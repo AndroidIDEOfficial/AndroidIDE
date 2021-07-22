@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/linearLayout3"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="vertical">
+
+	<ImageView
+		android:id="@+id/contentIconView"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="16dp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="@id/contentTextView"
+		android:visibility="gone"/>
+
+    <TextView
+		android:id="@+id/contentTextView"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="8dp"
+		android:layout_marginEnd="16dp"
+		android:layout_marginStart="16dp"
+		android:layout_marginTop="24dp"
+		android:alpha="0.8"
+		android:letterSpacing="0.02"
+		android:lineSpacingExtra="7sp"
+		android:textColor="@color/primaryTextColor"
+		android:textSize="14sp"
+		android:textStyle="normal"
+		app:layout_constraintBottom_toTopOf="@+id/rightButton"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@id/contentIconView"
+		app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.google.android.material.button.MaterialButton
+		android:id="@+id/leftButton"
+		style="@style/Widget.MaterialComponents.Button.TextButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="8dp"
+		android:textColor="@color/primaryTextColor"
+		android:textSize="14sp"
+		app:layout_constraintBottom_toBottomOf="@+id/rightButton"
+		app:layout_constraintEnd_toStartOf="@+id/rightButton"
+		app:layout_constraintTop_toTopOf="@+id/rightButton"
+		app:rippleColor="@color/primaryDarkColor"/>
+
+    <com.google.android.material.button.MaterialButton
+		android:id="@+id/rightButton"
+		style="@style/Widget.MaterialComponents.Button.TextButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="9dp"
+		android:layout_marginEnd="16dp"
+		android:textColor="@color/primaryTextColor"
+		android:textSize="14sp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:rippleColor="@color/primaryDarkColor"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

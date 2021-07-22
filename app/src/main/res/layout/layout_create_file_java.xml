@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:paddingTop="8dp"
+	android:paddingBottom="8dp">
+
+	<HorizontalScrollView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="8dp"
+		android:clipChildren="false"
+		android:clipToPadding="false"
+		android:paddingStart="16dp"
+		android:paddingEnd="16dp">
+
+		<com.google.android.material.button.MaterialButtonToggleGroup
+			android:id="@+id/typeGroup"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			app:singleSelection="true"
+			app:selectionRequired="true"
+			app:checkedButton="@id/type_class">
+
+			<com.google.android.material.button.MaterialButton
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/classtype_class"
+				android:id="@+id/type_class"
+				app:icon="@drawable/ic_language_java"
+				android:theme="@style/AppTheme.MaterialToggleButton"
+				style="?attr/materialButtonOutlinedStyle"/>
+
+			<com.google.android.material.button.MaterialButton
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/type_activity"
+				android:text="@string/classtype_activity"
+				app:icon="@drawable/ic_filetype_activity"
+				android:theme="@style/AppTheme.MaterialToggleButton"
+				style="?attr/materialButtonOutlinedStyle"/>
+
+			<com.google.android.material.button.MaterialButton
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/type_interface"
+				android:text="@string/classtype_interface"
+				app:icon="@drawable/ic_filetype_interface"
+				android:theme="@style/AppTheme.MaterialToggleButton"
+				style="?attr/materialButtonOutlinedStyle"/>
+
+			<com.google.android.material.button.MaterialButton
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/type_enum"
+				android:text="@string/classtype_enum"
+				app:icon="@drawable/ic_filetype_enum"
+				android:theme="@style/AppTheme.MaterialToggleButton"
+				style="?attr/materialButtonOutlinedStyle"/>
+
+		</com.google.android.material.button.MaterialButtonToggleGroup>
+
+	</HorizontalScrollView>
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:id="@+id/name"
+		android:hint="@string/file_name"
+		app:startIconDrawable="@drawable/ic_file_rename"
+		app:startIconTint="@color/primaryIconColor"
+		app:counterEnabled="true"
+		app:counterMaxLength="40"
+		android:layout_marginStart="16dp"
+		android:layout_marginEnd="16dp">
+
+		<com.google.android.material.textfield.TextInputEditText
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:singleLine="true"/>
+
+	</com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>
+

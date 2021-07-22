@@ -1,0 +1,28 @@
+[
+  {
+    "version": "1.0.1-alpha",
+    "changes": [
+      "Added: Option to choose custom build tools",
+      "Added: Build output is now shown while starting completion services",
+      "Added: A preference screen with some basic preferences",
+      "Added: \u0027Stop all Daemons\u0027 option now force stops a build if it already running",
+      "Added: Option which shows the status of Gradle Daemons",
+      "Added: Syntax highlighting and basic (reserved) completion for Gradle files.",
+      "Added: Option to recreate completion services",
+      "Added: Basic options while creating a new file",
+      "Added: You can now invoke the selection mode without selecting a word",
+      "Fixed: Bug which caused files from previously created project to be copied to new project",
+      "Fixed: Auto import issue when a completion item is selected",
+      "Fixed: Orientation issue in downloads activity",
+      "Fixed: Sometimes, auto closing tags won\u0027t work as expected",
+      "Enhanced: Speed of Java completion has been improved. But still it needs a lot of work.",
+      "Enhanced: Starting of completion services is a bit faster as compared to the previous version. But takes more time on first startup."
+    ]
+  },
+  {
+    "version": "1.0.0-alpha",
+    "changes": [
+      "First alpha release"
+    ]
+  }
+]

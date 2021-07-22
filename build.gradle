@@ -1,0 +1,56 @@
+buildscript {
+    ext {
+		build_gradle_version = '4.0.1'
+		androidide_plugin_version = '1.0.6'
+	}
+    project.ext {
+        compileSdk = 30
+        buildTools = "30.0.2"
+        minSdk = 21
+        targetSdk = 28
+        versionCode = 101210625
+        versionName = "1.0.1-alpha"
+		packageName = "com.itsaky.androidide"
+    }
+
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public/' } 
+        maven { url 'https://maven.aliyun.com/repository/google/' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
+        maven { url 'https://clojars.org/repo/'}
+        maven { url 'https://jitpack.io'}
+		maven { url 'https://maven.google.com' }
+		maven { url uri('/storage/emulated/0/AppProjects/AndroidIDEPlugin')}
+        google()
+        mavenLocal()
+		mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:$build_gradle_version"
+		classpath "com.itsaky.androidide:gradle:$androidide_plugin_version"
+		classpath 'com.github.megatronking.stringfog:gradle-plugin:2.2.1'
+		classpath 'com.github.megatronking.stringfog:xor:1.1.0'
+		classpath 'com.google.gms:google-services:4.3.8'
+		classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
+    }
+}
+
+allprojects {
+	
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public/' } 
+        maven { url 'https://maven.aliyun.com/repository/google/' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
+        maven { url 'https://clojars.org/repo/'}
+        maven { url 'https://jitpack.io'}
+		maven { url 'https://maven.google.com' }
+		maven { url 'https://androidide.com/build/plugin/'}
+        mavenLocal()
+		mavenCentral()
+        google()
+   }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

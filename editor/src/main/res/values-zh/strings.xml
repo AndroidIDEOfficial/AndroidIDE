@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Copyright 2020-2021 Rosemoe
+  ~
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<resources>
+    <string name="paste">粘贴</string>
+    <string name="copy">复制</string>
+    <string name="selectAll">全选</string>
+    <string name="cut">剪切</string>
+    <string name="last">上个</string>
+    <string name="next">下个</string>
+    <string name="replace">替换</string>
+    <string name="replaceAll">替换全部</string>
+    <string name="replacement">替换文本</string>
+    <string name="cancel">取消</string>
+    <string name="text_to_search">欲搜索文本</string>
+</resources>

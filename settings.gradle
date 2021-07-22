@@ -1,0 +1,8 @@
+include ':app'
+include ':treeview'
+include ':editor'
+include ':spinkit'
+include ':slidr'
+include ':javadocparser'
+
+rootProject.name = "Android IDE"

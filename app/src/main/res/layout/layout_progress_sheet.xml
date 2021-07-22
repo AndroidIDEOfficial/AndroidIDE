@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:gravity="start|center_vertical"
+	android:paddingTop="16dp">
+
+	<ProgressBar
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:layout_marginEnd="16dp"
+		android:id="@+id/progress"
+		android:padding="10dp"/>
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:singleLine="true"
+		android:textSize="15sp"
+		android:id="@+id/message"
+		android:layout_toEndOf="@id/progress"
+		android:layout_marginEnd="8dp"
+		android:ellipsize="end"/>
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/message"
+		android:layout_toEndOf="@id/progress"
+		android:id="@+id/subMessage"
+		android:ellipsize="end"
+		android:layout_marginEnd="8dp"
+		android:textSize="12sp"
+		android:maxLines="2"
+		android:gravity="center_vertical"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/get_ready_for_something_awesome"
+		android:layout_centerHorizontal="true"
+		android:layout_below="@id/progress"
+		android:layout_marginTop="24dp"
+		android:textSize="18sp"
+		android:textStyle="bold"
+		android:textColor="@color/secondaryTextColor_light"
+		android:id="@+id/welcomeText"/>
+
+</RelativeLayout>
+

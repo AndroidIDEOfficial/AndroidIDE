@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportHeight="24"
+    android:viewportWidth="24">
+    <path
+        android:fillColor="@color/tabAction_icon"
+        android:pathData="M5,13H19V11H5M3,17H17V15H3M7,7V9H21V7"/>
+
+</vector>

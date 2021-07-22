@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:animateLayoutChanges="true">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:layout_height="56dp"
+		android:layout_width="match_parent"
+		android:gravity="center"
+		android:id="@+id/appbar"
+		android:background="?attr/colorPrimary"
+		app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<ImageView
+				app:srcCompat="@drawable/ic_settings"
+				android:id="@+id/settings"
+				android:scaleType="center"
+				android:layout_alignParentEnd="true"
+				android:layout_centerVertical="true"
+				android:layout_height="48dp"
+				android:layout_width="48dp"
+				android:layout_margin="8dp"
+				android:clickable="true"
+				android:focusable="true"
+				android:background="?attr/selectableItemBackgroundBorderless"/>
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:text="@string/app_name"
+				android:textStyle="bold"
+				android:gravity="center"
+				android:textColor="@color/primaryTextColor"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:id="@+id/activitymainTextView1"
+				android:textSize="24sp"
+				android:layout_centerVertical="true"
+				android:clickable="false"
+				android:focusable="false"/>
+
+		</RelativeLayout>
+
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<com.itsaky.androidide.views.VerticalViewPager
+		android:id="@+id/main_viewPager"
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
+
+	<com.google.android.material.floatingactionbutton.FloatingActionButton
+		android:id="@+id/main_moveDown"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_margin="16dp"
+		app:fabSize="normal"
+		app:srcCompat="@drawable/ic_chevron_down"
+		app:tint="@color/primaryTextColor"
+		app:backgroundTint="@color/secondaryColor"
+		android:layout_gravity="bottom|end"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

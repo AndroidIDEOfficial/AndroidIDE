@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+	
+	<group
+		android:title="@string/discuss_amp_help"
+		android:id="@+id/editornav_group_discuss">
+		<item
+			android:id="@+id/editornav_discuss"
+			android:icon="@drawable/ic_telegram"
+			android:title="@string/discussions_on_telegram"/>
+		<!--<item
+			android:id="@+id/editornav_suggest"
+			android:icon="@drawable/ic_suggest"
+			android:title="@string/user_suggestions"/>-->
+		<item
+			android:id="@+id/editornav_needHelp"
+			android:icon="@drawable/ic_help"
+			android:title="@string/need_help"/>
+	</group>
+	
+	<group
+		android:title="@string/other"
+		android:id="@+id/editornav_group_other">
+		<item
+			android:id="@+id/editornav_settings"
+			android:icon="@drawable/ic_settings"
+			android:title="@string/ide_preferences"/>
+		<item
+			android:id="@+id/editornav_share"
+			android:icon="@drawable/ic_share"
+			android:title="@string/share_with_friends"/>
+	</group>
+	
+</menu>

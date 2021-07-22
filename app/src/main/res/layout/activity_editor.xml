@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:id="@+id/editor_drawerLayout"
+	android:animateLayoutChanges="true">
+	
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:id="@+id/realContainer">
+		
+		<com.google.android.material.appbar.AppBarLayout
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:elevation="8dp"
+			android:id="@+id/editor_appBarLayout"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent">
+
+			<com.google.android.material.appbar.MaterialToolbar
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:background="@color/primaryDarkColor"
+				android:id="@+id/editor_toolbar"/>
+
+			<com.itsaky.androidide.views.MaterialBanner
+				android:id="@+id/syncBanner"
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:visibility="gone"/>
+
+			<com.google.android.material.tabs.TabLayout
+				android:id="@+id/tabs"
+				android:layout_width="match_parent"
+				android:layout_height="40dp"
+				android:background="@color/primaryDarkColor"
+				app:tabBackground="@drawable/bg_editor_tab"
+				app:tabIndicatorHeight="0dp"
+				app:tabMode="scrollable"
+				app:tabGravity="fill"
+				app:tabSelectedTextColor="@color/editorTab_selectedText"
+				app:tabTextColor="@color/editorTab_unselectedText"/>
+
+		</com.google.android.material.appbar.AppBarLayout>
+		
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:id="@+id/fragContainer"
+			app:layout_constraintTop_toBottomOf="@id/editor_appBarLayout"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent">
+
+			<com.itsaky.androidide.views.NonSwipableViewPager
+				android:id="@+id/editor_viewPager"
+				android:layout_height="0dp"
+				android:layout_width="match_parent"
+				android:layout_weight="1.0"
+				android:background="@color/content_background"/>
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:orientation="vertical">
+
+				<com.itsaky.androidide.views.SymbolInputView
+					android:id="@+id/symbolInput"
+					android:layout_height="wrap_content"
+					android:layout_width="match_parent"/>
+
+				<TextView
+					android:id="@+id/editor_statusText"
+					android:layout_height="wrap_content"
+					android:layout_width="match_parent"
+					android:gravity="center"
+					android:textSize="14sp"
+					android:background="@android:color/black"
+					android:textColor="@color/primaryTextColor"
+					android:singleLine="true"/>
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+		<FrameLayout
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:id="@+id/transformScrim"
+			android:background="@color/transform_scrim"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"/>
+
+		<com.google.android.material.card.MaterialCardView
+			android:id="@+id/viewOptionsCard"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="16dp"
+			android:layout_marginBottom="24dp"
+			android:layout_marginStart="16dp"
+			android:layout_marginEnd="16dp"
+			app:cardElevation="8dp"
+			app:cardCornerRadius="8dp"
+			app:cardBackgroundColor="@color/primaryLightColor"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent">
+
+			<LinearLayout
+				android:orientation="vertical"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content">
+
+				<com.google.android.material.button.MaterialButton
+					style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+					android:id="@+id/view_buildOut"
+					android:layout_width="match_parent"
+					android:layout_height="52dp"
+					android:gravity="start|center_vertical"
+					android:insetTop="0dp"
+					android:insetBottom="0dp"
+					android:text="@string/build_output"
+					android:layout_marginBottom="1dp"
+					android:textColor="@color/primaryTextColor"
+					app:iconTint="@color/primaryIconColor"
+					app:cornerRadius="0dp"
+					app:icon="@drawable/ic_build_output"
+					app:backgroundTint="@color/primaryColor"
+					app:rippleColor="@color/rippleHighlightColor_light"/>
+
+				<com.google.android.material.button.MaterialButton
+					style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+					android:id="@+id/view_logs"
+					android:layout_width="match_parent"
+					android:layout_height="52dp"
+					android:gravity="start|center_vertical"
+					android:insetTop="0dp"
+					android:insetBottom="0dp"
+					android:text="@string/logs"
+					android:layout_marginBottom="1dp"
+					android:textColor="@color/primaryTextColor"
+					app:iconTint="@color/primaryIconColor"
+					app:cornerRadius="0dp"
+					app:icon="@drawable/ic_log"
+					app:backgroundTint="@color/primaryColor"
+					app:rippleColor="@color/rippleHighlightColor_light"/>
+
+				<com.google.android.material.button.MaterialButton
+					style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+					android:id="@+id/view_files"
+					android:layout_width="match_parent"
+					android:layout_height="52dp"
+					android:gravity="start|center_vertical"
+					android:insetTop="0dp"
+					android:insetBottom="0dp"
+					android:text="@string/show_files"
+					android:layout_marginBottom="1dp"
+					android:textColor="@color/primaryTextColor"
+					app:iconTint="@color/primaryIconColor"
+					app:cornerRadius="0dp"
+					app:icon="@drawable/ic_folder"
+					app:backgroundTint="@color/primaryColor"
+					app:rippleColor="@color/rippleHighlightColor_light"/>
+
+				<com.google.android.material.button.MaterialButton
+					style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+					android:id="@+id/view_daemonStatus"
+					android:layout_width="match_parent"
+					android:layout_height="52dp"
+					android:gravity="start|center_vertical"
+					android:insetTop="0dp"
+					android:insetBottom="0dp"
+					android:text="@string/gradle_daemon_status"
+					android:textColor="@color/primaryTextColor"
+					app:iconTint="@color/primaryIconColor"
+					app:cornerRadius="0dp"
+					app:icon="@drawable/ic_info"
+					app:backgroundTint="@color/primaryColor"
+					app:rippleColor="@color/rippleHighlightColor_light"/>
+
+			</LinearLayout>
+
+		</com.google.android.material.card.MaterialCardView>
+
+		<LinearLayout
+			android:orientation="vertical"
+			android:id="@+id/buildContainer"
+			android:visibility="gone"
+			android:background="@color/primaryDarkColor"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent">
+
+			<com.google.android.material.appbar.MaterialToolbar
+				android:layout_height="56dp"
+				android:layout_width="match_parent"
+				android:id="@+id/buildOutToolbar"
+				android:elevation="8dp"
+				android:background="@color/primaryDarkColor"
+				app:title="@string/build_output"
+				app:navigationIcon="@drawable/ic_chevron_down"
+				app:navigationIconTint="@color/primaryIconColor"/>
+
+			<LinearLayout
+				android:orientation="vertical"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:id="@+id/buildOutcontainer"/>
+
+		</LinearLayout>
+		
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:id="@+id/logContainer"
+			android:visibility="gone"
+			android:background="@color/primaryDarkColor"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintEnd_toEndOf="parent">
+
+			<com.google.android.material.appbar.MaterialToolbar
+				android:layout_height="56dp"
+				android:layout_width="match_parent"
+				android:id="@+id/logOutToolbar"
+				android:elevation="8dp"
+				android:background="@color/primaryDarkColor"
+				app:title="@string/logs"
+				app:navigationIcon="@drawable/ic_chevron_down"
+				app:navigationIconTint="@color/primaryIconColor"/>
+
+			<LinearLayout
+				android:orientation="vertical"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:id="@+id/logOutcontainer"/>
+
+		</LinearLayout>
+
+		<com.google.android.material.floatingactionbutton.FloatingActionButton
+			android:id="@+id/fab_view"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_marginTop="16dp"
+			android:layout_marginBottom="24dp"
+			android:layout_marginStart="16dp"
+			android:layout_marginEnd="16dp"
+			app:fabSize="normal"
+			app:srcCompat="@drawable/ic_view"
+			app:tint="@color/primaryTextColor"
+			app:backgroundTint="@color/secondaryColor"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			android:visibility="visible"/>
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+	
+	<com.google.android.material.navigation.NavigationView
+		android:id="@+id/startNav"
+		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		android:layout_gravity="start"
+		android:background="@color/primaryColor"
+		app:headerLayout="@layout/layout_nav_header"
+		app:menu="@menu/menu_editor_nav">
+
+	</com.google.android.material.navigation.NavigationView>
+
+	<com.google.android.material.navigation.NavigationView
+		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		android:background="@color/primaryColor"
+		android:layout_gravity="end">
+
+		<FrameLayout
+			android:id="@+id/editor_frameLayout"
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"/>
+
+	</com.google.android.material.navigation.NavigationView>
+
+</androidx.drawerlayout.widget.DrawerLayout>
+

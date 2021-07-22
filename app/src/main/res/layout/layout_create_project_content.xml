@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingLeft="16dp"
+	android:paddingRight="16dp">
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:hint="@string/project_app_name"
+		android:id="@+id/createproject_textAppName"
+		android:layout_marginBottom="8dp"
+		android:theme="@style/AppTheme.ProjectCreator.TextInput"
+		app:startIconDrawable="@drawable/ic_android"
+		app:startIconTint="@color/primaryIconColor"
+		app:counterEnabled="true"
+		app:counterMaxLength="20">
+
+		<com.google.android.material.textfield.TextInputEditText
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:singleLine="true"
+			android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"/>
+
+	</com.google.android.material.textfield.TextInputLayout>
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:hint="@string/package_name"
+		android:id="@+id/createproject_textPackageName"
+		android:layout_marginBottom="8dp"
+		android:theme="@style/AppTheme.ProjectCreator.TextInput"
+		app:startIconTint="@color/primaryIconColor"
+		app:startIconDrawable="@drawable/ic_package"
+		app:counterEnabled="true"
+		app:counterMaxLength="40">
+
+		<com.google.android.material.textfield.TextInputEditText
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:singleLine="true"
+			android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890."/>
+
+	</com.google.android.material.textfield.TextInputLayout>
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:hint="@string/minimum_sdk"
+		android:id="@+id/createproject_textMinSdk"
+		android:layout_marginBottom="8dp"
+		android:theme="@style/AppTheme.ProjectCreator.TextInput"
+		app:startIconTint="@color/primaryIconColor"
+		app:startIconDrawable="@drawable/ic_min_sdk"
+		app:counterEnabled="true"
+		app:counterMaxLength="2">
+
+		<com.google.android.material.textfield.TextInputEditText
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:singleLine="true"
+			android:digits="1234567890"
+			android:inputType="number"/>
+
+	</com.google.android.material.textfield.TextInputLayout>
+
+	<com.google.android.material.textfield.TextInputLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:hint="@string/target_sdk"
+		android:id="@+id/createproject_textTargetSdk"
+		android:layout_marginBottom="16dp"
+		android:theme="@style/AppTheme.ProjectCreator.TextInput"
+		app:startIconTint="@color/primaryIconColor"
+		app:startIconDrawable="@drawable/ic_target_sdk"
+		app:counterEnabled="true"
+		app:counterMaxLength="2">
+
+		<com.google.android.material.textfield.TextInputEditText
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:singleLine="true"
+			android:digits="1234567890"
+			android:inputType="number"/>
+
+	</com.google.android.material.textfield.TextInputLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="250dp"
+		android:orientation="horizontal"
+		android:weightSum="2.0">
+
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1.0"
+			android:padding="16dp">
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:id="@+id/createproject_templateLabel"
+				android:text="@string/template_empty"
+				android:textStyle="bold"
+				android:singleLine="true"
+				android:layout_marginBottom="8dp"
+				android:textColor="@color/secondaryColor"/>
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="0dp"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:id="@+id/createproject_templateDescription"
+				android:layout_weight="1.0"
+				android:textColor="@color/secondaryTextColor"/>
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
+				android:orientation="horizontal"
+				android:gravity="center">
+
+				<com.google.android.material.card.MaterialCardView
+					android:id="@+id/previousCard"
+					android:layout_height="50dp"
+					android:layout_width="50dp"
+					android:clickable="true"
+					android:focusable="true"
+					android:foreground="?attr/selectableItemBackgroundBorderless"
+					android:descendantFocusability="blocksDescendants"
+					android:layout_marginEnd="16dp"
+					app:cardBackgroundColor="@android:color/transparent"
+					app:cardCornerRadius="50dp"
+					app:cardElevation="0dp"
+					app:strokeColor="@color/secondaryColor"
+					app:strokeWidth="0.75dp">
+
+					<ImageView
+						android:layout_height="match_parent"
+						android:layout_width="match_parent"
+						android:id="@+id/createproject_previousTemplate"
+						android:scaleType="fitCenter"
+						android:padding="10dp"
+						app:srcCompat="@drawable/ic_chevron_left"/>
+
+				</com.google.android.material.card.MaterialCardView>
+
+				<com.google.android.material.card.MaterialCardView
+					android:id="@+id/nextCard"
+					android:layout_height="50dp"
+					android:layout_width="50dp"
+					android:clickable="true"
+					android:focusable="true"
+					android:foreground="?attr/selectableItemBackgroundBorderless"
+					android:descendantFocusability="blocksDescendants"
+					app:cardBackgroundColor="@android:color/transparent"
+					app:cardCornerRadius="50dp"
+					app:cardElevation="0dp"
+					app:strokeColor="@color/secondaryColor"
+					app:strokeWidth="0.75dp"
+					android:layout_marginStart="16dp">
+
+					<ImageView
+						android:layout_height="match_parent"
+						android:layout_width="match_parent"
+						android:id="@+id/createproject_nextTemplate"
+						android:scaleType="fitCenter"
+						android:padding="10dp"
+						app:srcCompat="@drawable/ic_chevron_right"/>
+
+				</com.google.android.material.card.MaterialCardView>
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+		<ImageView
+			android:id="@+id/createproject_templateImage"
+			android:layout_height="match_parent"
+			android:layout_width="0dp"
+			android:scaleType="fitCenter"
+			android:layout_weight="1.0"/>
+
+	</LinearLayout>
+
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/create_project"
+		android:layout_margin="16dp"
+		android:layout_gravity="center_horizontal"
+		android:textColor="@color/primaryTextColor"
+		android:id="@+id/createproject_create"/>
+
+</LinearLayout>

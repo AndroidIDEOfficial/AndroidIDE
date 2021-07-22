@@ -1,0 +1,106 @@
+<resources>
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/secondaryColor</item>
+		<item name="colorButtonNormal">@color/secondaryColor</item>
+		<item name="android:colorButtonNormal">@color/secondaryColor</item>
+		<item name="android:textColorSecondary">@color/secondaryTextColor</item>
+		<item name="colorControlNormal">@color/secondaryColor</item>
+		<item name="colorControlHighlight">@color/rippleHighlightColor</item>
+		<item name="android:fontFamily">@font/quicksand</item>
+		<item name="windowActionModeOverlay">true</item>
+		<item name="windowActionBarOverlay">true</item>
+		<item name="fontFamily">@font/quicksand</item>
+		<item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
+		<item name="android:windowBackground">@color/content_background</item>
+    </style>
+	<style name="AppTheme.MaterialToggleButton" parent="">
+		<item name="colorPrimary">@color/secondaryColor</item>
+	</style>
+	<style name="AppTheme.ProjectCreator.TextInput" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+        <item name="colorAccent">@color/primaryTextColor</item>
+        <item name="android:textColorHint">@color/secondaryTextColor</item>
+        <item name="colorControlActivated">@color/secondaryTextColor_light</item>
+    </style>
+	<style name="CreateProjectCardView" parent="@style/Widget.MaterialComponents.CardView">
+		<item name="shapeAppearanceOverlay">@style/CreateProjectCardView.ShapeAppearanceOverlay</item>
+	</style>
+	<style name="CreateProjectCardView.ShapeAppearanceOverlay" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSizeTopRight">16dp</item>
+		<item name="cornerSizeTopLeft">16dp</item>
+		<item name="cornerSizeBottomRight">0dp</item>
+		<item name="cornerSizeBottomLeft">0dp</item>
+	</style>
+	<style name="AppTheme.ShapeOverlay.Large" parent="">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSizeTopRight">16dp</item>
+		<item name="cornerSizeTopLeft">16dp</item>
+		<item name="cornerSizeBottomRight">0dp</item>
+		<item name="cornerSizeBottomLeft">0dp</item>
+	</style>
+	<!-- Alert Dialog -->
+	<style name="AppTheme.MaterialAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+		<item name="shapeAppearanceOverlay">@style/MaterialDialog.ShapeAppearance</item>
+		<item name="materialAlertDialogTitleTextStyle">@style/MaterialDialog.Title.Text</item>
+		<item name="materialAlertDialogBodyTextStyle">@style/MaterialDialog.Body.Text</item>
+		<item name="buttonBarPositiveButtonStyle">@style/MaterialAlertDialog.PositiveButtonStyle</item>
+		<item name="buttonBarNegativeButtonStyle">@style/MaterialAlertDialog.NegativeButtonStyle</item>
+		<item name="buttonBarNeutralButtonStyle">@style/MaterialAlertDialog.NeutralButtonStyle</item>
+		<item name="android:windowEnterAnimation">@animator/dialog_in</item>
+		<item name="android:windowExitAnimation">@animator/dialog_out</item>
+	</style>
+	<style name="MaterialDialog.ShapeAppearance" parent="">
+		<item name="cornerSize">10dp</item>
+	</style>
+	<style name="MaterialDialog.Title.Text" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
+		<item name="android:textColor">@color/primaryTextColor</item>
+		<item name="android:textStyle">bold</item>
+		<item name="fontFamily">@font/quicksand</item>
+	</style>
+	<style name="MaterialDialog.Body.Text" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">
+		<item name="android:textColor">@color/primaryTextColor</item>
+		<item name="fontFamily">@font/quicksand</item>
+	</style>
+	<style name="MaterialAlertDialog.PositiveButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+		<item name="android:textColor">@color/secondaryColor</item>
+		<item name="backgroundTint">@android:color/transparent</item>
+		<item name="fontFamily">@font/quicksand</item>
+	</style>
+	<style name="MaterialAlertDialog.NegativeButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+		<item name="android:textColor">@color/secondaryColor</item>
+		<item name="backgroundTint">@android:color/transparent</item>
+		<item name="fontFamily">@font/quicksand</item>
+	</style>
+	<style name="MaterialAlertDialog.NeutralButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+		<item name="android:textColor">@color/secondaryColor</item>
+		<item name="backgroundTint">@android:color/transparent</item>
+		<item name="fontFamily">@font/quicksand</item>
+	</style>
+	<style name="AppTheme.FilePicker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorAccent">@color/secondaryColor</item>
+
+        <item name="android:statusBarColor">@color/secondaryColor</item>
+        <item name="android:windowBackground">@color/content_background</item>
+        <item name="android:navigationBarColor">@color/primaryDarkColor</item>
+
+        <!-- textColorPrimary is for toolbar title text  -->
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+
+        <!-- textColorSecondary is for toolbar action icons tint-->
+        <item name="android:textColorSecondary">@color/primaryIconColor</item>
+        <item name="unicorn.colorAccent">@color/secondaryColor</item>
+        <item name="unicorn.background">@color/content_background</item>
+        <item name="unicorn.secondaryTextColor">@color/secondaryTextColor</item>
+        <item name="unicorn.primaryTextColor">@color/primaryTextColor</item>
+        <item name="unicorn.file.heading">@color/primaryTextColor</item>
+        <item name="unicorn.file.subHeading">@color/primaryTextColorLight</item>
+        <item name="unicorn.file.iconTint">@color/primaryIconColor</item>
+        <item name="unicorn.file.arrowIconTint">@color/primaryIconColor</item>
+        <item name="unicorn.file.selectionTint">@color/secondaryLightColor</item>
+        <item name="unicorn.fabColor">@color/secondaryColor</item>
+    </style>
+</resources>

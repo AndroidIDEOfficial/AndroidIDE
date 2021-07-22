@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content">
+
+	<com.itsaky.toaster.ToastWrapper
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:padding="8dp"
+		android:gravity="center"
+		android:id="@+id/toast_toastWrapper">
+
+		<ImageView
+			android:src="@android:drawable/ic_delete"
+			android:layout_width="30dp"
+			android:layout_height="30dp"
+			android:layout_marginEnd="16dp"
+			android:id="@+id/toast_image"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:ellipsize="end"
+			android:maxLines="2"
+			android:id="@+id/toast_text"
+			android:textColor="@color/primaryTextColor"/>
+
+	</com.itsaky.toaster.ToastWrapper>
+
+</RelativeLayout>
+

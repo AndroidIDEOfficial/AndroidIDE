@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.itsaky.androidide">
+    
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+	<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+		
+    <application
+        android:name=".app.StudioApp"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+		android:allowBackup="false"
+		android:largeHeap="true"
+		android:allowNativeHeapPointerTagging="false"
+		android:hardwareAccelerated="true">
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity 
+            android:name=".MainActivity"
+			android:configChanges="orientation|screenSize|uiMode">
+		</activity>
+		<activity 
+			android:name=".DownloadActivity"
+			android:configChanges="orientation|screenSize|uiMode">
+        </activity>
+		<activity 
+            android:name=".EditorActivity"
+			android:configChanges="orientation|screenSize|uiMode"
+			android:windowSoftInputMode="adjustResize">
+        </activity>
+		<activity
+			android:name=".PreferencesActivity"
+			android:configChanges="orientation|screenSize">
+		</activity>
+		<service
+			android:name="com.itsaky.androidide.services.IDEService"
+			android:exported="false">
+		</service>
+		<service
+			android:name=".services.MessagingService"
+			android:exported="false">
+			<intent-filter>
+				<action android:name="com.google.firebase.MESSAGING_EVENT" />
+			</intent-filter>
+		</service>
+		<receiver
+			android:name="com.itsaky.androidide.receivers.LogReceiver"
+			android:enabled="true"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
+			</intent-filter>
+		</receiver>
+		<meta-data
+			android:name="com.google.firebase.messaging.default_notification_icon"
+			android:resource="@mipmap/ic_launcher" />
+		<meta-data
+			android:name="com.google.firebase.messaging.default_notification_color"
+			android:resource="@color/secondaryColor" />
+		<meta-data
+			android:name="com.google.firebase.messaging.default_notification_channel_id"
+			android:value="@string/cms_channel_id_devs" />
+    </application>
+</manifest>
