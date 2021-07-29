@@ -207,6 +207,8 @@ public class IDEService extends Service implements ShellServer.Callback {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+        
+        // Delete the tmp directory. This directory is not needed anymore...
         FileUtils.delete(Environment.TMP_DIR);
 		isRunning = false;
 	}

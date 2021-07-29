@@ -84,7 +84,7 @@ public class IDEPreferences extends BasePreferenceFragment {
 		
 		screen.addPreference(editor);
 		screen.addPreference(build);
-//		screen.addPreference(issueTracker);
+		screen.addPreference(issueTracker);
 		screen.addPreference(telegram);
 		screen.addPreference(changelog);
 		

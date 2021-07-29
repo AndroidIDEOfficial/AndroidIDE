@@ -10,6 +10,7 @@ import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
+import io.github.rosemoe.editor.widget.CodeEditor;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,7 @@ public class LogLanguageImpl implements EditorLanguage {
 	private static class LogCompletor implements AutoCompleteProvider {
 		
 		@Override
-		public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
+		public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(CodeEditor editor, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
 			return new ArrayList<Either<SuggestItem, CompletionItem>>();
 		}
 	}

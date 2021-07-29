@@ -9,10 +9,10 @@
 			android:id="@+id/editornav_discuss"
 			android:icon="@drawable/ic_telegram"
 			android:title="@string/discussions_on_telegram"/>
-		<!--<item
+		<item
 			android:id="@+id/editornav_suggest"
 			android:icon="@drawable/ic_suggest"
-			android:title="@string/user_suggestions"/>-->
+			android:title="@string/user_suggestions"/>
 		<item
 			android:id="@+id/editornav_needHelp"
 			android:icon="@drawable/ic_help"

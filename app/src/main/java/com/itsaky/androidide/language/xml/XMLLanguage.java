@@ -19,8 +19,8 @@ public class XMLLanguage implements EditorLanguage {
 	private XMLAutoComplete completer;
 	private NewlineHandler[] newlineHandlers = new NewlineHandler[] {};
 
-	public XMLLanguage(CodeEditor editor) {
-		this.completer = new XMLAutoComplete(editor);
+	public XMLLanguage() {
+		this.completer = new XMLAutoComplete();
 		this.analyzer = new XMLAnalyzer();
 		this.newlineHandlers = new NewlineHandler[]{new IndentHandler()};
 	}

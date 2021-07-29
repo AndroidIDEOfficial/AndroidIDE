@@ -13,21 +13,26 @@ import io.github.rosemoe.editor.widget.CodeEditor;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConstructorDescription extends JavaSuggestItemImpl implements IJavaDocCommentable {
-    private ArrayList<IClass> mParameterTypes = new ArrayList<>();
+    private ArrayList<String> mParameterTypes = new ArrayList<>();
     private String mConstructorName;
 
     public ConstructorDescription(Constructor constructor) {
         mConstructorName = constructor.getName();
         Class[] parameterTypes = constructor.getParameterTypes();
         for (Class parameterType : parameterTypes) {
-            IClass type = JavaClassManager.getInstance().getClassWrapper(parameterType);
-            mParameterTypes.add(type);
+            mParameterTypes.add(parameterType.getName());
         }
     }
 
     public ConstructorDescription(String name, List<IClass> paramTypes) {
+        mConstructorName = name;
+        mParameterTypes.addAll(paramTypes.stream().filter(c -> c != null).map(c -> c.getFullClassName()).collect(Collectors.toList()));
+    }
+    
+    public ConstructorDescription(String name, ArrayList<String> paramTypes) {
         mConstructorName = name;
         mParameterTypes.addAll(paramTypes);
     }
@@ -95,21 +100,21 @@ public class ConstructorDescription extends JavaSuggestItemImpl implements IJava
         return getSimpleName() + "()";
     }
 	
-    private String paramsToString(@NonNull ArrayList<IClass> parameterTypes) {
+    private String paramsToString(@NonNull ArrayList<String> parameterTypes) {
         StringBuilder result = new StringBuilder();
         boolean firstTime = true;
-        for (IClass parameterType : parameterTypes) {
+        for (String parameterType : parameterTypes) {
             if (firstTime) {
                 firstTime = false;
             } else {
                 result.append(",");
             }
-            result.append(parameterType.getSimpleName());
+            result.append(parameterType);
         }
         return result.toString();
     }
 
-    public ArrayList<IClass> getParameterTypes() {
+    public ArrayList<String> getParameterTypes() {
         return mParameterTypes;
     }
 

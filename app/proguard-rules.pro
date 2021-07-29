@@ -1,5 +1,8 @@
 -keepattributes SourceFile, LineNumberTable
 -renamesourcefileattribute FuckYou
+-obfuscationdictionary dictionary.txt
+-packageobfuscationdictionary dictionary.txt
+-classobfuscationdictionary dictionary.txt
 
 -ignorewarnings
 -dontwarn
@@ -14,17 +17,14 @@
 -dontwarn androidx.lifecycle.**
 -keep class androidx.arch.** { *; }
 -keep class androidx.lifecycle.** { *; }
--keepclasseswithmembernames,includedescriptorclasses class * {
-    native <methods>;
-}
+-keep class org.eclipse.jdt.** { <init>(...); }
+-keep class org.eclipse.jdt.** { static *; }
+
+-keepclasseswithmembernames,includedescriptorclasses class * { native <methods>; }
 -keep public class * implements com.bumptech.glide.module.GlideModule
--keep class * extends com.bumptech.glide.module.AppGlideModule {
- <init>(...);
-}
+-keep class * extends com.bumptech.glide.module.AppGlideModule { <init>(...); }
 -keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
   **[] $VALUES;
   public *;
 }
--keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder {
-  *** rewind();
-}
+-keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder { *** rewind(); }

@@ -11,15 +11,10 @@ import android.text.TextUtils;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
 import com.blankj.utilcode.util.EncodeUtils;
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.SPStaticUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
-import com.elvishew.xlog.LogConfiguration;
-import com.elvishew.xlog.LogLevel;
-import com.elvishew.xlog.XLog;
-import com.elvishew.xlog.printer.Printer;
-import com.elvishew.xlog.printer.file.FilePrinter;
-import com.elvishew.xlog.printer.file.naming.DateFileNameGenerator;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
@@ -28,8 +23,10 @@ import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.language.java.provider.JavaCompletionProvider;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
 import com.itsaky.androidide.models.AndroidProject;
+import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.services.MessagingService;
+import com.itsaky.androidide.services.compiler.JavaCompilerService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
@@ -37,16 +34,11 @@ import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.androidide.utils.StudioUtils;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import com.itsaky.androidide.models.ConstantsBridge;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import com.itsaky.androidide.services.compiler.JavaCompilerService;
-import com.itsaky.androidide.interfaces.CompileListener;
-import com.blankj.utilcode.util.FileUtils;
 
 public class StudioApp extends MultiDexApplication
 {
@@ -93,10 +85,6 @@ public class StudioApp extends MultiDexApplication
 		newShell(line -> handleLog(line)).bgAppend("logcat -v threadtime");
         setupLibsIfNeeded();
         
-        if(isFrameworkInstalled()) {
-            newShell(t -> XLog.i(t)).bgAppend("printenv > /sdcard/androidideenv.txt && java -version");
-        }
-							
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			createNotificationChannels();
 		}
@@ -153,41 +141,28 @@ public class StudioApp extends MultiDexApplication
 	}
 	
 	private void initLogger() {
-		LogConfiguration config = new LogConfiguration.Builder()
-			.logLevel(DEBUG ? LogLevel.ALL : LogLevel.NONE)
-			.tag("Android IDE")                                         
-			.enableThreadInfo()                                    
-			.enableStackTrace(2)                                  
-			.enableBorder()                                        
-			.build();
-		Printer filePrinter = new FilePrinter                      
-			.Builder(FileUtil.getExternalStorageDir() + "/ide_xlog")                         
-			.fileNameGenerator(new DateFileNameGenerator()) 
-			.build();
-		XLog.init(                                                 
-			config,                                                
-		 filePrinter);
+		
 	}
     
     private boolean setupLibsIfNeeded() {
         File lib = Environment.LIBDIR;
-        return extractLibs(lib);
-//        if(lib != null && lib.exists() && lib.isDirectory()) {
-//            boolean libhook, librt, libgcc, libgcc_real, libpthread, libz;
-//            libhook = librt = libgcc = libgcc_real = libpthread = libz = false;
-//            File[] list = lib.listFiles();
-//            if(list != null) {
-//               for(File f : list) {
-//                   libhook = libhook == false && f.getName().equals("libhook.so");
-//                   librt = librt == false && f.getName().equals("librt.so");
-//                   libpthread = libpthread == false && f.getName().equals("libpthread.so");
-//                   libgcc = libgcc == false && f.getName().equals("libgcc.so");
-//                   libgcc_real = libgcc_real = false & f.getName().equals("libgcc_real.so");
-//                   libz = libz == false && f.getName().equals("libz.so.1");
-//               }
-//            } else return extractLibs(lib);
-//            return !(libhook && librt && libgcc && libgcc_real && libpthread && libz) ? extractLibs(lib) : true;
-//        } else return extractLibs(lib);
+        if(lib != null && lib.exists() && lib.isDirectory()) {
+            boolean libhook, librt, libgcc, libgcc_real, libpthread, libz, libcpp_shared;
+            libhook = librt = libgcc = libgcc_real = libpthread = libz = libcpp_shared = false;
+            File[] list = lib.listFiles();
+            if(list != null) {
+               for(File f : list) {
+                   libhook = libhook == false ? f.getName().equals("libhook.so") : libhook;
+                   librt = librt == false ? f.getName().equals("librt.so") : librt;
+                   libpthread = libpthread == false ? f.getName().equals("libpthread.so") : libpthread;
+                   libgcc = libgcc == false ? f.getName().equals("libgcc.so") : libgcc;
+                   libgcc_real = libgcc_real = false ? f.getName().equals("libgcc_real.so") : libgcc_real;
+                   libz = libz == false ? f.getName().equals("libz.so.1") : libz;
+                   libcpp_shared = libcpp_shared == false ? f.getName().equals("libc++_shared.so") : libcpp_shared;
+               }
+            } else return extractLibs(lib);
+            return !(libhook && librt && libgcc && libgcc_real && libpthread && libz && libcpp_shared) ? extractLibs(lib) : true;
+        } else return extractLibs(lib);
     }
 
     private boolean extractLibs(File lib) {
@@ -248,10 +223,9 @@ public class StudioApp extends MultiDexApplication
 		this.mCompletionProvider.loadProject(project);
     }
 	
-	public void createJavaCompiler(AndroidProject project, CompileListener listener) {
+	public void createJavaCompiler(AndroidProject project) {
 		this.mJavaCompilerService =
-			new JavaCompilerService(project)
-				.setListener(listener);
+			new JavaCompilerService(project);
 	}
 	
 	public JavaCompilerService getJavaCompiler() {

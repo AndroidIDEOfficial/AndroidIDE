@@ -15,22 +15,23 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
+import com.itsaky.androidide.utils.Logger;
+import java.util.stream.Collectors;
+import com.itsaky.androidide.services.compiler.model.CompilerDiagnosticImpl;
 
 public class JavaAutoComplete implements AutoCompleteProvider {
-
-	private CodeEditor editor;
 	private JavaLanguageAnalyzer analyzer;
 
-	public JavaAutoComplete(CodeEditor editor, JavaLanguageAnalyzer analyzer) {
-		this.editor = editor;
+	public JavaAutoComplete(JavaLanguageAnalyzer analyzer) {
 		this.analyzer = analyzer;
 	}
 
 	@Override
-	public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
+	public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(CodeEditor editor, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
 		Pair<ArrayList<SuggestItem>, List<Diagnostic<? extends JavaFileObject>>> pair = StudioApp.getInstance().getCompletionProvider().getSuggestions(editor);
 		final ArrayList<SuggestItem> suggestions = pair.first;
-		final List<Diagnostic<? extends JavaFileObject>> diags = pair.second;
+//		final List<Diagnostic<? extends JavaFileObject>> diags = pair.second;
+//        editor.setDiagnostics(diags.stream().map(CompilerDiagnosticImpl::fromDiagnostic).collect(Collectors.toList()));
 		if(suggestions != null) {
 			List<Either<SuggestItem, CompletionItem>> result = new ArrayList<>();
 			for(SuggestItem item : suggestions) {

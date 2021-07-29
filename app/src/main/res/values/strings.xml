@@ -1,4 +1,9 @@
 <resources>
+    <string name="view_diags">Diagnostics</string>
+    <string name="diagnostic_position">Line: %s, Column: %s</string>
+    <string name="diagnostic_error">ERROR</string>
+    <string name="diagnostic_warning">WARNING</string>
+    <string name="diagnostic_note">NOTE</string>
 	<string name="msg_project_deleted">Project deleted</string>
 	<string name="msg_project_delete_failed">Failed to delete project!</string>
 	<string name="msg_failed_load_icon_path">Failed to load icon path!</string>
@@ -224,4 +229,18 @@
 	<string name="cms_channel_id_devs">Notifications from Developers</string>
 	<string name="cms_channel_id_update">App Update Notifications</string>
 	<string name="nothing_here">Nothing here &#8230;</string>
+    
+    <item name="paste" type="string">Paste</item>
+    <item name="copy" type="string">Copy</item>
+    <item name="selectAll" type="string" formatted="true">Select All</item>
+    <item name="saveToProject" type="string" translatable="false" >Project</item>
+    <item name="cut" type="string">Cut</item>
+    <item name="last" type="string">Last</item>
+    <item name="next" type="string">Next</item>
+    <item name="replace" type="string">Replace</item>
+    <item name="replaceAll" type="string">Replace All</item>
+    <item name="replacement" type="string">Replacement</item>
+    <item name="text_to_search" type="string">Text to search</item>
+    <item name="more" type="string" translatable="false" >More</item>
+	<item name="msg_long_click" type="string">Long click on an item to show JavaDoc if available.</item>
 </resources>

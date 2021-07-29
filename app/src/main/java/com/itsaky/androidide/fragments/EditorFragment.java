@@ -5,21 +5,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.FragmentEditorBinding;
 import com.itsaky.androidide.fragments.preferences.EditorPreferences;
+import com.itsaky.androidide.interfaces.CompileListener;
 import com.itsaky.androidide.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.language.java.JavaLanguage;
 import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.services.compiler.JavaCompilerService;
 import com.itsaky.androidide.services.compiler.model.CompilerDiagnostic;
 import com.itsaky.androidide.syntax.colorschemes.SchemeWombat;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ReadFileTask;
+import com.itsaky.androidide.tools.SourceJavaFileObject;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.sun.tools.javac.resources.compiler;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.widget.CodeEditor;
@@ -28,13 +33,11 @@ import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import com.elvishew.xlog.XLog;
-import android.text.TextUtils;
-import com.itsaky.androidide.services.compiler.JavaCompilerService;
 
-public class EditorFragment extends BaseFragment implements EditorEventListener {
+public class EditorFragment extends BaseFragment implements EditorEventListener, CompileListener {
 	
 	public FragmentEditorBinding binding;
 	private File mFile;
@@ -43,9 +46,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	private boolean isFirstCreate = false;
 	
 	private static AndroidProject project;
-	
-	private List<CompilerDiagnostic> diags;
-	
+    
 	public static final String KEY_FILE_PATH = "file_path";
 	public static final String KEY_PROJECT = "project";
 	public static final String EXT_JAVA = ".java";
@@ -55,7 +56,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	public static final String EXT_GROOVY = ".groovy";
 	public static final String EXT_KOTLIN = ".kt";
 	public static final String EXT_JSON = ".json";
-
+    
 	public static EditorFragment newInstance(File file, AndroidProject project) {
 		Bundle bundle = new Bundle();
 		bundle.putString(KEY_FILE_PATH, file.getAbsolutePath());
@@ -100,11 +101,30 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 			postRead();
 		});
 	}
+
+    @Override
+    public void onCompilationResult(boolean singleFile, Map<File, List<CompilerDiagnostic>> diagnostics) {
+        if(diagnostics != null
+            && getFile() != null
+            && diagnostics.containsKey(getFile()))
+        {
+            binding.editorCodeEditor.setDiagnostics(diagnostics.get(getFile()));
+        }
+    }
+    
+    private void requestCompilation() {
+        final long s = System.currentTimeMillis();
+        final SourceJavaFileObject source = new SourceJavaFileObject(getFile(), binding.editorCodeEditor.getText().toString());
+        JavaCompilerService compiler = StudioApp.getInstance().getJavaCompiler();
+        if(compiler != null) {
+            compiler.compileSingleAsync(source, this);
+        }
+    }
 	
 	public void setDiagnostics(List<CompilerDiagnostic> diags) {
-		this.diags = diags;
-		XLog.i("[EditorFragment] Diagnostics for file: " + getFile().getAbsolutePath()
-				+ "\ndiagnostics: " + TextUtils.join("\n", diags));
+		if(binding.editorCodeEditor != null) {
+            binding.editorCodeEditor.setDiagnostics(diags);
+        }
 	}
 	
 	private void configureEditorIfNeeded() {
@@ -176,10 +196,10 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	
 	private void postRead() {
 		if (mFile.isFile() && mFile.getName().endsWith(EXT_JAVA)) {
-			binding.editorCodeEditor.setEditorLanguage(new JavaLanguage(binding.editorCodeEditor, project));
+			binding.editorCodeEditor.setEditorLanguage(new JavaLanguage(project));
 			binding.editorCodeEditor.setColorScheme(new SchemeVS2019());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_XML)) {
-			binding.editorCodeEditor.setEditorLanguage(new XMLLanguage(binding.editorCodeEditor));
+			binding.editorCodeEditor.setEditorLanguage(new XMLLanguage());
 			binding.editorCodeEditor.setColorScheme(new SchemeWombat());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_GRADLE)) {
 			binding.editorCodeEditor.setEditorLanguage(new GroovyLanguage());
@@ -251,6 +271,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	@Override
 	public void afterDelete(CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
 		isModified = true;
+        
+        requestCompilation();
 	}
 
 	@Override
@@ -263,11 +285,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		if(isOpen && insertedContent.toString().equals("/")) {
 			closeCurrentTag(editor.getText().toString(), endLine, endColumn);
 		}
-		
-		JavaCompilerService compiler = getStudioActivity().getApp().getJavaCompiler();
-		if(compiler != null) {
-			compiler.compileAll();
-		}
+        
+        requestCompilation();
 	}
 
 	@Override

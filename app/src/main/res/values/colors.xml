@@ -10,6 +10,7 @@
 	<color name="primaryTextColorLight">#bdbdbd</color>
 	<color name="secondaryTextColor">#70ffffff</color>
 	<color name="secondaryTextColor_light">#50ffffff</color>
+    <color name="secondaryTextColor_lighter">#f0ffffff</color>
 	<color name="color_toast_background">#90424242</color>
 	<color name="primaryIconColor">#ffffff</color>
 	<color name="secondaryIconColor">#9f9f9f</color>
@@ -32,7 +33,13 @@
 	<color name="log_warning">#FF7043</color>
 	<color name="log_info">#4CAF50</color>
 	<color name="log_normal">@color/primaryTextColor</color>
+    <color name="diagnostic_error">@color/secondaryDarkColor</color>
+    <color name="diagnostic_warning">@color/log_warning</color>
 	<color name="content_background">#212121</color>
 	<color name="bg_green">#4CAF50</color>
 	<color name="transform_scrim">#70000000</color>
+    
+    <color name="textActionNameColor">@android:color/tertiary_text_light</color>
+    <color name="completionWindow_tipBackground">#eeeeee</color>
+	<color name="completionWindow_tipText">@android:color/black</color>
 </resources>

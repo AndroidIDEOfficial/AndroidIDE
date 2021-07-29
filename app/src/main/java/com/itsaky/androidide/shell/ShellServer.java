@@ -2,7 +2,6 @@ package com.itsaky.androidide.shell;
 
 import com.blankj.utilcode.util.CloseUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
-import com.elvishew.xlog.XLog;
 import com.itsaky.androidide.utils.Environment;
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -38,25 +37,30 @@ public class ShellServer extends Thread {
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.ANDROID_HOME) + "/cmdline-tools/latest/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.ANDROID_HOME) + "/cmake/bin");
             
+            // Provide paths to .so files needed to execute JDK
             final String lib = Environment.LIBDIR.getAbsolutePath();
             stringBuilder.append("\nexport LD_LIBRARY_PATH=" + lib);
             stringBuilder.append(System.getenv().containsKey("LD_LIBRARY_PATH") ? ":" + System.getenv().get("LD_LIBRARY_PATH") : "");
             
             if(android.os.Build.VERSION.SDK_INT >= 30) {
+                // Hook calls to malloc() in native binaries
+                // Required only in Android 11 and up
                 stringBuilder.append("\nexport LD_PRELOAD=" + Environment.LIBHOOKSO.getAbsolutePath());
             }
             
+            // Monotonic clock fix, needed for JDK
             stringBuilder.append("\nls -l /system/lib64/libc.so && " +
                    "ln -sf /apex/com.android.runtime/lib64/bionic/libc.so " + lib + "/librt.so && " +
                    "ln -sf /apex/com.android.runtime/lib64/bionic/libc.so " + lib + "/libpthread.so");
-                   
+             
+            // Make sure there are proper permissions set to the $HOME directory
             stringBuilder.append("\nchmod -R 777 $HOME");
-            stringBuilder.append("\njava -XshowSettings:all > /sdcard/androidide_jdk_settings.txt");
+            
+            // Execute all commands...
             append(stringBuilder.toString(), false);
         } catch (Throwable th) {
             if (callback != null) {
                 String out = ThrowableUtils.getFullStackTrace(th).concat("\n");
-                XLog.e("[ShellServer] error setting up server ->\n" + out);
                 callback.output(out);
             }
         }

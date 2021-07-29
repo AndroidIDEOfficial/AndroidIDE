@@ -133,6 +133,23 @@
 					app:icon="@drawable/ic_build_output"
 					app:backgroundTint="@color/primaryColor"
 					app:rippleColor="@color/rippleHighlightColor_light"/>
+                
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                    android:id="@+id/view_diags"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:gravity="start|center_vertical"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="@string/view_diags"
+                    android:layout_marginBottom="1dp"
+                    android:textColor="@color/primaryTextColor"
+                    app:iconTint="@color/primaryIconColor"
+                    app:cornerRadius="0dp"
+                    app:icon="@drawable/ic_diagnostics"
+                    app:backgroundTint="@color/primaryColor"
+					app:rippleColor="@color/rippleHighlightColor_light"/>
 
 				<com.google.android.material.button.MaterialButton
 					style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
@@ -247,6 +264,36 @@
 				android:id="@+id/logOutcontainer"/>
 
 		</LinearLayout>
+        
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/diagContainer"
+            android:visibility="gone"
+            android:background="@color/primaryDarkColor"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:layout_height="56dp"
+                android:layout_width="match_parent"
+                android:id="@+id/diagToolbar"
+                android:elevation="8dp"
+                android:background="@color/primaryDarkColor"
+                app:title="@string/view_diags"
+                app:navigationIcon="@drawable/ic_chevron_down"
+                app:navigationIconTint="@color/primaryIconColor"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/diagListContainer"/>
+
+        </LinearLayout>
 
 		<com.google.android.material.floatingactionbutton.FloatingActionButton
 			android:id="@+id/fab_view"

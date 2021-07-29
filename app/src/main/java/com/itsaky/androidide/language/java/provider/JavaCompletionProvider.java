@@ -44,7 +44,7 @@ public class JavaCompletionProvider {
 		this.mPackageManager = new PackageManager();
 		this.mJavaParser = new JavacParser();
 
-		addAutoComplete();
+		addMatchers();
 	}
 
 	public boolean loadProject(AndroidProject project) {
@@ -57,7 +57,7 @@ public class JavaCompletionProvider {
 		return initiated;
 	}
 
-	private void addAutoComplete() {
+	private void addMatchers() {
         mCompletors.add(new CompleteExpression(mClassLoader));
         mCompletors.add(new CompleteNewKeyword(mClassLoader));
         mCompletors.add(new CompletePackage(mPackageManager));

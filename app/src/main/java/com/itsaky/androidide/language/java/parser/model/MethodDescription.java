@@ -28,10 +28,10 @@ public class MethodDescription extends JavaSuggestItemImpl implements Member, Su
     private IClass mReturnType;
 
     public MethodDescription(String name, IClass returnType,
-                             long modifiers, ArrayList<String> parameterTypes) {
+                             int modifiers, ArrayList<String> parameterTypes) {
         mMethodName = name;
         mReturnType = returnType;
-        mModifiers = (int) modifiers;
+        mModifiers = modifiers;
         mParameterTypes = parameterTypes;
     }
 

@@ -49,7 +49,7 @@ public class CompleteThisKeyword extends JavaCompleteMatcherImpl {
             MethodDescription desc = new MethodDescription(
                     method.getName().toString(),
 					returnType,
-                    method.getModifiers().flags,
+                    (int) method.getModifiers().flags,
                     paramsStr);
             setInfo(desc, editor, incomplete);
             result.add(desc);

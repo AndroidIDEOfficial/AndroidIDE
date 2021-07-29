@@ -12,6 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * A utility class to convert JAR files to DEX
+ *
+ * @deprecated This is replaced by the ClassFileReader. There is no need to dex the JAR files in order to load them.
+ */
+@Deprecated
 public class Jar2DexService implements ShellServer.Callback {
 	
 	private final List<String> mClasspaths;

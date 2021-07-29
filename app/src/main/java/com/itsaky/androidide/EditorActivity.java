@@ -17,6 +17,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
 import com.blankj.utilcode.util.ClipboardUtils;
@@ -29,6 +31,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialArcMotion;
 import com.google.android.material.transition.MaterialContainerTransform;
+import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorPagerAdapter;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
 import com.itsaky.androidide.app.StudioActivity;
@@ -41,9 +44,11 @@ import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.interfaces.CompileListener;
 import com.itsaky.androidide.interfaces.DexResultListener;
+import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.receivers.LogReceiver;
@@ -64,6 +69,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -71,14 +77,14 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-import com.elvishew.xlog.XLog;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
 														TabLayout.OnTabSelectedListener,
 														NavigationView.OnNavigationItemSelectedListener,
 														DexResultListener,
-														CompileListener {
+														CompileListener,
+                                                        DiagnosticClickListener {
 															
 	private ActivityEditorBinding mBinding;
 	private EditorPagerAdapter mPagerAdapter;
@@ -89,6 +95,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private TreeNode mLastHolded;
 	private CodeEditor buildView;
 	private CodeEditor logView;
+    private RecyclerView diagnosticList;
 	
 	private LogLanguageImpl mLogLanguageImpl;
 	
@@ -97,6 +104,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private OptionsListFragment mFileOptionsFragment;
 	
 	private boolean recreateCompletionServices = false;
+    
+    private final Map<File, List<CompilerDiagnostic>> diagnostics = new HashMap<>();
 	
 	private final String RES_PATH_REGEX = "/.*/src/.*/res";
 	private final String LAYOUTRES_PATH_REGEX = "/.*/src/.*/res/layout";
@@ -111,9 +120,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private static final int ACTIONID_CLOSE = 100;
 	private static final int ACTIONID_OTHERS = 101;
 	private static final int ACTIONID_ALL = 102;
-	
-	private static final HashMap<File, List<CompilerDiagnostic>> mDiagnosticsMap = new HashMap<>();
-	
+    
 	private LogReceiver mLogReceiver = new LogReceiver().setLogListener(line -> appendApkLog(line));
 	private BroadcastReceiver mServiceStartReceiver = new BroadcastReceiver(){
 
@@ -186,7 +193,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		
 		KeyboardUtils.registerSoftInputChangedListener(this, __ -> onSoftInputChanged());
 		registerLogReceiver();
-		
 		setupContainers();
     }
 
@@ -198,6 +204,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		if(getLogView().getParent() != null && getLogView().getParent() instanceof ViewGroup) {
 			((ViewGroup) getLogView().getParent()).removeView(getLogView());
 		}
+        
+        if(getDiagnosticsList().getParent() != null && getDiagnosticsList().getParent() instanceof ViewGroup) {
+            ((ViewGroup) getDiagnosticsList().getParent()).removeView(getDiagnosticsList());
+		}
 		
 		mBinding.buildOutcontainer.addView(getBuildView(), new ViewGroup.LayoutParams(-1, -1));
 		mBinding.buildContainer.setVisibility(View.GONE);
@@ -208,12 +218,18 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.logContainer.setVisibility(View.GONE);
 		mBinding.logOutToolbar.setNavigationOnClickListener(v -> hideLogResult());
 		mBinding.logOutToolbar.setOnClickListener(v -> hideLogResult());
+        
+        mBinding.diagListContainer.addView(getDiagnosticsList(), new ViewGroup.LayoutParams(-1, -1));
+        mBinding.diagContainer.setVisibility(View.GONE);
+        mBinding.diagToolbar.setNavigationOnClickListener(v -> hideDiagnostics());
+		mBinding.diagToolbar.setOnClickListener(v -> hideDiagnostics());
 		
 		mBinding.viewOptionsCard.setVisibility(View.GONE);
 		mBinding.transformScrim.setVisibility(View.GONE);
 		
 		mBinding.transformScrim.setOnClickListener(v -> hideViewOptions());
 		mBinding.viewBuildOut.setOnClickListener(v -> showBuildResult());
+        mBinding.viewDiags.setOnClickListener(v -> showDiagnostics());
 		mBinding.viewLogs.setOnClickListener(v -> showLogResult());
 		mBinding.viewFiles.setOnClickListener(v -> showFiles());
 		mBinding.viewDaemonStatus.setOnClickListener(v -> showDaemonStatus());
@@ -250,18 +266,20 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
 	@Override
 	public void onBackPressed() {
-		if(mBinding.buildContainer.getVisibility() == View.VISIBLE) {
-			hideBuildResult();
-		} else if(mBinding.logContainer.getVisibility() == View.VISIBLE) {
-			hideLogResult();
-		} else if(mBinding.viewOptionsCard.getVisibility() == View.VISIBLE) {
-			hideViewOptions();
-		} else if(mBinding.getRoot().isDrawerOpen(GravityCompat.END)) {
+		if(mBinding.getRoot().isDrawerOpen(GravityCompat.END)) {
 			mBinding.getRoot().closeDrawer(GravityCompat.END);
 		} else if(mBinding.getRoot().isDrawerOpen(GravityCompat.START)) {
 			mBinding.getRoot().closeDrawer(GravityCompat.START);
 		} else if(getDaemonStatusFragment().isShowing()) {
 			getDaemonStatusFragment().dismiss();
+		} else if(mBinding.buildContainer.getVisibility() == View.VISIBLE) {
+            hideBuildResult();
+        } else if(mBinding.logContainer.getVisibility() == View.VISIBLE) {
+            hideLogResult();
+        } else if(mBinding.viewOptionsCard.getVisibility() == View.VISIBLE) {
+            hideViewOptions();
+		} else if(mBinding.diagContainer.getVisibility() == View.VISIBLE) {
+            hideDiagnostics();
 		} else if(mFileOptionsFragment != null && mFileOptionsFragment.isShowing()) {
 			mFileOptionsFragment.dismiss();
 		} else {
@@ -411,6 +429,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		if(recreateCompletionServices) {
 			getApp().createCompletionService(mProject);
 		} else if(task.getType() == GradleTask.Type.BUILD) {
+            getApp().createJavaCompiler(mProject);
+            getApp().getJavaCompiler().compileAllAsync(this);
 			if(task.getTaskID() == IDEService.TASK_ASSEMBLE_DEBUG) {
 				if(task.buildsApk()) {
 					install(task.getApk(new File(mProject.getMainModulePath(), "build").getAbsolutePath(), mProject.getMainModule()));
@@ -429,6 +449,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		if(task.canOutput()) {
 			setStatus(msg);
 		}
+        
+        if(task.getType() == GradleTask.Type.BUILD) {
+            getApp().createJavaCompiler(mProject);
+            getApp().getJavaCompiler().compileAllAsync(this);
+        }
 
 		showBuildResult();
 		
@@ -441,9 +466,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	public void onGetDependencies(List<String> dependencies) {
 		setStatus(getString(R.string.msg_starting_completion));
 		mProject.setClassPaths(dependencies);
-		getApp().createJavaCompiler(mProject, this);
-		getApp().getJavaCompiler().compileAll();
-		new Jar2DexService(getApp().getIndexedDir(), dependencies, this).startDexing();
+        createCompletionServices();
 	}
 
 	@Override
@@ -464,19 +487,31 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	public void saveFiles() {
 		saveAll();
 	}
-
+    
+    /**
+     * @deprecated This is replaced by the ClassFileReader. There is no need to dex the JAR files in order to load them.
+     */
+    @Deprecated
 	@Override
 	public void onDex(String name) {
 		setStatus(getString(R.string.msg_indexing, name));
 	}
-
+    
+    /**
+     * @deprecated This is replaced by the ClassFileReader. There is no need to dex the JAR files in order to load them.
+     */
+    @Deprecated
 	@Override
 	public void onDexSuccess(List<String> dexes) {
 		ConstantsBridge.PROJECT_DEXES = dexes;
 		setStatus(getString(R.string.msg_indexing_success));
 		createCompletionServices();
 	}
-
+    
+    /**
+     * @deprecated This is replaced by the ClassFileReader. There is no need to dex the JAR files in order to load them.
+     */
+    @Deprecated
 	@Override
 	public void onDexFailed(String message) {
 		appendBuildOut(message);
@@ -484,14 +519,20 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		showBuildResult();
 	}
 	
-	private void appendBuildOut(String str) {
-		str = str.endsWith("\n") ? str : str.concat("\n");
-		getBuildView(true).getText().append(str);
+    // Can be called from a different different, better to run on UI thread
+	private void appendBuildOut(final String str) {
+		runOnUiThread(() -> {
+            String strFinal = str.endsWith("\n") ? str : str.concat("\n");
+            getBuildView(true).getText().append(strFinal);
+        });
 	}
 	
-	private void appendLogOut(String str) {
-		str = str.endsWith("\n") ? str : str.concat("\n");
-		getLogView(true).getText().append(str);
+    // Can be called from a different different, better to run on UI thread
+	private void appendLogOut(final String str) {
+		runOnUiThread(() -> {
+            String strFinal = str.endsWith("\n") ? str : str.concat("\n");
+            getLogView(true).getText().append(strFinal);
+        });
 	}
 	
 	private void showFiles() {
@@ -563,6 +604,20 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.logContainer.setVisibility(View.GONE);
 		mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
 	}
+    
+    private void showDiagnostics() {
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewDiags, mBinding.diagContainer));
+        mBinding.diagContainer.setVisibility(View.VISIBLE);
+        mBinding.viewOptionsCard.setVisibility(View.GONE);
+        hideToolbarAndTabs();
+    }
+
+    private void hideDiagnostics() {
+        showToolbarAndTabs();
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.diagContainer, mBinding.viewDiags));
+        mBinding.diagContainer.setVisibility(View.GONE);
+        mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
+	}
 	
 	private MaterialContainerTransform createContainerTransformFor(View start, View end) {
 		return createContainerTransformFor(start, end, mBinding.realContainer);
@@ -632,7 +687,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
 
 	@Override
-	public void onCompilationResult(boolean success, Map<File, List<CompilerDiagnostic>> diagnostics) {
+	public void onCompilationResult(boolean singleFile, Map<File, List<CompilerDiagnostic>> diagnostics) {
+        if(getDiagnosticsList().getParent() == null || !(getDiagnosticsList().getParent() instanceof ViewGroup))
+            setupContainers();
+        getDiagnosticsList().setAdapter(new DiagnosticsAdapter(mapAsGroup(diagnostics), this));
+        this.diagnostics.clear();
+        this.diagnostics.putAll(diagnostics);
 		provideDiagnosticsToEditors(diagnostics);
 	}
 
@@ -650,6 +710,21 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			}
 		}
 	}
+
+    @Override
+    public void onGroupClick(DiagnosticGroup group) {
+        if(group != null
+            && group.file != null
+            && group.file.exists()
+            && FileUtils.isUtf8(group.file))
+        {
+            openFile(group.file);
+        }
+    }
+
+    @Override
+    public void onDiagnosticClick(CompilerDiagnostic diagnostic) {
+    }
 	
 	/*****************************
 	 **** Tab Related ************
@@ -690,8 +765,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		final int id = p1.getItemId();
 		if(id == R.id.editornav_discuss) {
 			getApp().openTelegramGroup();
-//		} else if(id == R.id.editornav_suggest) {
-//			getApp().openIssueTracker();
+		} else if(id == R.id.editornav_suggest) {
+			getApp().openIssueTracker();
 		} else if(id == R.id.editornav_needHelp) {
 			showNeedHelpDialog();
 		} else if(id == R.id.editornav_settings) {
@@ -796,7 +871,32 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		logView.setTextSize(12);
 		return logView;
 	}
-	
+    
+    private RecyclerView getDiagnosticsList() {
+        return diagnosticList == null ? createDiagnosticsList() : diagnosticList;
+    }
+    
+    private RecyclerView createDiagnosticsList() {
+        diagnosticList = new RecyclerView(this);
+        diagnosticList.setLayoutManager(new LinearLayoutManager(this));
+        diagnosticList.setAdapter(new DiagnosticsAdapter(mapAsGroup(this.diagnostics), this));
+        return diagnosticList;
+    }
+    
+    private List<DiagnosticGroup> mapAsGroup(Map<File, List<CompilerDiagnostic>> diags) {
+        List<DiagnosticGroup> groups = new ArrayList<>();
+        if(diags == null || diags.size() <= 0)
+            return groups;
+        for(File file : diags.keySet()) {
+            List<CompilerDiagnostic> fileDiags = diags.get(file);
+            if(fileDiags == null || fileDiags.size() <= 0)
+                continue;
+            DiagnosticGroup group = new DiagnosticGroup(R.drawable.ic_language_java, file, fileDiags);
+            groups.add(group);
+        }
+        return groups;
+    }
+    
 	private LogLanguageImpl getLogLanguage() {
 		return mLogLanguageImpl == null ? mLogLanguageImpl = new LogLanguageImpl() : mLogLanguageImpl;
 	}
@@ -823,6 +923,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		boolean isGradleSaved = mPagerAdapter.saveAll();
 		getApp().toast(R.string.all_saved, Toaster.Type.SUCCESS);
 		if(isGradleSaved) notifySyncNeeded();
+        if(getApp().getJavaCompiler() != null)
+            getApp().getJavaCompiler().compileAllAsync(this);
 		return isGradleSaved;
 	}
 	
@@ -1148,7 +1250,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
 		mBinding.tabs.addOnTabSelectedListener(this);
 	}
-
+    
 	private void closeFile(int index) {
 		closeFile(index, true);
 	}

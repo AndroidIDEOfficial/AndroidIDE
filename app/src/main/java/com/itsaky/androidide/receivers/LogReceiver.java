@@ -4,9 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.utils.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.elvishew.xlog.XLog;
 
 public class LogReceiver extends BroadcastReceiver {
 	
@@ -37,7 +37,7 @@ public class LogReceiver extends BroadcastReceiver {
 		Matcher m = LOG_HEAD_PATTERN.matcher(line);
 		LogLine log = null;
 		final boolean find = line != null && line.trim().length() > 2 /*if length() == 2 then only [] is available*/ && m.find();
-		XLog.i("line -> " + line + "\nlogTag find() -> " + find);
+		Logger.instance().i("line -> " + line + "\nlogTag find() -> " + find);
 		if(find) {
 			String date = "";
 			String time = "";
@@ -84,9 +84,9 @@ public class LogReceiver extends BroadcastReceiver {
 			log = new LogLine("", "", "", "", "", "", line);
 		}
 		
-		XLog.i("log = " + log + "\nlogListener = " + listener);
+		Logger.instance().i("log = " + log + "\nlogListener = " + listener);
 		if(log != null && listener != null) {
-			XLog.i("listener.appendLogLine(...) log ->\n" + log);
+			Logger.instance().i("listener.appendLogLine(...) log ->\n" + log);
 			listener.appendLogLine(log);
 			logTag = null;
 		}

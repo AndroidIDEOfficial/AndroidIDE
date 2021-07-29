@@ -18,8 +18,6 @@ import com.itsaky.androidide.utils.EitherOfResult;
 
 public class XMLAutoComplete implements AutoCompleteProvider {
 	
-	private CodeEditor editor;
-	
 	private Comparator<CompletionItem> RESULTS_SORTER = new Comparator<CompletionItem>(){
 
 		@Override
@@ -27,13 +25,9 @@ public class XMLAutoComplete implements AutoCompleteProvider {
 			return ((CompletionListItem) p1).getSortText().compareTo(((CompletionListItem) p2).getSortText());
 		}
 	};
-
-	public XMLAutoComplete(CodeEditor editor) {
-		this.editor = editor;
-	}
 	
 	@Override
-	public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
+	public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(CodeEditor editor, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
 		// We do not store the completion service here in this class
 		// This is because, if we modify the instance of the service in app,
 		// it'll be updated here

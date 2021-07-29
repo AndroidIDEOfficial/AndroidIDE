@@ -21,14 +21,12 @@ public class JavaLanguage implements EditorLanguage
 	private JavaLanguageAnalyzer analyzer;
 	private JavaAutoComplete complete;
 	private AndroidProject project;
-	private CodeEditor editor;
 
-	public JavaLanguage(CodeEditor editor, AndroidProject project)
+	public JavaLanguage(AndroidProject project)
 	{
 		this.analyzer = new JavaLanguageAnalyzer();
-		this.complete = new JavaAutoComplete(editor, analyzer);
+		this.complete = new JavaAutoComplete(analyzer);
 		this.project  = project;
-		this.editor   = editor;
 	}
 
 	@Override

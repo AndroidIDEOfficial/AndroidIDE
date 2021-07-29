@@ -59,7 +59,7 @@ android {
 			stringfog.enable false
         }
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
 			stringfog.enable true
@@ -75,8 +75,9 @@ android {
 }
 
 stringfog {
+    def isRelease = getGradle().getStartParameter().getTaskRequests().toString().contains("release")
     key 'WVV0aGMwaEFZVzVFVW05SlJFbGtaUT09'
-    enable true
+    enable false
     implementation 'com.github.megatronking.stringfog.xor.StringFogImpl'
 }
 
@@ -90,6 +91,7 @@ dependencies {
 	implementation 'com.github.bumptech.glide:glide:4.12.0'
 	implementation 'com.github.megatronking.stringfog:xor:1.1.0'
 	implementation 'com.github.piruin:quickaction:2.4.3'
+    implementation 'com.github.Rosemoe:BlockLinkedList:1.0.0'
 	implementation 'com.github.smart-fun:XmlToJson:1.5.1'
 	
 	// Dependencies for java completion
@@ -119,7 +121,6 @@ dependencies {
     
 	// Local projects
 	implementation project(':treeview')
-	implementation project(':editor')
 	implementation project(':spinkit')
 	implementation project(':slidr')
 	implementation project(':javadocparser')

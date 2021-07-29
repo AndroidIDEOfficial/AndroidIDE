@@ -26,6 +26,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import com.blankj.utilcode.util.FileUtils;
 
 public class FileTreeFragment extends BottomSheetDialogFragment implements TreeNode.TreeNodeClickListener, TreeNode.TreeNodeLongClickListener {
 	
@@ -86,13 +87,8 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 	public void onClick(TreeNode node, Object p2) {
 		final File f = (File) p2;
 		if(f.isFile()) {
-			if (mFileActionListener != null && f.isFile()) {
-				for(String ext : compatibleExtensions) {
-					if(f.getName().endsWith(ext)) {
-						mFileActionListener.openFile(f);
-						break;
-					}
-				}
+			if (mFileActionListener != null && FileUtils.isUtf8(f)) {
+				mFileActionListener.openFile(f);
 			}
 		} else if(f.isDirectory() && f.exists()) {
 			if(node.isExpanded()) {
@@ -181,7 +177,6 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 		final File gradleHome = Environment.GRADLE_PROPS_DIR;
         final File root = StudioApp.getInstance().getRootDir().getParentFile();
         File projectDir = new File(mProject.getProjectPath());
-        projectDir = root;
 		mRoot = TreeNode.root(projectDir);
 		if(gradleHome.exists() && gradleHome.isDirectory()) {
 			if(!gradleProps.exists())

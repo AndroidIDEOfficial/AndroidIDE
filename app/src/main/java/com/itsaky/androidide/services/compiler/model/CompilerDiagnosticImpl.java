@@ -15,16 +15,20 @@ public class CompilerDiagnosticImpl implements CompilerDiagnostic {
 	protected long end = 0;
 	
 	protected Diagnostic.Kind kind;
+    
+    public static final int COLOR_ERROR = 0xfff44336;
+    public static final int COLOR_WARNING = 0xffffb300;
+    public static final int COLOR_NOTE = 0xffffffff;
 	
 	private CompilerDiagnosticImpl(){}
 	
 	private CompilerDiagnosticImpl(Diagnostic<? extends JavaFileObject> diagnostic) {
 		this.file = new File(diagnostic.getSource().toUri());
 		this.message = diagnostic.getMessage(Locale.US);
-		this.line = diagnostic.getLineNumber();
+		this.line = diagnostic.getLineNumber() - 1;
 		this.column = diagnostic.getColumnNumber();
 		this.start = diagnostic.getStartPosition();
-		this.end = diagnostic.getEndPosition();
+		this.end = diagnostic.getEndPosition() + 1;
 		this.kind = diagnostic.getKind();
 	}
 	
@@ -80,9 +84,34 @@ public class CompilerDiagnosticImpl implements CompilerDiagnostic {
 	public String message() {
 		return message;
 	}
+
+    @Override
+    public int color() {
+        if(kind() == Diagnostic.Kind.ERROR) {
+            return COLOR_ERROR;
+        } else if(kind() == Diagnostic.Kind.WARNING || kind() == Diagnostic.Kind.MANDATORY_WARNING) {
+            return COLOR_WARNING;
+        }
+        return COLOR_NOTE;
+    }
 	
 	@Override
 	public String toString() {
-		return "CompilerDiagnosticImpl(file=" + file() + ", line=" + line() + ", column=" + column() + ", start=" + start() + ", end=" + end() + ", message=" + message() + ")";
+		return "CompilerDiagnosticImpl(file=" + file() + ", line=" + line() + ", column=" + column() + ", start=" + start() + ", end=" + end() + ", message=" + message() + ", kind=" + kind().toString() + ")";
 	}
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof CompilerDiagnosticImpl) {
+            CompilerDiagnosticImpl that = (CompilerDiagnosticImpl) obj;
+            return this.file().equals(that.file()) &&
+                this.line() == that.line() &&
+                this.column() == that.column() &&
+                this.start() == that.start() &&
+                this.end() == that.end() &&
+                this.message().equals(that.message()) &&
+                this.kind() == that.kind();
+        }
+        return false;
+    }
 }

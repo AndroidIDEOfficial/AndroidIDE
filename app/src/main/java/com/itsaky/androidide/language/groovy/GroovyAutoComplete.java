@@ -6,6 +6,7 @@ import com.itsaky.androidide.utils.Either;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
+import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,7 +18,7 @@ public class GroovyAutoComplete implements AutoCompleteProvider {
 	private static final List<String> OTHERS = createOtherCompletions();
 	
 	@Override
-	public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
+	public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(CodeEditor editor, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
 		List<Either<SuggestItem, CompletionItem>>  result = new ArrayList<>();
 		
 		for(String artifact : ANDROIDX_ARTIFACTS) {

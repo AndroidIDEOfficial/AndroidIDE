@@ -8,7 +8,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import com.blankj.utilcode.util.ThrowableUtils;
-import com.elvishew.xlog.XLog;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.models.LogLine;
 

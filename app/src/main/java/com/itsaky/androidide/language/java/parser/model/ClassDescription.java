@@ -56,6 +56,12 @@ public class ClassDescription extends JavaSuggestItemImpl implements IClass {
 		this.isMemberClass = isMember;
         this.mEum = isEnum;
     }
+    
+    public static ClassDescription ofObject() {
+        ClassDescription desc = new ClassDescription(Object.class);
+        desc.initMembers(Object.class);
+        return desc;
+    }
 	
 	@Override
 	public boolean isMemberClass() {
@@ -251,7 +257,6 @@ public class ClassDescription extends JavaSuggestItemImpl implements IClass {
         for (Class anInterface : interfaces) {
             IClass implement = JavaClassManager.getInstance().getClassWrapper(anInterface);
 			mImplements.add(implement);
-//			initClassMembers(implement);
         }
 
         if (c.getSuperclass() != null) {
@@ -262,8 +267,6 @@ public class ClassDescription extends JavaSuggestItemImpl implements IClass {
                 mSuperClass = JavaClassManager.getInstance().getParsedClass(Object.class.getName());
             }
         }
-		
-//		initClassMembers(mSuperClass);
 
         for (Constructor constructor : c.getConstructors()) {
             if (Modifier.isPublic(constructor.getModifiers())) {
@@ -288,26 +291,5 @@ public class ClassDescription extends JavaSuggestItemImpl implements IClass {
 
     public void setSuperclass(IClass superclass) {
         this.mSuperClass = superclass;
-//		initClassMembers(mSuperClass);
     }
-	
-//	private void initClassMembers(IClass clazz) {
-//		if(clazz.getFields() != null) {
-//			for(IField f : clazz.getFields()) {
-//				addField(f);
-//			}
-//		}
-//
-//		if(clazz.getMethods() != null) {
-//			for(IMethod method : clazz.getMethods()) {
-//				addMethod(method);
-//			}
-//		}
-//
-//		if(clazz.getConstructors() != null) {
-//			for(ConstructorDescription desc : clazz.getConstructors()) {
-//				addConstructor(desc);
-//			}
-//		}
-//	}
 }

@@ -8,8 +8,8 @@ buildscript {
         buildTools = "30.0.2"
         minSdk = 21
         targetSdk = 28
-        versionCode = 101210625
-        versionName = "1.0.1-alpha"
+        versionCode = 102210625
+        versionName = "1.0.2-alpha"
 		packageName = "com.itsaky.androidide"
     }
 
