@@ -26,7 +26,6 @@ import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.services.MessagingService;
-import com.itsaky.androidide.services.compiler.JavaCompilerService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
@@ -39,14 +38,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import com.blankj.utilcode.util.ZipUtils;
+import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.language.java.server.JavaLanguageServer;
+import android.os.Handler;
+import com.itsaky.lsp.InitializeParams;
+import com.itsaky.lsp.DidChangeConfigurationParams;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.itsaky.lsp.LanguageClient;
 
 public class StudioApp extends MultiDexApplication
 {
 	private static StudioApp instance;
 	private StudioUtils mUtils;
 	private IDEService buildService;
-	private JavaCompilerService mJavaCompilerService;
-	private JavaCompletionProvider mCompletionProvider;
+    private JavaLanguageServer languageServer;
     private XMLCompletionService mXmlCompletionService;
 	private PreferenceManager mPrefsManager;
 	private NotificationManager mNotificationManager;
@@ -84,7 +91,8 @@ public class StudioApp extends MultiDexApplication
         
 		newShell(line -> handleLog(line)).bgAppend("logcat -v threadtime");
         setupLibsIfNeeded();
-        
+        extractJlsIfNeeded();
+
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			createNotificationChannels();
 		}
@@ -143,6 +151,31 @@ public class StudioApp extends MultiDexApplication
 	private void initLogger() {
 		
 	}
+    
+    private void extractJlsIfNeeded() {
+        boolean gson = false, jls = false, proto = false;
+        final List<File> files = FileUtils.listFilesInDir(Environment.JLS_HOME, true);
+        for(File f : files) {
+            gson = gson == true ? gson : f.getName().equals("gson.jar");
+            jls = jls == true ? jls : f.getName().equals("jls.jar");
+            proto = proto == true ? proto : f.getName().equals("protobuf.jar");
+        }
+        
+        if(!false/* !(gson && jls && proto) */) {
+            try {
+                extractJls();
+            } catch (Throwable e) {
+                Logger.instance("StudioApp").e(ThrowableUtils.getFullStackTrace(e));
+            }
+        }
+    }
+
+    private void extractJls() throws IOException {
+        final File jlsZip = new File(Environment.JLS_HOME, "jls.zip");
+        ResourceUtils.copyFileFromAssets("data/jls.zip", jlsZip.getAbsolutePath());
+        ZipUtils.unzipFile(jlsZip, Environment.JLS_HOME);
+        FileUtils.delete(jlsZip);
+    }
     
     private boolean setupLibsIfNeeded() {
         File lib = Environment.LIBDIR;
@@ -217,35 +250,24 @@ public class StudioApp extends MultiDexApplication
 		return buildService;
 	}
 	
-    public void createCompletionService(AndroidProject project) {
-		this.mXmlCompletionService = new XMLCompletionService();
-		this.mCompletionProvider = new JavaCompletionProvider();
-		this.mCompletionProvider.loadProject(project);
+    public void createCompletionService(AndroidProject project, LanguageClient client) {
+        this.languageServer = new JavaLanguageServer(project, client);
+        this.mXmlCompletionService = new XMLCompletionService();
+        
+        this.languageServer.startServer();
     }
-	
-	public void createJavaCompiler(AndroidProject project) {
-		this.mJavaCompilerService =
-			new JavaCompilerService(project);
-	}
-	
-	public JavaCompilerService getJavaCompiler() {
-		return mJavaCompilerService;
-	}
-	
-	public JavaCompletionProvider getCompletionProvider() {
-		return mCompletionProvider;
-	}
+    
+    public JavaLanguageServer getJavaLanguageServer() {
+        return languageServer;
+    }
 	
 	public XMLCompletionService getXmlCompletionService() {
 		return mXmlCompletionService;
 	}
 	
 	public boolean areCompletorsStarted() {
-		return mCompletionProvider != null 
-			&& mXmlCompletionService != null
-			&& mCompletionProvider.isInitiated()
-			&& mXmlCompletionService.isInitiated()
-			&& ConstantsBridge.CLASS_LOAD_SUCCESS;
+		return mXmlCompletionService != null
+			&& mXmlCompletionService.isInitiated();
 	}
     
     public void setStopGradleDaemon(boolean startGradleDaemon) {

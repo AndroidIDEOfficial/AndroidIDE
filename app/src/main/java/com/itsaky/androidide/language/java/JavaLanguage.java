@@ -16,49 +16,41 @@ import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
-public class JavaLanguage implements EditorLanguage
-{
+public class JavaLanguage implements EditorLanguage {
+    
 	private JavaLanguageAnalyzer analyzer;
 	private JavaAutoComplete complete;
 	private AndroidProject project;
 
-	public JavaLanguage(AndroidProject project)
-	{
+	public JavaLanguage(AndroidProject project) {
 		this.analyzer = new JavaLanguageAnalyzer();
 		this.complete = new JavaAutoComplete(analyzer);
 		this.project  = project;
 	}
 
 	@Override
-	public CodeAnalyzer getAnalyzer()
-	{
+	public CodeAnalyzer getAnalyzer() {
 		return analyzer;
 	}
 
 	@Override
-	public AutoCompleteProvider getAutoCompleteProvider()
-	{
+	public AutoCompleteProvider getAutoCompleteProvider() {
 		return complete;
 	}
 
 	@Override
-	public boolean isAutoCompleteChar(char p1)
-	{
+	public boolean isAutoCompleteChar(char p1) {
 		return JavaCharacter.isJavaIdentifierPart(p1) || p1 == '.';
 	}
 
 	@Override
-	public int getIndentAdvance(String p1)
-	{
-		try
-		{
+	public int getIndentAdvance(String p1) {
+		try {
 			JavaLexer lexer = new JavaLexer(CharStreams.fromReader(new StringReader(p1)));
 			Token token = null;
 			int advance = 0;
-			while (((token = lexer.nextToken()) != null && token.getType() != token.EOF))
-			{
-				switch (token.getType())
-				{
+			while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+				switch (token.getType()) {
 					case JavaLexer.LBRACE:
 						advance++;
 						break;
@@ -69,14 +61,13 @@ public class JavaLanguage implements EditorLanguage
 			}
 			advance = Math.max(0, advance);
 			return advance * 4;
-		} catch (Throwable e)
-		{}
+		} catch (Throwable e) {}
 		return 0;
 	}
 
 	@Override
 	public SymbolPairMatch getSymbolPairs() {
-		return new SymbolPairMatch.DefaultSymbolPairs();
+		return new JavaSymbolPairs();
 	}
 
 	@Override
@@ -116,9 +107,8 @@ public class JavaLanguage implements EditorLanguage
             return new HandleResult(sb, shiftLeft);
         }
     }
-	
-	public static String[] getKeywords()
-	{
+
+	public static String[] getKeywords() {
 		return new String[] {
 			"abstract", "assert", "boolean", "break", "byte", "case", 
 			"catch", "char", "class", "const", "continue", "default", 
@@ -130,4 +120,15 @@ public class JavaLanguage implements EditorLanguage
 			"transient", "try", "void", "volatile", "while", "null"
 		};
 	}
+    
+    private class JavaSymbolPairs extends SymbolPairMatch {
+        public JavaSymbolPairs() {
+            super.putPair('{', new Replacement("{}", 1));
+            super.putPair('(', new Replacement("()", 1));
+            super.putPair('[', new Replacement("[]", 1));
+            super.putPair('"', new Replacement("\"\"", 1));
+            super.putPair('\'', new Replacement("''", 1));
+            super.putPair('<', new Replacement("<>", 1));
+        }
+    }
 }

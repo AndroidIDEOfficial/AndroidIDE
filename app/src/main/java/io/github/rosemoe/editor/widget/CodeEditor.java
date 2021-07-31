@@ -25,6 +25,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -57,11 +58,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import com.itsaky.androidide.R;
+import com.itsaky.lsp.Diagnostic;
+import com.itsaky.lsp.DiagnosticSeverity;
+import com.itsaky.lsp.Position;
+import com.itsaky.lsp.Range;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.struct.BlockLine;
+import io.github.rosemoe.editor.struct.HexColor;
 import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
@@ -80,15 +86,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import com.blankj.utilcode.util.DeviceUtils;
-import io.github.rosemoe.editor.struct.HexColor;
-import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.PointF;
-import com.itsaky.androidide.services.compiler.model.CompilerDiagnostic;
-import javax.tools.Diagnostic;
-import java.util.stream.Collectors;
-import com.itsaky.androidide.utils.Logger;
+import java.io.File;
+import com.itsaky.lsp.CompletionList;
+import com.itsaky.androidide.utils.Either;
+import com.itsaky.androidide.language.java.parser.internal.SuggestItem;
+import io.github.rosemoe.editor.struct.CompletionItem;
+import com.itsaky.androidide.models.CompletionItemWrapper;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -251,7 +254,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     KeyMetaStates mKeyMetaStates = new KeyMetaStates(this);
 	
 	private HashMap<HexColor, Integer> mLineColors;
-    private HashMap<Long, List<CompilerDiagnostic>> mDiagnostics;
+    private HashMap<Range, List<Diagnostic>> mDiagnostics;
+    
+    private File currentFile;
     
     public CodeEditor(Context context) {
         this(context, null);
@@ -277,6 +282,14 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 	public boolean isLineColorsEnabled() {
 		return mLineColorEnabled;
 	}
+    
+    public File getFile() {
+        return currentFile;
+    }
+    
+    public void setFile(File file) {
+        this.currentFile = file;
+    }
 
     /**
      * Whether this region has visible region on screen
@@ -477,21 +490,21 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     public void showOrHideDiagnosticWindow() {
-        int line = getCursor().getLeftLine();
-        int index = getCursor().getLeft();
+        int leftLine = getCursor().getLeftLine();
+        int leftCol = getCursor().getLeftColumn();
+        int rightLine = getCursor().getRightLine();
+        int rightCol = getCursor().getRightColumn();
+        final Range thisRange = new Range(new Position(leftLine, leftCol), new Position(rightLine, rightCol));
         boolean hide = false;
-        boolean has = mDiagnostics.containsKey(Long.valueOf(line));
+        boolean has = mDiagnostics.containsKey(thisRange);
         if(has) {
-            List<CompilerDiagnostic> diags = mDiagnostics.get(Long.valueOf(line));
-            if(diags != null) {
-                diags = diags.stream().filter(d -> d.start() <= index && d.end() >= index).collect(Collectors.toList());
-                if(diags != null && diags.size() > 0){
-                    CompilerDiagnostic d = diags.get(0);
-                    mDiagnosticWindow.setDiagnostic(d);
-                    if(!mDiagnosticWindow.isShowing())
-                        mDiagnosticWindow.show();
-                    else updateDiagnosticWindowPosition();
-                } else hide = true;
+            List<Diagnostic> diags = mDiagnostics.get(thisRange);
+            if(diags != null && diags.size() > 0) {
+                Diagnostic d = diags.get(0);
+                mDiagnosticWindow.setDiagnostic(d);
+                if(!mDiagnosticWindow.isShowing())
+                    mDiagnosticWindow.show();
+                else updateDiagnosticWindowPosition();
             } else hide = true;
         } else hide = true;
         if(hide && mDiagnosticWindow.isShowing()) {
@@ -499,28 +512,29 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
     }
     
-    public void setDiagnostics(List<CompilerDiagnostic> diags) {
+    public void setDiagnostics(List<Diagnostic> diags) {
         this.mDiagnostics = new HashMap<>();
         mapDiagnostics(diags);
     }
 
-    private void mapDiagnostics(List<CompilerDiagnostic> diags) {
+    private void mapDiagnostics(List<Diagnostic> diags) {
         if(diags == null)
             return;
         for(int i=0;i<diags.size();i++) {
-            CompilerDiagnostic d = diags.get(i);
+            Diagnostic d = diags.get(i);
             if(d == null)
                 continue;
-            if(mDiagnostics.containsKey(d.line())) {
-                List<CompilerDiagnostic> ds = mDiagnostics.get(d.line());
+            if(mDiagnostics.containsKey(d.range)) {
+                List<Diagnostic> ds = mDiagnostics.get(d.range);
                 if(ds == null)
                     ds = new ArrayList<>();
                 if(!ds.contains(d))
                     ds.add(d);
+                mDiagnostics.put(d.range, ds);
             } else {
-                List<CompilerDiagnostic> ds = new ArrayList<>();
+                List<Diagnostic> ds = new ArrayList<>();
                 ds.add(d);
-                mDiagnostics.put(Long.valueOf(d.line()), ds);
+                mDiagnostics.put(d.range, ds);
             }
         }
     }
@@ -1222,28 +1236,26 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 			}
             
             // Draw errors and warnings
-            if(mDiagnostics != null && mDiagnostics.containsKey(Long.valueOf(line))) {
-               List<CompilerDiagnostic> diags = mDiagnostics.get(Long.valueOf(line));
+            int leftLine = getCursor().getLeftLine();
+            int leftCol = getCursor().getLeftColumn();
+            int rightLine = getCursor().getRightLine();
+            int rightCol = getCursor().getRightColumn();
+            final Range thisRange = new Range(new Position(leftLine, leftCol), new Position(rightLine, rightCol));
+            if(mDiagnostics != null && mDiagnostics.containsKey(thisRange)) {
+               List<Diagnostic> diags = mDiagnostics.get(thisRange);
                if(diags != null && diags.size() > 0) {
                    for(int i=0;i<diags.size();i++) {
-                       CompilerDiagnostic d = diags.get(i);
+                       Diagnostic d = diags.get(i);
                        if(d == null) continue;
-                       CharPosition start = null, end = null;
-                       try {
-                           start = getText().getIndexer().getCharPosition((int) d.start());
-                           end = getText().getIndexer().getCharPosition((int) d.end());
-                       } catch (Throwable th) {
-                           continue;
-                       }
-                       final int paintStart = Math.max(firstVisibleChar, start.column);
-                       final int paintEnd = Math.min(lastVisibleChar, end.column);
+                       final int paintStart = Math.max(firstVisibleChar, d.range.start.character);
+                       final int paintEnd = Math.min(lastVisibleChar, d.range.end.character);
                        final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
                        final RectF r = new RectF();
                        r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
                        r.top = r.bottom - getRowHeight() * 0.2f;
                        r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
                        r.right = r.left + width;
-                       mPaint.setColor(d.color());
+                       mPaint.setColor(getDiagnosticIconId(d));
                        drawZigzagUnderline(r, canvas, mPaint);
                    }
                }
@@ -1348,7 +1360,12 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             }
         }
     }
-
+    
+    private int getDiagnosticIconId(Diagnostic diagnostic) {
+        if(diagnostic.severity == DiagnosticSeverity.Error)
+            return R.drawable.ic_compilation_error;
+        return R.drawable.ic_info;
+    }
 
     protected void showTextActionPopup() {
         if (mTextActionPresenter instanceof TextActionPopupWindow) {
@@ -3376,6 +3393,11 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
         
         showOrHideDiagnosticWindow();
+        
+        if(mCursorChangeListener != null) {
+            final Cursor c = getCursor();
+            mCursorChangeListener.onCursorPositionChange(c.getLeftLine(), c.getLeftColumn(), c.getRightLine(), c.getRightColumn());
+        }
     }
 
     /**
@@ -3452,6 +3474,21 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
         mEventHandler.notifyTouchedSelectionHandlerLater();
         showOrHideDiagnosticWindow();
+        
+        if(mCursorChangeListener != null) {
+            final Cursor c = getCursor();
+            mCursorChangeListener.onCursorPositionChange(c.getLeftLine(), c.getLeftColumn(), c.getRightLine(), c.getRightColumn());
+        }
+    }
+    
+    private CursorChangeListener mCursorChangeListener;
+    
+    public void setCursorChangeListener(CursorChangeListener listener ){
+        this.mCursorChangeListener = listener;
+    }
+    
+    public static interface CursorChangeListener {
+        void onCursorPositionChange(int leftLine, int leftColumn, int rightLine, int rightColumn);
     }
 
     /**
@@ -3542,7 +3579,13 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mText.removeContentListener(this);
             mText.setLineListener(null);
         }
-        mText = new Content(text);
+        
+        // There should not be any tabs in the text
+        // This is needed for the JavaLanguageServer
+        String t = text.toString();
+        t = t.replace("\t", "    ");
+        
+        mText = new Content(t);
         mCursor = mText.getCursor();
         mCursor.setAutoIndent(mAutoIndentEnabled);
         mCursor.setLanguage(mLanguage);
@@ -4229,6 +4272,11 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
         if(mDiagnosticWindow != null)
             mDiagnosticWindow.hide();
+            
+        // Notify listener
+        if (mListener != null) {
+            mListener.afterInsert(this, mText, startLine, startColumn, endLine, endColumn, insertedContent);
+        }
         
         // Update spans
         if (isSpanMapPrepared(true, endLine - startLine)) {
@@ -4282,16 +4330,16 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         // Notify to update highlight
         mSpanner.analyze(mText);
         mEventHandler.hideInsertHandle();
-        // Notify listener
-        if (mListener != null) {
-            mListener.afterInsert(this, mText, startLine, startColumn, endLine, endColumn, insertedContent);
-        }
     }
 
     @Override
     public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
         if(mDiagnosticWindow != null)
             mDiagnosticWindow.hide();
+            
+        if (mListener != null) {
+            mListener.afterDelete(this, mText, startLine, startColumn, endLine, endColumn, deletedContent);
+        }
         
         if (isSpanMapPrepared(false, endLine - startLine)) {
             if (startLine == endLine) {
@@ -4330,9 +4378,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             ensureSelectionVisible();
             mSpanner.analyze(mText);
             mEventHandler.hideInsertHandle();
-        }
-        if (mListener != null) {
-            mListener.afterDelete(this, mText, startLine, startColumn, endLine, endColumn, deletedContent);
         }
     }
 

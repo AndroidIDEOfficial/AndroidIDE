@@ -272,7 +272,8 @@ public class Content implements CharSequence {
         if (text == null) {
             throw new IllegalArgumentException("text can not be null");
         }
-
+        
+        text = text.toString().replace("\t", "    ");
         //-----Notify------
         if (mCursor != null)
             mCursor.beforeInsert(line, column);

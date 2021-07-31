@@ -27,10 +27,10 @@ public class Logger {
     
     private static Logger createInstance(String tag) {
         LogConfiguration config = new LogConfiguration.Builder()
+            .disableStackTrace()
+            .disableThreadInfo()
             .logLevel(com.itsaky.androidide.BuildConfig.DEBUG ? LogLevel.ALL : LogLevel.NONE)
-            .tag("AndroidIDE")                                         
-            .enableThreadInfo()                                    
-            .enableStackTrace(10)                                  
+            .tag("AndroidIDE")                                 
             .disableBorder()                                       
             .build();
         Printer filePrinter = new FilePrinter                      

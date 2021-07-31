@@ -16,6 +16,8 @@
 package io.github.rosemoe.editor.widget;
 
 import io.github.rosemoe.editor.text.Cursor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A channel to insert symbols in {@link CodeEditor}
@@ -24,9 +26,18 @@ import io.github.rosemoe.editor.text.Cursor;
 public class SymbolChannel {
 
     private CodeEditor mEditor;
+    
+    private final List<Character> pairs;
 
     protected SymbolChannel(CodeEditor editor) {
         mEditor = editor;
+        pairs = new ArrayList<>();
+        pairs.add('}');
+        pairs.add(')');
+        pairs.add(']');
+        pairs.add('"');
+        pairs.add('\'');
+        pairs.add('>');
     }
 
     /**
@@ -40,8 +51,8 @@ public class SymbolChannel {
      * @param selectionOffset New selection position relative to the start of text to insert.
      *                        Ranging from 0 to symbolText.length()
      */
-    public void insertSymbol(String symbolText, int selectionOffset) {
-        if (selectionOffset < 0 || selectionOffset > symbolText.length()) {
+    public void insertSymbol(String text, int selectionOffset) {
+        if (selectionOffset < 0 || selectionOffset > text.length()) {
             throw new IllegalArgumentException("selectionOffset is invalid");
         }
         Cursor cur = mEditor.getText().getCursor();
@@ -49,10 +60,19 @@ public class SymbolChannel {
             cur.onDeleteKeyPressed();
             mEditor.notifyExternalCursorChange();
         }
-        mEditor.getText().insert(cur.getRightLine(), cur.getRightColumn(), symbolText);
+        
+        if(cur.getLeftColumn() < mEditor.getText().getColumnCount(cur.getLeftLine())
+           && text.length() == 1
+           && text.charAt(0) == mEditor.getText().charAt(cur.getLeftLine(), cur.getLeftColumn())
+           && pairs.contains(text.charAt(0))) {
+               mEditor.moveSelectionRight();
+        }
+        
+        mEditor.getText().insert(cur.getRightLine(), cur.getRightColumn(), text);
+        
         mEditor.notifyExternalCursorChange();
-        if (selectionOffset != symbolText.length()) {
-            mEditor.setSelection(cur.getRightLine(), cur.getRightColumn() - (symbolText.length() - selectionOffset));
+        if (selectionOffset != text.length()) {
+            mEditor.setSelection(cur.getRightLine(), cur.getRightColumn() - (text.length() - selectionOffset));
         }
     }
 

@@ -1,11 +1,11 @@
 package com.itsaky.androidide.adapters;
 
-import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.models.AndroidProject;
+import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter
 		mFragments.addAll(fragments);
 	}
 	
-	public int openFile(File file)
+	public int openFile(File file, EditorFragment.FileOpenListener listener, CodeEditor.CursorChangeListener cursorListener)
 	{
 		int openedFileIndex = -1;
 		for(int i=0;i<mOpenedFiles.size();i++)
@@ -50,7 +50,7 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter
 		
 		if(openedFileIndex == -1)
 		{
-			mFragments.add(EditorFragment.newInstance(file, project));
+			mFragments.add(EditorFragment.newInstance(file, project).setFileOpenListener(listener).setCursorChangeListener(cursorListener));
 			mOpenedFiles.add(file);
 			notifyDataSetChanged();
 			return mFragments.size() - 1;

@@ -42,7 +42,6 @@ import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
-import com.itsaky.androidide.interfaces.CompileListener;
 import com.itsaky.androidide.interfaces.DexResultListener;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
@@ -53,8 +52,6 @@ import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.receivers.LogReceiver;
 import com.itsaky.androidide.services.IDEService;
-import com.itsaky.androidide.services.Jar2DexService;
-import com.itsaky.androidide.services.compiler.model.CompilerDiagnostic;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.TaskExecutor;
@@ -63,7 +60,11 @@ import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.androidide.utils.ProjectWriter;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.androidide.views.MaterialBanner;
+import com.itsaky.lsp.DidOpenTextDocumentParams;
+import com.itsaky.lsp.LanguageClient;
+import com.itsaky.lsp.TextDocumentItem;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
@@ -77,16 +78,22 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import com.itsaky.lsp.JavaReportProgressParams;
+import com.itsaky.lsp.PublishDiagnosticsParams;
+import com.itsaky.lsp.JavaStartProgressParams;
+import com.itsaky.lsp.ShowMessageParams;
+import com.google.gson.JsonElement;
+import com.itsaky.lsp.Diagnostic;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
 														TabLayout.OnTabSelectedListener,
 														NavigationView.OnNavigationItemSelectedListener,
-														DexResultListener,
-														CompileListener,
-                                                        DiagnosticClickListener {
-															
-	private ActivityEditorBinding mBinding;
+                                                        DiagnosticClickListener, 
+                                                        EditorFragment.FileOpenListener,
+                                                        LanguageClient, CodeEditor.CursorChangeListener {
+    
+    private ActivityEditorBinding mBinding;
 	private EditorPagerAdapter mPagerAdapter;
 	private FileTreeFragment mFileTreeFragment;
 	private EditorFragment mCurrentFragment;
@@ -105,7 +112,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	
 	private boolean recreateCompletionServices = false;
     
-    private final Map<File, List<CompilerDiagnostic>> diagnostics = new HashMap<>();
+    private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
 	
 	private final String RES_PATH_REGEX = "/.*/src/.*/res";
 	private final String LAYOUTRES_PATH_REGEX = "/.*/src/.*/res/layout";
@@ -426,11 +433,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		if(task.canOutput())
 			setStatus(msg);
 			
-		if(recreateCompletionServices) {
-			getApp().createCompletionService(mProject);
-		} else if(task.getType() == GradleTask.Type.BUILD) {
-            getApp().createJavaCompiler(mProject);
-            getApp().getJavaCompiler().compileAllAsync(this);
+		if(task.getType() == GradleTask.Type.BUILD) {
 			if(task.getTaskID() == IDEService.TASK_ASSEMBLE_DEBUG) {
 				if(task.buildsApk()) {
 					install(task.getApk(new File(mProject.getMainModulePath(), "build").getAbsolutePath(), mProject.getMainModule()));
@@ -449,11 +452,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		if(task.canOutput()) {
 			setStatus(msg);
 		}
-        
-        if(task.getType() == GradleTask.Type.BUILD) {
-            getApp().createJavaCompiler(mProject);
-            getApp().getJavaCompiler().compileAllAsync(this);
-        }
 
 		showBuildResult();
 		
@@ -488,37 +486,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		saveAll();
 	}
     
-    /**
-     * @deprecated This is replaced by the ClassFileReader. There is no need to dex the JAR files in order to load them.
-     */
-    @Deprecated
-	@Override
-	public void onDex(String name) {
-		setStatus(getString(R.string.msg_indexing, name));
-	}
-    
-    /**
-     * @deprecated This is replaced by the ClassFileReader. There is no need to dex the JAR files in order to load them.
-     */
-    @Deprecated
-	@Override
-	public void onDexSuccess(List<String> dexes) {
-		ConstantsBridge.PROJECT_DEXES = dexes;
-		setStatus(getString(R.string.msg_indexing_success));
-		createCompletionServices();
-	}
-    
-    /**
-     * @deprecated This is replaced by the ClassFileReader. There is no need to dex the JAR files in order to load them.
-     */
-    @Deprecated
-	@Override
-	public void onDexFailed(String message) {
-		appendBuildOut(message);
-		setStatus(getString(R.string.msg_indexing_failed));
-		showBuildResult();
-	}
-	
     // Can be called from a different different, better to run on UI thread
 	private void appendBuildOut(final String str) {
 		runOnUiThread(() -> {
@@ -651,7 +618,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
 	private void createCompletionServices() {
 		new TaskExecutor().executeAsync(() -> {
-			getApp().createCompletionService(mProject);
+			getApp().createCompletionService(mProject, EditorActivity.this);
 			return null;
 		}, __ -> {
 			setStatus(getString(getApp().areCompletorsStarted() ? R.string.msg_service_started : R.string.msg_starting_completion_failed));
@@ -685,18 +652,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			.setCancelable(false)
 			.create().show();
 	}
-
-	@Override
-	public void onCompilationResult(boolean singleFile, Map<File, List<CompilerDiagnostic>> diagnostics) {
-        if(getDiagnosticsList().getParent() == null || !(getDiagnosticsList().getParent() instanceof ViewGroup))
-            setupContainers();
-        getDiagnosticsList().setAdapter(new DiagnosticsAdapter(mapAsGroup(diagnostics), this));
-        this.diagnostics.clear();
-        this.diagnostics.putAll(diagnostics);
-		provideDiagnosticsToEditors(diagnostics);
-	}
-
-	private void provideDiagnosticsToEditors(Map<File, List<CompilerDiagnostic>> diagnostics) {
+    
+	private void provideDiagnosticsToEditors(Map<File, List<Diagnostic>> diagnostics) {
 		if(mPagerAdapter != null && mPagerAdapter.getFragments() != null) {
 			List<Fragment> editors = mPagerAdapter.getFragments();
 			if(editors.size() <= 0) return;
@@ -723,7 +680,50 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     @Override
-    public void onDiagnosticClick(CompilerDiagnostic diagnostic) {
+    public void onDiagnosticClick(Diagnostic diagnostic) {
+    }
+    
+    @Override
+    public void javaProgressStart(JavaStartProgressParams params) {
+    }
+
+    @Override
+    public void javaProgressReport(JavaReportProgressParams params) {
+    }
+
+    @Override
+    public void javaProgressEnd() {
+    }
+
+    @Override
+    public void publishDiagnostics(PublishDiagnosticsParams params) {
+        if(params == null) return;
+        File file = new File(params.uri);
+        if(!(file.exists() && file.isFile())) return;
+        diagnostics.put(file, params.diagnostics);
+        
+        getDiagnosticsList().setAdapter(new DiagnosticsAdapter(mapAsGroup(diagnostics), this));
+    }
+
+    @Override
+    public void showMessage(ShowMessageParams params) {
+    }
+
+    @Override
+    public void registerCapability(String method, JsonElement options) {
+    }
+
+    @Override
+    public void customNotification(String method, JsonElement params) {
+    }
+
+    @Override
+    public void onCursorPositionChange(int leftLine, int leftColumn, int rightLine, int rightColumn) {
+        if(leftLine == rightLine && leftColumn == rightColumn) {
+            mBinding.editorToolbar.setSubtitle(String.format("[%d, %d]", leftLine, leftColumn));
+        } else {
+            mBinding.editorToolbar.setSubtitle(String.format("[%d, %d] | [%d, %d]", leftLine, leftColumn, rightLine, rightColumn));
+        }
     }
 	
 	/*****************************
@@ -883,12 +883,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return diagnosticList;
     }
     
-    private List<DiagnosticGroup> mapAsGroup(Map<File, List<CompilerDiagnostic>> diags) {
+    private List<DiagnosticGroup> mapAsGroup(Map<File, List<Diagnostic>> diags) {
         List<DiagnosticGroup> groups = new ArrayList<>();
         if(diags == null || diags.size() <= 0)
             return groups;
         for(File file : diags.keySet()) {
-            List<CompilerDiagnostic> fileDiags = diags.get(file);
+            List<Diagnostic> fileDiags = diags.get(file);
             if(fileDiags == null || fileDiags.size() <= 0)
                 continue;
             DiagnosticGroup group = new DiagnosticGroup(R.drawable.ic_language_java, file, fileDiags);
@@ -907,11 +907,25 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	
 	@Override
 	public void openFile(File file) {
-		int i = mPagerAdapter.openFile(file);
+		int i = mPagerAdapter.openFile(file, this, this);
 		if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
 			mBinding.tabs.getTabAt(i).select();
 		mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
 	}
+
+    @Override
+    public void onOpenSuccessful(File file, String text) {
+        if(file.getName().endsWith(".java")) {
+            TextDocumentItem doc = new TextDocumentItem();
+            doc.languageId = "java";
+            doc.uri = file.toURI();
+            doc.text = text;
+            doc.version = VersionedFileManager.fileOpened(file);
+            DidOpenTextDocumentParams p = new DidOpenTextDocumentParams();
+            p.textDocument = doc;
+            getApp().getJavaLanguageServer().didOpen(p);
+        }
+    }
 
 	@Override
 	public void showFileOptions(File thisFile, TreeNode node) {
@@ -923,8 +937,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		boolean isGradleSaved = mPagerAdapter.saveAll();
 		getApp().toast(R.string.all_saved, Toaster.Type.SUCCESS);
 		if(isGradleSaved) notifySyncNeeded();
-        if(getApp().getJavaCompiler() != null)
-            getApp().getJavaCompiler().compileAllAsync(this);
 		return isGradleSaved;
 	}
 	

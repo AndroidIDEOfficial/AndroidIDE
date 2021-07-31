@@ -124,6 +124,7 @@ dependencies {
 	implementation project(':spinkit')
 	implementation project(':slidr')
 	implementation project(':javadocparser')
+    implementation project(':lsp')
 	
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	

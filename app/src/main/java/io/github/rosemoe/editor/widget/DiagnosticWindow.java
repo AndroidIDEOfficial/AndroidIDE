@@ -5,13 +5,13 @@ import android.view.LayoutInflater;
 import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
-import com.itsaky.androidide.services.compiler.model.CompilerDiagnostic;
-import javax.tools.Diagnostic;
+import com.itsaky.lsp.Diagnostic;
+import com.itsaky.lsp.DiagnosticSeverity;
 
 public class DiagnosticWindow extends EditorBasePopupWindow {
     
     private CodeEditor editor;
-    private CompilerDiagnostic diagnostic;
+    private Diagnostic diagnostic;
     private LayoutDiagnosticInfoBinding binding;
     
     public DiagnosticWindow(CodeEditor editor) {
@@ -46,31 +46,33 @@ public class DiagnosticWindow extends EditorBasePopupWindow {
             binding.errorPosition.setText(
                 editor.getContext().getString(
                     com.itsaky.androidide.R.string.diagnostic_position,
-                    ""+ diagnostic.line(),
-                    ""+ diagnostic.column()
+                    ""+ diagnostic.range.start.line,
+                    ""+ diagnostic.range.start.character,
+                    ""+ diagnostic.range.end.line,
+                    ""+ diagnostic.range.end.character
                 )
             );
 
-            binding.msg.setText(diagnostic.message());
+            binding.msg.setText(diagnostic.message);
             binding.msg.setTextIsSelectable(true);
         }
     }
     
-    public DiagnosticWindow setDiagnostic(CompilerDiagnostic diag) {
+    public DiagnosticWindow setDiagnostic(Diagnostic diag) {
         this.diagnostic = diag;
         return this;
     }
     
     private int getDiagnosticIconId() {
-        if(diagnostic.kind() == Diagnostic.Kind.ERROR)
+        if(diagnostic.severity == DiagnosticSeverity.Error)
             return R.drawable.ic_compilation_error;
         return R.drawable.ic_info;
     }
     
     private String getDiagnosticTypeString() {
-        if(diagnostic.kind() == Diagnostic.Kind.ERROR) {
+        if(diagnostic.severity == DiagnosticSeverity.Error) {
             return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_error);
-        } else if(diagnostic.kind() == Diagnostic.Kind.WARNING || diagnostic.kind() == Diagnostic.Kind.MANDATORY_WARNING) {
+        } else if(diagnostic.severity == DiagnosticSeverity.Warning) {
             return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_warning);
         }
         return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_note);

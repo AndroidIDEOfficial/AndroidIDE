@@ -15,6 +15,7 @@ public final class Environment {
 	public static File HOME;
 	public static File JAVA_HOME;
 	public static File ANDROID_HOME;
+    public static File JLS_HOME;
 	public static File TMP_DIR;
     public static File USRDIR;
 	public static File LIBDIR;
@@ -59,6 +60,7 @@ public final class Environment {
 		HOME = app.getRootDir();
 		JAVA_HOME = getJavaHome();
 		ANDROID_HOME = new File(HOME, ANDROID_SDK_FOLDER_NAME);
+        JLS_HOME = mkdirIfNotExits(new File(HOME, "jls"));
 		TMP_DIR = mkdirIfNotExits(new File(HOME, "tmp"));
 		GRADLE_DIR = new File(HOME, GRADLE_FOLDER_NAME);
         USRDIR = mkdirIfNotExits(new File(HOME.getParentFile(), "usr"));

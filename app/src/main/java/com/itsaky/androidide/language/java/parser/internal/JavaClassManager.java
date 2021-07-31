@@ -29,13 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import org.eclipse.jdt.core.Signature;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFileReader;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFormatException;
-import org.eclipse.jdt.internal.compiler.classfmt.FieldInfo;
-import org.eclipse.jdt.internal.compiler.env.IBinaryField;
-import org.eclipse.jdt.internal.compiler.env.IBinaryMethod;
-import org.eclipse.jdt.internal.compiler.env.IBinaryType;
 import com.itsaky.androidide.language.java.parser.model.ConstructorDescription;
 import com.itsaky.androidide.utils.Either;
 import com.blankj.utilcode.util.ThrowableUtils;
@@ -86,9 +79,6 @@ public class JavaClassManager implements IClassManager {
 
     public void loadFromProject(AndroidProject project) {
         try {
-            try {
-                loadClasspaths(project);
-            } catch (Throwable e) {}
             JavacParser parser = new JavacParser();
             List<String> javaSrcDirs = project.getSourcePaths();
             for (String dir : javaSrcDirs) {
@@ -266,174 +256,6 @@ public class JavaClassManager implements IClassManager {
         }
         return result;
     }
-    
-    private void loadClasspaths(AndroidProject project) throws IOException, ClassFormatException, ClassNotFoundException {
-        final List<String> classpaths = project.getClassPaths();
-        if(!classpaths.contains(Environment.BOOTCLASSPATH))
-            classpaths.add(Environment.BOOTCLASSPATH.getAbsolutePath());
-        for(int i=0;i<classpaths.size();i++) {
-            final File cp = new File(classpaths.get(i));
-            if(!(cp.exists() && cp.getName().endsWith(".jar"))) continue;
-            final ZipFile zip = new ZipFile(cp);
-            final Enumeration<? extends ZipEntry> entries = zip.entries();
-
-            ZipEntry entry = null;
-            while(entries.hasMoreElements() && ((entry = entries.nextElement()) != null)) {
-                if(!entry.getName().endsWith(".class"))
-                    continue;
-                try {
-                    ClassFileReader reader = ClassFileReader.read(zip, entry.getName());
-                    describe(zip, reader);
-                } catch (Throwable th) {}
-            }
-        }
-    }
-
-    private ClassDescription describe(ZipFile zip, IBinaryType type) throws IOException, ClassFormatException, ClassNotFoundException {
-        if(type == null)
-            return null;
-        final char[] name = type.getName();
-        final char[] superClassName = type.getSuperclassName();
-        if(name == null) return null;
-        final int mods = type.getModifiers();
-        final boolean isPremitive = false;
-        final boolean isAnnotation = false;
-        final boolean isEnum = false;
-        final boolean isMember = type.getEnclosingTypeName() != null;
-        final IBinaryField[] fields = type.getFields();
-        final IBinaryMethod[] methods = type.getMethods();
-        final char[][] interfaces = type.getInterfaceNames();
-        ClassDescription clazz = new ClassDescription(bytecodeToSourceType(new String(name)), mods, isPremitive, isAnnotation, isEnum, isMember);
-        
-        int index = 0;
-        while(fields != null && index < fields.length) {
-            IBinaryField f = fields[index];
-            if(f == null) continue;
-            FieldDescription field = describe(zip, f);
-            if(field == null) continue;
-            clazz.addField(field);
-            ++index;
-        }
-        
-        index = 0;
-        while(methods != null && index < methods.length) {
-            IBinaryMethod m = methods[index];
-            if(m == null) continue;
-            Either<MethodDescription, ConstructorDescription> result = describe(zip, m);
-            if(result == null) continue;
-            if(result.isLeft())
-                clazz.addMethod(result.getLeft());
-            else clazz.addConstructor(result.getRight());
-            ++index;
-        }
-        
-        // TODO: Add interfaces
-        
-        clazz.setSuperclass(superClassName == null ? ClassDescription.ofObject() : findType(zip, new String(superClassName)));
-        
-        update(clazz);
-        return clazz;
-    }
-
-    private Either<MethodDescription, ConstructorDescription> describe(ZipFile zip, IBinaryMethod m) throws IOException, IllegalArgumentException, ClassFormatException, ClassNotFoundException {
-        if(zip == null || m == null) return null;
-        final char[] descriptor = m.getMethodDescriptor();
-        final char[] signature = m.getGenericSignature();
-        final char[] name = m.getSelector();
-        final int mods = m.getModifiers();
-        if(name == null || descriptor == null) return null;
-        IClass returns = findType(zip, Signature.getReturnType(new String(descriptor)));
-        String[] paramTypes = Signature.getParameterTypes(new String(descriptor));
-        ArrayList<String> params = new ArrayList<>();
-        for(String type : paramTypes) {
-            params.add(bytecodeToSourceType(type));
-        }
-        return m.isConstructor() ? Either.forRight(new ConstructorDescription(new String(name).replace("/", "."), params)) : Either.forLeft(new MethodDescription(new String(name).replace("/", "."), returns, mods, params));
-    }
-
-    private FieldDescription describe(ZipFile zip, IBinaryField field) throws IOException, ClassFormatException, ClassNotFoundException {
-        if(field == null)
-            return null;
-        final char[] n = field.getName();
-        final char[] t = field.getTypeName();
-        if(n == null || t == null) return null;
-        final String name = new String(n);
-        final String type = new String(t);
-        final int mods = field.getModifiers();
-        final String value = field instanceof FieldInfo && ((FieldInfo) field).hasConstant() ? field.getConstant().stringValue() : "";
-        IClass typeClass = findType(zip, type);
-        if(typeClass == null)
-            typeClass = new ClassDescription(Object.class);
-        FieldDescription f = new FieldDescription(mods, typeClass, name.replace("/", "."), value);
-        return f;
-    }
-
-    private IClass findType(ZipFile zip, String name) throws IOException, ClassFormatException, ClassNotFoundException {
-        if(zip == null || name == null)
-            return null;
-        final int arrayCount = Signature.getArrayCount(name);
-        if(arrayCount == 0) {
-            if(name.length() == 1) {
-                // A primitive type
-                final Class load = primitiveType(name.charAt(0));
-                if(load != null) {
-                    ClassDescription desc = new ClassDescription(load);
-                    desc.initMembers(load);
-                    update(desc);
-                    return desc;
-                }
-            }
-            IClass found = getParsedClass(bytecodeToSourceType(name));
-            if(found != null) {
-                return found;
-            } else {
-                ClassFileReader reader = ClassFileReader.read(zip, name);
-                if(reader == null)
-                    return null;
-                else {
-                   // This class will be updated in describe() method
-                   return describe(zip, reader); 
-                }
-            }
-        } else {
-            if(Signature.getElementType(name).length() == 1) {
-                // This type may be an array of primitive
-                Class load = Class.forName(name);
-                if(load != null) {
-                    ClassDescription desc = new ClassDescription(load);
-                    desc.initMembers(load);
-                    update(desc);
-                    return desc;
-                }
-            }
-            // TODO: Load array type classes of objects
-            // Return without loading members of this class
-            return new ClassDescription(Void.TYPE);
-        }
-    }
-    
-    private String bytecodeToSourceType(String type) {
-        type = Signature.getElementType(type);
-        if(type.startsWith("L") && type.endsWith(";")) {
-            type = type.substring(1, type.lastIndexOf(";"));
-        }
-        return type.replace("/", ".");
-    }
-
-    public Class primitiveType(char typeId) {
-        switch (typeId) {
-            case 'I' : return int.class;
-            case 'B' : return byte.class;
-            case 'S' : return short.class;
-            case 'C' : return char.class;
-            case 'F' : return float.class;
-            case 'D' : return double.class;
-            case 'Z' : return boolean.class;
-            case 'J' : return long.class;
-            default : return null;
-        }
-    }
-    
     
     /**
      * Kept as a backup if loading jar files fails for some reasons

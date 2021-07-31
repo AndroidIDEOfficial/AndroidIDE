@@ -7,17 +7,17 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDiagnosticItemBinding;
-import com.itsaky.androidide.services.compiler.model.CompilerDiagnostic;
-import java.util.List;
-import javax.tools.Diagnostic;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
+import com.itsaky.lsp.Diagnostic;
+import com.itsaky.lsp.DiagnosticSeverity;
+import java.util.List;
 
 public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAdpater.VH> {
     
-    private List<CompilerDiagnostic> diags;
+    private List<Diagnostic> diags;
     private DiagnosticClickListener listener;
 
-    public DiagnosticItemAdpater(List<CompilerDiagnostic> diags, DiagnosticClickListener listener) {
+    public DiagnosticItemAdpater(List<Diagnostic> diags, DiagnosticClickListener listener) {
         this.diags = diags;
         this.listener = listener;
     }
@@ -29,12 +29,12 @@ public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAd
     
     @Override
     public void onBindViewHolder(DiagnosticItemAdpater.VH p1, int p2) {
-        final CompilerDiagnostic diagnostic = diags.get(p2);
+        final Diagnostic diagnostic = diags.get(p2);
         final LayoutDiagnosticItemBinding binding = p1.binding;
         
         binding.icon.setImageResource(getDiagnosticIconId(diagnostic));
-        binding.icon.setColorFilter(ContextCompat.getColor(binding.icon.getContext(), diagnostic.kind() == Diagnostic.Kind.ERROR ? R.color.diagnostic_error : R.color.diagnostic_warning), PorterDuff.Mode.SRC_ATOP);
-        binding.title.setText(diagnostic.message());
+        binding.icon.setColorFilter(ContextCompat.getColor(binding.icon.getContext(), diagnostic.severity == DiagnosticSeverity.Error ? R.color.diagnostic_error : R.color.diagnostic_warning), PorterDuff.Mode.SRC_ATOP);
+        binding.title.setText(diagnostic.message);
         
         binding.getRoot().setOnClickListener(v -> {
             if(listener != null) {
@@ -48,8 +48,8 @@ public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAd
         return diags.size();
     }
     
-    private int getDiagnosticIconId(CompilerDiagnostic diagnostic) {
-        if(diagnostic.kind() == Diagnostic.Kind.ERROR)
+    private int getDiagnosticIconId(Diagnostic diagnostic) {
+        if(diagnostic.severity == DiagnosticSeverity.Error)
             return R.drawable.ic_compilation_error;
         return R.drawable.ic_info;
     }

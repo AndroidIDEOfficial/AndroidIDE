@@ -34,6 +34,11 @@ public abstract class EditorCompletionAdapter extends BaseAdapter {
     private EditorAutoCompleteWindow mWindow;
     private List<Either<SuggestItem, CompletionItem>> mItems;
 
+    public void clear() {
+        if(mItems != null)
+            mItems.clear();
+    }
+
     /**
      * Called by {@link EditorAutoCompleteWindow} to attach some arguments
      */

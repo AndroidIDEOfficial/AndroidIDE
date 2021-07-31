@@ -95,7 +95,6 @@ public class SymbolPairMatch {
     }
 
     public final static class DefaultSymbolPairs extends SymbolPairMatch {
-
         public DefaultSymbolPairs() {
             super.putPair('{', new Replacement("{}", 1));
             super.putPair('(', new Replacement("()", 1));
@@ -103,7 +102,6 @@ public class SymbolPairMatch {
             super.putPair('"', new Replacement("\"\"", 1));
             super.putPair('\'', new Replacement("''", 1));
         }
-
     }
 
 }

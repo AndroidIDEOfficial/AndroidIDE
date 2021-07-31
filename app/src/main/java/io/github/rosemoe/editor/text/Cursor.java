@@ -16,9 +16,10 @@
 package io.github.rosemoe.editor.text;
 
 import android.util.Log;
-
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.util.IntPair;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Rose
@@ -33,6 +34,8 @@ public final class Cursor {
     private boolean mAutoIndentEnabled;
     private EditorLanguage mLanguage;
     private int mTabWidth;
+    
+    private final List<Character> pairs;
 
     /**
      * Create a new Cursor for Content
@@ -45,6 +48,14 @@ public final class Cursor {
         mLeft = new CharPosition().zero();
         mRight = new CharPosition().zero();
         mTabWidth = 4;
+        
+        pairs = new ArrayList<>();
+        pairs.add('}');
+        pairs.add(')');
+        pairs.add(']');
+        pairs.add('"');
+        pairs.add('\'');
+        pairs.add('>');
     }
 
     /**
@@ -253,35 +264,43 @@ public final class Cursor {
         if (isSelected()) {
             mContent.replace(getLeftLine(), getLeftColumn(), getRightLine(), getRightColumn(), text);
         } else {
-            if (mAutoIndentEnabled && text.length() != 0 && applyAutoIndent) {
-                char first = text.charAt(0);
-                if (first == '\n') {
-                    String line = mContent.getLineString(getLeftLine());
-                    int p = 0, count = 0;
-                    while (p < getLeftColumn()) {
-                        if (isWhitespace(line.charAt(p))) {
-                            if (line.charAt(p) == '\t') {
-                                count += mTabWidth;
+            if(getLeftColumn() < mContent.getColumnCount(getLeftLine())
+               && text.length() == 1
+               && text.charAt(0) == mContent.charAt(getLeftLine(), getLeftColumn())
+               && pairs.contains(text.charAt(0))) {
+                   
+                set(getLeftLine(), getLeftColumn() + 1);
+            } else {
+                if (mAutoIndentEnabled && text.length() != 0 && applyAutoIndent) {
+                    char first = text.charAt(0);
+                    if (first == '\n') {
+                        String line = mContent.getLineString(getLeftLine());
+                        int p = 0, count = 0;
+                        while (p < getLeftColumn()) {
+                            if (isWhitespace(line.charAt(p))) {
+                                if (line.charAt(p) == '\t') {
+                                    count += mTabWidth;
+                                } else {
+                                    count++;
+                                }
+                                p++;
                             } else {
-                                count++;
+                                break;
                             }
-                            p++;
-                        } else {
-                            break;
                         }
+                        String sub = line.substring(0, getLeftColumn());
+                        try {
+                            count += mLanguage.getIndentAdvance(sub);
+                        } catch (Exception e) {
+                            Log.w("EditorCursor", "Language object error", e);
+                        }
+                        StringBuilder sb = new StringBuilder(text);
+                        sb.insert(1, createIndent(count));
+                        text = sb;
                     }
-                    String sub = line.substring(0, getLeftColumn());
-                    try {
-                        count += mLanguage.getIndentAdvance(sub);
-                    } catch (Exception e) {
-                        Log.w("EditorCursor", "Language object error", e);
-                    }
-                    StringBuilder sb = new StringBuilder(text);
-                    sb.insert(1, createIndent(count));
-                    text = sb;
                 }
+                mContent.insert(getLeftLine(), getLeftColumn(), text);
             }
-            mContent.insert(getLeftLine(), getLeftColumn(), text);
         }
     }
 
@@ -294,12 +313,12 @@ public final class Cursor {
     private String createIndent(int p) {
         int tab = 0;
         int space;
-        if (mLanguage.useTab()) {
-            tab = p / mTabWidth;
-            space = p % mTabWidth;
-        } else {
+//        if (mLanguage.useTab()) {
+//            tab = p / mTabWidth;
+//            space = p % mTabWidth;
+//        } else {
             space = p;
-        }
+//        }
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < tab; i++) {
             s.append('\t');

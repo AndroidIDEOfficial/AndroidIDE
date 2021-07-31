@@ -3,5 +3,6 @@ include ':treeview'
 include ':spinkit'
 include ':slidr'
 include ':javadocparser'
+include ':lsp'
 
 rootProject.name = "Android IDE"

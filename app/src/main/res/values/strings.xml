@@ -1,6 +1,6 @@
 <resources>
     <string name="view_diags">Diagnostics</string>
-    <string name="diagnostic_position">Line: %s, Column: %s</string>
+    <string name="diagnostic_position">Start: %s, %s    End: %s, %s</string>
     <string name="diagnostic_error">ERROR</string>
     <string name="diagnostic_warning">WARNING</string>
     <string name="diagnostic_note">NOTE</string>

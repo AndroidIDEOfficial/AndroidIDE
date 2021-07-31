@@ -36,6 +36,7 @@ public class ShellServer extends Thread {
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.GRADLE_DIR) + "/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.ANDROID_HOME) + "/cmdline-tools/latest/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.ANDROID_HOME) + "/cmake/bin");
+            stringBuilder.append("\nexport JLS_HOME=" + Environment.path(Environment.JLS_HOME));
             
             // Provide paths to .so files needed to execute JDK
             final String lib = Environment.LIBDIR.getAbsolutePath();
@@ -49,8 +50,8 @@ public class ShellServer extends Thread {
             }
             
             // Monotonic clock fix, needed for JDK
-            stringBuilder.append("\nls -l /system/lib64/libc.so && " +
-                   "ln -sf /apex/com.android.runtime/lib64/bionic/libc.so " + lib + "/librt.so && " +
+            stringBuilder.append( // "\nls -l /system/lib64/libc.so && " +
+                   "\nln -sf /apex/com.android.runtime/lib64/bionic/libc.so " + lib + "/librt.so && " +
                    "ln -sf /apex/com.android.runtime/lib64/bionic/libc.so " + lib + "/libpthread.so");
              
             // Make sure there are proper permissions set to the $HOME directory

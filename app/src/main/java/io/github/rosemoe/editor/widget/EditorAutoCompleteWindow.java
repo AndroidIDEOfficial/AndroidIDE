@@ -32,6 +32,7 @@ import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import java.util.ArrayList;
 import java.util.List;
+import com.blankj.utilcode.util.ThreadUtils;
 
 /**
  * Auto complete window for editing code quicker
@@ -137,8 +138,8 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
         } else {
             mBinding.tip.setVisibility(View.GONE);
         }
-        //mBinding.list.setVisibility((!state) ? View.VISIBLE : View.GONE);
-        //update();
+        // mBinding.list.setVisibility((!state) ? View.VISIBLE : View.GONE);
+        // update();
     }
 
     /**
@@ -261,16 +262,14 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
      * @param results     Items of analysis
      * @param requestTime The time that this thread starts
      */
-    private void displayResults(final List<Either<SuggestItem, CompletionItem>> results, long requestTime) {
-        if (mRequestTime != requestTime) {
-            return;
-        }
+    public void displayResults(final List<Either<SuggestItem, CompletionItem>> results, long requestTime) {
         mEditor.post(() -> {
             setLoading(false);
             if (results == null || results.isEmpty()) {
                 hide();
                 return;
             }
+            mAdapter.clear();
             mAdapter.attachAttributes(this, results);
             mBinding.list.setAdapter(mAdapter);
             mCurrent = 0;

@@ -3,7 +3,6 @@ package com.itsaky.androidide.tools;
 import java.io.File;
 import java.net.URI;
 import javax.tools.SimpleJavaFileObject;
-import org.eclipse.jdt.internal.compiler.batch.CompilationUnit;
 
 public class SourceJavaFileObject extends SimpleJavaFileObject {
 
@@ -28,12 +27,5 @@ public class SourceJavaFileObject extends SimpleJavaFileObject {
     @Override
     public CharSequence getCharContent(boolean p1) {
         return source;
-    }
-    
-    public CompilationUnit asUnit() {
-        return new CompilationUnit(
-            getCharContent(true).toString().toCharArray(),
-            getFile().getAbsolutePath(),
-            "UTF-8");
     }
 }
