@@ -17,6 +17,8 @@ import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class JavaAutoComplete implements AutoCompleteProvider {
     
@@ -47,10 +49,18 @@ public class JavaAutoComplete implements AutoCompleteProvider {
                     Either<SuggestItem, CompletionItem> either = Either.forLeft(new CompletionItemWrapper(item, prefix));
                     result.add(either);
                 }
-                
+                Collections.sort(result, RESULT_SORTER);
                 return result;
             }
         }
         return new ArrayList<Either<SuggestItem, CompletionItem>>();
 	}
+    
+    private static final Comparator<Either<SuggestItem, CompletionItem>> RESULT_SORTER = new Comparator<Either<SuggestItem, CompletionItem>>(){
+
+        @Override
+        public int compare(Either<SuggestItem, CompletionItem> p1, Either<SuggestItem, CompletionItem> p2) {
+            return p1.getLeft().getSortText().compareTo(p2.getLeft().getSortText());
+        }
+    };
 }

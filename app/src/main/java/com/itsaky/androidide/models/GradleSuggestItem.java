@@ -37,11 +37,11 @@ public class GradleSuggestItem implements SuggestItem {
 	public char getTypeHeader() {
 		return ' ';
 	}
-	
-	@Override
-	public int getSuggestionPriority() {
-		return 1;
-	}
+
+    @Override
+    public String getSortText() {
+        return label;
+    }
 	
 	@Override
 	public void onSelectThis(CodeEditor editor) {

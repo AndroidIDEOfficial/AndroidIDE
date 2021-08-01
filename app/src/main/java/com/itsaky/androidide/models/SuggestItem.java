@@ -3,10 +3,12 @@ package com.itsaky.androidide.models;
 import io.github.rosemoe.editor.widget.CodeEditor;
 
 public interface SuggestItem {
-    public String getName();
-    public String getDescription();
-    public String getReturnType();
-    public char getTypeHeader();
-    public int getSuggestionPriority();
-    public void onSelectThis(CodeEditor editor);
+    String getName();
+    String getDescription();
+    String getReturnType();
+    String getSortText();
+    
+    char getTypeHeader();
+    
+    void onSelectThis(CodeEditor editor);
 }

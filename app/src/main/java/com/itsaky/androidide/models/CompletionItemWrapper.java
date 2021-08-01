@@ -8,7 +8,7 @@ import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.widget.CodeEditor;
 
-public class CompletionItemWrapper implements SuggestItem {
+public class CompletionItemWrapper implements SuggestItem, Comparable {
     
     private CompletionItem item;
     private String prefix;
@@ -43,8 +43,8 @@ public class CompletionItemWrapper implements SuggestItem {
     }
 
     @Override
-    public int getSuggestionPriority() {
-        return item.kind;
+    public String getSortText() {
+        return item.kind + getName();
     }
 
     @Override
@@ -65,6 +65,15 @@ public class CompletionItemWrapper implements SuggestItem {
         } catch (Throwable th) {
             Logger.instance("CompletionItemWrapper").e("onSelectThis, Error: ", ThrowableUtils.getFullStackTrace(th));
         }
+    }
+
+    @Override
+    public int compareTo(Object p1) {
+        if(p1 instanceof CompletionItemWrapper) {
+            CompletionItemWrapper that = (CompletionItemWrapper) p1;
+            return this.getSortText().compareTo(that.getSortText());
+        }
+        return 1;
     }
     
     private int getInsertLength() {
