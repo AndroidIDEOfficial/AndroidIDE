@@ -1,7 +1,7 @@
 package com.itsaky.androidide.language.logs;
 
-import com.itsaky.androidide.language.java.parser.internal.SuggestItem;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.models.SuggestItem;
 import com.itsaky.androidide.utils.Either;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;

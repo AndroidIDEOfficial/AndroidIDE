@@ -719,11 +719,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     @Override
     public void onServerStarted(int currentId) {
-        final JavaLanguageServer server = getApp().getJavaLanguageServer();
-        while(server != null && !pendingMessages.isEmpty()) {
-            Message msg = pendingMessages.pop();
-            server.send(msg);
-        }
+        new Thread(() -> {
+            final JavaLanguageServer server = getApp().getJavaLanguageServer();
+            while(server != null && !pendingMessages.isEmpty()) {
+                Message msg = pendingMessages.pop();
+                server.send(msg);
+            }
+        }).start();
     }
 
     @Override

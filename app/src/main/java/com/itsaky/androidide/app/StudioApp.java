@@ -20,7 +20,6 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.interfaces.LanguageServerListener;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
-import com.itsaky.androidide.language.java.provider.JavaCompletionProvider;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.ConstantsBridge;
@@ -251,10 +250,14 @@ public class StudioApp extends MultiDexApplication
 	}
 	
     public void createCompletionService(AndroidProject project, LanguageClient client) {
-        this.languageServer = new JavaLanguageServer(project, client);
         this.mXmlCompletionService = new XMLCompletionService();
         
-        this.languageServer.startServer();
+        if(languageServer == null) {
+            this.languageServer = new JavaLanguageServer(project, client);
+            this.languageServer.startServer();
+        } else {
+            this.languageServer.initialize(project);
+        }
     }
     
     public JavaLanguageServer getJavaLanguageServer() {

@@ -3,9 +3,9 @@ package com.itsaky.androidide.language.java;
 import androidx.core.util.Pair;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.java.JavaLanguageAnalyzer;
-import com.itsaky.androidide.language.java.parser.internal.SuggestItem;
 import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.androidide.models.CompletionItemWrapper;
+import com.itsaky.androidide.models.SuggestItem;
 import com.itsaky.androidide.utils.Either;
 import com.itsaky.lsp.CompletionList;
 import com.itsaky.lsp.Position;
@@ -17,7 +17,6 @@ import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.ArrayList;
 import java.util.List;
-import com.itsaky.androidide.utils.Logger;
 
 public class JavaAutoComplete implements AutoCompleteProvider {
     

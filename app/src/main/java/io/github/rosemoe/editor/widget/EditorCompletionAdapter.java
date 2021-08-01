@@ -19,7 +19,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import com.itsaky.androidide.language.java.parser.internal.SuggestItem;
+import com.itsaky.androidide.models.SuggestItem;
 import com.itsaky.androidide.utils.Either;
 import io.github.rosemoe.editor.struct.CompletionItem;
 import java.util.List;

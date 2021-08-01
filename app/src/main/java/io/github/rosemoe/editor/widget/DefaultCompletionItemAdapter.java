@@ -16,18 +16,18 @@
 package io.github.rosemoe.editor.widget;
 
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.itsaky.androidide.language.java.parser.internal.SuggestItem;
-import com.itsaky.androidide.utils.Either;
-import com.itsaky.androidide.R;
-import io.github.rosemoe.editor.struct.CompletionItem;
-import android.graphics.drawable.Drawable;
 import androidx.core.content.ContextCompat;
+import com.itsaky.androidide.R;
+import com.itsaky.androidide.models.SuggestItem;
+import com.itsaky.androidide.utils.Either;
+import io.github.rosemoe.editor.struct.CompletionItem;
 
 /**
  * Adapter to display results

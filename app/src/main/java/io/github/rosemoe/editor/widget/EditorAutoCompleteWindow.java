@@ -21,9 +21,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 import com.itsaky.androidide.databinding.LayoutCompletionWindowBinding;
-import com.itsaky.androidide.language.java.parser.internal.SuggestItem;
 import com.itsaky.androidide.models.CompletionEdit;
 import com.itsaky.androidide.models.CompletionListItem;
+import com.itsaky.androidide.models.SuggestItem;
 import com.itsaky.androidide.utils.Either;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.struct.CompletionItem;
@@ -32,7 +32,6 @@ import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import java.util.ArrayList;
 import java.util.List;
-import com.blankj.utilcode.util.ThreadUtils;
 
 /**
  * Auto complete window for editing code quicker

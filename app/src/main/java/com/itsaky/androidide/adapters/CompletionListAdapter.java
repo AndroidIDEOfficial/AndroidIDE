@@ -9,15 +9,13 @@ import android.view.ViewGroup;
 import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutCompletionItemBinding;
-import com.itsaky.androidide.language.java.parser.internal.JavaUtil;
-import com.itsaky.androidide.language.java.parser.internal.SuggestItem;
 import com.itsaky.androidide.models.CompletionListItem;
+import com.itsaky.androidide.models.SuggestItem;
 import com.itsaky.androidide.utils.Either;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.widget.EditorCompletionAdapter;
 import java.util.Locale;
-import com.itsaky.androidide.language.java.parser.internal.IJavaDocCommentable;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {
     @Override
@@ -45,7 +43,7 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
 			type = item.getItemType().contains(".") ? item.getItemType().substring(item.getItemType().lastIndexOf(".") + 1) : item.getItemType();
 			desc = item.getType() != CompletionListItem.Type.NOT_IMPORTED_CLASS ? item.getDetail() : getContext().getString(R.string.label_not_imported, item.getDetail());
 		}
-		type = JavaUtil.getArrayTypeIfNeeded(type);
+		
         binding.completionIconText.setText(header);
         binding.completionLabel.setText(label);
         binding.completionType.setText(type);
@@ -60,17 +58,4 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
 
         return binding.getRoot();
     }
-
-	@Override
-	protected String getHtmlJavadocAt(int index) {
-		Either<SuggestItem, CompletionItem> item = getItem(index);
-		if(item.isLeft() && item.getLeft() instanceof IJavaDocCommentable) {
-			IJavaDocCommentable commentable = (IJavaDocCommentable) item;
-			String doc = commentable.getJavaDoc();
-			if(doc != null && doc.trim().length() > 0) {
-				return doc;
-			}
-		}
-		return "";
-	}
 }

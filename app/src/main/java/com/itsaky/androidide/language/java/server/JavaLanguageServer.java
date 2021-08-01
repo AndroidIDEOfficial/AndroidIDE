@@ -82,7 +82,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
         new Thread(() -> {
             try {
                 Socket socket = connectAndGet();
-                onConnectToServer();
+                sendInit();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String line;
                 while((line = reader.readLine()) != null) {
@@ -95,6 +95,11 @@ public class JavaLanguageServer implements ShellServer.Callback {
                 logEx(e);
             }
         }).start();
+    }
+    
+    public void initialize(AndroidProject project) {
+        this.project = project;
+        sendInit();
     }
 
     private Socket connectAndGet() {
@@ -113,7 +118,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
         return server;
     }
     
-    protected void onConnectToServer() {
+    protected void sendInit() {
         InitializeParams p = new InitializeParams();
         p.rootUri = new File(project.getProjectPath()).toURI();
         initialize(p);

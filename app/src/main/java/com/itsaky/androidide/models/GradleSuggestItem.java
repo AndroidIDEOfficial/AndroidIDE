@@ -1,6 +1,5 @@
 package com.itsaky.androidide.models;
 
-import com.itsaky.androidide.language.java.parser.internal.SuggestItem;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.widget.CodeEditor;
