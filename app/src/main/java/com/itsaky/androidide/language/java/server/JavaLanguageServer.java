@@ -16,7 +16,9 @@ import com.itsaky.lsp.CancelParams;
 import com.itsaky.lsp.CompletionList;
 import com.itsaky.lsp.DidChangeConfigurationParams;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
+import com.itsaky.lsp.DidCloseTextDocumentParams;
 import com.itsaky.lsp.DidOpenTextDocumentParams;
+import com.itsaky.lsp.DidSaveTextDocumentParams;
 import com.itsaky.lsp.InitializeParams;
 import com.itsaky.lsp.JavaReportProgressParams;
 import com.itsaky.lsp.JavaStartProgressParams;
@@ -128,6 +130,11 @@ public class JavaLanguageServer implements ShellServer.Callback {
         DidChangeConfigurationParams p2 = new DidChangeConfigurationParams();
         p2.settings = settings;
         configurationChanged(p2);
+        
+        ThreadUtils.runOnUiThread(() -> {
+            if(client != null)
+                client.onServerStarted(UNIVERSION_ID);
+        });
     }
     
     public void initialize(InitializeParams p) {
@@ -146,8 +153,16 @@ public class JavaLanguageServer implements ShellServer.Callback {
         write(Method.DID_OPEN, gson.toJson(p));
     }
     
+    public void didClose(DidCloseTextDocumentParams p) {
+        write(Method.DID_CLOSE, gson.toJson(p));
+    }
+    
     public void didChange(DidChangeTextDocumentParams p) {
         write(Method.DID_CHANGE, gson.toJson(p));
+    }
+    
+    public void didSave(DidSaveTextDocumentParams p) {
+        write(Method.DID_SAVE, gson.toJson(p));
     }
     
     public Pair<Integer, CompletionList> completion(TextDocumentPositionParams p) {
@@ -166,19 +181,15 @@ public class JavaLanguageServer implements ShellServer.Callback {
         int id = write(Method.CANCEL_REQUEST, gson.toJson(p));
     }
     
-    private int write(String method, String data) {
+    public int send(Message msg) {
         final int id = UNIVERSION_ID++;
-        Message msg = new Message();
         msg.id = id;
-        msg.jsonrpc = "2.0";
-        msg.method = method;
-        msg.params = new JsonParser().parse(data);
-        
         if(this.send != null) {
             final String body = gson.toJson(msg);
             final String head = String.format("Content-Length: %d\r\n\r\n", body.length());
             new Thread(() -> {
                 try {
+                    logger.i(body);
                     send.write(head.concat(body).getBytes(StandardCharsets.UTF_8));
                 } catch (Throwable e) {
                     logger.e("Error writing to server: " + ThrowableUtils.getFullStackTrace(e));
@@ -187,6 +198,14 @@ public class JavaLanguageServer implements ShellServer.Callback {
         }
         
         return id;
+    }
+    
+    private int write(String method, String data) {
+        Message msg = new Message();
+        msg.jsonrpc = "2.0";
+        msg.method = method;
+        msg.params = new JsonParser().parse(data);
+        return send(msg);
     }
     
     private void logEx(Throwable th) {
@@ -204,6 +223,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     private void onServerOut(String line) {
         if(line == null || line.trim().length() <= 0) return;
         if(line.contains(CONTENT_LENGTH)) line = line.substring(0, line.lastIndexOf(CONTENT_LENGTH));
+        logger.v(line);
         if(this.client == null) return;
         try {
             JsonObject obj = new JsonParser().parse(line.trim()).getAsJsonObject();
@@ -233,7 +253,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
         }
     }
     
-    private class Method {
+    public static class Method {
         public static final String INITIALIZE = "initialize";
         public static final String INITIALIZED = "initialized";
         public static final String SHUTDOWN = "shutdown";
@@ -270,7 +290,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
         public static final String JAVA_COLORS = "java/colors";
     }
     
-    private class Key {
+    public static class Key {
         public static final String METHOD = "method";
         public static final String PARAMS = "params";
         public static final String ID = "id";

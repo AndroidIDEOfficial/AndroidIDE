@@ -9,6 +9,7 @@ import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import com.itsaky.androidide.interfaces.JLSRequestor;
 
 public class EditorPagerAdapter extends FragmentStatePagerAdapter
 {
@@ -34,8 +35,22 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter
 		mOpenedFiles.addAll(files);
 		mFragments.addAll(fragments);
 	}
+    
+    public EditorFragment findEditorByFile(File file) {
+        for(int i=0;i<mFragments.size();i++) {
+            Fragment frag = mFragments.get(i);
+            if(!(frag instanceof EditorFragment))
+                continue;
+                
+            EditorFragment editor = (EditorFragment) frag;
+            if(editor.getFile() != null && editor.getFile().getAbsolutePath().equals(file.getAbsolutePath()))
+                return editor;
+        }
+        
+        return null;
+    }
 	
-	public int openFile(File file, EditorFragment.FileOpenListener listener, CodeEditor.CursorChangeListener cursorListener)
+	public int openFile(File file, EditorFragment.FileOpenListener listener, CodeEditor.CursorChangeListener cursorListener, JLSRequestor jlsRequestor)
 	{
 		int openedFileIndex = -1;
 		for(int i=0;i<mOpenedFiles.size();i++)
@@ -50,7 +65,11 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter
 		
 		if(openedFileIndex == -1)
 		{
-			mFragments.add(EditorFragment.newInstance(file, project).setFileOpenListener(listener).setCursorChangeListener(cursorListener));
+			mFragments.add(EditorFragment
+                   .newInstance(file, project)
+                   .setFileOpenListener(listener)
+                   .setCursorChangeListener(cursorListener)
+                   .setJLSRequestor(jlsRequestor));
 			mOpenedFiles.add(file);
 			notifyDataSetChanged();
 			return mFragments.size() - 1;

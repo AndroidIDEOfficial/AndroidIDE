@@ -4,13 +4,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.blankj.utilcode.util.FileIOUtils;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.FragmentEditorBinding;
 import com.itsaky.androidide.fragments.preferences.EditorPreferences;
+import com.itsaky.androidide.interfaces.JLSRequestor;
 import com.itsaky.androidide.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.language.java.JavaLanguage;
-import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import com.itsaky.androidide.models.AndroidProject;
@@ -18,13 +18,15 @@ import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.colorschemes.SchemeWombat;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ReadFileTask;
-import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
+import com.itsaky.lsp.DidSaveTextDocumentParams;
+import com.itsaky.lsp.Range;
 import com.itsaky.lsp.TextDocumentContentChangeEvent;
+import com.itsaky.lsp.TextDocumentIdentifier;
 import com.itsaky.lsp.VersionedTextDocumentIdentifier;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
@@ -34,7 +36,9 @@ import io.github.rosemoe.editor.widget.schemes.SchemeVS2019;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
@@ -48,6 +52,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 	
     private CodeEditor.CursorChangeListener listener;
     private FileOpenListener openListener;
+    private JLSRequestor jlsRequestor;
 	private static AndroidProject project;
     
 	public static final String KEY_FILE_PATH = "file_path";
@@ -62,6 +67,11 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 
     public EditorFragment setCursorChangeListener(CodeEditor.CursorChangeListener listener) {
         this.listener = listener;
+        return this;
+    }
+    
+    public EditorFragment setJLSRequestor(JLSRequestor requestor) {
+        this.jlsRequestor = requestor;
         return this;
     }
     
@@ -124,8 +134,14 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
     }
 	
 	public void setDiagnostics(List<Diagnostic> diags) {
-		if(binding.editorCodeEditor != null) {
-            binding.editorCodeEditor.setDiagnostics(diags);
+		if(binding.editorCodeEditor != null && diags != null) {
+            Map<Range, Diagnostic> map = new HashMap<>();
+            for(int i=0;i<diags.size();i++) {
+                final Diagnostic d = diags.get(i);
+                if(d == null) continue;
+                map.put(d.range, d);
+            }
+            binding.editorCodeEditor.setDiagnostics(map);
         }
 	}
 	
@@ -186,10 +202,12 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 	}
 
 	public void save() {
-		FileUtil.writeFile(mFile.getAbsolutePath(), binding.editorCodeEditor.getText().toString());
+        final String text = binding.editorCodeEditor.getText().toString();
+        final boolean wrote = FileIOUtils.writeFileFromString(mFile, text);
+		notifySaved(wrote, text);
 		isModified = false;
 	}
-	
+    
 	public File getFile() {
 		return mFile;
 	}
@@ -275,50 +293,19 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 	@Override
 	public void onNewTextSet(CodeEditor editor) {
 		isModified = true;
+        notifyChanged();
 	}
 
 	@Override
 	public void afterDelete(CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
 		isModified = true;
-        JavaLanguageServer server = StudioApp.getInstance().getJavaLanguageServer();
-        if(server != null) {
-            try {
-                TextDocumentContentChangeEvent event = new TextDocumentContentChangeEvent();
-                VersionedTextDocumentIdentifier id = new VersionedTextDocumentIdentifier();
-                DidChangeTextDocumentParams p = new DidChangeTextDocumentParams();
-                List<TextDocumentContentChangeEvent> changes = new ArrayList<>();
-                event.text = getText();
-                event.range = null;
-                changes.add(event);
-                id.uri = getFile().toURI();
-                id.version = VersionedFileManager.incrementVersion(getFile());
-                p.textDocument = id;
-                p.contentChanges = changes;
-                server.didChange(p);
-            } catch (Throwable th) {}
-        }
+        notifyChanged();
 	}
-
+    
 	@Override
 	public void afterInsert(CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
 		isModified = true;
-        JavaLanguageServer server = StudioApp.getInstance().getJavaLanguageServer();
-        if(server != null) {
-            try {
-                TextDocumentContentChangeEvent event = new TextDocumentContentChangeEvent();
-                VersionedTextDocumentIdentifier id = new VersionedTextDocumentIdentifier();
-                DidChangeTextDocumentParams p = new DidChangeTextDocumentParams();
-                List<TextDocumentContentChangeEvent> changes = new ArrayList<>();
-                event.text = getText();
-                event.range = null;
-                changes.add(event);
-                id.uri = getFile().toURI();
-                id.version = VersionedFileManager.incrementVersion(getFile());
-                p.textDocument = id;
-                p.contentChanges = changes;
-                server.didChange(p);
-            } catch (Throwable th) {}
-        }
+        notifyChanged();
         
 		boolean isOpen = false;
 		try {
@@ -332,6 +319,36 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 	@Override
 	public void beforeReplace(CodeEditor editor, CharSequence content) {
 	}
+    
+    private void notifyChanged() {
+        if (getFile() != null && getFile().getName().endsWith(EXT_JAVA) && jlsRequestor != null) {
+            try {
+                TextDocumentContentChangeEvent event = new TextDocumentContentChangeEvent();
+                VersionedTextDocumentIdentifier id = new VersionedTextDocumentIdentifier();
+                DidChangeTextDocumentParams p = new DidChangeTextDocumentParams();
+                List<TextDocumentContentChangeEvent> changes = new ArrayList<>();
+                event.text = getText();
+                event.range = null;
+                changes.add(event);
+                id.uri = getFile().toURI();
+                id.version = VersionedFileManager.incrementVersion(getFile());
+                p.textDocument = id;
+                p.contentChanges = changes;
+                jlsRequestor.didChange(p);
+            } catch (Throwable th) {}
+        }
+    }
+    
+    private void notifySaved(boolean wrote, String text) {
+        if (wrote && jlsRequestor != null) {
+            TextDocumentIdentifier id = new TextDocumentIdentifier();
+            id.uri = mFile.toURI();
+            DidSaveTextDocumentParams p = new DidSaveTextDocumentParams();
+            p.text = text;
+            p.textDocument = id;
+            jlsRequestor.didSave(p);
+        }
+    }
     
     public static interface FileOpenListener {
         public void onOpenSuccessful(File file, String text);

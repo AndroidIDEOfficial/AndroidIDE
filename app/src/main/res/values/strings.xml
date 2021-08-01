@@ -3,7 +3,8 @@
     <string name="diagnostic_position">Start: %s, %s    End: %s, %s</string>
     <string name="diagnostic_error">ERROR</string>
     <string name="diagnostic_warning">WARNING</string>
-    <string name="diagnostic_note">NOTE</string>
+    <string name="diagnostic_hint">INFO</string>
+    <string name="diagnostic_info">HINT</string>
 	<string name="msg_project_deleted">Project deleted</string>
 	<string name="msg_project_delete_failed">Failed to delete project!</string>
 	<string name="msg_failed_load_icon_path">Failed to load icon path!</string>

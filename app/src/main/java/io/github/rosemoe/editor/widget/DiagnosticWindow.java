@@ -46,10 +46,10 @@ public class DiagnosticWindow extends EditorBasePopupWindow {
             binding.errorPosition.setText(
                 editor.getContext().getString(
                     com.itsaky.androidide.R.string.diagnostic_position,
-                    ""+ diagnostic.range.start.line,
-                    ""+ diagnostic.range.start.character,
-                    ""+ diagnostic.range.end.line,
-                    ""+ diagnostic.range.end.character
+                    ""+ diagnostic.range.start.line + 1,
+                    ""+ diagnostic.range.start.character + 1,
+                    ""+ diagnostic.range.end.line + 1,
+                    ""+ diagnostic.range.end.character + 1
                 )
             );
 
@@ -74,8 +74,10 @@ public class DiagnosticWindow extends EditorBasePopupWindow {
             return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_error);
         } else if(diagnostic.severity == DiagnosticSeverity.Warning) {
             return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_warning);
+        } else if(diagnostic.severity == DiagnosticSeverity.Hint) {
+            return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_hint);
         }
-        return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_note);
+        return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_info);
     }
     
 }

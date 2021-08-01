@@ -35,6 +35,8 @@
 	<color name="log_normal">@color/primaryTextColor</color>
     <color name="diagnostic_error">@color/secondaryDarkColor</color>
     <color name="diagnostic_warning">@color/log_warning</color>
+    <color name="diagnostic_info">@color/log_info</color>
+    <color name="diagnostic_hint">@color/primaryTextColor</color>
 	<color name="content_background">#212121</color>
 	<color name="bg_green">#4CAF50</color>
 	<color name="transform_scrim">#70000000</color>

@@ -58,9 +58,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.Diagnostic;
-import com.itsaky.lsp.DiagnosticSeverity;
 import com.itsaky.lsp.Position;
 import com.itsaky.lsp.Range;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
@@ -88,6 +90,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import com.itsaky.lsp.DiagnosticSeverity;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -251,8 +256,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private CharPosition mLockedSelection;
     KeyMetaStates mKeyMetaStates = new KeyMetaStates(this);
 	
-	private HashMap<HexColor, Integer> mLineColors;
-    private HashMap<Range, List<Diagnostic>> mDiagnostics;
+	private Map<HexColor, Integer> mLineColors;
+    private Map<Range, Diagnostic> mDiagnostics;
     
     private File currentFile;
     
@@ -524,54 +529,66 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         return mPinLineNumber;
     }
     
-    public void showOrHideDiagnosticWindow() {
+    private Diagnostic findDiagnosticInCursorRange() {
+        if(mDiagnostics == null)
+            return null;
         int leftLine = getCursor().getLeftLine();
         int leftCol = getCursor().getLeftColumn();
         int rightLine = getCursor().getRightLine();
         int rightCol = getCursor().getRightColumn();
-        final Range thisRange = new Range(new Position(leftLine, leftCol), new Position(rightLine, rightCol));
-        boolean hide = false;
-        boolean has = mDiagnostics.containsKey(thisRange);
-        if(has) {
-            List<Diagnostic> diags = mDiagnostics.get(thisRange);
-            if(diags != null && diags.size() > 0) {
-                Diagnostic d = diags.get(0);
-                mDiagnosticWindow.setDiagnostic(d);
-                if(!mDiagnosticWindow.isShowing())
-                    mDiagnosticWindow.show();
-                else updateDiagnosticWindowPosition();
-            } else hide = true;
-        } else hide = true;
+        final Range range = new Range(new Position(leftLine, leftCol), new Position(rightLine, rightCol));
+        final Set<Range> keys = mDiagnostics.keySet();
+        Range found = null;
+        for(Range r : keys) {
+            if(r.start.line <= range.start.line
+               && r.start.character <= range.start.character
+               && r.end.line >= range.end.line
+               && r.end.character >= range.end.character) {
+                found = r;
+                break;
+            }
+        }
+        
+        if(found != null) {
+            return mDiagnostics.get(found);
+        }
+        
+        return null;
+    }
+    
+    private List<Diagnostic> findDiagnosticsContainingLine(int line) {
+        final List<Diagnostic> diags = new ArrayList<>();
+        final Set<Range> keys = mDiagnostics.keySet();
+        
+        for(Range r : keys) {
+            if(r == null) continue;
+            if(r.start.line <= line && line <= r.end.line)
+                diags.add(mDiagnostics.get(r));
+        }
+        
+        return diags;
+    }
+    
+    public void showOrHideDiagnosticWindow() {
+        if(mDiagnostics == null) return;
+        boolean hide = true;
+        Diagnostic d = findDiagnosticInCursorRange();
+        if(d != null) {
+            hide = false;
+            mDiagnosticWindow.setDiagnostic(d);
+            if(!mDiagnosticWindow.isShowing())
+                mDiagnosticWindow.show();
+            else updateDiagnosticWindowPosition();
+        }
         if(hide && mDiagnosticWindow.isShowing()) {
             mDiagnosticWindow.hide();
         }
     }
     
-    public void setDiagnostics(List<Diagnostic> diags) {
-        this.mDiagnostics = new HashMap<>();
-        mapDiagnostics(diags);
-    }
-
-    private void mapDiagnostics(List<Diagnostic> diags) {
+    public void setDiagnostics(Map<Range, Diagnostic> diags) {
         if(diags == null)
-            return;
-        for(int i=0;i<diags.size();i++) {
-            Diagnostic d = diags.get(i);
-            if(d == null)
-                continue;
-            if(mDiagnostics.containsKey(d.range)) {
-                List<Diagnostic> ds = mDiagnostics.get(d.range);
-                if(ds == null)
-                    ds = new ArrayList<>();
-                if(!ds.contains(d))
-                    ds.add(d);
-                mDiagnostics.put(d.range, ds);
-            } else {
-                List<Diagnostic> ds = new ArrayList<>();
-                ds.add(d);
-                mDiagnostics.put(d.range, ds);
-            }
-        }
+            diags = new HashMap<>();
+        this.mDiagnostics = diags;
     }
 	
 	public CodeEditor setLineColors(HashMap<HexColor, Integer> map) {
@@ -1318,30 +1335,27 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 				}
 			}
             
-            // Draw errors and warnings
-            int leftLine = getCursor().getLeftLine();
-            int leftCol = getCursor().getLeftColumn();
-            int rightLine = getCursor().getRightLine();
-            int rightCol = getCursor().getRightColumn();
-            final Range thisRange = new Range(new Position(leftLine, leftCol), new Position(rightLine, rightCol));
-            if(mDiagnostics != null && mDiagnostics.containsKey(thisRange)) {
-               List<Diagnostic> diags = mDiagnostics.get(thisRange);
-               if(diags != null && diags.size() > 0) {
-                   for(int i=0;i<diags.size();i++) {
-                       Diagnostic d = diags.get(i);
-                       if(d == null) continue;
-                       final int paintStart = Math.max(firstVisibleChar, d.range.start.character);
-                       final int paintEnd = Math.min(lastVisibleChar, d.range.end.character);
-                       final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
-                       final RectF r = new RectF();
-                       r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
-                       r.top = r.bottom - getRowHeight() * 0.2f;
-                       r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
-                       r.right = r.left + width;
-                       mPaint.setColor(getDiagnosticIconId(d));
-                       drawZigzagUnderline(r, canvas, mPaint);
-                   }
-               }
+            // Draw diagnostics
+            final List<Diagnostic> diags = findDiagnosticsContainingLine(line);
+            if(diags.size() > 0) {
+                for(int i=0;i<diags.size();i++) {
+                    Diagnostic d = diags.get(i);
+                    if(d == null) continue;
+                    int startCol = d.range.start.character;
+                    int endCol = d.range.end.character;
+                    if(line > d.range.start.line) startCol = 0;
+                    if(line > d.range.end.line) endCol = 0;
+                    final int paintStart = Math.max(firstVisibleChar, startCol);
+                    final int paintEnd = Math.min(lastVisibleChar, endCol);
+                    final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
+                    final RectF r = new RectF();
+                    r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
+                    r.top = r.bottom - getRowHeight() * 0.2f;
+                    r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
+                    r.right = r.left + width;
+                    mPaint.setColor(diagnosticColor(d.severity));
+                    drawZigzagUnderline(r, canvas, mPaint);
+                }
             }
             
             // Draw cursors
@@ -1452,10 +1466,19 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
     }
     
-    private int getDiagnosticIconId(Diagnostic diagnostic) {
-        if(diagnostic.severity == DiagnosticSeverity.Error)
-            return R.drawable.ic_compilation_error;
-        return R.drawable.ic_info;
+    private int diagnosticColor(int severity) {
+        int id = R.color.diagnostic_warning;
+        switch(id) {
+            case DiagnosticSeverity.Error:
+                id = R.color.diagnostic_error;
+                break;
+            default:
+                id = R.color.diagnostic_warning;
+                break;
+        }
+
+        final Context ctx = StudioApp.getInstance();
+        return ContextCompat.getColor(ctx, id);
     }
 
     protected void showTextActionPopup() {

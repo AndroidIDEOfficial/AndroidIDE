@@ -31,6 +31,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialArcMotion;
 import com.google.android.material.transition.MaterialContainerTransform;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorPagerAdapter;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
@@ -42,11 +45,11 @@ import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
-import com.itsaky.androidide.interfaces.DexResultListener;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
+import com.itsaky.androidide.interfaces.JLSRequestor;
+import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.models.AndroidProject;
-import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SheetOption;
@@ -62,8 +65,15 @@ import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.androidide.views.MaterialBanner;
+import com.itsaky.lsp.Diagnostic;
+import com.itsaky.lsp.DidCloseTextDocumentParams;
 import com.itsaky.lsp.DidOpenTextDocumentParams;
+import com.itsaky.lsp.JavaReportProgressParams;
+import com.itsaky.lsp.JavaStartProgressParams;
 import com.itsaky.lsp.LanguageClient;
+import com.itsaky.lsp.Message;
+import com.itsaky.lsp.PublishDiagnosticsParams;
+import com.itsaky.lsp.ShowMessageParams;
 import com.itsaky.lsp.TextDocumentItem;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
@@ -75,15 +85,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-import com.itsaky.lsp.JavaReportProgressParams;
-import com.itsaky.lsp.PublishDiagnosticsParams;
-import com.itsaky.lsp.JavaStartProgressParams;
-import com.itsaky.lsp.ShowMessageParams;
-import com.google.gson.JsonElement;
-import com.itsaky.lsp.Diagnostic;
+import com.itsaky.lsp.DidSaveTextDocumentParams;
+import com.itsaky.lsp.DidChangeTextDocumentParams;
+import com.itsaky.lsp.TextDocumentIdentifier;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -91,7 +99,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 														NavigationView.OnNavigationItemSelectedListener,
                                                         DiagnosticClickListener, 
                                                         EditorFragment.FileOpenListener,
-                                                        LanguageClient, CodeEditor.CursorChangeListener {
+                                                        LanguageClient, CodeEditor.CursorChangeListener,
+                                                        JLSRequestor {
     
     private ActivityEditorBinding mBinding;
 	private EditorPagerAdapter mPagerAdapter;
@@ -113,13 +122,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private boolean recreateCompletionServices = false;
     
     private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
-	
+	private final Stack<Message> pendingMessages = new Stack<>();
+    
 	private final String RES_PATH_REGEX = "/.*/src/.*/res";
 	private final String LAYOUTRES_PATH_REGEX = "/.*/src/.*/res/layout";
 	private final String MENURES_PATH_REGEX = "/.*/src/.*/res/menu";
 	private final String DRAWABLERES_PATH_REGEX = "/.*/src/.*/res/drawable";
 	private final String JAVA_PATH_REGEX = "/.*/src/.*/java";
 	
+    private static final Gson gson = new Gson();
 	private final IDEService.BuildListener mBuildListener = this;
 	private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
     public static final String TAG = "EditorActivity";
@@ -652,21 +663,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			.setCancelable(false)
 			.create().show();
 	}
-    
-	private void provideDiagnosticsToEditors(Map<File, List<Diagnostic>> diagnostics) {
-		if(mPagerAdapter != null && mPagerAdapter.getFragments() != null) {
-			List<Fragment> editors = mPagerAdapter.getFragments();
-			if(editors.size() <= 0) return;
-			for(int i=0;i<editors.size();i++) {
-				try {
-					EditorFragment editor = mPagerAdapter.getFrag(i);
-					if(diagnostics.containsKey(editor.getFile())) {
-						editor.setDiagnostics(diagnostics.get(editor.getFile()));
-					}
-				} catch (Throwable th) {}
-			}
-		}
-	}
 
     @Override
     public void onGroupClick(DiagnosticGroup group) {
@@ -701,8 +697,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         File file = new File(params.uri);
         if(!(file.exists() && file.isFile())) return;
         diagnostics.put(file, params.diagnostics);
-        
         getDiagnosticsList().setAdapter(new DiagnosticsAdapter(mapAsGroup(diagnostics), this));
+        
+        EditorFragment editor = null;
+        if(mPagerAdapter != null && (editor = mPagerAdapter.findEditorByFile(new File(params.uri))) != null) {
+            editor.setDiagnostics(params.diagnostics);
+        }
     }
 
     @Override
@@ -716,6 +716,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     @Override
     public void customNotification(String method, JsonElement params) {
     }
+    
+    @Override
+    public void onServerStarted(int currentId) {
+        final JavaLanguageServer server = getApp().getJavaLanguageServer();
+        while(server != null && !pendingMessages.isEmpty()) {
+            Message msg = pendingMessages.pop();
+            server.send(msg);
+        }
+    }
 
     @Override
     public void onCursorPositionChange(int leftLine, int leftColumn, int rightLine, int rightColumn) {
@@ -724,6 +733,50 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         } else {
             mBinding.editorToolbar.setSubtitle(String.format("[%d, %d] | [%d, %d]", leftLine, leftColumn, rightLine, rightColumn));
         }
+    }
+    
+    @Override
+    public void didOpen(DidOpenTextDocumentParams p) {
+        final JavaLanguageServer server = getApp().getJavaLanguageServer();
+        if(server != null)
+            server.didOpen(p);
+        else addPendingMessage(createMessage(JavaLanguageServer.Method.DID_OPEN, gson.toJson(p)));
+    }
+    
+    @Override
+    public void didClose(DidCloseTextDocumentParams p) {
+        final JavaLanguageServer server = getApp().getJavaLanguageServer();
+        if(server != null)
+            server.didClose(p);
+        else addPendingMessage(createMessage(JavaLanguageServer.Method.DID_CLOSE, gson.toJson(p)));
+    }
+
+    @Override
+    public void didChange(DidChangeTextDocumentParams params) {
+        final JavaLanguageServer server = getApp().getJavaLanguageServer();
+        if(server != null)
+            server.didChange(params);
+        else addPendingMessage(createMessage(JavaLanguageServer.Method.DID_CHANGE, gson.toJson(params)));
+    }
+
+    @Override
+    public void didSave(DidSaveTextDocumentParams params) {
+        final JavaLanguageServer server = getApp().getJavaLanguageServer();
+        if(server != null)
+            server.didSave(params);
+        else addPendingMessage(createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
+    }
+    
+    private void addPendingMessage(Message msg) {
+        pendingMessages.push(msg);
+    }
+    
+    private Message createMessage(String method, String data) {
+        Message msg = new Message();
+        msg.jsonrpc = "2.0";
+        msg.method = method;
+        msg.params = new JsonParser().parse(data);
+        return msg;
     }
 	
 	/*****************************
@@ -907,7 +960,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	
 	@Override
 	public void openFile(File file) {
-		int i = mPagerAdapter.openFile(file, this, this);
+		int i = mPagerAdapter.openFile(file, this, this, this);
 		if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
 			mBinding.tabs.getTabAt(i).select();
 		mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
@@ -923,7 +976,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             doc.version = VersionedFileManager.fileOpened(file);
             DidOpenTextDocumentParams p = new DidOpenTextDocumentParams();
             p.textDocument = doc;
-            getApp().getJavaLanguageServer().didOpen(p);
+            didOpen(p);
         }
     }
 
@@ -1269,11 +1322,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
 	private void closeFile(int index, boolean selectOther) {
 		mBinding.tabs.removeOnTabSelectedListener(this);
-
+        
 		int pos = index;
 		final List<Fragment> frags = mPagerAdapter.getFragments();
 		final List<File> files = mPagerAdapter.getOpenedFiles();
-
+        
+        final File removed = files.get(index);
+        
 		frags.remove(index);
 		files.remove(index);
 
@@ -1297,5 +1352,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 				mBinding.editorViewPager.setCurrentItem(pos, false);
 			}
 		}
+        
+        TextDocumentIdentifier id = new TextDocumentIdentifier();
+        id.uri = removed.toURI();
+        DidCloseTextDocumentParams p = new DidCloseTextDocumentParams();
+        p.textDocument = id;
+        didClose(p);
 	}
 }
