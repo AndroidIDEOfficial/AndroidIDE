@@ -92,6 +92,7 @@ import me.piruin.quickaction.QuickAction;
 import com.itsaky.lsp.DidSaveTextDocumentParams;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.TextDocumentIdentifier;
+import com.itsaky.lsp.JavaColors;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -703,6 +704,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         if(mPagerAdapter != null && (editor = mPagerAdapter.findEditorByFile(new File(params.uri))) != null) {
             editor.setDiagnostics(params.diagnostics);
         }
+    }
+
+    @Override
+    public void javaColors(JavaColors colors) {
+        final File file = new File(colors.uri);
+        final EditorFragment editor = mPagerAdapter.findEditorByFile(file);
+        editor.setJavaColors(colors);
     }
 
     @Override

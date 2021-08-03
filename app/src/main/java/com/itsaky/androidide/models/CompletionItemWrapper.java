@@ -4,9 +4,11 @@ import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.CompletionItem;
 import com.itsaky.lsp.CompletionItemKind;
-import io.github.rosemoe.editor.text.CharPosition;
+import com.itsaky.lsp.Position;
+import com.itsaky.lsp.TextEdit;
 import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.widget.CodeEditor;
+import java.util.List;
 
 public class CompletionItemWrapper implements SuggestItem, Comparable {
     
@@ -62,6 +64,22 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
             
             if(shiftLeft && !atEnd)
                 editor.moveSelectionLeft();
+             
+            final List<TextEdit> edits = item.additionalTextEdits;
+            if(edits != null && edits.size() > 0) {
+                for(int i=0;i<edits.size();i++) {
+                    final TextEdit edit = edits.get(i);
+                    if(edit == null || edit.range == null || edit.newText == null) continue;
+                    final Position start = edit.range.start;
+                    final Position end =  edit.range.end;
+                    if(start == null || end == null) continue;
+                    if(start.equals(end)) {
+                        editor.getText().insert(start.line, start.character, edit.newText);
+                    } else {
+                        editor.getText().replace(start.line, start.character, end.line, end.character, edit.newText);
+                    }
+                }
+            }
         } catch (Throwable th) {
             Logger.instance("CompletionItemWrapper").e("onSelectThis, Error: ", ThrowableUtils.getFullStackTrace(th));
         }

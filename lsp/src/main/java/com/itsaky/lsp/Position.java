@@ -1,5 +1,7 @@
 package com.itsaky.lsp;
 
+import com.google.gson.GsonBuilder;
+
 public class Position {
     public int line, character;
 
@@ -12,7 +14,7 @@ public class Position {
 
     @Override
     public String toString() {
-        return line + "," + character;
+        return new GsonBuilder().setPrettyPrinting().create().toJson(this);
     }
 
     @Override

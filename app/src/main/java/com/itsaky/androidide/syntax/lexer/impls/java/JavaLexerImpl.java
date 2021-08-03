@@ -1,25 +1,25 @@
 package com.itsaky.androidide.syntax.lexer.impls.java;
 
-import android.graphics.Color;
 import com.itsaky.androidide.language.java.parser.JavaLexer;
 import com.itsaky.androidide.syntax.lexer.Lexer;
 import com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer;
 import com.itsaky.androidide.syntax.lexer.tokens.Token;
 import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
+import com.itsaky.lsp.Range;
 import io.github.rosemoe.editor.struct.BlockLine;
-import io.github.rosemoe.editor.struct.HexColor;
-import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 import org.antlr.v4.runtime.CharStreams;
+import com.itsaky.lsp.JavaColors;
 
 public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 	
+    private JavaColors javaColors;
+    
 	public JavaLexerImpl(String content, TextAnalyzeResult colors) {
 		this.content = content;
 		this.colors = colors;
@@ -41,7 +41,11 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 		builtinTypes.add(JavaLexer.LONG);
 		builtinTypes.add(JavaLexer.SHORT);
 	}
-	
+    
+    public void setJavaColors(JavaColors colors) {
+        this.javaColors = colors;
+    }
+    
 	@Override
 	public void init() throws IOException {
 		lexer = new JavaLexer(CharStreams.fromReader(new StringReader(content)));
@@ -60,6 +64,7 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 	@Override
 	public int line() {
 		// currentToken's line index starts from 1
+        // so we reduce it by 1
 		int line = currentToken.getLine() - 1;
 		this.lastLine = line;
 		return line;
@@ -238,6 +243,21 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 					wasClassName = false;
 					break;
 				}
+                
+                if(isClassName(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.IDENTIFIER_NAME);
+                    break;
+                }
+                
+                if(isFieldOrStatic(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.FIELD);
+                    break;
+                }
+                
+                if(isPackageName(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.PACKAGE_NAME);
+                    break;
+                }
 				
 				colors.addIfNeeded(line, column, EditorColorScheme.TEXT_NORMAL);
 				break;
@@ -286,4 +306,66 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 		 
 		return type;
 	}
+    
+    private boolean isPackageName(int line, int column) {
+        if(javaColors == null || javaColors.packages == null) return false;
+        final List<Range> packages = javaColors.packages;
+        if(packages != null && packages.size() > 0) {
+            for(int i=0;i<packages.size();i++) {
+                final Range range = packages.get(i);
+                if(range == null) continue;
+                if(range.start.line == line && range.start.character == column)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+    
+    private boolean isClassName(int line, int column) {
+        if(javaColors == null || javaColors.classNames == null) return false;
+        final List<Range> names = javaColors.classNames;
+        if(names != null && names.size() > 0) {
+            for(int i=0;i<names.size();i++) {
+                final Range range = names.get(i);
+                if(range == null) continue;
+                if(range.start.line == line && range.start.character == column)
+                    return true;
+            }
+        }
+        
+        return false;
+    }
+
+    private boolean isFieldOrStatic(int line, int column) {
+        return isField(line, column) || isStatic(line, column);
+    }
+    
+    private boolean isField(int line, int column) {
+        if(javaColors == null || javaColors.fields == null) return false;
+        final List<Range> fields = javaColors.fields;
+        if(fields != null && fields.size() > 0) {
+            for(int i=0;i<fields.size();i++) {
+                final Range range = fields.get(i);
+                if(range == null) continue;
+                if(range.start.line == line && range.start.character == column)
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isStatic(int line, int column) {
+        if(javaColors == null || javaColors.statics == null) return false;
+        final List<Range> statics = javaColors.statics;
+        if(statics != null && statics.size() > 0) {
+            for(int i=0;i<statics.size();i++) {
+                final Range range = statics.get(i);
+                if(range == null) continue;
+                if(range.start.line == line && range.start.character == column)
+                    return true;
+            }
+        } 
+        return false;
+    }
 }

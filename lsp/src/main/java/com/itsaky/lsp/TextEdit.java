@@ -1,4 +1,5 @@
 package com.itsaky.lsp;
+import com.google.gson.GsonBuilder;
 
 public class TextEdit {
     public Range range;
@@ -13,7 +14,7 @@ public class TextEdit {
 
     @Override
     public String toString() {
-        return range + "/" + newText;
+        return new GsonBuilder().setPrettyPrinting().create().toJson(this);
     }
 
     public static final TextEdit NONE = new TextEdit(Range.NONE, "");

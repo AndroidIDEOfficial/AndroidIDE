@@ -61,7 +61,6 @@ import androidx.annotation.Px;
 import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.Position;
 import com.itsaky.lsp.Range;
@@ -603,6 +602,12 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 		}
 		return this;
 	}
+    
+    public void notifySpansChanged() {
+        if(mSpanner != null) {
+            mSpanner.analyze(getText());
+        }
+    }
 
     /**
      * Define symbol pairs for any language,

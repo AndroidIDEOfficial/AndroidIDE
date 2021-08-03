@@ -1,5 +1,7 @@
 package com.itsaky.lsp;
 
+import com.google.gson.GsonBuilder;
+
 public class Range {
     public Position start, end;
 
@@ -12,7 +14,7 @@ public class Range {
 
     @Override
     public String toString() {
-        return start + "-" + end;
+        return new GsonBuilder().setPrettyPrinting().create().toJson(this);
     }
 
     @Override

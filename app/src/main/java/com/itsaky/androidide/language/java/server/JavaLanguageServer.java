@@ -7,27 +7,36 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.CancelParams;
+import com.itsaky.lsp.CodeActionParams;
+import com.itsaky.lsp.CompletionItem;
 import com.itsaky.lsp.CompletionList;
 import com.itsaky.lsp.DidChangeConfigurationParams;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.DidCloseTextDocumentParams;
 import com.itsaky.lsp.DidOpenTextDocumentParams;
 import com.itsaky.lsp.DidSaveTextDocumentParams;
+import com.itsaky.lsp.DocumentFormattingParams;
 import com.itsaky.lsp.InitializeParams;
+import com.itsaky.lsp.JavaColors;
 import com.itsaky.lsp.JavaReportProgressParams;
 import com.itsaky.lsp.JavaStartProgressParams;
 import com.itsaky.lsp.LanguageClient;
 import com.itsaky.lsp.Message;
 import com.itsaky.lsp.PublishDiagnosticsParams;
 import com.itsaky.lsp.TextDocumentPositionParams;
+import com.itsaky.lsp.TextEdit;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -45,10 +54,13 @@ public class JavaLanguageServer implements ShellServer.Callback {
     
     private LanguageClient client;
     private Socket server;
-    private OutputStream send;
+    private BufferedOutputStream send;
     
     private final ConcurrentHashMap<Integer, Integer> completionRequests = new ConcurrentHashMap<>();
-    private final BlockingQueue<CompletionList> responseQueue = new ArrayBlockingQueue<CompletionList>(1);
+    private final ConcurrentHashMap<Integer, Integer> formattingRequests = new ConcurrentHashMap<>();
+    
+    private final BlockingQueue<CompletionList> completionResponseQueue = new ArrayBlockingQueue<>(20);
+    private final BlockingQueue<List<TextEdit>> formattingResponseQueue = new ArrayBlockingQueue<>(20);
     
     private static final String START_COMMAND = "java " +
     "--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED " +
@@ -87,10 +99,12 @@ public class JavaLanguageServer implements ShellServer.Callback {
                 String line;
                 while((line = reader.readLine()) != null) {
                     final String temp = line;
+                    if(temp == null || temp.trim().length() <= 0) continue;
                     ThreadUtils.runOnUiThread(() -> {
                         onServerOut(temp);
                     });
                 }
+                logger.i("Socket disconnected");
             } catch (Throwable e) {
                 logEx(e);
             }
@@ -103,13 +117,13 @@ public class JavaLanguageServer implements ShellServer.Callback {
     }
 
     private Socket connectAndGet() {
-        int tryCount = 0;
         while(server == null || send == null || !server.isConnected()) {
             try {
                 server = new Socket(SOCKET_HOST, SOCKET_PORT);
-                send = server.getOutputStream();
+                OutputStream o = server.getOutputStream();
+                if(o != null)
+                    send = new BufferedOutputStream(o);
             } catch (IOException e) {
-                tryCount++;
                 try {
                      Thread.sleep(100);
                 } catch (InterruptedException e2) {}
@@ -175,9 +189,24 @@ public class JavaLanguageServer implements ShellServer.Callback {
         completionRequests.put(id, id);
         CompletionList result = null;
         try {
-            result = responseQueue.take();
+            result = completionResponseQueue.take();
         } catch (InterruptedException e) {}
         return Pair.create(id, result);
+    }
+    
+    public void resolveCompletion(CompletionItem item) {
+        write(Method.RESOLVE_COMPLETION, gson.toJson(item));
+    }
+    
+    public List<TextEdit> formatting(DocumentFormattingParams params) {
+        int id = write(Method.FORMATTING, gson.toJson(params));
+        formattingRequests.put(id, id);
+        List<TextEdit> edits = null;
+        return edits;
+    }
+    
+    public void codeActions(CodeActionParams p) {
+        write(Method.CODE_ACTION, gson.toJson(p));
     }
     
     public void cancelRequest(int requestId) {
@@ -190,12 +219,13 @@ public class JavaLanguageServer implements ShellServer.Callback {
         final int id = UNIVERSION_ID++;
         msg.id = id;
         if(this.send != null) {
-            final String body = gson.toJson(msg);
-            final String head = String.format("Content-Length: %d\r\n\r\n", body.length());
+            // Message must end with a \n so that server can read it correctly
+            final String body = gson.toJson(msg) + "\n";
+            final byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
             new Thread(() -> {
                 try {
-                    logger.i(body);
-                    send.write(head.concat(body).getBytes(StandardCharsets.UTF_8));
+                    send.write(bodyBytes);
+                    send.flush();
                 } catch (Throwable e) {
                     logger.e("Error writing to server: " + ThrowableUtils.getFullStackTrace(e));
                 }
@@ -219,18 +249,31 @@ public class JavaLanguageServer implements ShellServer.Callback {
 
     @Override
     public void output(CharSequence charSequence) {
-        logger.d(charSequence);
+        writeOut(charSequence.toString());
+    }
+    
+    private BufferedOutputStream os;
+    
+    private void writeOut(String data) {
+        try {
+            if(os == null) {
+                os = new BufferedOutputStream(new FileOutputStream(new File(FileUtil.getExternalStorageDir(), "ide_xlog/out.txt"), true));
+            }
+            os.write(data.getBytes());
+            os.flush();
+        } catch (Throwable th) {
+            logger.e(ThrowableUtils.getFullStackTrace(th));
+        }
     }
     
     /**
      * This method is called on UI Thread, do not perform time consuming or networking tasks
      */
     private void onServerOut(String line) {
-        if(line == null || line.trim().length() <= 0) return;
         if(line.contains(CONTENT_LENGTH)) line = line.substring(0, line.lastIndexOf(CONTENT_LENGTH));
-        logger.v(line);
         if(this.client == null) return;
         try {
+            logger.v(line);
             JsonObject obj = new JsonParser().parse(line.trim()).getAsJsonObject();
             if(obj.has(Key.METHOD)) {
                 final String method = obj.get(Key.METHOD).getAsString();
@@ -240,21 +283,29 @@ public class JavaLanguageServer implements ShellServer.Callback {
                 } else if(method.equals(Method.JLS_PROGRESS_START)) {
                     JavaStartProgressParams params = gson.fromJson(obj.get(Key.PARAMS).toString(), JavaStartProgressParams.class);
                     client.javaProgressStart(params);
-                } if(method.equals(Method.JLS_PROGRESS_REPORT)) {
+                } else if(method.equals(Method.JLS_PROGRESS_REPORT)) {
                     JavaReportProgressParams params = gson.fromJson(obj.get(Key.PARAMS).toString(), JavaReportProgressParams.class);
                     client.javaProgressReport(params);
-                } if(method.equals(Method.JLS_PROGRESS_END)) {
+                } else if(method.equals(Method.JLS_PROGRESS_END)) {
                     client.javaProgressEnd();
+                } else if(method.equals(Method.JAVA_COLORS)) {
+                    JavaColors colors = gson.fromJson(obj.get(Key.PARAMS).toString(), JavaColors.class);
+                    client.javaColors(colors);
                 }
             } else if(obj.has(Key.ID)) {
                 int id = obj.get(Key.ID).getAsInt();
                 if(completionRequests.containsKey(id)) {
                     final CompletionList list = gson.fromJson(obj.get(Key.RESULT).getAsJsonObject(), CompletionList.class);
-                    responseQueue.put(list);
+                    completionResponseQueue.put(list);
+                } else if(formattingRequests.containsKey(id)) {
+                    final List<TextEdit> list = gson.fromJson(obj.get(Key.RESULT).getAsJsonObject(), TypeToken.getParameterized(List.class, TextEdit.class).getType());
+                    formattingResponseQueue.put(list);
                 }
+            } else {
+                
             }
         } catch (Throwable th) {
-            logger.e("onServerOut", ThrowableUtils.getFullStackTrace(th));
+            logger.e("onServerOut", line, ThrowableUtils.getFullStackTrace(th));
         }
     }
     
@@ -283,6 +334,8 @@ public class JavaLanguageServer implements ShellServer.Callback {
         public static final String PREPARE_RENAME = "textDocument/prepareRename";
         public static final String RENAME = "textDocument/rename";
         
+        public static final String FORMATTING = "textDocument/formatting";
+        
         public static final String CODE_ACTION = "textDocument/codeAction";
         
         public static final String CANCEL_REQUEST = "$/cancelRequest";
@@ -300,5 +353,8 @@ public class JavaLanguageServer implements ShellServer.Callback {
         public static final String PARAMS = "params";
         public static final String ID = "id";
         public static final String RESULT = "result";
+        
+        public static final String STATICS = "statics";
+        public static final String FIELDS = "fields";
     }
 }

@@ -11,6 +11,7 @@ import com.itsaky.androidide.fragments.preferences.EditorPreferences;
 import com.itsaky.androidide.interfaces.JLSRequestor;
 import com.itsaky.androidide.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.language.java.JavaLanguage;
+import com.itsaky.androidide.language.java.JavaLanguageAnalyzer;
 import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import com.itsaky.androidide.models.AndroidProject;
@@ -24,6 +25,7 @@ import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.DidSaveTextDocumentParams;
+import com.itsaky.lsp.JavaColors;
 import com.itsaky.lsp.Range;
 import com.itsaky.lsp.TextDocumentContentChangeEvent;
 import com.itsaky.lsp.TextDocumentIdentifier;
@@ -55,6 +57,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
     private JLSRequestor jlsRequestor;
 	private static AndroidProject project;
     
+    private JavaLanguage mJavaLanguage;
+    
 	public static final String KEY_FILE_PATH = "file_path";
 	public static final String KEY_PROJECT = "project";
 	public static final String EXT_JAVA = ".java";
@@ -73,6 +77,14 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
     public EditorFragment setJLSRequestor(JLSRequestor requestor) {
         this.jlsRequestor = requestor;
         return this;
+    }
+    
+    public void setJavaColors(JavaColors colors) {
+        if(mJavaLanguage != null) {
+            JavaLanguageAnalyzer analyzer = (JavaLanguageAnalyzer) mJavaLanguage.getAnalyzer();
+            analyzer.setJavaColors(colors);
+            binding.editorCodeEditor.notifySpansChanged();
+        }
     }
     
 	public static EditorFragment newInstance(File file, AndroidProject project) {
@@ -221,7 +233,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 	private void postRead() {
         binding.editorCodeEditor.setFile(getFile());
 		if (mFile.isFile() && mFile.getName().endsWith(EXT_JAVA)) {
-			binding.editorCodeEditor.setEditorLanguage(new JavaLanguage(project));
+			binding.editorCodeEditor.setEditorLanguage(mJavaLanguage = new JavaLanguage(project));
 			binding.editorCodeEditor.setColorScheme(new SchemeVS2019());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_XML)) {
 			binding.editorCodeEditor.setEditorLanguage(new XMLLanguage());

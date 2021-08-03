@@ -37,7 +37,6 @@ public class LogReceiver extends BroadcastReceiver {
 		Matcher m = LOG_HEAD_PATTERN.matcher(line);
 		LogLine log = null;
 		final boolean find = line != null && line.trim().length() > 2 /*if length() == 2 then only [] is available*/ && m.find();
-		Logger.instance().i("line -> " + line + "\nlogTag find() -> " + find);
 		if(find) {
 			String date = "";
 			String time = "";
@@ -83,10 +82,8 @@ public class LogReceiver extends BroadcastReceiver {
 		} else {
 			log = new LogLine("", "", "", "", "", "", line);
 		}
-		
-		Logger.instance().i("log = " + log + "\nlogListener = " + listener);
+        
 		if(log != null && listener != null) {
-			Logger.instance().i("listener.appendLogLine(...) log ->\n" + log);
 			listener.appendLogLine(log);
 			logTag = null;
 		}

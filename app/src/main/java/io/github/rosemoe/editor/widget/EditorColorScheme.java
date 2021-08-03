@@ -59,6 +59,9 @@ public class EditorColorScheme {
 	
     //-----------------Highlight colors-----------
 	
+    public static final int FIELD = 35;
+    public static final int STATIC_FIELD = 36;
+    public static final int PACKAGE_NAME = 37;
     public static final int ANNOTATION = 28;
     public static final int FUNCTION_NAME = 27;
     public static final int IDENTIFIER_NAME = 26;
@@ -107,7 +110,7 @@ public class EditorColorScheme {
     /**
      * Max pre-defined color id
      */
-    protected static final int END_COLOR_ID = 34;
+    protected static final int END_COLOR_ID = 37;
     /**
      * Real color saver
      */
@@ -116,7 +119,7 @@ public class EditorColorScheme {
      * Host editor object
      */
     private CodeEditor mEditor;
-
+    
     /**
      * Create a new ColorScheme for the given editor
      *
@@ -267,6 +270,13 @@ public class EditorColorScheme {
 			case LOG_INFO :
 				color = 0xff4caf50;
 				break;
+            case FIELD :
+            case STATIC_FIELD :
+                color = 0xFFF0BE4B;
+                break;
+            case PACKAGE_NAME :
+                color = 0xffF0BE4B;
+                break;
             default:
                 throw new IllegalArgumentException("Unexpected type:" + type);
         }
