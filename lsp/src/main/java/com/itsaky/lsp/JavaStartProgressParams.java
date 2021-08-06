@@ -1,6 +1,10 @@
 package com.itsaky.lsp;
 
+import com.google.gson.annotations.SerializedName;
+
 public class JavaStartProgressParams {
+    
+    @SerializedName("message")
     private String message;
 
     public JavaStartProgressParams() {}

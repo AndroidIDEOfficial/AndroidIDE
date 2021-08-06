@@ -46,6 +46,8 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import com.itsaky.lsp.DidChangeWatchedFilesParams;
+import com.itsaky.lsp.SignatureHelp;
 
 public class JavaLanguageServer implements ShellServer.Callback {
 
@@ -56,11 +58,13 @@ public class JavaLanguageServer implements ShellServer.Callback {
     private Socket server;
     private BufferedOutputStream send;
     
+    private boolean started;
+    
     private final ConcurrentHashMap<Integer, Integer> completionRequests = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, Integer> formattingRequests = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, File> signatureRequests = new ConcurrentHashMap<>();
     
     private final BlockingQueue<CompletionList> completionResponseQueue = new ArrayBlockingQueue<>(20);
-    private final BlockingQueue<List<TextEdit>> formattingResponseQueue = new ArrayBlockingQueue<>(20);
     
     private static final String START_COMMAND = "java " +
     "--add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED " +
@@ -135,6 +139,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     protected void sendInit() {
         InitializeParams p = new InitializeParams();
         p.rootUri = new File(project.getProjectPath()).toURI();
+        p.roots = java.util.Set.of(p.rootUri, StudioApp.getInstance().getLogSenderDir().toURI());
         initialize(p);
         initialized();
 
@@ -154,6 +159,10 @@ public class JavaLanguageServer implements ShellServer.Callback {
             if(client != null)
                 client.onServerStarted(UNIVERSION_ID);
         });
+    }
+    
+    public boolean isStarted() {
+        return started;
     }
     
     public void initialize(InitializeParams p) {
@@ -184,6 +193,10 @@ public class JavaLanguageServer implements ShellServer.Callback {
         write(Method.DID_SAVE, gson.toJson(p));
     }
     
+    public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
+        write(Method.CHANGED_WATCHED_FILES, gson.toJson(params));
+    }
+    
     public Pair<Integer, CompletionList> completion(TextDocumentPositionParams p) {
         int id = write(Method.COMPLETION, gson.toJson(p));
         completionRequests.put(id, id);
@@ -207,6 +220,11 @@ public class JavaLanguageServer implements ShellServer.Callback {
     
     public void codeActions(CodeActionParams p) {
         write(Method.CODE_ACTION, gson.toJson(p));
+    }
+    
+    public void signatureHelp(TextDocumentPositionParams params, File file) {
+        int id = write(Method.SIGNATURE_HELP, gson.toJson(params));
+        signatureRequests.put(id, file);
     }
     
     public void cancelRequest(int requestId) {
@@ -253,6 +271,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     }
     
     private BufferedOutputStream os;
+    private BufferedOutputStream os1;
     
     private void writeOut(String data) {
         try {
@@ -266,10 +285,23 @@ public class JavaLanguageServer implements ShellServer.Callback {
         }
     }
     
+    private void writeOut2(String data) {
+        try {
+            if(os1 == null) {
+                os1 = new BufferedOutputStream(new FileOutputStream(new File(FileUtil.getExternalStorageDir(), "ide_xlog/verbose.txt"), true));
+            }
+            os1.write(data.getBytes());
+            os1.flush();
+        } catch (Throwable th) {
+            logger.e(ThrowableUtils.getFullStackTrace(th));
+        }
+    }
+    
     /**
      * This method is called on UI Thread, do not perform time consuming or networking tasks
      */
     private void onServerOut(String line) {
+        writeOut2(line + "\n");
         if(line.contains(CONTENT_LENGTH)) line = line.substring(0, line.lastIndexOf(CONTENT_LENGTH));
         if(this.client == null) return;
         try {
@@ -277,7 +309,9 @@ public class JavaLanguageServer implements ShellServer.Callback {
             JsonObject obj = new JsonParser().parse(line.trim()).getAsJsonObject();
             if(obj.has(Key.METHOD)) {
                 final String method = obj.get(Key.METHOD).getAsString();
-                if(method.equals(Method.PUBLISH_DIAGNOSTICS)) {
+                if(method.equals(Method.REGISTER_CAPABILITY)) {
+                    started = true;
+                } else if(method.equals(Method.PUBLISH_DIAGNOSTICS)) {
                     PublishDiagnosticsParams params = gson.fromJson(obj.get(Key.PARAMS).toString(), PublishDiagnosticsParams.class);
                     client.publishDiagnostics(params);
                 } else if(method.equals(Method.JLS_PROGRESS_START)) {
@@ -290,6 +324,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
                     client.javaProgressEnd();
                 } else if(method.equals(Method.JAVA_COLORS)) {
                     JavaColors colors = gson.fromJson(obj.get(Key.PARAMS).toString(), JavaColors.class);
+                    logger.v(colors.toString());
                     client.javaColors(colors);
                 }
             } else if(obj.has(Key.ID)) {
@@ -298,11 +333,15 @@ public class JavaLanguageServer implements ShellServer.Callback {
                     final CompletionList list = gson.fromJson(obj.get(Key.RESULT).getAsJsonObject(), CompletionList.class);
                     completionResponseQueue.put(list);
                 } else if(formattingRequests.containsKey(id)) {
-                    final List<TextEdit> list = gson.fromJson(obj.get(Key.RESULT).getAsJsonObject(), TypeToken.getParameterized(List.class, TextEdit.class).getType());
-                    formattingResponseQueue.put(list);
+                    // TODO: Implement this
+                } else if(signatureRequests.containsKey(id)) {
+                    try {
+                        SignatureHelp signature = gson.fromJson(obj.get(Key.RESULT).getAsJsonObject(), SignatureHelp.class);
+                        client.signatureHelp(signature, signatureRequests.get(id)); 
+                    } catch ( Throwable th) {
+                        client.signatureHelp(null, null);
+                    }
                 }
-            } else {
-                
             }
         } catch (Throwable th) {
             logger.e("onServerOut", line, ThrowableUtils.getFullStackTrace(th));
@@ -346,6 +385,8 @@ public class JavaLanguageServer implements ShellServer.Callback {
         
         public static final String PUBLISH_DIAGNOSTICS = "textDocument/publishDiagnostics";
         public static final String JAVA_COLORS = "java/colors";
+        
+        public static final String REGISTER_CAPABILITY = "client/registerCapability";
     }
     
     public static class Key {

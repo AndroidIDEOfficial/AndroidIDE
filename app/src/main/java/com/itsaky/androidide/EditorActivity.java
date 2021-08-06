@@ -6,7 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +32,7 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -56,6 +63,7 @@ import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.receivers.LogReceiver;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.Environment;
@@ -66,15 +74,26 @@ import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.lsp.Diagnostic;
+import com.itsaky.lsp.DidChangeTextDocumentParams;
+import com.itsaky.lsp.DidChangeWatchedFilesParams;
 import com.itsaky.lsp.DidCloseTextDocumentParams;
 import com.itsaky.lsp.DidOpenTextDocumentParams;
+import com.itsaky.lsp.DidSaveTextDocumentParams;
+import com.itsaky.lsp.FileChangeType;
+import com.itsaky.lsp.FileEvent;
+import com.itsaky.lsp.JavaColors;
 import com.itsaky.lsp.JavaReportProgressParams;
 import com.itsaky.lsp.JavaStartProgressParams;
 import com.itsaky.lsp.LanguageClient;
 import com.itsaky.lsp.Message;
+import com.itsaky.lsp.ParameterInformation;
 import com.itsaky.lsp.PublishDiagnosticsParams;
 import com.itsaky.lsp.ShowMessageParams;
+import com.itsaky.lsp.SignatureHelp;
+import com.itsaky.lsp.SignatureInformation;
+import com.itsaky.lsp.TextDocumentIdentifier;
 import com.itsaky.lsp.TextDocumentItem;
+import com.itsaky.lsp.TextDocumentPositionParams;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
@@ -89,10 +108,6 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-import com.itsaky.lsp.DidSaveTextDocumentParams;
-import com.itsaky.lsp.DidChangeTextDocumentParams;
-import com.itsaky.lsp.TextDocumentIdentifier;
-import com.itsaky.lsp.JavaColors;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -100,7 +115,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 														NavigationView.OnNavigationItemSelectedListener,
                                                         DiagnosticClickListener, 
                                                         EditorFragment.FileOpenListener,
-                                                        LanguageClient, CodeEditor.CursorChangeListener,
+                                                        LanguageClient,
                                                         JLSRequestor {
     
     private ActivityEditorBinding mBinding;
@@ -154,6 +169,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		}
 	};
 	
+    /**
+     * MenuItem(s) that are related to the build process
+     *
+     * These items will be disabled once the build process starts and will be enabled after the execution
+     */
 	private final int[] BUILD_IDS = {
 		R.id.menuEditor_quickRun,
 		R.id.menuEditor_runDebug,
@@ -162,7 +182,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		R.id.menuEditor_runBundle,
 		R.id.menuEditor_runClean,
 		R.id.menuEditor_runCleanBuild,
-		R.id.menuEditor_runRecreate,
 		R.id.menuEditor_lint,
 		R.id.menuEditor_lintDebug,
 		R.id.menuEditor_lintRelease
@@ -213,6 +232,17 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		KeyboardUtils.registerSoftInputChangedListener(this, __ -> onSoftInputChanged());
 		registerLogReceiver();
 		setupContainers();
+        setupSignatureText();
+    }
+
+    private void setupSignatureText() {
+        GradientDrawable gd = new GradientDrawable();
+        gd.setShape(GradientDrawable.RECTANGLE);
+        gd.setColor(0xff212121);
+        gd.setStroke(2, 0xffffffff);
+        gd.setCornerRadius(8);
+        mBinding.symbolText.setBackgroundDrawable(gd);
+        mBinding.symbolText.setVisibility(View.GONE);
     }
 
 	private void setupContainers() {
@@ -334,13 +364,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		for (int id : BUILD_IDS) {
 			MenuItem item = menu.findItem(id);
 			if (item != null) {
-				item.setEnabled(getBuildService() != null && !getBuildService().isBuilding());
+                boolean enabled = getBuildService() != null && !getBuildService().isBuilding();
+				item.setEnabled(enabled);
+                item.getIcon().setAlpha(enabled ? 255 : 130);
 			}
 		}
 		MenuItem run1 = menu.findItem(R.id.menuEditor_quickRun);
 		MenuItem run2 = menu.findItem(R.id.menuEditor_run);
 		MenuItem undo = menu.findItem(R.id.menuEditor_undo);
 		MenuItem redo = menu.findItem(R.id.menuEditor_redo);
+        MenuItem save = menu.findItem(R.id.menuEditor_save);
 		if(KeyboardUtils.isSoftInputVisible(this)) {
 			run1.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 			run2.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
@@ -352,6 +385,27 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			undo.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 			redo.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 		}
+        
+        if(mPagerAdapter != null && mPagerAdapter.getCount() <= 0) {
+            undo.setEnabled(false);
+            redo.setEnabled(false);
+            save.setEnabled(false);
+            
+            final int alpha = 76;
+            undo.getIcon().setAlpha(alpha);
+            redo.getIcon().setAlpha(alpha);
+            save.getIcon().setAlpha(alpha);
+        } else {
+            undo.setEnabled(true);
+            redo.setEnabled(true);
+            save.setEnabled(true);
+
+            final int alpha = 255;
+            undo.getIcon().setAlpha(alpha);
+            redo.getIcon().setAlpha(alpha);
+            save.getIcon().setAlpha(alpha);
+        }
+        
 		return true;
 	}
 
@@ -391,8 +445,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			this.mCurrentFragment.undo();
 		} else if (id == R.id.menuEditor_redo && this.mCurrentFragment != null && this.mCurrentFragment.isVisible()) {
 			this.mCurrentFragment.redo();
-		} else if(id == R.id.menuEditor_runRecreate) {
-			getBuildService().recreateServices();
 		}
 		invalidateOptionsMenu();
 		return true;
@@ -476,7 +528,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	public void onGetDependencies(List<String> dependencies) {
 		setStatus(getString(R.string.msg_starting_completion));
 		mProject.setClassPaths(dependencies);
-        createCompletionServices();
+        createServices();
 	}
 
 	@Override
@@ -628,7 +680,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		}
 	}
 
-	private void createCompletionServices() {
+	private void createServices() {
 		new TaskExecutor().executeAsync(() -> {
 			getApp().createCompletionService(mProject, EditorActivity.this);
 			return null;
@@ -710,7 +762,77 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public void javaColors(JavaColors colors) {
         final File file = new File(colors.uri);
         final EditorFragment editor = mPagerAdapter.findEditorByFile(file);
-        editor.setJavaColors(colors);
+        if(editor != null)
+            editor.setJavaColors(colors);
+    }
+
+    @Override
+    public void signatureHelp(SignatureHelp signature, File file) {
+        if(signature == null || signature.signatures == null) {
+            mBinding.symbolText.setVisibility(View.GONE);
+            return;
+        }
+        SignatureInformation info = signature.signatures.get(signature.activeSignature);
+        mBinding.symbolText.setText(formatSignature(info, signature.activeParameter));
+        final EditorFragment frag = mPagerAdapter.findEditorByFile(file);
+        if(frag != null) {
+            final CodeEditor editor = frag.getEditor();
+            final float[] cursor = editor.getCursorPosition();
+            
+            float x = editor.updateCursorAnchor() - (mBinding.symbolText.getWidth() / 2);
+            float y = mBinding.editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - mBinding.symbolText.getHeight());
+            mBinding.symbolText.setX(x);
+            mBinding.symbolText.setY(y);
+            mBinding.symbolText.setVisibility(View.VISIBLE);
+            
+              //////////////////////////////////////////////
+             //// Position the signature text properly ////
+            //////////////////////////////////////////////
+            Rect r = new Rect();
+            int width = mBinding.symbolText.getWidth();
+            x = mBinding.symbolText.getX();
+            mBinding.symbolText.getWindowVisibleDisplayFrame(r);
+            if(r.width() != width) {
+                if(x < r.left) {
+                    x = SizeUtils.dp2px(8); // an offset of 8dp from the left edge of screen
+                    mBinding.symbolText.setX(x);
+                }
+                
+                if(x + width > r.right) {
+                    x = r.right - SizeUtils.dp2px(8) - width; // position to the right but leaving 8dp space from the right edge of screen
+                    mBinding.symbolText.setX(x); 
+                }
+            }
+        }
+    }
+
+    private CharSequence formatSignature(SignatureInformation signature, int paramIndex) {
+        String name = signature.label;
+        name = name.substring(0, name.indexOf("("));
+        
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append(name, new ForegroundColorSpan(0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.append("(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+         
+        List<ParameterInformation> params = signature.parameters;
+        for(int i=0;i<params.size();i++) {
+            int color = i == paramIndex ? 0xffff6060 : 0xffffffff;
+            final ParameterInformation info = params.get(i);
+            if(i == params.size() - 1) {
+                sb.append(info.label, new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else {
+                sb.append(info.label, new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(",", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(" ");
+            }
+        }
+        sb.append(")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sb;
+    }
+
+    @Override
+    public void hideSignature() {
+        mBinding.symbolText.setVisibility(View.GONE);
     }
 
     @Override
@@ -734,15 +856,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 server.send(msg);
             }
         }).start();
-    }
-
-    @Override
-    public void onCursorPositionChange(int leftLine, int leftColumn, int rightLine, int rightColumn) {
-        if(leftLine == rightLine && leftColumn == rightColumn) {
-            mBinding.editorToolbar.setSubtitle(String.format("[%d, %d]", leftLine, leftColumn));
-        } else {
-            mBinding.editorToolbar.setSubtitle(String.format("[%d, %d] | [%d, %d]", leftLine, leftColumn, rightLine, rightColumn));
-        }
     }
     
     @Override
@@ -776,6 +889,22 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             server.didSave(params);
         else addPendingMessage(createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
     }
+
+    @Override
+    public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
+        final JavaLanguageServer server = getApp().getJavaLanguageServer();
+        if(server != null)
+            server.didChangeWatchedFiles(params);
+        else addPendingMessage(createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
+    }
+
+    @Override
+    public void signatureHelp(TextDocumentPositionParams params, File file) {
+        final JavaLanguageServer server = getApp().getJavaLanguageServer();
+        if(server != null)
+            server.signatureHelp(params, file);
+        else addPendingMessage(createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
+    }
     
     private void addPendingMessage(Message msg) {
         pendingMessages.push(msg);
@@ -787,6 +916,22 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         msg.method = method;
         msg.params = new JsonParser().parse(data);
         return msg;
+    }
+    
+    private void notifyFileCreated(File file) {
+        if(!file.getName().endsWith(".java")) return;
+        DidChangeWatchedFilesParams p = new DidChangeWatchedFilesParams();
+        p.changes.add(new FileEvent(file.toURI(), FileChangeType.Created));
+        didChangeWatchedFiles(p);
+        
+        openFile(file);
+    }
+    
+    private void notifyFileDeleted(File file) {
+        if(!file.getName().endsWith(".java")) return;
+        DidChangeWatchedFilesParams p = new DidChangeWatchedFilesParams();
+        p.changes.add(new FileEvent(file.toURI(), FileChangeType.Deleted));
+        didChangeWatchedFiles(p);
     }
 	
 	/*****************************
@@ -905,6 +1050,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		buildView.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
 		buildView.setTypefaceText(TypefaceUtils.jetbrainsMono());
 		buildView.setTextSize(12);
+        buildView.setColorScheme(new SchemeAndroidIDE());
 		return buildView;
 	}
 	
@@ -932,6 +1078,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		logView.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
 		logView.setTypefaceText(TypefaceUtils.jetbrainsMono());
 		logView.setTextSize(12);
+        buildView.setColorScheme(new SchemeAndroidIDE());
 		return logView;
 	}
     
@@ -970,7 +1117,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	
 	@Override
 	public void openFile(File file) {
-		int i = mPagerAdapter.openFile(file, this, this, this);
+		int i = mPagerAdapter.openFile(file, this, this);
 		if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
 			mBinding.tabs.getTabAt(i).select();
 		mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
@@ -1162,6 +1309,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 				getApp().toast(R.string.msg_file_exists, Toaster.Type.ERROR);
 			} else {
 				if(FileIOUtils.writeFileFromString(file, content)) {
+                    notifyFileCreated(file);
 					getApp().toast(R.string.msg_file_created, Toaster.Type.SUCCESS);
 					if(mLastHolded != null) {
 						TreeNode node = new TreeNode(file);
@@ -1229,6 +1377,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			final boolean deleted = FileUtils.delete(f);
 			getApp().toast(deleted ? R.string.deleted : R.string.delete_failed, deleted ? Toaster.Type.SUCCESS : Toaster.Type.ERROR);
 			if(deleted) {
+                notifyFileDeleted(f);
 				if(mLastHolded != null) {
 					TreeNode parent = mLastHolded.getParent();
 					parent.deleteChild(mLastHolded);
@@ -1236,6 +1385,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 				} else {
 					mFileTreeFragment.listProjectFiles();
 				}
+                EditorFragment frag = mPagerAdapter.findEditorByFile(f);
+                if(frag != null) {
+                    closeFile(mPagerAdapter.getFragments().indexOf(frag));
+                }
 			}
 		})
 		.setTitle(R.string.title_confirm_delete)

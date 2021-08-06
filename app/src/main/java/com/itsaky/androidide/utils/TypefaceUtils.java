@@ -12,4 +12,8 @@ public class TypefaceUtils {
 	public static Typeface jetbrainsMono() {
 		return Typeface.createFromAsset(StudioApp.getInstance().getAssets(), "fonts/jetbrains-mono.ttf");
 	}
+    
+    public static Typeface josefinSans() {
+        return Typeface.createFromAsset(StudioApp.getInstance().getAssets(), "fonts/josefin-sans.ttf");
+	}
 }

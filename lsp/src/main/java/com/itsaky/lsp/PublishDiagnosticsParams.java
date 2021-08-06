@@ -1,11 +1,16 @@
 package com.itsaky.lsp;
 
+import com.google.gson.annotations.SerializedName;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PublishDiagnosticsParams {
+    
+    @SerializedName("uri")
     public URI uri;
+    
+    @SerializedName("diagnostics")
     public List<Diagnostic> diagnostics;
 
     public PublishDiagnosticsParams() {

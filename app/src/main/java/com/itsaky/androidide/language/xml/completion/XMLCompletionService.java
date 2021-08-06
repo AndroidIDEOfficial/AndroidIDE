@@ -21,6 +21,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import com.itsaky.androidide.utils.Logger;
 
 public class XMLCompletionService {
 	private HashMap<String, Attr> attrs;
@@ -68,19 +69,19 @@ public class XMLCompletionService {
 			}
 			return handleResults(result);
 		} else {
-			IsInValueScanner scanner = new IsInValueScanner(editor.getCursor().getLeft());
-			String name = scanner.scan(editor.getText().toString());
+			final IsInValueScanner scanner = new IsInValueScanner(editor.getCursor().getLeft());
+			final String name = scanner.scan(editor.getText().toString());
 			if(name != null) {
 				final String attrName = name.contains(":") ? name.substring(name.indexOf(":") + 1) : name;
-				if(attrs.containsKey(attrName)) {
-					Attr attr = attrs.get(attrName);
-					if(attr.hasPossibleValues()) {
-						Set<String> values = attr.possibleValues;
-						for(String value : values) 
-							if(value.toLowerCase(Locale.US).contains(prefix))
-								result.add(valueAsCompletion(value));
-					}
-				}
+                if (attrs.containsKey(attrName)) {
+                    Attr attr = attrs.get(attrName);
+                    if(attr.hasPossibleValues()) {
+                        Set<String> values = attr.possibleValues;
+                        for(String value : values) 
+                            if(value.toLowerCase(Locale.US).contains(prefix))
+                                result.add(valueAsCompletion(value));
+                    }
+                }
 			} else {
 				for(Map.Entry<String, Attr> entry : attrs.entrySet()) {
 					Attr attr = entry.getValue();
@@ -187,10 +188,10 @@ public class XMLCompletionService {
 	private class IsInValueScanner {
 		
 		private int cursorIndex;
-
+        
 		public IsInValueScanner(int cursorIndex) {
 			this.cursorIndex = cursorIndex;
-		}
+        }
 		
 		private boolean containsCursor(Token token) {
 			int start = token.getStartIndex();
@@ -205,9 +206,9 @@ public class XMLCompletionService {
 				String attrName = null;
 				while((token = lexer.nextToken()) != null && token.getType() != XMLLexer.EOF) {
 					if(token.getType() == XMLLexer.STRING && containsCursor(token)) {
-						String text = token.getText();
-						if(text.startsWith("\""))
-							return attrName;
+                        String text = token.getText();
+                        if(text.startsWith("\""))
+                            return attrName;
 					} else if(token.getType() == XMLLexer.Name) {
 						attrName = token.getText();
 					}

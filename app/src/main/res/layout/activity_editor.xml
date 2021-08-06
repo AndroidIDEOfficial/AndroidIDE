@@ -294,6 +294,21 @@
                 android:id="@+id/diagListContainer"/>
 
         </LinearLayout>
+        
+        <TextView
+            android:id="@+id/symbolText"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@color/primaryTextColor"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:background="@color/content_background"
+            android:clickable="false"
+            android:focusable="false"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"/>
 
 		<com.google.android.material.floatingactionbutton.FloatingActionButton
 			android:id="@+id/fab_view"

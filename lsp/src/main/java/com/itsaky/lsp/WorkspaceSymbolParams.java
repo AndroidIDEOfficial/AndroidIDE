@@ -1,6 +1,9 @@
 package com.itsaky.lsp;
+import com.google.gson.annotations.SerializedName;
 
 public class WorkspaceSymbolParams {
+    
+    @SerializedName("query")
     public String query;
 
     public WorkspaceSymbolParams() {}

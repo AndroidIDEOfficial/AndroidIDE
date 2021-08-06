@@ -1,9 +1,14 @@
 package com.itsaky.lsp;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 
 public class Range {
-    public Position start, end;
+    @SerializedName("start")
+    public Position start;
+    
+    @SerializedName("end")
+    public Position end;
 
     public Range() {}
 

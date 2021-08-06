@@ -50,7 +50,7 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter
         return null;
     }
 	
-	public int openFile(File file, EditorFragment.FileOpenListener listener, CodeEditor.CursorChangeListener cursorListener, JLSRequestor jlsRequestor)
+	public int openFile(File file, EditorFragment.FileOpenListener listener, JLSRequestor jlsRequestor)
 	{
 		int openedFileIndex = -1;
 		for(int i=0;i<mOpenedFiles.size();i++)
@@ -68,7 +68,6 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter
 			mFragments.add(EditorFragment
                    .newInstance(file, project)
                    .setFileOpenListener(listener)
-                   .setCursorChangeListener(cursorListener)
                    .setJLSRequestor(jlsRequestor));
 			mOpenedFiles.add(file);
 			notifyDataSetChanged();

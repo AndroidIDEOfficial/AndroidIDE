@@ -52,6 +52,11 @@ import io.github.rosemoe.editor.util.Objects;
  */
 public class EditorColorScheme {
 	
+    public static final int DIAGNOSTIC_ERROR = 38;
+    public static final int DIAGNOSTIC_WARNING = 39;
+    public static final int DIAGNOSTIC_HINT = 40;
+    public static final int DIAGNOSTIC_INFO = 41;
+    
 	public static final int LOG_DEBUG = 5; // Text Normal
 	public static final int LOG_INFO = 32;
 	public static final int LOG_ERROR = 33;
@@ -59,13 +64,24 @@ public class EditorColorScheme {
 	
     //-----------------Highlight colors-----------
 	
+    public static final int XML_TAG = 52;
     public static final int FIELD = 35;
     public static final int STATIC_FIELD = 36;
     public static final int PACKAGE_NAME = 37;
+    public static final int ENUM_TYPE = 42;
+    public static final int INTERFACE = 43;
+    public static final int ENUM = 44;
+    public static final int PARAMETER = 45;
+    public static final int CONSTRUCTOR = 46;
+    public static final int STATIC_INIT = 47;
+    public static final int INSTANCE_INIT = 48;
+    public static final int TYPE_PARAM = 49;
+    public static final int RESOURCE_VARIABLE = 50;
+    public static final int EXCEPTION_PARAM = 51;
     public static final int ANNOTATION = 28;
-    public static final int FUNCTION_NAME = 27;
-    public static final int IDENTIFIER_NAME = 26;
-    public static final int IDENTIFIER_VAR = 25;
+    public static final int METHOD = 27;
+    public static final int TYPE_NAME = 26;
+    public static final int LOCAL_VARIABLE = 25;
     public static final int LITERAL = 24;
     public static final int OPERATOR = 23;
     public static final int COMMENT = 22;
@@ -110,7 +126,7 @@ public class EditorColorScheme {
     /**
      * Max pre-defined color id
      */
-    protected static final int END_COLOR_ID = 37;
+    protected static final int END_COLOR_ID = 52;
     /**
      * Real color saver
      */
@@ -156,22 +172,6 @@ public class EditorColorScheme {
         for (int i = START_COLOR_ID; i <= END_COLOR_ID; i++) {
             applyDefault(i);
         }
-		
-		setColor(WHOLE_BACKGROUND, 0xff1e1e1e);
-        setColor(TEXT_NORMAL, 0xffdcdcdc);
-        setColor(LINE_NUMBER_BACKGROUND, 0xff1e1e1e);
-        setColor(LINE_NUMBER, 0xff2b9eaf);
-        setColor(LINE_DIVIDER, 0xff2b9eaf);
-        setColor(SCROLL_BAR_THUMB, 0xff3e3e42);
-        setColor(SCROLL_BAR_THUMB_PRESSED, 0xff9e9e9e);
-        setColor(SELECTED_TEXT_BACKGROUND, 0xff3676b8);
-        setColor(MATCHED_TEXT_BACKGROUND, 0xff653306);
-        setColor(CURRENT_LINE, 0xff464646);
-        setColor(SELECTION_INSERT, 0xffffffff);
-        setColor(SELECTION_HANDLE, 0xffffffff);
-        setColor(BLOCK_LINE, 0xff717171);
-        setColor(BLOCK_LINE_CURRENT, 0);
-        setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
     }
 
     /**
@@ -250,9 +250,15 @@ public class EditorColorScheme {
             case BLOCK_LINE_CURRENT:
                 color = 0xff999999;
                 break;
-            case IDENTIFIER_VAR:
-            case IDENTIFIER_NAME:
-            case FUNCTION_NAME:
+            case LOCAL_VARIABLE:
+            case TYPE_NAME:
+            case TYPE_PARAM :
+            case PARAMETER :
+            case METHOD:
+            case ENUM_TYPE :
+            case INTERFACE :
+            case CONSTRUCTOR :
+            case EXCEPTION_PARAM :
                 color = 0xff333333;
                 break;
             case MATCHED_TEXT_BACKGROUND:
@@ -272,13 +278,26 @@ public class EditorColorScheme {
 				break;
             case FIELD :
             case STATIC_FIELD :
+            case ENUM :
                 color = 0xFFF0BE4B;
                 break;
             case PACKAGE_NAME :
                 color = 0xffF0BE4B;
                 break;
+            case DIAGNOSTIC_ERROR :
+                color = 0xfff44336;
+                break;
+            case DIAGNOSTIC_WARNING :
+                color = 0xffFF9800;
+                break;
+            case DIAGNOSTIC_INFO :
+                color = 0xff4CAF50;
+                break;
+            case DIAGNOSTIC_HINT :
+                color = 0xffffffff;
+                break;
             default:
-                throw new IllegalArgumentException("Unexpected type:" + type);
+                color = 0xffffffff;
         }
         setColor(type, color);
     }

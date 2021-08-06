@@ -1,12 +1,16 @@
 package com.itsaky.lsp;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class CompletionList {
+    
+    @SerializedName("isIncomplete")
     public boolean isIncomplete;
+    
+    @SerializedName("items")
     public List<CompletionItem> items;
 
     public CompletionList() {

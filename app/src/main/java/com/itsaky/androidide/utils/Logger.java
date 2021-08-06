@@ -18,7 +18,7 @@ public class Logger {
     }
     
     public static Logger instance(String tag) {
-        return instance == null ? createInstance(tag) : instance;
+        return createInstance(tag);
     }
     
     private Logger(String tag) {

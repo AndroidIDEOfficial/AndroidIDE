@@ -1,10 +1,17 @@
 package com.itsaky.lsp;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class SignatureInformation {
+    
+    @SerializedName("label")
     public String label;
+    
+    @SerializedName("documentation")
     public MarkupContent documentation;
+    
+    @SerializedName("parameters")
     public List<ParameterInformation> parameters;
 
     public SignatureInformation() {}

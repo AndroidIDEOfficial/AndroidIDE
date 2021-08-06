@@ -1,7 +1,12 @@
 package com.itsaky.lsp;
 
+import com.google.gson.annotations.SerializedName;
+
 public class JavaReportProgressParams {
+    @SerializedName("message")
     private String message;
+    
+    @SerializedName("increment")
     private int increment = -1;
 
     public JavaReportProgressParams() {}

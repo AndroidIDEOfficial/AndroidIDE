@@ -1,10 +1,14 @@
 package com.itsaky.androidide.models;
 
 import com.blankj.utilcode.util.ThrowableUtils;
+import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.CompletionItem;
 import com.itsaky.lsp.CompletionItemKind;
 import com.itsaky.lsp.Position;
+import com.itsaky.lsp.TextDocumentIdentifier;
+import com.itsaky.lsp.TextDocumentPositionParams;
 import com.itsaky.lsp.TextEdit;
 import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.widget.CodeEditor;
@@ -62,8 +66,10 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
             editor.getText().delete(cursor.getLeftLine(), cursor.getLeftColumn() - length, cursor.getLeftLine(), cursor.getLeftColumn());
             cursor.onCommitText(text);
             
-            if(shiftLeft && !atEnd)
+            if(shiftLeft && !atEnd) {
                 editor.moveSelectionLeft();
+                requestSignature(editor);
+            }
              
             final List<TextEdit> edits = item.additionalTextEdits;
             if(edits != null && edits.size() > 0) {
@@ -82,6 +88,16 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
             }
         } catch (Throwable th) {
             Logger.instance("CompletionItemWrapper").e("onSelectThis, Error: ", ThrowableUtils.getFullStackTrace(th));
+        }
+    }
+    
+    private void requestSignature(CodeEditor editor) {
+        final JavaLanguageServer server = StudioApp.getInstance().getJavaLanguageServer();
+        if (server != null) {
+            TextDocumentPositionParams p = new TextDocumentPositionParams();
+            p.textDocument = new TextDocumentIdentifier(editor.getFile().toURI());
+            p.position = new Position(editor.getCursor().getLeftLine(), editor.getCursor().getLeftColumn());
+            server.signatureHelp(p, editor.getFile());
         }
     }
 

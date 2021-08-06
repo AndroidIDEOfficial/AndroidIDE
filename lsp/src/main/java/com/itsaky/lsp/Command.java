@@ -1,9 +1,17 @@
 package com.itsaky.lsp;
 
 import com.google.gson.JsonArray;
+import com.google.gson.annotations.SerializedName;
 
 public class Command {
-    public String title, command;
+    
+    @SerializedName("title")
+    public String title;
+    
+    @SerializedName("command")
+    public String command;
+    
+    @SerializedName("arguments")
     public JsonArray arguments;
 
     public Command() {}

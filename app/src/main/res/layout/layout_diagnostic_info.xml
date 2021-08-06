@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.itsaky.androidide.views.TooltipLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/primaryLightColor">
+	android:background="@android:color/transparent"
+    android:paddingBottom="8dp">
 
 	<RelativeLayout
 		android:layout_width="match_parent"
@@ -65,5 +66,4 @@
 		android:textSize="11sp"
         android:textIsSelectable="true"/>
 
-</LinearLayout>
-
+</com.itsaky.androidide.views.TooltipLayout>

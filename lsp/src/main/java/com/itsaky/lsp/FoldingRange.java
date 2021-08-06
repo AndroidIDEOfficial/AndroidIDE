@@ -1,8 +1,22 @@
 package com.itsaky.lsp;
 
+import com.google.gson.annotations.SerializedName;
+
 public class FoldingRange {
-    public int startLine, startCharacter, endLine, endCharacter;
-    public String kind; // FoldingRangeKind
+    @SerializedName("startLine")
+    public int startLine;
+    
+    @SerializedName("startCharacter")
+    public int startCharacter;
+    
+    @SerializedName("endLine")
+    public int endLine;
+    
+    @SerializedName("endCharacter")
+    public int endCharacter;
+    
+    @SerializedName("kind")
+    public String kind;
 
     public FoldingRange() {}
 

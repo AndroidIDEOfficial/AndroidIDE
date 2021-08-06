@@ -17,9 +17,6 @@
 -dontwarn androidx.lifecycle.**
 -keep class androidx.arch.** { *; }
 -keep class androidx.lifecycle.** { *; }
--keep class com.itsaky.lsp.** { *; }
--keep class org.eclipse.jdt.** { <init>(...); }
--keep class org.eclipse.jdt.** { static *; }
 
 -keepclasseswithmembernames,includedescriptorclasses class * { native <methods>; }
 -keep public class * implements com.bumptech.glide.module.GlideModule

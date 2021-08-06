@@ -8,10 +8,10 @@
 		<item name="android:textColorSecondary">@color/secondaryTextColor</item>
 		<item name="colorControlNormal">@color/secondaryColor</item>
 		<item name="colorControlHighlight">@color/rippleHighlightColor</item>
-		<item name="android:fontFamily">@font/quicksand</item>
+		<item name="android:fontFamily">@font/josefin_sans</item>
 		<item name="windowActionModeOverlay">true</item>
 		<item name="windowActionBarOverlay">true</item>
-		<item name="fontFamily">@font/quicksand</item>
+		<item name="fontFamily">@font/josefin_sans</item>
 		<item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
 		<item name="android:windowBackground">@color/content_background</item>
     </style>
@@ -57,26 +57,26 @@
 	<style name="MaterialDialog.Title.Text" parent="@style/MaterialAlertDialog.MaterialComponents.Title.Text">
 		<item name="android:textColor">@color/primaryTextColor</item>
 		<item name="android:textStyle">bold</item>
-		<item name="fontFamily">@font/quicksand</item>
+		<item name="fontFamily">@font/josefin_sans</item>
 	</style>
 	<style name="MaterialDialog.Body.Text" parent="@style/MaterialAlertDialog.MaterialComponents.Body.Text">
 		<item name="android:textColor">@color/primaryTextColor</item>
-		<item name="fontFamily">@font/quicksand</item>
+		<item name="fontFamily">@font/josefin_sans</item>
 	</style>
 	<style name="MaterialAlertDialog.PositiveButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
 		<item name="android:textColor">@color/secondaryColor</item>
 		<item name="backgroundTint">@android:color/transparent</item>
-		<item name="fontFamily">@font/quicksand</item>
+		<item name="fontFamily">@font/josefin_sans</item>
 	</style>
 	<style name="MaterialAlertDialog.NegativeButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
 		<item name="android:textColor">@color/secondaryColor</item>
 		<item name="backgroundTint">@android:color/transparent</item>
-		<item name="fontFamily">@font/quicksand</item>
+		<item name="fontFamily">@font/josefin_sans</item>
 	</style>
 	<style name="MaterialAlertDialog.NeutralButtonStyle" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
 		<item name="android:textColor">@color/secondaryColor</item>
 		<item name="backgroundTint">@android:color/transparent</item>
-		<item name="fontFamily">@font/quicksand</item>
+		<item name="fontFamily">@font/josefin_sans</item>
 	</style>
 	<style name="AppTheme.FilePicker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primaryColor</item>

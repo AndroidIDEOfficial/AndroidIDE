@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.blankj.utilcode.util.FileIOUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
 import com.itsaky.androidide.databinding.FragmentEditorBinding;
 import com.itsaky.androidide.fragments.preferences.EditorPreferences;
@@ -16,7 +17,7 @@ import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.ConstantsBridge;
-import com.itsaky.androidide.syntax.colorschemes.SchemeWombat;
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ReadFileTask;
 import com.itsaky.androidide.utils.PreferenceManager;
@@ -34,7 +35,6 @@ import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.widget.CodeEditor;
-import io.github.rosemoe.editor.widget.schemes.SchemeVS2019;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -43,8 +43,12 @@ import java.util.List;
 import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import com.itsaky.androidide.utils.Logger;
+import com.blankj.utilcode.util.ThrowableUtils;
+import com.itsaky.lsp.TextDocumentPositionParams;
+import com.itsaky.lsp.Position;
 
-public class EditorFragment extends BaseFragment implements EditorEventListener, CodeEditor.CursorChangeListener {
+public class EditorFragment extends BaseFragment implements EditorEventListener {
 	
 	public FragmentEditorBinding binding;
 	private File mFile;
@@ -52,7 +56,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 	private boolean isModified = false;
 	private boolean isFirstCreate = false;
 	
-    private CodeEditor.CursorChangeListener listener;
     private FileOpenListener openListener;
     private JLSRequestor jlsRequestor;
 	private static AndroidProject project;
@@ -68,11 +71,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 	public static final String EXT_GROOVY = ".groovy";
 	public static final String EXT_KOTLIN = ".kt";
 	public static final String EXT_JSON = ".json";
-
-    public EditorFragment setCursorChangeListener(CodeEditor.CursorChangeListener listener) {
-        this.listener = listener;
-        return this;
-    }
     
     public EditorFragment setJLSRequestor(JLSRequestor requestor) {
         this.jlsRequestor = requestor;
@@ -99,6 +97,10 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
     public EditorFragment setFileOpenListener(FileOpenListener openListener) {
         this.openListener = openListener;
         return this;
+    }
+    
+    public CodeEditor getEditor() {
+        return binding.editorCodeEditor;
     }
 
 	@Override
@@ -128,7 +130,9 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
         binding.editorCodeEditor.setAutoCompletionOnComposing(true);
         binding.editorCodeEditor.setAutoCompletionItemAdapter(new CompletionListAdapter());
 		binding.editorCodeEditor.setLineColorsEnabled(true);
-		
+		binding.editorCodeEditor.setDividerWidth(SizeUtils.dp2px(1));
+        binding.editorCodeEditor.setJLSRequestor(jlsRequestor);
+        
 		configureEditorIfNeeded();
 		
 		new TaskExecutor().executeAsync(new ReadFileTask(mFile), result -> {
@@ -136,14 +140,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 			postRead();
 		});
 	}
-
-    @Override
-    public void onCursorPositionChange(int leftLine, int leftColumn, int rightLine, int rightColumn) {
-        if(listener != null) {
-            final Cursor c = binding.editorCodeEditor. getCursor();
-            listener.onCursorPositionChange(c.getLeftLine(), c.getLeftColumn(), c.getRightLine(), c.getRightColumn());
-        }
-    }
 	
 	public void setDiagnostics(List<Diagnostic> diags) {
 		if(binding.editorCodeEditor != null && diags != null) {
@@ -234,58 +230,55 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
         binding.editorCodeEditor.setFile(getFile());
 		if (mFile.isFile() && mFile.getName().endsWith(EXT_JAVA)) {
 			binding.editorCodeEditor.setEditorLanguage(mJavaLanguage = new JavaLanguage(project));
-			binding.editorCodeEditor.setColorScheme(new SchemeVS2019());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_XML)) {
 			binding.editorCodeEditor.setEditorLanguage(new XMLLanguage());
-			binding.editorCodeEditor.setColorScheme(new SchemeWombat());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_GRADLE)) {
 			binding.editorCodeEditor.setEditorLanguage(new GroovyLanguage());
-			binding.editorCodeEditor.setColorScheme(new SchemeVS2019());
 		} else {
 			binding.editorCodeEditor.setEditorLanguage(new EmptyLanguage());
 		}
+        binding.editorCodeEditor.setColorScheme(new SchemeAndroidIDE());
 		isRead = true;
         if(openListener != null)
             openListener.onOpenSuccessful(getFile(), getText());
 	}
 	
 	private void closeCurrentTag(String text, int line, int col) {
-		try {
-			XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(text)));
-			Token token;
-			boolean wasSlash = false, wasOpen = false;
-			ArrayList<String> currentNames = new ArrayList<>();
-			while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
-				final int type = token.getType();
-				if(type == XMLLexer.OPEN) {
-					wasOpen = true;
-				} else if(type == XMLLexer.Name) {
-					if(wasOpen && wasSlash && currentNames.size() > 0) {
-						currentNames.remove(0);
-					} else if(wasOpen){
-						currentNames.add(0, token.getText());
-						wasOpen = false;
-					}
-				} else if(type == XMLLexer.OPEN_SLASH) {
-					int l = token.getLine() - 1;
-					int c = token.getCharPositionInLine();
-					if(l == line && c == col) {
-						break;
-					}
-					else if(currentNames.size() > 0)
-						currentNames.remove(0);
-				} else if(type == XMLLexer.SLASH_CLOSE
-						  || type == XMLLexer.SPECIAL_CLOSE) {
-					if(currentNames.size() > 0 && token.getText().trim().endsWith("/>"))
-						currentNames.remove(0);
-				} else if(type == XMLLexer.SLASH) {
-					wasSlash = true;
-				} else wasOpen = wasSlash = false;
-			}
-			if(currentNames.size() > 0) {
-				binding.editorCodeEditor.getText().insert(line, col + 2, currentNames.get(0));
-			}
-		} catch (Throwable th) {}
+        try {
+            XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(text)));
+            Token token;
+            boolean wasSlash = false, wasOpen = false;
+            ArrayList<String> currentNames = new ArrayList<>();
+            while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+                final int type = token.getType();
+                if(type == XMLLexer.OPEN) {
+                    wasOpen = true;
+                } else if(type == XMLLexer.Name) {
+                    if(wasOpen && wasSlash && currentNames.size() > 0) {
+                        currentNames.remove(0);
+                    } else if(wasOpen){
+                        currentNames.add(0, token.getText());
+                        wasOpen = false;
+                    }
+                } else if(type == XMLLexer.OPEN_SLASH) {
+                    int l = token.getLine() - 1;
+                    int c = token.getCharPositionInLine();
+                    if(l == line && c == col) {
+                        break;
+                    } else if(currentNames.size() > 0)
+                        currentNames.remove(0);
+                } else if(type == XMLLexer.SLASH_CLOSE
+                          || type == XMLLexer.SPECIAL_CLOSE) {
+                    if(currentNames.size() > 0 && token.getText().trim().endsWith("/>"))
+                        currentNames.remove(0);
+                } else if(type == XMLLexer.SLASH) {
+                    wasSlash = true;
+                } else wasOpen = wasSlash = false;
+            }
+            if(currentNames.size() > 0) {
+                binding.editorCodeEditor.getText().insert(line, col + 2, currentNames.get(0));
+            }
+        } catch (Throwable th) {}
 	}
 	
 	@Override
@@ -305,51 +298,52 @@ public class EditorFragment extends BaseFragment implements EditorEventListener,
 	@Override
 	public void onNewTextSet(CodeEditor editor) {
 		isModified = true;
-        notifyChanged();
 	}
+
+    @Override
+    public void onSetSelection(int startLine, int startCol, int endLine, int endCol) {
+        if(jlsRequestor != null) {
+            jlsRequestor.hideSignature();
+        }
+    }
 
 	@Override
 	public void afterDelete(CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
 		isModified = true;
-        notifyChanged();
 	}
     
 	@Override
 	public void afterInsert(CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
 		isModified = true;
-        notifyChanged();
         
-		boolean isOpen = false;
-		try {
-			isOpen = editor.getText().charAt(editor.getCursor().getLeft() - 2) == '<';
-		} catch (Throwable th) {}
-		if(isOpen && insertedContent.toString().equals("/")) {
-			closeCurrentTag(editor.getText().toString(), endLine, endColumn);
-		}
+		if(getFile() != null && getFile().getName().endsWith(".java")) {
+            boolean isOpen = false;
+            try {
+                isOpen = editor.getText().charAt(editor.getCursor().getLeft() - 2) == '<';
+            } catch (Throwable th) {}
+            if(isOpen && insertedContent.toString().equals("/")) {
+                closeCurrentTag(editor.getText().toString(), endLine, endColumn);
+            }
+        }
+        
+        char c = insertedContent.charAt(0);
+        if(c == '(' || c == ',') {
+            requestSignature();
+        }
 	}
+
+    private void requestSignature() {
+        if (jlsRequestor != null) {
+            TextDocumentPositionParams p = new TextDocumentPositionParams();
+            p.textDocument = new TextDocumentIdentifier(getFile().toURI());
+            p.position = new Position(binding.editorCodeEditor.getCursor().getLeftLine(), binding.editorCodeEditor.getCursor().getLeftColumn());
+            jlsRequestor.signatureHelp(p, getFile());
+        }
+    }
 
 	@Override
 	public void beforeReplace(CodeEditor editor, CharSequence content) {
 	}
-    
-    private void notifyChanged() {
-        if (getFile() != null && getFile().getName().endsWith(EXT_JAVA) && jlsRequestor != null) {
-            try {
-                TextDocumentContentChangeEvent event = new TextDocumentContentChangeEvent();
-                VersionedTextDocumentIdentifier id = new VersionedTextDocumentIdentifier();
-                DidChangeTextDocumentParams p = new DidChangeTextDocumentParams();
-                List<TextDocumentContentChangeEvent> changes = new ArrayList<>();
-                event.text = getText();
-                event.range = null;
-                changes.add(event);
-                id.uri = getFile().toURI();
-                id.version = VersionedFileManager.incrementVersion(getFile());
-                p.textDocument = id;
-                p.contentChanges = changes;
-                jlsRequestor.didChange(p);
-            } catch (Throwable th) {}
-        }
-    }
     
     private void notifySaved(boolean wrote, String text) {
         if (wrote && jlsRequestor != null) {

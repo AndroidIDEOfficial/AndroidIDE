@@ -109,7 +109,7 @@ public class PreferenceManager {
 	}
 	
 	public boolean isGradleInfoEnabled() {
-		return getBoolean(KEY_GRADLECMD_INFO);
+		return getBoolean(KEY_GRADLECMD_INFO, true);
 	}
 	
 	public boolean isGradleDebugEnabled() {

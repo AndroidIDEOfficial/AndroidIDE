@@ -37,7 +37,9 @@ public class XMLLanguage implements EditorLanguage {
 
 	@Override
 	public boolean isAutoCompleteChar(char ch) {
-		return JavaCharacter.isJavaIdentifierPart(ch) || ch == '<' || ch == '/';
+		return JavaCharacter.isJavaIdentifierPart(ch)
+        || ch == '<'
+        || ch == '/';
 	}
 
 	@Override

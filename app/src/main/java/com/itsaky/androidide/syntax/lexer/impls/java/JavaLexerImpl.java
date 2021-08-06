@@ -5,6 +5,7 @@ import com.itsaky.androidide.syntax.lexer.Lexer;
 import com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer;
 import com.itsaky.androidide.syntax.lexer.tokens.Token;
 import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
+import com.itsaky.lsp.JavaColors;
 import com.itsaky.lsp.Range;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
@@ -14,7 +15,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.CharStreams;
-import com.itsaky.lsp.JavaColors;
 
 public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 	
@@ -214,7 +214,7 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 			case JavaLexer.LONG:
 			case JavaLexer.SHORT:
 				type = TokenType.TYPE;
-				colors.addIfNeeded(line, column, EditorColorScheme.IDENTIFIER_NAME);
+				colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
 				wasClassName = true;
 				break;
 
@@ -232,33 +232,91 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 			case JavaLexer.IDENTIFIER :
 				type = TokenType.IDENTIFIER;
 				
-				if (previous == JavaLexer.AT) {
-					colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
-					wasClassName = false;
-					break;
-				}
-
-				if ((previous == JavaLexer.IDENTIFIER || builtinTypes.contains(previous)) && wasClassName) {
-					colors.addIfNeeded(line, column, EditorColorScheme.IDENTIFIER_VAR);
-					wasClassName = false;
-					break;
-				}
-                
-                if(isClassName(line, column)) {
-                    colors.addIfNeeded(line, column, EditorColorScheme.IDENTIFIER_NAME);
-                    break;
-                }
-                
-                if(isFieldOrStatic(line, column)) {
-                    colors.addIfNeeded(line, column, EditorColorScheme.FIELD);
-                    break;
-                }
-                
                 if(isPackageName(line, column)) {
                     colors.addIfNeeded(line, column, EditorColorScheme.PACKAGE_NAME);
                     break;
                 }
-				
+                
+                if(isEnumType(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.ENUM_TYPE);
+                    break;
+                }
+                
+                if(isClassName(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
+                    break;
+                }
+                
+                if(isAnnotationType(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
+                    break;
+                }
+                
+                if(isInterface(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.INTERFACE);
+                    break;
+                }
+                
+                if(isEnum(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.ENUM);
+                    break;
+                }
+                
+                if(isStaticField(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.STATIC_FIELD);
+                    break;
+                }
+                
+                if(isField(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.FIELD);
+                    break;
+                }
+                
+                if(isParameter(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.PARAMETER);
+                    break;
+                }
+                
+                if(isLocal(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.LOCAL_VARIABLE);
+                    break;
+                }
+                
+                if(isExceptionParam(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.EXCEPTION_PARAM);
+                    break;
+                }
+                
+                if(isMethod(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.METHOD);
+                    break;
+                }
+                
+                if(isConstructor(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.CONSTRUCTOR);
+                    break;
+                }
+                
+                if(isStaticInit(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.STATIC_INIT);
+                    break;
+                }
+                
+                if(isInstanceInit(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.INSTANCE_INIT);
+                    break;
+                }
+                
+                if(isTypeParam(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.TYPE_PARAM);
+                    break;
+                }
+                
+                if(isResourceVariable(line, column)) {
+                    colors.addIfNeeded(line, column, EditorColorScheme.RESOURCE_VARIABLE);
+                    break;
+                }
+                
 				colors.addIfNeeded(line, column, EditorColorScheme.TEXT_NORMAL);
 				break;
 			case JavaLexer.LBRACE :
@@ -306,61 +364,96 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 		 
 		return type;
 	}
+
+    private boolean isEnumType(int line, int column) {
+        if(javaColors == null || javaColors.enumTypes == null) return false;
+        return isInRange(javaColors.enumTypes, line, column);
+    }
+
+    private boolean isAnnotationType(int line, int column) {
+        if(javaColors == null || javaColors.annotationTypes == null) return false;
+        return isInRange(javaColors.annotationTypes, line, column);
+    }
+
+    private boolean isInterface(int line, int column) {
+        if(javaColors == null || javaColors.interfaces == null) return false;
+        return isInRange(javaColors.interfaces, line, column);
+    }
+
+    private boolean isEnum(int line, int column) {
+        if(javaColors == null || javaColors.enums == null) return false;
+        return isInRange(javaColors.enums, line, column);
+    }
+
+    private boolean isParameter(int line, int column) {
+        if(javaColors == null || javaColors.parameters == null) return false;
+        return isInRange(javaColors.parameters, line, column);
+    }
+
+    private boolean isExceptionParam(int line, int column) {
+        if(javaColors == null || javaColors.exceptionParams == null) return false;
+        return isInRange(javaColors.exceptionParams, line, column);
+    }
+
+    private boolean isConstructor(int line, int column) {
+        if(javaColors == null || javaColors.constructors == null) return false;
+        return isInRange(javaColors.constructors, line, column);
+    }
+
+    private boolean isStaticInit(int line, int column) {
+        if(javaColors == null || javaColors.staticInits == null) return false;
+        return isInRange(javaColors.staticInits, line, column);
+    }
+
+    private boolean isInstanceInit(int line, int column) {
+        if(javaColors == null || javaColors.instanceInits == null) return false;
+        return isInRange(javaColors.instanceInits, line, column);
+    }
+
+    private boolean isTypeParam(int line, int column) {
+        if(javaColors == null || javaColors.typeParams == null) return false;
+        return isInRange(javaColors.typeParams, line, column);
+    }
+
+    private boolean isResourceVariable(int line, int column) {
+        if(javaColors == null || javaColors.resourceVariables == null) return false;
+        return isInRange(javaColors.resourceVariables, line, column);
+    }
     
     private boolean isPackageName(int line, int column) {
         if(javaColors == null || javaColors.packages == null) return false;
-        final List<Range> packages = javaColors.packages;
-        if(packages != null && packages.size() > 0) {
-            for(int i=0;i<packages.size();i++) {
-                final Range range = packages.get(i);
-                if(range == null) continue;
-                if(range.start.line == line && range.start.character == column)
-                    return true;
-            }
-        }
-
-        return false;
+        return isInRange(javaColors.packages, line, column);
     }
     
     private boolean isClassName(int line, int column) {
         if(javaColors == null || javaColors.classNames == null) return false;
-        final List<Range> names = javaColors.classNames;
-        if(names != null && names.size() > 0) {
-            for(int i=0;i<names.size();i++) {
-                final Range range = names.get(i);
-                if(range == null) continue;
-                if(range.start.line == line && range.start.character == column)
-                    return true;
-            }
-        }
-        
-        return false;
-    }
-
-    private boolean isFieldOrStatic(int line, int column) {
-        return isField(line, column) || isStatic(line, column);
+        return isInRange(javaColors.classNames, line, column);
     }
     
     private boolean isField(int line, int column) {
         if(javaColors == null || javaColors.fields == null) return false;
-        final List<Range> fields = javaColors.fields;
-        if(fields != null && fields.size() > 0) {
-            for(int i=0;i<fields.size();i++) {
-                final Range range = fields.get(i);
-                if(range == null) continue;
-                if(range.start.line == line && range.start.character == column)
-                    return true;
-            }
-        }
-        return false;
+        return isInRange(javaColors.fields, line, column);
     }
     
-    private boolean isStatic(int line, int column) {
+    private boolean isStaticField(int line, int column) {
         if(javaColors == null || javaColors.statics == null) return false;
-        final List<Range> statics = javaColors.statics;
-        if(statics != null && statics.size() > 0) {
-            for(int i=0;i<statics.size();i++) {
-                final Range range = statics.get(i);
+        return isInRange(javaColors.statics, line, column);
+    }
+    
+    private boolean isMethod(int line, int column) {
+        if(javaColors == null || javaColors.methods == null) return false;
+        return isInRange(javaColors.methods, line, column);
+    }
+    
+    private boolean isLocal(int line, int column) {
+        if(javaColors == null || javaColors.locals == null) return false;
+        return isInRange(javaColors.locals, line, column);
+    }
+    
+    private boolean isInRange(List<Range> ranges, int line, int column) {
+        if(ranges != null && ranges.size() > 0) {
+            for(int i=0;i<ranges.size();i++) {
+                final Range range = ranges.get(i);
                 if(range == null) continue;
                 if(range.start.line == line && range.start.character == column)
                     return true;

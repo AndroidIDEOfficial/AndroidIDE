@@ -210,7 +210,7 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 			case GroovyLexer.LONG:
 			case GroovyLexer.SHORT:
 				type = TokenType.TYPE;
-				colors.addIfNeeded(line, column, EditorColorScheme.IDENTIFIER_NAME);
+				colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
 				wasClassName = true;
 				break;
 
@@ -235,7 +235,7 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 				}
 
 				if ((previous == GroovyLexer.IDENTIFIER || builtinTypes.contains(previous)) && wasClassName) {
-					colors.addIfNeeded(line, column, EditorColorScheme.IDENTIFIER_VAR);
+					colors.addIfNeeded(line, column, EditorColorScheme.LOCAL_VARIABLE);
 					wasClassName = false;
 					break;
 				}

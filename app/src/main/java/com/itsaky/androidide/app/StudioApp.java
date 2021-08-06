@@ -46,6 +46,7 @@ import com.itsaky.lsp.DidChangeConfigurationParams;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.itsaky.lsp.LanguageClient;
+import net.lingala.zip4j.ZipFile;
 
 public class StudioApp extends MultiDexApplication
 {
@@ -169,11 +170,16 @@ public class StudioApp extends MultiDexApplication
         }
     }
 
-    private void extractJls() throws IOException {
+    private void extractJls(){
         final File jlsZip = new File(Environment.JLS_HOME, "jls.zip");
         ResourceUtils.copyFileFromAssets("data/jls.zip", jlsZip.getAbsolutePath());
-        ZipUtils.unzipFile(jlsZip, Environment.JLS_HOME);
-        FileUtils.delete(jlsZip);
+        try {
+            ZipFile file = new ZipFile(jlsZip, ConstantsBridge.JLS_ZIP_PASSWORD_HASH.toCharArray());
+            file.extractAll(Environment.JLS_HOME.getAbsolutePath());
+            FileUtils.delete(jlsZip);
+        } catch (Throwable th) {
+            Logger.instance("UnzipJLS").e(ThrowableUtils.getFullStackTrace(th));
+        }
     }
     
     private boolean setupLibsIfNeeded() {

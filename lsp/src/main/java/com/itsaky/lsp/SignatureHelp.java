@@ -1,10 +1,17 @@
 package com.itsaky.lsp;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class SignatureHelp {
+    @SerializedName("signatures")
     public List<SignatureInformation> signatures;
-    public Integer activeSignature, activeParameter;
+    
+    @SerializedName("activeSignature")
+    public Integer activeSignature;
+    
+    @SerializedName("activeParameter")
+    public Integer activeParameter;
 
     public SignatureHelp() {}
 

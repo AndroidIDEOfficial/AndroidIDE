@@ -1,9 +1,13 @@
 package com.itsaky.lsp;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Hover {
+    @SerializedName("contents")
     public List<MarkedString> contents;
+    
+    @SerializedName("range")
     public Range range;
 
     public Hover() {}

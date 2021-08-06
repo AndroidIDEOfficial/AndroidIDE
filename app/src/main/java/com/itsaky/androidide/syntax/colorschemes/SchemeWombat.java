@@ -18,13 +18,13 @@ public class SchemeWombat extends EditorColorScheme {
 		setColor(LINE_DIVIDER, 0xff656565);
 		setColor(COMMENT, 0xff99968b);
 		setColor(NON_PRINTABLE_CHAR, 0xff99968b);
-		setColor(IDENTIFIER_NAME, 0xfff08080);
+		setColor(TYPE_NAME, 0xfff08080);
 		setColor(ANNOTATION, 0xff808080);
 		setColor(OPERATOR, 0xfff3f6ee);
-		setColor(FUNCTION_NAME, 0xfff3f6ee);
+		setColor(METHOD, 0xfff3f6ee);
 		setColor(LITERAL, 0xff96e454);
 		setColor(OPERATOR, 0xff8ac6f2);
-		setColor(IDENTIFIER_VAR, 0xffd4c4a9);
+		setColor(LOCAL_VARIABLE, 0xffd4c4a9);
 		setColor(SELECTION_HANDLE, 0xfff44336);
 	}
 }

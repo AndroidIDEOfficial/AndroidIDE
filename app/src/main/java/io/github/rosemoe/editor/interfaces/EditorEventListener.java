@@ -66,5 +66,6 @@ public interface EditorEventListener {
      * Note:do not change content at this time
      */
     void beforeReplace(CodeEditor editor, CharSequence content);
-
+    
+    void onSetSelection(int startLine, int startCol, int endLine, int endCol);
 }

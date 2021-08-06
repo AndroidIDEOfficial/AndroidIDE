@@ -93,11 +93,11 @@
 				android:id="@+id/menuEditor_runStopDaemons"
 				android:title="@string/stop_gradle_daemons"
 				app:showAsAction="never"/>
-			<item
+			<!--<item
 				android:icon="@drawable/ic_recreate"
 				android:id="@+id/menuEditor_runRecreate"
 				android:title="@string/recreate_completion_services"
-				app:showAsAction="never"/>
+				app:showAsAction="never"/>-->
 		</menu>
 	</item>
 	<item

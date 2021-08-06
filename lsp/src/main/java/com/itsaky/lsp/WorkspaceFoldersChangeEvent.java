@@ -1,7 +1,12 @@
 package com.itsaky.lsp;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class WorkspaceFoldersChangeEvent {
-    public List<WorkspaceFolder> added, removed;
+    @SerializedName("added")
+    public List<WorkspaceFolder> added;
+    
+    @SerializedName("removed")
+    public List<WorkspaceFolder> removed;
 }

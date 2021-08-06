@@ -1,8 +1,13 @@
 package com.itsaky.lsp;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 
 public class TextEdit {
+    
+    @SerializedName("range")
     public Range range;
+    
+    @SerializedName("newText")
     public String newText;
 
     public TextEdit() {}

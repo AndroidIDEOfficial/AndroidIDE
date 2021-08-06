@@ -58,12 +58,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.interfaces.JLSRequestor;
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.lsp.Diagnostic;
+import com.itsaky.lsp.DiagnosticSeverity;
+import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.Position;
 import com.itsaky.lsp.Range;
+import com.itsaky.lsp.TextDocumentContentChangeEvent;
+import com.itsaky.lsp.VersionedTextDocumentIdentifier;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
@@ -91,7 +97,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.itsaky.lsp.DiagnosticSeverity;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -495,8 +500,11 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         setLineNumberEnabled(true);
 		setLineColorsEnabled(true);
         setAutoCompletionOnComposing(true);
-        setTypefaceText(Typeface.DEFAULT);
+        setTypefaceText(TypefaceUtils.jetbrainsMono());
+        setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
         setPinLineNumber(true);
+        setLineNumberAlign(Paint.Align.RIGHT);
+        setColorScheme(new SchemeAndroidIDE());
         // Issue #41 View being highlighted when focused on Android 11
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             setDefaultFocusHighlightEnabled(false);
@@ -1472,18 +1480,14 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     private int diagnosticColor(int severity) {
-        int id = R.color.diagnostic_warning;
-        switch(id) {
-            case DiagnosticSeverity.Error:
-                id = R.color.diagnostic_error;
-                break;
-            default:
-                id = R.color.diagnostic_warning;
-                break;
+        int id = EditorColorScheme.DIAGNOSTIC_HINT;
+        switch(severity) {
+            case DiagnosticSeverity.Error : id = EditorColorScheme.DIAGNOSTIC_ERROR; break;
+            case DiagnosticSeverity.Warning : id = EditorColorScheme.DIAGNOSTIC_WARNING; break;
+            case DiagnosticSeverity.Information : id = EditorColorScheme.DIAGNOSTIC_INFO; break;
+            default : id = EditorColorScheme.DIAGNOSTIC_ERROR; break;
         }
-
-        final Context ctx = StudioApp.getInstance();
-        return ContextCompat.getColor(ctx, id);
+        return mColors.getColor(id);
     }
 
     protected void showTextActionPopup() {
@@ -2398,7 +2402,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private void updateDiagnosticWindowPosition() {
         float panelX = updateCursorAnchor() + mDpUnit * 20;
         float[] rightLayoutOffset = mLayout.getCharLayoutOffset(mCursor.getRightLine(), mCursor.getRightColumn());
-        float panelY = rightLayoutOffset[0] - getOffsetY() + getRowHeight() / 2f;
+        float panelY = rightLayoutOffset[0] - getOffsetY() - getRowHeight();
         float restY = getHeight() - panelY;
         if (restY > mDpUnit * 120) {
             restY = mDpUnit * 120;
@@ -2420,8 +2424,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             int w = getWidth() / 3;
             mDiagnosticWindow.setWidth(w * 2);
         }
-        
+
         mDiagnosticWindow.setHeight((int) restY);
+        mDiagnosticWindow.setExtendedY(panelY - restY);
         mDiagnosticWindow.updatePosition();
     }
 
@@ -2468,7 +2473,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      *
      * @return The offset x of right cursor on view
      */
-    protected float updateCursorAnchor() {
+    public float updateCursorAnchor() {
         CursorAnchorInfo.Builder builder = mAnchorInfoBuilder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder.reset();
@@ -2704,6 +2709,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      */
     public long getPointPosition(float xOffset, float yOffset) {
         return mLayout.getCharPositionForLayoutOffset(xOffset - measureTextRegionOffset(), yOffset);
+    }
+    
+    public float[] getCursorPosition() {
+        return mLayout.getCharLayoutOffset(getCursor().getLeftLine(), getCursor().getLeftColumn());
     }
 
     /**
@@ -3513,9 +3522,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         
         showOrHideDiagnosticWindow();
         
-        if(mCursorChangeListener != null) {
-            final Cursor c = getCursor();
-            mCursorChangeListener.onCursorPositionChange(c.getLeftLine(), c.getLeftColumn(), c.getRightLine(), c.getRightColumn());
+        if(mListener != null) {
+            Cursor c = getCursor();
+            mListener.onSetSelection(c.getLeftLine(), c.getLeftColumn(), c.getRightLine(), c.getRightColumn());
         }
     }
 
@@ -3594,20 +3603,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mEventHandler.notifyTouchedSelectionHandlerLater();
         showOrHideDiagnosticWindow();
         
-        if(mCursorChangeListener != null) {
-            final Cursor c = getCursor();
-            mCursorChangeListener.onCursorPositionChange(c.getLeftLine(), c.getLeftColumn(), c.getRightLine(), c.getRightColumn());
+        if(mListener != null) {
+            Cursor c = getCursor();
+            mListener.onSetSelection(c.getLeftLine(), c.getLeftColumn(), c.getRightLine(), c.getRightColumn());
         }
-    }
-    
-    private CursorChangeListener mCursorChangeListener;
-    
-    public void setCursorChangeListener(CursorChangeListener listener ){
-        this.mCursorChangeListener = listener;
-    }
-    
-    public static interface CursorChangeListener {
-        void onCursorPositionChange(int leftLine, int leftColumn, int rightLine, int rightColumn);
     }
 
     /**
@@ -3729,6 +3728,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if (mListener != null) {
             mListener.onNewTextSet(this);
         }
+        
+        notifyChanged();
+        
         if (mInputMethodManager != null) {
             mInputMethodManager.restartInput(this);
         }
@@ -4386,16 +4388,19 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mListener.beforeReplace(this, content);
         }
     }
+    
+    private JLSRequestor jlsRequestor;
+    
+    public void setJLSRequestor(JLSRequestor requestor) {
+        this.jlsRequestor = requestor;
+    }
 
     @Override
     public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
         if(mDiagnosticWindow != null)
             mDiagnosticWindow.hide();
-            
-        // Notify listener
-        if (mListener != null) {
-            mListener.afterInsert(this, mText, startLine, startColumn, endLine, endColumn, insertedContent);
-        }
+        
+        notifyChanged();
         
         // Update spans
         if (isSpanMapPrepared(true, endLine - startLine)) {
@@ -4449,6 +4454,28 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         // Notify to update highlight
         mSpanner.analyze(mText);
         mEventHandler.hideInsertHandle();
+        
+        // Notify listener
+        if (mListener != null) {
+            mListener.afterInsert(this, mText, startLine, startColumn, endLine, endColumn, insertedContent);
+        }
+    }
+
+    private void notifyChanged() {
+        if (getFile() != null && getFile().getName().endsWith(".java") && jlsRequestor != null) {
+            TextDocumentContentChangeEvent event = new TextDocumentContentChangeEvent();
+            VersionedTextDocumentIdentifier id = new VersionedTextDocumentIdentifier();
+            DidChangeTextDocumentParams p = new DidChangeTextDocumentParams();
+            List<TextDocumentContentChangeEvent> changes = new ArrayList<>();
+            event.text = getText().toString();
+            event.range = null;
+            changes.add(event);
+            id.uri = getFile().toURI();
+            id.version = VersionedFileManager.incrementVersion(getFile());
+            p.textDocument = id;
+            p.contentChanges = changes;
+            jlsRequestor.didChange(p);
+        }
     }
 
     @Override
@@ -4456,9 +4483,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if(mDiagnosticWindow != null)
             mDiagnosticWindow.hide();
             
-        if (mListener != null) {
-            mListener.afterDelete(this, mText, startLine, startColumn, endLine, endColumn, deletedContent);
-        }
+        notifyChanged();
         
         if (isSpanMapPrepared(false, endLine - startLine)) {
             if (startLine == endLine) {
@@ -4497,6 +4522,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             ensureSelectionVisible();
             mSpanner.analyze(mText);
             mEventHandler.hideInsertHandle();
+        }
+        
+        if (mListener != null) {
+            mListener.afterDelete(this, mText, startLine, startColumn, endLine, endColumn, deletedContent);
         }
     }
 

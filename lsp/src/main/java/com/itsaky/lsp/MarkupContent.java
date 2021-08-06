@@ -1,7 +1,13 @@
 package com.itsaky.lsp;
 
+import com.google.gson.annotations.SerializedName;
+
 public class MarkupContent {
-    public String kind, value;
+    @SerializedName("kind")
+    public String kind;
+    
+    @SerializedName("value")
+    public String value;
 
     public MarkupContent() {}
 

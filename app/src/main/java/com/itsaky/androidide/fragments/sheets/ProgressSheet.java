@@ -28,7 +28,7 @@ public class ProgressSheet extends BaseBottomSheetFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		binding.progress.setIndeterminateDrawable(new FoldingCube());
+		
 		binding.message.setText(message);
 		if(subMessageEnabled) {
 			binding.subMessage.setText(subMessage);

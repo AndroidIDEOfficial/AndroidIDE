@@ -62,7 +62,7 @@ public class XMLAnalyzer implements CodeAnalyzer {
 						addHexColorIfPresent(token, lineColors, line, column);
 						break;
 					case XMLLexer.Name :
-						colors.addIfNeeded(line, column, previous.getType() == XMLLexer.OPEN || previous.getType() == XMLLexer.OPEN_SLASH ? EditorColorScheme.IDENTIFIER_NAME : EditorColorScheme.TEXT_NORMAL);
+						colors.addIfNeeded(line, column, previous.getType() == XMLLexer.OPEN || previous.getType() == XMLLexer.OPEN_SLASH ? EditorColorScheme.XML_TAG : EditorColorScheme.TEXT_NORMAL);
 						addHexColorIfPresent(token, lineColors, line, column);
 						break;
 					case XMLLexer.TEXT :

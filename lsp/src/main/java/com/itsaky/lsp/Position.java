@@ -1,9 +1,15 @@
 package com.itsaky.lsp;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 
 public class Position {
-    public int line, character;
+    
+    @SerializedName("line")
+    public int line;
+    
+    @SerializedName("character")
+    public int character;
 
     public Position() {}
 
