@@ -44,7 +44,7 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
 	@Override
 	protected void onShow() {
 		super.onShow();
-		setToEditor(SpannableString.valueOf(getOutputBuilder()));
+		editor.setText(getOutputBuilder());
 	}
 
 	private Void scrollToBottom() {

@@ -47,7 +47,7 @@ public class LogLine {
 		if(s == null || s.trim().length() > 1) {
 			return DEBUG;
 		}
-		char c = s.toLowerCase().charAt(0);
+		char c = s.toLowerCase(Locale.US).charAt(0);
 		if(c == 'w') {
 			return WARNING;
 		} else if(c == 'e') {

@@ -20,6 +20,7 @@ import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.util.IntPair;
 import java.util.List;
 import java.util.ArrayList;
+import io.github.rosemoe.editor.widget.CodeEditor;
 
 /**
  * @author Rose
@@ -35,6 +36,8 @@ public final class Cursor {
     private EditorLanguage mLanguage;
     private int mTabWidth;
     
+    private final CodeEditor editor;
+    
     private final List<Character> pairs;
 
     /**
@@ -42,7 +45,8 @@ public final class Cursor {
      *
      * @param content Target content
      */
-    public Cursor(Content content) {
+    public Cursor(CodeEditor editor, Content content) {
+        this.editor = editor;
         mContent = content;
         mIndexer = new CachedIndexer(content);
         mLeft = new CharPosition().zero();
@@ -269,7 +273,12 @@ public final class Cursor {
                && text.charAt(0) == mContent.charAt(getLeftLine(), getLeftColumn())
                && pairs.contains(text.charAt(0))) {
                    
-                set(getLeftLine(), getLeftColumn() + 1);
+                // Moving the cursor to right through editor is instant
+                // If we don't really have an instance of the editor, fall back to 'less efficient' method
+                if(this.editor != null)
+                    this.editor.moveSelectionRight();
+                else 
+                    set(getLeftLine(), getLeftColumn() + 1);
             } else {
                 if (mAutoIndentEnabled && text.length() != 0 && applyAutoIndent) {
                     char first = text.charAt(0);
@@ -311,18 +320,8 @@ public final class Cursor {
      * @return Generated space string
      */
     private String createIndent(int p) {
-        int tab = 0;
-        int space;
-//        if (mLanguage.useTab()) {
-//            tab = p / mTabWidth;
-//            space = p % mTabWidth;
-//        } else {
-            space = p;
-//        }
+        int space = p;
         StringBuilder s = new StringBuilder();
-        for (int i = 0; i < tab; i++) {
-            s.append('\t');
-        }
         for (int i = 0; i < space; i++) {
             s.append(' ');
         }

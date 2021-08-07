@@ -48,6 +48,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import com.itsaky.lsp.DidChangeWatchedFilesParams;
 import com.itsaky.lsp.SignatureHelp;
+import android.annotation.SuppressLint;
 
 public class JavaLanguageServer implements ShellServer.Callback {
 
@@ -136,6 +137,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
         return server;
     }
     
+    @SuppressLint("NewApi")
     protected void sendInit() {
         InitializeParams p = new InitializeParams();
         p.rootUri = new File(project.getProjectPath()).toURI();
@@ -267,41 +269,12 @@ public class JavaLanguageServer implements ShellServer.Callback {
 
     @Override
     public void output(CharSequence charSequence) {
-        writeOut(charSequence.toString());
-    }
-    
-    private BufferedOutputStream os;
-    private BufferedOutputStream os1;
-    
-    private void writeOut(String data) {
-        try {
-            if(os == null) {
-                os = new BufferedOutputStream(new FileOutputStream(new File(FileUtil.getExternalStorageDir(), "ide_xlog/out.txt"), true));
-            }
-            os.write(data.getBytes());
-            os.flush();
-        } catch (Throwable th) {
-            logger.e(ThrowableUtils.getFullStackTrace(th));
-        }
-    }
-    
-    private void writeOut2(String data) {
-        try {
-            if(os1 == null) {
-                os1 = new BufferedOutputStream(new FileOutputStream(new File(FileUtil.getExternalStorageDir(), "ide_xlog/verbose.txt"), true));
-            }
-            os1.write(data.getBytes());
-            os1.flush();
-        } catch (Throwable th) {
-            logger.e(ThrowableUtils.getFullStackTrace(th));
-        }
     }
     
     /**
      * This method is called on UI Thread, do not perform time consuming or networking tasks
      */
     private void onServerOut(String line) {
-        writeOut2(line + "\n");
         if(line.contains(CONTENT_LENGTH)) line = line.substring(0, line.lastIndexOf(CONTENT_LENGTH));
         if(this.client == null) return;
         try {

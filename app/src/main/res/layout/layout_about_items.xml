@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="16dp"
+		android:paddingTop="16dp"
+		android:clickable="true"
+		android:focusable="true"
+		android:background="@drawable/bg_ripple"
+		android:paddingStart="16dp"
+		android:paddingEnd="8dp">
+
+		<ImageView
+			android:id="@+id/icon_github"
+			android:layout_height="22dp"
+			android:layout_width="22dp"
+			android:scaleType="fitCenter"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:layout_centerVertical="true"
+			app:srcCompat="@drawable/ic_github"/>
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:textSize="16sp"
+			android:textColor="@color/primaryTextColor"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:layout_toEndOf="@id/icon_github"
+			android:layout_centerVertical="true"
+			android:text="@string/user_suggestions"/>
+
+	</RelativeLayout>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="16dp"
+		android:paddingTop="16dp"
+		android:clickable="true"
+		android:focusable="true"
+		android:background="@drawable/bg_ripple"
+		android:paddingStart="16dp"
+		android:paddingEnd="8dp">
+
+		<ImageView
+			android:id="@+id/icon_telegram"
+			android:layout_height="22dp"
+			android:layout_width="22dp"
+			android:scaleType="fitCenter"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:layout_centerVertical="true"
+			app:srcCompat="@drawable/ic_telegram"/>
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:textSize="16sp"
+			android:textColor="@color/primaryTextColor"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:layout_toEndOf="@id/icon_telegram"
+			android:layout_centerVertical="true"
+			android:text="@string/discussions_on_telegram"/>
+
+	</RelativeLayout>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="16dp"
+		android:paddingTop="16dp"
+		android:clickable="true"
+		android:focusable="true"
+		android:background="@drawable/bg_ripple"
+		android:paddingStart="16dp"
+		android:paddingEnd="8dp">
+
+		<ImageView
+			android:id="@+id/icon_email"
+			android:layout_height="22dp"
+			android:layout_width="22dp"
+			android:scaleType="fitCenter"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:layout_centerVertical="true"
+			app:srcCompat="@drawable/ic_email"/>
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:textSize="16sp"
+			android:textColor="@color/primaryTextColor"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:layout_toEndOf="@id/icon_email"
+			android:layout_centerVertical="true"
+			android:text="@string/about_option_email"/>
+
+	</RelativeLayout>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="16dp"
+		android:paddingTop="16dp"
+		android:clickable="true"
+		android:focusable="true"
+		android:background="@drawable/bg_ripple"
+		android:layout_marginBottom="16dp"
+		android:paddingStart="16dp"
+		android:paddingEnd="8dp">
+
+		<ImageView
+			android:id="@+id/icon_website"
+			android:layout_height="22dp"
+			android:layout_width="22dp"
+			android:scaleType="fitCenter"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:layout_centerVertical="true"
+			app:srcCompat="@drawable/ic_website"/>
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:textSize="16sp"
+			android:textColor="@color/primaryTextColor"
+			android:layout_marginStart="8dp"
+			android:layout_marginEnd="8dp"
+			android:layout_toEndOf="@id/icon_website"
+			android:layout_centerVertical="true"
+			android:text="@string/about_option_website"/>
+
+	</RelativeLayout>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Developers"
+		android:layout_marginStart="16dp"
+		android:layout_marginEnd="16dp"
+		android:layout_marginBottom="4dp"
+		android:textStyle="bold"
+		android:textSize="16sp"/>
+
+	<View
+		android:background="?android:attr/dividerVertical"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginBottom="8dp"/>
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="24dp"
+		android:layout_marginEnd="16dp"
+		android:text="\u2022 Akash Yadav\n\u2022 Marvin Stelter"
+		android:layout_marginBottom="16dp"
+		android:textSize="14sp"
+        android:textColor="@color/secondaryTextColor_lighter"
+		android:autoLink="all"
+		android:linksClickable="true"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Open source licenses"
+		android:layout_marginStart="16dp"
+		android:layout_marginEnd="16dp"
+		android:layout_marginBottom="4dp"
+		android:textStyle="bold"
+		android:textSize="16sp"/>
+
+	<View
+		android:background="?android:attr/dividerVertical"
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginBottom="8dp"/>
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="24dp"
+		android:layout_marginEnd="16dp"
+        android:textColor="@color/secondaryTextColor_lighter"
+		android:text="AndroidIDE uses open source libraries. You can find the source and the license of the libraries used by clicking on below links."
+		android:layout_marginBottom="4dp"
+		android:textSize="14sp"
+		android:autoLink="all"
+		android:linksClickable="true"/>
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="24dp"
+		android:layout_marginEnd="16dp"
+		android:layout_marginBottom="16dp"
+		android:id="@+id/licenses"
+        android:textColor="@color/secondaryTextColor_lighter"
+		android:textSize="14sp"/>
+
+	<TextView
+		android:id="@+id/footer_text"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:layout_marginBottom="16dp"
+		android:textColor="@color/secondaryTextColor"/>
+
+</LinearLayout>
+

@@ -1,4 +1,12 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="msg_about_license_source">Source and License: %s</string>
+    <string name="msg_about_licensed_under">Licensed under %s</string>
+    <string name="msg_about_no_licenses">Failed to load licenses</string>
+    <string name="about_option_email">Email</string>
+    <string name="about_option_website">Website</string>
+    <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
+    <string name="about_footer">AndroidIDE %1$s for %2$s</string>
+    <string name="about_subtitle">Simply, an IDE for Android</string>
     <string name="view_diags">Diagnostics</string>
     <string name="diagnostic_position">Start: %s, %s    End: %s, %s</string>
     <string name="diagnostic_error">ERROR</string>
@@ -11,11 +19,11 @@
 	<string name="msg_failed_get_changelog">Failed to read changelog!</string>
 	<string name="pref_changelog">Changelog</string>
 	<string name="pref_changelog_summary">What\'s new in this version?</string>
-	<string name="msg_getting_daemom_status">Getting Daemon status, please wait...</string>
-	<string name="msg_indexing_success">Indexing success! Starting services...</string>
+	<string name="msg_getting_daemom_status">Getting Daemon status, please wait&#8230;</string>
+	<string name="msg_indexing_success">Indexing success! Starting services&#8230;</string>
 	<string name="msg_indexing_failed">Index failed!</string>
 	<string name="msg_indexing">Indexing: %s</string>
-	<string name="msg_daemons_force_stopping">Gradle build process is running. Killing daemons...</string>
+	<string name="msg_daemons_force_stopping">Gradle build process is running. Killing daemons&#8230;</string>
 	<string name="msg_daemons_stopped">Gradle Daemons Stopped</string>
     <string name="recreate_completion_services">Recreate services</string>
     <string name="gradle_daemon_status">Gradle daemon status</string>
@@ -57,6 +65,7 @@
 	<string name="msg_install_gradle">Currently installed gradle version will be DELETE PEEMANENTLY!\n\nPlease enter full path of the zip file which contains Gradle distribution.</string>
 	<string name="reset">Reset</string>
 	<string name="title_change_text_size">Editor font size</string>
+    <string name="idepref_about_title">About AndroidIDE</string>
 	<string name="idepref_build_clearCache_title">Clear Gradle caches</string>
 	<string name="idepref_build_clearCache_summary">Clear Gradle caches directory. This will delete all dependencies downloaded by Gradle. Required files will be downloaded again in next build.</string>
 	<string name="idepref_build_choosegradle_title">Choose Gradle version</string>
@@ -126,7 +135,7 @@
 	<string name="msg_file_exists">File already exists!</string>
 	<string name="msg_invalid_name">Invalid Name!</string>
 	<string name="text_create">Create</string>
-	<string name="msg_can_contain_slashes">You can use forward slashes (\'/\') to define a relative path to this folder. This will create directories if they do not already exist and will save time in creating multiple directories.</string>
+	<string name="msg_can_contain_slashes">If the path contains File separator (\'/\'), then the required (parent) directories will be created if they don\'t exist.</string>
 	<string name="folder_name">Folder Name</string>
 	<string name="file_name">File Name</string>
 	<string name="new_name">New name</string>
@@ -191,7 +200,7 @@
 	<string name="template_empty">Empty project</string>
 	<string name="template_navigation_drawer">Navigation drawer project</string>
 	<string name="unknown_type">Unknown type</string>
-    <string name="app_name">Android IDE</string>
+    <string name="app_name">AndroidIDE</string>
     <string name="build">Build</string>
     <string name="build_debug">assembleDebug</string>
     <string name="build_output">Build output</string>
@@ -232,7 +241,7 @@
 	<string name="nothing_here">Nothing here &#8230;</string>
     
     <item name="paste" type="string">Paste</item>
-    <item name="copy" type="string">Copy</item>
+    <item name="copy" type="string" tools:override="true">Copy</item>
     <item name="selectAll" type="string" formatted="true">Select All</item>
     <item name="saveToProject" type="string" translatable="false" >Project</item>
     <item name="cut" type="string">Cut</item>

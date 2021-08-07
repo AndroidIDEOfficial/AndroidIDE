@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	app:cardBackgroundColor="@color/primaryLightColor"
@@ -74,6 +75,7 @@
 			</com.google.android.material.card.MaterialCardView>
 
 			<ImageView
+                tools:ignore="UnusedAttribute"
 				app:srcCompat="@drawable/ic_file_delete"
 				android:layout_width="50dp"
 				android:layout_height="match_parent"
@@ -97,6 +99,7 @@
 			android:paddingBottom="5dp"
 			android:paddingTop="5dp"
 			android:paddingStart="16dp"
+            android:paddingEnd="16dp"
 			android:visibility="gone"
 			android:enabled="false"
 			android:id="@+id/confirmDeleteContainer">

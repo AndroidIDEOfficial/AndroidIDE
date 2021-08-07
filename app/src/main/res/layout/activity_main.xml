@@ -11,7 +11,7 @@
 		android:layout_width="match_parent"
 		android:gravity="center"
 		android:id="@+id/appbar"
-		android:background="?attr/colorPrimary"
+		android:background="?attr/colorPrimaryDark"
 		app:layout_behavior="com.google.android.material.appbar.AppBarLayout$Behavior">
 
 		<RelativeLayout

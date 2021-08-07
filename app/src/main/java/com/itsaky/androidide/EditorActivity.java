@@ -1121,6 +1121,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
 			mBinding.tabs.getTabAt(i).select();
 		mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
+        invalidateOptionsMenu();
 	}
 
     @Override
@@ -1521,5 +1522,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         DidCloseTextDocumentParams p = new DidCloseTextDocumentParams();
         p.textDocument = id;
         didClose(p);
+        
+        invalidateOptionsMenu();
 	}
 }

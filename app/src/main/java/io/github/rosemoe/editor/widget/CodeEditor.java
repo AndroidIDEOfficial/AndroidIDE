@@ -262,6 +262,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 	
 	private Map<HexColor, Integer> mLineColors;
     private Map<Range, Diagnostic> mDiagnostics;
+    private Map<Integer, List<Range>> stringMap;
     
     private File currentFile;
     
@@ -596,6 +597,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if(diags == null)
             diags = new HashMap<>();
         this.mDiagnostics = diags;
+    }
+    
+    public void setStringMap(Map<Integer, List<Range>> map) {
+        this.stringMap = map;
     }
 	
 	public CodeEditor setLineColors(HashMap<HexColor, Integer> map) {
@@ -3703,7 +3708,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         String t = text.toString();
         t = t.replace("\t", "    ");
         
-        mText = new Content(t);
+        mText = new Content(this, t);
         mCursor = mText.getCursor();
         mCursor.setAutoIndent(mAutoIndentEnabled);
         mCursor.setLanguage(mLanguage);
@@ -4421,7 +4426,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         exitSelectModeIfNeeded();
 
         // Auto completion
-        if (isAutoCompletionEnabled()) {
+        // Trigger only when autocompletion is enabled and cursor is not in a string token
+        if (isAutoCompletionEnabled() && !isInString()) {
             if ((mConnection.mComposingLine == -1 || mCompletionOnComposing) && endColumn != 0 && startLine == endLine) {
                 int end = endColumn;
                 while (endColumn > 0) {
@@ -4459,6 +4465,20 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if (mListener != null) {
             mListener.afterInsert(this, mText, startLine, startColumn, endLine, endColumn, insertedContent);
         }
+    }
+
+    private boolean isInString() {
+        final int line = getCursor().getLeftLine();
+        final int column = getCursor().getLeftColumn();
+        if(stringMap == null || stringMap.isEmpty() || !stringMap.containsKey(line)) return false;
+        List<Range> strings = stringMap.get(line);
+        if(strings == null || strings.isEmpty()) return false;
+        for(int i=0;i<strings.size();i++) {
+            Range r = strings.get(i);
+            if(r.start.character <= column && column <= r.end.character)
+                return true;
+        }
+        return false;
     }
 
     private void notifyChanged() {
@@ -4566,6 +4586,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 			if(mSpanner.getResult().getHexColors().size() > 0) {
 				setLineColors(mSpanner.getResult().getHexColors());
 			}
+            if(mSpanner.getResult().getStringMap().size() > 0) {
+                setStringMap(mSpanner.getResult().getStringMap());
+            }
             if (mHighlightCurrentBlock) {
                 mCursorPosition = findCursorBlock();
             }

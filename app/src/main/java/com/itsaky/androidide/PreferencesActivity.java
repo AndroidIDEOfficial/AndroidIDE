@@ -28,7 +28,6 @@ public class PreferencesActivity extends StudioActivity {
 		setSupportActionBar(binding.toolbar);
 		getSupportActionBar().setTitle(R.string.ide_preferences);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setHomeButtonEnabled(true);
 		
 		loadFragment(getPrefsFragment());
 	}

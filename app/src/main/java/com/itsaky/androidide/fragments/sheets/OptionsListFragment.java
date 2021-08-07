@@ -16,6 +16,8 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
 	private RecyclerView mList;
 	private OnOptionsClickListener listener;
 	private final List<SheetOption> mOptions = new ArrayList<>();
+    
+    protected boolean dismissOnItemClick = true;
 	
 	@Override
 	protected void bind(LinearLayout container) {
@@ -28,7 +30,12 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		mList.setLayoutManager(new LinearLayoutManager(getContext()));
-		mList.setAdapter(new OptionsSheetAdapter(mOptions, __ -> { dismiss(); if(listener != null) listener.onOptionsClick(__);}));
+		mList.setAdapter(new OptionsSheetAdapter(mOptions, __ -> {
+            if(dismissOnItemClick)
+                dismiss();
+            if(listener != null)
+                listener.onOptionsClick(__);
+        }));
 	}
 	
 	public OptionsListFragment setOnOptionsClickListener(OnOptionsClickListener listener) {
@@ -52,6 +59,11 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
 		mOptions.remove(option);
 		return this;
 	}
+    
+    public OptionsListFragment setDismissOnItemClick(boolean dissmiss) {
+        this.dismissOnItemClick = dissmiss;
+        return this;
+    }
 
 	@Override
 	protected String getTitle() {

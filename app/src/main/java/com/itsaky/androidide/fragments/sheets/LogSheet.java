@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.models.LogLine;
+import android.annotation.SuppressLint;
 
 public class LogSheet extends BaseBottomSheetFragment {
 	
@@ -51,6 +52,7 @@ public class LogSheet extends BaseBottomSheetFragment {
 		}
 	}
 	
+    @SuppressLint("SetTextI18n")
 	protected TextView createLogTextView(LogLine line) {
 		TextView text = new TextView(getContext());
 		text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);

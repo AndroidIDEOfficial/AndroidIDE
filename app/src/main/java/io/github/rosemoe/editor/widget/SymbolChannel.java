@@ -66,13 +66,12 @@ public class SymbolChannel {
            && text.charAt(0) == mEditor.getText().charAt(cur.getLeftLine(), cur.getLeftColumn())
            && pairs.contains(text.charAt(0))) {
                mEditor.moveSelectionRight();
-        }
-        
-        mEditor.getText().insert(cur.getRightLine(), cur.getRightColumn(), text);
-        
-        mEditor.notifyExternalCursorChange();
-        if (selectionOffset != text.length()) {
-            mEditor.setSelection(cur.getRightLine(), cur.getRightColumn() - (text.length() - selectionOffset));
+        } else {
+            mEditor.getText().insert(cur.getRightLine(), cur.getRightColumn(), text);
+            mEditor.notifyExternalCursorChange();
+            if (selectionOffset != text.length()) {
+                mEditor.setSelection(cur.getRightLine(), cur.getRightColumn() - (text.length() - selectionOffset));
+            }
         }
     }
 

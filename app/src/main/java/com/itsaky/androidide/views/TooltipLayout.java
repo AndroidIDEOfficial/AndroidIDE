@@ -12,6 +12,8 @@ import android.graphics.Color;
 public class TooltipLayout extends LinearLayout {
     
     private final float dp8;
+    private final Path path;
+    private final Paint paint;
     
     public TooltipLayout (Context ctx) {
         this(ctx, null);
@@ -25,14 +27,20 @@ public class TooltipLayout extends LinearLayout {
         super(ctx, attrs, style);
         
         dp8 = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
+        path = new Path();
+        
+        paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.parseColor("#424242"));
     }
-
+    
     @Override
     protected void onDraw(Canvas canvas) {
         final int width = getWidth();
         final int height = getHeight();
         final float midX = width / 2;
-        Path path = new Path();
+        
         path.moveTo(0, 0);
         path.lineTo(width, 0);
         path.lineTo(width, height - dp8);
@@ -42,10 +50,6 @@ public class TooltipLayout extends LinearLayout {
         path.lineTo(0, height - dp8);
         path.close();
         
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.parseColor("#424242"));
         canvas.drawPath(path, paint);
         super.onDraw(canvas);
     }

@@ -13,16 +13,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.graphics.Rect;
-import com.r0adkll.slidr.model.SlidrInterface;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrConfig;
-import com.r0adkll.slidr.model.SlidrPosition;
 
 public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment {
 	
 	protected Dialog mDialog;
 	private LayoutSheetBinding binding;
 	protected boolean shadowEnabled = true;
+    protected boolean titleEnabled = true;
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -78,7 +75,7 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
 	}
 	
 	protected boolean shouldHideTitle() {
-		return false;
+		return !titleEnabled;
 	}
 	
 	protected String getTitle() {
@@ -88,6 +85,10 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
 	public void setShowShadow(boolean enabled) {
 		this.shadowEnabled = enabled;
 	}
+    
+    public void setShowTitle(boolean enabled) {
+        this.titleEnabled = enabled;
+    }
 	
 	protected void onShow() {}
 	protected abstract void bind(LinearLayout container);

@@ -310,13 +310,14 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	@Override
 	public void afterDelete(CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
 		isModified = true;
+        requestSignature();
 	}
     
 	@Override
 	public void afterInsert(CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
 		isModified = true;
         
-		if(getFile() != null && getFile().getName().endsWith(".java")) {
+		if(getFile() != null && getFile().getName().endsWith(EXT_XML)) {
             boolean isOpen = false;
             try {
                 isOpen = editor.getText().charAt(editor.getCursor().getLeft() - 2) == '<';
@@ -326,10 +327,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
             }
         }
         
-        char c = insertedContent.charAt(0);
-        if(c == '(' || c == ',') {
-            requestSignature();
-        }
+        requestSignature();
 	}
 
     private void requestSignature() {

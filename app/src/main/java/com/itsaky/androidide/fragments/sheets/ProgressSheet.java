@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import com.github.ybq.android.spinkit.style.FoldingCube;
 import com.itsaky.androidide.databinding.LayoutProgressSheetBinding;
 import com.blankj.utilcode.util.SizeUtils;
 import android.widget.RelativeLayout;
@@ -13,7 +12,7 @@ import android.widget.RelativeLayout;
 public class ProgressSheet extends BaseBottomSheetFragment {
 	
 	private LayoutProgressSheetBinding binding;
-	private Drawable drawable = new FoldingCube();
+	private Drawable drawable = null;
 	private String message = "";
 	private String subMessage = "";
 	private boolean subMessageEnabled = false;

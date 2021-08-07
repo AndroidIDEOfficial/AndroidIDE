@@ -24,6 +24,8 @@ import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.util.HashMap;
 import io.github.rosemoe.editor.struct.HexColor;
+import java.util.Map;
+import com.itsaky.lsp.Range;
 
 /**
  * The result of analysis
@@ -37,6 +39,8 @@ public class TextAnalyzeResult {
     protected List<NavigationItem> mLabels;
     protected Span mLast;
     protected int mSuppressSwitch = Integer.MAX_VALUE;
+    
+    private final Map<Integer, List<Range>> stringMap = new HashMap<>();
 
     /**
      * Create a new result
@@ -46,6 +50,22 @@ public class TextAnalyzeResult {
         mSpanMap = new ArrayList<>(2048);
         mBlocks = new ArrayList<>(1024);
 		mHexColor = new HashMap<>();
+    }
+    
+    public Map<Integer, List<Range>> getStringMap() {
+        return stringMap;
+    }
+    
+    public void addStringRange(int line, Range range) {
+        if(stringMap.containsKey(line)) {
+            List<Range> ranges = stringMap.get(line);
+            ranges.add(range);
+            stringMap.put(line, ranges);
+        } else {
+            List<Range> ranges = new ArrayList<>();
+            ranges.add(range);
+            stringMap.put(line, ranges);
+        }
     }
 	
 	public void addHexColor(HexColor index, int color) {

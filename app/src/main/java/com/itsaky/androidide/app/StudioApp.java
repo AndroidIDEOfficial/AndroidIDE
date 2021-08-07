@@ -75,7 +75,8 @@ public class StudioApp extends MultiDexApplication
 	
 	public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
 	public static final String SUGGESTIONS_URL = "https://github.com/itsaky/AndroidIDE";
-
+    public static final String WEBSITE = "https://androidide.com";
+    
 	private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 	
 	@Override
@@ -338,6 +339,7 @@ public class StudioApp extends MultiDexApplication
 		return new File(getFilesDir(), "framework");
 	}
 	
+    @SuppressLint("SdCardPath")
 	public File getIDEDataDir() {
 		return Environment.mkdirIfNotExits(new File("/data/data/com.itsaky.androidide/files"));
 	}
@@ -488,5 +490,13 @@ public class StudioApp extends MultiDexApplication
 		open.setData(Uri.parse(StudioApp.SUGGESTIONS_URL));
 		open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(open);
+	}
+    
+    public void openWebsite() {
+        Intent open = new Intent();
+        open.setAction(Intent.ACTION_VIEW);
+        open.setData(Uri.parse(StudioApp.WEBSITE));
+        open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(open);
 	}
 }

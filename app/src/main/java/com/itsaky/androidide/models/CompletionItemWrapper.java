@@ -13,6 +13,7 @@ import com.itsaky.lsp.TextEdit;
 import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.List;
+import com.itsaky.androidide.language.java.manager.JavaCharacter;
 
 public class CompletionItemWrapper implements SuggestItem, Comparable {
     
@@ -58,12 +59,21 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
         try {
             final Cursor cursor = editor.getCursor();
             if(cursor.isSelected()) return;
-            final int length = getInsertLength();
+            final int line = cursor.getLeftLine();
+            int col = cursor.getLeftColumn();
+            while(true) {
+                col--;
+                if(col == 0)
+                    break;
+                if(!JavaCharacter.isJavaIdentifierPart(editor.getText().charAt(line, col)))
+                    break;
+            }
+            col++;
             String text = getInsertText();
             final boolean shiftLeft = text.contains("$0");
             final boolean atEnd = text.endsWith("$0");
             text = text.replace("$0", "");
-            editor.getText().delete(cursor.getLeftLine(), cursor.getLeftColumn() - length, cursor.getLeftLine(), cursor.getLeftColumn());
+            editor.getText().delete(line, col, line, cursor.getLeftColumn());
             cursor.onCommitText(text);
             
             if(shiftLeft && !atEnd) {

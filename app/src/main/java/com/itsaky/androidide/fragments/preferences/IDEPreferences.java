@@ -1,5 +1,6 @@
 package com.itsaky.androidide.fragments.preferences;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -13,13 +14,13 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import com.blankj.utilcode.util.ResourceUtils;
-import com.blankj.utilcode.util.ThrowableUtils;
+import com.blankj.utilcode.util.SizeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.AboutActivity;
 import com.itsaky.androidide.app.StudioApp;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import com.blankj.utilcode.util.SizeUtils;
 
 public class IDEPreferences extends BasePreferenceFragment {
 	
@@ -35,6 +36,7 @@ public class IDEPreferences extends BasePreferenceFragment {
 	public static final String KEY_TELEGRAM = "idepref_telegram";
 	public static final String KEY_ISSUES = "idepref_issues";
 	public static final String KEY_CHANGELOG = "idepref_changelog";
+    public static final String KEY_ABOUT = "idepref_about";
 	
 	@Override
 	public void onCreatePreferences(Bundle savedState, String rootKey) {
@@ -48,7 +50,8 @@ public class IDEPreferences extends BasePreferenceFragment {
 		final Preference telegram = new Preference(getContext());
 		final Preference issueTracker = new Preference(getContext());
 		final Preference changelog = new Preference(getContext());
-		
+		final Preference about = new Preference(getContext());
+        
 		appearance.setKey(KEY_APPEARANCE);
 		appearance.setIconSpaceReserved(false);
 		appearance.setFragment(getAppearanceFrag().getClass().getName());
@@ -81,17 +84,24 @@ public class IDEPreferences extends BasePreferenceFragment {
 		changelog.setIconSpaceReserved(false);
 		changelog.setTitle(R.string.pref_changelog);
 		changelog.setSummary(R.string.pref_changelog_summary);
+        
+        about.setKey(KEY_ABOUT);
+        about.setIconSpaceReserved(false);
+        about.setTitle(R.string.idepref_about_title);
+//		about.setSummary(R.string.pref_changelog_summary);
 		
 		screen.addPreference(editor);
 		screen.addPreference(build);
 		screen.addPreference(issueTracker);
 		screen.addPreference(telegram);
 		screen.addPreference(changelog);
+        screen.addPreference(about);
 		
 		final Preference.OnPreferenceClickListener listener = getListener();
 		issueTracker.setOnPreferenceClickListener(listener);
 		telegram.setOnPreferenceClickListener(listener);
 		changelog.setOnPreferenceClickListener(listener);
+        about.setOnPreferenceClickListener(listener);
 	}
 	
 	private AppearancePreferences getAppearanceFrag() {
@@ -161,7 +171,9 @@ public class IDEPreferences extends BasePreferenceFragment {
 					StudioApp.getInstance().openTelegramGroup();
 				} else if(key.equals(KEY_ISSUES)) {
 					StudioApp.getInstance().openIssueTracker();
-				}
+				} else if(key.equals(KEY_ABOUT)) {
+                    startActivity(new Intent(getContext(), AboutActivity.class));
+                }
 				return true;
 			}
 		};

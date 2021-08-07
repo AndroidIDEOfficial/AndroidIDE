@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+    app:layoutDescription="@xml/motion_about">
+
+	<View
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/icon_anchor"
+		android:layout_width="0dp"
+		android:layout_height="200dp"
+		android:background="@color/primaryDarkColor"/>
+
+	<com.google.android.material.card.MaterialCardView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/icon_anchor"
+		android:id="@+id/icon_container"
+		android:layout_width="56dp"
+		android:layout_height="56dp"
+		android:layout_marginTop="-28dp"
+		android:layout_marginBottom="16dp"
+		android:layout_marginStart="16dp"
+		android:layout_marginEnd="16dp"
+		app:cardBackgroundColor="@color/primaryLightColor"
+		app:cardCornerRadius="5dp"
+		app:cardElevation="0dp">
+
+		<ImageView
+			android:src="@mipmap/ic_launcher"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:id="@+id/icon"/>
+
+	</com.google.android.material.card.MaterialCardView>
+
+	<TextView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/icon_container"
+        android:id="@+id/title"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:text="@string/app_name"
+		android:textStyle="bold"
+		android:textSize="30sp"
+		android:textColor="@color/primaryTextColor"
+		android:layout_marginBottom="4dp"/>
+
+	<TextView
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+		android:id="@+id/subtitle"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:text="@string/about_subtitle"
+		android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/secondaryTextColor"
+		android:layout_marginBottom="24dp"/>
+    
+	<androidx.core.widget.NestedScrollView
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subtitle"
+		android:id="@+id/about_scroller">
+        
+        <include android:id="@+id/items" layout="@layout/layout_about_items"/>
+        
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

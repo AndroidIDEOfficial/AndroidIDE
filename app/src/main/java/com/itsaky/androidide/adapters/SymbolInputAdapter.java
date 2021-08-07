@@ -47,7 +47,7 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
 		if(symbols == null || symbols[position] == null) return;
 		final Symbol symbol = symbols[position];
 		holder.binding.symbol.setText(symbol.label);
-		TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(holder.binding.symbol, 16, 27, 1, TypedValue.COMPLEX_UNIT_SP);
+//		TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(holder.binding.symbol, 16, 27, 1, TypedValue.COMPLEX_UNIT_SP);
 		holder.binding.symbol.setOnClickListener(__ -> channel.insertSymbol(symbol.commit, symbol.offset));
 	}
 	

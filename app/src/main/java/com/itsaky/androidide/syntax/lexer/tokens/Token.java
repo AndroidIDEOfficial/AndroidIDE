@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class Token implements Serializable {
 
@@ -76,9 +77,9 @@ public class Token implements Serializable {
     @Override
     public String toString() {
         if (pairValue == 0) {
-            return String.format("%s (%d, %d) %d", type, line, column, length);
+            return String.format(Locale.US, "%s (%d, %d) %d", type, line, column, length);
         } else {
-            return String.format("%s (%d, %d) (%d) %d", type, line, column, length, pairValue);
+            return String.format(Locale.US, "%s (%d, %d) (%d) %d", type, line, column, length, pairValue);
         }
     }
 	

@@ -15,6 +15,9 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.CharStreams;
+import java.util.Map;
+import java.util.HashMap;
+import com.itsaky.lsp.Position;
 
 public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 	
@@ -30,7 +33,7 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 		this.isFirst = true;
 		
 		builtinTypes = new ArrayList<>();
-
+        
 		builtinTypes.add(JavaLexer.BOOLEAN);
 		builtinTypes.add(JavaLexer.BYTE);
 		builtinTypes.add(JavaLexer.CHAR);
@@ -154,6 +157,11 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 				type = TokenType.STRING_LITERAL;
 				colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
 				wasClassName = false;
+                
+                Position start = new Position(line, column);
+                Position end = new Position(line, column + currentToken.getText().length());
+                colors.addStringRange(line, new Range(start, end));
+                
 				addHexColorIfPresent();
 				break;
 			case JavaLexer.LPAREN :

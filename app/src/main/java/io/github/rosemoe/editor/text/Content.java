@@ -20,6 +20,7 @@ import java.util.List;
 
 import io.github.rosemoe.editor.annotations.Experimental;
 import io.github.rosemoe.struct.BlockLinkedList;
+import io.github.rosemoe.editor.widget.CodeEditor;
 
 /**
  * This class saves the text content for editor and maintains line widths
@@ -45,6 +46,8 @@ public class Content implements CharSequence {
     private UndoManager mUndoManager;
     private Cursor mCursor;
     private LineRemoveListener mLineListener;
+    
+    private final CodeEditor editor;
 
     /**
      * Use a BlockLinkedList instead of ArrayList.
@@ -60,8 +63,8 @@ public class Content implements CharSequence {
     /**
      * This constructor will create a Content object with no text
      */
-    public Content() {
-        this(null);
+    public Content(CodeEditor editor) {
+        this(editor, null);
     }
 
     /**
@@ -70,10 +73,11 @@ public class Content implements CharSequence {
      *
      * @param src The source of Content
      */
-    public Content(CharSequence src) {
+    public Content(CodeEditor editor, CharSequence src) {
         if (src == null) {
             src = "";
         }
+        this.editor = editor;
         mTextLength = 0;
         mNestedBatchEdit = 0;
         if (!useBlock)
@@ -607,7 +611,7 @@ public class Content implements CharSequence {
      * @return sub sequence of this Content
      */
     public Content subContent(int startLine, int startColumn, int endLine, int endColumn) {
-        Content c = new Content();
+        Content c = new Content(this.editor);
         c.setUndoEnabled(false);
         if (startLine == endLine) {
             c.insert(0, 0, mLines.get(startLine).subSequence(startColumn, endColumn));
@@ -691,7 +695,7 @@ public class Content implements CharSequence {
      */
     public Cursor getCursor() {
         if (mCursor == null) {
-            mCursor = new Cursor(this);
+            mCursor = new Cursor(this.editor, this);
         }
         return mCursor;
     }

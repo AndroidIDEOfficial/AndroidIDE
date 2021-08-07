@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import androidx.core.content.ContextCompat;
-import com.github.ybq.android.spinkit.style.Circle;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
@@ -60,7 +59,6 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
 	}
 	
 	public void setLoading() {
-		chevron.setImageDrawable(new Circle());
 		chevron.getDrawable().setColorFilter(ContextCompat.getColor(context, R.color.secondaryLightColor), PorterDuff.Mode.SRC_ATOP);
 	}
 
