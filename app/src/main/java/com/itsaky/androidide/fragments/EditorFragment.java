@@ -22,18 +22,15 @@ import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ReadFileTask;
 import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.androidide.utils.TypefaceUtils;
-import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.lsp.Diagnostic;
-import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.DidSaveTextDocumentParams;
 import com.itsaky.lsp.JavaColors;
+import com.itsaky.lsp.Position;
 import com.itsaky.lsp.Range;
-import com.itsaky.lsp.TextDocumentContentChangeEvent;
 import com.itsaky.lsp.TextDocumentIdentifier;
-import com.itsaky.lsp.VersionedTextDocumentIdentifier;
+import com.itsaky.lsp.TextDocumentPositionParams;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
-import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.io.StringReader;
@@ -43,14 +40,11 @@ import java.util.List;
 import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import com.itsaky.androidide.utils.Logger;
-import com.blankj.utilcode.util.ThrowableUtils;
-import com.itsaky.lsp.TextDocumentPositionParams;
-import com.itsaky.lsp.Position;
 
 public class EditorFragment extends BaseFragment implements EditorEventListener {
 	
 	public FragmentEditorBinding binding;
+    private CodeEditor editor;
 	private File mFile;
 	private boolean isRead = false;
 	private boolean isModified = false;
@@ -81,7 +75,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         if(mJavaLanguage != null) {
             JavaLanguageAnalyzer analyzer = (JavaLanguageAnalyzer) mJavaLanguage.getAnalyzer();
             analyzer.setJavaColors(colors);
-            binding.editorCodeEditor.notifySpansChanged();
+            editor.notifySpansChanged();
         }
     }
     
@@ -100,7 +94,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     }
     
     public CodeEditor getEditor() {
-        return binding.editorCodeEditor;
+        return editor;
     }
 
 	@Override
@@ -108,6 +102,12 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		super.onCreate(savedInstanceState);
 		isFirstCreate = true;
 	}
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        save();
+        super.onSaveInstanceState(outState);
+    }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -121,35 +121,38 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		if (getActivity() == null || getArguments() == null || !getArguments().containsKey(KEY_FILE_PATH) || !getArguments().containsKey(KEY_PROJECT)) return;
 		mFile = new File(getArguments().getString(KEY_FILE_PATH));
 		project = getArguments().getParcelable(KEY_PROJECT);
-		
-		binding.editorCodeEditor.setOverScrollEnabled(false);
-		binding.editorCodeEditor.setTypefaceText(TypefaceUtils.jetbrainsMono());
-		binding.editorCodeEditor.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
-		binding.editorCodeEditor.setHighlightCurrentBlock(true);
-		binding.editorCodeEditor.setEventListener(this);
-        binding.editorCodeEditor.setAutoCompletionOnComposing(true);
-        binding.editorCodeEditor.setAutoCompletionItemAdapter(new CompletionListAdapter());
-		binding.editorCodeEditor.setLineColorsEnabled(true);
-		binding.editorCodeEditor.setDividerWidth(SizeUtils.dp2px(1));
-        binding.editorCodeEditor.setJLSRequestor(jlsRequestor);
+        
+        editor = new CodeEditor(getContext());
+		editor.setOverScrollEnabled(false);
+		editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
+		editor.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
+		editor.setHighlightCurrentBlock(true);
+		editor.setEventListener(this);
+        editor.setAutoCompletionOnComposing(true);
+        editor.setAutoCompletionItemAdapter(new CompletionListAdapter());
+		editor.setLineColorsEnabled(true);
+		editor.setDividerWidth(SizeUtils.dp2px(1));
+        editor.setJLSRequestor(jlsRequestor);
+        
+        binding.getRoot().addView(editor, new ViewGroup.LayoutParams(-1, -1));
         
 		configureEditorIfNeeded();
 		
 		new TaskExecutor().executeAsync(new ReadFileTask(mFile), result -> {
-			binding.editorCodeEditor.setText(result);
+			editor.setText(result);
 			postRead();
 		});
 	}
 	
 	public void setDiagnostics(List<Diagnostic> diags) {
-		if(binding.editorCodeEditor != null && diags != null) {
+		if(editor != null && diags != null) {
             Map<Range, Diagnostic> map = new HashMap<>();
             for(int i=0;i<diags.size();i++) {
                 final Diagnostic d = diags.get(i);
                 if(d == null) continue;
                 map.put(d.range, d);
             }
-            binding.editorCodeEditor.setDiagnostics(map);
+            editor.setDiagnostics(map);
         }
 	}
 	
@@ -162,7 +165,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 			float textSize = prefs.getFloat(EditorPreferences.KEY_EDITOR_FONT_SIZE);
 			if(textSize < 6 || textSize > 32)
 				textSize = 14;
-			binding.editorCodeEditor.setTextSize(textSize);
+			editor.setTextSize(textSize);
 			ConstantsBridge.EDITORPREF_SIZE_CHANGED = false;
 		}
 		
@@ -179,12 +182,12 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 			if(prefs.getBoolean(PreferenceManager.KEY_EDITORFLAG_LINE_BREAK, true))
 				flags |= CodeEditor.FLAG_DRAW_LINE_SEPARATOR;
 
-			binding.editorCodeEditor.setNonPrintablePaintingFlags(flags);
+			editor.setNonPrintablePaintingFlags(flags);
 			ConstantsBridge.EDITORPREF_FLAGS_CHANGED = false;
 		}
 		
 		if(drawHexChanged) {
-			binding.editorCodeEditor.setLineColorsEnabled(prefs.getBoolean(PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
+			editor.setLineColorsEnabled(prefs.getBoolean(PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
 			ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED = false;
 		}
 		
@@ -192,7 +195,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
     
     public String getText() {
-        return binding.editorCodeEditor.getText().toString();
+        return editor.getText().toString();
     }
 	
 	public boolean isModified() {
@@ -200,17 +203,17 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
 	
 	public void undo() {
-		if(binding.editorCodeEditor.canUndo())
-			binding.editorCodeEditor.undo();
+		if(editor.canUndo())
+			editor.undo();
 	}
 	
 	public void redo() {
-		if(binding.editorCodeEditor.canRedo())
-			binding.editorCodeEditor.redo();
+		if(editor.canRedo())
+			editor.redo();
 	}
 
 	public void save() {
-        final String text = binding.editorCodeEditor.getText().toString();
+        final String text = editor.getText().toString();
         final boolean wrote = FileIOUtils.writeFileFromString(mFile, text);
 		notifySaved(wrote, text);
 		isModified = false;
@@ -227,17 +230,17 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
 	
 	private void postRead() {
-        binding.editorCodeEditor.setFile(getFile());
+        editor.setFile(getFile());
 		if (mFile.isFile() && mFile.getName().endsWith(EXT_JAVA)) {
-			binding.editorCodeEditor.setEditorLanguage(mJavaLanguage = new JavaLanguage(project));
+			editor.setEditorLanguage(mJavaLanguage = new JavaLanguage(project));
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_XML)) {
-			binding.editorCodeEditor.setEditorLanguage(new XMLLanguage());
+			editor.setEditorLanguage(new XMLLanguage());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_GRADLE)) {
-			binding.editorCodeEditor.setEditorLanguage(new GroovyLanguage());
+			editor.setEditorLanguage(new GroovyLanguage());
 		} else {
-			binding.editorCodeEditor.setEditorLanguage(new EmptyLanguage());
+			editor.setEditorLanguage(new EmptyLanguage());
 		}
-        binding.editorCodeEditor.setColorScheme(new SchemeAndroidIDE());
+        editor.setColorScheme(new SchemeAndroidIDE());
 		isRead = true;
         if(openListener != null)
             openListener.onOpenSuccessful(getFile(), getText());
@@ -276,7 +279,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
                 } else wasOpen = wasSlash = false;
             }
             if(currentNames.size() > 0) {
-                binding.editorCodeEditor.getText().insert(line, col + 2, currentNames.get(0));
+                editor.getText().insert(line, col + 2, currentNames.get(0));
             }
         } catch (Throwable th) {}
 	}
@@ -334,7 +337,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         if (jlsRequestor != null) {
             TextDocumentPositionParams p = new TextDocumentPositionParams();
             p.textDocument = new TextDocumentIdentifier(getFile().toURI());
-            p.position = new Position(binding.editorCodeEditor.getCursor().getLeftLine(), binding.editorCodeEditor.getCursor().getLeftColumn());
+            p.position = new Position(editor.getCursor().getLeftLine(), editor.getCursor().getLeftColumn());
             jlsRequestor.signatureHelp(p, getFile());
         }
     }

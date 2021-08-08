@@ -9,6 +9,7 @@ import android.text.style.StyleSpan;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
@@ -88,7 +89,6 @@ public class IDEPreferences extends BasePreferenceFragment {
         about.setKey(KEY_ABOUT);
         about.setIconSpaceReserved(false);
         about.setTitle(R.string.idepref_about_title);
-//		about.setSummary(R.string.pref_changelog_summary);
 		
 		screen.addPreference(editor);
 		screen.addPreference(build);
@@ -119,6 +119,10 @@ public class IDEPreferences extends BasePreferenceFragment {
 	private void showChangelog() {
 		final int dp8 = SizeUtils.dp2px(8);
 		final int dp16 = SizeUtils.dp2px(16);
+        final ScrollView vScroll = new ScrollView(getContext());
+        vScroll.setFillViewport(true);
+        vScroll.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+        
 		final HorizontalScrollView scroll = new HorizontalScrollView(getContext());
 		scroll.setLayoutParams(new ViewGroup.LayoutParams(-1, -2));
 		scroll.setFillViewport(true);
@@ -130,11 +134,13 @@ public class IDEPreferences extends BasePreferenceFragment {
 		text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
 		text.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
 		scroll.removeAllViews();
+        vScroll.removeAllViews();
 		scroll.addView(text, new ViewGroup.LayoutParams(-1, -1));
-		
+		vScroll.addView(scroll);
+        
 		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog);
 		builder.setTitle(R.string.pref_changelog);
-		builder.setView(scroll);
+		builder.setView(vScroll);
 		builder.setPositiveButton(android.R.string.ok, null);
 		builder.create().show();
 	}

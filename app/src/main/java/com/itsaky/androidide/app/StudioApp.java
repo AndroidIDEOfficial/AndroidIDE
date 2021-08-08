@@ -76,6 +76,7 @@ public class StudioApp extends MultiDexApplication
 	public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
 	public static final String SUGGESTIONS_URL = "https://github.com/itsaky/AndroidIDE";
     public static final String WEBSITE = "https://androidide.com";
+    public static final String EMAIL = "contact@androidide.com";
     
 	private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 	
@@ -162,7 +163,7 @@ public class StudioApp extends MultiDexApplication
             proto = proto == true ? proto : f.getName().equals("protobuf.jar");
         }
         
-        if(!false/* !(gson && jls && proto) */) {
+        if(!(gson && jls && proto)) {
             try {
                 extractJls();
             } catch (Throwable e) {
@@ -499,4 +500,12 @@ public class StudioApp extends MultiDexApplication
         open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(open);
 	}
+    
+    public void emailUs() {
+        Intent open = new Intent();
+        open.setAction(Intent.ACTION_VIEW);
+        open.setData(Uri.parse("mailto:" + EMAIL));
+        open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(open);
+    }
 }

@@ -66,15 +66,11 @@
 				android:background="@color/content_background"/>
 
 			<LinearLayout
+                android:id="@+id/input_container"
 				android:layout_height="wrap_content"
 				android:layout_width="match_parent"
 				android:orientation="vertical">
-
-				<com.itsaky.androidide.views.SymbolInputView
-					android:id="@+id/symbolInput"
-					android:layout_height="wrap_content"
-					android:layout_width="match_parent"/>
-
+                
 				<TextView
 					android:id="@+id/editor_statusText"
 					android:layout_height="wrap_content"

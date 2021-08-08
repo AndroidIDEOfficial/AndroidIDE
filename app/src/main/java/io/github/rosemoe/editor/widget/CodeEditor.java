@@ -751,6 +751,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mCompletionWindow.hide();
             mCompletionWindow.setProvider(lang.getAutoCompleteProvider());
         }
+        
+        hideDiagnosticWindow();
 
         // Symbol pairs
         if (mLanguageSymbolPairs != null) {
@@ -3367,6 +3369,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             setSelection(IntPair.getFirst(pos), IntPair.getSecond(pos));
         } else {
             mCompletionWindow.hide();
+            hideDiagnosticWindow();
+            hideDiagnosticWindow();
             long pos = mCursor.getDownOf(getSelectingTarget().toIntPair());
             setSelectionRegion(mLockedSelection.line, mLockedSelection.column, IntPair.getFirst(pos), IntPair.getSecond(pos), false);
             ensureSelectingTargetVisible();
@@ -3378,6 +3382,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * If Auto complete panel is shown,move the selection in panel to last
      */
     public void moveSelectionUp() {
+        hideDiagnosticWindow();
         if (mLockedSelection == null) {
             if (mCompletionWindow.isShowing()) {
                 mCompletionWindow.moveUp();
@@ -3397,6 +3402,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * Move the selection left
      */
     public void moveSelectionLeft() {
+        hideDiagnosticWindow();
         if (mLockedSelection == null) {
             Cursor c = getCursor();
             int line = c.getLeftLine();
@@ -3432,6 +3438,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * Move the selection right
      */
     public void moveSelectionRight() {
+        hideDiagnosticWindow();
         if (mLockedSelection == null) {
             Cursor c = getCursor();
             int line = c.getLeftLine();
@@ -3453,7 +3460,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 }
             }
         } else {
-            mCompletionWindow.hide();
+            mCompletionWindow.hide(); hideDiagnosticWindow();
             long pos = mCursor.getRightOf(getSelectingTarget().toIntPair());
             setSelectionRegion(mLockedSelection.line, mLockedSelection.column, IntPair.getFirst(pos), IntPair.getSecond(pos), false);
             ensureSelectingTargetVisible();
@@ -3595,6 +3602,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mCursor.setRight(lineRight, columnRight);
         updateCursor();
         mCompletionWindow.hide();
+        hideDiagnosticWindow();
         if (makeRightVisible) {
             ensurePositionVisible(lineRight, columnRight);
         } else {
@@ -3619,7 +3627,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      */
     public void movePageDown() {
         mEventHandler.onScroll(null, null, 0, getHeight());
-        mCompletionWindow.hide();
+        mCompletionWindow.hide(); hideDiagnosticWindow();
     }
 
     /**
@@ -3628,6 +3636,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     public void movePageUp() {
         mEventHandler.onScroll(null, null, 0, -getHeight());
         mCompletionWindow.hide();
+        hideDiagnosticWindow();
     }
 
     /**
@@ -3847,6 +3856,12 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     public void hideAutoCompleteWindow() {
         if (mCompletionWindow != null) {
             mCompletionWindow.hide();
+        }
+    }
+    
+    public void hideDiagnosticWindow() {
+        if(mDiagnosticWindow != null) {
+            mDiagnosticWindow.hide();
         }
     }
 
@@ -4575,6 +4590,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 mText.replace(0, 0, getLineCount() - 1, mText.getColumnCount(getLineCount() - 1), newText);
                 getScroller().forceFinished(true);
                 mCompletionWindow.hide();
+                hideDiagnosticWindow();
                 setSelectionAround(line, column);
             });
         }

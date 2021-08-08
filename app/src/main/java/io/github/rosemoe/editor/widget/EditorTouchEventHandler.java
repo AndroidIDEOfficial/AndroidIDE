@@ -310,13 +310,13 @@ final class EditorTouchEventHandler implements GestureDetector.OnGestureListener
                 if (rect.contains(e.getX(), e.getY())) {
                     mHoldingScrollbarVertical = true;
                     downY = e.getY();
-                    mEditor.hideAutoCompleteWindow();
+                    mEditor.hideAutoCompleteWindow(); mEditor.hideDiagnosticWindow();
                 }
                 rect = mEditor.getHorizontalScrollBarRect();
                 if (rect.contains(e.getX(), e.getY())) {
                     mHoldingScrollbarHorizontal = true;
                     downX = e.getX();
-                    mEditor.hideAutoCompleteWindow();
+                    mEditor.hideAutoCompleteWindow(); mEditor.hideDiagnosticWindow();
                 }
                 if (mHoldingScrollbarVertical && mHoldingScrollbarHorizontal) {
                     mHoldingScrollbarHorizontal = false;
@@ -482,6 +482,7 @@ final class EditorTouchEventHandler implements GestureDetector.OnGestureListener
             }
         }
         mEditor.hideAutoCompleteWindow();
+        mEditor.hideDiagnosticWindow();
         int endX = mScroller.getCurrX() + (int) distanceX;
         int endY = mScroller.getCurrY() + (int) distanceY;
         endX = Math.max(endX, 0);
@@ -525,6 +526,7 @@ final class EditorTouchEventHandler implements GestureDetector.OnGestureListener
             } else {
                 mEditor.setSelection(line, column);
                 mEditor.hideAutoCompleteWindow();
+                mEditor.hideDiagnosticWindow();
             }
         }
         mEditor.performClick();
@@ -658,6 +660,7 @@ final class EditorTouchEventHandler implements GestureDetector.OnGestureListener
         if (Math.abs(velocityX) >= minVe || Math.abs(velocityY) >= minVe) {
             notifyScrolled();
             mEditor.hideAutoCompleteWindow();
+            mEditor.hideDiagnosticWindow();
         }
         if (Math.abs(velocityX) >= minVe / 2f) {
             mEditor.getHorizontalEdgeEffect().finish();

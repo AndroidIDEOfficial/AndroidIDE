@@ -1,5 +1,27 @@
 [
   {
+      "version":"1.0.2-alpha",
+      "changes": [
+          "Added: Realtime error checking for current file",
+          "Added: Link to issue tracker on GitHub",
+          "Added: Do not insert closing symbols if already present in editor",
+          "Added: You can now edit any file whose encoding is UTF-8",
+          "Added: You can now edit the global gradle.properties file",
+          "Added: You can now delete a project from the project's list (click and hold to show delete option)",
+          "Added: Show signature of methods and constructors when typing their parameters",
+          "Added: Editor now pins the line number",
+          "Fixed: If an opened file is deleted, it was still open even after deleting",
+          "Fixed: Lag with the progress dialog while installing build tools",
+          "Fixed: App crash when --debug, --info or --scan was enabled for Gradle builds",
+          "Fixed: File tree keeps loading on some devices",
+          "Fixed: Different text color for buttons in preferences",
+          "Fixed: Color of icons in options menu remained unchanged even if the items were disabled",
+          "Enhanced: Syntax highlighting of Java files (works only after services are started)",
+          "Enhanced: Java completion is much more advanced than earlier versions",
+          "Updated: AndroidIDE now comes with an updated JDK built specifically for AndroidIDE."
+      ]
+  },
+  {
     "version": "1.0.1-alpha",
     "changes": [
       "Added: Option to choose custom build tools",

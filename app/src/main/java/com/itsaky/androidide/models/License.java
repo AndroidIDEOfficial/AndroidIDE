@@ -11,4 +11,10 @@ public class License {
     
     @SerializedName("url")
     public String url;
+
+    public License(String name, String license, String url) {
+        this.name = name;
+        this.license = license;
+        this.url = url;
+    }
 }

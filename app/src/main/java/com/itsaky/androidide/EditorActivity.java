@@ -108,6 +108,7 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import com.itsaky.androidide.views.SymbolInputView;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -128,6 +129,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private CodeEditor buildView;
 	private CodeEditor logView;
     private RecyclerView diagnosticList;
+    private SymbolInputView symbolInput;
 	
 	private LogLanguageImpl mLogLanguageImpl;
 	
@@ -210,7 +212,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		loadFragment(mFileTreeFragment);
 		
 		createQuickActions();
-		
+        
+        symbolInput = new SymbolInputView(this);
+        mBinding.inputContainer.addView(symbolInput, 0, new ViewGroup.LayoutParams(-1, -2));
+        
 		mBinding.editorViewPager.setOffscreenPageLimit(9);
 		mBinding.editorViewPager.setAdapter(mPagerAdapter);
 		mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
@@ -288,18 +293,18 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		invalidateOptionsMenu();
 		if(KeyboardUtils.isSoftInputVisible(this)) {
 			TransitionManager.beginDelayedTransition(mBinding.getRoot(), new Slide(Gravity.TOP));
-			mBinding.symbolInput.setVisibility(View.VISIBLE);
+			symbolInput.setVisibility(View.VISIBLE);
 			mBinding.fabView.hide();
 		} else {
 			TransitionManager.beginDelayedTransition(mBinding.getRoot(), new Slide(Gravity.BOTTOM));
-			mBinding.symbolInput.setVisibility(View.GONE);
+			symbolInput.setVisibility(View.GONE);
 			mBinding.fabView.show();
 		}
 	}
 
 	private void refreshSymbolInput(EditorFragment frag) {
-		mBinding.symbolInput.bindEditor(frag.binding.editorCodeEditor);
-		mBinding.symbolInput.setSymbols(Symbols.forFile(frag.getFile()));
+		symbolInput.bindEditor(frag.getEditor());
+		symbolInput.setSymbols(Symbols.forFile(frag.getFile()));
 	}
 	
 	private void notifySyncNeeded() {
@@ -594,6 +599,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
 	
 	private void showViewOptions() {
+        try {
+            EditorFragment frag = mPagerAdapter.getFrag(mBinding.tabs.getSelectedTabPosition());
+            if(frag != null) {
+                frag.getEditor().hideAutoCompleteWindow();
+                frag.getEditor().hideDiagnosticWindow();
+            }
+        } catch (Throwable e) {}
 		TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.fabView, mBinding.viewOptionsCard));
 		mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
 		mBinding.transformScrim.setVisibility(View.VISIBLE);
