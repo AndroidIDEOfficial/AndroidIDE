@@ -15,8 +15,6 @@
  */
 package io.github.rosemoe.editor.text;
 
-import android.util.Log;
-
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -79,10 +77,7 @@ public class SpanRecycler {
                         break;
                     }
                 }
-            } catch (Exception e) {
-                Log.w(LOG_TAG, e);
-            }
-            Log.i(LOG_TAG, "Recycler exited");
+            } catch (Exception e) {}
         }
 
     }

@@ -17,7 +17,6 @@ package io.github.rosemoe.editor.widget;
 
 import android.content.res.Resources;
 import android.graphics.RectF;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;

@@ -15,8 +15,6 @@
  */
 package io.github.rosemoe.editor.text;
 
-import android.util.Log;
-
 import java.util.List;
 
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
@@ -95,7 +93,6 @@ public class TextAnalyzer {
     public synchronized void analyze(Content origin) {
         AnalyzeThread thread = this.mThread;
         if (thread == null || !thread.isAlive()) {
-            Log.d("TextAnalyzer", "Starting a new thread for analyzing");
             thread = this.mThread = new AnalyzeThread(mLock, mCodeAnalyzer, origin);
             thread.setName("TextAnalyzeDaemon-" + nextThreadId());
             thread.setDaemon(true);
@@ -217,12 +214,10 @@ public class TextAnalyzer {
                             lock.wait();
                         }
                     } catch (InterruptedException e) {
-                        Log.d("AnalyzeThread", "Analyze daemon is being interrupted -> Exit");
                         break;
                     }
                 } while (true);
             } catch (Exception ex) {
-                Log.i("AnalyzeThread", "Analyze daemon got exception -> Exit", ex);
             }
         }
 

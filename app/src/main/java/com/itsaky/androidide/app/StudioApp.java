@@ -20,6 +20,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.interfaces.LanguageServerListener;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
+import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.ConstantsBridge;
@@ -30,6 +31,7 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.androidide.utils.StudioUtils;
+import com.itsaky.lsp.LanguageClient;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,15 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import com.blankj.utilcode.util.ZipUtils;
-import com.itsaky.androidide.utils.Logger;
-import com.itsaky.androidide.language.java.server.JavaLanguageServer;
-import android.os.Handler;
-import com.itsaky.lsp.InitializeParams;
-import com.itsaky.lsp.DidChangeConfigurationParams;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
-import com.itsaky.lsp.LanguageClient;
 import net.lingala.zip4j.ZipFile;
 
 public class StudioApp extends MultiDexApplication
@@ -166,9 +159,7 @@ public class StudioApp extends MultiDexApplication
         if(!(gson && jls && proto)) {
             try {
                 extractJls();
-            } catch (Throwable e) {
-                Logger.instance("StudioApp").e(ThrowableUtils.getFullStackTrace(e));
-            }
+            } catch (Throwable e) {}
         }
     }
 
@@ -179,9 +170,7 @@ public class StudioApp extends MultiDexApplication
             ZipFile file = new ZipFile(jlsZip, ConstantsBridge.JLS_ZIP_PASSWORD_HASH.toCharArray());
             file.extractAll(Environment.JLS_HOME.getAbsolutePath());
             FileUtils.delete(jlsZip);
-        } catch (Throwable th) {
-            Logger.instance("UnzipJLS").e(ThrowableUtils.getFullStackTrace(th));
-        }
+        } catch (Throwable th) {}
     }
     
     private boolean setupLibsIfNeeded() {

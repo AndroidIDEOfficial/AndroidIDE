@@ -15,7 +15,6 @@
  */
 package io.github.rosemoe.editor.text;
 
-import android.util.Log;
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.util.IntPair;
 import java.util.List;
@@ -300,9 +299,7 @@ public final class Cursor {
                         String sub = line.substring(0, getLeftColumn());
                         try {
                             count += mLanguage.getIndentAdvance(sub);
-                        } catch (Exception e) {
-                            Log.w("EditorCursor", "Language object error", e);
-                        }
+                        } catch (Exception e) {}
                         StringBuilder sb = new StringBuilder(text);
                         sb.insert(1, createIndent(count));
                         text = sb;

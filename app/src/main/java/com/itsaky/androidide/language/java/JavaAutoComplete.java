@@ -33,6 +33,7 @@ public class JavaAutoComplete implements AutoCompleteProvider {
 	public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(CodeEditor editor, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
         final JavaLanguageServer server = StudioApp.getInstance().getJavaLanguageServer();
         if(server != null) {
+            if(lastId != -1) server.cancelRequest(lastId);
             TextDocumentIdentifier id = new TextDocumentIdentifier();
             id.uri = editor.getFile().toURI();
             TextDocumentPositionParams p = new TextDocumentPositionParams();

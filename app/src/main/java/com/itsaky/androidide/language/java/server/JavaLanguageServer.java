@@ -1,5 +1,6 @@
 package com.itsaky.androidide.language.java.server;
 
+import android.annotation.SuppressLint;
 import androidx.core.util.Pair;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
@@ -7,12 +8,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.CancelParams;
 import com.itsaky.lsp.CodeActionParams;
@@ -20,6 +19,7 @@ import com.itsaky.lsp.CompletionItem;
 import com.itsaky.lsp.CompletionList;
 import com.itsaky.lsp.DidChangeConfigurationParams;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
+import com.itsaky.lsp.DidChangeWatchedFilesParams;
 import com.itsaky.lsp.DidCloseTextDocumentParams;
 import com.itsaky.lsp.DidOpenTextDocumentParams;
 import com.itsaky.lsp.DidSaveTextDocumentParams;
@@ -31,12 +31,12 @@ import com.itsaky.lsp.JavaStartProgressParams;
 import com.itsaky.lsp.LanguageClient;
 import com.itsaky.lsp.Message;
 import com.itsaky.lsp.PublishDiagnosticsParams;
+import com.itsaky.lsp.SignatureHelp;
 import com.itsaky.lsp.TextDocumentPositionParams;
 import com.itsaky.lsp.TextEdit;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -46,9 +46,6 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import com.itsaky.lsp.DidChangeWatchedFilesParams;
-import com.itsaky.lsp.SignatureHelp;
-import android.annotation.SuppressLint;
 
 public class JavaLanguageServer implements ShellServer.Callback {
 

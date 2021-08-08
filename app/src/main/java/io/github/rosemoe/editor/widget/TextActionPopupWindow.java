@@ -19,7 +19,6 @@ import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -181,7 +180,6 @@ public class TextActionPopupWindow extends TextComposeBasePopup implements View.
             int panelX = (int) ((handleLeftX + handleRightX) / 2f);
             panel.setExtendedX(mDpUnit * 28);
             panel.setExtendedY(panelY);
-            Log.d("onTextSelectionEnd", "panelX: " + panelX + ", panelY: " + panelY);
             panel.show();
             mContainer.requestFocus();
             //mSelectAll.clearFocus();

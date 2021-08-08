@@ -21,7 +21,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import com.itsaky.androidide.utils.Logger;
 
 public class XMLCompletionService {
 	private HashMap<String, Attr> attrs;

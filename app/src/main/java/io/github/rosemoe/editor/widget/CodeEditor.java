@@ -33,7 +33,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.MutableInt;
 import android.util.TypedValue;
 import android.view.ActionMode;
@@ -760,7 +759,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
         mLanguageSymbolPairs = mLanguage.getSymbolPairs();
         if (mLanguageSymbolPairs == null) {
-            Log.w(LOG_TAG, "Language(" + mLanguage.toString() + ") returned null for symbol pairs. It is a mistake.");
             mLanguageSymbolPairs = new SymbolPairMatch();
         }
         mLanguageSymbolPairs.setParent(mOverrideSymbolPairs);
@@ -991,7 +989,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private void print() {
         double time = (System.nanoTime() - startClock) / 1e6;
         if (time > 3.0) {
-            Log.d(LOG_TAG, "Fatal: drawView() used " + time + " ms");
         }
     }
 	
@@ -1057,13 +1054,13 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         postDrawLineNumbers.clear();
         LongArrayList postDrawCurrentLines = new LongArrayList();
         List<CursorPaintAction> postDrawCursor = new ArrayList<>();
-		MutableInt firstLn = isFirstLineNumberAlwaysVisible() ? new MutableInt(-1) : null;
+		MutableInt firstLn = isFirstLineNumberAlwaysVisible() && isWordwrap() ? new MutableInt(-1) : null;
         
         drawRows(canvas, textOffset, postDrawLineNumbers, postDrawCursor, postDrawCurrentLines, firstLn);
         
         offsetX = -getOffsetX();
 		
-        if (lineNumberNotPinned) {
+        if (isLineNumberEnabled() && lineNumberNotPinned) {
             drawLineNumberBackground(canvas, offsetX, lineNumberWidth + mDividerMargin, color.getColor(EditorColorScheme.LINE_NUMBER_BACKGROUND));
             drawDivider(canvas, offsetX + lineNumberWidth + mDividerMargin, color.getColor(EditorColorScheme.LINE_DIVIDER));
             int lineNumberColor = mColors.getColor(EditorColorScheme.LINE_NUMBER);
@@ -3129,7 +3126,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mPaint.setTypeface(typefaceText);
         mFontCache.clearCache();
         if (2 * mPaint.measureText("/") != mPaint.measureText("//")) {
-            Log.w(LOG_TAG, "Font issue:Your font is painting '/' and '//' differently, which will cause the editor to render slowly than other fonts.");
             mCharPaint = true;
         } else {
             mCharPaint = false;
@@ -3574,7 +3570,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 		
         if (start > end) {
             setSelectionRegion(lineRight, columnRight, lineLeft, columnLeft, makeRightVisible);
-            Log.w(LOG_TAG, "setSelectionRegion() error: start > end:start = " + start + " end = " + end + " lineLeft = " + lineLeft + " columnLeft = " + columnLeft + " lineRight = " + lineRight + " columnRight = " + columnRight);
             return;
         }
         boolean lastState = mCursor.isSelected();
@@ -4202,7 +4197,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                                             continue;
                                         }
                                     } catch (Exception e) {
-                                        Log.w(LOG_TAG, "Error occurred while calling Language's NewlineHandler", e);
                                     }
                                     break;
                                 }
@@ -4342,9 +4336,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.EXACTLY);
             warn = true;
         }
-        if (warn) {
-            Log.i(LOG_TAG, "onMeasure():Code editor does not support wrap_content mode when measuring.It will just fill the whole space.");
-        }
+        
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 

@@ -19,7 +19,6 @@ import android.os.SystemClock;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.inputmethod.BaseInputConnection;
@@ -38,7 +37,7 @@ import io.github.rosemoe.editor.text.Cursor;
 class EditorInputConnection extends BaseInputConnection {
 
     private final static String LOG_TAG = "EditorInputConnection";
-    final static int TEXT_LENGTH_LIMIT = 1000000;
+    final static int TEXT_LENGTH_LIMIT = 10000000;
 
     private final CodeEditor mEditor;
     protected int mComposingLine = -1;
@@ -157,7 +156,6 @@ class EditorInputConnection extends BaseInputConnection {
         try {
             return getTextRegionInternal(start, end, flags);
         } catch (IndexOutOfBoundsException e) {
-            Log.w(LOG_TAG, "Failed to get text region for IME", e);
             return "";
         }
     }
@@ -467,7 +465,6 @@ class EditorInputConnection extends BaseInputConnection {
             mComposingEnd = endPos.column;
             mEditor.invalidate();
         } catch (IndexOutOfBoundsException e) {
-            Log.w(LOG_TAG, "set composing region for IME failed", e);
             return false;
         }
         return true;

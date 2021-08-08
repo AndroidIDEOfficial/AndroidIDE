@@ -1,9 +1,8 @@
 package com.itsaky.androidide.models;
 
-import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.language.java.server.JavaLanguageServer;
-import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.CompletionItem;
 import com.itsaky.lsp.CompletionItemKind;
 import com.itsaky.lsp.Position;
@@ -13,7 +12,6 @@ import com.itsaky.lsp.TextEdit;
 import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.List;
-import com.itsaky.androidide.language.java.manager.JavaCharacter;
 
 public class CompletionItemWrapper implements SuggestItem, Comparable {
     
@@ -96,9 +94,7 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
                     }
                 }
             }
-        } catch (Throwable th) {
-            Logger.instance("CompletionItemWrapper").e("onSelectThis, Error: ", ThrowableUtils.getFullStackTrace(th));
-        }
+        } catch (Throwable th) {}
     }
     
     private void requestSignature(CodeEditor editor) {

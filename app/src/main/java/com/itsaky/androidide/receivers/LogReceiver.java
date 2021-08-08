@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.androidide.utils.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
