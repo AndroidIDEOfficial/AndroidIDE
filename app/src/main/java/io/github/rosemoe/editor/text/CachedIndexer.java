@@ -342,7 +342,8 @@ public class CachedIndexer implements Indexer, ContentListener {
 
     @Override
     public int getCharIndex(int line, int column) {
-        return getCharPosition(line, column).index;
+        CharPosition pos = getCharPosition(line, column);
+        return pos == null ? 0 : pos.index;
     }
 
     @Override
@@ -377,7 +378,8 @@ public class CachedIndexer implements Indexer, ContentListener {
     @Override
     public CharPosition getCharPosition(int line, int column) {
         throwIfHas();
-        mContent.checkLineAndColumn(line, column, true);
+        if(!mContent.checkLineAndColumn(line, column, true))
+            return new CharPosition().zero();
         CharPosition pos = findNearestByLine(line);
         CharPosition res;
         if (pos.line == line) {

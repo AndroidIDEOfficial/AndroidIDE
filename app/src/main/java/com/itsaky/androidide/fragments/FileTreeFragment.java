@@ -35,18 +35,8 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 	private FileActionListener mFileActionListener;
 	private AndroidProject mProject;
 	private TreeNode mRoot;
-	private ArrayList<String> compatibleExtensions = new ArrayList<>();
-
+	
 	public FileTreeFragment() {
-		compatibleExtensions = new ArrayList<>();
-		compatibleExtensions.add(".java"); // Java
-		compatibleExtensions.add(".kt"); // Kotlin
-		compatibleExtensions.add(".xml"); // XML
-		compatibleExtensions.add(".json"); // JSON
-		compatibleExtensions.add(".gradle"); // Gradle
-		compatibleExtensions.add(".txt"); // Text
-		compatibleExtensions.add(".properties"); // properties (User may need to edit gradle.properties)
-		compatibleExtensions.add(".md"); // MarkDown (to edit README.md and other files)
 	}
 
 	public FileTreeFragment setFileActionListener(FileActionListener listener) {
@@ -177,6 +167,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 		final File gradleHome = Environment.GRADLE_PROPS_DIR;
         final File root = StudioApp.getInstance().getRootDir().getParentFile();
         File projectDir = new File(mProject.getProjectPath());
+//        projectDir = root;
 		mRoot = TreeNode.root(projectDir);
 		if(gradleHome.exists() && gradleHome.isDirectory()) {
 			if(!gradleProps.exists())

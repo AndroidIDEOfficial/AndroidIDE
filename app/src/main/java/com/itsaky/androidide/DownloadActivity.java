@@ -25,6 +25,9 @@ import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import com.itsaky.androidide.utils.Logger;
 
 public class DownloadActivity extends StudioActivity {
 	
@@ -99,14 +102,14 @@ public class DownloadActivity extends StudioActivity {
 				if(f.getName().endsWith(".tar.xz")) {
 					sb.append("$BUSYBOX tar xvJf '" + f.getAbsolutePath() + "' && ");
 				} else if(f.getName().endsWith(".zip")) {
-					sb.append("$BUSYBOX unzip '" + f.getAbsolutePath() + "'");
+					sb.append("$BUSYBOX unzip '" + f.getAbsolutePath() + "' && ");
 				}
 			}
 		sb.append("rm -rf '" + getApp().getToolsDownloadDirectory().getAbsolutePath() + "' && ");
 		sb.append("echo " + DONE);
 		server.bgAppend(sb.toString());
 	}
-
+    
 	private void checkInstalled(CharSequence out) {
 		if(out != null) {
 			final String line = out.toString().trim();

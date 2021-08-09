@@ -180,7 +180,7 @@ public class Content implements CharSequence {
      * @return The character at the given position
      */
     public char charAt(int line, int column) {
-        checkLineAndColumn(line, column, true);
+        if(!checkLineAndColumn(line, column, true)) return 0;
         if (column == getColumnCount(line)) {
             return '\n';
         }
@@ -272,7 +272,7 @@ public class Content implements CharSequence {
      * @param text   The text you want to insert at the position
      */
     public void insert(int line, int column, CharSequence text) {
-        checkLineAndColumn(line, column, true);
+        if(!checkLineAndColumn(line, column, true)) return;
         if (text == null) {
             throw new IllegalArgumentException("text can not be null");
         }
@@ -334,8 +334,8 @@ public class Content implements CharSequence {
     public void delete(int startLine, int columnOnStartLine, int endLine, int columnOnEndLine) {
         StringBuilder changedContent = new StringBuilder();
         if (startLine == endLine) {
-            checkLineAndColumn(endLine, columnOnEndLine, true);
-            checkLineAndColumn(startLine, columnOnStartLine == -1 ? 0 : columnOnStartLine, true);
+            if(!checkLineAndColumn(endLine, columnOnEndLine, true)) return;
+            if(!checkLineAndColumn(startLine, columnOnStartLine == -1 ? 0 : columnOnStartLine, true)) return;
             int beginIdx = columnOnStartLine;
             if (columnOnStartLine == -1) {
                 beginIdx = 0;
@@ -375,8 +375,8 @@ public class Content implements CharSequence {
                 }
             }
         } else if (startLine < endLine) {
-            checkLineAndColumn(startLine, columnOnStartLine, true);
-            checkLineAndColumn(endLine, columnOnEndLine, true);
+            if(!checkLineAndColumn(startLine, columnOnStartLine, true)) return;
+            if(!checkLineAndColumn(endLine, columnOnEndLine, true)) return;
 
             //-----Notify------
             if (mCursor != null)
@@ -769,12 +769,7 @@ public class Content implements CharSequence {
     }
 	
 	public boolean isPositionValid(int line, int column) {
-		try {
-			checkLineAndColumn(line, column, true);
-			return true;
-		} catch (StringIndexOutOfBoundsException e) {
-			return false;
-		}
+		return checkLineAndColumn(line, column, true);
 	}
 
     /**
@@ -795,13 +790,14 @@ public class Content implements CharSequence {
      * @param column     The column to check
      * @param allowEqual Whether allow (column == getColumnCount(line))
      */
-    protected void checkLineAndColumn(int line, int column, boolean allowEqual) {
+    protected boolean checkLineAndColumn(int line, int column, boolean allowEqual) {
         checkLine(line);
         int len = mLines.get(line).length();
         if (column > len || (!allowEqual && column == len)) {
-            throw new StringIndexOutOfBoundsException(
-                    "Column " + column + " out of bounds.line: " + line + " ,column count:" + len);
+            return false;
         }
+        
+        return true;
     }
 
 }

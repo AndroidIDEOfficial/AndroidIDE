@@ -601,7 +601,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private void showViewOptions() {
         try {
             EditorFragment frag = mPagerAdapter.getFrag(mBinding.tabs.getSelectedTabPosition());
-            if(frag != null) {
+            if(frag != null && frag.getEditor() != null) {
                 frag.getEditor().hideAutoCompleteWindow();
                 frag.getEditor().hideDiagnosticWindow();
             }

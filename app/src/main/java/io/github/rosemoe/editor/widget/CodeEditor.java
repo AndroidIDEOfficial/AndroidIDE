@@ -4406,6 +4406,14 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     public void setJLSRequestor(JLSRequestor requestor) {
         this.jlsRequestor = requestor;
     }
+    
+    public void commentSelected() {
+        
+    }
+    
+    public void uncommentSelected() {
+        
+    }
 
     @Override
     public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {

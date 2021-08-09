@@ -44,7 +44,6 @@ import org.antlr.v4.runtime.Token;
 public class EditorFragment extends BaseFragment implements EditorEventListener {
 	
 	public FragmentEditorBinding binding;
-    private CodeEditor editor;
 	private File mFile;
 	private boolean isRead = false;
 	private boolean isModified = false;
@@ -75,7 +74,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         if(mJavaLanguage != null) {
             JavaLanguageAnalyzer analyzer = (JavaLanguageAnalyzer) mJavaLanguage.getAnalyzer();
             analyzer.setJavaColors(colors);
-            editor.notifySpansChanged();
+            binding.editor.notifySpansChanged();
         }
     }
     
@@ -94,7 +93,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     }
     
     public CodeEditor getEditor() {
-        return editor;
+        return binding.editor;
     }
 
 	@Override
@@ -122,37 +121,34 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		mFile = new File(getArguments().getString(KEY_FILE_PATH));
 		project = getArguments().getParcelable(KEY_PROJECT);
         
-        editor = new CodeEditor(getContext());
-		editor.setOverScrollEnabled(false);
-		editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
-		editor.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
-		editor.setHighlightCurrentBlock(true);
-		editor.setEventListener(this);
-        editor.setAutoCompletionOnComposing(true);
-        editor.setAutoCompletionItemAdapter(new CompletionListAdapter());
-		editor.setLineColorsEnabled(true);
-		editor.setDividerWidth(SizeUtils.dp2px(1));
-        editor.setJLSRequestor(jlsRequestor);
-        
-        binding.getRoot().addView(editor, new ViewGroup.LayoutParams(-1, -1));
+		binding.editor.setOverScrollEnabled(false);
+		binding.editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
+		binding.editor.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
+		binding.editor.setHighlightCurrentBlock(true);
+		binding.editor.setEventListener(this);
+        binding.editor.setAutoCompletionOnComposing(true);
+        binding.editor.setAutoCompletionItemAdapter(new CompletionListAdapter());
+		binding.editor.setLineColorsEnabled(true);
+		binding.editor.setDividerWidth(SizeUtils.dp2px(1));
+        binding.editor.setJLSRequestor(jlsRequestor);
         
 		configureEditorIfNeeded();
 		
 		new TaskExecutor().executeAsync(new ReadFileTask(mFile), result -> {
-			editor.setText(result);
+			binding.editor.setText(result);
 			postRead();
 		});
 	}
 	
 	public void setDiagnostics(List<Diagnostic> diags) {
-		if(editor != null && diags != null) {
+		if(binding.editor != null && diags != null) {
             Map<Range, Diagnostic> map = new HashMap<>();
             for(int i=0;i<diags.size();i++) {
                 final Diagnostic d = diags.get(i);
                 if(d == null) continue;
                 map.put(d.range, d);
             }
-            editor.setDiagnostics(map);
+            binding.editor.setDiagnostics(map);
         }
 	}
 	
@@ -165,7 +161,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 			float textSize = prefs.getFloat(EditorPreferences.KEY_EDITOR_FONT_SIZE);
 			if(textSize < 6 || textSize > 32)
 				textSize = 14;
-			editor.setTextSize(textSize);
+			binding.editor.setTextSize(textSize);
 			ConstantsBridge.EDITORPREF_SIZE_CHANGED = false;
 		}
 		
@@ -182,12 +178,12 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 			if(prefs.getBoolean(PreferenceManager.KEY_EDITORFLAG_LINE_BREAK, true))
 				flags |= CodeEditor.FLAG_DRAW_LINE_SEPARATOR;
 
-			editor.setNonPrintablePaintingFlags(flags);
+			binding.editor.setNonPrintablePaintingFlags(flags);
 			ConstantsBridge.EDITORPREF_FLAGS_CHANGED = false;
 		}
 		
 		if(drawHexChanged) {
-			editor.setLineColorsEnabled(prefs.getBoolean(PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
+			binding.editor.setLineColorsEnabled(prefs.getBoolean(PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
 			ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED = false;
 		}
 		
@@ -195,7 +191,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
     
     public String getText() {
-        return editor.getText().toString();
+        return binding.editor.getText().toString();
     }
 	
 	public boolean isModified() {
@@ -203,17 +199,18 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
 	
 	public void undo() {
-		if(editor.canUndo())
-			editor.undo();
+		if(binding.editor.canUndo())
+			binding.editor.undo();
 	}
 	
 	public void redo() {
-		if(editor.canRedo())
-			editor.redo();
+		if(binding.editor.canRedo())
+			binding.editor.redo();
 	}
 
 	public void save() {
-        final String text = editor.getText().toString();
+        if(mFile == null || binding == null || binding.editor == null || binding.editor.getText() == null) return;
+        final String text = binding.editor.getText().toString();
         final boolean wrote = FileIOUtils.writeFileFromString(mFile, text);
 		notifySaved(wrote, text);
 		isModified = false;
@@ -230,17 +227,17 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
 	
 	private void postRead() {
-        editor.setFile(getFile());
+        binding.editor.setFile(getFile());
 		if (mFile.isFile() && mFile.getName().endsWith(EXT_JAVA)) {
-			editor.setEditorLanguage(mJavaLanguage = new JavaLanguage(project));
+			binding.editor.setEditorLanguage(mJavaLanguage = new JavaLanguage(project));
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_XML)) {
-			editor.setEditorLanguage(new XMLLanguage());
+			binding.editor.setEditorLanguage(new XMLLanguage());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_GRADLE)) {
-			editor.setEditorLanguage(new GroovyLanguage());
+			binding.editor.setEditorLanguage(new GroovyLanguage());
 		} else {
-			editor.setEditorLanguage(new EmptyLanguage());
+			binding.editor.setEditorLanguage(new EmptyLanguage());
 		}
-        editor.setColorScheme(new SchemeAndroidIDE());
+        binding.editor.setColorScheme(new SchemeAndroidIDE());
 		isRead = true;
         if(openListener != null)
             openListener.onOpenSuccessful(getFile(), getText());
@@ -279,7 +276,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
                 } else wasOpen = wasSlash = false;
             }
             if(currentNames.size() > 0) {
-                editor.getText().insert(line, col + 2, currentNames.get(0));
+                binding.editor.getText().insert(line, col + 2, currentNames.get(0));
             }
         } catch (Throwable th) {}
 	}
@@ -334,12 +331,14 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
 
     private void requestSignature() {
-        if (jlsRequestor != null) {
-            TextDocumentPositionParams p = new TextDocumentPositionParams();
-            p.textDocument = new TextDocumentIdentifier(getFile().toURI());
-            p.position = new Position(editor.getCursor().getLeftLine(), editor.getCursor().getLeftColumn());
-            jlsRequestor.signatureHelp(p, getFile());
-        }
+        try {
+            if (jlsRequestor != null) {
+                TextDocumentPositionParams p = new TextDocumentPositionParams();
+                p.textDocument = new TextDocumentIdentifier(getFile().toURI());
+                p.position = new Position(binding.editor.getCursor().getLeftLine(), binding.editor.getCursor().getLeftColumn());
+                jlsRequestor.signatureHelp(p, getFile());
+            }
+        } catch (Throwable th) {}
     }
 
 	@Override
@@ -348,12 +347,14 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     
     private void notifySaved(boolean wrote, String text) {
         if (wrote && jlsRequestor != null) {
-            TextDocumentIdentifier id = new TextDocumentIdentifier();
-            id.uri = mFile.toURI();
-            DidSaveTextDocumentParams p = new DidSaveTextDocumentParams();
-            p.text = text;
-            p.textDocument = id;
-            jlsRequestor.didSave(p);
+            try {
+                TextDocumentIdentifier id = new TextDocumentIdentifier();
+                id.uri = mFile.toURI();
+                DidSaveTextDocumentParams p = new DidSaveTextDocumentParams();
+                p.text = text;
+                p.textDocument = id;
+                jlsRequestor.didSave(p);
+            } catch (Throwable th) {}
         }
     }
     

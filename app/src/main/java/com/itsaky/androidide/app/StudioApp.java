@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import net.lingala.zip4j.ZipFile;
+import com.blankj.utilcode.util.ZipUtils;
 
 public class StudioApp extends MultiDexApplication
 {
@@ -87,6 +88,7 @@ public class StudioApp extends MultiDexApplication
 		newShell(line -> handleLog(line)).bgAppend("logcat -v threadtime");
         setupLibsIfNeeded();
         extractJlsIfNeeded();
+        extractLogsenderIfNeeded();
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			createNotificationChannels();
@@ -198,6 +200,14 @@ public class StudioApp extends MultiDexApplication
         if(lib.exists()) 
             FileUtils.delete(lib.getParentFile());
         return lib.mkdirs() && ResourceUtils.copyFileFromAssets(getAssetsDataFile("lib"), lib.getAbsolutePath());
+    }
+    
+    private void extractLogsenderIfNeeded() {
+        try {
+            final File logsenderZip = new File(Environment.JLS_HOME, "logsender.zip");
+            ResourceUtils.copyFileFromAssets("data/logsender.zip", logsenderZip.getAbsolutePath());
+            ZipUtils.unzipFile(logsenderZip, Environment.HOME);
+        } catch (IOException e) {}
     }
     
 	private File getBusybox() {
@@ -391,7 +401,7 @@ public class StudioApp extends MultiDexApplication
     }
 	
 	private void handleCrash(Thread thread, Throwable th) {
-		if(DEBUG)
+		if(true/*DEBUG*/)
 			writeException(th);
 		if(this.uncaughtExceptionHandler != null) {
 			this.uncaughtExceptionHandler.uncaughtException(thread, th);
@@ -466,35 +476,49 @@ public class StudioApp extends MultiDexApplication
     }
 	
 	public void openTelegramGroup() {
-		Intent open = new Intent();
-		open.setAction(Intent.ACTION_VIEW);
-		open.setData(Uri.parse(StudioApp.TELEGRAM_GROUP_URL));
-		open.setPackage("org.telegram.messenger");
-		open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(open);
+		try {
+            Intent open = new Intent();
+            open.setAction(Intent.ACTION_VIEW);
+            open.setData(Uri.parse(StudioApp.TELEGRAM_GROUP_URL));
+            open.setPackage("org.telegram.messenger");
+            open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(open);
+        } catch (Throwable th) {
+            Intent open = new Intent();
+            open.setAction(Intent.ACTION_VIEW);
+            open.setData(Uri.parse(StudioApp.TELEGRAM_GROUP_URL));
+            open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(open);
+        }
 	}
 	
 	public void openIssueTracker() {
-		Intent open = new Intent();
-		open.setAction(Intent.ACTION_VIEW);
-		open.setData(Uri.parse(StudioApp.SUGGESTIONS_URL));
-		open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(open);
+		try {
+            Intent open = new Intent();
+            open.setAction(Intent.ACTION_VIEW);
+            open.setData(Uri.parse(StudioApp.SUGGESTIONS_URL));
+            open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(open); 
+        } catch (Throwable th) {}
 	}
     
     public void openWebsite() {
-        Intent open = new Intent();
-        open.setAction(Intent.ACTION_VIEW);
-        open.setData(Uri.parse(StudioApp.WEBSITE));
-        open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(open);
+        try {
+            Intent open = new Intent();
+            open.setAction(Intent.ACTION_VIEW);
+            open.setData(Uri.parse(StudioApp.WEBSITE));
+            open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(open);
+        } catch (Throwable th) {}
 	}
     
     public void emailUs() {
-        Intent open = new Intent();
-        open.setAction(Intent.ACTION_VIEW);
-        open.setData(Uri.parse("mailto:" + EMAIL));
-        open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(open);
+        try {
+            Intent open = new Intent();
+            open.setAction(Intent.ACTION_VIEW);
+            open.setData(Uri.parse("mailto:" + EMAIL));
+            open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(open);
+        } catch (Throwable th) {}
     }
 }

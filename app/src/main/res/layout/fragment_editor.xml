@@ -5,4 +5,9 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
     
+    <com.itsaky.androidide.views.Editor
+        android:id="@+id/editor"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"/>
+    
 </LinearLayout>
