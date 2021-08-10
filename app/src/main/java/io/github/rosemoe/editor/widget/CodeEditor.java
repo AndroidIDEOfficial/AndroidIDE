@@ -96,6 +96,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.itsaky.androidide.utils.Logger;
+import com.blankj.utilcode.util.ThrowableUtils;
+import com.itsaky.lsp.TextDocumentPositionParams;
+import com.itsaky.lsp.TextDocumentIdentifier;
+import com.itsaky.lsp.ReferenceParams;
+import com.itsaky.lsp.ReferenceContext;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -4413,6 +4419,31 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     
     public void uncommentSelected() {
         
+    }
+    
+    public void findDefinition() {
+        if(jlsRequestor == null || getFile() == null) return;
+        try {
+            TextDocumentPositionParams params = new TextDocumentPositionParams();
+            params.position = new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
+            params.textDocument = new TextDocumentIdentifier(getFile().toURI());
+            jlsRequestor.findDefinition(params);
+        } catch (Throwable th) {
+            Logger.instance("CodeEditor").e(ThrowableUtils.getFullStackTrace(th));
+        }
+    }
+    
+    public void findReferences() {
+        if(jlsRequestor == null || getFile() == null) return;
+        try {
+            ReferenceParams params = new ReferenceParams();
+            params.context = new ReferenceContext(true);
+            params.position = new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
+            params.textDocument = new TextDocumentIdentifier(getFile().toURI());
+            jlsRequestor.findReferences(params);
+        } catch (Throwable th) {
+            Logger.instance("CodeEditor").e(ThrowableUtils.getFullStackTrace(th));
+        }
     }
 
     @Override

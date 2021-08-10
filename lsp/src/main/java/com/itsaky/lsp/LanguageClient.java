@@ -2,6 +2,7 @@ package com.itsaky.lsp;
 
 import com.google.gson.JsonElement;
 import java.io.File;
+import java.util.List;
 
 public interface LanguageClient {
     void javaProgressStart(JavaStartProgressParams params);
@@ -9,6 +10,9 @@ public interface LanguageClient {
     void javaProgressEnd();
     
     void publishDiagnostics(PublishDiagnosticsParams params);
+    
+    void gotoDefinition(List<Location> locations);
+    void references(List<Location> references);
     void signatureHelp(SignatureHelp signature, File file);
     void javaColors(JavaColors colors);
     

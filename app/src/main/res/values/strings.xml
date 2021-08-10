@@ -1,4 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="view_search_results">Search results</string>
+    <string name="msg_no_definition">Definition not found</string>
+    <string name="msg_no_references">No references found</string>
     <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK can be found in the JDK itself or at : </string>
     <string name="title_developers">Developers</string>
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>

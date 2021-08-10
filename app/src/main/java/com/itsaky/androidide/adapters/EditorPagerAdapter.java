@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import com.itsaky.androidide.interfaces.JLSRequestor;
+import com.itsaky.lsp.Range;
 
 public class EditorPagerAdapter extends FragmentStatePagerAdapter
 {
@@ -36,21 +37,28 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter
 		mFragments.addAll(fragments);
 	}
     
-    public EditorFragment findEditorByFile(File file) {
+    public int findIndexOfEditorByFile(File file) {
         for(int i=0;i<mFragments.size();i++) {
             Fragment frag = mFragments.get(i);
             if(!(frag instanceof EditorFragment))
                 continue;
-                
+
             EditorFragment editor = (EditorFragment) frag;
             if(editor.getFile() != null && editor.getFile().getAbsolutePath().equals(file.getAbsolutePath()))
-                return editor;
+                return i;
         }
-        
+
+        return -1;
+    }
+    
+    public EditorFragment findEditorByFile(File file) {
+        int index = findIndexOfEditorByFile(file);
+        if(index != -1)
+            return getFrag(index);
         return null;
     }
 	
-	public int openFile(File file, EditorFragment.FileOpenListener listener, JLSRequestor jlsRequestor)
+	public int openFile(File file, Range selection, EditorFragment.FileOpenListener listener, JLSRequestor jlsRequestor)
 	{
 		int openedFileIndex = -1;
 		for(int i=0;i<mOpenedFiles.size();i++)
@@ -66,7 +74,7 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter
 		if(openedFileIndex == -1)
 		{
 			mFragments.add(EditorFragment
-                   .newInstance(file, project)
+                   .newInstance(file, project, selection)
                    .setFileOpenListener(listener)
                    .setJLSRequestor(jlsRequestor));
 			mOpenedFiles.add(file);

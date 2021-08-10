@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -33,6 +31,7 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -43,6 +42,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorPagerAdapter;
+import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
@@ -67,12 +67,14 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.androidide.utils.ProjectWriter;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.androidide.views.MaterialBanner;
+import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.DidChangeWatchedFilesParams;
@@ -85,9 +87,12 @@ import com.itsaky.lsp.JavaColors;
 import com.itsaky.lsp.JavaReportProgressParams;
 import com.itsaky.lsp.JavaStartProgressParams;
 import com.itsaky.lsp.LanguageClient;
+import com.itsaky.lsp.Location;
 import com.itsaky.lsp.Message;
 import com.itsaky.lsp.ParameterInformation;
 import com.itsaky.lsp.PublishDiagnosticsParams;
+import com.itsaky.lsp.Range;
+import com.itsaky.lsp.ReferenceParams;
 import com.itsaky.lsp.ShowMessageParams;
 import com.itsaky.lsp.SignatureHelp;
 import com.itsaky.lsp.SignatureInformation;
@@ -108,7 +113,6 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-import com.itsaky.androidide.views.SymbolInputView;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -129,6 +133,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private CodeEditor buildView;
 	private CodeEditor logView;
     private RecyclerView diagnosticList;
+    private RecyclerView searchResultList;
     private SymbolInputView symbolInput;
 	
 	private LogLanguageImpl mLogLanguageImpl;
@@ -262,6 +267,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         if(getDiagnosticsList().getParent() != null && getDiagnosticsList().getParent() instanceof ViewGroup) {
             ((ViewGroup) getDiagnosticsList().getParent()).removeView(getDiagnosticsList());
 		}
+        
+        if(getSearchResultList().getParent() != null && getSearchResultList().getParent() instanceof ViewGroup) {
+            ((ViewGroup) getSearchResultList().getParent()).removeView(getSearchResultList());
+		}
 		
 		mBinding.buildOutcontainer.addView(getBuildView(), new ViewGroup.LayoutParams(-1, -1));
 		mBinding.buildContainer.setVisibility(View.GONE);
@@ -277,6 +286,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBinding.diagContainer.setVisibility(View.GONE);
         mBinding.diagToolbar.setNavigationOnClickListener(v -> hideDiagnostics());
 		mBinding.diagToolbar.setOnClickListener(v -> hideDiagnostics());
+        
+        mBinding.searchResultsListContainer.addView(getSearchResultList(), new ViewGroup.LayoutParams(-1, -1));
+        mBinding.searchResultsContainer.setVisibility(View.GONE);
+        mBinding.searchResultsToolbar.setNavigationOnClickListener(v -> hideSearchResults());
+		mBinding.searchResultsToolbar.setOnClickListener(v -> hideSearchResults());
 		
 		mBinding.viewOptionsCard.setVisibility(View.GONE);
 		mBinding.transformScrim.setVisibility(View.GONE);
@@ -284,6 +298,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.transformScrim.setOnClickListener(v -> hideViewOptions());
 		mBinding.viewBuildOut.setOnClickListener(v -> showBuildResult());
         mBinding.viewDiags.setOnClickListener(v -> showDiagnostics());
+        mBinding.viewSearchResults.setOnClickListener(v -> showSearchResults());
 		mBinding.viewLogs.setOnClickListener(v -> showLogResult());
 		mBinding.viewFiles.setOnClickListener(v -> showFiles());
 		mBinding.viewDaemonStatus.setOnClickListener(v -> showDaemonStatus());
@@ -334,6 +349,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             hideViewOptions();
 		} else if(mBinding.diagContainer.getVisibility() == View.VISIBLE) {
             hideDiagnostics();
+		} else if(mBinding.searchResultsContainer.getVisibility() == View.VISIBLE) {
+            hideSearchResults();
 		} else if(mFileOptionsFragment != null && mFileOptionsFragment.isShowing()) {
 			mFileOptionsFragment.dismiss();
 		} else {
@@ -661,6 +678,20 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBinding.diagContainer.setVisibility(View.GONE);
         mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
 	}
+    
+    private void showSearchResults() {
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewSearchResults, mBinding.searchResultsContainer));
+        mBinding.diagContainer.setVisibility(View.VISIBLE);
+        mBinding.viewOptionsCard.setVisibility(View.GONE);
+        hideToolbarAndTabs();
+    }
+
+    private void hideSearchResults() {
+        showToolbarAndTabs();
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.searchResultsContainer, mBinding.viewSearchResults));
+        mBinding.diagContainer.setVisibility(View.GONE);
+        mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
+	}
 	
 	private MaterialContainerTransform createContainerTransformFor(View start, View end) {
 		return createContainerTransformFor(start, end, mBinding.realContainer);
@@ -917,6 +948,72 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             server.signatureHelp(params, file);
         else addPendingMessage(createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
     }
+
+    @Override
+    public void findDefinition(TextDocumentPositionParams params) {
+        final JavaLanguageServer server = getApp().getJavaLanguageServer();
+        if(server == null) return;
+        server.findDefinition(params);
+    }
+
+    @Override
+    public void gotoDefinition(List<Location> locations) {
+        if(locations == null || locations.size() <= 0) {
+            getApp().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
+            return;
+        }
+        Location loc = locations.get(0);
+        final File file = new File(loc.uri);
+        final Range range = loc.range;
+        try {
+            if(mPagerAdapter == null) return;
+            if(mPagerAdapter.getCount() <= 0) {
+                openFile(file, range);
+                return;
+            }
+            EditorFragment frag = mPagerAdapter.getFrag(mBinding.tabs.getSelectedTabPosition());
+            if(frag != null
+            && frag.getFile() != null
+            && frag.getEditor() != null
+            && frag.getFile().getAbsolutePath().equals(file.getAbsolutePath())) {
+                if(range.start.equals(range.end)) {
+                    frag.getEditor().setSelection(range.start.line, range.start.character);
+                } else {
+                    frag.getEditor().setSelectionRegion(range.start.line, range.start.character, range.end.line, range.end.character);
+                }
+            } else {
+                openFile(file, range);
+                EditorFragment opened = mPagerAdapter.findEditorByFile(file);
+                if(opened != null && opened.getEditor() != null) {
+                    CodeEditor editor = opened.getEditor();
+                    editor.post(() -> {
+                        if(range.start.equals(range.end)) {
+                            editor.setSelection(range.start.line, range.start.character);
+                        } else {
+                            editor.setSelectionRegion(range.start.line, range.start.character, range.end.line, range.end.character);
+                        }
+                    });
+                }
+            }
+        } catch (Throwable th) {
+            Logger.instance().e(ThrowableUtils.getFullStackTrace(th));
+        }
+    }
+
+    @Override
+    public void findReferences(ReferenceParams params) {
+        final JavaLanguageServer server = getApp().getJavaLanguageServer();
+        if(server == null) return;
+        server.findReferences(params);
+    }
+
+    @Override
+    public void references(List<Location> references) {
+        if(references == null || references.size() <= 0) {
+            getApp().toast(R.string.msg_no_references, Toaster.Type.INFO);
+            return;
+        }
+    }
     
     private void addPendingMessage(Message msg) {
         pendingMessages.push(msg);
@@ -1105,6 +1202,17 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return diagnosticList;
     }
     
+    private RecyclerView getSearchResultList() {
+        return searchResultList == null ? createSearchResultList() : searchResultList;
+    }
+    
+    private RecyclerView createSearchResultList() {
+        searchResultList = new RecyclerView(this);
+        searchResultList.setLayoutManager(new LinearLayoutManager(this));
+        searchResultList.setAdapter(new SearchListAdapter());
+        return searchResultList;
+    }
+    
     private List<DiagnosticGroup> mapAsGroup(Map<File, List<Diagnostic>> diags) {
         List<DiagnosticGroup> groups = new ArrayList<>();
         if(diags == null || diags.size() <= 0)
@@ -1129,12 +1237,22 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	
 	@Override
 	public void openFile(File file) {
-		int i = mPagerAdapter.openFile(file, this, this);
-		if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
-			mBinding.tabs.getTabAt(i).select();
-		mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
-        invalidateOptionsMenu();
+		openFile(file, null);
 	}
+    
+    public EditorFragment openFile(File file, Range selection) {
+        if(selection == null) selection = Range.ofZero();
+        int i = mPagerAdapter.openFile(file, selection, this, this);
+        if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
+            mBinding.tabs.getTabAt(i).select();
+        mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
+        invalidateOptionsMenu();
+        try {
+            return mPagerAdapter.getFrag(i);
+        } catch (Throwable th) {
+            return null;
+        }
+    }
 
     @Override
     public void onOpenSuccessful(File file, String text) {

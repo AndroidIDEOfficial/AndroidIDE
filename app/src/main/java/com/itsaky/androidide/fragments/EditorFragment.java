@@ -57,6 +57,11 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     
 	public static final String KEY_FILE_PATH = "file_path";
 	public static final String KEY_PROJECT = "project";
+    public static final String KEY_LINE_START = "line_start";
+    public static final String KEY_LINE_END = "line_end";
+    public static final String KEY_COLUMN_START = "col_start";
+    public static final String KEY_COLUMN_END = "col_end";
+    
 	public static final String EXT_JAVA = ".java";
 	public static final String EXT_XML = ".xml";
 	public static final String EXT_HTML = ".html";
@@ -78,9 +83,13 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         }
     }
     
-	public static EditorFragment newInstance(File file, AndroidProject project) {
+	public static EditorFragment newInstance(File file, AndroidProject project, Range selection) {
 		Bundle bundle = new Bundle();
 		bundle.putString(KEY_FILE_PATH, file.getAbsolutePath());
+        bundle.putInt(KEY_LINE_START, selection.start.line);
+        bundle.putInt(KEY_LINE_END, selection.end.line);
+        bundle.putInt(KEY_COLUMN_START, selection.start.character);
+        bundle.putInt(KEY_COLUMN_END, selection.end.character);
 		bundle.putParcelable(KEY_PROJECT, project);
 		EditorFragment frag = new EditorFragment();
 		frag.setArguments(bundle);
@@ -134,11 +143,36 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         
 		configureEditorIfNeeded();
 		
+        final Range range = fromArgs(getArguments());
 		new TaskExecutor().executeAsync(new ReadFileTask(mFile), result -> {
 			binding.editor.setText(result);
 			postRead();
+            binding.editor.post(() -> {
+                if(range.start.equals(range.end)) {
+                    getEditor().setSelection(range.start.line, range.start.character);
+                } else {
+                    getEditor().setSelectionRegion(range.start.line, range.start.character, range.end.line, range.end.character);
+                }
+            });
 		});
 	}
+
+    private Range fromArgs(Bundle args) {
+        if(!(args.containsKey(KEY_LINE_START)
+         && args.containsKey(KEY_COLUMN_START)
+         && args.containsKey(KEY_LINE_END)
+         && args.containsKey(KEY_COLUMN_END)))
+            return Range.ofZero();
+            
+        return new Range(
+            new Position(
+                args.getInt(KEY_LINE_START),
+                args.getInt(KEY_COLUMN_START)),
+            new Position(
+                args.getInt(KEY_LINE_END),
+                args.getInt(KEY_COLUMN_END)
+                ));
+    }
 	
 	public void setDiagnostics(List<Diagnostic> diags) {
 		if(binding.editor != null && diags != null) {

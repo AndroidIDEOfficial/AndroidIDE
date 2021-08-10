@@ -31,6 +31,10 @@ public class Range {
         }
         return false;
     }
+    
+    public static Range ofZero() {
+        return new Range(new Position(0, 0), new Position(0, 0));
+    }
 
     public static final Range NONE = new Range(Position.NONE, Position.NONE);
 }

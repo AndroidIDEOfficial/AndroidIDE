@@ -12,6 +12,7 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.CancelParams;
 import com.itsaky.lsp.CodeActionParams;
@@ -37,6 +38,7 @@ import com.itsaky.lsp.TextEdit;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -46,6 +48,9 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import com.itsaky.lsp.Location;
+import com.google.gson.reflect.TypeToken;
+import com.itsaky.lsp.ReferenceParams;
 
 public class JavaLanguageServer implements ShellServer.Callback {
 
@@ -60,6 +65,8 @@ public class JavaLanguageServer implements ShellServer.Callback {
     
     private final ConcurrentHashMap<Integer, Integer> completionRequests = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, Integer> formattingRequests = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, Integer> definitionRequests = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, Integer> referencesRequests = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, File> signatureRequests = new ConcurrentHashMap<>();
     
     private final BlockingQueue<CompletionList> completionResponseQueue = new ArrayBlockingQueue<>(20);
@@ -226,6 +233,16 @@ public class JavaLanguageServer implements ShellServer.Callback {
         signatureRequests.put(id, file);
     }
     
+    public void findDefinition(TextDocumentPositionParams params) {
+        int id = write(Method.DEFINITION, gson.toJson(params));
+        definitionRequests.put(id, id);
+    }
+    
+    public void findReferences(ReferenceParams params) {
+        int id = write(Method.REFERENCES, gson.toJson(params));
+        referencesRequests.put(id, id);
+    }
+    
     public void cancelRequest(int requestId) {
         CancelParams p = new CancelParams();
         p.id = requestId;
@@ -266,12 +283,41 @@ public class JavaLanguageServer implements ShellServer.Callback {
 
     @Override
     public void output(CharSequence charSequence) {
+        writeOut(charSequence.toString());
+    }
+    
+    private BufferedOutputStream os;
+    private BufferedOutputStream os1;
+
+    private void writeOut(String data) {
+        try {
+            if(os == null) {
+                os = new BufferedOutputStream(new FileOutputStream(new File(FileUtil.getExternalStorageDir(), "ide_xlog/out.txt"), true));
+            }
+            os.write(data.getBytes());
+            os.flush();
+        } catch (Throwable th) {
+            logger.e(ThrowableUtils.getFullStackTrace(th));
+        }
+    }
+
+    private void writeOut2(String data) {
+        try {
+            if(os1 == null) {
+                os1 = new BufferedOutputStream(new FileOutputStream(new File(FileUtil.getExternalStorageDir(), "ide_xlog/verbose.txt"), true));
+            }
+            os1.write(data.getBytes());
+            os1.flush();
+        } catch (Throwable th) {
+            logger.e(ThrowableUtils.getFullStackTrace(th));
+        }
     }
     
     /**
      * This method is called on UI Thread, do not perform time consuming or networking tasks
      */
     private void onServerOut(String line) {
+        writeOut2(line + "\n");
         if(line.contains(CONTENT_LENGTH)) line = line.substring(0, line.lastIndexOf(CONTENT_LENGTH));
         if(this.client == null) return;
         try {
@@ -294,11 +340,10 @@ public class JavaLanguageServer implements ShellServer.Callback {
                     client.javaProgressEnd();
                 } else if(method.equals(Method.JAVA_COLORS)) {
                     JavaColors colors = gson.fromJson(obj.get(Key.PARAMS).toString(), JavaColors.class);
-                    logger.v(colors.toString());
                     client.javaColors(colors);
                 }
             } else if(obj.has(Key.ID)) {
-                int id = obj.get(Key.ID).getAsInt();
+                final int id = obj.get(Key.ID).getAsInt();
                 if(completionRequests.containsKey(id)) {
                     final CompletionList list = gson.fromJson(obj.get(Key.RESULT).getAsJsonObject(), CompletionList.class);
                     completionResponseQueue.put(list);
@@ -310,6 +355,22 @@ public class JavaLanguageServer implements ShellServer.Callback {
                         client.signatureHelp(signature, signatureRequests.get(id)); 
                     } catch ( Throwable th) {
                         client.signatureHelp(null, null);
+                    }
+                } else if(definitionRequests.containsKey(id)) {
+                    try {
+                        final List<Location> locations = gson.fromJson(obj.get(Key.RESULT).getAsJsonArray(), new TypeToken<List<Location>>(){}.getType());
+                        if(locations != null && locations.size() > 0)
+                            client.gotoDefinition(locations);
+                    } catch (Throwable th) {
+                        client.gotoDefinition(null);
+                    }
+                } else if(referencesRequests.containsKey(id)) {
+                    try {
+                        final List<Location> locations = gson.fromJson(obj.get(Key.RESULT).getAsJsonArray(), new TypeToken<List<Location>>(){}.getType());
+                        if(locations != null && locations.size() > 0)
+                            client.references(locations);
+                    } catch (Throwable th) {
+                        client.references(null);
                     }
                 }
             }
@@ -339,6 +400,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
         public static final String HOVER = "textDocument/hover";
         public static final String SIGNATURE_HELP = "textDocument/signatureHelp";
         public static final String DEFINITION = "textDocument/definition";
+        public static final String REFERENCES = "textDocument/references";
         
         public static final String PREPARE_RENAME = "textDocument/prepareRename";
         public static final String RENAME = "textDocument/rename";

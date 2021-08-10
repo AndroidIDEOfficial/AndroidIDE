@@ -18,7 +18,7 @@
 		android:ellipsize="end"
 		android:textColor="@color/primaryTextColor"
 		android:elevation="0dp"
-		android:background="@android:color/transparent"
+		android:background="@color/primaryDarkColor"
 		app:rippleColor="@color/rippleHighlightColor"
 		app:icon="@drawable/ic_chevron_down"
 		app:iconPadding="8dp"

@@ -7,6 +7,7 @@ import com.itsaky.lsp.DidOpenTextDocumentParams;
 import com.itsaky.lsp.DidSaveTextDocumentParams;
 import com.itsaky.lsp.TextDocumentPositionParams;
 import java.io.File;
+import com.itsaky.lsp.ReferenceParams;
 
 public interface JLSRequestor {
 
@@ -19,4 +20,6 @@ public interface JLSRequestor {
     void didChangeWatchedFiles(DidChangeWatchedFilesParams params);
     
     void signatureHelp(TextDocumentPositionParams params, File file);
+    void findDefinition(TextDocumentPositionParams params);
+    void findReferences(ReferenceParams params);
 }

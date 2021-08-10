@@ -68,7 +68,8 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                 menu.add(0, 3, 0, mEditor.getContext().getString(android.R.string.paste))
                         .setShowAsActionFlags(2)
                         .setIcon(array.getDrawable(3));
-
+                menu.add(0, 4, 0, "Go to Definition");
+                menu.add(0, 5, 0, "Find all references");
                 array.recycle();
                 return true;
             }
@@ -86,16 +87,22 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         break;
                     case 1:
                         mEditor.cutText();
-                        onExit();
                         break;
                     case 2:
                         mEditor.copyText();
-                        onExit();
                         break;
                     case 3:
                         mEditor.pasteText();
-                        onExit();
+                        break;
+                    case 4:
+                        mEditor.findDefinition();
+                        break;
+                    case 5:
+                        mEditor.findReferences();
+                        break;
                 }
+                if(menuItem.getItemId() != 0)
+                    onExit();
                 return false;
             }
 
@@ -126,6 +133,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
         int column = IntPair.getSecond(packed);
         mEditor.setSelection(line, column);
         mEditor.hideAutoCompleteWindow();
+        mEditor.hideDiagnosticWindow();
     }
 
     @Override
