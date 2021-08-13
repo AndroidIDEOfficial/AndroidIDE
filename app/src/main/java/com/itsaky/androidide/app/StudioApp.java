@@ -85,10 +85,12 @@ public class StudioApp extends MultiDexApplication
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         JavaCharacter.initMap();
         
-		newShell(line -> handleLog(line)).bgAppend("logcat -v threadtime");
         setupLibsIfNeeded();
         extractJlsIfNeeded();
         extractLogsenderIfNeeded();
+        extractCleanerIfNeeded();
+        
+        newShell(line -> handleLog(line)).bgAppend("androidide-cleaner && logcat -v threadtime");
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			createNotificationChannels();
@@ -97,6 +99,20 @@ public class StudioApp extends MultiDexApplication
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_UPDATE);
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_DEV_MSGS);
 	}
+
+    private void extractCleanerIfNeeded() {
+        File cleanerZip = new File(Environment.TMP_DIR, "bin.zip");
+        File cleaner = new File(Environment.BINDIR, "androidide-cleaner");
+        if(!cleaner.exists()) {
+            ResourceUtils.copyFileFromAssets("data/bin.zip", cleanerZip.getAbsolutePath());
+            try {
+                ZipUtils.unzipFile(cleanerZip, Environment.BINDIR);
+            } catch (Throwable e) {}
+        }
+        
+        if(cleaner.exists() && !cleaner.canExecute())
+            cleaner.setExecutable(true);
+    }
 	
 	private void handleLog(CharSequence seq) {
 		if(seq == null)

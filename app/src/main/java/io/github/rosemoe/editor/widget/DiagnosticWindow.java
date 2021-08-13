@@ -47,9 +47,9 @@ public class DiagnosticWindow extends EditorBasePopupWindow {
                 editor.getContext().getString(
                     com.itsaky.androidide.R.string.diagnostic_position,
                     ""+ (diagnostic.range.start.line + 1),
-                    ""+ (diagnostic.range.start.character + 1),
+                    ""+ (diagnostic.range.start.column + 1),
                     ""+ (diagnostic.range.end.line + 1),
-                    ""+ (diagnostic.range.end.character + 1)
+                    ""+ (diagnostic.range.end.column + 1)
                 )
             );
 

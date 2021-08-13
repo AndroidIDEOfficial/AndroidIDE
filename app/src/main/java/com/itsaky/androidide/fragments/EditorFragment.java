@@ -88,8 +88,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		bundle.putString(KEY_FILE_PATH, file.getAbsolutePath());
         bundle.putInt(KEY_LINE_START, selection.start.line);
         bundle.putInt(KEY_LINE_END, selection.end.line);
-        bundle.putInt(KEY_COLUMN_START, selection.start.character);
-        bundle.putInt(KEY_COLUMN_END, selection.end.character);
+        bundle.putInt(KEY_COLUMN_START, selection.start.column);
+        bundle.putInt(KEY_COLUMN_END, selection.end.column);
 		bundle.putParcelable(KEY_PROJECT, project);
 		EditorFragment frag = new EditorFragment();
 		frag.setArguments(bundle);
@@ -149,9 +149,9 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 			postRead();
             binding.editor.post(() -> {
                 if(range.start.equals(range.end)) {
-                    getEditor().setSelection(range.start.line, range.start.character);
+                    getEditor().setSelection(range.start.line, range.start.column);
                 } else {
-                    getEditor().setSelectionRegion(range.start.line, range.start.character, range.end.line, range.end.character);
+                    getEditor().setSelectionRegion(range.start.line, range.start.column, range.end.line, range.end.column);
                 }
             });
 		});
@@ -241,6 +241,26 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		if(binding.editor.canRedo())
 			binding.editor.redo();
 	}
+    
+    public void findDefinition() {
+        binding.editor.findDefinition();
+    }
+    
+    public void findReferences() {
+        binding.editor.findReferences();
+    }
+    
+    public void commentLine() {
+        binding.editor.commentLine();
+    }
+    
+    public void uncommentLine() {
+        binding.editor.uncommentLine();
+    }
+    
+    public void beginSearch() {
+        binding.editor.beginSearchMode();
+    }
 
 	public void save() {
         if(mFile == null || binding == null || binding.editor == null || binding.editor.getText() == null) return;

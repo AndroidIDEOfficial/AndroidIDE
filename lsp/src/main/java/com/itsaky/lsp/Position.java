@@ -9,13 +9,13 @@ public class Position {
     public int line;
     
     @SerializedName("character")
-    public int character;
+    public int column;
 
     public Position() {}
 
     public Position(int line, int character) {
         this.line = line;
-        this.character = character;
+        this.column = character;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Position {
         if(obj instanceof Position) {
             Position that = (Position) obj;
             return this.line == that.line
-            && this.character == that.character;
+            && this.column == that.column;
         }
         return false;
     }

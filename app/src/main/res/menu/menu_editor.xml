@@ -105,4 +105,50 @@
 		android:id="@+id/menuEditor_save"
 		android:title="@string/save"
 		app:showAsAction="ifRoom"/>
+    <item
+        android:icon="@drawable/ic_navigation"
+        android:id="@+id/menuEditor_navigate"
+        android:title="@string/menu_navigate"
+		app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:icon="@drawable/ic_goto_definition"
+                android:id="@+id/menuEditor_gotoDefinition"
+                android:title="@string/menu_navigate_definition"
+				app:showAsAction="never"/>
+            <item
+                android:icon="@drawable/ic_find_references"
+                android:id="@+id/menuEditor_findReferences"
+                android:title="@string/menu_navigate_references"
+				app:showAsAction="never"/>
+            <item
+                android:icon="@drawable/ic_comment_line"
+                android:id="@+id/menuEditor_commentLine"
+                android:title="@string/menu_comment_line"
+                app:showAsAction="never"/>
+            <item
+                android:icon="@drawable/ic_uncomment_line"
+                android:id="@+id/menuEditor_uncommentLine"
+                android:title="@string/menu_uncomment_line"
+                app:showAsAction="never"/>
+        </menu>
+    </item>
+    <item
+        android:icon="@drawable/ic_search"
+        android:id="@+id/menuEditor_find"
+        android:title="@string/menu_find"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:icon="@drawable/ic_search_file"
+                android:id="@+id/menuEditor_findFile"
+                android:title="@string/menu_find_file"
+                app:showAsAction="never"/>
+            <item
+                android:icon="@drawable/ic_search_project"
+                android:id="@+id/menuEditor_findProject"
+                android:title="@string/menu_find_project"
+                app:showAsAction="never"/>
+        </menu>
+    </item>
 </menu>

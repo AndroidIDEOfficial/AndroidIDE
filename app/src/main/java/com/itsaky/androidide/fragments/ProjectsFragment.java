@@ -26,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import com.blankj.utilcode.util.FileUtils;
 import java.util.stream.Collectors;
+import java.util.regex.Pattern;
+import com.blankj.utilcode.util.FileIOUtils;
 
 public class ProjectsFragment extends BaseFragment {
 	
@@ -85,40 +87,35 @@ public class ProjectsFragment extends BaseFragment {
 			if (!settings.exists()) continue;
 			String content = FileUtil.readFile(settings.getAbsolutePath());
 			if (TextUtils.isEmpty(content)) continue;
-            boolean foundIcon = false;
             AndroidProject project = new AndroidProject();
             for (File module : file.listFiles()) {
-                String[] result;
-                if (module.isDirectory()
-                    && !module.isHidden()
-                    && (result = proceedModule(file, module, project)) != null
-                    && result.length == 2
-                    && result[0] != null
-                    && result[1] != null
-                    && !foundIcon) {
-                    foundIcon = true;
-                    String packageName = result[0];
-                    String icon = result[1];
-                    project.setPackageName(packageName)
-						.setIconPath(icon)
-						.setMainModule(module.getName())
-						.setMainSourcePath(new File(module, "src/main/java").getAbsolutePath());
+                if (module.isDirectory() && !module.isHidden()) {
+                    proceedModule(file, module, project);
                 }
             }
 
             project.setAppName(file.getName());
             project.setProjectPath(file.getAbsolutePath());
+            if(project.getMainModule() == null
+            && project.getModulePaths().size() > 0
+            && project.getModulePaths().get(0) != null) {
+                File f = new File(project.getModulePaths().get(0));
+                if(!f.exists() || !f.isDirectory()) continue;
+                project.setMainModule(f.getName());
+                project.setMainSourcePath(new File(f, "src/main/java").getAbsolutePath());
+            }
             mProjects.add(project);
 		}
 	}
 
-	private String[] proceedModule(File file, File module, AndroidProject project) throws JSONException {
+	private void proceedModule(File file, File module, AndroidProject project) throws JSONException {
+        final Pattern appPattern = Pattern.compile("apply\\s+plugin\\s*:\\s*(\'|\")com.android.application(\'|\")");
 		File projectGradle = new File(file, "build.gradle");
 		File moduleGradle = new File(module, "build.gradle");
 		File manifest = new File(module, "src/main/AndroidManifest.xml");
 		File res = new File(module, "src/main/res");
-		if (!module.exists() || !projectGradle.exists() || !moduleGradle.exists() || !manifest.exists()) return null;
-		if (!module.isDirectory() || !moduleGradle.isFile() || !projectGradle.isFile() || !manifest.isFile()) return null;
+		if (!module.exists() || !projectGradle.exists() || !moduleGradle.exists() || !manifest.exists()) return;
+		if (!module.isDirectory() || !moduleGradle.isFile() || !projectGradle.isFile() || !manifest.isFile()) return;
 
         File java = new File(module, "src/main/java");
         if (java.exists() && java.isDirectory())
@@ -139,7 +136,7 @@ public class ProjectsFragment extends BaseFragment {
 		project.addSource(new File(module, "build/generated/data_binding_base_class_source_out/debug/out").getAbsolutePath());
 
         JSONObject obj = new XmlToJson.Builder(FileUtil.readFile(manifest.getAbsolutePath())).build().toJson();
-		if (!obj.has("manifest")) return null;
+		if (!obj.has("manifest")) return;
         String iconPath = null;
         if (obj.has("manifest") && obj.getJSONObject("manifest").has("application") && obj.getJSONObject("manifest").getJSONObject("application").has("android:icon")) {
             String iconRes = obj.getJSONObject("manifest").getJSONObject("application").getString("android:icon");  
@@ -172,8 +169,25 @@ public class ProjectsFragment extends BaseFragment {
             }
         }
 		final String packageName = obj.getJSONObject("manifest").getString("package");
-        if (iconPath == null) return null;
-		return new String[]{ packageName, iconPath };
+        final String mainModuleName = module.getName();
+        
+        boolean isMainModule = false;
+        if(project.getMainModule() == null) {
+            String content = FileIOUtils.readFile2String(moduleGradle);
+            if(content != null && appPattern.matcher(content).find()) {
+                isMainModule = true;
+                project.setMainModule(mainModuleName);
+                project.setMainSourcePath(new File(module, "src/main/java").getAbsolutePath());
+            }
+        }
+        
+        if (iconPath != null) {
+            project.setIconPath(iconPath);
+        }
+        
+        if(packageName != null && isMainModule) {
+            project.setPackageName(packageName);
+        }
 	}
 
 	private File[] listDrawables(File file) {

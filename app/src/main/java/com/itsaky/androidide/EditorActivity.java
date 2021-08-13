@@ -51,6 +51,7 @@ import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
+import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.JLSRequestor;
@@ -59,6 +60,7 @@ import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.receivers.LogReceiver;
 import com.itsaky.androidide.services.IDEService;
@@ -102,10 +104,10 @@ import com.itsaky.lsp.TextDocumentPositionParams;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +115,11 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import androidx.appcompat.app.AlertDialog;
+import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import com.itsaky.androidide.utils.RecursiveFileSearcher;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -141,6 +148,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private QuickAction mTabCloseAction;
 	private TextSheetFragment mDaemonStatusFragment;
 	private OptionsListFragment mFileOptionsFragment;
+    private ProgressSheet mSearchingProgress;
+    private AlertDialog mFindInProjectDialog;
 	
 	private boolean recreateCompletionServices = false;
     
@@ -256,21 +265,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
 	private void setupContainers() {
-		if(getBuildView().getParent() != null && getBuildView().getParent() instanceof ViewGroup) {
-			((ViewGroup) getBuildView().getParent()).removeView(getBuildView());
-		}
-		
-		if(getLogView().getParent() != null && getLogView().getParent() instanceof ViewGroup) {
-			((ViewGroup) getLogView().getParent()).removeView(getLogView());
-		}
-        
-        if(getDiagnosticsList().getParent() != null && getDiagnosticsList().getParent() instanceof ViewGroup) {
-            ((ViewGroup) getDiagnosticsList().getParent()).removeView(getDiagnosticsList());
-		}
-        
-        if(getSearchResultList().getParent() != null && getSearchResultList().getParent() instanceof ViewGroup) {
-            ((ViewGroup) getSearchResultList().getParent()).removeView(getSearchResultList());
-		}
+        removeFromParent(getBuildView());
+        removeFromParent(getLogView());
+        removeFromParent(getDiagnosticsList());
+        removeFromParent(getSearchResultList());
 		
 		mBinding.buildOutcontainer.addView(getBuildView(), new ViewGroup.LayoutParams(-1, -1));
 		mBinding.buildContainer.setVisibility(View.GONE);
@@ -303,6 +301,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.viewFiles.setOnClickListener(v -> showFiles());
 		mBinding.viewDaemonStatus.setOnClickListener(v -> showDaemonStatus());
 	}
+    
+    private void removeFromParent(View v) {
+        if(v.getParent() != null && v.getParent() instanceof ViewGroup) {
+            ((ViewGroup) v.getParent()).removeView(v);
+		}
+    }
 	
 	private void onSoftInputChanged() {
 		invalidateOptionsMenu();
@@ -388,14 +392,21 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			if (item != null) {
                 boolean enabled = getBuildService() != null && !getBuildService().isBuilding();
 				item.setEnabled(enabled);
-                item.getIcon().setAlpha(enabled ? 255 : 130);
+                item.getIcon().setAlpha(enabled ? 255 : 76);
 			}
 		}
+        
 		MenuItem run1 = menu.findItem(R.id.menuEditor_quickRun);
 		MenuItem run2 = menu.findItem(R.id.menuEditor_run);
 		MenuItem undo = menu.findItem(R.id.menuEditor_undo);
 		MenuItem redo = menu.findItem(R.id.menuEditor_redo);
         MenuItem save = menu.findItem(R.id.menuEditor_save);
+        MenuItem def = menu.findItem(R.id.menuEditor_gotoDefinition);
+        MenuItem ref = menu.findItem(R.id.menuEditor_findReferences);
+        MenuItem comment = menu.findItem(R.id.menuEditor_commentLine);
+        MenuItem uncomment = menu.findItem(R.id.menuEditor_uncommentLine);
+        MenuItem findFile = menu.findItem(R.id.menuEditor_findFile);
+        
 		if(KeyboardUtils.isSoftInputVisible(this)) {
 			run1.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 			run2.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
@@ -408,25 +419,28 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			redo.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 		}
         
-        if(mPagerAdapter != null && mPagerAdapter.getCount() <= 0) {
-            undo.setEnabled(false);
-            redo.setEnabled(false);
-            save.setEnabled(false);
-            
-            final int alpha = 76;
-            undo.getIcon().setAlpha(alpha);
-            redo.getIcon().setAlpha(alpha);
-            save.getIcon().setAlpha(alpha);
-        } else {
-            undo.setEnabled(true);
-            redo.setEnabled(true);
-            save.setEnabled(true);
-
-            final int alpha = 255;
-            undo.getIcon().setAlpha(alpha);
-            redo.getIcon().setAlpha(alpha);
-            save.getIcon().setAlpha(alpha);
-        }
+        final boolean enabled1 = mCurrentFile != null;
+        final boolean enabled2 = enabled1 && mCurrentFile.getName().endsWith(".java");
+        final int alpha1 = enabled1 ? 255 : 76;
+        final int alpha2 = enabled2 ? 255 : 76;
+        
+        undo.setEnabled(enabled1);
+        redo.setEnabled(enabled1);
+        save.setEnabled(enabled1);
+        comment.setEnabled(enabled1);
+        uncomment.setEnabled(enabled1);
+        findFile.setEnabled(enabled1);
+        def.setEnabled(enabled2);
+        ref.setEnabled(enabled2);
+        
+        undo.getIcon().setAlpha(alpha1);
+        redo.getIcon().setAlpha(alpha1);
+        save.getIcon().setAlpha(alpha1);
+        comment.getIcon().setAlpha(alpha1);
+        uncomment.getIcon().setAlpha(alpha1);
+        findFile.getIcon().setAlpha(alpha1);
+        def.getIcon().setAlpha(alpha2);
+        ref.getIcon().setAlpha(alpha2);
         
 		return true;
 	}
@@ -467,10 +481,113 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			this.mCurrentFragment.undo();
 		} else if (id == R.id.menuEditor_redo && this.mCurrentFragment != null && this.mCurrentFragment.isVisible()) {
 			this.mCurrentFragment.redo();
-		}
+		} else if(id == R.id.menuEditor_gotoDefinition && mCurrentFragment != null && this.mCurrentFragment.isVisible()) {
+            this.mCurrentFragment.findDefinition();
+        } else if(id == R.id.menuEditor_findReferences && mCurrentFragment != null && this.mCurrentFragment.isVisible()) {
+            this.mCurrentFragment.findReferences();
+        } else if(id == R.id.menuEditor_commentLine && mCurrentFragment != null && this.mCurrentFragment.isVisible()) {
+            this.mCurrentFragment.commentLine();
+        } else if(id == R.id.menuEditor_uncommentLine && mCurrentFragment != null && this.mCurrentFragment.isVisible()) {
+            this.mCurrentFragment.uncommentLine();
+        } else if(id == R.id.menuEditor_findFile && mCurrentFragment != null && this.mCurrentFragment.isVisible()) {
+            this.mCurrentFragment.beginSearch();
+        } else if(id == R.id.menuEditor_findProject) {
+            AlertDialog d = getFindInProjectDialog();
+            if(d != null) d.show();
+        }
 		invalidateOptionsMenu();
 		return true;
 	}
+    
+    private AlertDialog getFindInProjectDialog() {
+        return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
+    }
+    
+    private AlertDialog createFindInProjectDialog() {
+        if(mProject == null 
+        || mProject.getModulePaths() == null
+        || mProject.getModulePaths().size() <= 0) {
+            getApp().toast(R.string.msg_no_modules, Toaster.Type.ERROR);
+            return null;
+        }
+        final List<String> modules = mProject.getModulePaths();
+        final List<File> srcDirs = new ArrayList<>();
+        final LayoutSearchProjectBinding binding = LayoutSearchProjectBinding.inflate(getLayoutInflater());
+        binding.modulesContainer.removeAllViews();
+        for(int i=0;i<modules.size();i++) {
+            final File file = new File(modules.get(i));
+            final File src = new File(file, "src");
+            if(!file.exists() || !file.isDirectory() || !src.exists() || !src.isDirectory()) continue;
+            
+            CheckBox check = new CheckBox(this);
+            check.setText(file.getName());
+            check.setChecked(true);
+            
+            LinearLayout.MarginLayoutParams params = new LinearLayout.MarginLayoutParams(-2, -2);
+            params.bottomMargin = SizeUtils.dp2px(4);
+            binding.modulesContainer.addView(check, params);
+            
+            srcDirs.add(src);
+        }
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+        builder.setTitle(R.string.menu_find_project);
+        builder.setView(binding.getRoot());
+        builder.setPositiveButton(R.string.menu_find, (dialog, which) -> {
+            final String text = binding.input.getEditText().getText().toString().trim();
+            if(text == null || text.isEmpty()) {
+                getApp().toast(R.string.msg_empty_search_query, Toaster.Type.ERROR);
+                return;
+            }
+            
+            final List<File> searchDirs = new ArrayList<>();
+            for(int i=0;i<binding.modulesContainer.getChildCount();i++) {
+                CheckBox check = (CheckBox) binding.modulesContainer.getChildAt(i);
+                if(check.isChecked())
+                    searchDirs.add(srcDirs.get(i));
+            }
+            
+            final String extensions = binding.filter.getEditText().getText().toString().trim();
+            final List<String> exts = new ArrayList<>();
+            if(extensions != null && !extensions.isEmpty()) {
+                if(extensions.contains("|")) {
+                    for(String str : extensions.split(Pattern.quote("|"))) {
+                        if(str == null || str.trim().isEmpty())
+                            continue;
+
+                        exts.add(str);
+                    }
+                } else 
+                    exts.add(extensions);
+            }
+            
+            if(searchDirs == null || searchDirs.isEmpty()) {
+                getApp().toast(R.string.msg_select_search_modules, Toaster.Type.ERROR);
+            } else {
+                dialog.dismiss();
+                getProgressSheet(R.string.msg_searching_project).show(getSupportFragmentManager(), "search_in_project_progress");
+                RecursiveFileSearcher.searchRecursiveAsync(text, exts, searchDirs, result -> handleSearchResults(result));
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, (__, ___) -> __.dismiss());
+        mFindInProjectDialog = builder.create();
+        return mFindInProjectDialog;
+    }
+    
+    private void handleSearchResults(Map<File, List<SearchResult>> results) {
+        getSearchResultList().setAdapter(new SearchListAdapter(results, file -> {
+            openFile(file);
+            hideSearchResults();
+        }, match -> {
+            openFileAndSelect(match.file, match);
+            hideSearchResults();
+        }));
+        mBinding.transformScrim.setVisibility(View.VISIBLE);
+        mBinding.fabView.setVisibility(View.GONE);
+        showSearchResults();
+        
+        if(mSearchingProgress != null && mSearchingProgress.isShowing())
+            mSearchingProgress.dismiss();
+    }
 	
 	/************************************
 	 *   Build Related                  *
@@ -681,7 +798,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     private void showSearchResults() {
         TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewSearchResults, mBinding.searchResultsContainer));
-        mBinding.diagContainer.setVisibility(View.VISIBLE);
+        mBinding.searchResultsContainer.setVisibility(View.VISIBLE);
         mBinding.viewOptionsCard.setVisibility(View.GONE);
         hideToolbarAndTabs();
     }
@@ -689,7 +806,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private void hideSearchResults() {
         showToolbarAndTabs();
         TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.searchResultsContainer, mBinding.viewSearchResults));
-        mBinding.diagContainer.setVisibility(View.GONE);
+        mBinding.searchResultsContainer.setVisibility(View.GONE);
         mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
 	}
 	
@@ -772,7 +889,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     @Override
-    public void onDiagnosticClick(Diagnostic diagnostic) {
+    public void onDiagnosticClick(File file, Diagnostic diagnostic) {
+        openFileAndSelect(file, diagnostic.range);
+        hideDiagnostics();
     }
     
     @Override
@@ -954,10 +1073,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final JavaLanguageServer server = getApp().getJavaLanguageServer();
         if(server == null) return;
         server.findDefinition(params);
+        getProgressSheet(R.string.msg_finding_definition).show(getSupportFragmentManager(), "definition_progress");
     }
 
     @Override
     public void gotoDefinition(List<Location> locations) {
+        if(mSearchingProgress != null && mSearchingProgress.isShowing())
+            mSearchingProgress.dismiss();
         if(locations == null || locations.size() <= 0) {
             getApp().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
             return;
@@ -977,26 +1099,30 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             && frag.getEditor() != null
             && frag.getFile().getAbsolutePath().equals(file.getAbsolutePath())) {
                 if(range.start.equals(range.end)) {
-                    frag.getEditor().setSelection(range.start.line, range.start.character);
+                    frag.getEditor().setSelection(range.start.line, range.start.column);
                 } else {
-                    frag.getEditor().setSelectionRegion(range.start.line, range.start.character, range.end.line, range.end.character);
+                    frag.getEditor().setSelectionRegion(range.start.line, range.start.column, range.end.line, range.end.column);
                 }
             } else {
-                openFile(file, range);
-                EditorFragment opened = mPagerAdapter.findEditorByFile(file);
-                if(opened != null && opened.getEditor() != null) {
-                    CodeEditor editor = opened.getEditor();
-                    editor.post(() -> {
-                        if(range.start.equals(range.end)) {
-                            editor.setSelection(range.start.line, range.start.character);
-                        } else {
-                            editor.setSelectionRegion(range.start.line, range.start.character, range.end.line, range.end.character);
-                        }
-                    });
-                }
+                openFileAndSelect(file, range);
             }
         } catch (Throwable th) {
             Logger.instance().e(ThrowableUtils.getFullStackTrace(th));
+        }
+    }
+
+    private void openFileAndSelect(File file, Range range) {
+        openFile(file, range);
+        EditorFragment opened = mPagerAdapter.findEditorByFile(file);
+        if (opened != null && opened.getEditor() != null) {
+            CodeEditor editor = opened.getEditor();
+            editor.post(() -> {
+                if (range.start.equals(range.end)) {
+                    editor.setSelection(range.start.line, range.start.column);
+                } else {
+                    editor.setSelectionRegion(range.start.line, range.start.column, range.end.line, range.end.column);
+                }
+            });
         }
     }
 
@@ -1005,14 +1131,57 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final JavaLanguageServer server = getApp().getJavaLanguageServer();
         if(server == null) return;
         server.findReferences(params);
+        getProgressSheet(R.string.msg_finding_references).show(getSupportFragmentManager(), "references_progress");
     }
 
     @Override
     public void references(List<Location> references) {
-        if(references == null || references.size() <= 0) {
+        if(mSearchingProgress != null && mSearchingProgress.isShowing())
+            mSearchingProgress.dismiss();
+        if(references == null) {
             getApp().toast(R.string.msg_no_references, Toaster.Type.INFO);
             return;
         }
+        
+        if(references.size() <= 0) {
+            getApp().toast(R.string.msg_no_references, Toaster.Type.INFO);
+            getSearchResultList().setAdapter(new SearchListAdapter(null, null, null));
+            return;
+        }
+        
+        final Map<File, List<SearchResult>> results = new HashMap<>();
+        for(int i=0;i<references.size();i++) {
+            try {
+                final Location loc = references.get(i);
+                if(loc == null || loc.uri == null || loc.range == null) continue;
+                final File file = new File(loc.uri);
+                if(!file.exists() || !file.isFile()) continue;
+                EditorFragment frag = mPagerAdapter.findEditorByFile(file);
+                Content content;
+                if(frag != null && frag.getEditor() != null)
+                    content = frag.getEditor().getText();
+                else content = new Content(null, FileIOUtils.readFile2String(file));
+                final List<SearchResult> matches = results.containsKey(file) ? results.get(file) : new ArrayList<>();
+                matches.add(
+                    new SearchResult(
+                        loc.range,
+                        file,
+                        content.getLineString(loc.range.start.line),
+                        content.subContent(
+                            loc.range.start.line,
+                            loc.range.start.column,
+                            loc.range.end.line,
+                            loc.range.end.column
+                        ).toString()
+                    )
+                );
+                results.put(file, matches);
+            } catch (Throwable th) {
+                Logger.instance().e(ThrowableUtils.getFullStackTrace(th));
+            }
+        }
+        
+        handleSearchResults(results);
     }
     
     private void addPendingMessage(Message msg) {
@@ -1052,9 +1221,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		EditorFragment current = mPagerAdapter.getFrag(p1.getPosition());
 		if(current != null && current.getFile() != null) {
 			this.mCurrentFragment = current;
-			mCurrentFile = current.getFile();
+			this.mCurrentFile = current.getFile();
 			refreshSymbolInput(current);
 		}
+        
+        invalidateOptionsMenu();
 	}
 
 	@Override
@@ -1102,9 +1273,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		builder.create().show();
 	}
 	
-	// -----------------------------
-	// ---- Fragment Related
-	// -----------------------------
+	  // -----------------------------
+	 // ---- Fragment Related
+	// -------------------------------
+    
 	
 	public void loadFragment(Fragment fragment) {
 		super.loadFragment(fragment, mBinding.editorFrameLayout.getId());
@@ -1122,6 +1294,18 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mFileOptionsFragment.setOnOptionsClickListener(o -> handleOptionClick(o));
 		return mFileOptionsFragment;
 	}
+    
+    private ProgressSheet getProgressSheet(int msg) {
+        if(mSearchingProgress != null && mSearchingProgress.isShowing()) {
+            mSearchingProgress.dismiss();
+        }
+        mSearchingProgress = new ProgressSheet();
+        mSearchingProgress.setCancelable(false);
+        mSearchingProgress.setWelcomeTextEnabled(false);
+        mSearchingProgress.setMessage(getString(msg));
+        mSearchingProgress.setSubMessageEnabled(false);
+        return mSearchingProgress;
+    }
 
 	private MaterialBanner getSyncBanner() {
 		return mBinding.syncBanner.setContentTextColor(ContextCompat.getColor(this, R.color.primaryTextColor))
@@ -1209,7 +1393,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private RecyclerView createSearchResultList() {
         searchResultList = new RecyclerView(this);
         searchResultList.setLayoutManager(new LinearLayoutManager(this));
-        searchResultList.setAdapter(new SearchListAdapter());
         return searchResultList;
     }
     
@@ -1602,12 +1785,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
 
 	private void closeOthers() {
-		final Fragment frag = mPagerAdapter.getFragments().get(mBinding.tabs.getSelectedTabPosition());
+		final EditorFragment frag = mPagerAdapter.getFrag(mBinding.tabs.getSelectedTabPosition());
 		final File file = mPagerAdapter.getOpenedFiles().get(mBinding.tabs.getSelectedTabPosition());
-		mPagerAdapter = new EditorPagerAdapter(getSupportFragmentManager(), mProject, Arrays.asList(frag), Arrays.asList(file));
+        try { frag.save(); } catch (Throwable th) { }
+		mPagerAdapter = new EditorPagerAdapter(getSupportFragmentManager(), mProject);
 		mBinding.editorViewPager.setAdapter(mPagerAdapter);
 		mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
 		mBinding.tabs.addOnTabSelectedListener(this);
+        openFile(file);
 	}
     
 	private void closeFile(int index) {

@@ -38,7 +38,7 @@ public class DiagnosticsAdapter extends RecyclerView.Adapter<DiagnosticsAdapter.
         binding.info.title.setText(group.text);
         binding.info.title.setTextColor(color);
         binding.diagnostics.setLayoutManager(new LinearLayoutManager(binding.diagnostics.getContext()));
-        binding.diagnostics.setAdapter(new DiagnosticItemAdpater(group.diagnostics, listener));
+        binding.diagnostics.setAdapter(new DiagnosticItemAdpater(group.diagnostics, group.file, listener));
         
         binding.info.getRoot().setOnClickListener(v -> {
             if(listener != null) {

@@ -88,9 +88,9 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
                     final Position end =  edit.range.end;
                     if(start == null || end == null) continue;
                     if(start.equals(end)) {
-                        editor.getText().insert(start.line, start.character, edit.newText);
+                        editor.getText().insert(start.line, start.column, edit.newText);
                     } else {
-                        editor.getText().replace(start.line, start.character, end.line, end.character, edit.newText);
+                        editor.getText().replace(start.line, start.column, end.line, end.column, edit.newText);
                     }
                 }
             }

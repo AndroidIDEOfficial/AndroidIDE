@@ -19,6 +19,7 @@ public final class Environment {
 	public static File TMP_DIR;
     public static File USRDIR;
 	public static File LIBDIR;
+    public static File BINDIR;
     
 	public static File GRADLE_DIR;
 	public static File GRADLE_PROPS;
@@ -65,6 +66,7 @@ public final class Environment {
 		GRADLE_DIR = new File(HOME, GRADLE_FOLDER_NAME);
         USRDIR = mkdirIfNotExits(new File(HOME.getParentFile(), "usr"));
         LIBDIR = mkdirIfNotExits(new File(USRDIR, "lib"));
+        BINDIR = mkdirIfNotExits(new File(USRDIR, "bin"));
         
         LIBHOOKSO = new File(LIBDIR, "libhook.so");
 		CACHES_DIR = new File(HOME, "ide-caches");

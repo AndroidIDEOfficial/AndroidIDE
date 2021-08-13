@@ -53,6 +53,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         android.R.attr.actionModeCopyDrawable,
                         android.R.attr.actionModePasteDrawable,
                 });
+                
                 menu.add(0, 0, 0, mEditor.getContext().getString(android.R.string.selectAll))
                         .setShowAsActionFlags(2)
                         .setIcon(array.getDrawable(0));
@@ -68,8 +69,15 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                 menu.add(0, 3, 0, mEditor.getContext().getString(android.R.string.paste))
                         .setShowAsActionFlags(2)
                         .setIcon(array.getDrawable(3));
-                menu.add(0, 4, 0, "Go to Definition");
-                menu.add(0, 5, 0, "Find all references");
+                
+                menu.add(0, 4, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_definition))
+                    .setIcon(com.itsaky.androidide.R.drawable.ic_goto_definition);
+                menu.add(0, 5, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_references))
+                    .setIcon(com.itsaky.androidide.R.drawable.ic_find_references);
+                menu.add(0, 6, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_comment_line))
+                    .setIcon(com.itsaky.androidide.R.drawable.ic_comment_line);
+                menu.add(0, 7, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_uncomment_line))
+                    .setIcon(com.itsaky.androidide.R.drawable.ic_uncomment_line);
                 array.recycle();
                 return true;
             }
@@ -99,6 +107,12 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         break;
                     case 5:
                         mEditor.findReferences();
+                        break;
+                    case 6:
+                        mEditor.commentLine();
+                        break;
+                    case 7:
+                        mEditor.uncommentLine();
                         break;
                 }
                 if(menuItem.getItemId() != 0)

@@ -27,7 +27,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         setColor(BLOCK_LINE_CURRENT, 0xffffffff);
         setColor(AUTO_COMP_PANEL_BG, 0xff757575);
         setColor(AUTO_COMP_PANEL_CORNER, 0xff9e9e9e);
-        setColor(MATCHED_TEXT_BACKGROUND, 0xffffff00);
+        setColor(MATCHED_TEXT_BACKGROUND, 0xffFF8F00);
         setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
         setColor(KEYWORD, 0xffff6060);
         setColor(COMMENT, 0xffbdbdbd);

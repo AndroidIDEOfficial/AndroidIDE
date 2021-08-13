@@ -11,14 +11,17 @@ import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DiagnosticSeverity;
 import java.util.List;
+import java.io.File;
 
 public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAdpater.VH> {
     
     private List<Diagnostic> diags;
+    private final File file;
     private DiagnosticClickListener listener;
 
-    public DiagnosticItemAdpater(List<Diagnostic> diags, DiagnosticClickListener listener) {
+    public DiagnosticItemAdpater(List<Diagnostic> diags, File file, DiagnosticClickListener listener) {
         this.diags = diags;
+        this.file = file;
         this.listener = listener;
     }
     
@@ -38,7 +41,7 @@ public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAd
         
         binding.getRoot().setOnClickListener(v -> {
             if(listener != null) {
-                listener.onDiagnosticClick(diagnostic);
+                listener.onDiagnosticClick(file, diagnostic);
             }
         });
     }

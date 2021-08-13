@@ -6,6 +6,7 @@ import com.blankj.utilcode.util.ThrowableUtils;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import com.itsaky.androidide.utils.Logger;
 
 public class TaskExecutor {
     private final Executor executor = Executors.newSingleThreadExecutor(); // change according to your requirements
@@ -22,8 +23,7 @@ public class TaskExecutor {
 				handler.post(() -> {
 					callback.onComplete(result);
 				});
-			} catch (Throwable th) {
-			}
+			} catch (Throwable th) {}
         });
     }
 }

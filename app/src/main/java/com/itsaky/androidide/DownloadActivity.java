@@ -4,7 +4,6 @@ import abhishekti7.unicorn.filepicker.UnicornFilePicker;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,9 +24,6 @@ import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import com.itsaky.androidide.utils.Logger;
 
 public class DownloadActivity extends StudioActivity {
 	
@@ -88,7 +84,7 @@ public class DownloadActivity extends StudioActivity {
 		}
 	}
 	
-	private final String DONE = "DONE";
+	private final String DONE = "'Installed successfully.'";
 	private void installAll() {
 		showProgress();
 		getApp().getPrefManager().putBoolean(PreferenceManager.KEY_FRAMEWORK_DOWNLOADED, true);
@@ -106,7 +102,8 @@ public class DownloadActivity extends StudioActivity {
 				}
 			}
 		sb.append("rm -rf '" + getApp().getToolsDownloadDirectory().getAbsolutePath() + "' && ");
-		sb.append("echo " + DONE);
+        sb.append("echo 'Cleaning unsupported flags in binaries...' && $BUSYBOX find $JAVA_HOME/bin -type f -exec androidide-cleaner {} \\; && ");
+        sb.append("echo " + DONE);
 		server.bgAppend(sb.toString());
 	}
     

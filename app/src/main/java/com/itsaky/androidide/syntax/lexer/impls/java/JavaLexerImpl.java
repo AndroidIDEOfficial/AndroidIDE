@@ -31,18 +31,6 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
 		this.previous = -1;
 		this.wasClassName = false;
 		this.isFirst = true;
-		
-		builtinTypes = new ArrayList<>();
-        
-		builtinTypes.add(JavaLexer.BOOLEAN);
-		builtinTypes.add(JavaLexer.BYTE);
-		builtinTypes.add(JavaLexer.CHAR);
-		builtinTypes.add(JavaLexer.DOUBLE);
-		builtinTypes.add(JavaLexer.ENUM);
-		builtinTypes.add(JavaLexer.FLOAT);
-		builtinTypes.add(JavaLexer.INT);
-		builtinTypes.add(JavaLexer.LONG);
-		builtinTypes.add(JavaLexer.SHORT);
 	}
     
     public void setJavaColors(JavaColors colors) {
@@ -463,7 +451,7 @@ public class JavaLexerImpl extends BaseJavaLexer implements Lexer {
             for(int i=0;i<ranges.size();i++) {
                 final Range range = ranges.get(i);
                 if(range == null) continue;
-                if(range.start.line == line && range.start.character == column)
+                if(range.start.line == line && range.start.column == column)
                     return true;
             }
         } 

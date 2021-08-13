@@ -102,6 +102,9 @@ import com.itsaky.lsp.TextDocumentPositionParams;
 import com.itsaky.lsp.TextDocumentIdentifier;
 import com.itsaky.lsp.ReferenceParams;
 import com.itsaky.lsp.ReferenceContext;
+import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
+import android.view.LayoutInflater;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -554,9 +557,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         Range found = null;
         for(Range r : keys) {
             if(r.start.line <= range.start.line
-               && r.start.character <= range.start.character
+               && r.start.column <= range.start.column
                && r.end.line >= range.end.line
-               && r.end.character >= range.end.character) {
+               && r.end.column >= range.end.column) {
                 found = r;
                 break;
             }
@@ -1364,8 +1367,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 for(int i=0;i<diags.size();i++) {
                     Diagnostic d = diags.get(i);
                     if(d == null) continue;
-                    int startCol = d.range.start.character;
-                    int endCol = d.range.end.character;
+                    int startCol = d.range.start.column;
+                    int endCol = d.range.end.column;
                     if(line > d.range.start.line) startCol = 0;
                     if(line > d.range.end.line) endCol = 0;
                     final int paintStart = Math.max(firstVisibleChar, startCol);
@@ -2967,10 +2970,15 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             @Override
             public boolean onCreateActionMode(ActionMode p1, Menu p2) {
                 mStartedActionMode = ACTION_MODE_SEARCH_TEXT;
-                p2.add(0, 0, 0, R.string.next).setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-                p2.add(0, 1, 0, R.string.last).setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
-                p2.add(0, 2, 0, R.string.replace).setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
-                p2.add(0, 3, 0, R.string.replaceAll).setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);
+                p2.add(0, 1, 0, R.string.last)
+                    .setIcon(R.drawable.ic_search_last)
+                    .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                p2.add(0, 0, 0, R.string.next)
+                    .setIcon(R.drawable.ic_search_next)
+                    .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                p2.add(0, 2, 0, R.string.replace)
+                    .setIcon(R.drawable.ic_search_replace)
+                    .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 SearchView sv = new SearchView(getContext());
                 sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -3010,20 +3018,21 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                         getSearcher().gotoNext();
                         break;
                     case 2:
-                    case 3:
-                        final boolean replaceAll = p2.getItemId() == 3;
-                        final EditText et = new EditText(getContext());
-                        et.setHint(R.string.replacement);
-                        new AlertDialog.Builder(getContext())
-                                .setTitle(replaceAll ? R.string.replaceAll : R.string.replace)
-                                .setView(et)
+                        final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(LayoutInflater.from(getContext()));
+                        binding.name.setHint(R.string.replacement);
+                        binding.name.setStartIconDrawable(R.drawable.ic_replace);
+                        binding.name.setCounterEnabled(false);
+                        new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog)
+                                .setTitle(R.string.replace)
+                                .setView(binding.getRoot())
                                 .setNegativeButton(R.string.cancel, null)
                                 .setPositiveButton(R.string.replace, (dialog, which) -> {
-                                    if (replaceAll) {
-                                        getSearcher().replaceAll(et.getText().toString());
-                                    } else {
-                                        getSearcher().replaceThis(et.getText().toString());
-                                    }
+                                    getSearcher().replaceThis(binding.name.getEditText().getText().toString());
+                                    am.finish();
+                                    dialog.dismiss();
+                                })
+                                .setNeutralButton(R.string.replaceAll, (dialog, which) -> {
+                                    getSearcher().replaceAll(binding.name.getEditText().getText().toString());
                                     am.finish();
                                     dialog.dismiss();
                                 })
@@ -4413,12 +4422,62 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         this.jlsRequestor = requestor;
     }
     
-    public void commentSelected() {
+    public void commentLine() {
+        if(getFile() == null) return;
         
+        final Content text = getText();
+        final String name = getFile().getName();
+        int line = getCursor().getLeftLine();
+        if(name.endsWith(".java") || name.endsWith(".gradle")){
+            while(line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
+                if(!text.getLineString(line).trim().startsWith("//"))
+                    text.insert(line, 0, "//");
+                line++;
+            }
+        } else if(name.endsWith(".xml")) {
+            while(line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
+                final String lineString = text.getLineString(line);
+                if(!lineString.trim().startsWith("<!--")
+                && !lineString.trim().endsWith("-->")) {
+                    text.replace(line, 0, line, text.getColumnCount(line), "<!--".concat(lineString).concat("-->"));
+                }
+                line++;
+            }
+        }
     }
     
-    public void uncommentSelected() {
+    public void uncommentLine() {
+        if(getFile() == null) return;
         
+        final Content text = getText();
+        final String name = getFile().getName();
+        int line = getCursor().getLeftLine();
+        if(name.endsWith(".java") || name.endsWith(".gradle")) {
+            while(line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
+                String l = text.getLineString(line);
+                if(l.trim().startsWith("//")) {
+                    int i = l.indexOf("//");
+                    text.delete(line, i, line, i + 2);
+                }
+                line++;
+            }
+        } else if(name.endsWith(".xml")) {
+            final String commentStart = "<!--";
+            final String commentEnd   = "-->";
+            while(line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
+                String l = text.getLineString(line);
+                if(l.trim().startsWith(commentStart)) {
+                    int i = l.indexOf(commentStart);
+                    text.delete(line, i, line, i + commentStart.length());
+                }
+                if(l.trim().endsWith(commentEnd)) {
+                    int i = l.lastIndexOf(commentEnd);
+                    int count = text.getColumnCount(line);
+                    text.delete(line, count - commentEnd.length(), line, count);
+                }
+                line++;
+            }
+        }
     }
     
     public void findDefinition() {
@@ -4521,7 +4580,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if(strings == null || strings.isEmpty()) return false;
         for(int i=0;i<strings.size();i++) {
             Range r = strings.get(i);
-            if(r.start.character <= column && column <= r.end.character)
+            if(r.start.column <= column && column <= r.end.column)
                 return true;
         }
         return false;
