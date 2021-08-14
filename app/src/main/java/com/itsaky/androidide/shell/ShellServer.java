@@ -58,7 +58,7 @@ public class ShellServer extends Thread {
             append(stringBuilder.toString(), false);
             
             // Make sure there are proper permissions set to the $HOME directory
-            append("chmod -R 777 $HOME");
+            append("chmod -R 777 $HOME", false);
         } catch (Throwable th) {
             if (callback != null) {
                 String out = ThrowableUtils.getFullStackTrace(th).concat("\n");

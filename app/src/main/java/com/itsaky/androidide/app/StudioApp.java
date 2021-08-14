@@ -90,7 +90,7 @@ public class StudioApp extends MultiDexApplication
         extractLogsenderIfNeeded();
         extractCleanerIfNeeded();
         
-        newShell(line -> handleLog(line)).bgAppend("androidide-cleaner && logcat -v threadtime");
+//      newShell(line -> handleLog(line)).bgAppend("androidide-cleaner && logcat -v threadtime");
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			createNotificationChannels();

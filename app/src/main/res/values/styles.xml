@@ -1,19 +1,24 @@
 <resources>
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="actionOverflowButtonStyle">@style/AppTheme.Toolbar.OverflowButton</item>
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
 		<item name="colorButtonNormal">@color/secondaryColor</item>
-		<item name="android:colorButtonNormal">@color/secondaryColor</item>
-		<item name="android:textColorSecondary">@color/secondaryTextColor</item>
 		<item name="colorControlNormal">@color/secondaryColor</item>
 		<item name="colorControlHighlight">@color/rippleHighlightColor</item>
-		<item name="android:fontFamily">@font/josefin_sans</item>
+        <item name="fontFamily">@font/josefin_sans</item>
+        <item name="hintTextColor">@color/secondaryColor</item>
+        <item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
 		<item name="windowActionModeOverlay">true</item>
 		<item name="windowActionBarOverlay">true</item>
-		<item name="fontFamily">@font/josefin_sans</item>
-		<item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
-		<item name="android:windowBackground">@color/content_background</item>
+        <item name="android:colorButtonNormal">@color/secondaryColor</item>
+		<item name="android:textColorSecondary">@color/secondaryTextColor</item>
+        <item name="android:windowBackground">@color/content_background</item>
+        <item name="android:fontFamily">@font/josefin_sans</item>
+    </style>
+    <style name="AppTheme.Toolbar.OverflowButton" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/secondaryColor</item>
     </style>
 	<style name="AppTheme.MaterialToggleButton" parent="">
 		<item name="colorPrimary">@color/secondaryColor</item>

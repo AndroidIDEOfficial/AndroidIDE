@@ -16,7 +16,6 @@
 package io.github.rosemoe.editor.widget;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -35,9 +34,9 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.util.MutableInt;
 import android.util.TypedValue;
-import android.view.ActionMode;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -50,16 +49,22 @@ import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.OverScroller;
 import android.widget.SearchView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
+import androidx.appcompat.view.menu.MenuBuilder;
+import com.blankj.utilcode.util.ThrowableUtils;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
 import com.itsaky.androidide.interfaces.JLSRequestor;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.lsp.Diagnostic;
@@ -67,7 +72,11 @@ import com.itsaky.lsp.DiagnosticSeverity;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.Position;
 import com.itsaky.lsp.Range;
+import com.itsaky.lsp.ReferenceContext;
+import com.itsaky.lsp.ReferenceParams;
 import com.itsaky.lsp.TextDocumentContentChangeEvent;
+import com.itsaky.lsp.TextDocumentIdentifier;
+import com.itsaky.lsp.TextDocumentPositionParams;
 import com.itsaky.lsp.VersionedTextDocumentIdentifier;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
@@ -96,15 +105,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.itsaky.androidide.utils.Logger;
-import com.blankj.utilcode.util.ThrowableUtils;
-import com.itsaky.lsp.TextDocumentPositionParams;
-import com.itsaky.lsp.TextDocumentIdentifier;
-import com.itsaky.lsp.ReferenceParams;
-import com.itsaky.lsp.ReferenceContext;
-import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
-import android.view.LayoutInflater;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -2966,17 +2966,22 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      */
     public void beginSearchMode() {
         class SearchActionMode implements ActionMode.Callback {
-
+            
+            @SuppressLint("RestrictedApi")
             @Override
-            public boolean onCreateActionMode(ActionMode p1, Menu p2) {
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 mStartedActionMode = ACTION_MODE_SEARCH_TEXT;
-                p2.add(0, 1, 0, R.string.last)
+                if(menu instanceof MenuBuilder){
+                    MenuBuilder builder = (MenuBuilder) menu;
+                    builder.setOptionalIconsVisible(true);
+                }
+                menu.add(0, 1, 0, R.string.last)
                     .setIcon(R.drawable.ic_search_last)
                     .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-                p2.add(0, 0, 0, R.string.next)
+                menu.add(0, 0, 0, R.string.next)
                     .setIcon(R.drawable.ic_search_next)
                     .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-                p2.add(0, 2, 0, R.string.replace)
+                menu.add(0, 2, 0, R.string.replace)
                     .setIcon(R.drawable.ic_search_replace)
                     .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
                 SearchView sv = new SearchView(getContext());
@@ -2995,7 +3000,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                     }
 
                 });
-                p1.setCustomView(sv);
+                mode.setCustomView(sv);
                 sv.performClick();
                 sv.setQueryHint(getContext().getString(R.string.text_to_search));
                 sv.setIconifiedByDefault(false);
@@ -3050,7 +3055,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 
         }
         ActionMode.Callback callback = new SearchActionMode();
-        startActionMode(callback);
+        ((AppCompatActivity) getContext()).startSupportActionMode(callback);
     }
 
     public EditorTouchEventHandler getEventHandler() {

@@ -17,7 +17,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
@@ -48,6 +52,7 @@ import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding;
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
+import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
@@ -72,6 +77,7 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.androidide.utils.ProjectWriter;
+import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.utils.VersionedFileManager;
@@ -115,11 +121,6 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-import androidx.appcompat.app.AlertDialog;
-import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
-import com.itsaky.androidide.utils.RecursiveFileSearcher;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -258,7 +259,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         GradientDrawable gd = new GradientDrawable();
         gd.setShape(GradientDrawable.RECTANGLE);
         gd.setColor(0xff212121);
-        gd.setStroke(2, 0xffffffff);
+        gd.setStroke(1, 0xffffffff);
         gd.setCornerRadius(8);
         mBinding.symbolText.setBackgroundDrawable(gd);
         mBinding.symbolText.setVisibility(View.GONE);
@@ -445,8 +446,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		return true;
 	}
 
+    @SuppressLint("RestrictedApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+        if(menu instanceof MenuBuilder){
+            MenuBuilder builder = (MenuBuilder) menu;
+            builder.setOptionalIconsVisible(true);
+        }
 		getMenuInflater().inflate(R.menu.menu_editor, menu);
 		return true;
 	}
@@ -532,6 +538,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
         builder.setTitle(R.string.menu_find_project);
         builder.setView(binding.getRoot());
+        builder.setCancelable(false);
         builder.setPositiveButton(R.string.menu_find, (dialog, which) -> {
             final String text = binding.input.getEditText().getText().toString().trim();
             if(text == null || text.isEmpty()) {
@@ -1837,6 +1844,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         DidCloseTextDocumentParams p = new DidCloseTextDocumentParams();
         p.textDocument = id;
         didClose(p);
+        
+        if(mPagerAdapter.getCount() <= 0) {
+            mCurrentFragment = null;
+            mCurrentFile = null;
+        }
         
         invalidateOptionsMenu();
 	}

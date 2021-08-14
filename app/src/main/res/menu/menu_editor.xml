@@ -106,7 +106,7 @@
 		android:title="@string/save"
 		app:showAsAction="ifRoom"/>
     <item
-        android:icon="@drawable/ic_navigation"
+        android:icon="@drawable/ic_code"
         android:id="@+id/menuEditor_navigate"
         android:title="@string/menu_navigate"
 		app:showAsAction="ifRoom">
