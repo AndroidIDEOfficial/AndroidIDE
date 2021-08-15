@@ -81,7 +81,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     "--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED " +
     "--add-opens jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED " +
     "-cp $JLS_HOME/lib/jls.jar:$JLS_HOME/lib/gson.jar:$JLS_HOME/lib/protobuf.jar " +
-    "org.javacs.Main";
+    "org.javacs.Main --quiet";
 
     
     private static final String CONTENT_LENGTH = "Content-Length: ";
