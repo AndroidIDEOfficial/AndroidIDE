@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AndroidProject implements Parcelable {
+    
 	private String appName;
 	private String packageName;
 	private String iconPath;

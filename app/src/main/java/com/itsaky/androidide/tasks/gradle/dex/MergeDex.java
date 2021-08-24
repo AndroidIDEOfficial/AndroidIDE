@@ -5,6 +5,8 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.tasks.BaseGradleTask;
 import java.io.File;
+import java.util.List;
+import java.util.Arrays;
 
 public class MergeDex extends BaseGradleTask {
 
@@ -17,6 +19,11 @@ public class MergeDex extends BaseGradleTask {
 	public String getCommands() {
 		return "mergeDexDebug";
 	}
+
+    @Override
+    public List<String> getTasks() {
+        return Arrays.asList("mergeDexDebug");
+    }
 
 	@Override
 	public int getTaskID() {

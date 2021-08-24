@@ -2,6 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto">
 	
+    <group
+        android:title="@string/group_project"
+        android:id="@+id/editornav_group_project">
+        <item
+            android:id="@+id/editornav_close_project"
+            android:icon="@drawable/ic_close"
+			android:title="@string/title_close_project"/>
+    </group>
+    
 	<group
 		android:title="@string/discuss_amp_help"
 		android:id="@+id/editornav_group_discuss">

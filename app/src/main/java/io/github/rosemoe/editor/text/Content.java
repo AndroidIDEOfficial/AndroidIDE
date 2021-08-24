@@ -254,14 +254,15 @@ public class Content implements CharSequence {
 	 *
 	 * @param text Text to append
 	 */
-	public void append(CharSequence text) {
+	public int append(CharSequence text) {
 		if(getLineCount() <= 0)
-			return;
+			return 0;
 		final int line = getLineCount() - 1;
 		int col = getColumnCount(line);
 		if(col < 0)
 			col = 0;
 		insert(line, col, text);
+        return line;
 	}
 
     /**

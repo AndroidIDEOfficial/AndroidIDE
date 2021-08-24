@@ -83,7 +83,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 		} else if(f.isDirectory() && f.exists()) {
 			if(node.isExpanded()) {
 				collapseNode(node);
-			} else if(f.getAbsolutePath().equals(Environment.GRADLE_PROPS_DIR.getAbsolutePath()) && !node.isExpanded()) {
+			} else if(f.getAbsolutePath().equals(Environment.GRADLE_USER_HOME.getAbsolutePath()) && !node.isExpanded()) {
 				expandNode(node);
 			} else {
 				setLoading(node);
@@ -164,7 +164,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 			return;
 		
 		final File gradleProps = Environment.GRADLE_PROPS;
-		final File gradleHome = Environment.GRADLE_PROPS_DIR;
+		final File gradleHome = Environment.GRADLE_USER_HOME;
         final File root = StudioApp.getInstance().getRootDir().getParentFile();
         File projectDir = new File(mProject.getProjectPath());
 //        projectDir = root;

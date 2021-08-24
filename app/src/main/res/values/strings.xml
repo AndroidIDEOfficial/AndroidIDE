@@ -1,4 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="group_project">Project</string>
+    <string name="title_close_project">Close this project</string>
+    <string name="msg_opened_project_does_not_exist">Last opened project doesn\'t exist!</string>
+    <string name="msg_create_new_project">Create new project</string>
+    <string name="msg_open_existing_project">Open existing project</string>
+    <string name="msg_preferences">Preferences</string>
+    <string name="msg_opening_project">Opening project&#8230;</string>
+    <string name="msg_invalid_project">Picked directory is not an Android project</string>
     <string name="menu_navigate_definition">Go to definition</string>
     <string name="menu_navigate_references">Find all references</string>
     <string name="menu_navigate">Code</string>
@@ -17,9 +25,13 @@
     <string name="msg_empty_search_query">Please enter text</string>
     <string name="msg_select_search_modules">Select modules to search</string>
     <string name="msg_searching_project">Finding in project, please wait&#8230;</string>
+    <string name="msg_final_build_result_prefix">========== FINAL BUILD RESULT ==========</string>
+    <string name="msg_final_build_result">BUILD %s for task %s in %d seconds</string>
     <string name="view_search_results">Search results</string>
     <string name="msg_no_definition">Definition not found</string>
     <string name="msg_no_references">No references found</string>
+    <string name="title_confirm_project_close">Close project</string>
+    <string name="msg_confirm_project_close">Are you sure you want to close this project? All started Gradle daemons will be stopped after this project is closed.</string>
     <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK can be found in the JDK itself or at : </string>
     <string name="title_developers">Developers</string>
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>

@@ -15,11 +15,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityDownloadBinding;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
+import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ListDirectoryCallable;
 import com.itsaky.androidide.utils.FileUtil;
-import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.io.FileFilter;
@@ -84,7 +84,7 @@ public class DownloadActivity extends StudioActivity {
 		}
 	}
 	
-	private final String DONE = "'Installed successfully.'";
+	private final String DONE = "DONE";
 	private void installAll() {
 		showProgress();
 		getApp().getPrefManager().putBoolean(PreferenceManager.KEY_FRAMEWORK_DOWNLOADED, true);

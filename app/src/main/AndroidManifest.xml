@@ -50,10 +50,6 @@
             android:configChanges="orientation|screenSize|uiMode">
 		</activity>
 		<service
-			android:name="com.itsaky.androidide.services.IDEService"
-			android:exported="false">
-		</service>
-		<service
 			android:name=".services.MessagingService"
 			android:exported="false">
 			<intent-filter>

@@ -17,20 +17,7 @@
 		<RelativeLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
-
-			<ImageView
-				app:srcCompat="@drawable/ic_settings"
-				android:id="@+id/settings"
-				android:scaleType="center"
-				android:layout_alignParentEnd="true"
-				android:layout_centerVertical="true"
-				android:layout_height="48dp"
-				android:layout_width="48dp"
-				android:layout_margin="8dp"
-				android:clickable="true"
-				android:focusable="true"
-				android:background="?attr/selectableItemBackgroundBorderless"/>
-
+            
 			<TextView
 				android:layout_height="wrap_content"
 				android:layout_width="match_parent"
@@ -39,31 +26,149 @@
 				android:gravity="center"
 				android:textColor="@color/primaryTextColor"
 				android:textAppearance="?android:attr/textAppearanceLarge"
-				android:id="@+id/activitymainTextView1"
+				android:id="@+id/toolbar_header"
 				android:textSize="24sp"
-				android:layout_centerVertical="true"
+				android:layout_centerInParent="true"
 				android:clickable="false"
 				android:focusable="false"/>
 
 		</RelativeLayout>
 
 	</com.google.android.material.appbar.AppBarLayout>
+    
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/real_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-	<com.itsaky.androidide.views.VerticalViewPager
-		android:id="@+id/main_viewPager"
-		android:layout_height="match_parent"
-		android:layout_width="match_parent"
-		app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
+        <ImageView
+            android:src="@mipmap/ic_launcher"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.25"
+            android:id="@+id/main_image"/>
 
-	<com.google.android.material.floatingactionbutton.FloatingActionButton
-		android:id="@+id/main_moveDown"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:layout_margin="16dp"
-		app:fabSize="normal"
-		app:srcCompat="@drawable/ic_chevron_down"
-		app:tint="@color/primaryTextColor"
-		app:backgroundTint="@color/secondaryColor"
-		android:layout_gravity="bottom|end"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/get_started"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"
+            android:textColor="@color/primaryTextColor"
+            android:layout_margin="4dp"
+            app:layout_constraintTop_toBottomOf="@id/main_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/getStarted"/>
+
+        <TextView
+            android:id="@+id/greetingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_your_new_awesome_project"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/primaryTextColorLight"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@id/getStarted"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        
+        <Button
+            android:id="@+id/create_project"
+            android:layout_height="56dp"
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="@string/msg_create_new_project"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@color/primaryTextColor"
+            android:elevation="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/greetingText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:rippleColor="@color/rippleHighlightColor"
+            app:icon="@drawable/ic_add"
+            app:iconPadding="8dp"
+            app:iconTint="@color/primaryTextColor"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"/>
+        
+        <Button
+            android:id="@+id/open_project"
+            android:layout_height="56dp"
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="@string/msg_open_existing_project"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@color/primaryTextColor"
+            android:elevation="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/create_project"
+            app:layout_constraintStart_toStartOf="@id/create_project"
+            app:rippleColor="@color/rippleHighlightColor"
+            app:icon="@drawable/ic_folder"
+            app:iconPadding="8dp"
+            app:iconTint="@color/primaryTextColor"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"/>
+        
+        <Button
+            android:id="@+id/goto_preferences"
+            android:layout_height="56dp"
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="@string/msg_preferences"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@color/primaryTextColor"
+            android:elevation="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/open_project"
+            app:layout_constraintStart_toStartOf="@id/create_project"
+            app:rippleColor="@color/rippleHighlightColor"
+            app:icon="@drawable/ic_settings"
+            app:iconPadding="8dp"
+            app:iconTint="@color/primaryTextColor"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/createNewCard"
+            android:layout_height="0dp"
+            android:layout_width="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:cardBackgroundColor="@color/primaryLightColor"
+            app:cardElevation="8dp"
+            style="@style/CreateProjectCardView">
+
+            <include
+                android:id="@+id/createLayout"
+                layout="@layout/layout_create_project"/>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

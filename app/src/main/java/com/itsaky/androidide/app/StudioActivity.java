@@ -14,13 +14,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.services.IDEService;
+import com.itsaky.androidide.utils.Logger;
 
 public abstract class StudioActivity extends AppCompatActivity {
 	private boolean toRequestStorage = true;
 
 	public static final String TAG = "StudioActivity";
 	public static final int REQCODE_STORAGE = 1009;
-
+    
+    protected static Logger LOG = Logger.instance("StudioActivity");
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

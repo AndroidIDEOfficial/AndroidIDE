@@ -10,7 +10,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
 
-import static com.itsaky.androidide.utils.PreferenceManager.*;
+import static com.itsaky.androidide.managers.PreferenceManager.*;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.google.android.material.slider.LabelFormatter;
 import java.text.NumberFormat;

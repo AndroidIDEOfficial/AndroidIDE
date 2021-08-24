@@ -1,11 +1,8 @@
 package com.itsaky.androidide;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -39,9 +36,9 @@ import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.transition.MaterialArcMotion;
 import com.google.android.material.transition.MaterialContainerTransform;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
@@ -60,13 +57,17 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.JLSRequestor;
+import com.itsaky.androidide.language.buildout.BuildOutputLanguage;
 import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
+import com.itsaky.androidide.managers.PreferenceManager;
+import com.itsaky.androidide.managers.VersionedFileManager;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
+import com.itsaky.androidide.models.build.OperationHierarchyNode;
 import com.itsaky.androidide.receivers.LogReceiver;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
@@ -75,14 +76,19 @@ import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.androidide.utils.PreferenceManager;
 import com.itsaky.androidide.utils.ProjectWriter;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
+import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
-import com.itsaky.androidide.utils.VersionedFileManager;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
+import com.itsaky.gradle.tooling.api.model.IDEProject;
+import com.itsaky.gradle.tooling.api.model.Module;
+import com.itsaky.gradle.tooling.api.model.build.BuildProgressEvent;
+import com.itsaky.gradle.tooling.api.model.build.OperationDescriptor;
+import com.itsaky.gradle.tooling.api.model.build.ProgressType;
+import com.itsaky.gradle.tooling.api.model.build.descriptors.TaskDescriptor;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.DidChangeWatchedFilesParams;
@@ -109,7 +115,6 @@ import com.itsaky.lsp.TextDocumentItem;
 import com.itsaky.lsp.TextDocumentPositionParams;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
-import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
@@ -151,9 +156,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private OptionsListFragment mFileOptionsFragment;
     private ProgressSheet mSearchingProgress;
     private AlertDialog mFindInProjectDialog;
-	
-	private boolean recreateCompletionServices = false;
     
+    private final List<OperationHierarchyNode> operationTree = new ArrayList<>();
     private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
 	private final Stack<Message> pendingMessages = new Stack<>();
     
@@ -164,7 +168,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private final String JAVA_PATH_REGEX = "/.*/src/.*/java";
 	
     private static final Gson gson = new Gson();
-	private final IDEService.BuildListener mBuildListener = this;
 	private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
     public static final String TAG = "EditorActivity";
 	
@@ -172,19 +175,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private static final int ACTIONID_OTHERS = 101;
 	private static final int ACTIONID_ALL = 102;
     
+    private static final int STD_TYPE_NORMAL = 0;
+    private static final int STD_TYPE_ERROR = 1;
+    private static final int STD_TYPE_SUCCESS = 2;
+    
+    public static final String EXTRA_PROJECT = "project";
+    
 	private LogReceiver mLogReceiver = new LogReceiver().setLogListener(line -> appendApkLog(line));
-	private BroadcastReceiver mServiceStartReceiver = new BroadcastReceiver(){
-
-		@Override
-		public void onReceive(Context p1, Intent p2) {
-			unregisterReceiver(this);
-			getApp().storeBuildServiceInstance(mBuildListener);
-			if (getApp().isStopGradleDaemon() && getBuildService() != null) getBuildService().stopAllDaemons();
-			getBuildService().setModule(mProject.getMainModulePath());
-			preBuild();
-			invalidateOptionsMenu();
-		}
-	};
 	
     /**
      * MenuItem(s) that are related to the build process
@@ -216,7 +213,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         super.onCreate(savedInstanceState);
 		setSupportActionBar(mBinding.editorToolbar);
 		
-		this.mProject = getIntent().getParcelableExtra("project");
+		getProjectFromIntent();
 		mPagerAdapter = new EditorPagerAdapter(getSupportFragmentManager(), this.mProject);
 		mFileTreeFragment = FileTreeFragment.newInstance(this.mProject).setFileActionListener(this);
 		mDaemonStatusFragment = new TextSheetFragment().setTextSelectable(true);
@@ -238,21 +235,18 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.fabView.setOnClickListener(v -> showViewOptions());
 		
 		getApp().checkAndUpdateGradle();
-		if (getBuildService() == null) {
-			registerServiceReceiver();
-			getApp().startBuildService();
-		} else {
-			if (getApp().isStopGradleDaemon() && getBuildService() != null) getBuildService().stopAllDaemons();
-			getBuildService().setModule(mProject.getMainModulePath());
-			getBuildService().setListener(this);
-			preBuild();
-			invalidateOptionsMenu();
-		}
-		
+		getApp().startBuildService(new File(mProject.getProjectPath()));
+		getApp().getBuildService().setListener(this);
+        
 		KeyboardUtils.registerSoftInputChangedListener(this, __ -> onSoftInputChanged());
 		registerLogReceiver();
 		setupContainers();
         setupSignatureText();
+    }
+
+    private void getProjectFromIntent() {
+        this.mProject = getIntent().getParcelableExtra(EXTRA_PROJECT);
+        getApp().getPrefManager().setOpenedProject(this.mProject.getProjectPath());
     }
 
     private void setupSignatureText() {
@@ -328,7 +322,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
 	
 	private void notifySyncNeeded() {
-		if(getBuildService() != null && !getBuildService().isBuilding()) {
+		if(getBuildService() != null && getBuildService().isProjectInitialized() && !getBuildService().isBuilding()) {
 			getSyncBanner()
 				.setNegative(android.R.string.cancel, null)
 				.setPositive(android.R.string.ok, v -> {
@@ -337,6 +331,35 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 				.show();
 		}
 	}
+    
+    private void closeProject(boolean manualFinish) {
+        if (getBuildService() != null && getBuildService().isProjectInitialized()) {
+            getBuildService().setListener(null);
+            getBuildService().exit();
+        }
+        
+        getApp().getPrefManager().setOpenedProject(PreferenceManager.NO_OPENED_PROJECT);
+        
+        if(getApp().getJavaLanguageServer() != null)
+            getApp().getJavaLanguageServer().exit();
+            
+        getApp().stopAllDaemons();
+        
+        if(manualFinish)
+            finish();
+    }
+    
+    private void confirmProjectClose() {
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+        builder.setTitle(R.string.title_confirm_project_close);
+        builder.setMessage(R.string.msg_confirm_project_close);
+        builder.setNegativeButton(android.R.string.no, null);
+        builder.setPositiveButton(android.R.string.yes, (d, w) -> {
+            d.dismiss();
+            closeProject(true);
+        });
+        builder.show();
+    }
 
 	@Override
 	public void onBackPressed() {
@@ -359,7 +382,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		} else if(mFileOptionsFragment != null && mFileOptionsFragment.isShowing()) {
 			mFileOptionsFragment.dismiss();
 		} else {
-			super.onBackPressed();
+            confirmProjectClose();
 		}
 	}
 
@@ -375,14 +398,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
-		if (getBuildService() != null) {
-			getBuildService().setListener(null);
-		}
-		try {
-			unregisterReceiver(mServiceStartReceiver);
-			unregisterReceiver(mLogReceiver);
+        closeProject(false);
+        try {
+            unregisterReceiver(mLogReceiver);
 		} catch (Throwable th) {}
+		super.onDestroy();
 	}
 
 	@Override
@@ -391,7 +411,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		for (int id : BUILD_IDS) {
 			MenuItem item = menu.findItem(id);
 			if (item != null) {
-                boolean enabled = getBuildService() != null && !getBuildService().isBuilding();
+                boolean enabled = getBuildService() != null && getBuildService().isProjectInitialized() && !getBuildService().isBuilding();
 				item.setEnabled(enabled);
                 item.getIcon().setAlpha(enabled ? 255 : 76);
 			}
@@ -604,19 +624,28 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		getLogLanguage().addLine(line);
 		appendLogOut(line.toString());
 	}
+
+    @Override
+    public void stdOut(GradleTask task, CharSequence text) {
+        if(text == null) text = "";
+		appendBuildOut(text.toString(), STD_TYPE_NORMAL);
+    }
 	
 	@Override
-	public void appendOutput(GradleTask task, CharSequence text) {
-		if(text == null)
-			return;
-		if(task != null && !task.canOutput()) {
-			return;
-		}
-		appendBuildOut(text.toString());
+	public void stdErr(GradleTask task, CharSequence text) {
+		if(text == null) text = "";
+		appendBuildOut(text.toString(), STD_TYPE_ERROR);
 	}
 
+    @Override
+    public void stdSuccess(GradleTask task, CharSequence text) {
+        if(text == null) text = "";
+		appendBuildOut(text.toString(), STD_TYPE_SUCCESS);
+    }
+
 	@Override
-	public void showPreparing() {
+	public void prepare() {
+        operationTree.clear();
 		boolean isFirstBuild = getApp().getPrefManager().getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true);
 		setStatus(getString(isFirstBuild ? R.string.preparing_first : R.string.preparing));
 		if(isFirstBuild) {
@@ -625,20 +654,106 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
 
 	@Override
-	public void onStartingGradleDaemon(GradleTask task) {
-		setStatus(getString(R.string.msg_starting_daemon));
-		getApp().setStopGradleDaemon(false);
+	public void onConnectionProgressChanged(String status) {
+		setStatus(status);
 	}
 
-	@Override
-	public void onRunTask(String taskName, GradleTask task) {
-		if(task != null && task.canOutput()) {
-			setStatus(getBuildService().typeString(task.getTaskID()) + " " + taskName);
-		}
-	}
+    @Override
+    public void onBuildProgress(GradleTask gradleTask, BuildProgressEvent event) {
+        
+        OperationDescriptor descriptor = event.descriptor;
+        OperationDescriptor parent = descriptor.parent;
+        
+        OperationHierarchyNode node = createNode(event);
+        if(parent == null) {
+            // This is a root node, add it at level 0 in tree
+            if(operationTree.contains(node)) {
+                operationTree.set(operationTree.indexOf(node), node);
+            } else operationTree.add(node);
+        } else {
+            // A nested node must be added in the appropriate parent node
+            
+            // We first get the list of parents
+            // Last item in this list will always be the direct parent of current node
+            final List<OperationDescriptor> parents = new ArrayList<>();
+            while(parent != null) {
+                parents.add(0, parent);
+                parent = parent.parent;
+            }
+            
+            List<OperationHierarchyNode> list = new ArrayList<OperationHierarchyNode>(operationTree);
+            OperationHierarchyNode direct = null;
+            final int last = parents.size() - 1;
+            for(int i=0;i<parents.size();i++) {
+                OperationDescriptor desc = parents.get(i);
+                if(i == last) {
+                    if(direct != null)
+                        direct.children.add(node);
+                    else list.add(node);
+                } else {
+                    desc = parents.get(i);
+                    direct = findNodeByLabelInList(desc.name, list);
+                    if(direct != null)
+                        list = new ArrayList<OperationHierarchyNode>(direct.children);
+                }
+            }
+        }
+        
+        if(event.descriptor != null) {
+            /**
+             * A descriptor describes a progress event
+             * Different descriptors are available for different events in package {@code com.itsaky.gradle.tooling.api.model.build.descriptors }
+             */
+            if(event.descriptor instanceof TaskDescriptor) {
+                TaskDescriptor task = (TaskDescriptor) descriptor;
+                setStatus(String.format("> Task %s", task.taskPath));
+            }
+        }
+    }
+    
+    private OperationHierarchyNode findNodeByLabelInList(String label, List<OperationHierarchyNode> list) {
+        if(list == null || label == null) return null;
+        for(int i=0;i<list.size();i++) {
+            OperationHierarchyNode node = list.get(i);
+            if(node != null && node.label.equals(label))
+                return node;
+        }
+        return null;
+    }
+    
+    private OperationHierarchyNode createNode(BuildProgressEvent event) {
+        OperationHierarchyNode node = new OperationHierarchyNode();
+        node.label = event.descriptor.name;
+        node.isFinished = isFinished(event);
+        node.isStarted = isStarted(event);
+
+        // A BuildResult is available in the descriptor only if the event has finished executing
+        node.isSuccessful = node.isFinished && event.descriptor.result != null && (event.descriptor.result.isSuccess || event.descriptor.result.isSkipped);
+        
+        return node;
+    }
+    
+    private boolean isFinished(BuildProgressEvent event) {
+        return event.type == ProgressType.FINISH
+            || event.type == ProgressType.PROJECT_CONFUGURATION_FINISH
+            || event.type == ProgressType.TASK_FINISH
+            || event.type == ProgressType.TEST_FINISH
+            || event.type == ProgressType.TRANSFORM_FINISH
+            || event.type == ProgressType.WORK_ITEM_FINISH;
+    }
+    
+    private boolean isStarted(BuildProgressEvent event) {
+        return event.type == ProgressType.START
+            || event.type == ProgressType.PROJECT_CONFUGURATION_START
+            || event.type == ProgressType.TASK_START
+            || event.type == ProgressType.TEST_START
+            || event.type == ProgressType.TRANSFORM_START
+            || event.type == ProgressType.WORK_ITEM_START;
+    }
 
 	@Override
-	public void onBuildSuccessful(String msg, GradleTask task) {
+	public void onBuildSuccessful(GradleTask task, String msg) {
+        invalidateOptionsMenu();
 		if(task == null) return;
 		if(task.canOutput())
 			setStatus(msg);
@@ -652,12 +767,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		}
 		
 		getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-		recreateCompletionServices = false;
-		invalidateOptionsMenu();
+        
+        LOG.i("Operation tree: " + new GsonBuilder().setPrettyPrinting().create().toJson(operationTree));
 	}
-
+    
 	@Override
-	public void onBuildFailed(String msg, GradleTask task) {
+	public void onBuildFailed(GradleTask task, String msg) {
+        invalidateOptionsMenu();
 		if(task == null) return;
 		if(task.canOutput()) {
 			setStatus(msg);
@@ -666,30 +782,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		showBuildResult();
 		
 		getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-		recreateCompletionServices = false;
-		invalidateOptionsMenu();
 	}
 
-	@Override
-	public void onGetDependencies(List<String> dependencies) {
-		setStatus(getString(R.string.msg_starting_completion));
-		mProject.setClassPaths(dependencies);
+    @Override
+    public void onProjectInitialized(IDEProject project, Module main) {
+        invalidateOptionsMenu();
+        setStatus(getString(R.string.msg_starting_completion));
+        mProject.setClassPaths(new ArrayList<String>(main.dependencyJars));
         createServices();
-	}
-
-	@Override
-	public void onGetDependenciesFailed() {
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
-		builder.setNegativeButton(android.R.string.no, null)
-			.setPositiveButton(android.R.string.yes, (p1, p2) -> {
-				p1.dismiss();
-				if(getBuildService() != null)
-					getBuildService().showDependencies();
-			})
-			.setTitle(R.string.failed)
-			.setMessage(R.string.msg_first_prepare_failed)
-			.create().show();
-	}
+    }
 	
 	@Override
 	public void saveFiles() {
@@ -697,10 +798,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
     
     // Can be called from a different different, better to run on UI thread
-	private void appendBuildOut(final String str) {
+	private void appendBuildOut(final String str, int type) {
 		runOnUiThread(() -> {
             String strFinal = str.endsWith("\n") ? str : str.concat("\n");
-            getBuildView(true).getText().append(strFinal);
+            int line = getBuildView(true).getText().append(strFinal);
+            if(type == STD_TYPE_SUCCESS) {
+                ((BuildOutputLanguage) getBuildView().getEditorLanguage()).addSuccess(line);
+            } else if(type == STD_TYPE_ERROR) {
+                ((BuildOutputLanguage) getBuildView().getEditorLanguage()).addError(line);
+            }
         });
 	}
 	
@@ -822,20 +928,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
 	
 	private MaterialContainerTransform createContainerTransformFor(View start, View end, View drawingView) {
-		MaterialContainerTransform transform = new MaterialContainerTransform();
-		transform.setStartView(start);
-		transform.setEndView(end);
-		transform.addTarget(end);
-		transform.setDrawingViewId(drawingView.getId());
-		transform.setAllContainerColors(ContextCompat.getColor(this, R.color.primaryDarkColor));
-		transform.setElevationShadowEnabled(true);
-		transform.setPathMotion(new MaterialArcMotion());
-		transform.setScrimColor(Color.TRANSPARENT);
-		return transform;
-	}
-
-	private void preBuild() {
-		getBuildService().showDependencies();
+		return TransformUtils.createContainerTransformFor(start, end, drawingView);
 	}
 
 	private void install(File apk) {
@@ -854,12 +947,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		}, __ -> {
 			setStatus(getString(getApp().areCompletorsStarted() ? R.string.msg_service_started : R.string.msg_starting_completion_failed));
 		});
-	}
-	
-	private void registerServiceReceiver() {
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(IDEService.ACTION_CREATED);
-		registerReceiver(mServiceStartReceiver, filter);
 	}
 
 	private void registerLogReceiver() {
@@ -1268,7 +1355,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			startActivity(new Intent(this, PreferencesActivity.class));
 		} else if(id == R.id.editornav_share) {
 			startActivity(IntentUtils.getShareTextIntent(getString(R.string.msg_share_app)));
-		} 
+		} else if(id == R.id.editornav_close_project) {
+            confirmProjectClose();
+        }
+        mBinding.getRoot().closeDrawer(GravityCompat.START);
 		return false;
 	}
 
@@ -1342,7 +1432,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		buildView = new CodeEditor(this);
 		buildView.setEditable(false);
 		buildView.setDividerWidth(0);
-		buildView.setEditorLanguage(new EmptyLanguage());
+		buildView.setEditorLanguage(new BuildOutputLanguage());
 		buildView.setOverScrollEnabled(false);
 		buildView.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
 		buildView.setWordwrap(false);
@@ -1852,4 +1942,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         
         invalidateOptionsMenu();
 	}
+    
+    private static final Logger LOG = Logger.instance("EditorActivity");
 }

@@ -1,13 +1,13 @@
 package com.itsaky.androidide.fragments.preferences;
 
-import androidx.preference.PreferenceFragmentCompat;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.os.Bundle;
 import android.view.ViewGroup;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceFragmentCompat;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.utils.PreferenceManager;
+import com.itsaky.androidide.managers.PreferenceManager;
 
 public abstract class BasePreferenceFragment extends PreferenceFragmentCompat {
 	

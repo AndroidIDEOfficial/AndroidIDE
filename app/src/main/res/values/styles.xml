@@ -84,11 +84,11 @@
 		<item name="fontFamily">@font/josefin_sans</item>
 	</style>
 	<style name="AppTheme.FilePicker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimary">@color/primaryDarkColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
 
-        <item name="android:statusBarColor">@color/secondaryColor</item>
+        <item name="android:statusBarColor">@color/primaryDarkColor</item>
         <item name="android:windowBackground">@color/content_background</item>
         <item name="android:navigationBarColor">@color/primaryDarkColor</item>
 

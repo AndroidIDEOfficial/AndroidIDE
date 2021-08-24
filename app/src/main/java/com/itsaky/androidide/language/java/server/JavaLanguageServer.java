@@ -81,7 +81,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     "--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED " +
     "--add-opens jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED " +
     "-cp $JLS_HOME/lib/jls.jar:$JLS_HOME/lib/gson.jar:$JLS_HOME/lib/protobuf.jar " +
-    "org.javacs.Main --quiet";
+    "org.javacs.Main";
 
     
     private static final String CONTENT_LENGTH = "Content-Length: ";
@@ -113,6 +113,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
                         onServerOut(temp);
                     });
                 }
+                socket.close();
                 logger.i("Socket disconnected");
             } catch (Throwable e) {
                 logEx(e);
@@ -165,6 +166,13 @@ public class JavaLanguageServer implements ShellServer.Callback {
             if(client != null)
                 client.onServerStarted(UNIVERSION_ID);
         });
+    }
+    
+    public void exit() {
+        write(Method.EXIT, "");
+        try {
+            server.close();
+        } catch (Throwable th) {}
     }
     
     public boolean isStarted() {
@@ -287,8 +295,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     }
     
     private BufferedOutputStream os;
-    private BufferedOutputStream os1;
-
+    
     private void writeOut(String data) {
         try {
             if(os == null) {
@@ -300,24 +307,11 @@ public class JavaLanguageServer implements ShellServer.Callback {
             logger.e(ThrowableUtils.getFullStackTrace(th));
         }
     }
-
-    private void writeOut2(String data) {
-        try {
-            if(os1 == null) {
-                os1 = new BufferedOutputStream(new FileOutputStream(new File(FileUtil.getExternalStorageDir(), "ide_xlog/verbose.txt"), true));
-            }
-            os1.write(data.getBytes());
-            os1.flush();
-        } catch (Throwable th) {
-            logger.e(ThrowableUtils.getFullStackTrace(th));
-        }
-    }
     
     /**
      * This method is called on UI Thread, do not perform time consuming or networking tasks
      */
     private void onServerOut(String line) {
-        writeOut2(line + "\n");
         if(line.contains(CONTENT_LENGTH)) line = line.substring(0, line.lastIndexOf(CONTENT_LENGTH));
         if(this.client == null) return;
         try {

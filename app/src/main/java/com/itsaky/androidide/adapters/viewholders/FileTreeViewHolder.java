@@ -45,7 +45,7 @@ public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
 		else
 			icon = R.drawable.ic_file_unknown;
 
-		final boolean isGradle = file.getAbsolutePath().equals(Environment.GRADLE_PROPS_DIR.getAbsolutePath());
+		final boolean isGradle = file.getAbsolutePath().equals(Environment.GRADLE_USER_HOME.getAbsolutePath());
 		chevron = binding.getRoot().findViewById(R.id.filetree_chevron);
 		binding.filetreeName.setText(isGradle ? "GRADLE_HOME" : file.getName());
 		binding.filetreeIcon.setImageResource(icon);

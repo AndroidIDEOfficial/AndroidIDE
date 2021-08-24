@@ -23,13 +23,17 @@ public final class Environment {
     
 	public static File GRADLE_DIR;
 	public static File GRADLE_PROPS;
-	public static File GRADLE_PROPS_DIR;
+	public static File GRADLE_USER_HOME;
 	public static File GRADLE_PLUGIN;
     public static File BOOTCLASSPATH;
 	public static File CACHES_DIR;
 	public static File AAPT2;
     
+    public static File INIT_SCRIPT;
     public static File LIBHOOKSO;
+    
+    public static File GRADLE_API_DIR;
+    public static File GRADLE_API_LIBS_DIR;
 	
 	public static String ANDROID_SDK_FOLDER_NAME = "android-sdk";
 	public static String GRADLE_FOLDER_NAME = null;
@@ -61,25 +65,24 @@ public final class Environment {
 		HOME = app.getRootDir();
 		JAVA_HOME = getJavaHome();
 		ANDROID_HOME = new File(HOME, ANDROID_SDK_FOLDER_NAME);
-        JLS_HOME = mkdirIfNotExits(new File(HOME, "jls"));
+        JLS_HOME = mkdirIfNotExits(new File(HOME.getParentFile(), "jls"));
 		TMP_DIR = mkdirIfNotExits(new File(HOME, "tmp"));
 		GRADLE_DIR = new File(HOME, GRADLE_FOLDER_NAME);
         USRDIR = mkdirIfNotExits(new File(HOME.getParentFile(), "usr"));
         LIBDIR = mkdirIfNotExits(new File(USRDIR, "lib"));
         BINDIR = mkdirIfNotExits(new File(USRDIR, "bin"));
         
+        GRADLE_API_DIR = mkdirIfNotExits(new File(HOME.getParentFile(), "gradle-api"));
+        GRADLE_API_LIBS_DIR = new File(GRADLE_API_DIR, "libs");
+        
+        INIT_SCRIPT = new File(mkdirIfNotExits(new File(HOME.getParentFile(), "init")), "androidide.init.gradle");
         LIBHOOKSO = new File(LIBDIR, "libhook.so");
 		CACHES_DIR = new File(HOME, "ide-caches");
         BOOTCLASSPATH = new File("");
 		AAPT2 = new File(files21, "com.android.tools.build/aapt2/4.0.1-6197926");
 		GRADLE_PLUGIN = new File(files21, "com.itsaky.androidide/gradle");
-		GRADLE_PROPS_DIR = new File(HOME, ".gradle");
-		GRADLE_PROPS = new File(GRADLE_PROPS_DIR, "gradle.properties");
-	}
-	
-	public static void updateGradleDir() {
-		GRADLE_DIR = new File(HOME, GRADLE_FOLDER_NAME);
-		StudioApp.getInstance().onGradleUpdated();
+		GRADLE_USER_HOME = new File(HOME, ".gradle");
+		GRADLE_PROPS = new File(GRADLE_USER_HOME, "gradle.properties");
 	}
 	
 	public static File getGradleDir() {

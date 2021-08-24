@@ -778,6 +778,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
         invalidate();
     }
+    
+    public EditorLanguage getEditorLanguage() {
+        return mLanguage;
+    }
 
     /**
      * Getter

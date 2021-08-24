@@ -200,7 +200,7 @@ public class ProjectWriter {
 					}
 				}
 				if(success)
-					notifySuccess();
+					notifySuccess(projectDir);
 			} else {
 				notifyFailed(instance.getString(R.string.failed_create_project_dir));
 			}
@@ -223,10 +223,10 @@ public class ProjectWriter {
 		});
 	}
 	
-	private static void notifySuccess() {
+	private static void notifySuccess(File root) {
 		ThreadUtils.runOnUiThread(() -> {
 			if(callback != null)
-				callback.onSuccess();
+				callback.onSuccess(root);
 		});
 	}
 	

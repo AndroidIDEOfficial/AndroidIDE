@@ -1,11 +1,13 @@
 package com.itsaky.androidide.tasks;
 
 import java.io.File;
+import java.util.List;
 
 public interface GradleTask {
     
 	public String getName();
     public String getCommands();
+    public List<String> getTasks();
 	public int getTaskID();
 	public boolean shouldSaveFiles();
 	public boolean canOutput();

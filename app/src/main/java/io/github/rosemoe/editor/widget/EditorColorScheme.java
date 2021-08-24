@@ -61,6 +61,9 @@ public class EditorColorScheme {
 	public static final int LOG_INFO = 32;
 	public static final int LOG_ERROR = 33;
 	public static final int LOG_WARNING = 34;
+    
+    public static final int BUILD_OUT_ERROR = 53;
+    public static final int BUILD_OUT_SUCCESS = 54;
 	
     //-----------------Highlight colors-----------
 	
@@ -126,7 +129,7 @@ public class EditorColorScheme {
     /**
      * Max pre-defined color id
      */
-    protected static final int END_COLOR_ID = 52;
+    protected static final int END_COLOR_ID = 54;
     /**
      * Real color saver
      */
@@ -201,6 +204,8 @@ public class EditorColorScheme {
             case OPERATOR:
                 color = 0xFF0066D6;
                 break;
+            case BUILD_OUT_SUCCESS :
+            case BUILD_OUT_ERROR :
             case TEXT_NORMAL:
                 color = 0xFF333333;
                 break;

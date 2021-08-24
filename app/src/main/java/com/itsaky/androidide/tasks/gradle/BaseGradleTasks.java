@@ -13,7 +13,6 @@ import com.itsaky.androidide.tasks.gradle.dex.MergeLibAndProjectDex;
 import com.itsaky.androidide.tasks.gradle.lint.Lint;
 import com.itsaky.androidide.tasks.gradle.lint.LintDebug;
 import com.itsaky.androidide.tasks.gradle.lint.LintRelease;
-import com.itsaky.androidide.tasks.gradle.plugintasks.ShowDependencies;
 
 public class BaseGradleTasks {
 	
@@ -31,7 +30,5 @@ public class BaseGradleTasks {
 	
 	MERGE_DEX = new MergeDex(),
 	MERGE_EXT_DEX = new MergeExtDex(),
-	MERGE_LIB_AND_PROJECT_DEX = new MergeLibAndProjectDex(),
-	
-	SHOW_DEPENDENCIES = new ShowDependencies();
+	MERGE_LIB_AND_PROJECT_DEX = new MergeLibAndProjectDex();
 }

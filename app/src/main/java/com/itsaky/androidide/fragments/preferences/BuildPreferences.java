@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-import static com.itsaky.androidide.utils.PreferenceManager.*;
+import static com.itsaky.androidide.managers.PreferenceManager.*;
 
 public class BuildPreferences extends BasePreferenceFragment implements Preference.OnPreferenceClickListener {
 	

@@ -3,19 +3,25 @@ package com.itsaky.androidide.shell;
 import com.blankj.utilcode.util.CloseUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.Logger;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ShellServer extends Thread {
-    private final List<Callback> callbacks = Collections.synchronizedList(new ArrayList());
+    private final List<Callback> callbacks = Collections.synchronizedList(new ArrayList<Callback>());
     private BufferedReader output;
     private Process process;
+    
+    private static final Logger LOG = Logger.instance("ShellServer");
 
     public ShellServer(Callback callback, String command, String dirPath) {
         addCallback(callback);
@@ -30,7 +36,8 @@ public class ShellServer extends Thread {
             stringBuilder.append("\nexport TMPDIR=" + Environment.path(Environment.mkdirIfNotExits(Environment.TMP_DIR)));
             stringBuilder.append("\nexport JAVA_HOME=" + Environment.path(Environment.JAVA_HOME));
             stringBuilder.append("\nexport ANDROID_HOME=" + Environment.path(Environment.ANDROID_HOME));
-            stringBuilder.append("\nexport GRADLE_USER_HOME=$HOME/.gradle");
+            stringBuilder.append("\nexport GRADLE_INSTALLATION_DIR=" + Environment.path(Environment.GRADLE_DIR));
+            stringBuilder.append("\nexport GRADLE_USER_HOME=" + Environment.path(Environment.GRADLE_USER_HOME));
             stringBuilder.append("\nexport PATH=$PATH:$HOME/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.JAVA_HOME) + "/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.GRADLE_DIR) + "/bin");
@@ -65,6 +72,24 @@ public class ShellServer extends Thread {
                 callback.output(out);
             }
         }
+    }
+    
+    public int getPid() {
+        int pid = -1;
+        try {
+            Field f = process.getClass().getDeclaredField("pid");
+            f.setAccessible(true);
+            pid = f.getInt(process);
+            f.setAccessible(false);
+        } catch (Throwable ignored) {
+            try {
+                Matcher m = Pattern.compile("pid=(\\d+)").matcher(process.toString());
+                pid = m.find() ? Integer.parseInt(m.group(1)) : -1;
+            } catch (Throwable ignored2) {
+                pid = -1;
+            }
+        }
+        return pid;
     }
 
     public ShellServer addCallback(Callback callback) {

@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
 import com.blankj.utilcode.util.EncodeUtils;
-import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.SPStaticUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
@@ -22,14 +21,15 @@ import com.itsaky.androidide.interfaces.LanguageServerListener;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
+import com.itsaky.androidide.managers.PreferenceManager;
+import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.models.AndroidProject;
-import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.services.MessagingService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
-import com.itsaky.androidide.utils.PreferenceManager;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.StudioUtils;
 import com.itsaky.lsp.LanguageClient;
 import com.itsaky.toaster.Toaster;
@@ -39,8 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import net.lingala.zip4j.ZipFile;
-import com.blankj.utilcode.util.ZipUtils;
 
 public class StudioApp extends MultiDexApplication
 {
@@ -73,6 +71,8 @@ public class StudioApp extends MultiDexApplication
     public static final String EMAIL = "contact@androidide.com";
     
 	private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
+    
+    private static final Logger LOG = Logger.instance("StudioApp");
 	
 	@Override
 	public void onCreate() {
@@ -85,34 +85,15 @@ public class StudioApp extends MultiDexApplication
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         JavaCharacter.initMap();
         
-        setupLibsIfNeeded();
-        extractJlsIfNeeded();
-        extractLogsenderIfNeeded();
-        extractCleanerIfNeeded();
+        ToolsManager.init(this, null);
         
-//      newShell(line -> handleLog(line)).bgAppend("androidide-cleaner && logcat -v threadtime");
-
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			createNotificationChannels();
 		}
-		
+        
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_UPDATE);
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_DEV_MSGS);
 	}
-
-    private void extractCleanerIfNeeded() {
-        File cleanerZip = new File(Environment.TMP_DIR, "bin.zip");
-        File cleaner = new File(Environment.BINDIR, "androidide-cleaner");
-        if(!cleaner.exists()) {
-            ResourceUtils.copyFileFromAssets("data/bin.zip", cleanerZip.getAbsolutePath());
-            try {
-                ZipUtils.unzipFile(cleanerZip, Environment.BINDIR);
-            } catch (Throwable e) {}
-        }
-        
-        if(cleaner.exists() && !cleaner.canExecute())
-            cleaner.setExecutable(true);
-    }
 	
 	private void handleLog(CharSequence seq) {
 		if(seq == null)
@@ -165,67 +146,6 @@ public class StudioApp extends MultiDexApplication
 		
 	}
     
-    private void extractJlsIfNeeded() {
-        boolean gson = false, jls = false, proto = false;
-        final List<File> files = FileUtils.listFilesInDir(Environment.JLS_HOME, true);
-        for(File f : files) {
-            gson = gson == true ? gson : f.getName().equals("gson.jar");
-            jls = jls == true ? jls : f.getName().equals("jls.jar");
-            proto = proto == true ? proto : f.getName().equals("protobuf.jar");
-        }
-        
-        if(!(gson && jls && proto)) {
-            try {
-                extractJls();
-            } catch (Throwable e) {}
-        }
-    }
-
-    private void extractJls(){
-        final File jlsZip = new File(Environment.JLS_HOME, "jls.zip");
-        ResourceUtils.copyFileFromAssets("data/jls.zip", jlsZip.getAbsolutePath());
-        try {
-            ZipFile file = new ZipFile(jlsZip, ConstantsBridge.JLS_ZIP_PASSWORD_HASH.toCharArray());
-            file.extractAll(Environment.JLS_HOME.getAbsolutePath());
-            FileUtils.delete(jlsZip);
-        } catch (Throwable th) {}
-    }
-    
-    private boolean setupLibsIfNeeded() {
-        File lib = Environment.LIBDIR;
-        if(lib != null && lib.exists() && lib.isDirectory()) {
-            boolean libhook, librt, libgcc, libgcc_real, libpthread, libz, libcpp_shared;
-            libhook = librt = libgcc = libgcc_real = libpthread = libz = libcpp_shared = false;
-            File[] list = lib.listFiles();
-            if(list != null) {
-               for(File f : list) {
-                   libhook = libhook == false ? f.getName().equals("libhook.so") : libhook;
-                   librt = librt == false ? f.getName().equals("librt.so") : librt;
-                   libpthread = libpthread == false ? f.getName().equals("libpthread.so") : libpthread;
-                   libgcc = libgcc == false ? f.getName().equals("libgcc.so") : libgcc;
-                   libgcc_real = libgcc_real = false ? f.getName().equals("libgcc_real.so") : libgcc_real;
-                   libz = libz == false ? f.getName().equals("libz.so.1") : libz;
-                   libcpp_shared = libcpp_shared == false ? f.getName().equals("libc++_shared.so") : libcpp_shared;
-               }
-            } else return extractLibs(lib);
-            return !(libhook && librt && libgcc && libgcc_real && libpthread && libz && libcpp_shared) ? extractLibs(lib) : true;
-        } else return extractLibs(lib);
-    }
-
-    private boolean extractLibs(File lib) {
-        if(lib.exists()) 
-            FileUtils.delete(lib.getParentFile());
-        return lib.mkdirs() && ResourceUtils.copyFileFromAssets(getAssetsDataFile("lib"), lib.getAbsolutePath());
-    }
-    
-    private void extractLogsenderIfNeeded() {
-        try {
-            final File logsenderZip = new File(Environment.JLS_HOME, "logsender.zip");
-            ResourceUtils.copyFileFromAssets("data/logsender.zip", logsenderZip.getAbsolutePath());
-            ZipUtils.unzipFile(logsenderZip, Environment.HOME);
-        } catch (IOException e) {}
-    }
-    
 	private File getBusybox() {
         File parentFile = getRootDir().getParentFile();
         File busyboxDir = new File(parentFile, "bin/busybox");
@@ -249,38 +169,28 @@ public class StudioApp extends MultiDexApplication
             
         return busyboxDir;
     }
+    
+    public void stopAllDaemons() {
+        newShell(null).bgAppend("gradle --stop");
+    }
 	
-	public void onGradleUpdated() {
-		IDEService service = getBuildService();
-		if(service != null) {
-			service.onGradleUpdated();
-		}
+	public void startBuildService(File rootProject) {
+        if(getBuildService() != null) {
+            getBuildService().exit();
+        }
+        
+		buildService = new IDEService(rootProject);
+        buildService.start();
 	}
-	
-	public void startBuildService() {
-		if(!IDEService.isRunning()) {
-			startService(new Intent(this, IDEService.class));
-		}
-	}
-	
-	public void storeBuildServiceInstance(IDEService.BuildListener listener) {
-		buildService = IDEService.getInstance();
-		buildService.setListener(listener);
-	}
-	
+    
 	public IDEService getBuildService() {
 		return buildService;
 	}
 	
     public void createCompletionService(AndroidProject project, LanguageClient client) {
         this.mXmlCompletionService = new XMLCompletionService();
-        
-        if(languageServer == null) {
-            this.languageServer = new JavaLanguageServer(project, client);
-            this.languageServer.startServer();
-        } else {
-            this.languageServer.initialize(project);
-        }
+        this.languageServer = new JavaLanguageServer(project, client);
+        this.languageServer.startServer();
     }
     
     public JavaLanguageServer getJavaLanguageServer() {
@@ -500,11 +410,15 @@ public class StudioApp extends MultiDexApplication
             open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(open);
         } catch (Throwable th) {
-            Intent open = new Intent();
-            open.setAction(Intent.ACTION_VIEW);
-            open.setData(Uri.parse(StudioApp.TELEGRAM_GROUP_URL));
-            open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(open);
+            try {
+                Intent open = new Intent();
+                open.setAction(Intent.ACTION_VIEW);
+                open.setData(Uri.parse(StudioApp.TELEGRAM_GROUP_URL));
+                open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(open);
+            } catch (Throwable th2) {
+                toast(th2.getMessage(), Toaster.Type.ERROR);
+            }
         }
 	}
 	
@@ -515,7 +429,9 @@ public class StudioApp extends MultiDexApplication
             open.setData(Uri.parse(StudioApp.SUGGESTIONS_URL));
             open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(open); 
-        } catch (Throwable th) {}
+        } catch (Throwable th) {
+            toast(th.getMessage(), Toaster.Type.ERROR);
+        }
 	}
     
     public void openWebsite() {
@@ -525,7 +441,9 @@ public class StudioApp extends MultiDexApplication
             open.setData(Uri.parse(StudioApp.WEBSITE));
             open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(open);
-        } catch (Throwable th) {}
+        } catch (Throwable th) {
+            toast(th.getMessage(), Toaster.Type.ERROR);
+        }
 	}
     
     public void emailUs() {
@@ -535,6 +453,8 @@ public class StudioApp extends MultiDexApplication
             open.setData(Uri.parse("mailto:" + EMAIL));
             open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(open);
-        } catch (Throwable th) {}
+        } catch (Throwable th) {
+            toast(th.getMessage(), Toaster.Type.ERROR);
+        }
     }
 }
