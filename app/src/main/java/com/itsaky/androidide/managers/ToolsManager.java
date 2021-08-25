@@ -39,7 +39,7 @@ public class ToolsManager {
         if(onFinish != null)
             onFinish.run();
     }
-
+    
     private static void writeInitScript(StudioApp app) {
         FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, INIT_SCRIPT);
     }

@@ -102,7 +102,7 @@ public class DownloadActivity extends StudioActivity {
 				}
 			}
 		sb.append("rm -rf '" + getApp().getToolsDownloadDirectory().getAbsolutePath() + "' && ");
-        sb.append("echo 'Cleaning unsupported flags in binaries...' && $BUSYBOX find $JAVA_HOME/bin -type f -exec androidide-cleaner {} \\; && ");
+        sb.append("echo 'Cleaning unsupported flags in binaries...' && $BUSYBOX find $JAVA_HOME -type f -exec androidide-cleaner {} \\; && ");
         sb.append("echo " + DONE);
 		server.bgAppend(sb.toString());
 	}
@@ -115,6 +115,8 @@ public class DownloadActivity extends StudioActivity {
 				if(line.contains(DONE)) {
 					getApp().getPrefManager().putBoolean(PreferenceManager.KEY_FRAMEWORK_INSTALLED, true);
 					showRestartNeeded();
+                    if(getProgressSheet().isShowing())
+                        getProgressSheet().dismiss();
 				}
 			});
 		}

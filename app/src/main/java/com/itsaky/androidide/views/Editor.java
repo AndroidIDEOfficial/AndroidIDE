@@ -7,15 +7,15 @@ import io.github.rosemoe.editor.widget.CodeEditor;
 public class Editor extends CodeEditor {
     
     public Editor(Context context) {
-        super(context, null);
+        this(context, null);
     }
     
     public Editor(Context context, AttributeSet attrs) {
-        super(context, attrs, 0);
+        this(context, attrs, 0);
     }
     
     public Editor(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr, 0);
+        this(context, attrs, defStyleAttr, 0);
     }
     
     public Editor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {

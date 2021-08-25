@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import com.blankj.utilcode.util.FileUtils;
 
 public class StudioApp extends MultiDexApplication
 {
@@ -364,8 +365,11 @@ public class StudioApp extends MultiDexApplication
 		File gradle = new File(Environment.GRADLE_DIR, "bin/gradle");
 		if(gradle.exists()) {
 			String[] txt = FileUtil.readFile(gradle.getAbsolutePath()).split("\n");
-			if(txt != null && txt.length > 1 && txt[0].contains("#!/usr/bin/env sh")) {
-				txt[0] = "";
+			if(txt != null && txt.length > 1) {
+                String line1 = txt[0];
+                if(line1.startsWith("#!")) {
+                    txt[0] = "";
+                }
 				FileUtil.writeFile(gradle.getAbsolutePath(), TextUtils.join("\n", txt));
 				if(!gradle.canExecute())
 					gradle.setExecutable(true);

@@ -27,7 +27,7 @@ public final class Environment {
 	public static File GRADLE_PLUGIN;
     public static File BOOTCLASSPATH;
 	public static File CACHES_DIR;
-	public static File AAPT2;
+	public static File AAPT2_DIR;
     
     public static File INIT_SCRIPT;
     public static File LIBHOOKSO;
@@ -79,7 +79,7 @@ public final class Environment {
         LIBHOOKSO = new File(LIBDIR, "libhook.so");
 		CACHES_DIR = new File(HOME, "ide-caches");
         BOOTCLASSPATH = new File("");
-		AAPT2 = new File(files21, "com.android.tools.build/aapt2/4.0.1-6197926");
+		AAPT2_DIR = new File(files21, "com.android.tools.build/aapt2");
 		GRADLE_PLUGIN = new File(files21, "com.itsaky.androidide/gradle");
 		GRADLE_USER_HOME = new File(HOME, ".gradle");
 		GRADLE_PROPS = new File(GRADLE_USER_HOME, "gradle.properties");

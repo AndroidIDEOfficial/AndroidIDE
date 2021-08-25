@@ -38,34 +38,33 @@ public class ShellServer extends Thread {
             stringBuilder.append("\nexport ANDROID_HOME=" + Environment.path(Environment.ANDROID_HOME));
             stringBuilder.append("\nexport GRADLE_INSTALLATION_DIR=" + Environment.path(Environment.GRADLE_DIR));
             stringBuilder.append("\nexport GRADLE_USER_HOME=" + Environment.path(Environment.GRADLE_USER_HOME));
+            stringBuilder.append("\nexport JLS_HOME=" + Environment.path(Environment.JLS_HOME));
             stringBuilder.append("\nexport PATH=$PATH:$HOME/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.JAVA_HOME) + "/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.GRADLE_DIR) + "/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.ANDROID_HOME) + "/cmdline-tools/latest/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.ANDROID_HOME) + "/cmake/bin");
             stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.BINDIR));
-            stringBuilder.append("\nexport JLS_HOME=" + Environment.path(Environment.JLS_HOME));
             
-            // Provide paths to .so files needed to execute JDK
-            final String lib = Environment.LIBDIR.getAbsolutePath();
-            stringBuilder.append("\nexport LD_LIBRARY_PATH=" + lib);
-            stringBuilder.append(System.getenv().containsKey("LD_LIBRARY_PATH") ? ":" + System.getenv().get("LD_LIBRARY_PATH") : "");
-            
-            if(android.os.Build.VERSION.SDK_INT >= 30) {
-                // Hook calls to malloc() in native binaries
-                // Required only in Android 11 and up
-                stringBuilder.append("\nexport LD_PRELOAD=" + Environment.LIBHOOKSO.getAbsolutePath());
-            }
+////            Provide paths to .so files needed to execute JDK
+//            final String lib = Environment.LIBDIR.getAbsolutePath();
+//            stringBuilder.append("\nexport LD_LIBRARY_PATH=" + lib);
+//            stringBuilder.append(System.getenv().containsKey("LD_LIBRARY_PATH") ? ":" + System.getenv().get("LD_LIBRARY_PATH") : "");
+//            
+//            if(android.os.Build.VERSION.SDK_INT >= 30) {
+//                // Hook calls to malloc() in native binaries
+//                // Required only in Android 11 and up
+//                stringBuilder.append("\nexport LD_PRELOAD=" + Environment.LIBHOOKSO.getAbsolutePath());
+//            }
             
             // Monotonic clock fix, needed for JDK
-            stringBuilder.append("\nln -sf /apex/com.android.runtime/lib64/bionic/libc.so " + lib + "/librt.so && " +
-                   "ln -sf /apex/com.android.runtime/lib64/bionic/libc.so " + lib + "/libpthread.so");
+            stringBuilder.append("\nln -sf /apex/com.android.runtime/lib64/bionic/libc.so $JAVA_HOME/lib/librt.so && ln -sf /apex/com.android.runtime/lib64/bionic/libc.so $JAVA_HOME/lib/libpthread.so");
              
             // Execute all commands...
             append(stringBuilder.toString(), false);
             
             // Make sure there are proper permissions set to the $HOME directory
-            append("chmod -R 777 $HOME", false);
+            append("chmod -R 777 $HOME > /dev/null 2>&1", false);
         } catch (Throwable th) {
             if (callback != null) {
                 String out = ThrowableUtils.getFullStackTrace(th).concat("\n");

@@ -45,7 +45,7 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
 	protected void onShow() {
 		super.onShow();
 		editor.setText(getOutputBuilder());
-	}
+    }
 
 	private Void scrollToBottom() {
 		if(getActivity() != null)

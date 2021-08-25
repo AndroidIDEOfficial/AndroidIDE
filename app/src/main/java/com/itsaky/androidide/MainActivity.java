@@ -232,6 +232,7 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
 
     private void createProgressSheet() {
         mProgressSheet = new ProgressSheet();
+        mProgressSheet.setShowShadow(false);
     }
 
     private void setMessage(int msg) {

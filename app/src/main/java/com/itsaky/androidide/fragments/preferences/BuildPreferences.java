@@ -1,26 +1,25 @@
 package com.itsaky.androidide.fragments.preferences;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.ZipUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
+import com.itsaky.androidide.databinding.LayoutInstallToolsBinding;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
+import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
+import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
-import java.util.List;
-import java.util.Set;
 
 import static com.itsaky.androidide.managers.PreferenceManager.*;
+import com.itsaky.androidide.utils.Logger;
 
 public class BuildPreferences extends BasePreferenceFragment implements Preference.OnPreferenceClickListener {
 	
@@ -53,7 +52,7 @@ public class BuildPreferences extends BasePreferenceFragment implements Preferen
 		categoryGradle.setTitle(R.string.gradle);
 		categoryGradle.addPreference(customCommands);
 		categoryGradle.addPreference(clearCache);
-		
+        
 		setPreferenceScreen(screen);
         
 		customCommands.setOnPreferenceClickListener(this);
@@ -70,7 +69,7 @@ public class BuildPreferences extends BasePreferenceFragment implements Preferen
 		}
 		return true;
 	}
-
+    
 	private void showGradleCommandsDialog() {
 		final String[] labels = {
 			"--stacktrace",
@@ -125,7 +124,7 @@ public class BuildPreferences extends BasePreferenceFragment implements Preferen
 	}
 	
 	private Object deleteCaches() {
-		File file = new File(Environment.HOME, ".gradle/caches");
+		File file = new File(Environment.GRADLE_USER_HOME, "caches");
 		if(file.exists()) {
 			FileUtils.delete(file);
 		}

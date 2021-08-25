@@ -1,4 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="msg_shell_verbose">Verbose output is enabled!</string>
+    <string name="msg_shell_output">Shell output</string>
+    <string name="msg_invalid_path">Invalid path!</string>
+    <string name="msg_path_to_tools">Path to .tar.xz or .zip</string>
+    <string name="str_build_tools">Build Tools</string>
+    <string name="msg_delete_aapt2">Delete AAPT2</string>
+    <string name="msg_delete_jdk">Delete JDK</string>
+    <string name="msg_delete_gradle">Delete Gradle</string>
     <string name="group_project">Project</string>
     <string name="title_close_project">Close this project</string>
     <string name="msg_opened_project_does_not_exist">Last opened project doesn\'t exist!</string>
@@ -97,10 +105,12 @@
 	<string name="msg_custom_gradle">Please type/paste the path of .zip file which contains Gradle executables.</string>
 	<string name="msg_gradle_installed">Gradle Installed successfully!</string>
 	<string name="msg_editor_font_size">Please choose default font size of editor :</string>
-	<string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\n\nAre you sure you want to delete caches?</string>
+	<string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\nIMPORTANT: This will also delete AAPT2. You will need to reinstall it otherwise you\'ll end up with a build failure.\n\nAre you sure you want to delete caches?</string>
 	<string name="msg_install_gradle">Currently installed gradle version will be DELETE PEEMANENTLY!\n\nPlease enter full path of the zip file which contains Gradle distribution.</string>
 	<string name="reset">Reset</string>
 	<string name="title_change_text_size">Editor font size</string>
+    <string name="idepref_update_tools_title">Update/Install build tools</string>
+    <string name="idepref_update_tools_msg">Use this if you want to install or update build tools.</string>
     <string name="idepref_about_title">About AndroidIDE</string>
 	<string name="idepref_build_clearCache_title">Clear Gradle caches</string>
 	<string name="idepref_build_clearCache_summary">Clear Gradle caches directory. This will delete all dependencies downloaded by Gradle. Required files will be downloaded again in next build.</string>
