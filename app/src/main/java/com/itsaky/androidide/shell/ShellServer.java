@@ -15,6 +15,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
 
 public class ShellServer extends Thread {
     private final List<Callback> callbacks = Collections.synchronizedList(new ArrayList<Callback>());
@@ -22,7 +25,7 @@ public class ShellServer extends Thread {
     private Process process;
     
     private static final Logger LOG = Logger.instance("ShellServer");
-
+    
     public ShellServer(Callback callback, String command, String dirPath) {
         addCallback(callback);
         ProcessBuilder processBuilder = new ProcessBuilder(new String[]{command});
@@ -30,42 +33,18 @@ public class ShellServer extends Thread {
 		processBuilder.redirectErrorStream(true);
         try {
             this.process = processBuilder.start();
-            this.output = new BufferedReader(new InputStreamReader(this.process.getInputStream()));
+            this.output = new BufferedReader(new InputStreamReader(process.getInputStream()));
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("export HOME=" + Environment.path(Environment.HOME) + " && cd");
-            stringBuilder.append("\nexport TMPDIR=" + Environment.path(Environment.mkdirIfNotExits(Environment.TMP_DIR)));
-            stringBuilder.append("\nexport JAVA_HOME=" + Environment.path(Environment.JAVA_HOME));
-            stringBuilder.append("\nexport ANDROID_HOME=" + Environment.path(Environment.ANDROID_HOME));
-            stringBuilder.append("\nexport GRADLE_INSTALLATION_DIR=" + Environment.path(Environment.GRADLE_DIR));
-            stringBuilder.append("\nexport GRADLE_USER_HOME=" + Environment.path(Environment.GRADLE_USER_HOME));
-            stringBuilder.append("\nexport JLS_HOME=" + Environment.path(Environment.JLS_HOME));
-            stringBuilder.append("\nexport PATH=$PATH:$HOME/bin");
-            stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.JAVA_HOME) + "/bin");
-            stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.GRADLE_DIR) + "/bin");
-            stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.ANDROID_HOME) + "/cmdline-tools/latest/bin");
-            stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.ANDROID_HOME) + "/cmake/bin");
-            stringBuilder.append("\nexport PATH=$PATH:" + Environment.path(Environment.BINDIR));
+            stringBuilder.append("ln -sf /apex/com.android.runtime/lib64/bionic/libc.so $JAVA_HOME/lib/librt.so");
+            stringBuilder.append("\nln -sf /apex/com.android.runtime/lib64/bionic/libc.so $JAVA_HOME/lib/libpthread.so");
             
-////            Provide paths to .so files needed to execute JDK
-//            final String lib = Environment.LIBDIR.getAbsolutePath();
-//            stringBuilder.append("\nexport LD_LIBRARY_PATH=" + lib);
-//            stringBuilder.append(System.getenv().containsKey("LD_LIBRARY_PATH") ? ":" + System.getenv().get("LD_LIBRARY_PATH") : "");
-//            
-//            if(android.os.Build.VERSION.SDK_INT >= 30) {
-//                // Hook calls to malloc() in native binaries
-//                // Required only in Android 11 and up
-//                stringBuilder.append("\nexport LD_PRELOAD=" + Environment.LIBHOOKSO.getAbsolutePath());
-//            }
-            
-            // Monotonic clock fix, needed for JDK
-            stringBuilder.append("\nln -sf /apex/com.android.runtime/lib64/bionic/libc.so $JAVA_HOME/lib/librt.so && ln -sf /apex/com.android.runtime/lib64/bionic/libc.so $JAVA_HOME/lib/libpthread.so");
-             
-            // Execute all commands...
+            final Map<String, String> envs = Environment.getEnvironment(false);
+            for(Map.Entry<String, String> env : envs.entrySet()) {
+                stringBuilder.append(String.format("\nexport %s=%s", env.getKey(), env.getValue()));
+            }
             append(stringBuilder.toString(), false);
-            
-            // Make sure there are proper permissions set to the $HOME directory
-            append("chmod -R 777 $HOME > /dev/null 2>&1", false);
         } catch (Throwable th) {
+            LOG.e(ThrowableUtils.getFullStackTrace(th));
             if (callback != null) {
                 String out = ThrowableUtils.getFullStackTrace(th).concat("\n");
                 callback.output(out);
@@ -130,7 +109,7 @@ public class ShellServer extends Thread {
 			this.process.getOutputStream().write(str.concat("\n").getBytes());
 			this.process.getOutputStream().flush();
 		} catch (IOException e) {
-
+            LOG.e(ThrowableUtils.getFullStackTrace(e));
 		}
     }
 

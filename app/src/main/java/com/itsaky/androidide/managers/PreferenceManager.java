@@ -155,33 +155,4 @@ public class PreferenceManager {
     public PreferenceManager setGradleWarningEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLECMD_WARNINGMODE, enabled);
     }
-
-    public PreferenceManager addGradleFolder(String name) {
-        Set<String> folders = prefs.getStringSet(KEY_GRADLE_FILENAMES, new HashSet<String>());
-        if(folders == null) {
-            folders = new HashSet<String>();
-        }
-        if(!folders.contains(name)) {
-            folders.add(name);
-        }
-        editor.putStringSet(KEY_GRADLE_FILENAMES, folders).apply();
-        return this;
-    }
-
-    public Set<String> getGradleFolderNames() {
-        Set<String> folders = prefs.getStringSet(KEY_GRADLE_FILENAMES, new HashSet<String>());
-        if(folders != null && folders.size() > 0) {
-            return folders;
-        } else {
-            return addGradleFolder(Environment.DEFAULT_GRADLE_FOLDER).getGradleFolderNames();
-        }
-    }
-
-    public PreferenceManager setCurentGradleFolderName(String name) {
-        return addGradleFolder(name).putString(KEY_GRADLE_CURRENT_DIR, name);
-    }
-
-    public String getCurrentGradleFolderName() {
-        return getString(KEY_GRADLE_CURRENT_DIR, Environment.DEFAULT_GRADLE_FOLDER);
-    }
 }

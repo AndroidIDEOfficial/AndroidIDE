@@ -122,6 +122,8 @@ dependencies {
 	// Local projects
 	implementation project(':treeview')
     implementation project(':lsp')
+    implementation project(':emulator')
+    implementation project(':emulatorview')
 	
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	

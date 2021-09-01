@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="btn_terminal">Terminal</string>
     <string name="msg_shell_verbose">Verbose output is enabled!</string>
     <string name="msg_shell_output">Shell output</string>
     <string name="msg_invalid_path">Invalid path!</string>

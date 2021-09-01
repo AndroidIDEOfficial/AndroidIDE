@@ -24,6 +24,7 @@ import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import com.itsaky.androidide.utils.Environment;
 
 public class DownloadActivity extends StudioActivity {
 	
@@ -93,21 +94,27 @@ public class DownloadActivity extends StudioActivity {
 		sb.append("cd $HOME && ");
 		sb.append("echo 'Installing...' && ");
 		File[] files = choosenDir.listFiles(ARCHIVE_FILTER);
-		if(files != null)
-			for(File f : files) {
-				if(f.getName().endsWith(".tar.xz")) {
-					sb.append("$BUSYBOX tar xvJf '" + f.getAbsolutePath() + "' && ");
-				} else if(f.getName().endsWith(".zip")) {
-					sb.append("$BUSYBOX unzip '" + f.getAbsolutePath() + "' && ");
-				}
+		if(files != null) {
+            for(File f : files) {
+                if(f.getName().endsWith(".tar.xz")) {
+                    if(f.getName().equals("androidide-sysroot.tar.xz")) {
+                        sb.append("cd $SYSROOT/.. && ");
+                    }
+                    sb.append("$BUSYBOX tar xvJf '" + f.getAbsolutePath() + "' && ");
+                    sb.append("cd $HOME && ");
+                } else if(f.getName().endsWith(".zip")) {
+                    sb.append("$BUSYBOX unzip '" + f.getAbsolutePath() + "' && ");
+                }
 			}
-		sb.append("rm -rf '" + getApp().getToolsDownloadDirectory().getAbsolutePath() + "' && ");
+        }
         sb.append("echo 'Cleaning unsupported flags in binaries...' && $BUSYBOX find $JAVA_HOME -type f -exec androidide-cleaner {} \\; && ");
         sb.append("echo " + DONE);
+        LOG.d("Installation commands ", sb.toString().replace("&&", "\n"));
 		server.bgAppend(sb.toString());
 	}
     
 	private void checkInstalled(CharSequence out) {
+        LOG.v("Installation output: ", out);
 		if(out != null) {
 			final String line = out.toString().trim();
 			runOnUiThread(() -> {

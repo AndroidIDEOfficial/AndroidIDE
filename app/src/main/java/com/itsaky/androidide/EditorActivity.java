@@ -67,7 +67,6 @@ import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
-import com.itsaky.androidide.models.build.OperationHierarchyNode;
 import com.itsaky.androidide.receivers.LogReceiver;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
@@ -157,7 +156,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private ProgressSheet mSearchingProgress;
     private AlertDialog mFindInProjectDialog;
     
-    private final List<OperationHierarchyNode> operationTree = new ArrayList<>();
     private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
 	private final Stack<Message> pendingMessages = new Stack<>();
     
@@ -645,7 +643,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
 	@Override
 	public void prepare() {
-        operationTree.clear();
 		boolean isFirstBuild = getApp().getPrefManager().getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true);
 		setStatus(getString(isFirstBuild ? R.string.preparing_first : R.string.preparing));
 		if(isFirstBuild) {
@@ -662,42 +659,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public void onBuildProgress(GradleTask gradleTask, BuildProgressEvent event) {
         
         OperationDescriptor descriptor = event.descriptor;
-        OperationDescriptor parent = descriptor.parent;
-        
-        OperationHierarchyNode node = createNode(event);
-        if(parent == null) {
-            // This is a root node, add it at level 0 in tree
-            if(operationTree.contains(node)) {
-                operationTree.set(operationTree.indexOf(node), node);
-            } else operationTree.add(node);
-        } else {
-            // A nested node must be added in the appropriate parent node
-            
-            // We first get the list of parents
-            // Last item in this list will always be the direct parent of current node
-            final List<OperationDescriptor> parents = new ArrayList<>();
-            while(parent != null) {
-                parents.add(0, parent);
-                parent = parent.parent;
-            }
-            
-            List<OperationHierarchyNode> list = new ArrayList<OperationHierarchyNode>(operationTree);
-            OperationHierarchyNode direct = null;
-            final int last = parents.size() - 1;
-            for(int i=0;i<parents.size();i++) {
-                OperationDescriptor desc = parents.get(i);
-                if(i == last) {
-                    if(direct != null)
-                        direct.children.add(node);
-                    else list.add(node);
-                } else {
-                    desc = parents.get(i);
-                    direct = findNodeByLabelInList(desc.name, list);
-                    if(direct != null)
-                        list = new ArrayList<OperationHierarchyNode>(direct.children);
-                }
-            }
-        }
         
         if(event.descriptor != null) {
             /**
@@ -711,46 +672,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
     }
     
-    private OperationHierarchyNode findNodeByLabelInList(String label, List<OperationHierarchyNode> list) {
-        if(list == null || label == null) return null;
-        for(int i=0;i<list.size();i++) {
-            OperationHierarchyNode node = list.get(i);
-            if(node != null && node.label.equals(label))
-                return node;
-        }
-        return null;
-    }
-    
-    private OperationHierarchyNode createNode(BuildProgressEvent event) {
-        OperationHierarchyNode node = new OperationHierarchyNode();
-        node.label = event.descriptor.name;
-        node.isFinished = isFinished(event);
-        node.isStarted = isStarted(event);
-
-        // A BuildResult is available in the descriptor only if the event has finished executing
-        node.isSuccessful = node.isFinished && event.descriptor.result != null && (event.descriptor.result.isSuccess || event.descriptor.result.isSkipped);
-        
-        return node;
-    }
-    
-    private boolean isFinished(BuildProgressEvent event) {
-        return event.type == ProgressType.FINISH
-            || event.type == ProgressType.PROJECT_CONFUGURATION_FINISH
-            || event.type == ProgressType.TASK_FINISH
-            || event.type == ProgressType.TEST_FINISH
-            || event.type == ProgressType.TRANSFORM_FINISH
-            || event.type == ProgressType.WORK_ITEM_FINISH;
-    }
-    
-    private boolean isStarted(BuildProgressEvent event) {
-        return event.type == ProgressType.START
-            || event.type == ProgressType.PROJECT_CONFUGURATION_START
-            || event.type == ProgressType.TASK_START
-            || event.type == ProgressType.TEST_START
-            || event.type == ProgressType.TRANSFORM_START
-            || event.type == ProgressType.WORK_ITEM_START;
-    }
-
 	@Override
 	public void onBuildSuccessful(GradleTask task, String msg) {
         invalidateOptionsMenu();
@@ -767,8 +688,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		}
 		
 		getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-        
-        LOG.i("Operation tree: " + new GsonBuilder().setPrettyPrinting().create().toJson(operationTree));
 	}
     
 	@Override

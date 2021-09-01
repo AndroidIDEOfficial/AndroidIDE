@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import com.blankj.utilcode.util.FileUtils;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 public class StudioApp extends MultiDexApplication
 {
@@ -147,30 +149,6 @@ public class StudioApp extends MultiDexApplication
 		
 	}
     
-	private File getBusybox() {
-        File parentFile = getRootDir().getParentFile();
-        File busyboxDir = new File(parentFile, "bin/busybox");
-        if (busyboxDir.exists() && busyboxDir.isDirectory())
-		    FileUtil.deleteFile(busyboxDir.getAbsolutePath());
-        
-        if ((!busyboxDir.exists() || SPStaticUtils.getLong("BUSYBOX_VERSION", 0) < BUSYBOX_VERSION) && Build.SUPPORTED_64_BIT_ABIS.length > 0) {
-            String arch = getArch(Build.SUPPORTED_64_BIT_ABIS[0]);
-            
-            if (arch == null) {
-                return null;
-            } else if (ResourceUtils.copyFileFromAssets(getAssetsDataFile(new StringBuffer().append("busybox/").append(arch).toString()), parentFile.getAbsolutePath())) {
-                SPStaticUtils.put("busyboxArch", arch);
-                busyboxDir.setExecutable(true);
-                SPStaticUtils.put("BUSYBOX_VERSION", BUSYBOX_VERSION);
-                return busyboxDir;
-            } else return null;
-        }
-        if (!busyboxDir.canExecute())
-		    busyboxDir.setExecutable(true);
-            
-        return busyboxDir;
-    }
-    
     public void stopAllDaemons() {
         newShell(null).bgAppend("gradle --stop");
     }
@@ -221,7 +199,6 @@ public class StudioApp extends MultiDexApplication
     
     public ShellServer newShell(ShellServer.Callback callback) {
         ShellServer shellServer = new ShellServer(callback, "sh", Environment.mkdirIfNotExits(getRootDir()).getAbsolutePath());
-        if (getBusybox() != null) shellServer.append(String.format("export BUSYBOX=%s\n", getBusybox().getAbsolutePath()), false);
         shellServer.start();
         return shellServer;
     }
@@ -237,8 +214,7 @@ public class StudioApp extends MultiDexApplication
         if(serveralisteners.contains(listener))
             serveralisteners.remove(listener);
 	}
-
-
+    
 	public void writeException(Throwable th) {
 		FileUtil.writeFile(new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(), ThrowableUtils.getFullStackTrace(th));
 	}
@@ -362,7 +338,7 @@ public class StudioApp extends MultiDexApplication
     }
 	
 	public void checkAndUpdateGradle() {
-		File gradle = new File(Environment.GRADLE_DIR, "bin/gradle");
+		File gradle = new File(Environment.GRADLE_HOME, "bin/gradle");
 		if(gradle.exists()) {
 			String[] txt = FileUtil.readFile(gradle.getAbsolutePath()).split("\n");
 			if(txt != null && txt.length > 1) {

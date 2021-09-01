@@ -57,7 +57,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         setColor(DIAGNOSTIC_INFO, 0xff4CAF50);
         setColor(DIAGNOSTIC_HINT, 0xffffffff);
         
-        setColor(BUILD_OUT_ERROR, 0xfff44336);
-        setColor(BUILD_OUT_SUCCESS, 0xff4CAF50);
+        setColor(STDERR, 0xfff44336);
+        setColor(STDOUT, 0xff4CAF50);
     }
 }

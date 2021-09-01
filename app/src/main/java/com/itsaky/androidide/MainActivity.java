@@ -52,6 +52,7 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
 
         binding.createProject.setOnClickListener(this);
         binding.openProject.setOnClickListener(this);
+        binding.openTerminal.setOnClickListener(this);
         createBinding.createprojectClose.setOnClickListener(this);
         createLayoutBinding.createprojectCreate.setOnClickListener(this);
         createLayoutBinding.previousCard.setOnClickListener(this);
@@ -117,6 +118,8 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
             gotoSettings();
         } else if (p1.getId() == binding.openProject.getId()) {
             pickProject();
+        } else if(p1.getId() == binding.openTerminal.getId()) {
+            startActivity(new Intent(this, TerminalActivity.class));
         }
 	}
 

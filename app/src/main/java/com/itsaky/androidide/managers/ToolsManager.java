@@ -30,17 +30,37 @@ public class ToolsManager {
     
     public static void init(StudioApp app, Runnable onFinish) {
         prefs = app.getPrefManager();
+        copyBusyboxIfNeeded();
         extractJlsIfNeeded();
         extractLogsenderIfNeeded();
         extractCleanerIfNeeded();
         extractGradleApiIfNeeded();
-        writeInitScript(app);
+        
+        writeInitScript();
+        writeBashrc();
         
         if(onFinish != null)
             onFinish.run();
     }
+
+    private static void copyBusyboxIfNeeded() {
+        File exec = Environment.BUSYBOX;
+        if(exec.exists()) return;
+        Environment.mkdirIfNotExits(exec.getParentFile());
+        ResourceUtils.copyFileFromAssets("data/busybox", exec.getAbsolutePath());
+        if(!exec.canExecute()) {
+            exec.setExecutable(true);
+        }
+    }
     
-    private static void writeInitScript(StudioApp app) {
+    private static void writeBashrc() {
+        File rc = Environment.BASHRC;
+        if(!rc.exists()) {
+            FileIOUtils.writeFileFromString(rc, BASHRC);
+        }
+    }
+    
+    private static void writeInitScript() {
         FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, INIT_SCRIPT);
     }
     
@@ -122,6 +142,10 @@ public class ToolsManager {
             } catch (Throwable th) { }
         }
     }
+    
+    private static final String BASHRC =
+    "PROMPT_DIRTRIM=2" +
+    "PS1=\'\\[\\e[0;34m\\]\\w\\[\\e[0m\\] \\[\\e[0;97m\\]$\\[\\e[0m\\] \'";
     
     private static final String INIT_SCRIPT = 
         "/**"

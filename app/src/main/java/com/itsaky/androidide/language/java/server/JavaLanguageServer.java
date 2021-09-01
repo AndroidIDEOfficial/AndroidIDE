@@ -291,7 +291,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
 
     @Override
     public void output(CharSequence charSequence) {
-        writeOut(charSequence.toString());
+//        writeOut(charSequence.toString());
     }
     
     private BufferedOutputStream os;

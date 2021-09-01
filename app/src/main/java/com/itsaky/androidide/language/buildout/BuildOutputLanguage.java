@@ -46,9 +46,9 @@ public class BuildOutputLanguage extends EmptyLanguage {
             while(index < content.length() && delegate.shouldAnalyze()) {
                 int id = EditorColorScheme.TEXT_NORMAL;
                 if(errorMap != null && errorMap.contains(line))
-                    id = EditorColorScheme.BUILD_OUT_ERROR;
+                    id = EditorColorScheme.STDERR;
                 else if(successMap != null && successMap.contains(line))
-                    id = EditorColorScheme.BUILD_OUT_SUCCESS;
+                    id = EditorColorScheme.STDOUT;
                 colors.addIfNeeded(line, 0, id);
                 char c = content.charAt(index);
                 if(c == '\n') {

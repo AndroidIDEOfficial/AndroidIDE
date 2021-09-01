@@ -20,7 +20,7 @@ buildscript {
         maven { url 'https://clojars.org/repo/'}
         maven { url 'https://jitpack.io'}
 		maven { url 'https://maven.google.com' }
-		maven { url uri('/storage/emulated/0/AppProjects/AndroidIDEPlugin')}
+		maven { url 'https://androidide.com/build/plugin/'}
         google()
         mavenLocal()
 		mavenCentral()

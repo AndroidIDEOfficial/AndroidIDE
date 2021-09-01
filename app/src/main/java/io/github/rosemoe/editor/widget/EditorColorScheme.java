@@ -62,8 +62,8 @@ public class EditorColorScheme {
 	public static final int LOG_ERROR = 33;
 	public static final int LOG_WARNING = 34;
     
-    public static final int BUILD_OUT_ERROR = 53;
-    public static final int BUILD_OUT_SUCCESS = 54;
+    public static final int STDERR = 53;
+    public static final int STDOUT = 54;
 	
     //-----------------Highlight colors-----------
 	
@@ -204,8 +204,8 @@ public class EditorColorScheme {
             case OPERATOR:
                 color = 0xFF0066D6;
                 break;
-            case BUILD_OUT_SUCCESS :
-            case BUILD_OUT_ERROR :
+            case STDOUT :
+            case STDERR :
             case TEXT_NORMAL:
                 color = 0xFF333333;
                 break;

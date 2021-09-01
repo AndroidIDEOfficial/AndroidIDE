@@ -91,19 +91,19 @@ public class IDEService extends SocketConnection implements ShellServer.Callback
 
     static {
         RuntimeTypeAdapterFactory<OperationDescriptor> descriptorFactory = RuntimeTypeAdapterFactory.of(OperationDescriptor.class)
-            .registerSubtype(OperationDescriptor.class)
-            .registerSubtype(TaskDescriptor.class)
-            .registerSubtype(FinishEventDescriptor.class)
-            .registerSubtype(ProjectConfigurationDescriptor.class)
-            .registerSubtype(StartEventDescriptor.class)
-            .registerSubtype(StatusEventDescriptor.class)
-            .registerSubtype(TestOutDescriptor.class)
-            .registerSubtype(TransformDescriptor.class)
-            .registerSubtype(WorkItemDescriptor.class);
+            .registerSubtype(OperationDescriptor.class, "OperationDescriptor")
+            .registerSubtype(TaskDescriptor.class, "TaskDescriptor")
+            .registerSubtype(FinishEventDescriptor.class, "FinishEventDescriptor")
+            .registerSubtype(ProjectConfigurationDescriptor.class, "ProjectConfigurationDescriptor")
+            .registerSubtype(StartEventDescriptor.class, "StartEventDescriptor")
+            .registerSubtype(StatusEventDescriptor.class, "StatusEventDescriptor")
+            .registerSubtype(TestOutDescriptor.class, "TestOutDescriptor")
+            .registerSubtype(TransformDescriptor.class, "TransformDescriptor")
+            .registerSubtype(WorkItemDescriptor.class, "WorkItemDescriptor");
         RuntimeTypeAdapterFactory<PluginIdentifierDescription> pluginFactory = RuntimeTypeAdapterFactory.of(PluginIdentifierDescription.class)
-            .registerSubtype(PluginIdentifierDescription.class)
-            .registerSubtype(BinaryPluginIdentifierDescription.class)
-            .registerSubtype(ScriptPluginIdentifierDescription.class);
+            .registerSubtype(PluginIdentifierDescription.class, "PluginIdentifierDescription")
+            .registerSubtype(BinaryPluginIdentifierDescription.class, "BinaryPluginIdentifierDescription")
+            .registerSubtype(ScriptPluginIdentifierDescription.class, "ScriptPluginIdentifierDescription");
         GSON = new GsonBuilder()
             .registerTypeAdapterFactory(descriptorFactory)
             .registerTypeAdapterFactory(pluginFactory)
@@ -138,7 +138,7 @@ public class IDEService extends SocketConnection implements ShellServer.Callback
     @Override
     protected void onConnected() {
         isConnected = true;
-        writeMessage(Method.PROJECT_INIT, new InitializeParams(Environment.GRADLE_DIR.getAbsolutePath(), rootProject.getAbsolutePath()));
+        writeMessage(Method.PROJECT_INIT, new InitializeParams(Environment.GRADLE_HOME.getAbsolutePath(), rootProject.getAbsolutePath()));
     }
 
     @Override
@@ -205,7 +205,7 @@ public class IDEService extends SocketConnection implements ShellServer.Callback
 
     @Override
     protected void onResponse(String line) {
-        writeOut(line.trim() + "\n");
+//      writeOut(line.trim() + "\n");
         onResponse(GSON.fromJson(line, ResponseMessage.class));
     }
 
@@ -227,7 +227,7 @@ public class IDEService extends SocketConnection implements ShellServer.Callback
 
 	@Override
 	public void output(CharSequence charSequence) {
-		writeOut(charSequence.toString().trim() + "\n");
+//		writeOut(charSequence.toString().trim() + "\n");
 	}
 
     public void exit() {
