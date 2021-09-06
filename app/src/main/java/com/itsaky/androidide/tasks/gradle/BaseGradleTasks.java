@@ -7,17 +7,21 @@ import com.itsaky.androidide.tasks.gradle.build.Build;
 import com.itsaky.androidide.tasks.gradle.build.Bundle;
 import com.itsaky.androidide.tasks.gradle.build.Clean;
 import com.itsaky.androidide.tasks.gradle.build.CleanBuild;
+import com.itsaky.androidide.tasks.gradle.core.Tasks;
 import com.itsaky.androidide.tasks.gradle.dex.MergeDex;
 import com.itsaky.androidide.tasks.gradle.dex.MergeExtDex;
 import com.itsaky.androidide.tasks.gradle.dex.MergeLibAndProjectDex;
 import com.itsaky.androidide.tasks.gradle.lint.Lint;
 import com.itsaky.androidide.tasks.gradle.lint.LintDebug;
 import com.itsaky.androidide.tasks.gradle.lint.LintRelease;
+import com.itsaky.androidide.tasks.gradle.plugin.PrintDependencies;
 
 public class BaseGradleTasks {
 	
 	public static BaseGradleTask
 	
+    TASKS = new Tasks(),
+    
 	BUILD = new Build(),
 	ASSEMBLE_DEBUG = new AssembleDebug(),
 	ASSEMBLE_RELEASE = new AssembleRelease(),
@@ -30,5 +34,7 @@ public class BaseGradleTasks {
 	
 	MERGE_DEX = new MergeDex(),
 	MERGE_EXT_DEX = new MergeExtDex(),
-	MERGE_LIB_AND_PROJECT_DEX = new MergeLibAndProjectDex();
+	MERGE_LIB_AND_PROJECT_DEX = new MergeLibAndProjectDex(),
+    
+    SHOW_DEPENDENCIES = new PrintDependencies();
 }

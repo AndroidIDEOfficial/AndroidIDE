@@ -26,8 +26,7 @@ public final class Environment {
     public static final File IDEPROPS;
     
     public static final File INIT_SCRIPT;
-    public static final File GRADLE_API_DIR;
-    public static final File GRADLE_API_LIBS_DIR;
+    public static final File PROJECT_DATA_FILE;
     
 	public static final File GRADLE_HOME;
 	public static final File GRADLE_PROPS;
@@ -61,8 +60,7 @@ public final class Environment {
         LIBDIR = mkdirIfNotExits(new File(SYSROOT, "lib"));
         
         IDEPROPS = new File(SYSROOT, "etc/ide-environment.properties");
-        GRADLE_API_DIR = mkdirIfNotExits(new File(app.getIDEDataDir(), "gradle-api"));
-        GRADLE_API_LIBS_DIR = new File(GRADLE_API_DIR, "libs");
+        PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
 
         INIT_SCRIPT = new File(mkdirIfNotExits(new File(app.getIDEDataDir(), "init")), "androidide.init.gradle");
         BOOTCLASSPATH = new File("");

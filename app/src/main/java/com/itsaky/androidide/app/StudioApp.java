@@ -153,13 +153,12 @@ public class StudioApp extends MultiDexApplication
         newShell(null).bgAppend("gradle --stop");
     }
 	
-	public void startBuildService(File rootProject) {
+	public void startBuildService(AndroidProject project) {
         if(getBuildService() != null) {
             getBuildService().exit();
         }
         
-		buildService = new IDEService(rootProject);
-        buildService.start();
+		buildService = new IDEService(project);
 	}
     
 	public IDEService getBuildService() {

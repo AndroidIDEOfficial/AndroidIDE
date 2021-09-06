@@ -82,12 +82,6 @@ import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
-import com.itsaky.gradle.tooling.api.model.IDEProject;
-import com.itsaky.gradle.tooling.api.model.Module;
-import com.itsaky.gradle.tooling.api.model.build.BuildProgressEvent;
-import com.itsaky.gradle.tooling.api.model.build.OperationDescriptor;
-import com.itsaky.gradle.tooling.api.model.build.ProgressType;
-import com.itsaky.gradle.tooling.api.model.build.descriptors.TaskDescriptor;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.DidChangeWatchedFilesParams;
@@ -233,8 +227,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.fabView.setOnClickListener(v -> showViewOptions());
 		
 		getApp().checkAndUpdateGradle();
-		getApp().startBuildService(new File(mProject.getProjectPath()));
+		getApp().startBuildService(mProject);
 		getApp().getBuildService().setListener(this);
+        startServices();
+        invalidateOptionsMenu();
         
 		KeyboardUtils.registerSoftInputChangedListener(this, __ -> onSoftInputChanged());
 		registerLogReceiver();
@@ -295,6 +291,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.viewDaemonStatus.setOnClickListener(v -> showDaemonStatus());
 	}
     
+    private void startServices() {
+        getBuildService().showDependencies();
+    }
+    
     private void removeFromParent(View v) {
         if(v.getParent() != null && v.getParent() instanceof ViewGroup) {
             ((ViewGroup) v.getParent()).removeView(v);
@@ -320,7 +320,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
 	
 	private void notifySyncNeeded() {
-		if(getBuildService() != null && getBuildService().isProjectInitialized() && !getBuildService().isBuilding()) {
+		if(getBuildService() != null && !getBuildService().isBuilding()) {
 			getSyncBanner()
 				.setNegative(android.R.string.cancel, null)
 				.setPositive(android.R.string.ok, v -> {
@@ -331,7 +331,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
     
     private void closeProject(boolean manualFinish) {
-        if (getBuildService() != null && getBuildService().isProjectInitialized()) {
+        if (getBuildService() != null) {
             getBuildService().setListener(null);
             getBuildService().exit();
         }
@@ -409,7 +409,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		for (int id : BUILD_IDS) {
 			MenuItem item = menu.findItem(id);
 			if (item != null) {
-                boolean enabled = getBuildService() != null && getBuildService().isProjectInitialized() && !getBuildService().isBuilding();
+                boolean enabled = getBuildService() != null && !getBuildService().isBuilding();
 				item.setEnabled(enabled);
                 item.getIcon().setAlpha(enabled ? 255 : 76);
 			}
@@ -420,8 +420,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		MenuItem undo = menu.findItem(R.id.menuEditor_undo);
 		MenuItem redo = menu.findItem(R.id.menuEditor_redo);
         MenuItem save = menu.findItem(R.id.menuEditor_save);
-        MenuItem def = menu.findItem(R.id.menuEditor_gotoDefinition);
-        MenuItem ref = menu.findItem(R.id.menuEditor_findReferences);
+        MenuItem def =  menu.findItem(R.id.menuEditor_gotoDefinition);
+        MenuItem ref =  menu.findItem(R.id.menuEditor_findReferences);
         MenuItem comment = menu.findItem(R.id.menuEditor_commentLine);
         MenuItem uncomment = menu.findItem(R.id.menuEditor_uncommentLine);
         MenuItem findFile = menu.findItem(R.id.menuEditor_findFile);
@@ -624,114 +624,107 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
 
     @Override
-    public void stdOut(GradleTask task, CharSequence text) {
-        if(text == null) text = "";
-		appendBuildOut(text.toString(), STD_TYPE_NORMAL);
-    }
-	
-	@Override
-	public void stdErr(GradleTask task, CharSequence text) {
-		if(text == null) text = "";
-		appendBuildOut(text.toString(), STD_TYPE_ERROR);
-	}
-
-    @Override
-    public void stdSuccess(GradleTask task, CharSequence text) {
-        if(text == null) text = "";
-		appendBuildOut(text.toString(), STD_TYPE_SUCCESS);
+    public void appendOutput(GradleTask task, CharSequence text) {
+        if(text == null)
+            return;
+        if(task != null && !task.canOutput()) {
+            return;
+        }
+        appendBuildOut(text.toString());
     }
 
-	@Override
-	public void prepare() {
-		boolean isFirstBuild = getApp().getPrefManager().getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true);
-		setStatus(getString(isFirstBuild ? R.string.preparing_first : R.string.preparing));
-		if(isFirstBuild) {
-			showFirstBuildNotice();
-		}
-	}
-
-	@Override
-	public void onConnectionProgressChanged(String status) {
-		setStatus(status);
-	}
-
     @Override
-    public void onBuildProgress(GradleTask gradleTask, BuildProgressEvent event) {
-        
-        OperationDescriptor descriptor = event.descriptor;
-        
-        if(event.descriptor != null) {
-            /**
-             * A descriptor describes a progress event
-             * Different descriptors are available for different events in package {@code com.itsaky.gradle.tooling.api.model.build.descriptors }
-             */
-            if(event.descriptor instanceof TaskDescriptor) {
-                TaskDescriptor task = (TaskDescriptor) descriptor;
-                setStatus(String.format("> Task %s", task.taskPath));
-            }
+    public void prepare() {
+        boolean isFirstBuild = getApp().getPrefManager().getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true);
+        setStatus(getString(isFirstBuild ? R.string.preparing_first : R.string.preparing));
+        if(isFirstBuild) {
+            showFirstBuildNotice();
         }
     }
-    
-	@Override
-	public void onBuildSuccessful(GradleTask task, String msg) {
-        invalidateOptionsMenu();
-		if(task == null) return;
-		if(task.canOutput())
-			setStatus(msg);
-			
-		if(task.getType() == GradleTask.Type.BUILD) {
-			if(task.getTaskID() == IDEService.TASK_ASSEMBLE_DEBUG) {
-				if(task.buildsApk()) {
-					install(task.getApk(new File(mProject.getMainModulePath(), "build").getAbsolutePath(), mProject.getMainModule()));
-				}
-			}
-		}
-		
-		getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-	}
-    
-	@Override
-	public void onBuildFailed(GradleTask task, String msg) {
-        invalidateOptionsMenu();
-		if(task == null) return;
-		if(task.canOutput()) {
-			setStatus(msg);
-		}
-
-		showBuildResult();
-		
-		getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-	}
 
     @Override
-    public void onProjectInitialized(IDEProject project, Module main) {
+    public void onStartingGradleDaemon(GradleTask task) {
+        setStatus(getString(R.string.msg_starting_daemon));
+        getApp().setStopGradleDaemon(false);
+    }
+
+    @Override
+    public void onRunTask(GradleTask task, String taskName) {
+        if(task != null && task.canOutput()) {
+            setStatus(getBuildService().typeString(task.getTaskID()) + " " + taskName);
+        }
+    }
+
+    @Override
+    public void onBuildSuccessful(GradleTask task, String msg) {
+        if(task == null) return;
+        if(task.canOutput())
+            setStatus(msg);
+
+        if(task.getType() == GradleTask.Type.BUILD) {
+            if(task.getTaskID() == IDEService.TASK_ASSEMBLE_DEBUG) {
+                if(task.buildsApk()) {
+                    install(task.getApk(new File(mProject.getMainModulePath(), "build").getAbsolutePath(), mProject.getMainModule()));
+                }
+            }
+        }
+
+        getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
+        
         invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onBuildFailed(GradleTask task, String msg) {
+        if(task == null) return;
+        if(task.canOutput()) {
+            setStatus(msg);
+        }
+
+        showBuildResult();
+
+        getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
+        
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onGetDependencies(List<String> dependencies) {
         setStatus(getString(R.string.msg_starting_completion));
-        mProject.setClassPaths(new ArrayList<String>(main.dependencyJars));
+        mProject.setClassPaths(dependencies);
         createServices();
     }
-	
-	@Override
-	public void saveFiles() {
-		saveAll();
-	}
-    
+
+    @Override
+    public void onGetDependenciesFailed() {
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+        builder.setNegativeButton(android.R.string.no, null)
+            .setPositiveButton(android.R.string.yes, (p1, p2) -> {
+            p1.dismiss();
+            if(getBuildService() != null)
+                getBuildService().showDependencies();
+        })
+        .setTitle(R.string.failed)
+            .setMessage(R.string.msg_first_prepare_failed)
+            .create().show();
+    }
+
+    @Override
+    public void saveFiles() {
+        saveAll();
+    }
+
     // Can be called from a different different, better to run on UI thread
-	private void appendBuildOut(final String str, int type) {
-		runOnUiThread(() -> {
+    private void appendBuildOut(final String str) {
+        runOnUiThread(() -> {
             String strFinal = str.endsWith("\n") ? str : str.concat("\n");
-            int line = getBuildView(true).getText().append(strFinal);
-            if(type == STD_TYPE_SUCCESS) {
-                ((BuildOutputLanguage) getBuildView().getEditorLanguage()).addSuccess(line);
-            } else if(type == STD_TYPE_ERROR) {
-                ((BuildOutputLanguage) getBuildView().getEditorLanguage()).addError(line);
-            }
+            getBuildView(true).getText().append(strFinal);
         });
-	}
-	
+    }
+
     // Can be called from a different different, better to run on UI thread
-	private void appendLogOut(final String str) {
-		runOnUiThread(() -> {
+    private void appendLogOut(final String str) {
+        runOnUiThread(() -> {
             String strFinal = str.endsWith("\n") ? str : str.concat("\n");
             getLogView(true).getText().append(strFinal);
         });

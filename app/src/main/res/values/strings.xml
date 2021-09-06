@@ -230,7 +230,7 @@
 	<string name="msg_storage_denied">Can\'t proceed without storage permissions</string>
 	<string name="msg_storage_granted">Storage permissions granted!</string>
 	<string name="msg_sync_needed">Gradle files have changed. Please rebuild your project to sync dependencies and configurations.</string>
-	<string name="msg_task_begin">\n\n========== [%s] TASK_BEGIN: %s ==========</string>
+	<string name="msg_task_begin">========== [%s] TASK_BEGIN: %s ==========</string>
 	<string name="preparing">Preparing</string>
 	<string name="preparing_first">Preparing. First build may take up to 10&#8211;15 minutes!</string>
 	<string name="project_with_package">%1$s (%2$s)</string>
