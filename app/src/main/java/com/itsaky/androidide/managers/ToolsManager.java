@@ -16,7 +16,7 @@ import net.lingala.zip4j.ZipFile;
 public class ToolsManager {
     
     private static PreferenceManager prefs;
-    
+     
     public static final int JLS_VERSION = 1;
     public static final int LOGSENDER_VERSION = 1;
     public static final int CLEANER_VERSION = 1;
