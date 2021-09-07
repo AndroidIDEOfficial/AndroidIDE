@@ -119,6 +119,7 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import com.itsaky.androidide.models.project.IDEProject;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -292,7 +293,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
     
     private void startServices() {
-        getBuildService().showDependencies();
+        getBuildService().initProject();
     }
     
     private void removeFromParent(View v) {
@@ -702,11 +703,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             .setPositiveButton(android.R.string.yes, (p1, p2) -> {
             p1.dismiss();
             if(getBuildService() != null)
-                getBuildService().showDependencies();
+                getBuildService().initProject();
         })
         .setTitle(R.string.failed)
             .setMessage(R.string.msg_first_prepare_failed)
             .create().show();
+    }
+
+    @Override
+    public void onProjectLoaded(IDEProject project) {
+        
     }
 
     @Override

@@ -11,8 +11,8 @@ import com.itsaky.androidide.interfaces.ProjectWriterCallback;
 import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
 import java.io.File;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ProjectWriter {
 	
@@ -31,9 +31,7 @@ public class ProjectWriter {
 								MSDK = "$min_sdk",
 								TSDK = "$target_sdk",
 								ANDROIDIDE_PLUGIN = "$androidide_gradle_plugin_version";
-
-	private static final String ANDROIDIDE_PLUGIN_VERSION = "1.0.6";
-
+    
 	public static String createMenu() {
 		return "<menu"
 			+ "\n\txmlns:android=\"http://schemas.android.com/apk/res/android\""
@@ -129,10 +127,15 @@ public class ProjectWriter {
 	public static String createActivity(String packageName, String className) {
 		return "package " + packageName + ";\n"
 			+ "\n"
+            + "import android.os.Bundle;"
 			+ "import androidx.appcompat.app.AppCompatActivity;"
 			+ "\n"
 			+ "public class " + className + " extends AppCompatActivity {\n"
-			+ "\t\n"	
+			+ "    \n"
+            + "\n    @Override"
+            + "\n    protected void onCreate(Bundle savedInstanceState) {"
+            + "\n        super.onCreate(savedInstanceState);"
+            + "\n    }"
 			+ "}";
 	}
 	
@@ -180,7 +183,7 @@ public class ProjectWriter {
 							.replace(PNAME, details.packageName)
 							.replace(MSDK, String.valueOf(details.minSdk))
 							.replace(TSDK, String.valueOf(details.targetSdk))
-							.replace(ANDROIDIDE_PLUGIN, ANDROIDIDE_PLUGIN_VERSION);
+							.replace(ANDROIDIDE_PLUGIN, "1.0.6");
 					if(FileIOUtils.writeFileFromString(file, read, false)) {
 						continue;
 					} else {

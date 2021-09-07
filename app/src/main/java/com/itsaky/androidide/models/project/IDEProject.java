@@ -12,27 +12,27 @@ public class IDEProject {
      * Name of this project
      */
     @SerializedName("name")
-    public String name;
+    public String name = "";
     
     /**
      * Name of this project which should be displayed to user
      */
     @SerializedName("displayName")
-    public String displayName;
+    public String displayName = "";
     
     /**
      * Description of this project. Maybe null.
      */
     @SerializedName("description")
-    public String description;
+    public String description = "";
     
     /**
      * Path of this project. This is NOT the directory path of this project.
      * 
-     * For example, ':app: or ':module:subModule'
+     * For example, ':app or ':module:subModule'
      */
     @SerializedName("path")
-    public String path;
+    public String path = "";
     
     /**
      * Subprojects of this project

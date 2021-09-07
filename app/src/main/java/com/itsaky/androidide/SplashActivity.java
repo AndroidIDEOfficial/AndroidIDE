@@ -34,8 +34,7 @@ public class SplashActivity extends StudioActivity
 	}
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		binding.splashText.setText(getString(R.string.msg_checking_storage_permissions));
     }

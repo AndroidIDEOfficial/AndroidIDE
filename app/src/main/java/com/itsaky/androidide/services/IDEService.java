@@ -21,6 +21,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import org.json.JSONObject;
+import com.itsaky.androidide.models.project.IDEProject;
+import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.tasks.callables.ReadFileTask;
+import com.itsaky.androidide.utils.RuntimeTypeAdapterFactory;
+import com.itsaky.androidide.models.project.IDEModule;
+import com.itsaky.androidide.models.project.IDEAppModule;
+import com.google.gson.GsonBuilder;
+import com.blankj.utilcode.util.FileIOUtils;
+import com.itsaky.androidide.utils.Logger;
 
 public class IDEService implements ShellServer.Callback {
 
@@ -29,21 +38,19 @@ public class IDEService implements ShellServer.Callback {
     private GradleTask currentTask;
     private StudioApp app;
 
+    private IDEProject mIDEProject;
     private AndroidProject project;
     
     private List<String> dependencies;
     
     private boolean isBuilding = false;
     private boolean isRunning = false;
-    private boolean outputtingJars = false;
 	private boolean recreateShellOnDone = false;
     
     private final String RUN_TASK = "> Task";
     private final String STARTING_DAEMON = "Starting a ";
     private final String BUILD_SUCCESS = "BUILD SUCCESSFUL";
     private final String BUILD_FAILED = "BUILD FAILED";
-    private final String SHOW_DEPENDENCIES_START = ">> DEPENDENCIES START <<";
-	private final String SHOW_DEPENDENCIES_END = ">> DEPENDENCIES END <<";
     private final String PROJECT_INITIALIZED = ">>> PROJECT INITIALIZED <<<";
     
     public static final int TASK_SHOW_DEPENDENCIES       = GradleTask.TASK_SHOW_DEPENDENCIES;
@@ -59,13 +66,15 @@ public class IDEService implements ShellServer.Callback {
     public static final int TASK_LINT_DEBUG              = GradleTask.TASK_LINT_DEBUG;
     public static final int TASK_LINT_RELEASE            = GradleTask.TASK_LINT_RELEASE;
     
+    public static final Logger LOG = Logger.instance("IDEService");
+    
     public IDEService(AndroidProject project) {
         this.app = StudioApp.getInstance();
         this.project = project;
 
         this.shell = app.newShell(this);
         
-        isRunning = true;
+        this.isRunning = true;
     }
     
     public IDEService setListener(BuildListener listener) {
@@ -87,42 +96,7 @@ public class IDEService implements ShellServer.Callback {
         }
             
         boolean shouldOutput = true;
-        if(line.contains(SHOW_DEPENDENCIES_START)) {
-            shouldOutput = false;
-            dependencies = new ArrayList<>();
-            outputtingJars = true;
-            if(listener != null)
-                listener.onRunTask(currentTask, "> Task :app:startCompletionServices");
-            return;
-        } else if(line.contains(SHOW_DEPENDENCIES_END)) {
-            shouldOutput = false;
-            outputtingJars = false;
-            if(listener != null
-               && dependencies != null) {
-
-                listener.onGetDependencies(dependencies);
-            }
-            StudioApp.getInstance().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-            return;
-        }
-
-        if(outputtingJars) {
-            JSONObject o = asObjectOrNull(line);
-            try {
-                if(o.has("type")) {
-                    String type = o.getString("type");
-                    if(type.equals("ANDROID_JAR")) {
-                        shouldOutput = false;
-                        Environment.setBootClasspath(new File(o.getString("requested")));
-                    }
-                } else if(o.has("file")) {
-                    shouldOutput = false;
-                    String jar = o.getString("file");
-
-                    dependencies.add(jar);
-                }
-            } catch (Throwable th) {}
-        }
+        
         if(shouldOutput) {
             String text = line.replace(StudioApp.getInstance().getRootDir().getAbsolutePath(), "ANDROIDIDE_HOME");
             listener.appendOutput(currentTask, text);
@@ -135,7 +109,6 @@ public class IDEService implements ShellServer.Callback {
         } else
         if(charSequence.toString().contains(BUILD_SUCCESS)) {
             isBuilding = false;
-            outputtingJars = false;
             if(recreateShellOnDone)
                 createShell();
             if(currentTask != null && currentTask.getTaskID() != TASK_SHOW_DEPENDENCIES)
@@ -144,7 +117,6 @@ public class IDEService implements ShellServer.Callback {
         } else
         if(charSequence.toString().contains(BUILD_FAILED)) {
             isBuilding = false;
-            outputtingJars = false;
             if(recreateShellOnDone)
                 createShell();
             if(currentTask != null) {
@@ -159,6 +131,27 @@ public class IDEService implements ShellServer.Callback {
 	}
 
     private void readIdeProject() {
+        // Parsing project data is meaningless if there is no one listening...
+        if(listener == null)
+            return;
+        
+        final BuildListener local = listener;
+        new Thread(() -> {
+            RuntimeTypeAdapterFactory<IDEProject> typeAdapter = RuntimeTypeAdapterFactory.of(IDEProject.class)
+                .registerSubtype(IDEProject.class, "ide_project")
+                .registerSubtype(IDEModule.class, "ide_module")
+                .registerSubtype(IDEAppModule.class, "ide_app_module");
+                
+            IDEProject ideProject = new GsonBuilder()
+                .registerTypeAdapterFactory(typeAdapter)
+                .create()
+                .fromJson(
+                    FileIOUtils.readFile2String(Environment.PROJECT_DATA_FILE),
+                    IDEProject.class
+                );
+            if(local != null) local.onProjectLoaded(ideProject);
+            LOG.i("Deserialized project: " + ideProject, (ideProject != null ? String.format("Name: %s\nPath: %s\nTask count: %d\nSubproject count:%s", ideProject.name, ideProject.path, ideProject.tasks.size(), ideProject.modules.size()) : ""));
+        }).start();
     }
 
     private void appendOutputSeparator() {
@@ -256,8 +249,8 @@ public class IDEService implements ShellServer.Callback {
         }
     }
     
-    public void showDependencies() {
-        execTask(BaseGradleTasks.SHOW_DEPENDENCIES);
+    public void initProject() {
+        execTask(BaseGradleTasks.INITIALIZE_IDE_PROJECT);
 	}
 
     public void assembleDebug(boolean installApk) {
@@ -343,6 +336,7 @@ public class IDEService implements ShellServer.Callback {
     }
 
     public static interface BuildListener {
+        void onProjectLoaded(IDEProject project);
         void onGetDependencies(List<String> dependencies);
         void onGetDependenciesFailed();
         
