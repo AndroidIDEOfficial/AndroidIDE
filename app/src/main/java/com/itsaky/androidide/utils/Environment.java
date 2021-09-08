@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import android.os.Build;
 
 public final class Environment {
 	
@@ -23,7 +24,9 @@ public final class Environment {
 	public static final File TMP_DIR;
     public static final File BINDIR;
     public static final File LIBDIR;
+    public static final File PROJECTS_DIR;
     public static final File IDEPROPS;
+    public static final File LIBHOOK;
     
     public static final File INIT_SCRIPT;
     public static final File PROJECT_DATA_FILE;
@@ -43,6 +46,7 @@ public final class Environment {
 	public static final String SAMPLE_GRADLE_PROP_CONTENTS = "# Specify global Gradle properties in this file\n# These properties will be applicable for every project you build with Gradle.";
 	public static List<File> AARS = new ArrayList<>();
     
+    public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
     private static final String DEFAULT_JAVA_HOME = "/data/data/com.itsaky.androidide/files/framework/jdk";
     private static final String DEFAULT_ANDROID_HOME = "/data/data/com.itsaky.androidide/files/framework/android-sdk";
     private static final String DEFAULT_GRADLE_HOME = "/data/data/com.itsaky.androidide/files/framework/gradle-7.1.1";
@@ -58,8 +62,10 @@ public final class Environment {
         TMP_DIR = mkdirIfNotExits(new File(SYSROOT, "tmp"));
         BINDIR = mkdirIfNotExits(new File(SYSROOT, "bin"));
         LIBDIR = mkdirIfNotExits(new File(SYSROOT, "lib"));
+        PROJECTS_DIR = mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
         
         IDEPROPS = new File(SYSROOT, "etc/ide-environment.properties");
+        LIBHOOK = new File(LIBDIR, "libhook.so");
         PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
 
         INIT_SCRIPT = new File(mkdirIfNotExits(new File(app.getIDEDataDir(), "init")), "androidide.init.gradle");
@@ -108,6 +114,7 @@ public final class Environment {
         map.put("HOME", HOME.getAbsolutePath());
         map.put("GRADLE_USER_HOME", GRADLE_USER_HOME.getAbsolutePath());
         map.put("TMPDIR", TMP_DIR.getAbsolutePath());
+        map.put("PROJECT_DIR", PROJECTS_DIR.getAbsolutePath());
         map.put("ANDROID_DATA", "/data");
         map.put("ANDROID_ROOT", "/system");
         map.put("LANG", "en_US.UTF-8");
@@ -126,7 +133,7 @@ public final class Environment {
         map.put("COLORTERM", "truecolor");
         
         map.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
-        map.put("GRADLE_INSTALLATION_DIR", GRADLE_HOME.getAbsolutePath());
+        map.put("GRADLE_HOME", GRADLE_HOME.getAbsolutePath());
         map.put("JAVA_HOME", JAVA_HOME.getAbsolutePath());
         
         /**
@@ -138,6 +145,10 @@ public final class Environment {
             ld = "";
         else ld = LIBDIR.getAbsolutePath() + File.pathSeparator + ld;
         map.put("LD_LIBRARY_PATH", ld);
+        
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            map.put("LD_PRELOAD", LIBHOOK.getAbsolutePath());
+        }
         
         addToEnvIfPresent(map, "ANDROID_ART_ROOT");
         addToEnvIfPresent(map, "DEX2OATBOOTCLASSPATH");

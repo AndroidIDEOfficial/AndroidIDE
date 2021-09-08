@@ -1,4 +1,5 @@
 package com.itsaky.androidide.models.project;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -13,41 +14,43 @@ public class IDEModule extends IDEProject {
      * Build tools version of this project
      */
     @SerializedName("buildToolsVersion")
-    int buildToolsVersion = 0;
+    public String buildToolsVersion;
     
     /**
      * Compile SDK version of this project
+     *
+     * Representation: 'android-31', 'android-30', 'android-29', etc
      */
     @SerializedName("compileSdkVersion")
-    int compileSdkVersion = 0;
+    public String compileSdkVersion;
     
     /**
      * Minimum SDK version of this project
      */
     @SerializedName("minSdk")
-    int minSdk = 0;
+    public SDK minSdk;
     
     /**
      * Target SDK version of this project
      */
     @SerializedName("targetSdk")
-    int targetSdk = 0;
+    public SDK targetSdk;
     
     /**
      * Version code of this project
      */
     @SerializedName("versionCode")
-    int versionCode = 0;
+    public int versionCode = 0;
     
     /**
      * Version name of this project
      */
     @SerializedName("versionName")
-    String versionName = "Not defined";
+    public String versionName = "Not defined";
     
     /**
      * Is this project an Android library project?
      */
     @SerializedName("isLibrary")
-    boolean isLibrary = true;
+    public boolean isLibrary = true;
 }

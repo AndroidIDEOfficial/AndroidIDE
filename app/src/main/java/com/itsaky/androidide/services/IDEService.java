@@ -30,6 +30,7 @@ import com.itsaky.androidide.models.project.IDEAppModule;
 import com.google.gson.GsonBuilder;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.toaster.Toaster;
 
 public class IDEService implements ShellServer.Callback {
 
@@ -40,8 +41,6 @@ public class IDEService implements ShellServer.Callback {
 
     private IDEProject mIDEProject;
     private AndroidProject project;
-    
-    private List<String> dependencies;
     
     private boolean isBuilding = false;
     private boolean isRunning = false;
@@ -71,9 +70,7 @@ public class IDEService implements ShellServer.Callback {
     public IDEService(AndroidProject project) {
         this.app = StudioApp.getInstance();
         this.project = project;
-
         this.shell = app.newShell(this);
-        
         this.isRunning = true;
     }
     
@@ -142,15 +139,18 @@ public class IDEService implements ShellServer.Callback {
                 .registerSubtype(IDEModule.class, "ide_module")
                 .registerSubtype(IDEAppModule.class, "ide_app_module");
                 
-            IDEProject ideProject = new GsonBuilder()
+            mIDEProject = new GsonBuilder()
                 .registerTypeAdapterFactory(typeAdapter)
                 .create()
                 .fromJson(
                     FileIOUtils.readFile2String(Environment.PROJECT_DATA_FILE),
                     IDEProject.class
                 );
-            if(local != null) local.onProjectLoaded(ideProject);
-            LOG.i("Deserialized project: " + ideProject, (ideProject != null ? String.format("Name: %s\nPath: %s\nTask count: %d\nSubproject count:%s", ideProject.name, ideProject.path, ideProject.tasks.size(), ideProject.modules.size()) : ""));
+            if(local != null) {
+                local.onProjectLoaded(mIDEProject);
+            } else {
+                app.toast(com.itsaky.androidide.R.string.msg_init_project_failed, Toaster.Type.ERROR);
+            }
         }).start();
     }
 
@@ -164,17 +164,6 @@ public class IDEService implements ShellServer.Callback {
         shell = app.newShell(this);
         recreateShellOnDone = false;
     }
-
-    private JSONObject asObjectOrNull(String line) {
-        try {
-            if(line == null) return null;
-            line = line.trim();
-            if(line.length() <= 0) return null;
-            return new JSONObject(line);
-        } catch (Throwable th) {
-            return null;
-        }
-	}
 
     public void exit() {
         // Delete the tmp directory. It is not needed anymore...

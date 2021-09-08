@@ -63,8 +63,7 @@ public class StudioApp extends MultiDexApplication
 	public static final long BUSYBOX_VERSION = 1;
     public static final String TAG = "StudioApp";
 	public static final String ASSETS_DATA_DIR = "data/";
-	public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
-	
+    
 	public static final String NOTIFICATION_ID_UPDATE = "17571";
 	public static final String NOTIFICATION_ID_DEVS = "17572";
 	
@@ -279,7 +278,7 @@ public class StudioApp extends MultiDexApplication
 	}
 
 	public File getProjectsDir() {
-		return Environment.mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
+		return Environment.PROJECTS_DIR;
 	}
 
 	public File[] listProjects() {

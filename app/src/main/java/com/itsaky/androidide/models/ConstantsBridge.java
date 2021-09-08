@@ -9,6 +9,8 @@ public class ConstantsBridge {
     public static boolean EDITORPREF_DRAW_HEX_CHANGED = false;
     public static boolean CLASS_LOAD_SUCCESS = true;
 	
+    public static boolean SPLASH_TO_MAIN = false;
+    
 	public static List<String> PROJECT_DEXES = null;
     
     // Password unzipping the JLS stored in assets

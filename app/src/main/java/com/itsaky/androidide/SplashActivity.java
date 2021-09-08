@@ -7,10 +7,7 @@ import android.view.View;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivitySplashBinding;
-import com.itsaky.androidide.fragments.sheets.ProgressSheet;
-import com.itsaky.androidide.shell.ShellServer;
-import com.itsaky.androidide.utils.Environment;
-import java.io.File;                               
+import com.itsaky.androidide.models.ConstantsBridge;                               
 
 public class SplashActivity extends StudioActivity
 {
@@ -20,8 +17,8 @@ public class SplashActivity extends StudioActivity
     private final Runnable mRunnable = new Runnable(){
 
         @Override
-        public void run()
-        {
+        public void run() {
+            ConstantsBridge.SPLASH_TO_MAIN = true;
             startActivity(new Intent(SplashActivity.this, MainActivity.class));
             finish();
         }

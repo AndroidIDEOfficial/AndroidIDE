@@ -12,7 +12,7 @@ public class CompletionList {
     
     @SerializedName("items")
     public List<CompletionItem> items;
-
+    
     public CompletionList() {
         this.items = new ArrayList<>();
     }

@@ -25,6 +25,7 @@ import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import com.itsaky.androidide.models.ConstantsBridge;
 
 public class MainActivity extends StudioActivity implements View.OnClickListener, ProjectWriterCallback {
 
@@ -68,7 +69,7 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
         
         binding.getRoot().post(() -> {
             PreferenceManager manager = getApp().getPrefManager();
-            if(manager.wasProjectOpened()) {
+            if(manager.wasProjectOpened() && ConstantsBridge.SPLASH_TO_MAIN) {
                 String path = manager.getOpenedProject();
                 if(path == null && path.trim().isEmpty()) {
                     getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
@@ -81,6 +82,8 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
                     }
                 }
             }
+            
+            ConstantsBridge.SPLASH_TO_MAIN = false;
         });
     }
 

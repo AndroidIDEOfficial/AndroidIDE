@@ -30,7 +30,7 @@ public class InitializeIDEProject extends BaseGradleTask {
 
     @Override
     public boolean canOutput() {
-        return false;
+        return true;
     }
 
     @Override

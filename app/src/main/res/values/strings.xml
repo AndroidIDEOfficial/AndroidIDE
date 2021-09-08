@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="msg_init_project_failed">Failed to initialize project!</string>
     <string name="btn_terminal">Terminal</string>
     <string name="msg_shell_verbose">Verbose output is enabled!</string>
     <string name="msg_shell_output">Shell output</string>

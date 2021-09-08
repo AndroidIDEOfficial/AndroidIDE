@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.shell.ShellServer;
@@ -30,8 +31,10 @@ import com.itsaky.lsp.JavaColors;
 import com.itsaky.lsp.JavaReportProgressParams;
 import com.itsaky.lsp.JavaStartProgressParams;
 import com.itsaky.lsp.LanguageClient;
+import com.itsaky.lsp.Location;
 import com.itsaky.lsp.Message;
 import com.itsaky.lsp.PublishDiagnosticsParams;
+import com.itsaky.lsp.ReferenceParams;
 import com.itsaky.lsp.SignatureHelp;
 import com.itsaky.lsp.TextDocumentPositionParams;
 import com.itsaky.lsp.TextEdit;
@@ -48,9 +51,6 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import com.itsaky.lsp.Location;
-import com.google.gson.reflect.TypeToken;
-import com.itsaky.lsp.ReferenceParams;
 
 public class JavaLanguageServer implements ShellServer.Callback {
 
@@ -81,14 +81,13 @@ public class JavaLanguageServer implements ShellServer.Callback {
     "--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED " +
     "--add-opens jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED " +
     "-cp $JLS_HOME/lib/jls.jar:$JLS_HOME/lib/gson.jar:$JLS_HOME/lib/protobuf.jar " +
-    "org.javacs.Main";
+    "org.javacs.Main --quiet";
 
     
     private static final String CONTENT_LENGTH = "Content-Length: ";
     private static final String SOCKET_HOST = "localhost";
     private static final int SOCKET_PORT = 5443;
     private static int UNIVERSION_ID = 1;
-    private static final Logger logger = Logger.instance("JavaLanguageServer");
     private static final Gson gson = new Gson();
     
     public JavaLanguageServer(AndroidProject project, LanguageClient client) {
@@ -114,7 +113,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
                     });
                 }
                 socket.close();
-                logger.i("Socket disconnected");
+                LOG.i("Socket disconnected");
             } catch (Throwable e) {
                 logEx(e);
             }
@@ -269,7 +268,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
                     send.write(bodyBytes);
                     send.flush();
                 } catch (Throwable e) {
-                    logger.e("Error writing to server: " + ThrowableUtils.getFullStackTrace(e));
+                    LOG.e("Error writing to server: " + ThrowableUtils.getFullStackTrace(e));
                 }
             }).start();
         }
@@ -286,26 +285,12 @@ public class JavaLanguageServer implements ShellServer.Callback {
     }
     
     private void logEx(Throwable th) {
-        logger.e(ThrowableUtils.getFullStackTrace(th));
+        LOG.e(ThrowableUtils.getFullStackTrace(th));
     }
 
     @Override
     public void output(CharSequence charSequence) {
-//        writeOut(charSequence.toString());
-    }
-    
-    private BufferedOutputStream os;
-    
-    private void writeOut(String data) {
-        try {
-            if(os == null) {
-                os = new BufferedOutputStream(new FileOutputStream(new File(FileUtil.getExternalStorageDir(), "ide_xlog/out.txt"), true));
-            }
-            os.write(data.getBytes());
-            os.flush();
-        } catch (Throwable th) {
-            logger.e(ThrowableUtils.getFullStackTrace(th));
-        }
+        // Nothing is in the output
     }
     
     /**
@@ -315,7 +300,6 @@ public class JavaLanguageServer implements ShellServer.Callback {
         if(line.contains(CONTENT_LENGTH)) line = line.substring(0, line.lastIndexOf(CONTENT_LENGTH));
         if(this.client == null) return;
         try {
-            logger.v(line);
             JsonObject obj = new JsonParser().parse(line.trim()).getAsJsonObject();
             if(obj.has(Key.METHOD)) {
                 final String method = obj.get(Key.METHOD).getAsString();
@@ -369,9 +353,11 @@ public class JavaLanguageServer implements ShellServer.Callback {
                 }
             }
         } catch (Throwable th) {
-            logger.e("onServerOut", line, ThrowableUtils.getFullStackTrace(th));
+            LOG.e("onServerOut", line, ThrowableUtils.getFullStackTrace(th));
         }
     }
+    
+    private static final Logger LOG = Logger.instance("JavaLanguageServer");
     
     public static class Method {
         public static final String INITIALIZE = "initialize";

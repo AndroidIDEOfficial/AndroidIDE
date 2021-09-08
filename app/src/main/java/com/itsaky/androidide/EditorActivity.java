@@ -120,6 +120,8 @@ import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 import com.itsaky.androidide.models.project.IDEProject;
+import java.util.Optional;
+import com.itsaky.androidide.models.project.IDEModule;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -293,7 +295,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
     
     private void startServices() {
-        getBuildService().initProject();
+        getBuildService().assembleDebug(false);
     }
     
     private void removeFromParent(View v) {
@@ -712,7 +714,19 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
     @Override
     public void onProjectLoaded(IDEProject project) {
-        
+        Optional<IDEModule> appModule = project.getModuleByPath(":app");
+        if(appModule.isPresent()) {
+            IDEModule app = appModule.get();
+            setStatus(getString(R.string.msg_starting_completion));
+            mProject.setClassPaths(app.dependencies);
+            
+            File androidJar = new File(Environment.ANDROID_HOME, String.format("platforms/%s/android.jar", app.compileSdkVersion));
+            if(androidJar.exists()) {
+                Environment.setBootClasspath(androidJar);
+                mProject.addClasspath(androidJar.getAbsolutePath());
+                createServices();
+            } else setStatus("android.jar not found!");
+        } else setStatus("Cannot get :app module...");
     }
 
     @Override

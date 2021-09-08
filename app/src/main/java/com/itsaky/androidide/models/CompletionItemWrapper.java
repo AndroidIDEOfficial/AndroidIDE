@@ -6,12 +6,16 @@ import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.lsp.CompletionItem;
 import com.itsaky.lsp.CompletionItemKind;
 import com.itsaky.lsp.Position;
+import com.itsaky.lsp.Range;
 import com.itsaky.lsp.TextDocumentIdentifier;
 import com.itsaky.lsp.TextDocumentPositionParams;
 import com.itsaky.lsp.TextEdit;
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.Cursor;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.List;
+import io.github.rosemoe.editor.text.CharPosition;
+import com.itsaky.androidide.utils.Logger;
 
 public class CompletionItemWrapper implements SuggestItem, Comparable {
     
@@ -57,25 +61,22 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
         try {
             final Cursor cursor = editor.getCursor();
             if(cursor.isSelected()) return;
-            final int line = cursor.getLeftLine();
-            int col = cursor.getLeftColumn();
-            while(true) {
-                col--;
-                if(col == 0)
-                    break;
-                if(!JavaCharacter.isJavaIdentifierPart(editor.getText().charAt(line, col)))
-                    break;
-            }
-            col++;
+            Range range = getIdentifierRange(cursor.getLeft(), editor.getText());
             String text = getInsertText();
             final boolean shiftLeft = text.contains("$0");
             final boolean atEnd = text.endsWith("$0");
             text = text.replace("$0", "");
-            editor.getText().delete(line, col, line, cursor.getLeftColumn());
+            
+            editor.getText().delete(range.start.line, range.start.column, range.end.line, range.end.column);
             cursor.onCommitText(text);
             
             if(shiftLeft && !atEnd) {
                 editor.moveSelectionLeft();
+            }
+            
+            if(item.command != null
+                && item.command.command != null
+                && item.command.command.equals(CompletionItem.COMMAND_TRIGGER_PARAMETER_HINTS)) {
                 requestSignature(editor);
             }
              
@@ -97,6 +98,18 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
         } catch (Throwable th) {}
     }
     
+    private Range getIdentifierRange(int end, Content content) {
+        int start = end;
+        while(start > 0 && JavaCharacter.isJavaIdentifierPart(content.charAt(start - 1))) {
+            start--;
+        }
+        
+        CharPosition startPos = content.getIndexer().getCharPosition(start);
+        CharPosition endPos = content.getIndexer().getCharPosition(end);
+        Logger.instance("CompletionItemWrapper").d("PartialIdentifer Range: " + start + "," + end + ", text: " + content.subSequence(start, end));
+        return new Range(new Position(startPos.line, startPos.column), new Position(endPos.line, endPos.column));
+    }
+    
     private void requestSignature(CodeEditor editor) {
         final JavaLanguageServer server = StudioApp.getInstance().getJavaLanguageServer();
         if (server != null) {
@@ -110,6 +123,7 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
     @Override
     public int compareTo(Object p1) {
         if(p1 instanceof CompletionItemWrapper) {
+   
             CompletionItemWrapper that = (CompletionItemWrapper) p1;
             return this.getSortText().compareTo(that.getSortText());
         }

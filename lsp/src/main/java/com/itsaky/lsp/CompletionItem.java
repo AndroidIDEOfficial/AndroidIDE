@@ -49,4 +49,6 @@ public class CompletionItem {
     
     @SerializedName("data")
     public JsonElement data;
+    
+    public static final String COMMAND_TRIGGER_PARAMETER_HINTS = "editor.action.triggerParameterHints";
 }

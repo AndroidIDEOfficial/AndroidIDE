@@ -17,7 +17,7 @@ public class ToolsManager {
     
     private static PreferenceManager prefs;
     
-    public static final int JLS_VERSION = 1;
+    public static final int JLS_VERSION = 2;
     public static final int LOGSENDER_VERSION = 1;
     public static final int CLEANER_VERSION = 1;
     public static final int GRADLE_API_VERSION = 2;
@@ -80,7 +80,7 @@ public class ToolsManager {
 
         final boolean exists = gson && jls && proto;
         final boolean isOld = JLS_VERSION > prefs.getInt(KEY_JLS_VERSION, 0);
-        if(!exists || isOld) {
+        if(true/*!exists || isOld*/) {
             try {
                 extractJls();
             } catch (Throwable e) {}
@@ -114,7 +114,7 @@ public class ToolsManager {
     
     private static final String BASHRC =
     "PROMPT_DIRTRIM=2" +
-    "PS1=\'\\[\\e[0;34m\\]\\w\\[\\e[0m\\] \\[\\e[0;97m\\]$\\[\\e[0m\\] \'";
+    "\nPS1=\'\\[\\e[0;34m\\]\\w\\[\\e[0m\\] \\[\\e[0;97m\\]$\\[\\e[0m\\] \'";
     
     private static final String INIT_SCRIPT = 
     (   "import org.gradle.api.Plugin"
@@ -174,7 +174,6 @@ public class ToolsManager {
     + "\n            )"
     + "\n        {"
     + "\n            outputs.upToDateWhen { false }"
-    + "\n            dependsOn assembleDebug"
     + "\n            "
     + "\n            doLast {"
     + "\n                def root = project.getRootProject()"
@@ -204,16 +203,6 @@ public class ToolsManager {
     + "\n        project.afterEvaluate {"
     + "\n            project.tasks.getByName(\'assembleDebug\').finalizedBy(\'initializeIDEProject\')"
     + "\n            project.tasks.getByName(\'assembleRelease\').finalizedBy(\'initializeIDEProject\')"
-    + "\n        }"
-    + "\n        "
-    + "\n        variants.all { variant ->"
-    + "\n            "
-    + "\n            def variantName = variant.name.capitalize()"
-    + "\n            project.tasks.create(name: \"printDependencies${variantName}\", group: \"AndroidIDE\", description: \"List all dependencies in project including those in subprojects for ${variant.name.capitalize()} build.\") {"
-    + "\n                doLast {"
-    + "\n                    printDependencies(project, variant)"
-    + "\n                }"
-    + "\n            }"
     + "\n        }"
     + "\n    }"
     + "\n    "
@@ -305,15 +294,6 @@ public class ToolsManager {
     + "\n            project.tasks.add(task)"
     + "\n        }"
     + "\n    }"
-    + "\n    "
-    + "\n    def printDependencies(def project, def variant) {"
-    + "\n        println \">> DEPENDENCIES START <<\""
-    + "\n        variant.getCompileClasspath().each { dep ->"
-    + "\n            println \"{ \\\"file\\\": \\\"${dep.absolutePath}\\\"}\""
-    + "\n        }"
-    + "\n        println \"{ \\\"type\\\":\\\"ANDROID_JAR\\\", \\\"file\\\": \\\"${System.getenv(\'ANDROID_HOME\')}/platforms/${project.android.compileSdkVersion}/android.jar\\\"}\""
-    + "\n        println \">> DEPENDENCIES END <<\""
-    + "\n    }"
     + "\n}"
     + "\n"
     + "\nclass IDEProject {"
@@ -321,6 +301,7 @@ public class ToolsManager {
     + "\n    def displayName = \"Not defined\""
     + "\n    def description = \"Not defined\""
     + "\n    def path = \"Not defined\""
+    + "\n    def type = \"ide_project\""
     + "\n    List<IDEProject> modules = new ArrayList<IDEProject>()"
     + "\n    List<IDETask> tasks = new ArrayList<IDETask>()"
     + "\n    List<String> dependencies = new ArrayList<String>()"
@@ -334,6 +315,10 @@ public class ToolsManager {
     + "\n    def versionCode = 0"
     + "\n    def versionName = \"Not defined\""
     + "\n    def isLibrary = true"
+    + "\n    "
+    + "\n    public IDEModule () {"
+    + "\n        type = \"ide_module\""
+    + "\n    }"
     + "\n}"
     + "\n"
     + "\nclass IDEAppModule extends IDEModule {"
@@ -341,6 +326,7 @@ public class ToolsManager {
     + "\n    "
     + "\n    public IDEAppModule() {"
     + "\n        isLibrary = false"
+    + "\n        type = \"ide_app_module\""
     + "\n    }"
     + "\n}"
     + "\n"

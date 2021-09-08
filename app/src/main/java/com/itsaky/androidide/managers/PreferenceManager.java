@@ -10,8 +10,7 @@ import java.util.Set;
 public class PreferenceManager {
 
     private SharedPreferences prefs;
-    private SharedPreferences.Editor editor;
-
+    
     public static final int LOGSENDER_LATEST_VERSION = 102;
 
     public static final String KEY_FRAMEWORK_DOWNLOADED = "framework_downloaded";
@@ -41,11 +40,10 @@ public class PreferenceManager {
     @SuppressLint("CommitPrefEdits")
     public PreferenceManager(Context ctx) {
         this.prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
-        this.editor = prefs.edit();
     }
 
     public PreferenceManager putInt(String key, int val) {
-        editor.putInt(key, val).apply();
+        prefs.edit().putInt(key, val).apply();
         return this;
     }
 
@@ -58,7 +56,7 @@ public class PreferenceManager {
     }
 
     public PreferenceManager putFloat(String key, float val) {
-        editor.putFloat(key, val).apply();
+        prefs.edit().putFloat(key, val).apply();
         return this;
     }
 
@@ -71,7 +69,7 @@ public class PreferenceManager {
     }
 
     public PreferenceManager putBoolean(String key, boolean value) {
-        editor.putBoolean(key, value).apply();
+        prefs.edit().putBoolean(key, value).apply();
         return this;
     }
 
@@ -84,7 +82,7 @@ public class PreferenceManager {
     }
 
     public PreferenceManager putString(String key, String value) {
-        editor.putString(key, value).apply();
+        prefs.edit().putString(key, value).apply();
         return this;
     }
 
