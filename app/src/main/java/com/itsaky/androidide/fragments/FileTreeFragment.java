@@ -63,13 +63,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 		super.onViewCreated(view, savedInstanceState);
 		if (getActivity() == null || getArguments() == null || !getArguments().containsKey("project")) return;
 		mProject = getArguments().getParcelable("project");
-		
-		if(mProject.getIconPath() == null || mProject.getIconPath().trim().length() <= 0) {
-			StudioApp.getInstance().toast(R.string.msg_failed_load_icon_path, Toaster.Type.ERROR);
-		} else {
-			Glide.with(getActivity().getApplicationContext()).load(new File(mProject.getIconPath())).into(binding.filetreenavigationAppIcon);
-		}
-		binding.filetreenavigationProjectDetails.setText(getResources().getString(R.string.project_with_package, mProject.getAppName(),  mProject.getPackageName()));
+        
 		listProjectFiles();
 	}
 	

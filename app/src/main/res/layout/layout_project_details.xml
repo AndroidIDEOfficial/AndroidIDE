@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<RelativeLayout
+        android:id="@+id/details_container"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<ImageView
+			android:id="@+id/app_icon"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_margin="16dp"
+			android:layout_alignParentEnd="true"/>
+
+		<LinearLayout
+            android:id="@+id/project_info_container"
+			android:orientation="vertical"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="start|top"
+			android:layout_marginTop="16dp"
+			android:layout_marginStart="16dp"
+			android:layout_marginBottom="16dp"
+			android:layout_alignParentStart="true"
+			android:layout_toStartOf="@id/app_icon">
+
+			<TextView
+				android:id="@+id/project_name"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:textColor="@color/primaryTextColor"
+				android:textSize="18sp"
+				android:ellipsize="end"
+				android:layout_marginBottom="4dp"/>
+
+			<TextView
+				android:id="@+id/project_summary"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:textColor="@color/secondaryTextColor_light"
+				android:textSize="13sp"
+				android:ellipsize="end"/>
+            
+		</LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/module_info_container"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_below="@id/project_info_container">
+            
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:textSize="16sp"
+                android:textColor="@color/primaryTextColor"
+                android:text="@string/header_module_info"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:background="@color/content_background"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="12dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/modules_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:clipToPadding="false"
+                android:clipChildren="false"/>
+            
+        </LinearLayout>
+
+	</RelativeLayout>
+    
+    <com.itsaky.androidide.views.EmptyView
+        android:id="@+id/empty_view"
+        android:layout_height="200dp"
+        android:layout_width="match_parent"
+        android:visibility="gone"/>
+
+</LinearLayout>
+

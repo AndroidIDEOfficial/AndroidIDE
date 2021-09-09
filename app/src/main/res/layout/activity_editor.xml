@@ -305,7 +305,14 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/diagListContainer"/>
+                android:id="@+id/diagListContainer">
+                
+                <com.itsaky.androidide.views.EmptyView
+                    android:id="@+id/diagEmptyView"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+                
+            </LinearLayout>
 
         </LinearLayout>
         
@@ -335,7 +342,14 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/searchResultsListContainer"/>
+                android:id="@+id/searchResultsListContainer">
+                
+                <com.itsaky.androidide.views.EmptyView
+                    android:id="@+id/searchEmptyView"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+                
+            </LinearLayout>
 
         </LinearLayout>
         
@@ -389,12 +403,12 @@
 		android:layout_width="wrap_content"
 		android:background="@color/primaryColor"
 		android:layout_gravity="end">
-
-		<FrameLayout
-			android:id="@+id/editor_frameLayout"
-			android:layout_height="match_parent"
-			android:layout_width="match_parent"/>
-
+        
+        <FrameLayout
+            android:id="@+id/editor_frameLayout"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"/>
+        
 	</com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

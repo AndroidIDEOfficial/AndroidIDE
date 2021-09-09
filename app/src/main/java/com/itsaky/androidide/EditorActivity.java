@@ -38,7 +38,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialContainerTransform;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
@@ -67,6 +66,8 @@ import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
+import com.itsaky.androidide.models.project.IDEModule;
+import com.itsaky.androidide.models.project.IDEProject;
 import com.itsaky.androidide.receivers.LogReceiver;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
@@ -115,13 +116,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-import com.itsaky.androidide.models.project.IDEProject;
-import java.util.Optional;
-import com.itsaky.androidide.models.project.IDEModule;
+import com.itsaky.androidide.fragments.sheets.ProjectInfoSheet;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -136,7 +136,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private EditorPagerAdapter mPagerAdapter;
 	private FileTreeFragment mFileTreeFragment;
 	private EditorFragment mCurrentFragment;
-	private static AndroidProject mProject;
 	public static File mCurrentFile;
 	private TreeNode mLastHolded;
 	private CodeEditor buildView;
@@ -145,12 +144,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private RecyclerView searchResultList;
     private SymbolInputView symbolInput;
 	
+    private static AndroidProject mProject;
+    private IDEProject mIDEProject;
+    
 	private LogLanguageImpl mLogLanguageImpl;
 	
 	private QuickAction mTabCloseAction;
 	private TextSheetFragment mDaemonStatusFragment;
 	private OptionsListFragment mFileOptionsFragment;
     private ProgressSheet mSearchingProgress;
+    private ProjectInfoSheet mProjectInfoSheet;
     private AlertDialog mFindInProjectDialog;
     
     private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
@@ -292,6 +295,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.viewLogs.setOnClickListener(v -> showLogResult());
 		mBinding.viewFiles.setOnClickListener(v -> showFiles());
 		mBinding.viewDaemonStatus.setOnClickListener(v -> showDaemonStatus());
+        
+        handleDiagnosticsResultVisibility(true);
+        handleSearchResultVisibility(true);
 	}
     
     private void startServices() {
@@ -521,6 +527,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         } else if(id == R.id.menuEditor_findProject) {
             AlertDialog d = getFindInProjectDialog();
             if(d != null) d.show();
+        } else if(id == R.id.menuEditor_projectInfo) {
+            if(!getProjectInfoSheet().isShowing()) {
+                getProjectInfoSheet().show(getSupportFragmentManager(), "project_info_sheet");
+            }
         }
 		invalidateOptionsMenu();
 		return true;
@@ -714,6 +724,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
     @Override
     public void onProjectLoaded(IDEProject project) {
+        project.iconPath = mProject.getIconPath();
+        mIDEProject = project;
+        createProjectInfoSheet(); // Recreate sheet, even if already created. Just to update its contents
         Optional<IDEModule> appModule = project.getModuleByPath(":app");
         if(appModule.isPresent()) {
             IDEModule app = appModule.get();
@@ -854,6 +867,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBinding.searchResultsContainer.setVisibility(View.GONE);
         mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
 	}
+    
+    private void handleDiagnosticsResultVisibility(boolean errorVisible) {
+        mBinding.diagEmptyView.setVisibility(errorVisible ? View.VISIBLE : View.GONE);
+        getDiagnosticsList().setVisibility(errorVisible ? View.GONE : View.VISIBLE);
+    }
+
+    private void handleSearchResultVisibility(boolean errorVisible) {
+        mBinding.searchEmptyView.setVisibility(errorVisible ? View.VISIBLE : View.GONE);
+        getSearchResultList().setVisibility(errorVisible ? View.GONE : View.VISIBLE);
+    }
 	
 	private MaterialContainerTransform createContainerTransformFor(View start, View end) {
 		return createContainerTransformFor(start, end, mBinding.realContainer);
@@ -902,7 +925,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 			.setCancelable(false)
 			.create().show();
 	}
-
+    
     @Override
     public void onGroupClick(DiagnosticGroup group) {
         if(group != null
@@ -934,9 +957,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
     @Override
     public void publishDiagnostics(PublishDiagnosticsParams params) {
-        if(params == null) return;
+        boolean error = params == null || params.diagnostics == null || params.diagnostics.size() <= 0;
+        handleDiagnosticsResultVisibility(error);
+        
+        if(error) return;
+        
         File file = new File(params.uri);
         if(!(file.exists() && file.isFile())) return;
+        
+        
         diagnostics.put(file, params.diagnostics);
         getDiagnosticsList().setAdapter(new DiagnosticsAdapter(mapAsGroup(diagnostics), this));
         
@@ -1164,12 +1193,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public void references(List<Location> references) {
         if(mSearchingProgress != null && mSearchingProgress.isShowing())
             mSearchingProgress.dismiss();
-        if(references == null) {
-            getApp().toast(R.string.msg_no_references, Toaster.Type.INFO);
-            return;
-        }
+            
+        boolean error = references == null || references.size() <= 0;
+        handleSearchResultVisibility(error);
         
-        if(references.size() <= 0) {
+        
+        if(error) {
             getApp().toast(R.string.msg_no_references, Toaster.Type.INFO);
             getSearchResultList().setAdapter(new SearchListAdapter(null, null, null));
             return;
@@ -1310,6 +1339,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	public void loadFragment(Fragment fragment) {
 		super.loadFragment(fragment, mBinding.editorFrameLayout.getId());
 	}
+    
+    private ProjectInfoSheet getProjectInfoSheet() {
+        return mProjectInfoSheet == null ? createProjectInfoSheet() : mProjectInfoSheet;
+    }
+    
+    private ProjectInfoSheet createProjectInfoSheet() {
+        mProjectInfoSheet = new ProjectInfoSheet();
+        mProjectInfoSheet.setProject(mIDEProject);
+        return mProjectInfoSheet;
+    }
 	
 	private OptionsListFragment getFileOptionsFragment(File file) {
 		mFileOptionsFragment = new OptionsListFragment();

@@ -7,33 +7,13 @@
 	android:paddingEnd="16dp"
 	android:paddingTop="16dp"
 	android:paddingBottom="8dp">
-
-	<ImageView
-		android:layout_alignParentStart="true"
-		android:layout_height="30dp"
-		android:layout_width="30dp"
-		android:id="@+id/filetreenavigation_appIcon"
-		android:layout_marginEnd="8dp"/>
-
-	<TextView
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:id="@+id/filetreenavigation_projectDetails"
-		android:layout_toEndOf="@id/filetreenavigation_appIcon"
-		android:singleLine="true"
-		android:layout_alignTop="@id/filetreenavigation_appIcon"
-		android:layout_alignBottom="@id/filetreenavigation_appIcon"
-		android:gravity="center_vertical"
-		android:textColor="@color/primaryTextColor"/>
-
+    
 	<HorizontalScrollView
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:id="@+id/filetree_horizontalScrollView"
 		android:paddingTop="8dp"
 		android:paddingBottom="8dp"
-		android:layout_below="@id/filetreenavigation_appIcon"
 		android:layout_marginTop="8dp"
 		android:fillViewport="true"/>
 
