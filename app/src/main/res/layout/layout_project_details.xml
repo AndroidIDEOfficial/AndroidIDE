@@ -25,7 +25,6 @@
 			android:layout_height="wrap_content"
 			android:gravity="start|top"
 			android:layout_marginTop="16dp"
-			android:layout_marginStart="16dp"
 			android:layout_marginBottom="16dp"
 			android:layout_alignParentStart="true"
 			android:layout_toStartOf="@id/app_icon">
@@ -63,24 +62,18 @@
                 android:textColor="@color/secondaryLightColor"
                 android:text="@string/header_module_info"
                 android:textStyle="bold"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"/>
 
             <LinearLayout
                 android:layout_height="1dp"
                 android:layout_width="match_parent"
                 android:background="@color/content_background"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="12dp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/modules_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
                 android:clipToPadding="false"
                 android:clipChildren="false"/>
             

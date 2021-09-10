@@ -20,6 +20,7 @@ public class ProjectWriter {
 	
 	private static final String[] FILE_TO_CHANGE = {
 		"build.gradle",
+        "settings.gradle",
 		"app/src/main/AndroidManifest.xml",
 		"app/src/main/res/values/strings.xml",
 		"app/src/main/java/$package_name/MainActivity.java"
@@ -98,45 +99,20 @@ public class ProjectWriter {
 		return null;
 	}
 	
-	
-	// TODO: Implement a dynamic source code generator
 	public static String createJavaClass(String packageName, String className) {
-		return "package " + packageName + ";\n"
-			 + "\n"
-			 + "public class " + className + " {\n"
-			+ "\t\n"	
-			+ "}";
+		return ClassBuilder.createClass(packageName, className);
 	}
-	
+    
 	public static String createJavaInterface(String packageName, String className) {
-		return "package " + packageName + ";\n"
-			+ "\n"
-			+ "public interface " + className + " {\n"
-			+ "\t\n"	
-			+ "}";
+        return ClassBuilder.createInterface(packageName, className);
 	}
 	
 	public static String createJavaEnum(String packageName, String className) {
-		return "package " + packageName + ";\n"
-			+ "\n"
-			+ "public enum " + className + " {\n"
-			+ "\t\n"	
-			+ "}";
+		return ClassBuilder.createEnum(packageName, className);
 	}
 	
 	public static String createActivity(String packageName, String className) {
-		return "package " + packageName + ";\n"
-			+ "\n"
-            + "import android.os.Bundle;"
-			+ "import androidx.appcompat.app.AppCompatActivity;"
-			+ "\n"
-			+ "public class " + className + " extends AppCompatActivity {\n"
-			+ "    \n"
-            + "\n    @Override"
-            + "\n    protected void onCreate(Bundle savedInstanceState) {"
-            + "\n        super.onCreate(savedInstanceState);"
-            + "\n    }"
-			+ "}";
+        return ClassBuilder.createActivity(packageName, className);
 	}
 	
 	public static void write(ProjectTemplate template, NewProjectDetails details, ProjectWriterCallback listener) throws Exception {

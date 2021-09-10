@@ -4,12 +4,11 @@ import android.text.TextUtils;
 import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.google.gson.GsonBuilder;
+import com.google.gson.Gson;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.AndroidProject;
-import com.itsaky.androidide.models.project.IDEModule;
 import com.itsaky.androidide.models.project.IDEProject;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.GradleTask;
@@ -17,7 +16,6 @@ import com.itsaky.androidide.tasks.gradle.BaseGradleTasks;
 import com.itsaky.androidide.tasks.gradle.build.AssembleDebug;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.androidide.utils.RuntimeTypeAdapterFactory;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.text.DateFormat;
@@ -130,13 +128,7 @@ public class IDEService implements ShellServer.Callback {
         
         final BuildListener local = listener;
         new Thread(() -> {
-            RuntimeTypeAdapterFactory<IDEProject> typeAdapter = RuntimeTypeAdapterFactory.of(IDEProject.class)
-                .registerSubtype(IDEProject.class, "ide_project")
-                .registerSubtype(IDEModule.class, "ide_module");
-                
-            mIDEProject = new GsonBuilder()
-                .registerTypeAdapterFactory(typeAdapter)
-                .create()
+            mIDEProject = new Gson()
                 .fromJson(
                     FileIOUtils.readFile2String(Environment.PROJECT_DATA_FILE),
                     IDEProject.class

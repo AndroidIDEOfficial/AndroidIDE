@@ -1,14 +1,9 @@
 package com.itsaky.androidide.adapters;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import androidx.annotation.DrawableRes;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.databinding.LayoutModuleInfoItemBinding;
 import com.itsaky.androidide.models.project.IDEModule;

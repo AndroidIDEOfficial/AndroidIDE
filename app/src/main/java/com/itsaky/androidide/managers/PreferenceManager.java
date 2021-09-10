@@ -3,9 +3,7 @@ package com.itsaky.androidide.managers;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.itsaky.androidide.utils.Environment;
-import java.util.HashSet;
-import java.util.Set;
+import com.itsaky.androidide.fragments.preferences.EditorPreferences;
 
 public class PreferenceManager {
 
@@ -152,5 +150,9 @@ public class PreferenceManager {
 
     public PreferenceManager setGradleWarningEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLECMD_WARNINGMODE, enabled);
+    }
+    
+    public int getEditorTabSize() {
+        return getInt(EditorPreferences.KEY_EDITOR_TAB_SIZE, 4);
     }
 }

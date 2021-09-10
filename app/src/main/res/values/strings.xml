@@ -1,4 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="title_tab_size">Tab size</string>
+    <string name="msg_tab_size">Specify number of spaces for TAB</string>
     <string name="menu_project_info">Project info</string>
     <string name="header_module_info">Module info</string>
     <string name="msg_module_count"    >Modules      : %d</string>

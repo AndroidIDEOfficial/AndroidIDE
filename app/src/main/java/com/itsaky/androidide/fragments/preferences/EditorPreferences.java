@@ -21,7 +21,8 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 	public static final String KEY_EDITOR_FONT_SIZE = "idepref_editor_fontSize";
 	public static final String KEY_EDITOR_PRINTABLE_CHARS = "idepref_editor_nonPrintableFlags";
 	public static final String KEY_EDITOR_DRAW_HEX = "idepref_editor_drawHexColors";
-	
+	public static final String KEY_EDITOR_TAB_SIZE = "idepref_editor_tabSize";
+    
     @Override
 	public void onCreatePreferences(Bundle p1, String p2) {
 		super.onCreatePreferences(p1, p2);
@@ -30,8 +31,9 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		final PreferenceScreen screen = getPreferenceScreen();
 		final Preference fontSize = new Preference(getContext());
 		final Preference nonPrintable = new Preference(getContext());
+        final Preference tabSize = new Preference(getContext());
 		final SwitchPreference drawHex = new SwitchPreference(getContext());
-
+        
 		fontSize.setIcon(R.drawable.ic_text_size);
 		fontSize.setKey(KEY_EDITOR_FONT_SIZE);
 		fontSize.setTitle(R.string.idepref_editor_fontsize_title);
@@ -41,6 +43,11 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		nonPrintable.setKey(KEY_EDITOR_PRINTABLE_CHARS);
 		nonPrintable.setTitle(R.string.idepref_editor_paintingflags_title);
 		nonPrintable.setSummary(R.string.idepref_editor_paintingflags_summary);
+        
+        tabSize.setIcon(R.drawable.ic_open_project);
+        tabSize.setKey(KEY_EDITOR_TAB_SIZE);
+        tabSize.setTitle(R.string.title_tab_size);
+        tabSize.setSummary(R.string.msg_tab_size);
 		
 		drawHex.setIcon(R.drawable.ic_hexadecimal);
 		drawHex.setKey(KEY_EDITOR_DRAW_HEX);
@@ -49,11 +56,13 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 
 		screen.addPreference(fontSize);
 		screen.addPreference(nonPrintable);
+        screen.addPreference(tabSize);
 		screen.addPreference(drawHex);
 		setPreferenceScreen(screen);
 		
 		fontSize.setOnPreferenceClickListener(this);
 		nonPrintable.setOnPreferenceClickListener(this);
+        tabSize.setOnPreferenceClickListener(this);
 		drawHex.setOnPreferenceChangeListener(this);
 		
 		drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
@@ -62,7 +71,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 	@Override
 	public boolean onPreferenceChange(Preference p1, Object p2) {
 		if(p1.getKey().equals(KEY_EDITOR_DRAW_HEX)) {
-			boolean drawHex = (boolean) p2;
+			boolean drawHex = (Boolean) p2;
 			getPrefManager().putBoolean(KEY_EDITOR_DRAW_HEX, drawHex);
 			ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED = true;
 		}
@@ -76,9 +85,37 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 			showTextSizeDialog();
 		} else if(key.equals(KEY_EDITOR_PRINTABLE_CHARS)) {
 			showPrintableCharsDialog();
-		}
+		} else if(key.equals(KEY_EDITOR_TAB_SIZE)) {
+            showTabSizeDialog();
+        }
 		return true;
 	}
+
+    private void showTabSizeDialog() {
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog);
+        final String[] sizes = new String[]{"2", "4", "6", "8"};
+        
+        // We apply simple maths,
+        // assuming that tab size options have a difference of 2
+        // And the array is sorted
+        // Like, 2, 4, 6, 8, 10, etc
+        // 
+        // If current tab size if 4, 4/2 = 2 and 2 - 1 = 1, so option at index 1 will be selected which is current tab size (4)!
+        int current = (getPrefManager().getEditorTabSize() / 2) - 1;
+        if(current < 0 || current >= sizes.length) current = 1;
+        builder.setTitle(R.string.title_tab_size);
+        builder.setSingleChoiceItems(sizes, current, (d, i) -> {
+            d.dismiss();
+            int index = i;
+            
+            // Reversing the logic applied above...
+            int tabSize = (index + 1) * 2;
+            if(tabSize < 2 || tabSize > 8) tabSize = 4;
+            getPrefManager().putInt(KEY_EDITOR_TAB_SIZE, tabSize);
+        });
+       builder.setCancelable(true);
+       builder.show();
+    }
 	
 	private void showTextSizeDialog() {
 		final LayoutTextSizeSliderBinding binding = LayoutTextSizeSliderBinding.inflate(LayoutInflater.from(getContext()));
@@ -101,7 +138,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 			changeTextSize(binding, 14);
 		});
 		builder.setCancelable(false);
-		builder.create().show();
+		builder.show();
 	}
 	
 	private void changeTextSize(LayoutTextSizeSliderBinding binding, float size) {
@@ -148,6 +185,6 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		});
 		builder.setPositiveButton(android.R.string.ok, null);
 		builder.setCancelable(false);
-		builder.create().show();
+		builder.show();
 	}
 }

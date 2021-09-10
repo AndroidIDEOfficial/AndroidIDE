@@ -133,6 +133,7 @@ dependencies {
     implementation project(':lsp')
     implementation project(':emulator')
     implementation project(':emulatorview')
+    implementation project(':javapoet')
 	
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	
