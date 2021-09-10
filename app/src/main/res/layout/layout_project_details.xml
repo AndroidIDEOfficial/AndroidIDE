@@ -34,7 +34,7 @@
 				android:id="@+id/project_name"
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:textColor="@color/primaryTextColor"
+				android:textColor="@color/secondaryLightColor"
 				android:textSize="18sp"
 				android:ellipsize="end"
 				android:layout_marginBottom="4dp"/>
@@ -43,7 +43,7 @@
 				android:id="@+id/project_summary"
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:textColor="@color/secondaryTextColor_light"
+				android:textColor="@color/secondaryTextColor_lighter"
 				android:textSize="13sp"
 				android:ellipsize="end"/>
             
@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:textSize="16sp"
-                android:textColor="@color/primaryTextColor"
+                android:textColor="@color/secondaryLightColor"
                 android:text="@string/header_module_info"
                 android:textStyle="bold"
                 android:layout_marginStart="16dp"

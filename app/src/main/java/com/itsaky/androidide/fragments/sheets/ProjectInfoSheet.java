@@ -1,17 +1,19 @@
 package com.itsaky.androidide.fragments.sheets;
 
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.LinearLayout;
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import com.bumptech.glide.Glide;
+import com.itsaky.androidide.adapters.ModuleInfoAdapter;
 import com.itsaky.androidide.databinding.LayoutProjectDetailsBinding;
 import com.itsaky.androidide.models.project.IDEProject;
 import java.io.File;
-import com.bumptech.glide.Glide;
-import android.text.SpannableStringBuilder;
-import android.text.style.ImageSpan;
-import androidx.annotation.DrawableRes;
-import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
-import android.graphics.PorterDuff;
 
 public class ProjectInfoSheet extends BaseBottomSheetFragment {
     
@@ -55,20 +57,23 @@ public class ProjectInfoSheet extends BaseBottomSheetFragment {
             final int lineHeight = binding.projectSummary.getLineHeight();
             SpannableStringBuilder summaryBuilder = new SpannableStringBuilder();
             summaryBuilder.append(" ", createSpan(com.itsaky.androidide.R.drawable.ic_package, lineHeight), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-            summaryBuilder.append(" ");
+            summaryBuilder.append("  ");
             summaryBuilder.append(getString(com.itsaky.androidide.R.string.msg_module_count, project.modules.size()));
             summaryBuilder.append("\n");
             summaryBuilder.append(" ", createSpan(com.itsaky.androidide.R.drawable.ic_run, lineHeight), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-            summaryBuilder.append(" ");
+            summaryBuilder.append("  ");
             summaryBuilder.append(getString(com.itsaky.androidide.R.string.msg_task_count, project.tasks.size()));
             binding.projectSummary.setText(summaryBuilder);
+            
+            binding.modulesList.setLayoutManager(new LinearLayoutManager(getContext()));
+            binding.modulesList.setAdapter(new ModuleInfoAdapter(project.modules));
         }
     }
     
     private ImageSpan createSpan(@DrawableRes int id, int lineHeight) {
         Drawable image = ContextCompat.getDrawable(getContext(), id);
         image.setBounds(0, 0, lineHeight, lineHeight);
-        image.setColorFilter(ContextCompat.getColor(getContext(), com.itsaky.androidide.R.color.secondaryTextColor_light), PorterDuff.Mode.SRC_ATOP);
+        image.setAlpha(180);
         return new ImageSpan(image);
     }
 

@@ -2,16 +2,23 @@ package com.itsaky.androidide.services;
 
 import android.text.TextUtils;
 import androidx.annotation.StringRes;
+import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
+import com.google.gson.GsonBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.AndroidProject;
+import com.itsaky.androidide.models.project.IDEModule;
+import com.itsaky.androidide.models.project.IDEProject;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.BaseGradleTasks;
 import com.itsaky.androidide.tasks.gradle.build.AssembleDebug;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.RuntimeTypeAdapterFactory;
+import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,17 +27,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import org.json.JSONObject;
-import com.itsaky.androidide.models.project.IDEProject;
-import com.itsaky.androidide.tasks.TaskExecutor;
-import com.itsaky.androidide.tasks.callables.ReadFileTask;
-import com.itsaky.androidide.utils.RuntimeTypeAdapterFactory;
-import com.itsaky.androidide.models.project.IDEModule;
-import com.itsaky.androidide.models.project.IDEAppModule;
-import com.google.gson.GsonBuilder;
-import com.blankj.utilcode.util.FileIOUtils;
-import com.itsaky.androidide.utils.Logger;
-import com.itsaky.toaster.Toaster;
 
 public class IDEService implements ShellServer.Callback {
 
@@ -136,8 +132,7 @@ public class IDEService implements ShellServer.Callback {
         new Thread(() -> {
             RuntimeTypeAdapterFactory<IDEProject> typeAdapter = RuntimeTypeAdapterFactory.of(IDEProject.class)
                 .registerSubtype(IDEProject.class, "ide_project")
-                .registerSubtype(IDEModule.class, "ide_module")
-                .registerSubtype(IDEAppModule.class, "ide_app_module");
+                .registerSubtype(IDEModule.class, "ide_module");
                 
             mIDEProject = new GsonBuilder()
                 .registerTypeAdapterFactory(typeAdapter)

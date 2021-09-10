@@ -1,9 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="menu_project_info">Project info</string>
     <string name="header_module_info">Module info</string>
-    <string name="msg_module_count">Modules: %d</string>
-    <string name="msg_task_count">Tasks: %d</string>
-    <string name="msg_dependency_count">Dependencies: %d</string>
+    <string name="msg_module_count"    >Modules      : %d</string>
+    <string name="msg_task_count"      >Tasks        : %d</string>
+    <string name="msg_dependency_count">Dependencies : %d</string>
+    <string name="msg_package_name"    >Package      : %s</string>
+    <string name="msg_min_sdk"         >Min SDK      : %s</string>
+    <string name="msg_target_sdk"      >Target SDK   : %s</string>
     <string name="msg_empty_view">I have nothing to show you...</string>
     <string name="msg_init_project_failed">Failed to initialize project!</string>
     <string name="btn_terminal">Terminal</string>

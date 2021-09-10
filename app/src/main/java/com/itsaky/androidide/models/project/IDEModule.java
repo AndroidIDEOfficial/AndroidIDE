@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Represents a module (subproject) of a root project.
  *
  * In Android projects, a module can either be an application project,
- * or a library project. Application projects are represented by IDEAppModule
+ * or a library project.
  */
 public class IDEModule extends IDEProject {
     
@@ -53,4 +53,11 @@ public class IDEModule extends IDEProject {
      */
     @SerializedName("isLibrary")
     public boolean isLibrary = true;
+    
+    /**
+     * Library projects don't have applicationId, application projects do.
+     */
+
+    @SerializedName("applicationId")
+    public String applicationId;
 }
