@@ -1,0 +1,225 @@
+javax/lang/model/type/TypeKind.java
+ javax.lang.model.type.TypeKind
+ javax.lang.model.type.TypeKind$1
+javax/lang/model/util/Elements.java
+ javax.lang.model.util.Elements
+javax/lang/model/type/UnionType.java
+ javax.lang.model.type.UnionType
+javax/lang/model/util/AbstractAnnotationValueVisitor6.java
+ javax.lang.model.util.AbstractAnnotationValueVisitor6
+javax/lang/model/element/VariableElement.java
+ javax.lang.model.element.VariableElement
+javax/lang/model/util/ElementKindVisitor8.java
+ javax.lang.model.util.ElementKindVisitor8
+com/squareup/javapoet/CodeWriter.java
+ com.squareup.javapoet.CodeWriter
+ com.squareup.javapoet.CodeWriter$1
+ com.squareup.javapoet.CodeWriter$Multiset
+javax/lang/model/util/AbstractAnnotationValueVisitor7.java
+ javax.lang.model.util.AbstractAnnotationValueVisitor7
+javax/lang/model/util/AbstractElementVisitor8.java
+ javax.lang.model.util.AbstractElementVisitor8
+com/squareup/javapoet/ParameterSpec.java
+ com.squareup.javapoet.ParameterSpec
+ com.squareup.javapoet.ParameterSpec$1
+ com.squareup.javapoet.ParameterSpec$Builder
+javax/lang/model/util/ElementFilter.java
+ javax.lang.model.util.ElementFilter
+com/squareup/javapoet/Util.java
+ com.squareup.javapoet.Util
+javax/lang/model/element/TypeParameterElement.java
+ javax.lang.model.element.TypeParameterElement
+javax/lang/model/util/SimpleAnnotationValueVisitor6.java
+ javax.lang.model.util.SimpleAnnotationValueVisitor6
+com/squareup/javapoet/NameAllocator.java
+ com.squareup.javapoet.NameAllocator
+javax/lang/model/element/Parameterizable.java
+ javax.lang.model.element.Parameterizable
+javax/lang/model/util/ElementKindVisitor7.java
+ javax.lang.model.util.ElementKindVisitor7
+javax/lang/model/SourceVersion.java
+ javax.lang.model.SourceVersion
+javax/lang/model/type/TypeVariable.java
+ javax.lang.model.type.TypeVariable
+javax/lang/model/element/TypeElement.java
+ javax.lang.model.element.TypeElement
+javax/lang/model/type/TypeVisitor.java
+ javax.lang.model.type.TypeVisitor
+javax/lang/model/util/AbstractAnnotationValueVisitor8.java
+ javax.lang.model.util.AbstractAnnotationValueVisitor8
+javax/lang/model/util/AbstractElementVisitor7.java
+ javax.lang.model.util.AbstractElementVisitor7
+javax/lang/model/util/AbstractTypeVisitor7.java
+ javax.lang.model.util.AbstractTypeVisitor7
+javax/lang/model/type/NullType.java
+ javax.lang.model.type.NullType
+javax/lang/model/element/PackageElement.java
+ javax.lang.model.element.PackageElement
+javax/tools/FileObject.java
+ javax.tools.FileObject
+com/itsaky/javax/elements/BuildConfig.java
+ com.itsaky.javax.elements.BuildConfig
+javax/lang/model/type/TypeMirror.java
+ javax.lang.model.type.TypeMirror
+javax/lang/model/util/SimpleElementVisitor6.java
+ javax.lang.model.util.SimpleElementVisitor6
+com/squareup/javapoet/TypeSpec.java
+ com.squareup.javapoet.TypeSpec
+ com.squareup.javapoet.TypeSpec$1
+ com.squareup.javapoet.TypeSpec$Builder
+ com.squareup.javapoet.TypeSpec$Kind
+javax/lang/model/type/UnknownTypeException.java
+ javax.lang.model.type.UnknownTypeException
+javax/lang/model/element/AnnotationValueVisitor.java
+ javax.lang.model.element.AnnotationValueVisitor
+javax/lang/model/element/ElementKind.java
+ javax.lang.model.element.ElementKind
+javax/lang/model/type/ExecutableType.java
+ javax.lang.model.type.ExecutableType
+javax/lang/model/type/PrimitiveType.java
+ javax.lang.model.type.PrimitiveType
+com/squareup/javapoet/ParameterizedTypeName.java
+ com.squareup.javapoet.ParameterizedTypeName
+javax/lang/model/util/SimpleAnnotationValueVisitor8.java
+ javax.lang.model.util.SimpleAnnotationValueVisitor8
+javax/lang/model/type/ArrayType.java
+ javax.lang.model.type.ArrayType
+javax/lang/model/element/UnknownAnnotationValueException.java
+ javax.lang.model.element.UnknownAnnotationValueException
+javax/annotation/processing/FilerException.java
+ javax.annotation.processing.FilerException
+javax/lang/model/element/ElementVisitor.java
+ javax.lang.model.element.ElementVisitor
+javax/lang/model/util/AbstractElementVisitor6.java
+ javax.lang.model.util.AbstractElementVisitor6
+javax/lang/model/util/AbstractTypeVisitor6.java
+ javax.lang.model.util.AbstractTypeVisitor6
+javax/lang/model/util/SimpleElementVisitor7.java
+ javax.lang.model.util.SimpleElementVisitor7
+javax/lang/model/util/SimpleTypeVisitor7.java
+ javax.lang.model.util.SimpleTypeVisitor7
+javax/annotation/processing/SupportedAnnotationTypes.java
+ javax.annotation.processing.SupportedAnnotationTypes
+javax/lang/model/type/MirroredTypeException.java
+ javax.lang.model.type.MirroredTypeException
+com/squareup/javapoet/LineWrapper.java
+ com.squareup.javapoet.LineWrapper
+ com.squareup.javapoet.LineWrapper$1
+ com.squareup.javapoet.LineWrapper$FlushType
+ com.squareup.javapoet.LineWrapper$RecordingAppendable
+javax/lang/model/element/UnknownElementException.java
+ javax.lang.model.element.UnknownElementException
+javax/lang/model/util/ElementKindVisitor6.java
+ javax.lang.model.util.ElementKindVisitor6
+ javax.lang.model.util.ElementKindVisitor6$1
+javax/lang/model/type/NoType.java
+ javax.lang.model.type.NoType
+javax/annotation/processing/Completions.java
+ javax.annotation.processing.Completions
+ javax.annotation.processing.Completions$SimpleCompletion
+javax/lang/model/util/SimpleTypeVisitor6.java
+ javax.lang.model.util.SimpleTypeVisitor6
+com/squareup/javapoet/JavaFile.java
+ com.squareup.javapoet.JavaFile
+ com.squareup.javapoet.JavaFile$1
+ com.squareup.javapoet.JavaFile$2
+ com.squareup.javapoet.JavaFile$Builder
+javax/lang/model/AnnotatedConstruct.java
+ javax.lang.model.AnnotatedConstruct
+com/squareup/javapoet/MethodSpec.java
+ com.squareup.javapoet.MethodSpec
+ com.squareup.javapoet.MethodSpec$1
+ com.squareup.javapoet.MethodSpec$Builder
+javax/lang/model/util/ElementScanner7.java
+ javax.lang.model.util.ElementScanner7
+com/squareup/javapoet/AnnotationSpec.java
+ com.squareup.javapoet.AnnotationSpec
+ com.squareup.javapoet.AnnotationSpec$1
+ com.squareup.javapoet.AnnotationSpec$Builder
+ com.squareup.javapoet.AnnotationSpec$Visitor
+javax/lang/model/util/TypeKindVisitor6.java
+ javax.lang.model.util.TypeKindVisitor6
+ javax.lang.model.util.TypeKindVisitor6$1
+javax/lang/model/element/NestingKind.java
+ javax.lang.model.element.NestingKind
+com/squareup/javapoet/ClassName.java
+ com.squareup.javapoet.ClassName
+ com.squareup.javapoet.ClassName$1
+javax/lang/model/util/ElementScanner6.java
+ javax.lang.model.util.ElementScanner6
+com/squareup/javapoet/CodeBlock.java
+ com.squareup.javapoet.CodeBlock
+ com.squareup.javapoet.CodeBlock$1
+ com.squareup.javapoet.CodeBlock$Builder
+ com.squareup.javapoet.CodeBlock$CodeBlockJoiner
+javax/lang/model/type/DeclaredType.java
+ javax.lang.model.type.DeclaredType
+javax/annotation/processing/SupportedOptions.java
+ javax.annotation.processing.SupportedOptions
+javax/lang/model/type/ErrorType.java
+ javax.lang.model.type.ErrorType
+javax/lang/model/element/AnnotationValue.java
+ javax.lang.model.element.AnnotationValue
+javax/lang/model/util/ElementScanner8.java
+ javax.lang.model.util.ElementScanner8
+javax/lang/model/type/MirroredTypesException.java
+ javax.lang.model.type.MirroredTypesException
+javax/annotation/processing/RoundEnvironment.java
+ javax.annotation.processing.RoundEnvironment
+javax/lang/model/type/IntersectionType.java
+ javax.lang.model.type.IntersectionType
+javax/lang/model/util/Types.java
+ javax.lang.model.util.Types
+javax/lang/model/type/WildcardType.java
+ javax.lang.model.type.WildcardType
+javax/lang/model/util/TypeKindVisitor7.java
+ javax.lang.model.util.TypeKindVisitor7
+javax/lang/model/element/Name.java
+ javax.lang.model.element.Name
+com/squareup/javapoet/ArrayTypeName.java
+ com.squareup.javapoet.ArrayTypeName
+javax/annotation/processing/SupportedSourceVersion.java
+ javax.annotation.processing.SupportedSourceVersion
+javax/lang/model/element/Modifier.java
+ javax.lang.model.element.Modifier
+javax/lang/model/util/SimpleAnnotationValueVisitor7.java
+ javax.lang.model.util.SimpleAnnotationValueVisitor7
+javax/lang/model/type/ReferenceType.java
+ javax.lang.model.type.ReferenceType
+javax/lang/model/util/SimpleElementVisitor8.java
+ javax.lang.model.util.SimpleElementVisitor8
+javax/lang/model/util/AbstractTypeVisitor8.java
+ javax.lang.model.util.AbstractTypeVisitor8
+javax/lang/model/element/ExecutableElement.java
+ javax.lang.model.element.ExecutableElement
+javax/lang/model/util/SimpleTypeVisitor8.java
+ javax.lang.model.util.SimpleTypeVisitor8
+javax/tools/SimpleJavaFileObject.java
+ javax.tools.SimpleJavaFileObject
+com/squareup/javapoet/FieldSpec.java
+ com.squareup.javapoet.FieldSpec
+ com.squareup.javapoet.FieldSpec$1
+ com.squareup.javapoet.FieldSpec$Builder
+javax/lang/model/UnknownEntityException.java
+ javax.lang.model.UnknownEntityException
+javax/tools/JavaFileObject.java
+ javax.tools.JavaFileObject
+ javax.tools.JavaFileObject$Kind
+com/squareup/javapoet/WildcardTypeName.java
+ com.squareup.javapoet.WildcardTypeName
+javax/lang/model/element/AnnotationMirror.java
+ javax.lang.model.element.AnnotationMirror
+com/squareup/javapoet/TypeVariableName.java
+ com.squareup.javapoet.TypeVariableName
+javax/lang/model/element/QualifiedNameable.java
+ javax.lang.model.element.QualifiedNameable
+javax/lang/model/util/TypeKindVisitor8.java
+ javax.lang.model.util.TypeKindVisitor8
+javax/annotation/processing/Completion.java
+ javax.annotation.processing.Completion
+javax/lang/model/element/Element.java
+ javax.lang.model.element.Element
+com/squareup/javapoet/TypeName.java
+ com.squareup.javapoet.TypeName
+ com.squareup.javapoet.TypeName$1
+ com.squareup.javapoet.TypeName$2

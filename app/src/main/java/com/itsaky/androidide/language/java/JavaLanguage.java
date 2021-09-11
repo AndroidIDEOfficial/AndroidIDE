@@ -1,22 +1,20 @@
 package com.itsaky.androidide.language.java;
 
-import com.blankj.utilcode.util.ThrowableUtils;
+import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.language.java.parser.JavaLexer;
 import com.itsaky.androidide.language.java.parser.JavaParser;
 import com.itsaky.androidide.models.AndroidProject;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.text.TextUtils;
-import io.github.rosemoe.editor.widget.CodeEditor;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
-public class JavaLanguage implements EditorLanguage {
+public class JavaLanguage extends BaseLanguage {
     
 	private JavaLanguageAnalyzer analyzer;
 	private JavaAutoComplete complete;
@@ -60,7 +58,7 @@ public class JavaLanguage implements EditorLanguage {
 				}
 			}
 			advance = Math.max(0, advance);
-			return advance * 4;
+			return advance * getTabSize();
 		} catch (Throwable e) {}
 		return 0;
 	}

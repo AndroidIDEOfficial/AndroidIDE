@@ -1,11 +1,11 @@
 package com.itsaky.androidide.language.logs;
 
+import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SuggestItem;
 import com.itsaky.androidide.utils.Either;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
@@ -15,7 +15,7 @@ import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LogLanguageImpl implements EditorLanguage {
+public class LogLanguageImpl extends BaseLanguage {
 	
 	private static final LogAnalyzer analyzer = new LogAnalyzer();
 	private static final LogCompletor completor = new LogCompletor();

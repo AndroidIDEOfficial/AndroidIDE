@@ -1,0 +1,6 @@
+R_DEF: Internal format may change without notice
+local
+id node_header
+id node_items
+id tree_items
+style TreeNodeStyle

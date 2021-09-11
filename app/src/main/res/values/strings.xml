@@ -1,4 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="title_confirm_open_project">Open last project?</string>
+    <string name="msg_confirm_open_project">Do you want me to open last opened project? Opened project was:\n%s</string>
+    <string name="title_open_projects">Open last project</string>
+    <string name="msg_open_projects">Do you want me to automatically open last opened project?</string>
+    <string name="title_confirm_project_open">Confirm project opening</string>
+    <string name="msg_confirm_project_open">Should I ask before automatically opening project?</string>
+    <string name="title_general">General</string>
     <string name="title_tab_size">Tab size</string>
     <string name="msg_tab_size">Specify number of spaces for TAB</string>
     <string name="menu_project_info">Project info</string>

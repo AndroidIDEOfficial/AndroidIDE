@@ -66,6 +66,7 @@ import com.itsaky.androidide.interfaces.JLSRequestor;
 import com.itsaky.androidide.managers.VersionedFileManager;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DiagnosticSeverity;
@@ -2386,7 +2387,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      */
     private void commitTab() {
         if (mConnection != null && isEditable()) {
-            mConnection.commitTextInternal("\t", true);
+            mConnection.commitTextInternal(Symbols.createTabSpaces(), true);
         }
     }
 

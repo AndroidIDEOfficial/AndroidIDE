@@ -1,0 +1,27 @@
+com/itsaky/terminal/view/TerminalViewClient.java
+ com.itsaky.terminal.view.TerminalViewClient
+com/itsaky/terminal/view/textselection/TextSelectionCursorController.java
+ com.itsaky.terminal.view.textselection.TextSelectionCursorController
+ com.itsaky.terminal.view.textselection.TextSelectionCursorController$1
+ com.itsaky.terminal.view.textselection.TextSelectionCursorController$2
+com/itsaky/terminal/view/textselection/TextSelectionHandleView.java
+ com.itsaky.terminal.view.textselection.TextSelectionHandleView
+com/itsaky/terminal/view/TerminalRenderer.java
+ com.itsaky.terminal.view.TerminalRenderer
+com/itsaky/terminal/view/GestureAndScaleRecognizer.java
+ com.itsaky.terminal.view.GestureAndScaleRecognizer
+ com.itsaky.terminal.view.GestureAndScaleRecognizer$1
+ com.itsaky.terminal.view.GestureAndScaleRecognizer$2
+ com.itsaky.terminal.view.GestureAndScaleRecognizer$3
+ com.itsaky.terminal.view.GestureAndScaleRecognizer$Listener
+com/itsaky/terminal/view/textselection/CursorController.java
+ com.itsaky.terminal.view.textselection.CursorController
+com/itsaky/terminal/view/BuildConfig.java
+ com.itsaky.terminal.view.BuildConfig
+com/itsaky/terminal/view/TerminalView.java
+ com.itsaky.terminal.view.TerminalView
+ com.itsaky.terminal.view.TerminalView$1
+ com.itsaky.terminal.view.TerminalView$1$1
+ com.itsaky.terminal.view.TerminalView$2
+ com.itsaky.terminal.view.TerminalView$3
+ com.itsaky.terminal.view.TerminalView$TerminalCursorBlinkerRunnable

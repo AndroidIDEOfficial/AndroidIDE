@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<androidx.multidex>
+  <multidex versions="2.0.0,2.0.1"/>
+  <multidex-instrumentation versions="2.0.0"/>
+</androidx.multidex>

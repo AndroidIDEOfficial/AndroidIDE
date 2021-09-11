@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import com.itsaky.androidide.models.ConstantsBridge;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class MainActivity extends StudioActivity implements View.OnClickListener, ProjectWriterCallback {
 
@@ -69,7 +70,7 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
         
         binding.getRoot().post(() -> {
             PreferenceManager manager = getApp().getPrefManager();
-            if(manager.wasProjectOpened() && ConstantsBridge.SPLASH_TO_MAIN) {
+            if(manager.autoOpenProject() && manager.wasProjectOpened() && ConstantsBridge.SPLASH_TO_MAIN) {
                 String path = manager.getOpenedProject();
                 if(path == null && path.trim().isEmpty()) {
                     getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
@@ -78,13 +79,27 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
                     if(!root.exists()) {
                         getApp().toast(R.string.msg_opened_project_does_not_exist, Toaster.Type.INFO);
                     } else {
-                        openProject(root);
+                        if(manager.confirmProjectOpen()) {
+                            askProjectOpenPermission(root);
+                        } else {
+                            openProject(root);
+                        }
                     }
                 }
             }
             
             ConstantsBridge.SPLASH_TO_MAIN = false;
         });
+    }
+
+    private void askProjectOpenPermission(File root) {
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+        builder.setTitle(R.string.title_confirm_open_project);
+        builder.setMessage(getString(R.string.msg_confirm_open_project, root.getAbsolutePath()));
+        builder.setCancelable(false);
+        builder.setPositiveButton(android.R.string.yes, (d, w) -> openProject(root));
+        builder.setNegativeButton(android.R.string.no, null);
+        builder.show();
     }
 
 	private void gotoSettings() {

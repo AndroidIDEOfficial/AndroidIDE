@@ -1,10 +1,10 @@
 package com.itsaky.androidide.language.groovy;
 
+import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.groovy.lexer.GroovyLexer;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
@@ -12,7 +12,7 @@ import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
-public class GroovyLanguage implements EditorLanguage {
+public class GroovyLanguage extends BaseLanguage {
 	
 	private GroovyAnalyzer analyzer;
 	private GroovyAutoComplete completor;
@@ -58,7 +58,7 @@ public class GroovyLanguage implements EditorLanguage {
 				}
 			}
 			advance = Math.max(0, advance);
-			return advance * 4;
+			return advance * getTabSize();
 		} catch (Throwable e)
 		{}
 		return 0;

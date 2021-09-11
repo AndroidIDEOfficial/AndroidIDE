@@ -1,0 +1,13 @@
+#Sat Sep 11 01:34:51 GMT 2021
+path.3=classes2.dex
+path.2=classes1000.dex
+path.1=classes1000.dex
+path.0=classes.dex
+base.3=/storage/emulated/0/AppProjects/AndroidIDE/app/build/intermediates/dex/debug/mergeProjectDexDebug/classes2.dex
+base.2=/data/user/0/com.aide.ui/files/BuildTools/.gradle/caches/transforms-2/files-2.1/7082a4d0d3fdc04a784996656afb2b59/desugar_jdk_libs-1.1.5/classes1000.dex
+base.1=/data/user/0/com.aide.ui/files/BuildTools/.gradle/caches/transforms-2/files-2.1/2fe13991297cf1b85a696154dc753958/desugar_jdk_libs_configuration-1.1.5/classes1000.dex
+base.0=/storage/emulated/0/AppProjects/AndroidIDE/app/build/intermediates/dex/debug/mergeProjectDexDebug/classes.dex
+renamed.3=classes4.dex
+renamed.2=classes3.dex
+renamed.1=classes2.dex
+renamed.0=classes.dex

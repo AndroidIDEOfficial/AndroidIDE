@@ -1,14 +1,49 @@
 package com.itsaky.androidide.language.buildout;
 
+import com.itsaky.androidide.language.BaseLanguage;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.util.ArrayList;
 import java.util.List;
+import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
+import io.github.rosemoe.editor.interfaces.NewlineHandler;
+import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import io.github.rosemoe.editor.langs.EmptyLanguage;
 
-public class BuildOutputLanguage extends EmptyLanguage {
+public class BuildOutputLanguage extends BaseLanguage {
+
+    @Override
+    public AutoCompleteProvider getAutoCompleteProvider() {
+        return new EmptyLanguage.EmptyAutoCompleteProvider();
+    }
+
+    @Override
+    public boolean isAutoCompleteChar(char ch) {
+        return false;
+    }
+
+    @Override
+    public int getIndentAdvance(String content) {
+        return 0;
+    }
+
+    @Override
+    public CharSequence format(CharSequence text) {
+        return text;
+    }
+
+    @Override
+    public SymbolPairMatch getSymbolPairs() {
+        return new SymbolPairMatch.DefaultSymbolPairs();
+    }
+
+    @Override
+    public NewlineHandler[] getNewlineHandlers() {
+        return new NewlineHandler[0];
+    }
+    
     
     private final BuildAnalyzer analyzer = new BuildAnalyzer();
     

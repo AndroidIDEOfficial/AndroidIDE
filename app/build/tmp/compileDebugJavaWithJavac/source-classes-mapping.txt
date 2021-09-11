@@ -1,0 +1,742 @@
+com/itsaky/androidide/databinding/LayoutAboutItemsBinding.java
+ com.itsaky.androidide.databinding.LayoutAboutItemsBinding
+com/itsaky/androidide/models/CompletionItemWrapper.java
+ com.itsaky.androidide.models.CompletionItemWrapper
+com/itsaky/androidide/views/transition/CubicBezierArc.java
+ com.itsaky.androidide.views.transition.CubicBezierArc
+ com.itsaky.androidide.views.transition.CubicBezierArc$Point
+com/itsaky/androidide/models/AndroidProject.java
+ com.itsaky.androidide.models.AndroidProject
+ com.itsaky.androidide.models.AndroidProject$1
+com/itsaky/androidide/fragments/sheets/ProjectInfoSheet.java
+ com.itsaky.androidide.fragments.sheets.ProjectInfoSheet
+io/github/rosemoe/editor/text/Cursor.java
+ io.github.rosemoe.editor.text.Cursor
+com/itsaky/androidide/syntax/lexer/tokens/TokenType.java
+ com.itsaky.androidide.syntax.lexer.tokens.TokenType
+io/github/rosemoe/editor/text/TextAnalyzeResult.java
+ io.github.rosemoe.editor.text.TextAnalyzeResult
+io/github/rosemoe/editor/widget/EditorBasePopupWindow.java
+ io.github.rosemoe.editor.widget.EditorBasePopupWindow
+io/github/rosemoe/editor/widget/schemes/SchemeNotepadXX.java
+ io.github.rosemoe.editor.widget.schemes.SchemeNotepadXX
+com/itsaky/androidide/syntax/lexer/highlighters/Highlighter.java
+ com.itsaky.androidide.syntax.lexer.highlighters.Highlighter
+com/itsaky/androidide/models/project/IDEModule.java
+ com.itsaky.androidide.models.project.IDEModule
+com/itsaky/androidide/tasks/gradle/dex/MergeDex.java
+ com.itsaky.androidide.tasks.gradle.dex.MergeDex
+io/github/rosemoe/editor/interfaces/AutoCompleteProvider.java
+ io.github.rosemoe.editor.interfaces.AutoCompleteProvider
+com/itsaky/androidide/databinding/LayoutProjectsItemBinding.java
+ com.itsaky.androidide.databinding.LayoutProjectsItemBinding
+com/itsaky/androidide/interfaces/DiagnosticClickListener.java
+ com.itsaky.androidide.interfaces.DiagnosticClickListener
+io/github/rosemoe/editor/widget/EditorTextActionWindow.java
+ io.github.rosemoe.editor.widget.EditorTextActionWindow
+io/github/rosemoe/editor/widget/DiagnosticWindow.java
+ io.github.rosemoe.editor.widget.DiagnosticWindow
+com/itsaky/androidide/adapters/EditorPagerAdapter.java
+ com.itsaky.androidide.adapters.EditorPagerAdapter
+com/itsaky/androidide/models/ProjectTemplate.java
+ com.itsaky.androidide.models.ProjectTemplate
+com/itsaky/androidide/fragments/preferences/BuildPreferences.java
+ com.itsaky.androidide.fragments.preferences.BuildPreferences
+com/itsaky/androidide/adapters/DiagnosticItemAdpater.java
+ com.itsaky.androidide.adapters.DiagnosticItemAdpater
+ com.itsaky.androidide.adapters.DiagnosticItemAdpater$VH
+io/github/rosemoe/editor/text/Content.java
+ io.github.rosemoe.editor.text.Content
+io/github/rosemoe/editor/widget/KeyMetaStates.java
+ io.github.rosemoe.editor.widget.KeyMetaStates
+com/itsaky/toaster/Toaster.java
+ com.itsaky.toaster.Toaster
+ com.itsaky.toaster.Toaster$Gravity
+ com.itsaky.toaster.Toaster$Type
+io/github/rosemoe/editor/interfaces/EditorEventListener.java
+ io.github.rosemoe.editor.interfaces.EditorEventListener
+io/github/rosemoe/editor/text/FormatThread.java
+ io.github.rosemoe.editor.text.FormatThread
+ io.github.rosemoe.editor.text.FormatThread$FormatResultReceiver
+com/itsaky/androidide/tasks/BaseGradleTask.java
+ com.itsaky.androidide.tasks.BaseGradleTask
+io/github/rosemoe/editor/widget/Row.java
+ io.github.rosemoe.editor.widget.Row
+com/itsaky/androidide/adapters/SearchListAdapter.java
+ com.itsaky.androidide.adapters.SearchListAdapter
+ com.itsaky.androidide.adapters.SearchListAdapter$ChildAdapter
+ com.itsaky.androidide.adapters.SearchListAdapter$ChildVH
+ com.itsaky.androidide.adapters.SearchListAdapter$OnFileClickListener
+ com.itsaky.androidide.adapters.SearchListAdapter$OnMatchClickListener
+ com.itsaky.androidide.adapters.SearchListAdapter$VH
+com/itsaky/androidide/language/java/parser/JavaParserBaseListener.java
+ com.itsaky.androidide.language.java.parser.JavaParserBaseListener
+com/itsaky/androidide/models/CompletionListItem.java
+ com.itsaky.androidide.models.CompletionListItem
+ com.itsaky.androidide.models.CompletionListItem$Type
+com/itsaky/androidide/models/License.java
+ com.itsaky.androidide.models.License
+com/itsaky/androidide/tasks/callables/FileTreeCallable.java
+ com.itsaky.androidide.tasks.callables.FileTreeCallable
+ com.itsaky.androidide.tasks.callables.FileTreeCallable$HiddenFilesFilter
+ com.itsaky.androidide.tasks.callables.FileTreeCallable$SortFileName
+ com.itsaky.androidide.tasks.callables.FileTreeCallable$SortFolder
+io/github/rosemoe/editor/text/SpanRecycler.java
+ io.github.rosemoe.editor.text.SpanRecycler
+ io.github.rosemoe.editor.text.SpanRecycler$RecycleThread
+com/itsaky/androidide/fragments/FileTreeFragment.java
+ com.itsaky.androidide.fragments.FileTreeFragment
+ com.itsaky.androidide.fragments.FileTreeFragment$FileActionListener
+com/itsaky/androidide/databinding/DefaultCompletionResultItemBinding.java
+ com.itsaky.androidide.databinding.DefaultCompletionResultItemBinding
+com/itsaky/androidide/databinding/LayoutDiagnosticInfoBinding.java
+ com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding
+io/github/rosemoe/editor/struct/ErrorOrWarning.java
+ io.github.rosemoe.editor.struct.ErrorOrWarning
+io/github/rosemoe/editor/widget/SymbolChannel.java
+ io.github.rosemoe.editor.widget.SymbolChannel
+io/github/rosemoe/editor/widget/Layout.java
+ io.github.rosemoe.editor.widget.Layout
+com/itsaky/androidide/PreferencesActivity.java
+ com.itsaky.androidide.PreferencesActivity
+com/itsaky/androidide/syntax/lexer/tokens/Token.java
+ com.itsaky.androidide.syntax.lexer.tokens.Token
+com/itsaky/androidide/syntax/lexer/impls/java/JavaLexerImpl.java
+ com.itsaky.androidide.syntax.lexer.impls.java.JavaLexerImpl
+io/github/rosemoe/editor/widget/AbstractLayout.java
+ io.github.rosemoe.editor.widget.AbstractLayout
+io/github/rosemoe/editor/text/ObjectAllocator.java
+ io.github.rosemoe.editor.text.ObjectAllocator
+com/itsaky/androidide/syntax/lexer/impls/groovy/GroovyLexerImpl.java
+ com.itsaky.androidide.syntax.lexer.impls.groovy.GroovyLexerImpl
+io/github/rosemoe/editor/text/LineRemoveListener.java
+ io.github.rosemoe.editor.text.LineRemoveListener
+io/github/rosemoe/editor/util/BinaryHeap.java
+ io.github.rosemoe.editor.util.BinaryHeap
+ io.github.rosemoe.editor.util.BinaryHeap$Node
+io/github/rosemoe/editor/interfaces/NewlineHandler.java
+ io.github.rosemoe.editor.interfaces.NewlineHandler
+ io.github.rosemoe.editor.interfaces.NewlineHandler$HandleResult
+com/itsaky/androidide/fragments/sheets/OptionsListFragment.java
+ com.itsaky.androidide.fragments.sheets.OptionsListFragment
+ com.itsaky.androidide.fragments.sheets.OptionsListFragment$OnOptionsClickListener
+com/itsaky/androidide/interfaces/ProjectWriterCallback.java
+ com.itsaky.androidide.interfaces.ProjectWriterCallback
+com/itsaky/androidide/fragments/sheets/BaseBottomSheetFragment.java
+ com.itsaky.androidide.fragments.sheets.BaseBottomSheetFragment
+com/itsaky/androidide/language/java/manager/JavaCharacter.java
+ com.itsaky.androidide.language.java.manager.JavaCharacter
+com/itsaky/androidide/tasks/callables/LicenseReader.java
+ com.itsaky.androidide.tasks.callables.LicenseReader
+ com.itsaky.androidide.tasks.callables.LicenseReader$1
+com/itsaky/androidide/tasks/gradle/build/Build.java
+ com.itsaky.androidide.tasks.gradle.build.Build
+com/itsaky/androidide/databinding/ActivityTerminalBinding.java
+ com.itsaky.androidide.databinding.ActivityTerminalBinding
+com/itsaky/androidide/tasks/gradle/build/AssembleDebug.java
+ com.itsaky.androidide.tasks.gradle.build.AssembleDebug
+io/github/rosemoe/editor/struct/NavigationItem.java
+ io.github.rosemoe.editor.struct.NavigationItem
+io/github/rosemoe/editor/text/FontCache.java
+ io.github.rosemoe.editor.text.FontCache
+com/itsaky/androidide/receivers/LogReceiver.java
+ com.itsaky.androidide.receivers.LogReceiver
+ com.itsaky.androidide.receivers.LogReceiver$LogListener
+com/itsaky/androidide/databinding/LayoutDiagnosticGroupBinding.java
+ com.itsaky.androidide.databinding.LayoutDiagnosticGroupBinding
+com/itsaky/androidide/databinding/LayoutSymbolItemBinding.java
+ com.itsaky.androidide.databinding.LayoutSymbolItemBinding
+com/itsaky/androidide/EditorActivity.java
+ com.itsaky.androidide.EditorActivity
+io/github/rosemoe/editor/widget/EditorCompletionAdapter.java
+ io.github.rosemoe.editor.widget.EditorCompletionAdapter
+com/itsaky/androidide/utils/TransformUtils.java
+ com.itsaky.androidide.utils.TransformUtils
+com/itsaky/androidide/StringFog.java
+ com.itsaky.androidide.StringFog
+com/itsaky/androidide/views/MaterialBanner.java
+ com.itsaky.androidide.views.MaterialBanner
+ com.itsaky.androidide.views.MaterialBanner$1
+ com.itsaky.androidide.views.MaterialBanner$2
+ com.itsaky.androidide.views.MaterialBanner$OnNegativeClickListener
+ com.itsaky.androidide.views.MaterialBanner$OnPositiveClickListener
+com/itsaky/androidide/fragments/sheets/ProgressSheet.java
+ com.itsaky.androidide.fragments.sheets.ProgressSheet
+io/github/rosemoe/editor/text/ContentListener.java
+ io.github.rosemoe.editor.text.ContentListener
+com/itsaky/androidide/databinding/LayoutCreateProjectContentBinding.java
+ com.itsaky.androidide.databinding.LayoutCreateProjectContentBinding
+com/itsaky/androidide/adapters/CompletionListAdapter.java
+ com.itsaky.androidide.adapters.CompletionListAdapter
+com/itsaky/androidide/models/LogLine.java
+ com.itsaky.androidide.models.LogLine
+com/itsaky/androidide/adapters/SymbolInputAdapter.java
+ com.itsaky.androidide.adapters.SymbolInputAdapter
+ com.itsaky.androidide.adapters.SymbolInputAdapter$VH
+com/itsaky/androidide/fragments/sheets/LogSheet.java
+ com.itsaky.androidide.fragments.sheets.LogSheet
+io/github/rosemoe/editor/text/CharPosition.java
+ io.github.rosemoe.editor.text.CharPosition
+com/itsaky/androidide/tasks/gradle/build/CleanBuild.java
+ com.itsaky.androidide.tasks.gradle.build.CleanBuild
+com/itsaky/androidide/views/transition/ArcMotionPlus.java
+ com.itsaky.androidide.views.transition.ArcMotionPlus
+com/itsaky/androidide/language/java/parser/JavaParserVisitor.java
+ com.itsaky.androidide.language.java.parser.JavaParserVisitor
+com/itsaky/androidide/language/xml/XMLAnalyzer.java
+ com.itsaky.androidide.language.xml.XMLAnalyzer
+com/itsaky/androidide/syntax/lexer/DefaultLexer.java
+ com.itsaky.androidide.syntax.lexer.DefaultLexer
+com/itsaky/androidide/databinding/LayoutSearchResultGroupBinding.java
+ com.itsaky.androidide.databinding.LayoutSearchResultGroupBinding
+com/itsaky/androidide/adapters/OptionsSheetAdapter.java
+ com.itsaky.androidide.adapters.OptionsSheetAdapter
+ com.itsaky.androidide.adapters.OptionsSheetAdapter$OnOptionsClickListener
+ com.itsaky.androidide.adapters.OptionsSheetAdapter$VH
+com/itsaky/androidide/managers/ToolsManager.java
+ com.itsaky.androidide.managers.ToolsManager
+io/github/rosemoe/editor/widget/EditorAutoCompleteWindow.java
+ io.github.rosemoe.editor.widget.EditorAutoCompleteWindow
+ io.github.rosemoe.editor.widget.EditorAutoCompleteWindow$MatchThread
+com/itsaky/androidide/services/Jar2DexService.java
+ com.itsaky.androidide.services.Jar2DexService
+ com.itsaky.androidide.services.Jar2DexService$1
+io/github/rosemoe/editor/widget/schemes/SchemeDarcula.java
+ io.github.rosemoe.editor.widget.schemes.SchemeDarcula
+com/itsaky/androidide/syntax/lexer/highlighters/JavaHighlighter.java
+ com.itsaky.androidide.syntax.lexer.highlighters.JavaHighlighter
+com/itsaky/androidide/databinding/ActivityPreferencesBinding.java
+ com.itsaky.androidide.databinding.ActivityPreferencesBinding
+com/itsaky/androidide/language/java/parser/JavaParser.java
+ com.itsaky.androidide.language.java.parser.JavaParser
+ com.itsaky.androidide.language.java.parser.JavaParser$AltAnnotationQualifiedNameContext
+ com.itsaky.androidide.language.java.parser.JavaParser$AnnotationConstantRestContext
+ com.itsaky.androidide.language.java.parser.JavaParser$AnnotationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$AnnotationMethodOrConstantRestContext
+ com.itsaky.androidide.language.java.parser.JavaParser$AnnotationMethodRestContext
+ com.itsaky.androidide.language.java.parser.JavaParser$AnnotationTypeBodyContext
+ com.itsaky.androidide.language.java.parser.JavaParser$AnnotationTypeDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$AnnotationTypeElementDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$AnnotationTypeElementRestContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ArgumentsContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ArrayCreatorRestContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ArrayInitializerContext
+ com.itsaky.androidide.language.java.parser.JavaParser$BlockContext
+ com.itsaky.androidide.language.java.parser.JavaParser$BlockStatementContext
+ com.itsaky.androidide.language.java.parser.JavaParser$CatchClauseContext
+ com.itsaky.androidide.language.java.parser.JavaParser$CatchTypeContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ClassBodyContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ClassBodyDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ClassCreatorRestContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ClassDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ClassOrInterfaceModifierContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ClassOrInterfaceTypeContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ClassTypeContext
+ com.itsaky.androidide.language.java.parser.JavaParser$CompilationUnitContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ConstDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ConstantDeclaratorContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ConstructorDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$CreatedNameContext
+ com.itsaky.androidide.language.java.parser.JavaParser$CreatorContext
+ com.itsaky.androidide.language.java.parser.JavaParser$DefaultValueContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ElementValueArrayInitializerContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ElementValueContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ElementValuePairContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ElementValuePairsContext
+ com.itsaky.androidide.language.java.parser.JavaParser$EnhancedForControlContext
+ com.itsaky.androidide.language.java.parser.JavaParser$EnumBodyDeclarationsContext
+ com.itsaky.androidide.language.java.parser.JavaParser$EnumConstantContext
+ com.itsaky.androidide.language.java.parser.JavaParser$EnumConstantsContext
+ com.itsaky.androidide.language.java.parser.JavaParser$EnumDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ExplicitGenericInvocationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ExplicitGenericInvocationSuffixContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ExpressionContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ExpressionListContext
+ com.itsaky.androidide.language.java.parser.JavaParser$FieldDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$FinallyBlockContext
+ com.itsaky.androidide.language.java.parser.JavaParser$FloatLiteralContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ForControlContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ForInitContext
+ com.itsaky.androidide.language.java.parser.JavaParser$FormalParameterContext
+ com.itsaky.androidide.language.java.parser.JavaParser$FormalParameterListContext
+ com.itsaky.androidide.language.java.parser.JavaParser$FormalParametersContext
+ com.itsaky.androidide.language.java.parser.JavaParser$GenericConstructorDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$GenericInterfaceMethodDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$GenericMethodDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ImportDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$InnerCreatorContext
+ com.itsaky.androidide.language.java.parser.JavaParser$IntegerLiteralContext
+ com.itsaky.androidide.language.java.parser.JavaParser$InterfaceBodyContext
+ com.itsaky.androidide.language.java.parser.JavaParser$InterfaceBodyDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$InterfaceDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$InterfaceMemberDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$InterfaceMethodDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$InterfaceMethodModifierContext
+ com.itsaky.androidide.language.java.parser.JavaParser$LambdaBodyContext
+ com.itsaky.androidide.language.java.parser.JavaParser$LambdaExpressionContext
+ com.itsaky.androidide.language.java.parser.JavaParser$LambdaParametersContext
+ com.itsaky.androidide.language.java.parser.JavaParser$LastFormalParameterContext
+ com.itsaky.androidide.language.java.parser.JavaParser$LiteralContext
+ com.itsaky.androidide.language.java.parser.JavaParser$LocalTypeDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$LocalVariableDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$MemberDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$MethodBodyContext
+ com.itsaky.androidide.language.java.parser.JavaParser$MethodCallContext
+ com.itsaky.androidide.language.java.parser.JavaParser$MethodDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ModifierContext
+ com.itsaky.androidide.language.java.parser.JavaParser$NonWildcardTypeArgumentsContext
+ com.itsaky.androidide.language.java.parser.JavaParser$NonWildcardTypeArgumentsOrDiamondContext
+ com.itsaky.androidide.language.java.parser.JavaParser$PackageDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ParExpressionContext
+ com.itsaky.androidide.language.java.parser.JavaParser$PrimaryContext
+ com.itsaky.androidide.language.java.parser.JavaParser$PrimitiveTypeContext
+ com.itsaky.androidide.language.java.parser.JavaParser$QualifiedNameContext
+ com.itsaky.androidide.language.java.parser.JavaParser$QualifiedNameListContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ResourceContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ResourceSpecificationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$ResourcesContext
+ com.itsaky.androidide.language.java.parser.JavaParser$StatementContext
+ com.itsaky.androidide.language.java.parser.JavaParser$SuperSuffixContext
+ com.itsaky.androidide.language.java.parser.JavaParser$SwitchBlockStatementGroupContext
+ com.itsaky.androidide.language.java.parser.JavaParser$SwitchLabelContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeArgumentContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeArgumentsContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeArgumentsOrDiamondContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeBoundContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeDeclarationContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeListContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeParameterContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeParametersContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeTypeContext
+ com.itsaky.androidide.language.java.parser.JavaParser$TypeTypeOrVoidContext
+ com.itsaky.androidide.language.java.parser.JavaParser$VariableDeclaratorContext
+ com.itsaky.androidide.language.java.parser.JavaParser$VariableDeclaratorIdContext
+ com.itsaky.androidide.language.java.parser.JavaParser$VariableDeclaratorsContext
+ com.itsaky.androidide.language.java.parser.JavaParser$VariableInitializerContext
+ com.itsaky.androidide.language.java.parser.JavaParser$VariableModifierContext
+com/itsaky/androidide/views/EmptyView.java
+ com.itsaky.androidide.views.EmptyView
+com/itsaky/androidide/databinding/LayoutTextSizeSliderBinding.java
+ com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding
+com/itsaky/androidide/tasks/gradle/dex/MergeExtDex.java
+ com.itsaky.androidide.tasks.gradle.dex.MergeExtDex
+com/itsaky/androidide/language/java/parser/JavaLexer.java
+ com.itsaky.androidide.language.java.parser.JavaLexer
+com/itsaky/androidide/app/StudioApp.java
+ com.itsaky.androidide.app.StudioApp
+com/itsaky/androidide/language/java/JavaLanguage.java
+ com.itsaky.androidide.language.java.JavaLanguage
+ com.itsaky.androidide.language.java.JavaLanguage$BraceHandler
+ com.itsaky.androidide.language.java.JavaLanguage$JavaSymbolPairs
+com/itsaky/androidide/language/xml/XMLLanguage.java
+ com.itsaky.androidide.language.xml.XMLLanguage
+ com.itsaky.androidide.language.xml.XMLLanguage$IndentHandler
+com/itsaky/androidide/syntax/lexer/Lexer.java
+ com.itsaky.androidide.syntax.lexer.Lexer
+com/itsaky/androidide/fragments/ProjectsFragment.java
+ com.itsaky.androidide.fragments.ProjectsFragment
+ com.itsaky.androidide.fragments.ProjectsFragment$1
+ com.itsaky.androidide.fragments.ProjectsFragment$GetProjectsTask
+com/itsaky/androidide/tasks/gradle/build/Bundle.java
+ com.itsaky.androidide.tasks.gradle.build.Bundle
+com/itsaky/androidide/databinding/LayoutDialogTextInputBinding.java
+ com.itsaky.androidide.databinding.LayoutDialogTextInputBinding
+com/itsaky/androidide/tasks/callables/DownloadLinkFetcher.java
+ com.itsaky.androidide.tasks.callables.DownloadLinkFetcher
+com/itsaky/androidide/language/xml/completion/XMLCompletionService.java
+ com.itsaky.androidide.language.xml.completion.XMLCompletionService
+ com.itsaky.androidide.language.xml.completion.XMLCompletionService$Attr
+ com.itsaky.androidide.language.xml.completion.XMLCompletionService$IsInValueScanner
+com/itsaky/androidide/databinding/LayoutEditorFileTreeBinding.java
+ com.itsaky.androidide.databinding.LayoutEditorFileTreeBinding
+io/github/rosemoe/editor/util/Objects.java
+ io.github.rosemoe.editor.util.Objects
+io/github/rosemoe/editor/widget/TextActionPopupWindow.java
+ io.github.rosemoe.editor.widget.TextActionPopupWindow
+com/itsaky/androidide/fragments/sheets/TextSheetFragment.java
+ com.itsaky.androidide.fragments.sheets.TextSheetFragment
+com/itsaky/androidide/language/xml/XMLAutoComplete.java
+ com.itsaky.androidide.language.xml.XMLAutoComplete
+ com.itsaky.androidide.language.xml.XMLAutoComplete$1
+com/itsaky/androidide/databinding/ActivityMainBinding.java
+ com.itsaky.androidide.databinding.ActivityMainBinding
+com/itsaky/androidide/syntax/lexer/impls/BaseJavaLexer.java
+ com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer
+io/github/rosemoe/editor/struct/Span.java
+ io.github.rosemoe.editor.struct.Span
+com/itsaky/androidide/syntax/colorschemes/SchemeWombat.java
+ com.itsaky.androidide.syntax.colorschemes.SchemeWombat
+com/itsaky/androidide/views/TooltipLayout.java
+ com.itsaky.androidide.views.TooltipLayout
+com/itsaky/androidide/interfaces/Filter.java
+ com.itsaky.androidide.interfaces.Filter
+com/itsaky/androidide/models/DiagnosticGroup.java
+ com.itsaky.androidide.models.DiagnosticGroup
+com/itsaky/androidide/models/GradleSuggestItem.java
+ com.itsaky.androidide.models.GradleSuggestItem
+com/itsaky/androidide/fragments/EditorFragment.java
+ com.itsaky.androidide.fragments.EditorFragment
+ com.itsaky.androidide.fragments.EditorFragment$FileOpenListener
+com/itsaky/androidide/language/xml/lexer/XMLLexer.java
+ com.itsaky.androidide.language.xml.lexer.XMLLexer
+com/itsaky/androidide/utils/FileUtil.java
+ com.itsaky.androidide.utils.FileUtil
+com/itsaky/androidide/utils/Environment.java
+ com.itsaky.androidide.utils.Environment
+com/itsaky/androidide/AboutActivity.java
+ com.itsaky.androidide.AboutActivity
+io/github/rosemoe/editor/widget/schemes/SchemeEclipse.java
+ io.github.rosemoe.editor.widget.schemes.SchemeEclipse
+com/itsaky/androidide/language/java/server/JavaLanguageServer.java
+ com.itsaky.androidide.language.java.server.JavaLanguageServer
+ com.itsaky.androidide.language.java.server.JavaLanguageServer$1
+ com.itsaky.androidide.language.java.server.JavaLanguageServer$2
+ com.itsaky.androidide.language.java.server.JavaLanguageServer$Key
+ com.itsaky.androidide.language.java.server.JavaLanguageServer$Method
+io/github/rosemoe/editor/widget/SymbolPairMatch.java
+ io.github.rosemoe.editor.widget.SymbolPairMatch
+ io.github.rosemoe.editor.widget.SymbolPairMatch$DefaultSymbolPairs
+ io.github.rosemoe.editor.widget.SymbolPairMatch$Replacement
+com/itsaky/androidide/language/java/JavaAutoComplete.java
+ com.itsaky.androidide.language.java.JavaAutoComplete
+ com.itsaky.androidide.language.java.JavaAutoComplete$1
+com/itsaky/androidide/models/SuggestItem.java
+ com.itsaky.androidide.models.SuggestItem
+com/itsaky/androidide/fragments/preferences/GeneralPreferences.java
+ com.itsaky.androidide.fragments.preferences.GeneralPreferences
+com/itsaky/androidide/models/DexPair.java
+ com.itsaky.androidide.models.DexPair
+ com.itsaky.androidide.models.DexPair$1
+io/github/rosemoe/editor/widget/EditorSearcher.java
+ io.github.rosemoe.editor.widget.EditorSearcher
+ io.github.rosemoe.editor.widget.EditorSearcher$1
+com/itsaky/androidide/databinding/LayoutSearchProjectBinding.java
+ com.itsaky.androidide.databinding.LayoutSearchProjectBinding
+com/itsaky/androidide/models/SearchResult.java
+ com.itsaky.androidide.models.SearchResult
+com/itsaky/androidide/databinding/ProblemViewBinding.java
+ com.itsaky.androidide.databinding.ProblemViewBinding
+io/github/rosemoe/editor/text/TextUtils.java
+ io.github.rosemoe.editor.text.TextUtils
+com/itsaky/androidide/databinding/LayoutNavHeaderBinding.java
+ com.itsaky.androidide.databinding.LayoutNavHeaderBinding
+com/itsaky/androidide/tasks/callables/UnzipCallable.java
+ com.itsaky.androidide.tasks.callables.UnzipCallable
+com/itsaky/androidide/databinding/LayoutSearchResultItemBinding.java
+ com.itsaky.androidide.databinding.LayoutSearchResultItemBinding
+com/itsaky/androidide/utils/EitherOfResult.java
+ com.itsaky.androidide.utils.EitherOfResult
+com/itsaky/androidide/utils/RuntimeTypeAdapterFactory.java
+ com.itsaky.androidide.utils.RuntimeTypeAdapterFactory
+ com.itsaky.androidide.utils.RuntimeTypeAdapterFactory$1
+io/github/rosemoe/editor/widget/EditorTextActionModeStarter.java
+ io.github.rosemoe.editor.widget.EditorTextActionModeStarter
+ io.github.rosemoe.editor.widget.EditorTextActionModeStarter$1
+com/itsaky/androidide/views/transition/ProgressTransition.java
+ com.itsaky.androidide.views.transition.ProgressTransition
+ com.itsaky.androidide.views.transition.ProgressTransition$1
+com/itsaky/androidide/utils/RecursiveFileSearcher.java
+ com.itsaky.androidide.utils.RecursiveFileSearcher
+ com.itsaky.androidide.utils.RecursiveFileSearcher$Callback
+ com.itsaky.androidide.utils.RecursiveFileSearcher$MultiFileFilter
+ com.itsaky.androidide.utils.RecursiveFileSearcher$Searcher
+io/github/rosemoe/editor/widget/RowIterator.java
+ io.github.rosemoe.editor.widget.RowIterator
+com/itsaky/androidide/syntax/colorschemes/SchemeAndroidIDE.java
+ com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
+com/itsaky/androidide/utils/TypefaceUtils.java
+ com.itsaky.androidide.utils.TypefaceUtils
+com/itsaky/androidide/tasks/callables/ReadFileTask.java
+ com.itsaky.androidide.tasks.callables.ReadFileTask
+com/itsaky/androidide/utils/Logger.java
+ com.itsaky.androidide.utils.Logger
+io/github/rosemoe/editor/text/UndoManager.java
+ io.github.rosemoe.editor.text.UndoManager
+ io.github.rosemoe.editor.text.UndoManager$ContentAction
+ io.github.rosemoe.editor.text.UndoManager$DeleteAction
+ io.github.rosemoe.editor.text.UndoManager$InsertAction
+ io.github.rosemoe.editor.text.UndoManager$MultiAction
+ io.github.rosemoe.editor.text.UndoManager$ReplaceAction
+com/itsaky/androidide/language/buildout/BuildOutputLanguage.java
+ com.itsaky.androidide.language.buildout.BuildOutputLanguage
+ com.itsaky.androidide.language.buildout.BuildOutputLanguage$1
+ com.itsaky.androidide.language.buildout.BuildOutputLanguage$BuildAnalyzer
+io/github/rosemoe/editor/widget/LineBreakLayout.java
+ io.github.rosemoe.editor.widget.LineBreakLayout
+ io.github.rosemoe.editor.widget.LineBreakLayout$LineBreakLayoutRowItr
+com/itsaky/androidide/databinding/LayoutCompletionWindowBinding.java
+ com.itsaky.androidide.databinding.LayoutCompletionWindowBinding
+io/github/rosemoe/editor/interfaces/CodeAnalyzer.java
+ io.github.rosemoe.editor.interfaces.CodeAnalyzer
+io/github/rosemoe/editor/widget/schemes/SchemeVS2019.java
+ io.github.rosemoe.editor.widget.schemes.SchemeVS2019
+com/itsaky/androidide/language/java/parser/JavaParserBaseVisitor.java
+ com.itsaky.androidide.language.java.parser.JavaParserBaseVisitor
+com/itsaky/androidide/adapters/ModuleInfoAdapter.java
+ com.itsaky.androidide.adapters.ModuleInfoAdapter
+ com.itsaky.androidide.adapters.ModuleInfoAdapter$VH
+com/itsaky/androidide/databinding/LayoutProjectDetailsBinding.java
+ com.itsaky.androidide.databinding.LayoutProjectDetailsBinding
+com/itsaky/androidide/databinding/LayoutCompletionItemBinding.java
+ com.itsaky.androidide.databinding.LayoutCompletionItemBinding
+com/itsaky/androidide/models/project/IDEProject.java
+ com.itsaky.androidide.models.project.IDEProject
+ com.itsaky.androidide.models.project.IDEProject$SDK
+io/github/rosemoe/editor/util/LongArrayList.java
+ io.github.rosemoe.editor.util.LongArrayList
+com/itsaky/androidide/databinding/ActivityDownloadBinding.java
+ com.itsaky.androidide.databinding.ActivityDownloadBinding
+com/itsaky/androidide/databinding/LayoutInstallToolsBinding.java
+ com.itsaky.androidide.databinding.LayoutInstallToolsBinding
+com/itsaky/androidide/databinding/LayoutToastBinding.java
+ com.itsaky.androidide.databinding.LayoutToastBinding
+com/itsaky/androidide/databinding/LayoutCreateProjectBinding.java
+ com.itsaky.androidide.databinding.LayoutCreateProjectBinding
+io/github/rosemoe/editor/widget/MaterialEdgeEffect.java
+ io.github.rosemoe.editor.widget.MaterialEdgeEffect
+com/itsaky/androidide/fragments/preferences/EditorPreferences.java
+ com.itsaky.androidide.fragments.preferences.EditorPreferences
+com/itsaky/androidide/databinding/TextComposePanelBinding.java
+ com.itsaky.androidide.databinding.TextComposePanelBinding
+com/itsaky/androidide/fragments/BaseFragment.java
+ com.itsaky.androidide.fragments.BaseFragment
+com/itsaky/androidide/adapters/MainPagerAdapter.java
+ com.itsaky.androidide.adapters.MainPagerAdapter
+com/itsaky/androidide/DownloadActivity.java
+ com.itsaky.androidide.DownloadActivity
+ com.itsaky.androidide.DownloadActivity$1
+com/itsaky/androidide/services/MessagingService.java
+ com.itsaky.androidide.services.MessagingService
+com/itsaky/androidide/databinding/LayoutProjectsBinding.java
+ com.itsaky.androidide.databinding.LayoutProjectsBinding
+io/github/rosemoe/editor/text/ContentLine.java
+ io.github.rosemoe.editor.text.ContentLine
+com/itsaky/androidide/views/NonSwipableViewPager.java
+ com.itsaky.androidide.views.NonSwipableViewPager
+com/itsaky/androidide/utils/ProjectWriter.java
+ com.itsaky.androidide.utils.ProjectWriter
+com/itsaky/androidide/databinding/LayoutDiagnosticItemBinding.java
+ com.itsaky.androidide.databinding.LayoutDiagnosticItemBinding
+com/itsaky/androidide/app/StudioActivity.java
+ com.itsaky.androidide.app.StudioActivity
+com/itsaky/androidide/tasks/gradle/lint/LintDebug.java
+ com.itsaky.androidide.tasks.gradle.lint.LintDebug
+com/itsaky/androidide/MainActivity.java
+ com.itsaky.androidide.MainActivity
+ com.itsaky.androidide.MainActivity$OnEndTransitionListener
+ com.itsaky.androidide.MainActivity$ProjectReader
+com/itsaky/androidide/tasks/gradle/dex/MergeLibAndProjectDex.java
+ com.itsaky.androidide.tasks.gradle.dex.MergeLibAndProjectDex
+io/github/rosemoe/editor/langs/EmptyLanguage.java
+ io.github.rosemoe.editor.langs.EmptyLanguage
+ io.github.rosemoe.editor.langs.EmptyLanguage$1
+ io.github.rosemoe.editor.langs.EmptyLanguage$EmptyAutoCompleteProvider
+ io.github.rosemoe.editor.langs.EmptyLanguage$EmptyCodeAnalyzer
+io/github/rosemoe/editor/text/NoCacheIndexer.java
+ io.github.rosemoe.editor.text.NoCacheIndexer
+com/itsaky/androidide/databinding/LayoutSheetBinding.java
+ com.itsaky.androidide.databinding.LayoutSheetBinding
+com/itsaky/androidide/models/ConstantsBridge.java
+ com.itsaky.androidide.models.ConstantsBridge
+com/itsaky/androidide/utils/IntProperty.java
+ com.itsaky.androidide.utils.IntProperty
+com/itsaky/androidide/databinding/ActivityEditorBinding.java
+ com.itsaky.androidide.databinding.ActivityEditorBinding
+com/itsaky/androidide/tasks/gradle/lint/Lint.java
+ com.itsaky.androidide.tasks.gradle.lint.Lint
+io/github/rosemoe/editor/annotations/Experimental.java
+ io.github.rosemoe.editor.annotations.Experimental
+io/github/rosemoe/editor/widget/TextComposeBasePopup.java
+ io.github.rosemoe.editor.widget.TextComposeBasePopup
+com/itsaky/androidide/managers/PreferenceManager.java
+ com.itsaky.androidide.managers.PreferenceManager
+com/itsaky/androidide/tasks/gradle/core/Tasks.java
+ com.itsaky.androidide.tasks.gradle.core.Tasks
+io/github/rosemoe/editor/text/LineNumberCalculator.java
+ io.github.rosemoe.editor.text.LineNumberCalculator
+com/itsaky/androidide/tasks/gradle/lint/LintRelease.java
+ com.itsaky.androidide.tasks.gradle.lint.LintRelease
+com/itsaky/androidide/tasks/gradle/build/AssembleRelease.java
+ com.itsaky.androidide.tasks.gradle.build.AssembleRelease
+com/itsaky/androidide/services/IDEService.java
+ com.itsaky.androidide.services.IDEService
+ com.itsaky.androidide.services.IDEService$BuildListener
+io/github/rosemoe/editor/widget/CodeEditor.java
+ io.github.rosemoe.editor.widget.CodeEditor
+ io.github.rosemoe.editor.widget.CodeEditor$1
+ io.github.rosemoe.editor.widget.CodeEditor$1SearchActionMode
+ io.github.rosemoe.editor.widget.CodeEditor$1SearchActionMode$1
+ io.github.rosemoe.editor.widget.CodeEditor$CursorPaintAction
+ io.github.rosemoe.editor.widget.CodeEditor$EditorTextActionPresenter
+ io.github.rosemoe.editor.widget.CodeEditor$TextActionMode
+com/itsaky/androidide/utils/Either.java
+ com.itsaky.androidide.utils.Either
+com/itsaky/androidide/interfaces/DexResultListener.java
+ com.itsaky.androidide.interfaces.DexResultListener
+io/github/rosemoe/editor/text/SpanMapUpdater.java
+ io.github.rosemoe.editor.text.SpanMapUpdater
+com/itsaky/androidide/language/groovy/lexer/GroovyLexer.java
+ com.itsaky.androidide.language.groovy.lexer.GroovyLexer
+com/itsaky/androidide/language/groovy/GroovyAnalyzer.java
+ com.itsaky.androidide.language.groovy.GroovyAnalyzer
+com/itsaky/androidide/models/SheetOption.java
+ com.itsaky.androidide.models.SheetOption
+com/itsaky/androidide/fragments/preferences/BasePreferenceFragment.java
+ com.itsaky.androidide.fragments.preferences.BasePreferenceFragment
+com/itsaky/androidide/databinding/ActivityAboutBinding.java
+ com.itsaky.androidide.databinding.ActivityAboutBinding
+com/itsaky/toaster/ToastWrapper.java
+ com.itsaky.toaster.ToastWrapper
+ com.itsaky.toaster.ToastWrapper$1
+com/itsaky/androidide/project/utils/ProjectFinder.java
+ com.itsaky.androidide.project.utils.ProjectFinder
+ com.itsaky.androidide.project.utils.ProjectFinder$1
+ com.itsaky.androidide.project.utils.ProjectFinder$2
+com/itsaky/androidide/utils/ClassBuilder.java
+ com.itsaky.androidide.utils.ClassBuilder
+com/itsaky/androidide/language/logs/LogLanguageImpl.java
+ com.itsaky.androidide.language.logs.LogLanguageImpl
+ com.itsaky.androidide.language.logs.LogLanguageImpl$1
+ com.itsaky.androidide.language.logs.LogLanguageImpl$LogAnalyzer
+ com.itsaky.androidide.language.logs.LogLanguageImpl$LogCompletor
+com/itsaky/androidide/databinding/TextComposePopupWindowBinding.java
+ com.itsaky.androidide.databinding.TextComposePopupWindowBinding
+com/itsaky/androidide/interfaces/JLSRequestor.java
+ com.itsaky.androidide.interfaces.JLSRequestor
+io/github/rosemoe/editor/widget/WordwrapLayout.java
+ io.github.rosemoe.editor.widget.WordwrapLayout
+ io.github.rosemoe.editor.widget.WordwrapLayout$RowRegion
+ io.github.rosemoe.editor.widget.WordwrapLayout$WordwrapLayoutRowItr
+com/itsaky/androidide/interfaces/LanguageServerListener.java
+ com.itsaky.androidide.interfaces.LanguageServerListener
+com/itsaky/androidide/sockets/SocketConnection.java
+ com.itsaky.androidide.sockets.SocketConnection
+com/itsaky/androidide/tasks/callables/ProjectCreatorCallable.java
+ com.itsaky.androidide.tasks.callables.ProjectCreatorCallable
+io/github/rosemoe/editor/widget/schemes/SchemeGitHub.java
+ io.github.rosemoe.editor.widget.schemes.SchemeGitHub
+io/github/rosemoe/editor/widget/EditorColorScheme.java
+ io.github.rosemoe.editor.widget.EditorColorScheme
+com/itsaky/androidide/views/VerticalViewPager.java
+ com.itsaky.androidide.views.VerticalViewPager
+ com.itsaky.androidide.views.VerticalViewPager$1
+ com.itsaky.androidide.views.VerticalViewPager$VerticalPageTransformer
+io/github/rosemoe/editor/struct/HexColor.java
+ io.github.rosemoe.editor.struct.HexColor
+com/itsaky/androidide/fragments/preferences/IDEPreferences.java
+ com.itsaky.androidide.fragments.preferences.IDEPreferences
+ com.itsaky.androidide.fragments.preferences.IDEPreferences$1
+com/itsaky/androidide/utils/Symbols.java
+ com.itsaky.androidide.utils.Symbols
+com/itsaky/androidide/tasks/gradle/plugin/InitializeIDEProject.java
+ com.itsaky.androidide.tasks.gradle.plugin.InitializeIDEProject
+io/github/rosemoe/editor/struct/BlockLine.java
+ io.github.rosemoe.editor.struct.BlockLine
+com/itsaky/androidide/databinding/LayoutBannerBinding.java
+ com.itsaky.androidide.databinding.LayoutBannerBinding
+com/itsaky/androidide/adapters/viewholders/FileTreeViewHolder.java
+ com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder
+com/itsaky/androidide/databinding/LayoutFiletreeItemBinding.java
+ com.itsaky.androidide.databinding.LayoutFiletreeItemBinding
+com/itsaky/androidide/tasks/gradle/BaseGradleTasks.java
+ com.itsaky.androidide.tasks.gradle.BaseGradleTasks
+com/itsaky/androidide/databinding/ActivitySplashBinding.java
+ com.itsaky.androidide.databinding.ActivitySplashBinding
+com/itsaky/androidide/databinding/FragmentEditorBinding.java
+ com.itsaky.androidide.databinding.FragmentEditorBinding
+com/itsaky/androidide/databinding/LayoutOptionssheetItemBinding.java
+ com.itsaky.androidide.databinding.LayoutOptionssheetItemBinding
+com/itsaky/androidide/models/CompletionEdit.java
+ com.itsaky.androidide.models.CompletionEdit
+ com.itsaky.androidide.models.CompletionEdit$InsertPosition
+com/itsaky/androidide/databinding/LayoutProgressSheetBinding.java
+ com.itsaky.androidide.databinding.LayoutProgressSheetBinding
+com/itsaky/androidide/tasks/callables/ListDirectoryCallable.java
+ com.itsaky.androidide.tasks.callables.ListDirectoryCallable
+ com.itsaky.androidide.tasks.callables.ListDirectoryCallable$1
+com/itsaky/androidide/language/groovy/GroovyAutoComplete.java
+ com.itsaky.androidide.language.groovy.GroovyAutoComplete
+io/github/rosemoe/editor/text/TextAnalyzer.java
+ io.github.rosemoe.editor.text.TextAnalyzer
+ io.github.rosemoe.editor.text.TextAnalyzer$AnalyzeThread
+ io.github.rosemoe.editor.text.TextAnalyzer$AnalyzeThread$Delegate
+ io.github.rosemoe.editor.text.TextAnalyzer$Callback
+ io.github.rosemoe.editor.text.TextAnalyzer$RecycleObjContainer
+com/itsaky/androidide/tasks/gradle/build/Clean.java
+ com.itsaky.androidide.tasks.gradle.build.Clean
+com/itsaky/androidide/databinding/LayoutModuleInfoItemBinding.java
+ com.itsaky.androidide.databinding.LayoutModuleInfoItemBinding
+com/itsaky/androidide/utils/StudioUtils.java
+ com.itsaky.androidide.utils.StudioUtils
+com/itsaky/androidide/language/groovy/GroovyLanguage.java
+ com.itsaky.androidide.language.groovy.GroovyLanguage
+ com.itsaky.androidide.language.groovy.GroovyLanguage$BraceHandler
+com/itsaky/androidide/language/BaseLanguage.java
+ com.itsaky.androidide.language.BaseLanguage
+com/itsaky/androidide/models/project/IDETask.java
+ com.itsaky.androidide.models.project.IDETask
+io/github/rosemoe/editor/text/CachedIndexer.java
+ io.github.rosemoe.editor.text.CachedIndexer
+com/itsaky/androidide/language/java/parser/JavaParserListener.java
+ com.itsaky.androidide.language.java.parser.JavaParserListener
+io/github/rosemoe/editor/widget/DefaultCompletionItemAdapter.java
+ io.github.rosemoe.editor.widget.DefaultCompletionItemAdapter
+com/itsaky/androidide/databinding/LayoutCreateFileJavaBinding.java
+ com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding
+io/github/rosemoe/editor/interfaces/EditorLanguage.java
+ io.github.rosemoe.editor.interfaces.EditorLanguage
+com/itsaky/androidide/adapters/ProjectsListAdapter.java
+ com.itsaky.androidide.adapters.ProjectsListAdapter
+ com.itsaky.androidide.adapters.ProjectsListAdapter$1
+ com.itsaky.androidide.adapters.ProjectsListAdapter$OnProjectClickListener
+ com.itsaky.androidide.adapters.ProjectsListAdapter$VH
+com/itsaky/androidide/models/NewProjectDetails.java
+ com.itsaky.androidide.models.NewProjectDetails
+io/github/rosemoe/editor/text/Indexer.java
+ io.github.rosemoe.editor.text.Indexer
+com/itsaky/androidide/shell/ShellServer.java
+ com.itsaky.androidide.shell.ShellServer
+ com.itsaky.androidide.shell.ShellServer$Callback
+com/itsaky/androidide/managers/VersionedFileManager.java
+ com.itsaky.androidide.managers.VersionedFileManager
+com/itsaky/androidide/BuildConfig.java
+ com.itsaky.androidide.BuildConfig
+io/github/rosemoe/editor/widget/EditorTouchEventHandler.java
+ io.github.rosemoe.editor.widget.EditorTouchEventHandler
+ io.github.rosemoe.editor.widget.EditorTouchEventHandler$1InvalidateNotifier
+ io.github.rosemoe.editor.widget.EditorTouchEventHandler$1ScrollNotifier
+ io.github.rosemoe.editor.widget.EditorTouchEventHandler$2InvalidateNotifier
+ io.github.rosemoe.editor.widget.EditorTouchEventHandler$3InvalidateNotifier
+ io.github.rosemoe.editor.widget.EditorTouchEventHandler$EdgeScrollRunnable
+ io.github.rosemoe.editor.widget.EditorTouchEventHandler$SelectionHandle
+com/itsaky/androidide/views/Editor.java
+ com.itsaky.androidide.views.Editor
+io/github/rosemoe/editor/util/IntPair.java
+ io.github.rosemoe.editor.util.IntPair
+io/github/rosemoe/editor/widget/EditorInputConnection.java
+ io.github.rosemoe.editor.widget.EditorInputConnection
+com/itsaky/androidide/tasks/GradleTask.java
+ com.itsaky.androidide.tasks.GradleTask
+ com.itsaky.androidide.tasks.GradleTask$Type
+com/itsaky/androidide/adapters/DiagnosticsAdapter.java
+ com.itsaky.androidide.adapters.DiagnosticsAdapter
+ com.itsaky.androidide.adapters.DiagnosticsAdapter$VH
+com/itsaky/androidide/TerminalActivity.java
+ com.itsaky.androidide.TerminalActivity
+ com.itsaky.androidide.TerminalActivity$1
+ com.itsaky.androidide.TerminalActivity$Client
+io/github/rosemoe/editor/struct/CompletionItem.java
+ io.github.rosemoe.editor.struct.CompletionItem
+com/itsaky/androidide/SplashActivity.java
+ com.itsaky.androidide.SplashActivity
+ com.itsaky.androidide.SplashActivity$1
+com/itsaky/androidide/tasks/TaskExecutor.java
+ com.itsaky.androidide.tasks.TaskExecutor
+ com.itsaky.androidide.tasks.TaskExecutor$Callback
+com/itsaky/androidide/language/java/JavaLanguageAnalyzer.java
+ com.itsaky.androidide.language.java.JavaLanguageAnalyzer
+io/github/rosemoe/editor/widget/CursorBlink.java
+ io.github.rosemoe.editor.widget.CursorBlink
+com/itsaky/androidide/views/SymbolInputView.java
+ com.itsaky.androidide.views.SymbolInputView
+ com.itsaky.androidide.views.SymbolInputView$Symbol

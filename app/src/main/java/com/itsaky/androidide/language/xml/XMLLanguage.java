@@ -1,19 +1,18 @@
 package com.itsaky.androidide.language.xml;
 
+import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.text.TextUtils;
-import io.github.rosemoe.editor.widget.CodeEditor;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
-public class XMLLanguage implements EditorLanguage {
+public class XMLLanguage extends BaseLanguage {
 
 	private XMLAnalyzer analyzer;
 	private XMLAutoComplete completer;
@@ -64,7 +63,7 @@ public class XMLLanguage implements EditorLanguage {
 				}
 			}
 			advance = Math.max(0, advance);
-			return advance * 4;
+			return advance * getTabSize();
 		} catch (Throwable e) {}
 		return 0;
 	}

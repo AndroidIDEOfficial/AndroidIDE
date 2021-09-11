@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "applicationId": "com.itsaky.lsp",
+  "variantType": "LIBRARY",
+  "elements": [
+    {
+      "outputType": {
+        "type": "MERGED_MANIFESTS"
+      },
+      "apkData": {
+        "type": "MAIN",
+        "splits": [],
+        "versionCode": 102210808,
+        "versionName": "1.0.2.1-alpha",
+        "outputFile": "lsp-release.aar",
+        "fullName": "release",
+        "baseName": "release",
+        "dirName": ""
+      },
+      "path": "../../library_manifest/release/AndroidManifest.xml",
+      "properties": {
+        "packageId": "com.itsaky.lsp",
+        "split": ""
+      }
+    }
+  ]
+}

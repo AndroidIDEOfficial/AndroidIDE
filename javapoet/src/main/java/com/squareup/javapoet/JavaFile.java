@@ -28,12 +28,9 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.annotation.processing.Filer;
-import javax.lang.model.element.Element;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.SimpleJavaFileObject;
@@ -158,25 +155,6 @@ public final class JavaFile {
   public File writeToFile(File directory) throws IOException {
     final Path outputPath = writeToPath(directory.toPath());
     return outputPath.toFile();
-  }
-
-  /** Writes this to {@code filer}. */
-  public void writeTo(Filer filer) throws IOException {
-    String fileName = packageName.isEmpty()
-        ? typeSpec.name
-        : packageName + "." + typeSpec.name;
-    List<Element> originatingElements = typeSpec.originatingElements;
-    JavaFileObject filerSourceFile = filer.createSourceFile(fileName,
-        originatingElements.toArray(new Element[originatingElements.size()]));
-    try (Writer writer = filerSourceFile.openWriter()) {
-      writeTo(writer);
-    } catch (Exception e) {
-      try {
-        filerSourceFile.delete();
-      } catch (Exception ignored) {
-      }
-      throw e;
-    }
   }
 
   private void emit(CodeWriter codeWriter) throws IOException {

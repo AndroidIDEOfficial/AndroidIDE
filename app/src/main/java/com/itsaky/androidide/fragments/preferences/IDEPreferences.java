@@ -25,12 +25,13 @@ import org.json.JSONObject;
 
 public class IDEPreferences extends BasePreferenceFragment {
 	
-	private AppearancePreferences mAppearancePrefs;
+	private GeneralPreferences mGeneralPrefs;
 	private BuildPreferences mBuildPreferences;
 	private EditorPreferences mEditorPreferences;
 	
 	private String CHANGELOG = null;
 	
+    public static final String KEY_GENERAL = "idepref_general";
 	public static final String KEY_APPEARANCE = "idepref_appearance";
 	public static final String KEY_EDITOR = "idepref_editor";
 	public static final String KEY_BUILD = "idepref_build";
@@ -45,7 +46,7 @@ public class IDEPreferences extends BasePreferenceFragment {
 		if(getContext() == null) return;
 		
 		final PreferenceScreen screen = getPreferenceScreen();
-		final Preference appearance = new Preference(getContext());
+        final Preference general = new Preference(getContext());
 		final Preference editor = new Preference(getContext());
 		final Preference build = new Preference(getContext());
 		final Preference telegram = new Preference(getContext());
@@ -53,43 +54,38 @@ public class IDEPreferences extends BasePreferenceFragment {
 		final Preference changelog = new Preference(getContext());
 		final Preference about = new Preference(getContext());
         
-		appearance.setKey(KEY_APPEARANCE);
-		appearance.setIconSpaceReserved(false);
-		appearance.setFragment(getAppearanceFrag().getClass().getName());
-		appearance.setTitle(R.string.idepref_appearance_title);
-		appearance.setSummary(R.string.idepref_appearance_summary);
+		general.setKey(KEY_GENERAL);
+		general.setIconSpaceReserved(false);
+		general.setFragment(getGeneralFrag().getClass().getName());
+		general.setTitle(R.string.title_general);
 		
 		editor.setKey(KEY_EDITOR);
 		editor.setIconSpaceReserved(false);
 		editor.setFragment(getEditorFrag().getClass().getName());
 		editor.setTitle(R.string.idepref_editor_title);
-		editor.setSummary(R.string.idepref_editor_summary);
 		
 		build.setKey(KEY_BUILD);
 		build.setIconSpaceReserved(false);
 		build.setFragment(getBuildFrag().getClass().getName());
 		build.setTitle(R.string.idepref_build_title);
-		build.setSummary(R.string.idepref_build_summary);
 		
 		issueTracker.setKey(KEY_ISSUES);
 		issueTracker.setIconSpaceReserved(false);
 		issueTracker.setTitle(R.string.user_suggestions);
-		issueTracker.setSummary(R.string.issue_tracker_summary);
 		
 		telegram.setKey(KEY_TELEGRAM);
 		telegram.setIconSpaceReserved(false);
 		telegram.setTitle(R.string.discussions_on_telegram);
-		telegram.setSummary(R.string.discussions_on_telegram_summary);
 		
 		changelog.setKey(KEY_CHANGELOG);
 		changelog.setIconSpaceReserved(false);
 		changelog.setTitle(R.string.pref_changelog);
-		changelog.setSummary(R.string.pref_changelog_summary);
-        
+		
         about.setKey(KEY_ABOUT);
         about.setIconSpaceReserved(false);
         about.setTitle(R.string.idepref_about_title);
 		
+        screen.addPreference(general);
 		screen.addPreference(editor);
 		screen.addPreference(build);
 		screen.addPreference(issueTracker);
@@ -104,8 +100,8 @@ public class IDEPreferences extends BasePreferenceFragment {
         about.setOnPreferenceClickListener(listener);
 	}
 	
-	private AppearancePreferences getAppearanceFrag() {
-		return mAppearancePrefs == null ? mAppearancePrefs = new AppearancePreferences() : mAppearancePrefs;
+	private GeneralPreferences getGeneralFrag() {
+		return mGeneralPrefs == null ? mGeneralPrefs = new GeneralPreferences() : mGeneralPrefs;
 	}
 	
 	private EditorPreferences getEditorFrag() {

@@ -9,12 +9,9 @@ import androidx.preference.SwitchPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
+import com.itsaky.androidide.models.ConstantsBridge;
 
 import static com.itsaky.androidide.managers.PreferenceManager.*;
-import com.itsaky.androidide.models.ConstantsBridge;
-import com.google.android.material.slider.LabelFormatter;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 public class EditorPreferences extends BasePreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     
@@ -44,7 +41,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		nonPrintable.setTitle(R.string.idepref_editor_paintingflags_title);
 		nonPrintable.setSummary(R.string.idepref_editor_paintingflags_summary);
         
-        tabSize.setIcon(R.drawable.ic_open_project);
+        tabSize.setIcon(R.drawable.ic_tab);
         tabSize.setKey(KEY_EDITOR_TAB_SIZE);
         tabSize.setTitle(R.string.title_tab_size);
         tabSize.setSummary(R.string.msg_tab_size);

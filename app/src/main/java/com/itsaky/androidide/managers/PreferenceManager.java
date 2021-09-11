@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.itsaky.androidide.fragments.preferences.EditorPreferences;
+import com.itsaky.androidide.fragments.preferences.GeneralPreferences;
 
 public class PreferenceManager {
 
@@ -154,5 +155,13 @@ public class PreferenceManager {
     
     public int getEditorTabSize() {
         return getInt(EditorPreferences.KEY_EDITOR_TAB_SIZE, 4);
+    }
+    
+    public boolean autoOpenProject() {
+        return getBoolean(GeneralPreferences.KEY_OPEN_PROJECTS, true);
+    }
+    
+    public boolean confirmProjectOpen() {
+        return getBoolean(GeneralPreferences.KEY_CONFIRM_PROJECT_OPEN, false);
     }
 }

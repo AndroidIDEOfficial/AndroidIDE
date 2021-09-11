@@ -1,0 +1,7 @@
+R_DEF: Internal format may change without notice
+local
+drawable text_select_handle_left_material
+drawable text_select_handle_right_material
+string copy_text
+string paste_text
+string text_selection_more

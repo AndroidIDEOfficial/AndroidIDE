@@ -25,7 +25,7 @@ android {
 	}
     
     aaptOptions {
-        additionalParameters "--java", "$buildDir/gen/data_binding_base_class_source_out/debug/out"
+        additionalParameters "--java", "$buildDir/gen"
     }
 	
 	lintOptions {
