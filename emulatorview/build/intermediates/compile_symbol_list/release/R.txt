@@ -1,5 +1,0 @@
-int drawable text_select_handle_left_material 0x0
-int drawable text_select_handle_right_material 0x0
-int string copy_text 0x0
-int string paste_text 0x0
-int string text_selection_more 0x0
