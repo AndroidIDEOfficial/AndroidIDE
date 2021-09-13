@@ -305,14 +305,15 @@ public class TerminalActivity extends StudioActivity {
 
         @Override
         public boolean readControlKey() {
-            return false;
+            Boolean state = binding.virtualKeyTable.readSpecialButton(SpecialButton.CTRL, true);
+            return state != null && state.booleanValue();
         }
 
         @Override
         public boolean readAltKey() {
-            return false;
+            Boolean state = binding.virtualKeyTable.readSpecialButton(SpecialButton.ALT, true);
+            return state != null && state.booleanValue();
         }
-
 
         @Override
         public void onEmulatorSet() {
