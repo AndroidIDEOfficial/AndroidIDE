@@ -21,4 +21,33 @@ public class ConstantsBridge {
     // Password for GradleApi zip
     // Real password is gradle-api@admin@androidide
     public static final String GRADLE_API_ZIP_PASSWORD_HASH = "b50b462f8e8c5789f32428d7e1967da2";
+    
+    
+    public static final String VIRTUAL_KEYS =
+    "["
+    + "\n  ["
+    + "\n    \"ESC\","
+    + "\n    {"
+    + "\n      \"key\": \"/\","
+    + "\n      \"popup\": \"\\\\\""
+    + "\n    },"
+    + "\n    {"
+    + "\n      \"key\": \"-\","
+    + "\n      \"popup\": \"|\""
+    + "\n    },"
+    + "\n    \"HOME\","
+    + "\n    \"UP\","
+    + "\n    \"END\","
+    + "\n    \"PGUP\""
+    + "\n  ],"
+    + "\n  ["
+    + "\n    \"TAB\","
+    + "\n    \"CTRL\","
+    + "\n    \"ALT\","
+    + "\n    \"LEFT\","
+    + "\n    \"DOWN\","
+    + "\n    \"RIGHT\","
+    + "\n    \"PGDN\""
+    + "\n  ]"
+    + "\n]";
 }

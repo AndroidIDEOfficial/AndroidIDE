@@ -3,17 +3,23 @@ package com.itsaky.androidide;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityTerminalBinding;
-import com.itsaky.androidide.managers.ToolsManager;
+import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.androidide.views.virtualkeys.SpecialButton;
+import com.itsaky.androidide.views.virtualkeys.VirtualKeyButton;
+import com.itsaky.androidide.views.virtualkeys.VirtualKeysConstants;
+import com.itsaky.androidide.views.virtualkeys.VirtualKeysInfo;
+import com.itsaky.androidide.views.virtualkeys.VirtualKeysView;
 import com.itsaky.terminal.TerminalEmulator;
 import com.itsaky.terminal.TerminalSession;
 import com.itsaky.terminal.TerminalSessionClient;
@@ -21,6 +27,7 @@ import com.itsaky.terminal.TextStyle;
 import com.itsaky.terminal.view.TerminalView;
 import com.itsaky.terminal.view.TerminalViewClient;
 import java.util.Map;
+import org.json.JSONException;
 
 public class TerminalActivity extends StudioActivity {
     
@@ -28,8 +35,10 @@ public class TerminalActivity extends StudioActivity {
     private TerminalView terminal;
     private TerminalSession session;
     
+    private boolean isVisible = false;
     private int currentTextSize = 0;
     
+    private KeyListener listener;
     private final Client client = new Client();
     private static final Logger LOG = Logger.instance("TerminalActivity");
     
@@ -38,14 +47,27 @@ public class TerminalActivity extends StudioActivity {
         binding = ActivityTerminalBinding.inflate(getLayoutInflater());
         terminal = new TerminalView(this, null);
         terminal.setTerminalViewClient(client);
-        terminal.setTextSize(currentTextSize = SizeUtils.dp2px(10));
-        terminal.setTypeface(TypefaceUtils.jetbrainsMono());
         terminal.attachSession(createSession());
         terminal.setKeepScreenOn(true);
+        terminal.setTextSize(currentTextSize = SizeUtils.dp2px(10));
+        terminal.setTypeface(TypefaceUtils.jetbrainsMono());
         
-        binding.getRoot().addView(terminal, new ViewGroup.LayoutParams(-1, -1));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, 0);
+        params.weight = 1f;
         
+        binding.getRoot().addView(terminal, 0, params);
+        try {
+            binding.virtualKeyTable.setVirtualKeysViewClient(getKeyListener());
+            binding.virtualKeyTable.reload(new VirtualKeysInfo(ConstantsBridge.VIRTUAL_KEYS, "", VirtualKeysConstants.CONTROL_CHARS_ALIASES));
+        } catch (JSONException e) {
+            // Won't happen
+        }
+
         return binding.getRoot();
+    }
+    
+    private KeyListener getKeyListener() {
+        return listener == null ? listener = new KeyListener(terminal) : listener;
     }
     
     @Override
@@ -55,9 +77,20 @@ public class TerminalActivity extends StudioActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        isVisible = true;
+    }
+    
+    @Override
     protected void onStop() {
         super.onStop();
+        isVisible = false;
         setTerminalCursorBlinkingState(false);
+    }
+    
+    public boolean isVisible() {
+        return isVisible;
     }
     
     private void setTerminalCursorBlinkingState(boolean start ) {
@@ -76,7 +109,7 @@ public class TerminalActivity extends StudioActivity {
         }
         
         session = new TerminalSession(
-            Environment.BASH.getAbsolutePath(), // Shell command
+            Environment.SHELL.getAbsolutePath(), // Shell command
             Environment.HOME.getAbsolutePath(), // Working directory
             new String[]{}, // Arguments
             env, // Environment variables
@@ -92,6 +125,70 @@ public class TerminalActivity extends StudioActivity {
     
     
     
+    
+    private final class KeyListener implements VirtualKeysView.IVirtualKeysView {
+        
+        private final TerminalView terminal;
+
+        public KeyListener(TerminalView terminal) {
+            this.terminal = terminal;
+        }
+        
+        @Override
+        public void onVirtualKeyButtonClick(View view, VirtualKeyButton buttonInfo, Button button) {
+            if(terminal == null) return;
+            if (buttonInfo.isMacro()) {
+                String[] keys = buttonInfo.getKey().split(" ");
+                boolean ctrlDown = false;
+                boolean altDown = false;
+                boolean shiftDown = false;
+                boolean fnDown = false;
+                for (String key : keys) {
+                    if (SpecialButton.CTRL.getKey().equals(key)) {
+                        ctrlDown = true;
+                    } else if (SpecialButton.ALT.getKey().equals(key)) {
+                        altDown = true;
+                    } else if (SpecialButton.SHIFT.getKey().equals(key)) {
+                        shiftDown = true;
+                    } else if (SpecialButton.FN.getKey().equals(key)) {
+                        fnDown = true;
+                    } else {
+                        onTerminalExtraKeyButtonClick(view, key, ctrlDown, altDown, shiftDown, fnDown);
+                        ctrlDown = false; altDown = false; shiftDown = false; fnDown = false;
+                    }
+                }
+            } else {
+                onTerminalExtraKeyButtonClick(view, buttonInfo.getKey(), false, false, false, false);
+            }
+        }
+
+        protected void onTerminalExtraKeyButtonClick(View view, String key, boolean ctrlDown, boolean altDown, boolean shiftDown, boolean fnDown) {
+            if (VirtualKeysConstants.PRIMARY_KEY_CODES_FOR_STRINGS.containsKey(key)) {
+                Integer keyCode = VirtualKeysConstants.PRIMARY_KEY_CODES_FOR_STRINGS.get(key);
+                if (keyCode == null) return;
+                int metaState = 0;
+                if (ctrlDown) metaState |= KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON;
+                if (altDown) metaState |= KeyEvent.META_ALT_ON | KeyEvent.META_ALT_LEFT_ON;
+                if (shiftDown) metaState |= KeyEvent.META_SHIFT_ON | KeyEvent.META_SHIFT_LEFT_ON;
+                if (fnDown) metaState |= KeyEvent.META_FUNCTION_ON;
+
+                KeyEvent keyEvent = new KeyEvent(0, 0, KeyEvent.ACTION_UP, keyCode, 0, metaState);
+                terminal.onKeyDown(keyCode, keyEvent);
+            } else {
+                // not a control char
+                key.codePoints().forEach(codePoint -> {
+                    terminal.inputCodePoint(codePoint, ctrlDown, altDown);
+                });
+            }
+        }
+
+        @Override
+        public boolean performVirtualKeyButtonHapticFeedback(View view, VirtualKeyButton buttonInfo, Button button) {
+            // No need to handle this
+            // VirtualKeysView will take care of performing haptic feedback
+            return false;
+        }
+    }
     
     private final class Client implements TerminalViewClient, TerminalSessionClient {
         

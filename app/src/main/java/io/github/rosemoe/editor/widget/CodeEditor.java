@@ -2385,7 +2385,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     /**
      * Commit a tab to cursor
      */
-    private void commitTab() {
+    public void commitTab() {
         if (mConnection != null && isEditable()) {
             mConnection.commitTextInternal(Symbols.createTabSpaces(), true);
         }
@@ -3735,7 +3735,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         // There should not be any tabs in the text
         // This is needed for the JavaLanguageServer
         String t = text.toString();
-        t = t.replace("\t", "    ");
+        t = t.replace("\t", Symbols.createTabSpaces());
         
         mText = new Content(this, t);
         mCursor = mText.getCursor();

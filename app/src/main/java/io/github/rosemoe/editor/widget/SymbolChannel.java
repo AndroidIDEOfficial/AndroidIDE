@@ -15,6 +15,7 @@
  */
 package io.github.rosemoe.editor.widget;
 
+import com.itsaky.androidide.utils.Symbols;
 import io.github.rosemoe.editor.text.Cursor;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,21 +40,20 @@ public class SymbolChannel {
         pairs.add('\'');
         pairs.add('>');
     }
-
+    
     /**
      * Inserts the given text in the editor.
      * <p>
      * This method allows you to insert texts externally to the content of editor.
      * The content of {@param symbolText} is not checked to be exactly characters of symbols.
      *
-     * @throws IllegalArgumentException If the {@param selectionRegion} is invalid
      * @param symbolText Text to insert, usually a text of symbols
      * @param selectionOffset New selection position relative to the start of text to insert.
      *                        Ranging from 0 to symbolText.length()
      */
     public void insertSymbol(String text, int selectionOffset) {
         if (selectionOffset < 0 || selectionOffset > text.length()) {
-            throw new IllegalArgumentException("selectionOffset is invalid");
+            return;
         }
         Cursor cur = mEditor.getText().getCursor();
         if (cur.isSelected()) {

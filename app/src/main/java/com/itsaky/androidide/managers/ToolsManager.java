@@ -35,7 +35,6 @@ public class ToolsManager {
         extractLogsenderIfNeeded();
         
         writeInitScript();
-        writeBashrc();
         
         rewriteProjectData();
         
@@ -57,13 +56,6 @@ public class ToolsManager {
         }
     }
     
-    private static void writeBashrc() {
-        File rc = Environment.BASHRC;
-        if(!rc.exists()) {
-            FileIOUtils.writeFileFromString(rc, BASHRC);
-        }
-    }
-    
     private static void writeInitScript() {
         FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, INIT_SCRIPT);
     }
@@ -80,7 +72,7 @@ public class ToolsManager {
 
         final boolean exists = gson && jls && proto;
         final boolean isOld = JLS_VERSION > prefs.getInt(KEY_JLS_VERSION, 0);
-        if(true/*!exists || isOld*/) {
+        if(!exists || isOld) {
             try {
                 extractJls();
             } catch (Throwable e) {}
@@ -111,10 +103,6 @@ public class ToolsManager {
             }
         } catch (IOException e) {}
     }
-    
-    private static final String BASHRC =
-    "PROMPT_DIRTRIM=2" +
-    "\nPS1=\'\\[\\e[0;34m\\]\\w\\[\\e[0m\\] \\[\\e[0;97m\\]$\\[\\e[0m\\] \'";
     
     private static final String INIT_SCRIPT = 
     (   "import org.gradle.api.Plugin"
@@ -183,6 +171,7 @@ public class ToolsManager {
     + "\n                ideProject.displayName = root.getDisplayName()"
     + "\n                ideProject.description = root.getDescription()"
     + "\n                ideProject.path = root.getPath()"
+    + "\n                ideProject.projectDir = root.getProjectDir().getAbsolutePath()"
     + "\n                "
     + "\n                def tasks = root.tasks"
     + "\n                if(tasks != null && tasks.size() > 0) {"
@@ -194,6 +183,9 @@ public class ToolsManager {
     + "\n                }"
     + "\n    "
     + "\n                File out = new File(\"@@PROJECT_DATA_FILE@@\")"
+    + "\n                if(out.exists()) {"
+    + "\n                    out.delete()"
+    + "\n                }"
     + "\n                out << new JsonBuilder( ideProject ).toPrettyString()"
     + "\n    "
     + "\n                println \">>> PROJECT INITIALIZED <<<\""
@@ -236,6 +228,7 @@ public class ToolsManager {
     + "\n        module.targetSdk = config.targetSdkVersion"
     + "\n        module.versionCode = config.versionCode"
     + "\n        module.versionName = config.versionName"
+    + "\n        module.projectDir = sub.getProjectDir().getAbsolutePath()"
     + "\n        "
     + "\n        if(isApp) {"
     + "\n            module.applicationId = config.applicationId"
@@ -301,6 +294,7 @@ public class ToolsManager {
     + "\n    def displayName = \"Not defined\""
     + "\n    def description = \"Not defined\""
     + "\n    def path = \"Not defined\""
+    + "\n    def projectDir = \"Not defined\""
     + "\n    List<IDEProject> modules = new ArrayList<IDEProject>()"
     + "\n    List<IDETask> tasks = new ArrayList<IDETask>()"
     + "\n    List<String> dependencies = new ArrayList<String>()"

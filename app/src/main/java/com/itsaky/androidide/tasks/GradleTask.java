@@ -38,4 +38,5 @@ public interface GradleTask {
     public static final int TASK_LINT_RELEASE            = 11;
     public static final int TASK_TASKS                   = 12;
     public static final int TASK_INIT_PROJECT            = 13;
+    public static final int TASK_PROCESS_DEBUG_RESOURCES = 14;
 }

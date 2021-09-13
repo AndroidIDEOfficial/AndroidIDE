@@ -173,10 +173,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	private static final int ACTIONID_OTHERS = 101;
 	private static final int ACTIONID_ALL = 102;
     
-    private static final int STD_TYPE_NORMAL = 0;
-    private static final int STD_TYPE_ERROR = 1;
-    private static final int STD_TYPE_SUCCESS = 2;
-    
     public static final String EXTRA_PROJECT = "project";
     
 	private LogReceiver mLogReceiver = new LogReceiver().setLogListener(line -> appendApkLog(line));

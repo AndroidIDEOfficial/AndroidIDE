@@ -15,12 +15,12 @@
  */
 package io.github.rosemoe.editor.text;
 
+import com.itsaky.androidide.utils.Symbols;
+import io.github.rosemoe.editor.annotations.Experimental;
+import io.github.rosemoe.editor.widget.CodeEditor;
+import io.github.rosemoe.struct.BlockLinkedList;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.github.rosemoe.editor.annotations.Experimental;
-import io.github.rosemoe.struct.BlockLinkedList;
-import io.github.rosemoe.editor.widget.CodeEditor;
 
 /**
  * This class saves the text content for editor and maintains line widths
@@ -275,10 +275,10 @@ public class Content implements CharSequence {
     public void insert(int line, int column, CharSequence text) {
         if(!checkLineAndColumn(line, column, true)) return;
         if (text == null) {
-            throw new IllegalArgumentException("text can not be null");
+            return;
         }
         
-        text = text.toString().replace("\t", "    ");
+        text = text.toString().replace("\t", Symbols.createTabSpaces());
         //-----Notify------
         if (mCursor != null)
             mCursor.beforeInsert(line, column);

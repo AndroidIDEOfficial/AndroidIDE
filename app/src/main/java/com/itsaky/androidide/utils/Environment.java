@@ -38,8 +38,7 @@ public final class Environment {
     public static final File GRADLE;
     public static final File JAVA;
     public static final File BUSYBOX;
-    public static final File BASH;
-    public static final File BASHRC;
+    public static final File SHELL;
     
     public static File BOOTCLASSPATH;
     
@@ -77,12 +76,11 @@ public final class Environment {
         ANDROID_HOME = new File(props.getOrDefault("ANDROID_HOME", DEFAULT_ANDROID_HOME));
         JAVA_HOME = new File(props.getOrDefault("JAVA_HOME", DEFAULT_JAVA_HOME));
         GRADLE_HOME = new File(props.getOrDefault("GRADLE_HOME", DEFAULT_GRADLE_HOME));
-
-        BASH = new File(BINDIR, "bash");
+        
         GRADLE = new File(GRADLE_HOME, "bin/gradle");
         JAVA = new File(JAVA_HOME, "bin/java");
         BUSYBOX = new File(BINDIR, "busybox");
-        BASHRC = new File(HOME, ".bashrc");
+        SHELL = new File(BINDIR, "sh.sh");
 	}
     
     private static Map<String, String> readProperties() {
@@ -128,7 +126,7 @@ public final class Environment {
         map.put("PREFIX", SYSROOT.getAbsolutePath());
         
         map.put("BUSYBOX", BUSYBOX.getAbsolutePath());
-        map.put("SHELL", BASH.getAbsolutePath());
+        map.put("SHELL", SHELL.getAbsolutePath());
         map.put("TERM", "xterm-256color");
         map.put("COLORTERM", "truecolor");
         

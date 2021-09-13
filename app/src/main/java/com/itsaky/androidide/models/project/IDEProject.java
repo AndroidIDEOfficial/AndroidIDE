@@ -36,6 +36,12 @@ public class IDEProject {
     public String path = "";
     
     /**
+     * Path of the directory containing this project
+     */
+    @SerializedName("projectDir")
+    public String projectDir;
+    
+    /**
      * File path of the application's icon
      * We get this manually by parsing AndroidManifest.xml
      */

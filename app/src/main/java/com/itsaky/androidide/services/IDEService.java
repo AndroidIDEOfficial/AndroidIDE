@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import com.itsaky.androidide.tasks.gradle.resources.ProcessDebugResources;
 
 public class IDEService implements ShellServer.Callback {
 
@@ -105,6 +106,13 @@ public class IDEService implements ShellServer.Callback {
             if(currentTask != null && currentTask.getTaskID() != TASK_SHOW_DEPENDENCIES)
                 listener.onBuildSuccessful(currentTask, charSequence.toString().trim());
             appendOutputSeparator();
+            
+            if(currentTask != null && currentTask instanceof ProcessDebugResources) {
+                /**
+                 * An XML file was changed and saved
+                 * Generaring R.jar 
+                 */
+            }
         } else
         if(charSequence.toString().contains(BUILD_FAILED)) {
             isBuilding = false;
@@ -201,7 +209,11 @@ public class IDEService implements ShellServer.Callback {
 
         return TextUtils.join(" ", args);
     }
-
+    
+    public IDEProject getIDEProject () {
+        return mIDEProject;
+    }
+    
     public void execTask(GradleTask task) {
         execTask(task, false);
     }
@@ -244,19 +256,7 @@ public class IDEService implements ShellServer.Callback {
     public void bundle() {
         execTask(BaseGradleTasks.BUNDLE);
     }
-
-    public void mergeLibAndProjectDex() {
-        execTask(BaseGradleTasks.MERGE_LIB_AND_PROJECT_DEX);
-    }
-
-    public void mergeExtDex() {
-        execTask(BaseGradleTasks.MERGE_EXT_DEX);
-    }
-
-    public void mergeDex() {
-        execTask(BaseGradleTasks.MERGE_DEX);
-    }
-
+    
     public void clean() {
         execTask(BaseGradleTasks.CLEAN);
     }
@@ -267,6 +267,11 @@ public class IDEService implements ShellServer.Callback {
 
     public void stopAllDaemons() {
         app.newShell(null).bgAppend("gradle --stop");
+        if(isBuilding()) {
+            if(listener != null)
+                listener.onBuildFailed(currentTask, getString(R.string.msg_daemons_stopped));
+            isBuilding = false;
+        }
     }
 
     public void lint() {
@@ -279,6 +284,10 @@ public class IDEService implements ShellServer.Callback {
 
     public void lintRelease() {
         execTask(BaseGradleTasks.LINT_RELEASE);
+    }
+    
+    public void processDebugResources() {
+        execTask(BaseGradleTasks.PROCESS_DEBUG_RESOURCES);
     }
     
     public String typeString(int type) {

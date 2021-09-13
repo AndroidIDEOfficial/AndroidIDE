@@ -1,15 +1,13 @@
 package com.itsaky.androidide.adapters;
 
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.databinding.LayoutSymbolItemBinding;
+import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.views.SymbolInputView.Symbol;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import io.github.rosemoe.editor.widget.SymbolChannel;
-import android.util.TypedValue;
 
 public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.VH> {
 	
@@ -47,8 +45,7 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
 		if(symbols == null || symbols[position] == null) return;
 		final Symbol symbol = symbols[position];
 		holder.binding.symbol.setText(symbol.label);
-//		TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(holder.binding.symbol, 16, 27, 1, TypedValue.COMPLEX_UNIT_SP);
-		holder.binding.symbol.setOnClickListener(__ -> channel.insertSymbol(symbol.commit, symbol.offset));
+        holder.binding.symbol.setOnClickListener(__ -> channel.insertSymbol(symbol.commit, symbol.offset));
 	}
 	
 	@Override

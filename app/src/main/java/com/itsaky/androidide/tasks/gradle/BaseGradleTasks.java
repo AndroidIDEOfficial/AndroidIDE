@@ -8,17 +8,15 @@ import com.itsaky.androidide.tasks.gradle.build.Bundle;
 import com.itsaky.androidide.tasks.gradle.build.Clean;
 import com.itsaky.androidide.tasks.gradle.build.CleanBuild;
 import com.itsaky.androidide.tasks.gradle.core.Tasks;
-import com.itsaky.androidide.tasks.gradle.dex.MergeDex;
-import com.itsaky.androidide.tasks.gradle.dex.MergeExtDex;
-import com.itsaky.androidide.tasks.gradle.dex.MergeLibAndProjectDex;
 import com.itsaky.androidide.tasks.gradle.lint.Lint;
 import com.itsaky.androidide.tasks.gradle.lint.LintDebug;
 import com.itsaky.androidide.tasks.gradle.lint.LintRelease;
 import com.itsaky.androidide.tasks.gradle.plugin.InitializeIDEProject;
+import com.itsaky.androidide.tasks.gradle.resources.ProcessDebugResources;
 
 public class BaseGradleTasks {
 	
-	public static BaseGradleTask
+	public static final BaseGradleTask
 	
     TASKS = new Tasks(),
     
@@ -28,13 +26,12 @@ public class BaseGradleTasks {
 	BUNDLE = new Bundle(),
 	CLEAN = new Clean(),
 	CLEAN_BUILD = new CleanBuild(),
+    
 	LINT = new Lint(),
 	LINT_DEBUG = new LintDebug(),
 	LINT_RELEASE = new LintRelease(),
-	
-	MERGE_DEX = new MergeDex(),
-	MERGE_EXT_DEX = new MergeExtDex(),
-	MERGE_LIB_AND_PROJECT_DEX = new MergeLibAndProjectDex(),
+    
+    PROCESS_DEBUG_RESOURCES = new ProcessDebugResources(),
     
     INITIALIZE_IDE_PROJECT = new InitializeIDEProject();
 }
