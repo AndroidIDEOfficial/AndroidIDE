@@ -14,7 +14,7 @@ public class Logger {
     private static com.elvishew.xlog.Logger xLogger;
     private static String TAG = "AndroidIDE";
 
-    public Logger w(Object... messages) {
+    public Logger warn(Object... messages) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         sb.append(TAG);
@@ -64,7 +64,7 @@ public class Logger {
         return instance;
     }
     
-    public Logger d(Object... messages) {
+    public Logger debug(Object... messages) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         sb.append(TAG);
@@ -82,7 +82,7 @@ public class Logger {
         return this;
     }
     
-    public Logger e(Object... messages) {
+    public Logger error(Object... messages) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         sb.append(TAG);
@@ -102,7 +102,7 @@ public class Logger {
         return this;
     }
     
-    public Logger v(Object... messages) {
+    public Logger verbose(Object... messages) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         sb.append(TAG);
@@ -120,7 +120,7 @@ public class Logger {
         return this;
     }
     
-    public Logger i(Object... messages) {
+    public Logger info(Object... messages) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
         sb.append(TAG);

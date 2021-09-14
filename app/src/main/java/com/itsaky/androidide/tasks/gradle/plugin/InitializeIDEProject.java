@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Arrays;
 
 public class InitializeIDEProject extends BaseGradleTask {
-
+    
     @Override
     public String getName() {
         return "initializeIDEProject";

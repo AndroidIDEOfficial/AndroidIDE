@@ -9,6 +9,7 @@ public interface GradleTask {
     public String getCommands();
     public List<String> getTasks();
 	public int getTaskID();
+    public boolean affectsGeneratedSources();
 	public boolean shouldSaveFiles();
 	public boolean canOutput();
 	public boolean buildsApk();

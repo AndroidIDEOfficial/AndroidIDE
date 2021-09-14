@@ -31,20 +31,12 @@ public class ShellServer extends Thread {
         ProcessBuilder processBuilder = new ProcessBuilder(new String[]{command});
         processBuilder.directory(new File(dirPath));
 		processBuilder.redirectErrorStream(true);
+        processBuilder.environment().putAll(Environment.getEnvironment(false));
         try {
             this.process = processBuilder.start();
             this.output = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("ln -sf /apex/com.android.runtime/lib64/bionic/libc.so $JAVA_HOME/lib/librt.so");
-            stringBuilder.append("\nln -sf /apex/com.android.runtime/lib64/bionic/libc.so $JAVA_HOME/lib/libpthread.so");
-            
-            final Map<String, String> envs = Environment.getEnvironment(false);
-            for(Map.Entry<String, String> env : envs.entrySet()) {
-                stringBuilder.append(String.format("\nexport %s=%s", env.getKey(), env.getValue()));
-            }
-            append(stringBuilder.toString(), false);
         } catch (Throwable th) {
-            LOG.e(ThrowableUtils.getFullStackTrace(th));
+            LOG.error(ThrowableUtils.getFullStackTrace(th));
             if (callback != null) {
                 String out = ThrowableUtils.getFullStackTrace(th).concat("\n");
                 callback.output(out);
@@ -109,7 +101,7 @@ public class ShellServer extends Thread {
 			this.process.getOutputStream().write(str.concat("\n").getBytes());
 			this.process.getOutputStream().flush();
 		} catch (IOException e) {
-            LOG.e(ThrowableUtils.getFullStackTrace(e));
+            LOG.error(ThrowableUtils.getFullStackTrace(e));
 		}
     }
 

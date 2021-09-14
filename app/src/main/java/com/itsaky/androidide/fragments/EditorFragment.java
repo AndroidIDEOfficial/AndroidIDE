@@ -353,7 +353,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 
 	@Override
 	public void onNewTextSet(CodeEditor editor) {
-		isModified = true;
 	}
 
     @Override

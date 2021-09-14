@@ -44,7 +44,7 @@ public abstract class SocketConnection extends Thread {
                 mWriter.write(message.getBytes());
                 mWriter.flush();
             } catch (Throwable e) {
-                LOG.e("Error writing to server: " + ex(e));
+                LOG.error("Error writing to server: " + ex(e));
             }
         }).start();
     }
@@ -62,7 +62,7 @@ public abstract class SocketConnection extends Thread {
             CloseUtils.closeIOQuietly(mWriter, mSocket);
             onDisconnected();
         } catch (Throwable e) {
-            LOG.e("Failed to connect to socket", ex(e));
+            LOG.error("Failed to connect to socket", ex(e));
             onFailedToConnect(e);
         }
     }

@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class LintDebug extends BaseGradleTask {
-	
+    
 	@Override
 	public String getName() {
 		return StudioApp.getInstance().getString(R.string.lint_debug);

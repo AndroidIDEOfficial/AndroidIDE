@@ -4,6 +4,11 @@ import com.itsaky.androidide.services.IDEService;
 
 public abstract class BaseGradleTask implements GradleTask {
 
+    @Override
+    public boolean affectsGeneratedSources() {
+        return false;
+    }
+    
 	@Override
 	public boolean shouldSaveFiles() {
 		return getType() == Type.BUILD

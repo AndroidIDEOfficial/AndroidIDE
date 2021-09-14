@@ -4,131 +4,146 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.itsaky.androidide.fragments.EditorFragment;
+import com.itsaky.androidide.interfaces.JLSRequestor;
 import com.itsaky.androidide.models.AndroidProject;
-import io.github.rosemoe.editor.widget.CodeEditor;
+import com.itsaky.androidide.models.SaveResult;
+import com.itsaky.lsp.Range;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import com.itsaky.androidide.interfaces.JLSRequestor;
-import com.itsaky.lsp.Range;
+import com.itsaky.androidide.utils.Logger;
 
-public class EditorPagerAdapter extends FragmentStatePagerAdapter
-{
+public class EditorPagerAdapter extends FragmentStatePagerAdapter {
 	private ArrayList<File> mOpenedFiles;
 	private ArrayList<Fragment> mFragments;
 	private AndroidProject project;
-	
-	public EditorPagerAdapter(FragmentManager manager, AndroidProject project)
-	{
+    
+    private static final Logger LOG = Logger.instance("EditorPagerAdapter");
+
+	public EditorPagerAdapter(FragmentManager manager, AndroidProject project) {
 		super(manager);
 		this.project = project;
 		this.mOpenedFiles = new ArrayList<>();
 		this.mFragments = new ArrayList<>();
 	}
-	
-	public EditorPagerAdapter(FragmentManager manager, AndroidProject project, List<Fragment> fragments, List<File> files)
-	{
+
+	public EditorPagerAdapter(FragmentManager manager, AndroidProject project, List<Fragment> fragments, List<File> files) {
 		super(manager);
 		this.project = project;
 		this.mOpenedFiles = new ArrayList<>();
 		this.mFragments = new ArrayList<>();
-		
+
 		mOpenedFiles.addAll(files);
 		mFragments.addAll(fragments);
 	}
-    
+
     public int findIndexOfEditorByFile(File file) {
-        for(int i=0;i<mFragments.size();i++) {
+        for (int i=0;i < mFragments.size();i++) {
             Fragment frag = mFragments.get(i);
-            if(!(frag instanceof EditorFragment))
+            if (!(frag instanceof EditorFragment))
                 continue;
 
             EditorFragment editor = (EditorFragment) frag;
-            if(editor.getFile() != null && editor.getFile().getAbsolutePath().equals(file.getAbsolutePath()))
+            if (editor.getFile() != null && editor.getFile().getAbsolutePath().equals(file.getAbsolutePath()))
                 return i;
         }
 
         return -1;
     }
-    
+
     public EditorFragment findEditorByFile(File file) {
         int index = findIndexOfEditorByFile(file);
-        if(index != -1)
+        if (index != -1)
             return getFrag(index);
         return null;
     }
-	
-	public int openFile(File file, Range selection, EditorFragment.FileOpenListener listener, JLSRequestor jlsRequestor)
-	{
+
+	public int openFile(File file, Range selection, EditorFragment.FileOpenListener listener, JLSRequestor jlsRequestor) {
 		int openedFileIndex = -1;
-		for(int i=0;i<mOpenedFiles.size();i++)
-		{
+		for (int i=0;i < mOpenedFiles.size();i++) {
 			File f = mOpenedFiles.get(i);
-			if(f.getAbsolutePath().equals(file.getAbsolutePath()))
-			{
+			if (f.getAbsolutePath().equals(file.getAbsolutePath())) {
 				openedFileIndex = i;
 				break;
 			}
 		}
-		
-		if(openedFileIndex == -1)
-		{
+
+		if (openedFileIndex == -1) {
 			mFragments.add(EditorFragment
-                   .newInstance(file, project, selection)
-                   .setFileOpenListener(listener)
-                   .setJLSRequestor(jlsRequestor));
+                           .newInstance(file, project, selection)
+                           .setFileOpenListener(listener)
+                           .setJLSRequestor(jlsRequestor));
 			mOpenedFiles.add(file);
 			notifyDataSetChanged();
 			return mFragments.size() - 1;
 		} else return openedFileIndex;
 	}
-	
-	public boolean saveAll() {
-		boolean hasGradle = false;
-		for(int i=0;i<mFragments.size();i++) {
-			hasGradle = hasGradle == false && save(i);
+
+	public SaveResult saveAll() {
+		SaveResult result = new SaveResult();
+		for (int i=0;i < mFragments.size();i++) {
+			save(i, result);
 		}
-		return hasGradle;
+		return result;
 	}
-	
-	public boolean save(int index) {
-		if(index >= 0 && index < mFragments.size()) {
-			boolean hasGradle = false;
+
+	public void save(int index, SaveResult result) {
+		if (index >= 0 && index < mFragments.size()) {
 			EditorFragment frag = getFrag(index);
-			hasGradle = frag.isModified() && frag.getFile().getName().endsWith(EditorFragment.EXT_GRADLE);
+            
+            /**
+             * Must be called before frag.save()
+             * Otherwise, it'll always return false
+             */
+            final boolean modified = frag.isModified();
+            
 			frag.save();
-			return hasGradle;
+            
+            final boolean isGradle = frag.getFile().getName().endsWith(EditorFragment.EXT_GRADLE);
+            final boolean isXml = frag.getFile().getName().endsWith(EditorFragment.EXT_XML);
+            
+            LOG.info("Save file: " + frag.getFile(),
+                "isModified:" + modified,
+                "isGradle:" + isGradle,
+                "isXml:" + isXml);
+            
+            if (!result.gradleSaved) {
+                result.gradleSaved = modified && isGradle;
+            }
+
+            if (!result.xmlSaved) {
+                result.xmlSaved = modified && isXml;
+            }
 		}
-		return false;
 	}
-	
+
 	public EditorFragment getFrag(int index) {
 		return (EditorFragment) getItem(index);
 	}
-	
+
 	public List<Fragment> getFragments() {
 		return mFragments;
 	}
-	
+
 	public List<File> getOpenedFiles() {
 		return mOpenedFiles;
 	}
-	
+
 	@Override
-	public Fragment getItem(int p1)
-	{
+	public Fragment getItem(int p1) {
 		return p1 < 0 || p1 >= mFragments.size() ? null : mFragments.get(p1);
 	}
-	
+
 	@Override
-	public int getCount()
-	{
+	public int getCount() {
 		return mFragments.size();
 	}
 
 	@Override
-	public CharSequence getPageTitle(int position)
-	{
-		return mOpenedFiles.get(position).getName();
+	public CharSequence getPageTitle(int position) {
+        String title = mOpenedFiles.get(position).getName();
+        if(getFrag(position).isModified())
+            title += "*";
+		return title;
 	}
 }

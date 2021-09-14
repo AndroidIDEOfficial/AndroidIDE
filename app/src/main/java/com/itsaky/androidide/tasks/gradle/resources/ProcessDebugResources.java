@@ -9,6 +9,11 @@ import java.util.Arrays;
 public class ProcessDebugResources extends BaseGradleTask {
 
     @Override
+    public boolean affectsGeneratedSources() {
+        return true;
+    }
+    
+    @Override
     public String getName() {
         return "processDebugResources";
     }

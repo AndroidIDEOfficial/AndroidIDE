@@ -113,7 +113,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
                     });
                 }
                 socket.close();
-                LOG.i("Socket disconnected");
+                LOG.info("Socket disconnected");
             } catch (Throwable e) {
                 logEx(e);
             }
@@ -268,7 +268,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
                     send.write(bodyBytes);
                     send.flush();
                 } catch (Throwable e) {
-                    LOG.e("Error writing to server: " + ThrowableUtils.getFullStackTrace(e));
+                    LOG.error("Error writing to server: " + ThrowableUtils.getFullStackTrace(e));
                 }
             }).start();
         }
@@ -285,7 +285,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     }
     
     private void logEx(Throwable th) {
-        LOG.e(ThrowableUtils.getFullStackTrace(th));
+        LOG.error(ThrowableUtils.getFullStackTrace(th));
     }
 
     @Override
@@ -353,7 +353,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
                 }
             }
         } catch (Throwable th) {
-            LOG.e("onServerOut", line, ThrowableUtils.getFullStackTrace(th));
+            LOG.error("onServerOut", line, ThrowableUtils.getFullStackTrace(th));
         }
     }
     

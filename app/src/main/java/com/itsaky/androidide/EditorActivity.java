@@ -122,6 +122,7 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import com.itsaky.androidide.models.SaveResult;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -505,7 +506,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		} else if (id == R.id.menuEditor_lintRelease) {
 			getBuildService().lintRelease();
 		} else if (id == R.id.menuEditor_save) {
-			saveAll();
+            /**
+             * 1. Notify that all files are saved
+             * 2. If there were any XML files modified, call ':app:processDebugResources' task
+             *
+             * This will make sure that we generate view bindings and R.jar at proper time
+             * This will further result in updated code completion
+             */
+			saveAll(true, true);
 		} else if (id == R.id.menuEditor_undo && this.mCurrentFragment != null && this.mCurrentFragment.isVisible()) {
 			this.mCurrentFragment.undo();
 		} else if (id == R.id.menuEditor_redo && this.mCurrentFragment != null && this.mCurrentFragment.isVisible()) {
@@ -740,7 +748,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
     @Override
     public void saveFiles() {
-        saveAll();
+        saveAll(false, false);
     }
 
     // Can be called from a different different, better to run on UI thread
@@ -961,7 +969,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         File file = new File(params.uri);
         if(!(file.exists() && file.isFile())) return;
         
-        
         diagnostics.put(file, params.diagnostics);
         getDiagnosticsList().setAdapter(new DiagnosticsAdapter(mapAsGroup(diagnostics), this));
         
@@ -1158,7 +1165,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 openFileAndSelect(file, range);
             }
         } catch (Throwable th) {
-            Logger.instance().e(ThrowableUtils.getFullStackTrace(th));
+            Logger.instance().error(ThrowableUtils.getFullStackTrace(th));
         }
     }
 
@@ -1228,7 +1235,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 );
                 results.put(file, matches);
             } catch (Throwable th) {
-                Logger.instance().e(ThrowableUtils.getFullStackTrace(th));
+                Logger.instance().error(ThrowableUtils.getFullStackTrace(th));
             }
         }
         
@@ -1521,11 +1528,32 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		getFileOptionsFragment(thisFile).show(getSupportFragmentManager(), TAG_FILE_OPTIONS_FRAGMENT);
 	}
 	
-	private boolean saveAll() {
-		boolean isGradleSaved = mPagerAdapter.saveAll();
-		getApp().toast(R.string.all_saved, Toaster.Type.SUCCESS);
-		if(isGradleSaved) notifySyncNeeded();
-		return isGradleSaved;
+    private boolean saveAll() {
+        return saveAll(true);
+    }
+    
+    private boolean saveAll(boolean notify) {
+        return saveAll(notify, false);
+    }
+    
+	private boolean saveAll(boolean notify, boolean canProcessResources) {
+		SaveResult result = mPagerAdapter.saveAll();
+        if(notify) {
+            getApp().toast(R.string.all_saved, Toaster.Type.SUCCESS);
+        }
+		if(result.gradleSaved){
+            notifySyncNeeded();
+        }
+        LOG.info(
+            "saveAll()",
+            "notify:" + notify,
+            "processResources:" + canProcessResources,
+            "xmlSaved:" + result.xmlSaved,
+            "gradleSaved:" + result.gradleSaved);
+        if(result.xmlSaved && canProcessResources && getBuildService() != null) {
+            getBuildService().processDebugResources();
+        }
+		return result.gradleSaved;
 	}
 	
 	private void handleOptionClick(SheetOption o) {

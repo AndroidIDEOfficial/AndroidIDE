@@ -326,37 +326,37 @@ public class TerminalActivity extends StudioActivity {
 
         @Override
         public void logError(String tag, String message) {
-            LOG.e(message);
+            LOG.error(message);
         }
 
         @Override
         public void logWarn(String tag, String message) {
-            LOG.w(message);
+            LOG.warn(message);
         }
 
         @Override
         public void logInfo(String tag, String message) {
-            LOG.i(message);
+            LOG.info(message);
         }
 
         @Override
         public void logDebug(String tag, String message) {
-            LOG.d(message);
+            LOG.debug(message);
         }
 
         @Override
         public void logVerbose(String tag, String message) {
-            LOG.v(message);
+            LOG.verbose(message);
         }
 
         @Override
         public void logStackTraceWithMessage(String tag, String message, Exception e) {
-            LOG.e(message, ThrowableUtils.getFullStackTrace(e));
+            LOG.error(message, e);
         }
 
         @Override
         public void logStackTrace(String tag, Exception e) {
-            LOG.e(e.getMessage(), ThrowableUtils.getFullStackTrace(e));
+            LOG.error(e.getMessage(), e);
         }
     }
 }

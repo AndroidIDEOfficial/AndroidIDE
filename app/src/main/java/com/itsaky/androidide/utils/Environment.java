@@ -94,7 +94,7 @@ public final class Environment {
             }
             return props;
         } catch (Throwable th) {
-            LOG.e("Error reading properties", th);
+            LOG.error("Error reading properties", th);
             return props;
         }
     }

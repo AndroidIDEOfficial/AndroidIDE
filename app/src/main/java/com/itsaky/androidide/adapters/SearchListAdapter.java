@@ -89,7 +89,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.VH
                     final SpannableStringBuilder sb = new JavaHighlighter().highlight(match.line, match.match);
                     ThreadUtils.runOnUiThread(() -> binding.text.setText(sb));
                 } catch (Exception e) {
-                    Logger.instance().e(ThrowableUtils.getFullStackTrace(e));
+                    Logger.instance().error(ThrowableUtils.getFullStackTrace(e));
                     ThreadUtils.runOnUiThread(() -> binding.text.setText(match.match));
                 }
             }).start();

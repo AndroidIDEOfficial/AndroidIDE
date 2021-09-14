@@ -4498,7 +4498,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             params.textDocument = new TextDocumentIdentifier(getFile().toURI());
             jlsRequestor.findDefinition(params);
         } catch (Throwable th) {
-            Logger.instance("CodeEditor").e(ThrowableUtils.getFullStackTrace(th));
+            Logger.instance("CodeEditor").error(ThrowableUtils.getFullStackTrace(th));
         }
     }
     
@@ -4511,7 +4511,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             params.textDocument = new TextDocumentIdentifier(getFile().toURI());
             jlsRequestor.findReferences(params);
         } catch (Throwable th) {
-            Logger.instance("CodeEditor").e(ThrowableUtils.getFullStackTrace(th));
+            Logger.instance("CodeEditor").error(ThrowableUtils.getFullStackTrace(th));
         }
     }
 

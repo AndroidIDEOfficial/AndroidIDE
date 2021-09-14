@@ -106,7 +106,7 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
         
         CharPosition startPos = content.getIndexer().getCharPosition(start);
         CharPosition endPos = content.getIndexer().getCharPosition(end);
-        Logger.instance("CompletionItemWrapper").d("PartialIdentifer Range: " + start + "," + end + ", text: " + content.subSequence(start, end));
+        Logger.instance("CompletionItemWrapper").debug("PartialIdentifer Range: " + start + "," + end + ", text: " + content.subSequence(start, end));
         return new Range(new Position(startPos.line, startPos.column), new Position(endPos.line, endPos.column));
     }
     

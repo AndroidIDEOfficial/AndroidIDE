@@ -26,6 +26,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import com.itsaky.androidide.tasks.gradle.resources.ProcessDebugResources;
+import com.itsaky.androidide.language.java.server.JavaLanguageServer;
+import com.itsaky.lsp.DidChangeWatchedFilesParams;
+import com.itsaky.lsp.FileEvent;
+import com.itsaky.androidide.models.project.IDEModule;
+import java.io.FileFilter;
+import com.itsaky.lsp.FileChangeType;
 
 public class IDEService implements ShellServer.Callback {
 
@@ -107,11 +113,13 @@ public class IDEService implements ShellServer.Callback {
                 listener.onBuildSuccessful(currentTask, charSequence.toString().trim());
             appendOutputSeparator();
             
-            if(currentTask != null && currentTask instanceof ProcessDebugResources) {
+            if(currentTask != null && currentTask.affectsGeneratedSources()) {
                 /**
-                 * An XML file was changed and saved
-                 * Generaring R.jar 
+                 * If a task affects generated sources, we have to notify Java Language Server
+                 *
+                 * This is a must.
                  */
+                notifyExternalSourceChange();
             }
         } else
         if(charSequence.toString().contains(BUILD_FAILED)) {
@@ -179,6 +187,46 @@ public class IDEService implements ShellServer.Callback {
 
     private String getString(@StringRes int id, Object... format) {
         return app.getString(id, format);
+    }
+    
+    /**
+     * Notifies about an external change event in generated .java files
+     * Generated source files can be:
+     * 1. ViewBinding/Databinding sources
+     * 2. BuildConfig
+     * We also notify Java language server to reload R.jar
+     */
+    private void notifyExternalSourceChange() {
+        JavaLanguageServer server = app.getJavaLanguageServer();
+        if(mIDEProject == null || server == null) return;
+        
+        server.didChangeWatchedFiles(new DidChangeWatchedFilesParams(createSourceChangeEvents()));
+    }
+    
+    /**
+     * Returns a list of FileEvent representing the change in generated sources
+     *
+     * Takes care of adding changes from all modules
+     */
+    private List<FileEvent> createSourceChangeEvents() {
+        final List<FileEvent> events = new ArrayList<>();
+        for(int i=0;i<mIDEProject.modules.size();i++) {
+            IDEModule module = mIDEProject.modules.get(i);
+            if(module == null
+            || module.projectDir == null
+            || module.projectDir.trim().length() <= 0)
+                continue;
+                
+            File generated = new File(module.projectDir, "build/generated");
+            if(!(generated.exists() && generated.isDirectory())) continue;
+            
+            final List<File> sources = FileUtils.listFilesInDirWithFilter(generated, JAVA_FILTER, true);
+            if(sources == null) continue;
+            for(File source : sources) {
+                events.add(new FileEvent(source.toURI(), FileChangeType.Changed));
+            }
+        }
+        return events;
     }
 
     private String getArguments(List<String> tasks) {
@@ -334,4 +382,18 @@ public class IDEService implements ShellServer.Callback {
         void appendOutput(GradleTask task, CharSequence text);
         void prepare();
     }
+    
+    /**
+     * This FileFilter is used to list java source files in 'generated' dir
+     */
+    private static final FileFilter JAVA_FILTER = new FileFilter(){
+
+        @Override
+        public boolean accept(File p1) {
+            return p1.isFile()
+                && !p1.isHidden()
+                && p1.getName().endsWith(".java")
+                && !p1.getName().equals("package-info.java");
+        }
+    };
 }

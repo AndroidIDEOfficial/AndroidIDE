@@ -8,6 +8,10 @@ public class DidChangeWatchedFilesParams {
     
     @SerializedName("changes")
     public List<FileEvent> changes = new ArrayList<>();
+
+    public DidChangeWatchedFilesParams(List<FileEvent> changes) {
+        this.changes = changes;
+    }
     
     public DidChangeWatchedFilesParams() {
         changes = new ArrayList<>();
