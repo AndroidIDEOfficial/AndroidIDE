@@ -7,17 +7,24 @@ import com.blankj.utilcode.util.FileUtils;
 import com.google.gson.Gson;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.AndroidProject;
+import com.itsaky.androidide.models.project.IDEModule;
 import com.itsaky.androidide.models.project.IDEProject;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.BaseGradleTasks;
 import com.itsaky.androidide.tasks.gradle.build.AssembleDebug;
+import com.itsaky.androidide.tasks.gradle.resources.UpdateResourceClassesTask;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.DidChangeWatchedFilesParams;
+import com.itsaky.lsp.FileChangeType;
+import com.itsaky.lsp.FileEvent;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
+import java.io.FileFilter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,13 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import com.itsaky.androidide.tasks.gradle.resources.ProcessDebugResources;
-import com.itsaky.androidide.language.java.server.JavaLanguageServer;
-import com.itsaky.lsp.DidChangeWatchedFilesParams;
-import com.itsaky.lsp.FileEvent;
-import com.itsaky.androidide.models.project.IDEModule;
-import java.io.FileFilter;
-import com.itsaky.lsp.FileChangeType;
+import java.util.Optional;
 
 public class IDEService implements ShellServer.Callback {
 
@@ -41,6 +42,7 @@ public class IDEService implements ShellServer.Callback {
     private StudioApp app;
 
     private IDEProject mIDEProject;
+    private IDEModule mAppModule;
     private AndroidProject project;
     
     private boolean isBuilding = false;
@@ -115,9 +117,8 @@ public class IDEService implements ShellServer.Callback {
             
             if(currentTask != null && currentTask.affectsGeneratedSources()) {
                 /**
-                 * If a task affects generated sources, we have to notify Java Language Server
-                 *
-                 * This is a must.
+                 * If a task affects generated sources,
+                 * we have to notify Java Language Server
                  */
                 notifyExternalSourceChange();
             }
@@ -149,8 +150,12 @@ public class IDEService implements ShellServer.Callback {
                     FileIOUtils.readFile2String(Environment.PROJECT_DATA_FILE),
                     IDEProject.class
                 );
-            if(local != null) {
-                local.onProjectLoaded(mIDEProject);
+            if(local != null && mIDEProject != null) {
+                Optional<IDEModule> appModule = mIDEProject.getModuleByPath(":app");
+                if(appModule.isPresent()) {
+                    mAppModule = appModule.get();
+                }
+                local.onProjectLoaded(mIDEProject, appModule);
             } else {
                 app.toast(com.itsaky.androidide.R.string.msg_init_project_failed, Toaster.Type.ERROR);
             }
@@ -194,13 +199,18 @@ public class IDEService implements ShellServer.Callback {
      * Generated source files can be:
      * 1. ViewBinding/Databinding sources
      * 2. BuildConfig
-     * We also notify Java language server to reload R.jar
+     * 
+     * Also, we tell the Java language server to recreate compiler
+     * This is because R.jar may have been changed and the server,
+     * must recreate the JavaCompilerService in order to
+     * get completions from updated classpaths
      */
     private void notifyExternalSourceChange() {
         JavaLanguageServer server = app.getJavaLanguageServer();
         if(mIDEProject == null || server == null) return;
         
         server.didChangeWatchedFiles(new DidChangeWatchedFilesParams(createSourceChangeEvents()));
+        server.buildModified();
     }
     
     /**
@@ -334,8 +344,10 @@ public class IDEService implements ShellServer.Callback {
         execTask(BaseGradleTasks.LINT_RELEASE);
     }
     
-    public void processDebugResources() {
-        execTask(BaseGradleTasks.PROCESS_DEBUG_RESOURCES);
+    public void updateResourceClasses() {
+        if(mAppModule != null) {
+            execTask(new UpdateResourceClassesTask(mAppModule.viewBindingEnabled));
+        }
     }
     
     public String typeString(int type) {
@@ -369,7 +381,8 @@ public class IDEService implements ShellServer.Callback {
     }
 
     public static interface BuildListener {
-        void onProjectLoaded(IDEProject project);
+        void notifyBuildModified();
+        void onProjectLoaded(IDEProject project, Optional<IDEModule> appModule);
         void onGetDependencies(List<String> dependencies);
         void onGetDependenciesFailed();
         

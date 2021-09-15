@@ -123,6 +123,7 @@ import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 import com.itsaky.androidide.models.SaveResult;
+import java.util.stream.Collectors;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -727,15 +728,18 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     @Override
-    public void onProjectLoaded(IDEProject project) {
+    public void onProjectLoaded(IDEProject project, Optional<IDEModule> appModule) {
         project.iconPath = mProject.getIconPath();
         mIDEProject = project;
         createProjectInfoSheet(); // Recreate sheet, even if already created. Just to update its contents
-        Optional<IDEModule> appModule = project.getModuleByPath(":app");
         if(appModule.isPresent()) {
             IDEModule app = appModule.get();
             setStatus(getString(R.string.msg_starting_completion));
-            mProject.setClassPaths(app.dependencies);
+            
+            final List<String> paths = new ArrayList<String>(app.dependencies);
+            paths.stream().filter(path -> isClasspathValid(path)).collect(Collectors.toList());
+            
+            mProject.setClassPaths(paths);
             
             File androidJar = new File(Environment.ANDROID_HOME, String.format("platforms/%s/android.jar", app.compileSdkVersion));
             if(androidJar.exists()) {
@@ -744,6 +748,22 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 createServices();
             } else setStatus("android.jar not found!");
         } else setStatus("Cannot get :app module...");
+    }
+
+    @Override
+    public void notifyBuildModified() {
+        
+    }
+    
+    private boolean isClasspathValid(String path) {
+        if(path == null || path.trim().length() <= 0 || path.trim().equals("/")) return false;
+        File file = new File(path);
+        return file.isFile()
+            && file.getName().endsWith(".jar")
+            /**
+             * Release R.jar shouldn't be included in classpath
+             */
+            && !file.getAbsolutePath().endsWith("/release/R.jar");
     }
 
     @Override
@@ -1551,7 +1571,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             "xmlSaved:" + result.xmlSaved,
             "gradleSaved:" + result.gradleSaved);
         if(result.xmlSaved && canProcessResources && getBuildService() != null) {
-            getBuildService().processDebugResources();
+            getBuildService().updateResourceClasses();
         }
 		return result.gradleSaved;
 	}

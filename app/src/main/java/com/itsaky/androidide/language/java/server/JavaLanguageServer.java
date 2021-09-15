@@ -210,6 +210,10 @@ public class JavaLanguageServer implements ShellServer.Callback {
         write(Method.CHANGED_WATCHED_FILES, gson.toJson(params));
     }
     
+    public void buildModified() {
+        write(Method.BUILD_MODIFIED, "");
+    }
+    
     public Pair<Integer, CompletionList> completion(TextDocumentPositionParams p) {
         int id = write(Method.COMPLETION, gson.toJson(p));
         completionRequests.put(id, id);
@@ -364,6 +368,8 @@ public class JavaLanguageServer implements ShellServer.Callback {
         public static final String INITIALIZED = "initialized";
         public static final String SHUTDOWN = "shutdown";
         public static final String EXIT = "exit";
+        
+        public static final String BUILD_MODIFIED = "project/buildModified";
         
         public static final String CHANGED_CONFIGURATION = "workspace/didChangeConfiguration";
         public static final String CHANGED_WATCHED_FILES = "workspace/didChangeWatchedFiles";

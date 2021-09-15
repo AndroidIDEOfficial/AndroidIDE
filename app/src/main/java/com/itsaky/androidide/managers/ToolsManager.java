@@ -17,7 +17,7 @@ public class ToolsManager {
     
     private static PreferenceManager prefs;
     
-    public static final int JLS_VERSION = 2;
+    public static final int JLS_VERSION = 3;
     public static final int LOGSENDER_VERSION = 1;
     public static final int CLEANER_VERSION = 1;
     public static final int GRADLE_API_VERSION = 2;
@@ -72,6 +72,7 @@ public class ToolsManager {
 
         final boolean exists = gson && jls && proto;
         final boolean isOld = JLS_VERSION > prefs.getInt(KEY_JLS_VERSION, 0);
+        LOG.info("Should extract JLS: " + (!exists || isOld));
         if(!exists || isOld) {
             try {
                 extractJls();
@@ -229,6 +230,7 @@ public class ToolsManager {
     + "\n        module.versionCode = config.versionCode"
     + "\n        module.versionName = config.versionName"
     + "\n        module.projectDir = sub.getProjectDir().getAbsolutePath()"
+    + "\n        module.viewBindingEnabled = android.buildFeatures.viewBinding"
     + "\n        "
     + "\n        if(isApp) {"
     + "\n            module.applicationId = config.applicationId"
@@ -308,6 +310,7 @@ public class ToolsManager {
     + "\n    def versionCode = 0"
     + "\n    def versionName = \"Not defined\""
     + "\n    def isLibrary = true"
+    + "\n    def viewBindingEnabled = false"
     + "\n}"
     + "\n"
     + "\nclass IDEAppModule extends IDEModule {"

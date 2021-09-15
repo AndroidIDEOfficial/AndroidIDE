@@ -7,11 +7,11 @@ import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.interfaces.JLSRequestor;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.SaveResult;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.Range;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import com.itsaky.androidide.utils.Logger;
 
 public class EditorPagerAdapter extends FragmentStatePagerAdapter {
 	private ArrayList<File> mOpenedFiles;

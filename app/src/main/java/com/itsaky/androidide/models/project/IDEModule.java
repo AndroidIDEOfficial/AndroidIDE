@@ -55,6 +55,12 @@ public class IDEModule extends IDEProject {
     public boolean isLibrary = true;
     
     /**
+     * Does this module has viewBinding enabled?
+     */
+    @SerializedName("viewBindingEnabled")
+    public boolean viewBindingEnabled;
+    
+    /**
      * Library projects don't have applicationId, application projects do.
      */
 
