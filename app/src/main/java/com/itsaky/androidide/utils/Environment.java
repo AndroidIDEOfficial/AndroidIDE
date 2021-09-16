@@ -12,6 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import android.os.Build;
+import com.itsaky.apiinfo.ApiInfo;
+import com.itsaky.apiinfo.models.ClassInfo;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.itsaky.apiinfo.models.MethodInfo;
 
 public final class Environment {
 	
@@ -105,6 +110,8 @@ public final class Environment {
 
 	public static void setBootClasspath(File file) {
         BOOTCLASSPATH = new File(file.getAbsolutePath());
+        
+        StudioApp.getInstance().initializeApiInformation();
     }
     
     public static Map<String, String> getEnvironment(boolean publicUse) {

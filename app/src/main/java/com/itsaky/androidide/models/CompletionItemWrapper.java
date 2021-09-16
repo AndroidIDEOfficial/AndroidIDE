@@ -106,7 +106,6 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
         
         CharPosition startPos = content.getIndexer().getCharPosition(start);
         CharPosition endPos = content.getIndexer().getCharPosition(end);
-        Logger.instance("CompletionItemWrapper").debug("PartialIdentifer Range: " + start + "," + end + ", text: " + content.subSequence(start, end));
         return new Range(new Position(startPos.line, startPos.column), new Position(endPos.line, endPos.column));
     }
     
@@ -130,9 +129,7 @@ public class CompletionItemWrapper implements SuggestItem, Comparable {
         return 1;
     }
     
-    private int getInsertLength() {
-        if (prefix.endsWith(".")) return 0;
-        else if (prefix.contains(".")) return prefix.substring(prefix.lastIndexOf(".") + 1).length();
-        else return prefix.length();
+    public CompletionItem getItem() {
+        return item;
     }
 }

@@ -1,4 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="msg_api_info_since">Since API %d\n</string>
+    <string name="msg_api_info_removed">Removed in API %d\n</string>
+    <string name="msg_api_info_deprecated">Deprecated in API %d\n</string>
     <string name="title_confirm_open_project">Open last project?</string>
     <string name="msg_confirm_open_project">Do you want me to open last opened project? Opened project was:\n%s</string>
     <string name="title_open_projects">Open last project</string>

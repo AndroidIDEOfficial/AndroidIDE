@@ -705,28 +705,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         
         invalidateOptionsMenu();
     }
-
-    @Override
-    public void onGetDependencies(List<String> dependencies) {
-        setStatus(getString(R.string.msg_starting_completion));
-        mProject.setClassPaths(dependencies);
-        createServices();
-    }
-
-    @Override
-    public void onGetDependenciesFailed() {
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
-        builder.setNegativeButton(android.R.string.no, null)
-            .setPositiveButton(android.R.string.yes, (p1, p2) -> {
-            p1.dismiss();
-            if(getBuildService() != null)
-                getBuildService().initProject();
-        })
-        .setTitle(R.string.failed)
-            .setMessage(R.string.msg_first_prepare_failed)
-            .create().show();
-    }
-
+    
     @Override
     public void onProjectLoaded(IDEProject project, Optional<IDEModule> appModule) {
         project.iconPath = mProject.getIconPath();
@@ -751,8 +730,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     @Override
-    public void notifyBuildModified() {
-        
+    public void onBuildModified() {
+        // Does nothing currently
     }
     
     private boolean isClasspathValid(String path) {

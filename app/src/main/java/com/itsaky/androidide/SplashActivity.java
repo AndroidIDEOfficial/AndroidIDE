@@ -7,7 +7,9 @@ import android.view.View;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivitySplashBinding;
-import com.itsaky.androidide.models.ConstantsBridge;                               
+import com.itsaky.androidide.models.ConstantsBridge;
+import android.text.TextUtils;
+import org.eclipse.jdt.core.Signature;                               
 
 public class SplashActivity extends StudioActivity
 {

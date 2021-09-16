@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	tools:ignore="SmallSp"
 	android:layout_width="match_parent"
-	android:layout_height="40dp"
+	android:layout_height="wrap_content"
 	android:gravity="center_vertical"
 	android:background="@color/primaryLightColor">
 
@@ -47,12 +47,26 @@
 		android:ellipsize="end"
 		android:singleLine="true"
 		android:layout_toEndOf="@id/completion_iconText"
-		android:layout_marginBottom="2dp"
+		android:layout_marginEnd="4dp"/>
+    
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/completion_detail"
+        android:id="@+id/completion_api_info"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="11sp"
+        android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:layout_toEndOf="@id/completion_iconText"
+        android:layout_marginBottom="2dp"
 		android:layout_marginEnd="4dp"/>
 
 	<TextView
 		android:layout_width="30dp"
-		android:layout_height="30dp"
+		android:layout_height="match_parent"
 		android:layout_marginEnd="8dp"
 		android:id="@+id/completion_iconText"
 		android:background="@color/secondaryColor"

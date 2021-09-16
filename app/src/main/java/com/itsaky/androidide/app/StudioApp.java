@@ -42,6 +42,7 @@ import java.util.Locale;
 import com.blankj.utilcode.util.FileUtils;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import com.itsaky.apiinfo.ApiInfo;
 
 public class StudioApp extends MultiDexApplication
 {
@@ -55,6 +56,8 @@ public class StudioApp extends MultiDexApplication
 	
     private boolean stopGradleDaemon = true;
 	private String sArch = "";
+    
+    private ApiInfo mApiInfo;
     
     private List<LanguageServerListener> serveralisteners = new ArrayList<>();
     
@@ -81,7 +84,6 @@ public class StudioApp extends MultiDexApplication
 		this.instance = this;
 		this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> handleCrash(thread, ex));
-        initLogger();
 		super.onCreate();
 		mPrefsManager = new PreferenceManager(this);
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -143,10 +145,23 @@ public class StudioApp extends MultiDexApplication
 	private String getDevNotificationChannelName() {
 		return getString(R.string.cms_channel_id_devs);
 	}
-	
-	private void initLogger() {
-		
-	}
+    
+    /**
+     * Reads API version information from api-versions.xml
+     */
+    public void initializeApiInformation() {
+        if(mApiInfo == null || !mApiInfo.hasRead()) {
+            File apiVersions = new File(Environment.BOOTCLASSPATH.getParentFile(), "data/api-versions.xml");
+            if(apiVersions.exists() && apiVersions.isFile()) {
+                mApiInfo = new ApiInfo(apiVersions);
+                try {
+                    mApiInfo.readAsync(null);
+                } catch (Exception e) {
+                    LOG.error("Failed to read API version information", e);
+                }
+            }
+        }
+    }
     
     public void stopAllDaemons() {
         newShell(null).bgAppend("gradle --stop");
@@ -177,6 +192,10 @@ public class StudioApp extends MultiDexApplication
 	public XMLCompletionService getXmlCompletionService() {
 		return mXmlCompletionService;
 	}
+    
+    public ApiInfo getApiInfo() {
+        return mApiInfo;
+    }
 	
 	public boolean areCompletorsStarted() {
 		return mXmlCompletionService != null

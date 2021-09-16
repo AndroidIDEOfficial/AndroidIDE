@@ -4,5 +4,6 @@ include ':lsp'
 include ':emulatorview'
 include ':emulator'
 include ':javapoet'
+include ':api-info'
 
 rootProject.name = "Android IDE"
