@@ -1,6 +1,7 @@
 package com.itsaky.lsp;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Diagnostic {
@@ -21,4 +22,7 @@ public class Diagnostic {
     
     @SerializedName("tags")
     public List<Integer> tags;
+    
+    @SerializedName("codeActions")
+    public List<CodeAction> codeActions = new ArrayList<>();
 }

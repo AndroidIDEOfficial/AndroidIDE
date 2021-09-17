@@ -106,6 +106,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.itsaky.lsp.CodeActionParams;
+import com.itsaky.lsp.CodeAction;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -546,7 +548,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         return mPinLineNumber;
     }
     
-    private Diagnostic findDiagnosticInCursorRange() {
+    public Diagnostic findDiagnosticInCursorRange() {
         if(mDiagnostics == null)
             return null;
         int leftLine = getCursor().getLeftLine();
@@ -573,8 +575,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         return null;
     }
     
-    private List<Diagnostic> findDiagnosticsContainingLine(int line) {
+    public List<Diagnostic> findDiagnosticsContainingLine(int line) {
         final List<Diagnostic> diags = new ArrayList<>();
+        if(mDiagnostics == null || mDiagnostics.size() <= 0) return diags;
+        
         final Set<Range> keys = mDiagnostics.keySet();
         
         for(Range r : keys) {
@@ -4498,7 +4502,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             params.textDocument = new TextDocumentIdentifier(getFile().toURI());
             jlsRequestor.findDefinition(params);
         } catch (Throwable th) {
-            Logger.instance("CodeEditor").error(ThrowableUtils.getFullStackTrace(th));
+            LOG.error(ThrowableUtils.getFullStackTrace(th));
         }
     }
     
@@ -4511,7 +4515,13 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             params.textDocument = new TextDocumentIdentifier(getFile().toURI());
             jlsRequestor.findReferences(params);
         } catch (Throwable th) {
-            Logger.instance("CodeEditor").error(ThrowableUtils.getFullStackTrace(th));
+            LOG.error(ThrowableUtils.getFullStackTrace(th));
+        }
+    }
+    
+    public void performCodeActions(List<CodeAction> actions) {
+        if(jlsRequestor != null && getFile() != null) {
+            jlsRequestor.performCodeActions(getFile(), actions);
         }
     }
 
@@ -4850,4 +4860,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 
     }
 
+    private static final Logger LOG = Logger.instance("CodeEditor");
+    
 }

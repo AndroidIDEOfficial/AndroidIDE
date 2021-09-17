@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
+import com.blankj.utilcode.util.ThreadUtils;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.itsaky.androidide.R;
@@ -16,24 +18,18 @@ import com.itsaky.androidide.databinding.LayoutCompletionItemBinding;
 import com.itsaky.androidide.models.CompletionItemWrapper;
 import com.itsaky.androidide.models.CompletionListItem;
 import com.itsaky.androidide.models.SuggestItem;
-import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.utils.Either;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.apiinfo.models.ClassInfo;
+import com.itsaky.apiinfo.models.FieldInfo;
+import com.itsaky.apiinfo.models.Info;
 import com.itsaky.apiinfo.models.MethodInfo;
 import com.itsaky.lsp.CompletionItemKind;
 import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.widget.EditorCompletionAdapter;
 import java.util.Locale;
-import com.google.gson.JsonArray;
-import com.itsaky.apiinfo.models.FieldInfo;
-import com.blankj.utilcode.util.ThreadUtils;
-import com.itsaky.androidide.utils.Logger;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.itsaky.apiinfo.models.Info;
-import android.text.TextUtils;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {
     
@@ -149,14 +145,17 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
                 final StringBuilder infoBuilder = new StringBuilder();
                 if (apiInfo != null && apiInfo.since > 1) {
                     infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_since, apiInfo.since));
+                    infoBuilder.append("\n");
                 }
 
                 if (apiInfo != null && apiInfo.removed > 0) {
                     infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_removed, apiInfo.removed));
+                    infoBuilder.append("\n");
                 }
 
                 if (apiInfo != null && apiInfo.deprecated > 0) {
                     infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_deprecated, apiInfo.deprecated));
+                    infoBuilder.append("\n");
                 }
                 
                 ThreadUtils.runOnUiThread(() -> {

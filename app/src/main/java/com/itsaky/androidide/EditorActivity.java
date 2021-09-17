@@ -65,6 +65,7 @@ import com.itsaky.androidide.managers.VersionedFileManager;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.models.project.IDEModule;
@@ -84,6 +85,7 @@ import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
+import com.itsaky.lsp.CodeAction;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DidChangeTextDocumentParams;
 import com.itsaky.lsp.DidChangeWatchedFilesParams;
@@ -108,11 +110,13 @@ import com.itsaky.lsp.SignatureInformation;
 import com.itsaky.lsp.TextDocumentIdentifier;
 import com.itsaky.lsp.TextDocumentItem;
 import com.itsaky.lsp.TextDocumentPositionParams;
+import com.itsaky.lsp.TextEdit;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -120,10 +124,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-import com.itsaky.androidide.models.SaveResult;
-import java.util.stream.Collectors;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														IDEService.BuildListener,
@@ -1000,31 +1003,52 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             
             float x = editor.updateCursorAnchor() - (mBinding.symbolText.getWidth() / 2);
             float y = mBinding.editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - mBinding.symbolText.getHeight());
-            mBinding.symbolText.setX(x);
-            mBinding.symbolText.setY(y);
             mBinding.symbolText.setVisibility(View.VISIBLE);
+            positionViewWithinScreen(mBinding.symbolText, x, y);
+        }
+    }
+    
+    /**
+     * Positions the view to the provided coordinates and within screen
+     *
+     * @param view View to position
+     * @param initialX Initial X coordinate of view
+     * @param initialY Initial Y coordinate of view
+     */
+    private void positionViewWithinScreen(View view, float initialX, float initialY) {
+        view.setX(initialX);
+        view.setY(initialY);
+        
+        Rect r = new Rect();
+        int width = view.getWidth();
+        initialX = view.getX();
+        view.getWindowVisibleDisplayFrame(r);
+        if (r.width() != width) {
             
-              //////////////////////////////////////////////
-             //// Position the signature text properly ////
-            //////////////////////////////////////////////
-            Rect r = new Rect();
-            int width = mBinding.symbolText.getWidth();
-            x = mBinding.symbolText.getX();
-            mBinding.symbolText.getWindowVisibleDisplayFrame(r);
-            if(r.width() != width) {
-                if(x < r.left) {
-                    x = SizeUtils.dp2px(8); // an offset of 8dp from the left edge of screen
-                    mBinding.symbolText.setX(x);
-                }
-                
-                if(x + width > r.right) {
-                    x = r.right - SizeUtils.dp2px(8) - width; // position to the right but leaving 8dp space from the right edge of screen
-                    mBinding.symbolText.setX(x); 
-                }
+            /**
+             * Will be true when the view is going out of screen to left 
+             */
+            if (initialX < r.left) {
+                initialX = SizeUtils.dp2px(8); // an offset of 8dp from the left edge of screen
+                view.setX(initialX);
+            }
+            
+            /**
+             * Will be true when the view is going out of screen to right
+             */
+            if (initialX + width > r.right) {
+                initialX = r.right - SizeUtils.dp2px(8) - width; // position to the right but leaving 8dp space from the right edge of screen
+                view.setX(initialX); 
             }
         }
     }
-
+    
+    /**
+     * Formats (highlights) a method signature
+     *
+     * @param signature Signature information
+     * @param paramIndex Currently active parameter index
+     */
     private CharSequence formatSignature(SignatureInformation signature, int paramIndex) {
         String name = signature.label;
         name = name.substring(0, name.indexOf("("));
@@ -1128,7 +1152,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     @Override
     public void findDefinition(TextDocumentPositionParams params) {
         final JavaLanguageServer server = getApp().getJavaLanguageServer();
-        if(server == null) return;
+        if(server == null || !server.isStarted()) return;
         server.findDefinition(params);
         getProgressSheet(R.string.msg_finding_definition).show(getSupportFragmentManager(), "definition_progress");
     }
@@ -1186,7 +1210,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     @Override
     public void findReferences(ReferenceParams params) {
         final JavaLanguageServer server = getApp().getJavaLanguageServer();
-        if(server == null) return;
+        if(server == null || !server.isStarted()) return;
         server.findReferences(params);
         getProgressSheet(R.string.msg_finding_references).show(getSupportFragmentManager(), "references_progress");
     }
@@ -1239,6 +1263,147 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
         
         handleSearchResults(results);
+    }
+    
+    @Override
+    public void performCodeActions(final File file, List<CodeAction> actions) {
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+        builder.setTitle(R.string.msg_code_actions);
+        builder.setItems(mapActionsAsArray(removeDuplicates(actions)), (d, w) -> {
+            d.dismiss();
+            int index = w;
+            performCodeAction(file, actions.get(index));
+        });
+        builder.setCancelable(true);
+        builder.show();
+    }
+    
+    /**
+     * Some code actions may contain duplicate items <br>
+     * Removes duplicate CodeActions from the given list
+     *
+     * @param actions CodeActions to filter
+     */
+    private List<CodeAction> removeDuplicates(List<CodeAction> actions) {
+        List<CodeAction> filtered = new ArrayList<>();
+        for(CodeAction action : actions) {
+            if(filtered.contains(action)) continue;
+            
+            filtered.add(action);
+        }
+        return filtered;
+    }
+
+    private CharSequence[] mapActionsAsArray(List<CodeAction> actions) {
+        String[] result = new String[actions.size()];
+        for(int i=0;i<actions.size();i++) {
+            CodeAction action = actions.get(i);
+            if(action == null) continue;
+            result[i] = actions.get(i).title;
+        }
+        return result;
+    }
+    
+    /**
+     * Performs given code action
+     * 
+     * @param file Currently opened file. This is provided by current CodeEditor when invoking JLSRequestor#performCodeActions
+     */
+    private void performCodeAction(File file, CodeAction action) {
+        if(mPagerAdapter != null) {
+            if(action != null && action.edit != null && action.edit.changes != null) {
+                Map<URI, List<TextEdit>> changes = action.edit.changes;
+                
+                /**
+                 * TODO: Ask for confirmation before writing file other than currently opened file
+                 */
+                for(Map.Entry<URI, List<TextEdit>> entry : changes.entrySet()) {
+                    if(entry == null && entry.getKey() == null || entry.getValue() == null) continue;
+                    performEdits(new File(entry.getKey()), entry.getValue());
+                }
+            }
+        }
+    }
+    
+    /**
+     * Performs edits in specified file. If the file is already opened,
+     * it will find the EditorFragment containing this file and perform the edits in its Content
+     * <br><br>
+     * If the file is not opened, it will read that file, edit it accordingly and will save it.
+     *
+     * @param file The file to edit
+     * @param edits The edits to perform
+     */
+    public void performEdits(File file, List<TextEdit> edits) {
+        if(edits == null || edits.size() <= 0) return;
+        
+        boolean wroteInFragment = false;
+        
+        if(mPagerAdapter != null) {
+            EditorFragment frag = mPagerAdapter.findEditorByFile(file);
+            if(frag != null && frag.getEditor() != null && frag.getEditor().getText() != null) {
+                performEdits(frag.getEditor().getText(), edits);
+                wroteInFragment = true;
+            }
+        }
+        
+        if(!wroteInFragment) {
+            readAndPerformEdits(file, edits);
+        }
+    }
+    
+    /**
+     * Performs given text edits in provided content
+     *
+     * @param text Content to edit
+     * @param edits The edits to perform
+     */
+    private void performEdits(Content text, List<TextEdit> edits) {
+        for(TextEdit edit : edits) {
+            if(edit == null) continue;
+            if(edit.newText == null || edit.range == null) continue;
+            final Range range = edit.range;
+            text.replace(
+                range.start.line,
+                range.start.column,
+                range.end.line,
+                range.end.column,
+                edit.newText
+            );
+        }
+    }
+    
+    /**
+     * Reads the provided file and performs the given edits
+     *
+     * @param file The file to read
+     * @param edits Edits to perform
+     */
+    private void readAndPerformEdits(File file, List<TextEdit> edits) {
+        String text = FileIOUtils.readFile2String(file);
+        if(text == null || text.length() <= 0) return;
+        Content content = new Content(null, text);
+        performEdits(content, edits);
+        
+        FileIOUtils.writeFileFromString(file, content.toString());
+    }
+
+    /**
+     * Checks if all the changes are in the same (currently opened) file
+     *
+     * @param current File to check
+     * @param changes The changes to check
+     * @return Whether all changes are in the currently opened file
+     */
+    private boolean isInSameFile(File current, Map<URI, List<TextEdit>> changes) {
+        for(URI uri : changes.keySet()) {
+            File file = new File(uri);
+            if(file.exists()
+               && !file.getAbsolutePath().equals(current.getAbsolutePath())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private void addPendingMessage(Message msg) {

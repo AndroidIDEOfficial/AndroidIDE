@@ -49,7 +49,7 @@ public class Logger {
             .disableStackTrace()
             .disableThreadInfo()
             .logLevel(com.itsaky.androidide.BuildConfig.DEBUG ? LogLevel.ALL : LogLevel.NONE)
-            .tag("AndroidIDE")                                 
+            .tag("AndroidIDE") 
             .disableBorder()                                       
             .build();
         Printer filePrinter = new FilePrinter                      

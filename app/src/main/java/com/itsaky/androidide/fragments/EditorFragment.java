@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.FragmentEditorBinding;
 import com.itsaky.androidide.fragments.preferences.EditorPreferences;
 import com.itsaky.androidide.interfaces.JLSRequestor;
@@ -19,11 +18,11 @@ import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.ConstantsBridge;
-import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ReadFileTask;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.lsp.CodeAction;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DidSaveTextDocumentParams;
 import com.itsaky.lsp.JavaColors;
@@ -31,17 +30,20 @@ import com.itsaky.lsp.Position;
 import com.itsaky.lsp.Range;
 import com.itsaky.lsp.TextDocumentIdentifier;
 import com.itsaky.lsp.TextDocumentPositionParams;
+import com.itsaky.lsp.TextEdit;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.io.StringReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import io.github.rosemoe.editor.text.Content;
 
 public class EditorFragment extends BaseFragment implements EditorEventListener {
 	
@@ -175,7 +177,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
                 args.getInt(KEY_COLUMN_END)
                 ));
     }
-	
+    
 	public void setDiagnostics(List<Diagnostic> diags) {
 		if(binding.editor != null && diags != null) {
             Map<Range, Diagnostic> map = new HashMap<>();

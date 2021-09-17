@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import com.itsaky.lsp.CodeAction;
 
 public class JavaLanguageServer implements ShellServer.Callback {
 
@@ -67,6 +68,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     private final ConcurrentHashMap<Integer, Integer> formattingRequests = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, Integer> definitionRequests = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, Integer> referencesRequests = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, Integer> codeActionRequests = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, File> signatureRequests = new ConcurrentHashMap<>();
     
     private final BlockingQueue<CompletionList> completionResponseQueue = new ArrayBlockingQueue<>(20);
@@ -81,7 +83,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     "--add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED " +
     "--add-opens jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED " +
     "-cp $JLS_HOME/lib/jls.jar:$JLS_HOME/lib/gson.jar:$JLS_HOME/lib/protobuf.jar " +
-    "org.javacs.Main --quiet";
+    "org.javacs.Main";
 
     
     private static final String CONTENT_LENGTH = "Content-Length: ";
@@ -236,7 +238,9 @@ public class JavaLanguageServer implements ShellServer.Callback {
     }
     
     public void codeActions(CodeActionParams p) {
-        write(Method.CODE_ACTION, gson.toJson(p));
+        LOG.info("CodeAction Request", gson.toJson(p));
+        int id = write(Method.CODE_ACTION, gson.toJson(p));
+        codeActionRequests.put(id, id);
     }
     
     public void signatureHelp(TextDocumentPositionParams params, File file) {
@@ -294,7 +298,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
 
     @Override
     public void output(CharSequence charSequence) {
-        // Nothing is in the output
+        LOG.verbose(charSequence);
     }
     
     /**
@@ -310,6 +314,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
                 if(method.equals(Method.REGISTER_CAPABILITY)) {
                     started = true;
                 } else if(method.equals(Method.PUBLISH_DIAGNOSTICS)) {
+                    LOG.debug(line);
                     PublishDiagnosticsParams params = gson.fromJson(obj.get(Key.PARAMS).toString(), PublishDiagnosticsParams.class);
                     client.publishDiagnostics(params);
                 } else if(method.equals(Method.JLS_PROGRESS_START)) {
@@ -341,19 +346,19 @@ public class JavaLanguageServer implements ShellServer.Callback {
                 } else if(definitionRequests.containsKey(id)) {
                     try {
                         final List<Location> locations = gson.fromJson(obj.get(Key.RESULT).getAsJsonArray(), new TypeToken<List<Location>>(){}.getType());
-                        if(locations != null && locations.size() > 0)
-                            client.gotoDefinition(locations);
+                        client.gotoDefinition(locations);
                     } catch (Throwable th) {
                         client.gotoDefinition(null);
                     }
                 } else if(referencesRequests.containsKey(id)) {
                     try {
                         final List<Location> locations = gson.fromJson(obj.get(Key.RESULT).getAsJsonArray(), new TypeToken<List<Location>>(){}.getType());
-                        if(locations != null && locations.size() > 0)
-                            client.references(locations);
+                        client.references(locations);
                     } catch (Throwable th) {
                         client.references(null);
                     }
+                } else if(codeActionRequests.containsKey(id)) {
+                    // TODO: Implement code actions
                 }
             }
         } catch (Throwable th) {

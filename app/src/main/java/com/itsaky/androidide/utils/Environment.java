@@ -134,8 +134,8 @@ public final class Environment {
         
         map.put("BUSYBOX", BUSYBOX.getAbsolutePath());
         map.put("SHELL", SHELL.getAbsolutePath());
-        map.put("TERM", "xterm-256color");
-        map.put("COLORTERM", "truecolor");
+        map.put("TERM", "screen");
+//        map.put("COLORTERM", "truecolor");
         
         map.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
         map.put("GRADLE_HOME", GRADLE_HOME.getAbsolutePath());

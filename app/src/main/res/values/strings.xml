@@ -1,7 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="msg_api_info_since">Since API %d\n</string>
-    <string name="msg_api_info_removed">Removed in API %d\n</string>
-    <string name="msg_api_info_deprecated">Deprecated in API %d\n</string>
+    <string name="msg_no_code_actions">No code actions found</string>
+    <string name="msg_analyzing_actions">Analyzing code actions</string>
+    <string name="msg_service_not_started">Services has not been started yet</string>
+    <string name="msg_code_actions">Code Actions</string>
+    <string name="msg_api_info_since">Since API %d</string>
+    <string name="msg_api_info_removed">Removed in API %d</string>
+    <string name="msg_api_info_deprecated">Deprecated in API %d</string>
     <string name="title_confirm_open_project">Open last project?</string>
     <string name="msg_confirm_open_project">Do you want me to open last opened project? Opened project was:\n%s</string>
     <string name="title_open_projects">Open last project</string>

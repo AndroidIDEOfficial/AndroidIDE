@@ -64,8 +64,6 @@ public class ClassInfo extends Info {
             String binaryParamType = Signature.createTypeSignature(paramType, true /* isResolved */);
             parameterTypes[i] = binaryParamType;
         }
- 
-        log("Original parameters: \n" + TextUtils.join(", ", parameters) + "\n\nNew parameters:\n" + TextUtils.join(", ", parameterTypes));
         
         for(Map.Entry<String, MethodInfo> entry : methods.entrySet()) {
             MethodInfo method = entry.getValue();
@@ -101,17 +99,4 @@ public class ClassInfo extends Info {
         }
         return null;
     }
-    
-    private BufferedOutputStream os;
-    
-    private void log(String msg) {
-        try {
-            if(os == null)
-                os = new BufferedOutputStream(new FileOutputStream(new File(Environment.getExternalStorageDirectory(), "ide_xlog/class_info.txt")));
-                
-            os.write(msg.getBytes());
-            os.flush();
-        } catch (Throwable e) {}
-    }
-    
 }
