@@ -17,7 +17,7 @@ public class ToolsManager {
     
     private static PreferenceManager prefs;
     
-    public static final int JLS_VERSION = 6;
+    public static final int JLS_VERSION = 7;
     public static final int LOGSENDER_VERSION = 1;
     public static final int CLEANER_VERSION = 1;
     public static final int GRADLE_API_VERSION = 2;
@@ -72,7 +72,7 @@ public class ToolsManager {
 
         final boolean exists = gson && jls && proto;
         final boolean isOld = JLS_VERSION > prefs.getInt(KEY_JLS_VERSION, 0);
-        LOG.info("Should extract JLS: " + (!exists || isOld));
+        
         if(!exists || isOld) {
             try {
                 extractJls();

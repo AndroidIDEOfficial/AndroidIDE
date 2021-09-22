@@ -1,4 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="title_confirm_changes">Confirm changes</string>
+    <string name="msg_confirm_changes">These files will be modified:\n%s</string>
     <string name="msg_no_code_actions">No code actions found</string>
     <string name="msg_analyzing_actions">Analyzing code actions</string>
     <string name="msg_service_not_started">Services has not been started yet</string>

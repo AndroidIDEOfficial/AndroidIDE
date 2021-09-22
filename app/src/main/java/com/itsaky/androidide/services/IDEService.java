@@ -129,8 +129,6 @@ public class IDEService implements ShellServer.Callback {
                 createShell();
             listener.onBuildFailed(currentTask, line.trim());
             appendOutputSeparator();
-            
-            execTask(BaseGradleTasks.TASKS);
         }
 	}
 

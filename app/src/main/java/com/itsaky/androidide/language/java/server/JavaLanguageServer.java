@@ -13,7 +13,6 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.CancelParams;
 import com.itsaky.lsp.CodeActionParams;
@@ -41,7 +40,6 @@ import com.itsaky.lsp.TextEdit;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -51,7 +49,6 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import com.itsaky.lsp.CodeAction;
 
 public class JavaLanguageServer implements ShellServer.Callback {
 
@@ -330,6 +327,15 @@ public class JavaLanguageServer implements ShellServer.Callback {
                     client.javaColors(colors);
                 }
             } else if(obj.has(Key.ID)) {
+                
+                if(obj.has(Key.ERROR)) {
+                    /**
+                     * We got an error
+                     * TODO Handle this error
+                     */
+                    return;
+                }
+                
                 final int id = obj.get(Key.ID).getAsInt();
                 if(completionRequests.containsKey(id)) {
                     final CompletionList list = gson.fromJson(obj.get(Key.RESULT).getAsJsonObject(), CompletionList.class);
@@ -420,5 +426,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
         
         public static final String STATICS = "statics";
         public static final String FIELDS = "fields";
+        
+        public static final String ERROR = "error";
     }
 }

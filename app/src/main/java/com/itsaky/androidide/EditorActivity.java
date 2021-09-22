@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -122,6 +123,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1272,10 +1274,31 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         builder.setItems(mapActionsAsArray(removeDuplicates(actions)), (d, w) -> {
             d.dismiss();
             int index = w;
-            performCodeAction(file, actions.get(index));
+            confirmActionIfNecessary(file, actions.get(index));
         });
         builder.setCancelable(true);
         builder.show();
+    }
+    
+    /**
+     * Shows a dialog to user to get confirmation from user to modify files other than this one
+     * If the code action is only in the current file, directly performs the actions
+     */
+    private void confirmActionIfNecessary(File file, CodeAction action) {
+        if(isInSameFile(file, action.edit.changes)) {
+            performCodeAction(file, action);
+        } else {
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+            builder.setTitle(R.string.title_confirm_changes);
+            builder.setMessage(getString(R.string.msg_confirm_changes, getFileNamesOfEdits(action.edit.changes.keySet())));
+            builder.setPositiveButton(android.R.string.yes, (d, w) -> performCodeAction(file, action));
+            builder.setNegativeButton(android.R.string.no, null);
+            builder.show();
+        }
+    }
+
+    private String getFileNamesOfEdits(Set<URI> names) {
+        return TextUtils.join("\n", names.stream().filter(n -> n != null).map(File::new).collect(Collectors.toList()));
     }
     
     /**
@@ -1386,6 +1409,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         performEdits(content, edits);
         
         FileIOUtils.writeFileFromString(file, content.toString());
+        
+        notifyFileChanged(file);
     }
 
     /**
@@ -1419,18 +1444,23 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void notifyFileCreated(File file) {
-        if(!file.getName().endsWith(".java")) return;
-        DidChangeWatchedFilesParams p = new DidChangeWatchedFilesParams();
-        p.changes.add(new FileEvent(file.toURI(), FileChangeType.Created));
-        didChangeWatchedFiles(p);
+        notifyExternalFileChange(file, FileChangeType.Created);
         
         openFile(file);
     }
     
     private void notifyFileDeleted(File file) {
+        notifyExternalFileChange(file, FileChangeType.Deleted);
+    }
+    
+    private void notifyFileChanged(File file) {
+        notifyExternalFileChange(file, FileChangeType.Changed);
+    }
+    
+    private void notifyExternalFileChange(File file, int changeType) {
         if(!file.getName().endsWith(".java")) return;
         DidChangeWatchedFilesParams p = new DidChangeWatchedFilesParams();
-        p.changes.add(new FileEvent(file.toURI(), FileChangeType.Deleted));
+        p.changes.add(new FileEvent(file.toURI(), changeType));
         didChangeWatchedFiles(p);
     }
 	

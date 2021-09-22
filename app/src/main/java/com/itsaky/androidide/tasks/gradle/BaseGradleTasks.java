@@ -7,7 +7,6 @@ import com.itsaky.androidide.tasks.gradle.build.Build;
 import com.itsaky.androidide.tasks.gradle.build.Bundle;
 import com.itsaky.androidide.tasks.gradle.build.Clean;
 import com.itsaky.androidide.tasks.gradle.build.CleanBuild;
-import com.itsaky.androidide.tasks.gradle.core.Tasks;
 import com.itsaky.androidide.tasks.gradle.lint.Lint;
 import com.itsaky.androidide.tasks.gradle.lint.LintDebug;
 import com.itsaky.androidide.tasks.gradle.lint.LintRelease;
@@ -18,8 +17,6 @@ public class BaseGradleTasks {
 	
 	public static final BaseGradleTask
 	
-    TASKS = new Tasks(),
-    
 	BUILD = new Build(),
 	ASSEMBLE_DEBUG = new AssembleDebug(),
 	ASSEMBLE_RELEASE = new AssembleRelease(),
