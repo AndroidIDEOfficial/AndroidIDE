@@ -43,7 +43,8 @@ public class IDEService implements ShellServer.Callback {
 
     private IDEProject mIDEProject;
     private IDEModule mAppModule;
-    private AndroidProject project;
+    
+    private final File projectRoot;
     
     private boolean isBuilding = false;
     private boolean isRunning = false;
@@ -70,9 +71,9 @@ public class IDEService implements ShellServer.Callback {
     
     public static final Logger LOG = Logger.instance("IDEService");
     
-    public IDEService(AndroidProject project) {
+    public IDEService(File projectRoot) {
+        this.projectRoot = projectRoot;
         this.app = StudioApp.getInstance();
-        this.project = project;
         this.shell = app.newShell(this);
         this.isRunning = true;
     }
@@ -286,7 +287,7 @@ public class IDEService implements ShellServer.Callback {
             Environment.mkdirIfNotExits(Environment.TMP_DIR);
             currentTask = task;
             listener.appendOutput(task, getString(R.string.msg_task_begin, currentTime(), task.getName()));
-            shell.bgAppend(String.format("cd \"%s\"", new File(project.getProjectPath(), "app").getAbsolutePath()));
+            shell.bgAppend(String.format("cd \"%s\"", new File(projectRoot, "app").getAbsolutePath()));
             shell.bgAppend(getArguments(task.getTasks()));
 			isBuilding = true;
             listener.prepare();

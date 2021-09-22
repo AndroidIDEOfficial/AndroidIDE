@@ -167,22 +167,24 @@ public class StudioApp extends MultiDexApplication
         newShell(null).bgAppend("gradle --stop");
     }
 	
-	public void startBuildService(AndroidProject project) {
+	public void startBuildService(File projectRoot) {
         if(getBuildService() != null) {
             getBuildService().exit();
         }
         
-		buildService = new IDEService(project);
+		buildService = new IDEService(projectRoot);
 	}
     
 	public IDEService getBuildService() {
 		return buildService;
 	}
 	
-    public void createCompletionService(AndroidProject project, LanguageClient client) {
+    public void createCompletionService() {
         this.mXmlCompletionService = new XMLCompletionService();
-        this.languageServer = new JavaLanguageServer(project, client);
-        this.languageServer.startServer();
+    }
+    
+    public void setJavaLanguageServer(JavaLanguageServer server) {
+        this.languageServer = server;
     }
     
     public JavaLanguageServer getJavaLanguageServer() {

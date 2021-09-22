@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EditorPagerAdapter extends FragmentStatePagerAdapter {
+    
 	private ArrayList<File> mOpenedFiles;
 	private ArrayList<Fragment> mFragments;
 	private AndroidProject project;
@@ -101,11 +102,6 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter {
             
             final boolean isGradle = frag.getFile().getName().endsWith(EditorFragment.EXT_GRADLE);
             final boolean isXml = frag.getFile().getName().endsWith(EditorFragment.EXT_XML);
-            
-            LOG.info("Save file: " + frag.getFile(),
-                "isModified:" + modified,
-                "isGradle:" + isGradle,
-                "isXml:" + isXml);
             
             if (!result.gradleSaved) {
                 result.gradleSaved = modified && isGradle;

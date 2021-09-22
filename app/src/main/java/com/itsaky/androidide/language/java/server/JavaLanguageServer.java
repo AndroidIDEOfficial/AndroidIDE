@@ -235,7 +235,6 @@ public class JavaLanguageServer implements ShellServer.Callback {
     }
     
     public void codeActions(CodeActionParams p) {
-        LOG.info("CodeAction Request", gson.toJson(p));
         int id = write(Method.CODE_ACTION, gson.toJson(p));
         codeActionRequests.put(id, id);
     }
@@ -258,7 +257,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
     public void cancelRequest(int requestId) {
         CancelParams p = new CancelParams();
         p.id = requestId;
-        int id = write(Method.CANCEL_REQUEST, gson.toJson(p));
+        write(Method.CANCEL_REQUEST, gson.toJson(p));
     }
     
     public int send(Message msg) {
@@ -367,9 +366,7 @@ public class JavaLanguageServer implements ShellServer.Callback {
                     // TODO: Implement code actions
                 }
             }
-        } catch (Throwable th) {
-            LOG.error("onServerOut", line, ThrowableUtils.getFullStackTrace(th));
-        }
+        } catch (Throwable th) {}
     }
     
     private static final Logger LOG = Logger.instance("JavaLanguageServer");
