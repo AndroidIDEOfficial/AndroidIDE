@@ -4,7 +4,7 @@ import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.project.IDEProject;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.androidide.handlers.editor.JLSHandler;
+import com.itsaky.androidide.handlers.jls.JLSHandler;
 
 /**
  * A handler is an implementation that handles a specific feature, data or anything else in AndroidIDE

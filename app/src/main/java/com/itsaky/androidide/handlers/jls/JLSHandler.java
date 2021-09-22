@@ -1,4 +1,4 @@
-package com.itsaky.androidide.handlers.editor;
+package com.itsaky.androidide.handlers.jls;
 
 import android.text.TextUtils;
 import android.view.View;

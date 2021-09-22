@@ -1,4 +1,4 @@
-package com.itsaky.androidide.handlers.editor;
+package com.itsaky.androidide.handlers.jls;
 
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
