@@ -17,7 +17,7 @@ public class ToolsManager {
     
     private static PreferenceManager prefs;
     
-    public static final int JLS_VERSION = 7;
+    public static final int JLS_VERSION = 8;
     public static final int LOGSENDER_VERSION = 1;
     public static final int CLEANER_VERSION = 1;
     public static final int GRADLE_API_VERSION = 2;

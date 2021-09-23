@@ -95,6 +95,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 														NavigationView.OnNavigationItemSelectedListener,
                                                         DiagnosticClickListener, 
                                                         EditorFragment.FileOpenListener,
+                                                        EditorPagerAdapter.EditorStateListener,
                                                         IDEHandler.Provider {
     
     private ActivityEditorBinding mBinding;
@@ -181,7 +182,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         
         symbolInput = new SymbolInputView(this);
         mBinding.inputContainer.addView(symbolInput, 0, new ViewGroup.LayoutParams(-1, -2));
-
+        
+        
         mBinding.editorViewPager.setOffscreenPageLimit(9);
         mBinding.editorViewPager.setAdapter(mPagerAdapter);
         mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
@@ -203,63 +205,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		setupContainers();
         setupSignatureText();
     }
-
-    private void getProjectFromIntent() {
-        this.mProject = getIntent().getParcelableExtra(EXTRA_PROJECT);
-        getApp().getPrefManager().setOpenedProject(this.mProject.getProjectPath());
-    }
-
-    private void setupSignatureText() {
-        GradientDrawable gd = new GradientDrawable();
-        gd.setShape(GradientDrawable.RECTANGLE);
-        gd.setColor(0xff212121);
-        gd.setStroke(1, 0xffffffff);
-        gd.setCornerRadius(8);
-        mBinding.symbolText.setBackgroundDrawable(gd);
-        mBinding.symbolText.setVisibility(View.GONE);
-    }
-
-	private void setupContainers() {
-        removeFromParent(getBuildView());
-        removeFromParent(getLogView());
-        removeFromParent(getDiagnosticsList());
-        removeFromParent(getSearchResultList());
-		
-		mBinding.buildOutcontainer.addView(getBuildView(), new ViewGroup.LayoutParams(-1, -1));
-		mBinding.buildContainer.setVisibility(View.GONE);
-		mBinding.buildOutToolbar.setNavigationOnClickListener(v -> hideBuildResult());
-		mBinding.buildOutToolbar.setOnClickListener(v -> hideBuildResult());
-		
-		mBinding.logOutcontainer.addView(getLogView(), new ViewGroup.LayoutParams(-1, -1));
-		mBinding.logContainer.setVisibility(View.GONE);
-		mBinding.logOutToolbar.setNavigationOnClickListener(v -> hideLogResult());
-		mBinding.logOutToolbar.setOnClickListener(v -> hideLogResult());
-        
-        mBinding.diagListContainer.addView(getDiagnosticsList(), new ViewGroup.LayoutParams(-1, -1));
-        mBinding.diagContainer.setVisibility(View.GONE);
-        mBinding.diagToolbar.setNavigationOnClickListener(v -> hideDiagnostics());
-		mBinding.diagToolbar.setOnClickListener(v -> hideDiagnostics());
-        
-        mBinding.searchResultsListContainer.addView(getSearchResultList(), new ViewGroup.LayoutParams(-1, -1));
-        mBinding.searchResultsContainer.setVisibility(View.GONE);
-        mBinding.searchResultsToolbar.setNavigationOnClickListener(v -> hideSearchResults());
-		mBinding.searchResultsToolbar.setOnClickListener(v -> hideSearchResults());
-		
-		mBinding.viewOptionsCard.setVisibility(View.GONE);
-		mBinding.transformScrim.setVisibility(View.GONE);
-		
-		mBinding.transformScrim.setOnClickListener(v -> hideViewOptions());
-		mBinding.viewBuildOut.setOnClickListener(v -> showBuildResult());
-        mBinding.viewDiags.setOnClickListener(v -> showDiagnostics());
-        mBinding.viewSearchResults.setOnClickListener(v -> showSearchResults());
-		mBinding.viewLogs.setOnClickListener(v -> showLogResult());
-		mBinding.viewFiles.setOnClickListener(v -> showFiles());
-		mBinding.viewDaemonStatus.setOnClickListener(v -> showDaemonStatus());
-        
-        handleDiagnosticsResultVisibility(true);
-        handleSearchResultVisibility(true);
-	}
-
+    
 	@Override
 	public void onBackPressed() {
 		if(mBinding.getRoot().isDrawerOpen(GravityCompat.END)) {
@@ -453,6 +399,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     @Override
     public JLSHandler provideJLSHandler() {
         return mJLSHandler;
+    }
+
+    @Override
+    public void editorStateChanged() {
+        for(int i=0;i<mBinding.tabs.getTabCount();i++) {
+            try {
+                mBinding.tabs.getTabAt(i).setText(mPagerAdapter.getPageTitle(i));
+            } catch (Throwable th) {}
+        }
     }
     
     public void handleSearchResults(Map<File, List<SearchResult>> results) {
@@ -710,10 +665,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         msg.params = new JsonParser().parse(data);
         return msg;
     }
-
-    /*****************************
-     **** Tab Related ************
-     *****************************/
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
@@ -1045,7 +996,63 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
        /////////////////////////////////////////////////
       ////////////// PRIVATE APIS /////////////////////
      /////////////////////////////////////////////////
+     
+    private void getProjectFromIntent() {
+        this.mProject = getIntent().getParcelableExtra(EXTRA_PROJECT);
+        getApp().getPrefManager().setOpenedProject(this.mProject.getProjectPath());
+    }
 
+    private void setupSignatureText() {
+        GradientDrawable gd = new GradientDrawable();
+        gd.setShape(GradientDrawable.RECTANGLE);
+        gd.setColor(0xff212121);
+        gd.setStroke(1, 0xffffffff);
+        gd.setCornerRadius(8);
+        mBinding.symbolText.setBackgroundDrawable(gd);
+        mBinding.symbolText.setVisibility(View.GONE);
+    }
+
+    private void setupContainers() {
+        removeFromParent(getBuildView());
+        removeFromParent(getLogView());
+        removeFromParent(getDiagnosticsList());
+        removeFromParent(getSearchResultList());
+
+        mBinding.buildOutcontainer.addView(getBuildView(), new ViewGroup.LayoutParams(-1, -1));
+        mBinding.buildContainer.setVisibility(View.GONE);
+        mBinding.buildOutToolbar.setNavigationOnClickListener(v -> hideBuildResult());
+        mBinding.buildOutToolbar.setOnClickListener(v -> hideBuildResult());
+
+        mBinding.logOutcontainer.addView(getLogView(), new ViewGroup.LayoutParams(-1, -1));
+        mBinding.logContainer.setVisibility(View.GONE);
+        mBinding.logOutToolbar.setNavigationOnClickListener(v -> hideLogResult());
+        mBinding.logOutToolbar.setOnClickListener(v -> hideLogResult());
+
+        mBinding.diagListContainer.addView(getDiagnosticsList(), new ViewGroup.LayoutParams(-1, -1));
+        mBinding.diagContainer.setVisibility(View.GONE);
+        mBinding.diagToolbar.setNavigationOnClickListener(v -> hideDiagnostics());
+        mBinding.diagToolbar.setOnClickListener(v -> hideDiagnostics());
+
+        mBinding.searchResultsListContainer.addView(getSearchResultList(), new ViewGroup.LayoutParams(-1, -1));
+        mBinding.searchResultsContainer.setVisibility(View.GONE);
+        mBinding.searchResultsToolbar.setNavigationOnClickListener(v -> hideSearchResults());
+        mBinding.searchResultsToolbar.setOnClickListener(v -> hideSearchResults());
+
+        mBinding.viewOptionsCard.setVisibility(View.GONE);
+        mBinding.transformScrim.setVisibility(View.GONE);
+
+        mBinding.transformScrim.setOnClickListener(v -> hideViewOptions());
+        mBinding.viewBuildOut.setOnClickListener(v -> showBuildResult());
+        mBinding.viewDiags.setOnClickListener(v -> showDiagnostics());
+        mBinding.viewSearchResults.setOnClickListener(v -> showSearchResults());
+        mBinding.viewLogs.setOnClickListener(v -> showLogResult());
+        mBinding.viewFiles.setOnClickListener(v -> showFiles());
+        mBinding.viewDaemonStatus.setOnClickListener(v -> showDaemonStatus());
+
+        handleDiagnosticsResultVisibility(true);
+        handleSearchResultVisibility(true);
+	}
+    
     private MaterialContainerTransform createContainerTransformFor(View start, View end) {
         return createContainerTransformFor(start, end, mBinding.realContainer);
     }

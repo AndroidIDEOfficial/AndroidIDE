@@ -72,7 +72,8 @@ public class JLSHandler extends IDEHandler implements JLSRequestor {
     
     @Override
     public void stop() {
-        languageServer.exit();
+        if(languageServer != null)
+            languageServer.exit();
     }
     
     @Override

@@ -19,6 +19,8 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter implements Edi
 	private ArrayList<Fragment> mFragments;
 	private AndroidProject project;
     
+    private EditorStateListener mEditorStateListener;
+    
     private static final Logger LOG = Logger.instance("EditorPagerAdapter");
 
 	public EditorPagerAdapter(FragmentManager manager, AndroidProject project) {
@@ -37,6 +39,11 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter implements Edi
 		mOpenedFiles.addAll(files);
 		mFragments.addAll(fragments);
 	}
+    
+    public EditorPagerAdapter setEditorStateListener (EditorStateListener listener) {
+        this.mEditorStateListener = listener;
+        return this;
+    }
 
     public int findIndexOfEditorByFile(File file) {
         for (int i=0;i < mFragments.size();i++) {
@@ -123,12 +130,14 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter implements Edi
 
     @Override
     public void onModified(EditorFragment editor) {
-        // Maybe implemented in future
+        if(mEditorStateListener != null)
+            mEditorStateListener.editorStateChanged();
     }
 
     @Override
     public void onSaved(EditorFragment editor) {
-        // Maybe implemented in future
+        if(mEditorStateListener != null)
+            mEditorStateListener.editorStateChanged();
     }
     
 	public List<File> getOpenedFiles() {
@@ -149,4 +158,8 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter implements Edi
 	public CharSequence getPageTitle(int position) {
 		return getFrag(position).getTabTitle();
 	}
+    
+    public static interface EditorStateListener {
+        void editorStateChanged();
+    }
 }
