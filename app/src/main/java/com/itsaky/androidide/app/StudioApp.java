@@ -48,7 +48,6 @@ public class StudioApp extends MultiDexApplication
 {
 	private static StudioApp instance;
 	private StudioUtils mUtils;
-	private IDEService buildService;
     private JavaLanguageServer languageServer;
     private XMLCompletionService mXmlCompletionService;
 	private PreferenceManager mPrefsManager;
@@ -166,18 +165,6 @@ public class StudioApp extends MultiDexApplication
     public void stopAllDaemons() {
         newShell(null).bgAppend("gradle --stop");
     }
-	
-	public void startBuildService(File projectRoot) {
-        if(getBuildService() != null) {
-            getBuildService().exit();
-        }
-        
-		buildService = new IDEService(projectRoot);
-	}
-    
-	public IDEService getBuildService() {
-		return buildService;
-	}
 	
     public void createCompletionService() {
         this.mXmlCompletionService = new XMLCompletionService();

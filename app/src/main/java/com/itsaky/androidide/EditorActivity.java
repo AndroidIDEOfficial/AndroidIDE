@@ -49,6 +49,7 @@ import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.ProjectInfoSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
+import com.itsaky.androidide.handlers.BuildServiceHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.handlers.jls.JLSHandler;
 import com.itsaky.androidide.handlers.jls.LanguageClientHandler;
@@ -102,7 +103,6 @@ import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
-														IDEService.BuildListener,
 														TabLayout.OnTabSelectedListener,
 														NavigationView.OnNavigationItemSelectedListener,
                                                         DiagnosticClickListener, 
@@ -126,6 +126,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     private JLSHandler mJLSHandler;
     private LanguageClientHandler mLanguageClientHandler;
+    private BuildServiceHandler mBuildServiceHandler;
     
 	private LogLanguageImpl mLogLanguageImpl;
 	
@@ -206,14 +207,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		
 		createQuickActions();
         
-        mLanguageClientHandler = new LanguageClientHandler();
-        mJLSHandler = new JLSHandler(mLanguageClientHandler);
+        mLanguageClientHandler = new LanguageClientHandler(this);
+        mBuildServiceHandler = new BuildServiceHandler(this);
+        mJLSHandler = new JLSHandler(mLanguageClientHandler, this);
         
-		getApp().checkAndUpdateGradle();
-		getApp().startBuildService(new File(mProject.getProjectPath()));
-		getApp().getBuildService().setListener(this);
+        getApp().checkAndUpdateGradle();
         startServices();
-        invalidateOptionsMenu();
         
 		KeyboardUtils.registerSoftInputChangedListener(this, __ -> onSoftInputChanged());
 		registerLogReceiver();
@@ -276,73 +275,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         handleDiagnosticsResultVisibility(true);
         handleSearchResultVisibility(true);
 	}
-    
-    private void startServices() {
-        getBuildService().assembleDebug(false);
-    }
-    
-    private void removeFromParent(View v) {
-        if(v.getParent() != null && v.getParent() instanceof ViewGroup) {
-            ((ViewGroup) v.getParent()).removeView(v);
-		}
-    }
-	
-	private void onSoftInputChanged() {
-		invalidateOptionsMenu();
-		if(KeyboardUtils.isSoftInputVisible(this)) {
-			TransitionManager.beginDelayedTransition(mBinding.getRoot(), new Slide(Gravity.TOP));
-			symbolInput.setVisibility(View.VISIBLE);
-			mBinding.fabView.hide();
-		} else {
-			TransitionManager.beginDelayedTransition(mBinding.getRoot(), new Slide(Gravity.BOTTOM));
-			symbolInput.setVisibility(View.GONE);
-			mBinding.fabView.show();
-		}
-	}
-
-	private void refreshSymbolInput(EditorFragment frag) {
-		symbolInput.bindEditor(frag.getEditor());
-		symbolInput.setSymbols(Symbols.forFile(frag.getFile()));
-	}
-	
-	private void notifySyncNeeded() {
-		if(getBuildService() != null && !getBuildService().isBuilding()) {
-			getSyncBanner()
-				.setNegative(android.R.string.cancel, null)
-				.setPositive(android.R.string.ok, v -> {
-					getBuildService().assembleDebug(false);
-				})
-				.show();
-		}
-	}
-    
-    private void closeProject(boolean manualFinish) {
-        if (getBuildService() != null) {
-            getBuildService().setListener(null);
-            getBuildService().exit();
-        }
-        
-        getApp().getPrefManager().setOpenedProject(PreferenceManager.NO_OPENED_PROJECT);
-        
-        mJLSHandler.stop();
-            
-        getApp().stopAllDaemons();
-        
-        if(manualFinish)
-            finish();
-    }
-    
-    private void confirmProjectClose() {
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
-        builder.setTitle(R.string.title_confirm_project_close);
-        builder.setMessage(R.string.msg_confirm_project_close);
-        builder.setNegativeButton(android.R.string.no, null);
-        builder.setPositiveButton(android.R.string.yes, (d, w) -> {
-            d.dismiss();
-            closeProject(true);
-        });
-        builder.show();
-    }
 
 	@Override
 	public void onBackPressed() {
@@ -533,10 +465,614 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public IDEProject provideIDEProject() {
         return mIDEProject;
     }
-
+    
     @Override
     public JLSHandler provideJLSHandler() {
         return mJLSHandler;
+    }
+    
+    public void handleSearchResults(Map<File, List<SearchResult>> results) {
+        getSearchResultList().setAdapter(new com.itsaky.androidide.adapters.SearchListAdapter(results, file -> {
+            openFile(file);
+            hideSearchResults();
+        }, match -> {
+            openFileAndSelect(match.file, match);
+            hideSearchResults();
+        }));
+        mBinding.transformScrim.setVisibility(View.VISIBLE);
+        mBinding.fabView.setVisibility(View.GONE);
+        showSearchResults();
+
+        if(mSearchingProgress != null && mSearchingProgress.isShowing())
+            mSearchingProgress.dismiss();
+    }
+
+    public void appendApkLog(LogLine line) {
+        getLogLanguage().addLine(line);
+        appendLogOut(line.toString());
+    }
+
+    public void setIDEProject (IDEProject project) {
+        this.mIDEProject = project;
+    }
+
+    public void appendBuildOut(final String str) {
+        runOnUiThread(() -> {
+            String strFinal = str.endsWith("\n") ? str : str.concat("\n");
+            getBuildView(true).getText().append(strFinal);
+        });
+    }
+
+    public void appendLogOut(final String str) {
+        runOnUiThread(() -> {
+            String strFinal = str.endsWith("\n") ? str : str.concat("\n");
+            getLogView(true).getText().append(strFinal);
+        });
+    }
+
+    public void showFiles() {
+        if(mBinding.viewOptionsCard.getVisibility() == View.VISIBLE) {
+            hideViewOptions();
+        }
+
+        mBinding.getRoot().openDrawer(GravityCompat.END, true);
+    }
+
+    public void showDaemonStatus() {
+        if(mBinding.viewOptionsCard.getVisibility() == View.VISIBLE) {
+            hideViewOptions();
+        }
+        ShellServer shell = getApp().newShell(t -> getDaemonStatusFragment().append(t.toString()));
+        shell.bgAppend(String.format("echo '%s'", getString(R.string.msg_getting_daemom_status)));
+        shell.bgAppend("gradle --status");
+        if(!getDaemonStatusFragment().isShowing())
+            getDaemonStatusFragment().show(getSupportFragmentManager(), "daemon_status");
+    }
+
+    public void hideToolbarAndTabs() {
+        mBinding.editorAppBarLayout.setVisibility(View.INVISIBLE);
+    }
+
+    public void showToolbarAndTabs() {
+        mBinding.editorAppBarLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void showViewOptions() {
+        try {
+            EditorFragment frag = mPagerAdapter.getFrag(mBinding.tabs.getSelectedTabPosition());
+            if(frag != null && frag.getEditor() != null) {
+                frag.getEditor().hideAutoCompleteWindow();
+                frag.getEditor().hideDiagnosticWindow();
+            }
+        } catch (Throwable e) {}
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.fabView, mBinding.viewOptionsCard));
+        mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
+        mBinding.transformScrim.setVisibility(View.VISIBLE);
+        mBinding.fabView.setVisibility(View.GONE);
+    }
+
+    public void hideViewOptions() {
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewOptionsCard, mBinding.fabView));
+        mBinding.viewOptionsCard.setVisibility(View.GONE);
+        mBinding.transformScrim.setVisibility(View.GONE);
+        mBinding.fabView.setVisibility(View.VISIBLE);
+    }
+
+    public void showBuildResult() {
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewBuildOut, mBinding.buildContainer));
+        mBinding.buildContainer.setVisibility(View.VISIBLE);
+        mBinding.viewOptionsCard.setVisibility(View.GONE);
+        hideToolbarAndTabs();
+    }
+
+    public void hideBuildResult() {
+        showToolbarAndTabs();
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.buildContainer, mBinding.viewBuildOut));
+        mBinding.buildContainer.setVisibility(View.GONE);
+        mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
+    }
+
+    public void showLogResult() {
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewLogs, mBinding.logContainer));
+        mBinding.logContainer.setVisibility(View.VISIBLE);
+        mBinding.viewOptionsCard.setVisibility(View.GONE);
+        hideToolbarAndTabs();
+    }
+
+    public void hideLogResult() {
+        showToolbarAndTabs();
+
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.logContainer, mBinding.viewLogs));
+        mBinding.logContainer.setVisibility(View.GONE);
+        mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
+    }
+
+    public void showDiagnostics() {
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewDiags, mBinding.diagContainer));
+        mBinding.diagContainer.setVisibility(View.VISIBLE);
+        mBinding.viewOptionsCard.setVisibility(View.GONE);
+        hideToolbarAndTabs();
+    }
+
+    public void hideDiagnostics() {
+        showToolbarAndTabs();
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.diagContainer, mBinding.viewDiags));
+        mBinding.diagContainer.setVisibility(View.GONE);
+        mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
+    }
+
+    public void showSearchResults() {
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewSearchResults, mBinding.searchResultsContainer));
+        mBinding.searchResultsContainer.setVisibility(View.VISIBLE);
+        mBinding.viewOptionsCard.setVisibility(View.GONE);
+        hideToolbarAndTabs();
+    }
+
+    public void hideSearchResults() {
+        showToolbarAndTabs();
+        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.searchResultsContainer, mBinding.viewSearchResults));
+        mBinding.searchResultsContainer.setVisibility(View.GONE);
+        mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
+    }
+
+    public void handleDiagnosticsResultVisibility(boolean errorVisible) {
+        mBinding.diagEmptyView.setVisibility(errorVisible ? View.VISIBLE : View.GONE);
+        getDiagnosticsList().setVisibility(errorVisible ? View.GONE : View.VISIBLE);
+    }
+
+    public void handleSearchResultVisibility(boolean errorVisible) {
+        mBinding.searchEmptyView.setVisibility(errorVisible ? View.VISIBLE : View.GONE);
+        getSearchResultList().setVisibility(errorVisible ? View.GONE : View.VISIBLE);
+    }
+    
+    public void setStatus(final CharSequence text) {
+        try {
+            runOnUiThread(() -> mBinding.editorStatusText.setText(text));
+        } catch (Throwable th) {}
+    }
+
+    public void showFirstBuildNotice() {
+        new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog)
+            .setPositiveButton(android.R.string.ok, null)
+            .setTitle(R.string.title_first_build)
+            .setMessage(R.string.msg_first_build)
+            .setCancelable(false)
+            .create().show();
+    }
+
+    @Override
+    public void onGroupClick(DiagnosticGroup group) {
+        if(group != null
+           && group.file != null
+           && group.file.exists()
+           && FileUtils.isUtf8(group.file))
+        {
+            openFile(group.file);
+        }
+    }
+
+    @Override
+    public void onDiagnosticClick(File file, Diagnostic diagnostic) {
+        openFileAndSelect(file, diagnostic.range);
+        hideDiagnostics();
+    }
+
+    public EditorPagerAdapter getPagerAdapter(){
+        return mPagerAdapter;
+    }
+
+    public ActivityEditorBinding getBinding() {
+        return mBinding;
+    }
+
+    /**
+     * Positions the view to the provided coordinates and within screen
+     *
+     * @param view View to position
+     * @param initialX Initial X coordinate of view
+     * @param initialY Initial Y coordinate of view
+     */
+    public void positionViewWithinScreen(View view, float initialX, float initialY) {
+        view.setX(initialX);
+        view.setY(initialY);
+
+        Rect r = new Rect();
+        int width = view.getWidth();
+        initialX = view.getX();
+        view.getWindowVisibleDisplayFrame(r);
+        if (r.width() != width) {
+
+            /**
+             * Will be true when the view is going out of screen to left 
+             */
+            if (initialX < r.left) {
+                initialX = SizeUtils.dp2px(8); // an offset of 8dp from the left edge of screen
+                view.setX(initialX);
+            }
+
+            /**
+             * Will be true when the view is going out of screen to right
+             */
+            if (initialX + width > r.right) {
+                initialX = r.right - SizeUtils.dp2px(8) - width; // position to the right but leaving 8dp space from the right edge of screen
+                view.setX(initialX); 
+            }
+        }
+    }
+
+    public void openFileAndSelect(File file, Range range) {
+        openFile(file, range);
+        EditorFragment opened = mPagerAdapter.findEditorByFile(file);
+        if (opened != null && opened.getEditor() != null) {
+            CodeEditor editor = opened.getEditor();
+            editor.post(() -> {
+                if (range.start.equals(range.end)) {
+                    editor.setSelection(range.start.line, range.start.column);
+                } else {
+                    editor.setSelectionRegion(range.start.line, range.start.column, range.end.line, range.end.column);
+                }
+            });
+        }
+    }
+
+    public void addPendingMessage(Message msg) {
+        pendingMessages.push(msg);
+    }
+
+    public Message createMessage(String method, String data) {
+        Message msg = new Message();
+        msg.jsonrpc = "2.0";
+        msg.method = method;
+        msg.params = new JsonParser().parse(data);
+        return msg;
+    }
+
+    /*****************************
+     **** Tab Related ************
+     *****************************/
+
+    @Override
+    public void onTabSelected(TabLayout.Tab p1) {
+        EditorFragment current = mPagerAdapter.getFrag(p1.getPosition());
+        if(current != null && current.getFile() != null) {
+            this.mCurrentFragment = current;
+            this.mCurrentFile = current.getFile();
+            refreshSymbolInput(current);
+        }
+
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab p1) {
+        EditorFragment frag = mPagerAdapter.getFrag(p1.getPosition());
+        if(frag == null) return;
+        boolean isGradle = frag.isModified() && frag.getFile().getName().endsWith(EditorFragment.EXT_GRADLE);
+        frag.save();
+        if(isGradle) {
+            notifySyncNeeded();
+        }
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab p1) {
+        mTabCloseAction.show(mBinding.tabs);
+	}
+    
+    @Override
+    public boolean onNavigationItemSelected(MenuItem p1) {
+        final int id = p1.getItemId();
+        if(id == R.id.editornav_discuss) {
+            getApp().openTelegramGroup();
+        } else if(id == R.id.editornav_suggest) {
+            getApp().openIssueTracker();
+        } else if(id == R.id.editornav_needHelp) {
+            showNeedHelpDialog();
+        } else if(id == R.id.editornav_settings) {
+            startActivity(new Intent(this, PreferencesActivity.class));
+        } else if(id == R.id.editornav_share) {
+            startActivity(IntentUtils.getShareTextIntent(getString(R.string.msg_share_app)));
+        } else if(id == R.id.editornav_close_project) {
+            confirmProjectClose();
+        }
+        mBinding.getRoot().closeDrawer(GravityCompat.START);
+        return false;
+	}
+    
+    public void loadFragment(Fragment fragment) {
+        super.loadFragment(fragment, mBinding.editorFrameLayout.getId());
+    }
+
+    public ProjectInfoSheet getProjectInfoSheet() {
+        return mProjectInfoSheet == null ? createProjectInfoSheet() : mProjectInfoSheet;
+    }
+
+    public ProjectInfoSheet createProjectInfoSheet() {
+        mProjectInfoSheet = new ProjectInfoSheet();
+        mProjectInfoSheet.setProject(mIDEProject);
+        return mProjectInfoSheet;
+    }
+
+    public OptionsListFragment getFileOptionsFragment(File file) {
+        mFileOptionsFragment = new OptionsListFragment();
+        mFileOptionsFragment.addOption(new SheetOption(0, R.drawable.ic_file_copy_path, R.string.copy_path, file));
+        mFileOptionsFragment.addOption(new SheetOption(1, R.drawable.ic_file_rename, R.string.rename_file, file));
+        mFileOptionsFragment.addOption(new SheetOption(2, R.drawable.ic_file_delete, R.string.delete_file, file));
+        if(file.isDirectory()) {
+            mFileOptionsFragment.addOption(new SheetOption(3, R.drawable.ic_new_file, R.string.new_file, file));
+            mFileOptionsFragment.addOption(new SheetOption(4, R.drawable.ic_new_folder, R.string.new_folder, file));
+        }
+        mFileOptionsFragment.setOnOptionsClickListener(o -> handleOptionClick(o));
+        return mFileOptionsFragment;
+    }
+
+    public ProgressSheet getProgressSheet() {
+        return mSearchingProgress;
+    }
+
+    public ProgressSheet getProgressSheet(int msg) {
+        if(mSearchingProgress != null && mSearchingProgress.isShowing()) {
+            mSearchingProgress.dismiss();
+        }
+        mSearchingProgress = new ProgressSheet();
+        mSearchingProgress.setCancelable(false);
+        mSearchingProgress.setWelcomeTextEnabled(false);
+        mSearchingProgress.setMessage(getString(msg));
+        mSearchingProgress.setSubMessageEnabled(false);
+        return mSearchingProgress;
+    }
+
+    public MaterialBanner getSyncBanner() {
+        return mBinding.syncBanner.setContentTextColor(ContextCompat.getColor(this, R.color.primaryTextColor))
+            .setBannerBackgroundColor(ContextCompat.getColor(this, R.color.primaryLightColor))
+            .setButtonTextColor(ContextCompat.getColor(this, R.color.secondaryColor))
+            .setIcon(R.drawable.ic_sync)
+            .setContentText(R.string.msg_sync_needed);
+    }
+
+    public TextSheetFragment getDaemonStatusFragment() {
+        return mDaemonStatusFragment == null ? mDaemonStatusFragment = new TextSheetFragment().setTextSelectable(true).setTitleText(R.string.gradle_daemon_status) : mDaemonStatusFragment;
+    }
+
+    public CodeEditor getBuildView() {
+        return getBuildView(false);
+    }
+
+    public CodeEditor getBuildView(boolean setup) {
+        CodeEditor edit = buildView == null ? createBuildView() : buildView;
+        if(setup && edit.getParent() == null) {
+            setupContainers();
+        }
+        return edit;
+    }
+
+    public CodeEditor createBuildView() {
+        buildView = new CodeEditor(this);
+        buildView.setEditable(false);
+        buildView.setDividerWidth(0);
+        buildView.setEditorLanguage(new BuildOutputLanguage());
+        buildView.setOverScrollEnabled(false);
+        buildView.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
+        buildView.setWordwrap(false);
+        buildView.setUndoEnabled(false);
+        buildView.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
+        buildView.setTypefaceText(TypefaceUtils.jetbrainsMono());
+        buildView.setTextSize(12);
+        buildView.setColorScheme(new SchemeAndroidIDE());
+        return buildView;
+    }
+
+    public CodeEditor getLogView() {
+        return getLogView(false);
+    }
+
+    public CodeEditor getLogView(boolean setup) {
+        CodeEditor edit = logView == null ? createLogView() : logView;
+        if(setup && edit.getParent() == null) {
+            setupContainers();
+        }
+        return edit;
+    }
+
+    public CodeEditor createLogView() {
+        logView = new CodeEditor(this);
+        logView.setEditable(false);
+        logView.setDividerWidth(0);
+        logView.setEditorLanguage(getLogLanguage());
+        logView.setOverScrollEnabled(false);
+        logView.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
+        logView.setWordwrap(false);
+        logView.setUndoEnabled(false);
+        logView.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
+        logView.setTypefaceText(TypefaceUtils.jetbrainsMono());
+        logView.setTextSize(12);
+        buildView.setColorScheme(new SchemeAndroidIDE());
+        return logView;
+    }
+
+    public RecyclerView getDiagnosticsList() {
+        return diagnosticList == null ? createDiagnosticsList() : diagnosticList;
+    }
+
+    public RecyclerView createDiagnosticsList() {
+        diagnosticList = new RecyclerView(this);
+        diagnosticList.setLayoutManager(new LinearLayoutManager(this));
+        diagnosticList.setAdapter(mLanguageClientHandler.newDiagnosticsAdapter());
+        return diagnosticList;
+    }
+
+    public RecyclerView getSearchResultList() {
+        return searchResultList == null ? createSearchResultList() : searchResultList;
+    }
+
+    public RecyclerView createSearchResultList() {
+        searchResultList = new RecyclerView(this);
+        searchResultList.setLayoutManager(new LinearLayoutManager(this));
+        return searchResultList;
+    }
+
+    public LogLanguageImpl getLogLanguage() {
+        return mLogLanguageImpl == null ? mLogLanguageImpl = new LogLanguageImpl() : mLogLanguageImpl;
+    }
+
+    @Override
+    public void openFile(File file) {
+        openFile(file, null);
+    }
+
+    public EditorFragment openFile(File file, Range selection) {
+        if(selection == null) selection = Range.ofZero();
+        int i = mPagerAdapter.openFile(file, selection, this, mJLSHandler);
+        if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
+            mBinding.tabs.getTabAt(i).select();
+        mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
+        invalidateOptionsMenu();
+        try {
+            return mPagerAdapter.getFrag(i);
+        } catch (Throwable th) {
+            return null;
+        }
+    }
+
+    @Override
+    public void onOpenSuccessful(File file, String text) {
+        if(file.getName().endsWith(".java")) {
+            TextDocumentItem doc = new TextDocumentItem();
+            doc.languageId = "java";
+            doc.uri = file.toURI();
+            doc.text = text;
+            doc.version = VersionedFileManager.fileOpened(file);
+            DidOpenTextDocumentParams p = new DidOpenTextDocumentParams();
+            p.textDocument = doc;
+            mJLSHandler.didOpen(p);
+        }
+    }
+
+    @Override
+    public void showFileOptions(File thisFile, TreeNode node) {
+        mLastHolded = node;
+        getFileOptionsFragment(thisFile).show(getSupportFragmentManager(), TAG_FILE_OPTIONS_FRAGMENT);
+    }
+
+    public boolean saveAll() {
+        return saveAll(true);
+    }
+
+    public boolean saveAll(boolean notify) {
+        return saveAll(notify, false);
+    }
+
+    public boolean saveAll(boolean notify, boolean canProcessResources) {
+        SaveResult result = mPagerAdapter.saveAll();
+        if(notify) {
+            getApp().toast(R.string.all_saved, Toaster.Type.SUCCESS);
+        }
+        if(result.gradleSaved){
+            notifySyncNeeded();
+        }
+        if(result.xmlSaved && canProcessResources && getBuildService() != null) {
+            getBuildService().updateResourceClasses();
+        }
+        return result.gradleSaved;
+	}
+    
+    public void install(File apk) {
+        if(apk.exists()) {
+            Intent i = IntentUtils.getInstallAppIntent(apk);
+            if(i != null) {
+                startActivity(i);
+            }
+        }
+    }
+
+    public void createServices() {
+        new TaskExecutor().executeAsync(() -> {
+            getApp().createCompletionService();
+            mJLSHandler.start();
+            return null;
+        }, __ -> {
+            setStatus(getString(getApp().areCompletorsStarted() ? R.string.msg_service_started : R.string.msg_starting_completion_failed));
+        });
+	}
+    
+       /////////////////////////////////////////////////
+      ////////////// PRIVATE APIS /////////////////////
+     /////////////////////////////////////////////////
+
+    private MaterialContainerTransform createContainerTransformFor(View start, View end) {
+        return createContainerTransformFor(start, end, mBinding.realContainer);
+    }
+
+    private MaterialContainerTransform createContainerTransformFor(View start, View end, View drawingView) {
+        return TransformUtils.createContainerTransformFor(start, end, drawingView);
+    }
+    
+    private void startServices() {
+        mBuildServiceHandler.start();
+        getBuildService().assembleDebug(false);
+    }
+
+    private void removeFromParent(View v) {
+        if(v.getParent() != null && v.getParent() instanceof ViewGroup) {
+            ((ViewGroup) v.getParent()).removeView(v);
+        }
+    }
+
+    private void onSoftInputChanged() {
+        invalidateOptionsMenu();
+        if(KeyboardUtils.isSoftInputVisible(this)) {
+            TransitionManager.beginDelayedTransition(mBinding.getRoot(), new Slide(Gravity.TOP));
+            symbolInput.setVisibility(View.VISIBLE);
+            mBinding.fabView.hide();
+        } else {
+            TransitionManager.beginDelayedTransition(mBinding.getRoot(), new Slide(Gravity.BOTTOM));
+            symbolInput.setVisibility(View.GONE);
+            mBinding.fabView.show();
+        }
+    }
+
+    private void refreshSymbolInput(EditorFragment frag) {
+        symbolInput.bindEditor(frag.getEditor());
+        symbolInput.setSymbols(Symbols.forFile(frag.getFile()));
+    }
+
+    private void notifySyncNeeded() {
+        if(getBuildService() != null && !getBuildService().isBuilding()) {
+            getSyncBanner()
+                .setNegative(android.R.string.cancel, null)
+                .setPositive(android.R.string.ok, v -> {
+                getBuildService().assembleDebug(false);
+            })
+            .show();
+        }
+    }
+
+    private void closeProject(boolean manualFinish) {
+        if (getBuildService() != null) {
+            getBuildService().setListener(null);
+            getBuildService().exit();
+        }
+
+        getApp().getPrefManager().setOpenedProject(PreferenceManager.NO_OPENED_PROJECT);
+
+        mJLSHandler.stop();
+
+        getApp().stopAllDaemons();
+
+        if(manualFinish)
+            finish();
+    }
+
+    private void confirmProjectClose() {
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+        builder.setTitle(R.string.title_confirm_project_close);
+        builder.setMessage(R.string.msg_confirm_project_close);
+        builder.setNegativeButton(android.R.string.no, null);
+        builder.setPositiveButton(android.R.string.yes, (d, w) -> {
+            d.dismiss();
+            closeProject(true);
+        });
+        builder.show();
     }
     
     private AlertDialog getFindInProjectDialog() {
@@ -613,676 +1149,23 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mFindInProjectDialog = builder.create();
         return mFindInProjectDialog;
     }
-    
-    public void handleSearchResults(Map<File, List<SearchResult>> results) {
-        getSearchResultList().setAdapter(new SearchListAdapter(results, file -> {
-            openFile(file);
-            hideSearchResults();
-        }, match -> {
-            openFileAndSelect(match.file, match);
-            hideSearchResults();
-        }));
-        mBinding.transformScrim.setVisibility(View.VISIBLE);
-        mBinding.fabView.setVisibility(View.GONE);
-        showSearchResults();
-        
-        if(mSearchingProgress != null && mSearchingProgress.isShowing())
-            mSearchingProgress.dismiss();
-    }
-	
-	/************************************
-	 *   Build Related                  *
-	 ************************************/
-	 
-	private void appendApkLog(LogLine line) {
-		getLogLanguage().addLine(line);
-		appendLogOut(line.toString());
-	}
-
-    @Override
-    public void appendOutput(GradleTask task, CharSequence text) {
-        if(text == null)
-            return;
-        if(task != null && !task.canOutput()) {
-            return;
-        }
-        appendBuildOut(text.toString());
-    }
-
-    @Override
-    public void prepare() {
-        boolean isFirstBuild = getApp().getPrefManager().getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true);
-        setStatus(getString(isFirstBuild ? R.string.preparing_first : R.string.preparing));
-        if(isFirstBuild) {
-            showFirstBuildNotice();
-        }
-    }
-
-    @Override
-    public void onStartingGradleDaemon(GradleTask task) {
-        setStatus(getString(R.string.msg_starting_daemon));
-        getApp().setStopGradleDaemon(false);
-    }
-
-    @Override
-    public void onRunTask(GradleTask task, String taskName) {
-        if(task != null && task.canOutput()) {
-            setStatus(getBuildService().typeString(task.getTaskID()) + " " + taskName);
-        }
-    }
-
-    @Override
-    public void onBuildSuccessful(GradleTask task, String msg) {
-        if(task == null) return;
-        if(task.canOutput())
-            setStatus(msg);
-
-        if(task.getType() == GradleTask.Type.BUILD) {
-            if(task.getTaskID() == IDEService.TASK_ASSEMBLE_DEBUG) {
-                if(task.buildsApk()) {
-                    install(task.getApk(new File(mProject.getMainModulePath(), "build").getAbsolutePath(), mProject.getMainModule()));
-                }
-            }
-        }
-
-        getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-        
-        invalidateOptionsMenu();
-    }
-
-    @Override
-    public void onBuildFailed(GradleTask task, String msg) {
-        if(task == null) return;
-        if(task.canOutput()) {
-            setStatus(msg);
-        }
-
-        showBuildResult();
-
-        getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-        
-        invalidateOptionsMenu();
-    }
-    
-    @Override
-    public void onProjectLoaded(IDEProject project, Optional<IDEModule> appModule) {
-        project.iconPath = mProject.getIconPath();
-        mIDEProject = project;
-        createProjectInfoSheet(); // Recreate sheet, even if already created. Just to update its contents
-        if(appModule.isPresent()) {
-            IDEModule app = appModule.get();
-            setStatus(getString(R.string.msg_starting_completion));
-            
-            final List<String> paths = new ArrayList<String>(app.dependencies);
-            paths.stream().filter(path -> isClasspathValid(path)).collect(Collectors.toList());
-            
-            mProject.setClassPaths(paths);
-            
-            File androidJar = new File(Environment.ANDROID_HOME, String.format("platforms/%s/android.jar", app.compileSdkVersion));
-            if(androidJar.exists()) {
-                Environment.setBootClasspath(androidJar);
-                mProject.addClasspath(androidJar.getAbsolutePath());
-                createServices();
-            } else setStatus("android.jar not found!");
-        } else setStatus("Cannot get :app module...");
-    }
-
-    @Override
-    public void onBuildModified() {
-        // Does nothing currently
-    }
-    
-    private boolean isClasspathValid(String path) {
-        if(path == null || path.trim().length() <= 0 || path.trim().equals("/")) return false;
-        File file = new File(path);
-        return file.isFile()
-            && file.getName().endsWith(".jar")
-            /**
-             * Release R.jar shouldn't be included in classpath
-             */
-            && !file.getAbsolutePath().endsWith("/release/R.jar");
-    }
-
-    @Override
-    public void saveFiles() {
-        saveAll(false, false);
-    }
-
-    // Can be called from a different different, better to run on UI thread
-    private void appendBuildOut(final String str) {
-        runOnUiThread(() -> {
-            String strFinal = str.endsWith("\n") ? str : str.concat("\n");
-            getBuildView(true).getText().append(strFinal);
-        });
-    }
-
-    // Can be called from a different different, better to run on UI thread
-    private void appendLogOut(final String str) {
-        runOnUiThread(() -> {
-            String strFinal = str.endsWith("\n") ? str : str.concat("\n");
-            getLogView(true).getText().append(strFinal);
-        });
-	}
-	
-	private void showFiles() {
-		if(mBinding.viewOptionsCard.getVisibility() == View.VISIBLE) {
-			hideViewOptions();
-		}
-		
-		mBinding.getRoot().openDrawer(GravityCompat.END, true);
-	}
-	
-	private void showDaemonStatus() {
-		if(mBinding.viewOptionsCard.getVisibility() == View.VISIBLE) {
-			hideViewOptions();
-		}
-		ShellServer shell = getApp().newShell(t -> getDaemonStatusFragment().append(t.toString()));
-		shell.bgAppend(String.format("echo '%s'", getString(R.string.msg_getting_daemom_status)));
-		shell.bgAppend("gradle --status");
-		if(!getDaemonStatusFragment().isShowing())
-			getDaemonStatusFragment().show(getSupportFragmentManager(), "daemon_status");
-	}
-	
-	private void hideToolbarAndTabs() {
-		mBinding.editorAppBarLayout.setVisibility(View.INVISIBLE);
-	}
-	
-	private void showToolbarAndTabs() {
-		mBinding.editorAppBarLayout.setVisibility(View.VISIBLE);
-	}
-	
-	private void showViewOptions() {
-        try {
-            EditorFragment frag = mPagerAdapter.getFrag(mBinding.tabs.getSelectedTabPosition());
-            if(frag != null && frag.getEditor() != null) {
-                frag.getEditor().hideAutoCompleteWindow();
-                frag.getEditor().hideDiagnosticWindow();
-            }
-        } catch (Throwable e) {}
-		TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.fabView, mBinding.viewOptionsCard));
-		mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
-		mBinding.transformScrim.setVisibility(View.VISIBLE);
-		mBinding.fabView.setVisibility(View.GONE);
-	}
-	
-	private void hideViewOptions() {
-		TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewOptionsCard, mBinding.fabView));
-		mBinding.viewOptionsCard.setVisibility(View.GONE);
-		mBinding.transformScrim.setVisibility(View.GONE);
-		mBinding.fabView.setVisibility(View.VISIBLE);
-	}
-	
-	private void showBuildResult() {
-		TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewBuildOut, mBinding.buildContainer));
-		mBinding.buildContainer.setVisibility(View.VISIBLE);
-		mBinding.viewOptionsCard.setVisibility(View.GONE);
-		hideToolbarAndTabs();
-	}
-	
-	private void hideBuildResult() {
-		showToolbarAndTabs();
-		TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.buildContainer, mBinding.viewBuildOut));
-		mBinding.buildContainer.setVisibility(View.GONE);
-		mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
-	}
-	
-	private void showLogResult() {
-		TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewLogs, mBinding.logContainer));
-		mBinding.logContainer.setVisibility(View.VISIBLE);
-		mBinding.viewOptionsCard.setVisibility(View.GONE);
-		hideToolbarAndTabs();
-	}
-
-	private void hideLogResult() {
-		showToolbarAndTabs();
-		
-		TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.logContainer, mBinding.viewLogs));
-		mBinding.logContainer.setVisibility(View.GONE);
-		mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
-	}
-    
-    private void showDiagnostics() {
-        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewDiags, mBinding.diagContainer));
-        mBinding.diagContainer.setVisibility(View.VISIBLE);
-        mBinding.viewOptionsCard.setVisibility(View.GONE);
-        hideToolbarAndTabs();
-    }
-
-    private void hideDiagnostics() {
-        showToolbarAndTabs();
-        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.diagContainer, mBinding.viewDiags));
-        mBinding.diagContainer.setVisibility(View.GONE);
-        mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
-	}
-    
-    private void showSearchResults() {
-        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.viewSearchResults, mBinding.searchResultsContainer));
-        mBinding.searchResultsContainer.setVisibility(View.VISIBLE);
-        mBinding.viewOptionsCard.setVisibility(View.GONE);
-        hideToolbarAndTabs();
-    }
-
-    private void hideSearchResults() {
-        showToolbarAndTabs();
-        TransitionManager.beginDelayedTransition(mBinding.getRoot(), createContainerTransformFor(mBinding.searchResultsContainer, mBinding.viewSearchResults));
-        mBinding.searchResultsContainer.setVisibility(View.GONE);
-        mBinding.viewOptionsCard.setVisibility(View.VISIBLE);
-	}
-    
-    public void handleDiagnosticsResultVisibility(boolean errorVisible) {
-        mBinding.diagEmptyView.setVisibility(errorVisible ? View.VISIBLE : View.GONE);
-        getDiagnosticsList().setVisibility(errorVisible ? View.GONE : View.VISIBLE);
-    }
-
-    public void handleSearchResultVisibility(boolean errorVisible) {
-        mBinding.searchEmptyView.setVisibility(errorVisible ? View.VISIBLE : View.GONE);
-        getSearchResultList().setVisibility(errorVisible ? View.GONE : View.VISIBLE);
-    }
-	
-	private MaterialContainerTransform createContainerTransformFor(View start, View end) {
-		return createContainerTransformFor(start, end, mBinding.realContainer);
-	}
-	
-	private MaterialContainerTransform createContainerTransformFor(View start, View end, View drawingView) {
-		return TransformUtils.createContainerTransformFor(start, end, drawingView);
-	}
-
-	private void install(File apk) {
-		if(apk.exists()) {
-			Intent i = IntentUtils.getInstallAppIntent(apk);
-			if(i != null) {
-				startActivity(i);
-			}
-		}
-	}
-
-	private void createServices() {
-		new TaskExecutor().executeAsync(() -> {
-			getApp().createCompletionService();
-            mJLSHandler.start(EditorActivity.this);
-			return null;
-		}, __ -> {
-			setStatus(getString(getApp().areCompletorsStarted() ? R.string.msg_service_started : R.string.msg_starting_completion_failed));
-		});
-	}
 
 	private void registerLogReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(LogReceiver.APPEND_LOG);
 		registerReceiver(mLogReceiver, filter);
 	}
-
-    private void setStatus(final CharSequence text) {
-        try {
-			runOnUiThread(() -> mBinding.editorStatusText.setText(text));
-        } catch (Throwable th) {
-		}
-    }
-	
-	private void showFirstBuildNotice() {
-		new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog)
-			.setPositiveButton(android.R.string.ok, null)
-			.setTitle(R.string.title_first_build)
-			.setMessage(R.string.msg_first_build)
-			.setCancelable(false)
-			.create().show();
-	}
     
-    @Override
-    public void onGroupClick(DiagnosticGroup group) {
-        if(group != null
-            && group.file != null
-            && group.file.exists()
-            && FileUtils.isUtf8(group.file))
-        {
-            openFile(group.file);
-        }
-    }
-
-    @Override
-    public void onDiagnosticClick(File file, Diagnostic diagnostic) {
-        openFileAndSelect(file, diagnostic.range);
-        hideDiagnostics();
+    private IDEService getBuildService() {
+        return mBuildServiceHandler.getService();
     }
     
-    public EditorPagerAdapter getPagerAdapter(){
-        return mPagerAdapter;
-    }
-    
-    public ActivityEditorBinding getBinding() {
-        return mBinding;
-    }
-    
-    /**
-     * Positions the view to the provided coordinates and within screen
-     *
-     * @param view View to position
-     * @param initialX Initial X coordinate of view
-     * @param initialY Initial Y coordinate of view
-     */
-    public void positionViewWithinScreen(View view, float initialX, float initialY) {
-        view.setX(initialX);
-        view.setY(initialY);
-        
-        Rect r = new Rect();
-        int width = view.getWidth();
-        initialX = view.getX();
-        view.getWindowVisibleDisplayFrame(r);
-        if (r.width() != width) {
-            
-            /**
-             * Will be true when the view is going out of screen to left 
-             */
-            if (initialX < r.left) {
-                initialX = SizeUtils.dp2px(8); // an offset of 8dp from the left edge of screen
-                view.setX(initialX);
-            }
-            
-            /**
-             * Will be true when the view is going out of screen to right
-             */
-            if (initialX + width > r.right) {
-                initialX = r.right - SizeUtils.dp2px(8) - width; // position to the right but leaving 8dp space from the right edge of screen
-                view.setX(initialX); 
-            }
-        }
-    }
-    
-    public void openFileAndSelect(File file, Range range) {
-        openFile(file, range);
-        EditorFragment opened = mPagerAdapter.findEditorByFile(file);
-        if (opened != null && opened.getEditor() != null) {
-            CodeEditor editor = opened.getEditor();
-            editor.post(() -> {
-                if (range.start.equals(range.end)) {
-                    editor.setSelection(range.start.line, range.start.column);
-                } else {
-                    editor.setSelectionRegion(range.start.line, range.start.column, range.end.line, range.end.column);
-                }
-            });
-        }
-    }
-    
-    public void addPendingMessage(Message msg) {
-        pendingMessages.push(msg);
-    }
-    
-    public Message createMessage(String method, String data) {
-        Message msg = new Message();
-        msg.jsonrpc = "2.0";
-        msg.method = method;
-        msg.params = new JsonParser().parse(data);
-        return msg;
-    }
-    
-	/*****************************
-	 **** Tab Related ************
-	 *****************************/
-	 
-	@Override
-	public void onTabSelected(TabLayout.Tab p1) {
-		EditorFragment current = mPagerAdapter.getFrag(p1.getPosition());
-		if(current != null && current.getFile() != null) {
-			this.mCurrentFragment = current;
-			this.mCurrentFile = current.getFile();
-			refreshSymbolInput(current);
-		}
-        
-        invalidateOptionsMenu();
-	}
-
-	@Override
-	public void onTabUnselected(TabLayout.Tab p1) {
-		EditorFragment frag = mPagerAdapter.getFrag(p1.getPosition());
-		if(frag == null) return;
-		boolean isGradle = frag.isModified() && frag.getFile().getName().endsWith(EditorFragment.EXT_GRADLE);
-		frag.save();
-		if(isGradle) {
-			notifySyncNeeded();
-		}
-	}
-
-	@Override
-	public void onTabReselected(TabLayout.Tab p1) {
-		mTabCloseAction.show(mBinding.tabs);
-	}
-	
-	// ************************
-	// **** Navigation View
-	// ************************
-	
-	@Override
-	public boolean onNavigationItemSelected(MenuItem p1) {
-		final int id = p1.getItemId();
-		if(id == R.id.editornav_discuss) {
-			getApp().openTelegramGroup();
-		} else if(id == R.id.editornav_suggest) {
-			getApp().openIssueTracker();
-		} else if(id == R.id.editornav_needHelp) {
-			showNeedHelpDialog();
-		} else if(id == R.id.editornav_settings) {
-			startActivity(new Intent(this, PreferencesActivity.class));
-		} else if(id == R.id.editornav_share) {
-			startActivity(IntentUtils.getShareTextIntent(getString(R.string.msg_share_app)));
-		} else if(id == R.id.editornav_close_project) {
-            confirmProjectClose();
-        }
-        mBinding.getRoot().closeDrawer(GravityCompat.START);
-		return false;
-	}
-
 	private void showNeedHelpDialog() {
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
 		builder.setTitle(R.string.need_help);
 		builder.setMessage(R.string.msg_need_help);
 		builder.setPositiveButton(android.R.string.ok, null);
 		builder.create().show();
-	}
-	
-	  // -----------------------------
-	 // ---- Fragment Related
-	// -------------------------------
-    
-	
-	public void loadFragment(Fragment fragment) {
-		super.loadFragment(fragment, mBinding.editorFrameLayout.getId());
-	}
-    
-    public ProjectInfoSheet getProjectInfoSheet() {
-        return mProjectInfoSheet == null ? createProjectInfoSheet() : mProjectInfoSheet;
-    }
-    
-    public ProjectInfoSheet createProjectInfoSheet() {
-        mProjectInfoSheet = new ProjectInfoSheet();
-        mProjectInfoSheet.setProject(mIDEProject);
-        return mProjectInfoSheet;
-    }
-	
-	public OptionsListFragment getFileOptionsFragment(File file) {
-		mFileOptionsFragment = new OptionsListFragment();
-		mFileOptionsFragment.addOption(new SheetOption(0, R.drawable.ic_file_copy_path, R.string.copy_path, file));
-		mFileOptionsFragment.addOption(new SheetOption(1, R.drawable.ic_file_rename, R.string.rename_file, file));
-		mFileOptionsFragment.addOption(new SheetOption(2, R.drawable.ic_file_delete, R.string.delete_file, file));
-		if(file.isDirectory()) {
-			mFileOptionsFragment.addOption(new SheetOption(3, R.drawable.ic_new_file, R.string.new_file, file));
-			mFileOptionsFragment.addOption(new SheetOption(4, R.drawable.ic_new_folder, R.string.new_folder, file));
-		}
-		mFileOptionsFragment.setOnOptionsClickListener(o -> handleOptionClick(o));
-		return mFileOptionsFragment;
-	}
-    
-    public ProgressSheet getProgressSheet() {
-        return mSearchingProgress;
-    }
-    
-    public ProgressSheet getProgressSheet(int msg) {
-        if(mSearchingProgress != null && mSearchingProgress.isShowing()) {
-            mSearchingProgress.dismiss();
-        }
-        mSearchingProgress = new ProgressSheet();
-        mSearchingProgress.setCancelable(false);
-        mSearchingProgress.setWelcomeTextEnabled(false);
-        mSearchingProgress.setMessage(getString(msg));
-        mSearchingProgress.setSubMessageEnabled(false);
-        return mSearchingProgress;
-    }
-
-	public MaterialBanner getSyncBanner() {
-		return mBinding.syncBanner.setContentTextColor(ContextCompat.getColor(this, R.color.primaryTextColor))
-			.setBannerBackgroundColor(ContextCompat.getColor(this, R.color.primaryLightColor))
-			.setButtonTextColor(ContextCompat.getColor(this, R.color.secondaryColor))
-			.setIcon(R.drawable.ic_sync)
-			.setContentText(R.string.msg_sync_needed);
-	}
-	
-	public TextSheetFragment getDaemonStatusFragment() {
-		return mDaemonStatusFragment == null ? mDaemonStatusFragment = new TextSheetFragment().setTextSelectable(true).setTitleText(R.string.gradle_daemon_status) : mDaemonStatusFragment;
-	}
-	
-	public CodeEditor getBuildView() {
-		return getBuildView(false);
-	}
-	
-	public CodeEditor getBuildView(boolean setup) {
-		CodeEditor edit = buildView == null ? createBuildView() : buildView;
-		if(setup && edit.getParent() == null) {
-			setupContainers();
-		}
-		return edit;
-	}
-
-	public CodeEditor createBuildView() {
-		buildView = new CodeEditor(this);
-		buildView.setEditable(false);
-		buildView.setDividerWidth(0);
-		buildView.setEditorLanguage(new BuildOutputLanguage());
-		buildView.setOverScrollEnabled(false);
-		buildView.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
-		buildView.setWordwrap(false);
-		buildView.setUndoEnabled(false);
-		buildView.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
-		buildView.setTypefaceText(TypefaceUtils.jetbrainsMono());
-		buildView.setTextSize(12);
-        buildView.setColorScheme(new SchemeAndroidIDE());
-		return buildView;
-	}
-	
-	public CodeEditor getLogView() {
-		return getLogView(false);
-	}
-
-	public CodeEditor getLogView(boolean setup) {
-		CodeEditor edit = logView == null ? createLogView() : logView;
-		if(setup && edit.getParent() == null) {
-			setupContainers();
-		}
-		return edit;
-	}
-
-	public CodeEditor createLogView() {
-		logView = new CodeEditor(this);
-		logView.setEditable(false);
-		logView.setDividerWidth(0);
-		logView.setEditorLanguage(getLogLanguage());
-		logView.setOverScrollEnabled(false);
-		logView.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
-		logView.setWordwrap(false);
-		logView.setUndoEnabled(false);
-		logView.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
-		logView.setTypefaceText(TypefaceUtils.jetbrainsMono());
-		logView.setTextSize(12);
-        buildView.setColorScheme(new SchemeAndroidIDE());
-		return logView;
-	}
-    
-    public RecyclerView getDiagnosticsList() {
-        return diagnosticList == null ? createDiagnosticsList() : diagnosticList;
-    }
-    
-    public RecyclerView createDiagnosticsList() {
-        diagnosticList = new RecyclerView(this);
-        diagnosticList.setLayoutManager(new LinearLayoutManager(this));
-        diagnosticList.setAdapter(mLanguageClientHandler.newDiagnosticsAdapter());
-        return diagnosticList;
-    }
-    
-    public RecyclerView getSearchResultList() {
-        return searchResultList == null ? createSearchResultList() : searchResultList;
-    }
-    
-    public RecyclerView createSearchResultList() {
-        searchResultList = new RecyclerView(this);
-        searchResultList.setLayoutManager(new LinearLayoutManager(this));
-        return searchResultList;
-    }
-    
-	public LogLanguageImpl getLogLanguage() {
-		return mLogLanguageImpl == null ? mLogLanguageImpl = new LogLanguageImpl() : mLogLanguageImpl;
-	}
-	
-	// -----------------------------
-	// ---- File Related
-	// -----------------------------
-	
-	@Override
-	public void openFile(File file) {
-		openFile(file, null);
-	}
-    
-    public EditorFragment openFile(File file, Range selection) {
-        if(selection == null) selection = Range.ofZero();
-        int i = mPagerAdapter.openFile(file, selection, this, mJLSHandler);
-        if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
-            mBinding.tabs.getTabAt(i).select();
-        mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
-        invalidateOptionsMenu();
-        try {
-            return mPagerAdapter.getFrag(i);
-        } catch (Throwable th) {
-            return null;
-        }
-    }
-
-    @Override
-    public void onOpenSuccessful(File file, String text) {
-        if(file.getName().endsWith(".java")) {
-            TextDocumentItem doc = new TextDocumentItem();
-            doc.languageId = "java";
-            doc.uri = file.toURI();
-            doc.text = text;
-            doc.version = VersionedFileManager.fileOpened(file);
-            DidOpenTextDocumentParams p = new DidOpenTextDocumentParams();
-            p.textDocument = doc;
-            mJLSHandler.didOpen(p);
-        }
-    }
-
-	@Override
-	public void showFileOptions(File thisFile, TreeNode node) {
-		mLastHolded = node;
-		getFileOptionsFragment(thisFile).show(getSupportFragmentManager(), TAG_FILE_OPTIONS_FRAGMENT);
-	}
-	
-    private boolean saveAll() {
-        return saveAll(true);
-    }
-    
-    private boolean saveAll(boolean notify) {
-        return saveAll(notify, false);
-    }
-    
-	private boolean saveAll(boolean notify, boolean canProcessResources) {
-		SaveResult result = mPagerAdapter.saveAll();
-        if(notify) {
-            getApp().toast(R.string.all_saved, Toaster.Type.SUCCESS);
-        }
-		if(result.gradleSaved){
-            notifySyncNeeded();
-        }
-        if(result.xmlSaved && canProcessResources && getBuildService() != null) {
-            getBuildService().updateResourceClasses();
-        }
-		return result.gradleSaved;
 	}
 	
 	private void handleOptionClick(SheetOption o) {
@@ -1563,11 +1446,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		});
 		builder.create().show();
 	}
-	
-	// -----------------------------
-	// ---- Quick Actions
-	// -----------------------------
-	
+    
 	private void createQuickActions() {
 		ActionItem closeThis = new ActionItem(ACTIONID_CLOSE, getString(R.string.action_closeThis), R.drawable.ic_close_this);
 		ActionItem closeOthers = new ActionItem(ACTIONID_OTHERS, getString(R.string.action_closeOthers), R.drawable.ic_close_others);

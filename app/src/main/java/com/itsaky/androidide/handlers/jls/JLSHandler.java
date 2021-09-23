@@ -37,13 +37,13 @@ import java.util.stream.Collectors;
 
 public class JLSHandler extends IDEHandler implements JLSRequestor {
     
-    private EditorActivity activity;
     private JavaLanguageServer languageServer;
     
-    private final LanguageClient client;
+    private final LanguageClientHandler client;
     private static final Gson gson = new Gson();
 
-    public JLSHandler(LanguageClient client) {
+    public JLSHandler(LanguageClientHandler client, Provider provider) {
+        super(provider);
         this.client = client;
     }
     
@@ -52,10 +52,8 @@ public class JLSHandler extends IDEHandler implements JLSRequestor {
     }
     
     @Override
-    public void start(IDEHandler.Provider provider) {
-        super.start(provider);
-        this.activity = provider.provideEditorActivity();
-        if(activity == null) {
+    public void start() {
+        if(activity() == null) {
             throw new NullPointerException("EditorActivity should not be null");
         }
         
@@ -63,6 +61,8 @@ public class JLSHandler extends IDEHandler implements JLSRequestor {
         if(project == null) {
             throw new NullPointerException("Project is null");
         }
+        
+        this.client.start();
         
         this.languageServer = new JavaLanguageServer(project, this.client);
         this.languageServer.startServer();
@@ -77,68 +77,68 @@ public class JLSHandler extends IDEHandler implements JLSRequestor {
     
     @Override
     public void hideSignature() {
-        activity.getBinding().symbolText.setVisibility(View.GONE);
+        activity().getBinding().symbolText.setVisibility(View.GONE);
     }
 
     @Override
     public void didOpen(DidOpenTextDocumentParams p) {
         if(languageServer != null)
             languageServer.didOpen(p);
-        else activity.addPendingMessage(activity.createMessage(JavaLanguageServer.Method.DID_OPEN, gson.toJson(p)));
+        else activity().addPendingMessage(activity().createMessage(JavaLanguageServer.Method.DID_OPEN, gson.toJson(p)));
     }
 
     @Override
     public void didClose(DidCloseTextDocumentParams p) {
         if(languageServer != null)
             languageServer.didClose(p);
-        else activity.addPendingMessage(activity.createMessage(JavaLanguageServer.Method.DID_CLOSE, gson.toJson(p)));
+        else activity().addPendingMessage(activity().createMessage(JavaLanguageServer.Method.DID_CLOSE, gson.toJson(p)));
     }
 
     @Override
     public void didChange(DidChangeTextDocumentParams params) {
         if(languageServer != null)
             languageServer.didChange(params);
-        else activity.addPendingMessage(activity.createMessage(JavaLanguageServer.Method.DID_CHANGE, gson.toJson(params)));
+        else activity().addPendingMessage(activity().createMessage(JavaLanguageServer.Method.DID_CHANGE, gson.toJson(params)));
     }
 
     @Override
     public void didSave(DidSaveTextDocumentParams params) {
         if(languageServer != null)
             languageServer.didSave(params);
-        else activity.addPendingMessage(activity.createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
+        else activity().addPendingMessage(activity().createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
     }
 
     @Override
     public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
         if(languageServer != null)
             languageServer.didChangeWatchedFiles(params);
-        else activity.addPendingMessage(activity.createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
+        else activity().addPendingMessage(activity().createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
     }
 
     @Override
     public void signatureHelp(TextDocumentPositionParams params, File file) {
         if(languageServer != null)
             languageServer.signatureHelp(params, file);
-        else activity.addPendingMessage(activity.createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
+        else activity().addPendingMessage(activity().createMessage(JavaLanguageServer.Method.DID_SAVE, gson.toJson(params)));
     }
 
     @Override
     public void findDefinition(TextDocumentPositionParams params) {
         if(languageServer == null || !languageServer.isStarted()) return;
         languageServer.findDefinition(params);
-        activity.getProgressSheet(R.string.msg_finding_definition).show(activity.getSupportFragmentManager(), "definition_progress");
+        activity().getProgressSheet(R.string.msg_finding_definition).show(activity().getSupportFragmentManager(), "definition_progress");
     }
 
     @Override
     public void findReferences(ReferenceParams params) {
         if(languageServer == null || !languageServer.isStarted()) return;
         languageServer.findReferences(params);
-        activity.getProgressSheet(R.string.msg_finding_references).show(activity.getSupportFragmentManager(), "references_progress");
+        activity().getProgressSheet(R.string.msg_finding_references).show(activity().getSupportFragmentManager(), "references_progress");
     }
 
     @Override
     public void performCodeActions(final File file, List<CodeAction> actions) {
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity, R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
         builder.setTitle(R.string.msg_code_actions);
         builder.setItems(mapActionsAsArray(removeDuplicates(actions)), (d, w) -> {
             d.dismiss();
@@ -157,9 +157,9 @@ public class JLSHandler extends IDEHandler implements JLSRequestor {
         if(isInSameFile(file, action.edit.changes)) {
             performCodeAction(file, action);
         } else {
-            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity, R.style.AppTheme_MaterialAlertDialog);
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
             builder.setTitle(R.string.title_confirm_changes);
-            builder.setMessage(activity.getString(R.string.msg_confirm_changes, getFileNamesOfEdits(action.edit.changes.keySet())));
+            builder.setMessage(activity().getString(R.string.msg_confirm_changes, getFileNamesOfEdits(action.edit.changes.keySet())));
             builder.setPositiveButton(android.R.string.yes, (d, w) -> performCodeAction(file, action));
             builder.setNegativeButton(android.R.string.no, null);
             builder.show();
@@ -229,8 +229,8 @@ public class JLSHandler extends IDEHandler implements JLSRequestor {
 
         boolean wroteInFragment = false;
 
-        if(activity.getPagerAdapter() != null) {
-            EditorFragment frag = activity.getPagerAdapter().findEditorByFile(file);
+        if(activity().getPagerAdapter() != null) {
+            EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
             if(frag != null && frag.getEditor() != null && frag.getEditor().getText() != null) {
                 performEdits(frag.getEditor().getText(), edits);
                 wroteInFragment = true;
@@ -301,7 +301,7 @@ public class JLSHandler extends IDEHandler implements JLSRequestor {
     public void notifyFileCreated(File file) {
         notifyExternalFileChange(file, FileChangeType.Created);
 
-        activity.openFile(file);
+        activity().openFile(file);
     }
 
     public void notifyFileDeleted(File file) {

@@ -39,14 +39,15 @@ import java.util.Map;
 
 public class LanguageClientHandler extends IDEHandler implements LanguageClient {
     
-    private EditorActivity activity;
     private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
     
+    public LanguageClientHandler(Provider provider) {
+        super(provider);
+    }
+    
     @Override
-    public void start(IDEHandler.Provider listener) {
-        super.start(listener);
-        this.activity = listener.provideEditorActivity();
-        if(this.activity == null) throwNPE();
+    public void start() {
+        // Unimplemented
     }
 
     @Override
@@ -57,7 +58,7 @@ public class LanguageClientHandler extends IDEHandler implements LanguageClient 
     @Override
     public void publishDiagnostics(PublishDiagnosticsParams params) {
         boolean error = params == null || params.diagnostics == null || params.diagnostics.size() <= 0;
-        activity.handleDiagnosticsResultVisibility(error);
+        activity().handleDiagnosticsResultVisibility(error);
 
         if(error) return;
 
@@ -65,32 +66,32 @@ public class LanguageClientHandler extends IDEHandler implements LanguageClient 
         if(!(file.exists() && file.isFile())) return;
 
         diagnostics.put(file, params.diagnostics);
-        activity.getDiagnosticsList().setAdapter(newDiagnosticsAdapter());
+        activity().getDiagnosticsList().setAdapter(newDiagnosticsAdapter());
 
         EditorFragment editor = null;
-        if(activity.getPagerAdapter() != null && (editor = activity.getPagerAdapter().findEditorByFile(new File(params.uri))) != null) {
+        if(activity().getPagerAdapter() != null && (editor = activity().getPagerAdapter().findEditorByFile(new File(params.uri))) != null) {
             editor.setDiagnostics(params.diagnostics);
         }
     }
 
     @Override
     public void gotoDefinition(List<Location> locations) {
-        if(activity.getProgressSheet() != null && activity.getProgressSheet().isShowing())
-            activity.getProgressSheet().dismiss();
+        if(activity().getProgressSheet() != null && activity().getProgressSheet().isShowing())
+            activity().getProgressSheet().dismiss();
         if(locations == null || locations.size() <= 0) {
-            activity.getApp().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
+            activity().getApp().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
             return;
         }
         Location loc = locations.get(0);
         final File file = new File(loc.uri);
         final Range range = loc.range;
         try {
-            if(activity.getPagerAdapter() == null) return;
-            if(activity.getPagerAdapter().getCount() <= 0) {
-                activity.openFile(file, range);
+            if(activity().getPagerAdapter() == null) return;
+            if(activity().getPagerAdapter().getCount() <= 0) {
+                activity().openFile(file, range);
                 return;
             }
-            EditorFragment frag = activity.getPagerAdapter().getFrag(activity.getBinding().tabs.getSelectedTabPosition());
+            EditorFragment frag = activity().getPagerAdapter().getFrag(activity().getBinding().tabs.getSelectedTabPosition());
             if(frag != null
                && frag.getFile() != null
                && frag.getEditor() != null
@@ -101,7 +102,7 @@ public class LanguageClientHandler extends IDEHandler implements LanguageClient 
                     frag.getEditor().setSelectionRegion(range.start.line, range.start.column, range.end.line, range.end.column);
                 }
             } else {
-                activity.openFileAndSelect(file, range);
+                activity().openFileAndSelect(file, range);
             }
         } catch (Throwable th) {
             LOG.error(ThrowableUtils.getFullStackTrace(th));
@@ -110,16 +111,16 @@ public class LanguageClientHandler extends IDEHandler implements LanguageClient 
 
     @Override
     public void references(List<Location> references) {
-        if(activity.getProgressSheet() != null && activity.getProgressSheet().isShowing())
-            activity.getProgressSheet().dismiss();
+        if(activity().getProgressSheet() != null && activity().getProgressSheet().isShowing())
+            activity().getProgressSheet().dismiss();
 
         boolean error = references == null || references.size() <= 0;
-        activity.handleSearchResultVisibility(error);
+        activity().handleSearchResultVisibility(error);
 
 
         if(error) {
-            activity.getApp().toast(R.string.msg_no_references, Toaster.Type.INFO);
-            activity.getSearchResultList().setAdapter(new SearchListAdapter(null, null, null));
+            activity().getApp().toast(R.string.msg_no_references, Toaster.Type.INFO);
+            activity().getSearchResultList().setAdapter(new SearchListAdapter(null, null, null));
             return;
         }
 
@@ -130,7 +131,7 @@ public class LanguageClientHandler extends IDEHandler implements LanguageClient 
                 if(loc == null || loc.uri == null || loc.range == null) continue;
                 final File file = new File(loc.uri);
                 if(!file.exists() || !file.isFile()) continue;
-                EditorFragment frag = activity.getPagerAdapter().findEditorByFile(file);
+                EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
                 Content content;
                 if(frag != null && frag.getEditor() != null)
                     content = frag.getEditor().getText();
@@ -155,33 +156,33 @@ public class LanguageClientHandler extends IDEHandler implements LanguageClient 
             }
         }
 
-        activity.handleSearchResults(results);
+        activity().handleSearchResults(results);
     }
 
     @Override
     public void signatureHelp(SignatureHelp signature, File file) {
         if(signature == null || signature.signatures == null) {
-            activity.getBinding().symbolText.setVisibility(View.GONE);
+            activity().getBinding().symbolText.setVisibility(View.GONE);
             return;
         }
         SignatureInformation info = signature.signatures.get(signature.activeSignature);
-        activity.getBinding().symbolText.setText(formatSignature(info, signature.activeParameter));
-        final EditorFragment frag = activity.getPagerAdapter().findEditorByFile(file);
+        activity().getBinding().symbolText.setText(formatSignature(info, signature.activeParameter));
+        final EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
         if(frag != null) {
             final CodeEditor editor = frag.getEditor();
             final float[] cursor = editor.getCursorPosition();
 
-            float x = editor.updateCursorAnchor() - (activity.getBinding().symbolText.getWidth() / 2);
-            float y = activity.getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - activity.getBinding().symbolText.getHeight());
-            activity.getBinding().symbolText.setVisibility(View.VISIBLE);
-            activity.positionViewWithinScreen(activity.getBinding().symbolText, x, y);
+            float x = editor.updateCursorAnchor() - (activity().getBinding().symbolText.getWidth() / 2);
+            float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - activity().getBinding().symbolText.getHeight());
+            activity().getBinding().symbolText.setVisibility(View.VISIBLE);
+            activity().positionViewWithinScreen(activity().getBinding().symbolText, x, y);
         }
     }
 
     @Override
     public void javaColors(JavaColors colors) {
         final File file = new File(colors.uri);
-        final EditorFragment editor = this.activity.getPagerAdapter().findEditorByFile(file);
+        final EditorFragment editor = this.activity().getPagerAdapter().findEditorByFile(file);
         if(editor != null)
             editor.setJavaColors(colors);
     }
@@ -189,16 +190,16 @@ public class LanguageClientHandler extends IDEHandler implements LanguageClient 
     @Override
     public void onServerStarted(int currentId) {
         new Thread(() -> {
-            final JavaLanguageServer server = activity.getApp().getJavaLanguageServer();
-            while(server != null && !activity.pendingMessages.isEmpty()) {
-                Message msg = activity.pendingMessages.pop();
+            final JavaLanguageServer server = provider.provideJLSHandler().getJLS();
+            while(server != null && !activity().pendingMessages.isEmpty()) {
+                Message msg = activity().pendingMessages.pop();
                 server.send(msg);
             }
         }).start();
     }
     
     public DiagnosticsAdapter newDiagnosticsAdapter() {
-        return new DiagnosticsAdapter(mapAsGroup(this.diagnostics), activity);
+        return new DiagnosticsAdapter(mapAsGroup(this.diagnostics), activity());
     }
     
     /**

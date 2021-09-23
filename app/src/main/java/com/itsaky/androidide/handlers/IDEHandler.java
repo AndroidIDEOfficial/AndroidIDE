@@ -13,27 +13,23 @@ public abstract class IDEHandler {
     
     protected static final Logger LOG = Logger.instance();
     
-    private Provider provider;
-    
-    /**
-     * A convinient method to throw exception when trying to access a disabled handler
-     * >> Should only be used by subclasses <<
-     */
-    protected void throwDisabled() {
-        throw new NotEnabledExeption();
+    protected Provider provider;
+
+    public IDEHandler(Provider provider) {
+        this.provider = provider;
     }
     
     protected void throwNPE () {
         throw new NullPointerException();
     }
     
-    public void start(Provider provider) {
-        this.provider = provider;
+    protected EditorActivity activity() {
+        return provider.provideEditorActivity();
     }
     
-    public void stop() {
-        
-    }
+    public abstract void start();
+    
+    public abstract void stop ();
     
     /**
      * An interface to communicate between a handler and its client
@@ -67,13 +63,5 @@ public abstract class IDEHandler {
          * @throws NullPointerException is this is required
          */
         JLSHandler provideJLSHandler();
-    }
-    
-    public static class NotEnabledExeption extends RuntimeException {
-
-        @Override
-        public String getMessage() {
-            return "This hanadler is not enabled!";
-        }
     }
 }

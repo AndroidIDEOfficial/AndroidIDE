@@ -62,11 +62,7 @@ public abstract class StudioActivity extends AppCompatActivity {
 
 	public StudioApp getApp() {
 		return (StudioApp) getApplication();
-	}
-
-	public IDEService getBuildService() {
-		return getApp().getBuildService();
-	}
+    }
 
 	public TypedValue getTypedValueForAttr(@AttrRes int attrRes) {
         TypedValue typedValue = new TypedValue();
