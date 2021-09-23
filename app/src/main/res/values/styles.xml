@@ -23,6 +23,10 @@
 	<style name="AppTheme.MaterialToggleButton" parent="">
 		<item name="colorPrimary">@color/secondaryColor</item>
 	</style>
+    <style name="AppTheme.TabLayout.Title" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
 	<style name="AppTheme.ProjectCreator.TextInput" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
         <item name="colorAccent">@color/primaryTextColor</item>
         <item name="android:textColorHint">@color/secondaryTextColor</item>

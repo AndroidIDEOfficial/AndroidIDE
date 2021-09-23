@@ -36,7 +36,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialContainerTransform;
 import com.google.gson.JsonParser;
 import com.itsaky.androidide.adapters.EditorPagerAdapter;
-import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
@@ -64,13 +63,11 @@ import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
-import com.itsaky.androidide.models.project.IDEModule;
 import com.itsaky.androidide.models.project.IDEProject;
 import com.itsaky.androidide.receivers.LogReceiver;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
@@ -95,10 +92,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Stack;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
@@ -732,20 +727,20 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
      *****************************/
 
     @Override
-    public void onTabSelected(TabLayout.Tab p1) {
-        EditorFragment current = mPagerAdapter.getFrag(p1.getPosition());
+    public void onTabSelected(TabLayout.Tab tab) {
+        EditorFragment current = mPagerAdapter.getFrag(tab.getPosition());
         if(current != null && current.getFile() != null) {
             this.mCurrentFragment = current;
             this.mCurrentFile = current.getFile();
             refreshSymbolInput(current);
         }
-
+        
         invalidateOptionsMenu();
     }
 
     @Override
-    public void onTabUnselected(TabLayout.Tab p1) {
-        EditorFragment frag = mPagerAdapter.getFrag(p1.getPosition());
+    public void onTabUnselected(TabLayout.Tab tab) {
+        EditorFragment frag = mPagerAdapter.getFrag(tab.getPosition());
         if(frag == null) return;
         boolean isGradle = frag.isModified() && frag.getFile().getName().endsWith(EditorFragment.EXT_GRADLE);
         frag.save();

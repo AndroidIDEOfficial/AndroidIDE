@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditorPagerAdapter extends FragmentStatePagerAdapter {
+public class EditorPagerAdapter extends FragmentStatePagerAdapter implements EditorFragment.ModificationStateListener {
     
 	private ArrayList<File> mOpenedFiles;
 	private ArrayList<Fragment> mFragments;
@@ -121,6 +121,16 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter {
 		return mFragments;
 	}
 
+    @Override
+    public void onModified(EditorFragment editor) {
+        // Maybe implemented in future
+    }
+
+    @Override
+    public void onSaved(EditorFragment editor) {
+        // Maybe implemented in future
+    }
+    
 	public List<File> getOpenedFiles() {
 		return mOpenedFiles;
 	}
@@ -137,9 +147,6 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter {
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-        String title = mOpenedFiles.get(position).getName();
-        if(getFrag(position).isModified())
-            title += "*";
-		return title;
+		return getFrag(position).getTabTitle();
 	}
 }

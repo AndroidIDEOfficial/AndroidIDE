@@ -47,15 +47,16 @@ import io.github.rosemoe.editor.text.Content;
 
 public class EditorFragment extends BaseFragment implements EditorEventListener {
 	
-	public FragmentEditorBinding binding;
+	public FragmentEditorBinding mBinding;
 	private File mFile;
 	private boolean isRead = false;
 	private boolean isModified = false;
 	private boolean isFirstCreate = false;
 	
-    private FileOpenListener openListener;
-    private JLSRequestor jlsRequestor;
-	private static AndroidProject project;
+    private ModificationStateListener mModificationStateListener;
+    private FileOpenListener mOpenListener;
+    private JLSRequestor mJLSRequestor;
+	private static AndroidProject mProject;
     
     private JavaLanguage mJavaLanguage;
     
@@ -75,15 +76,31 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	public static final String EXT_JSON = ".json";
     
     public EditorFragment setJLSRequestor(JLSRequestor requestor) {
-        this.jlsRequestor = requestor;
+        this.mJLSRequestor = requestor;
         return this;
+    }
+    
+    public EditorFragment setModificationStateListener(ModificationStateListener listener) {
+        this.mModificationStateListener = listener;
+        return this;
+    }
+    
+    public String getTabTitle() {
+        if(getFile() != null) {
+            String title = getFile().getName();
+            if(isModified())
+                title += "*";
+                
+            return title;
+        }
+        return "";
     }
     
     public void setJavaColors(JavaColors colors) {
         if(mJavaLanguage != null) {
             JavaLanguageAnalyzer analyzer = (JavaLanguageAnalyzer) mJavaLanguage.getAnalyzer();
             analyzer.setJavaColors(colors);
-            binding.editor.notifySpansChanged();
+            mBinding.editor.notifySpansChanged();
         }
     }
     
@@ -101,12 +118,12 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
     
     public EditorFragment setFileOpenListener(FileOpenListener openListener) {
-        this.openListener = openListener;
+        this.mOpenListener = openListener;
         return this;
     }
     
     public CodeEditor getEditor() {
-        return binding.editor;
+        return mBinding.editor;
     }
 
 	@Override
@@ -123,8 +140,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		binding = FragmentEditorBinding.inflate(inflater, container, false);
-		return binding.getRoot();
+		mBinding = FragmentEditorBinding.inflate(inflater, container, false);
+		return mBinding.getRoot();
 	}
 
 	@Override
@@ -132,26 +149,26 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		super.onViewCreated(view, savedInstanceState);
 		if (getActivity() == null || getArguments() == null || !getArguments().containsKey(KEY_FILE_PATH) || !getArguments().containsKey(KEY_PROJECT)) return;
 		mFile = new File(getArguments().getString(KEY_FILE_PATH));
-		project = getArguments().getParcelable(KEY_PROJECT);
+		mProject = getArguments().getParcelable(KEY_PROJECT);
         
-		binding.editor.setOverScrollEnabled(false);
-		binding.editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
-		binding.editor.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
-		binding.editor.setHighlightCurrentBlock(true);
-		binding.editor.setEventListener(this);
-        binding.editor.setAutoCompletionOnComposing(true);
-        binding.editor.setAutoCompletionItemAdapter(new CompletionListAdapter());
-		binding.editor.setLineColorsEnabled(true);
-		binding.editor.setDividerWidth(SizeUtils.dp2px(1));
-        binding.editor.setJLSRequestor(jlsRequestor);
+		mBinding.editor.setOverScrollEnabled(false);
+		mBinding.editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
+		mBinding.editor.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
+		mBinding.editor.setHighlightCurrentBlock(true);
+		mBinding.editor.setEventListener(this);
+        mBinding.editor.setAutoCompletionOnComposing(true);
+        mBinding.editor.setAutoCompletionItemAdapter(new CompletionListAdapter());
+		mBinding.editor.setLineColorsEnabled(true);
+		mBinding.editor.setDividerWidth(SizeUtils.dp2px(1));
+        mBinding.editor.setJLSRequestor(mJLSRequestor);
         
 		configureEditorIfNeeded();
 		
         final Range range = fromArgs(getArguments());
 		new TaskExecutor().executeAsync(new ReadFileTask(mFile), result -> {
-			binding.editor.setText(result);
+			mBinding.editor.setText(result);
 			postRead();
-            binding.editor.post(() -> {
+            mBinding.editor.post(() -> {
                 if(range.start.equals(range.end)) {
                     getEditor().setSelection(range.start.line, range.start.column);
                 } else {
@@ -179,14 +196,14 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     }
     
 	public void setDiagnostics(List<Diagnostic> diags) {
-		if(binding.editor != null && diags != null) {
+		if(mBinding.editor != null && diags != null) {
             Map<Range, Diagnostic> map = new HashMap<>();
             for(int i=0;i<diags.size();i++) {
                 final Diagnostic d = diags.get(i);
                 if(d == null) continue;
                 map.put(d.range, d);
             }
-            binding.editor.setDiagnostics(map);
+            mBinding.editor.setDiagnostics(map);
         }
 	}
 	
@@ -199,7 +216,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 			float textSize = prefs.getFloat(EditorPreferences.KEY_EDITOR_FONT_SIZE);
 			if(textSize < 6 || textSize > 32)
 				textSize = 14;
-			binding.editor.setTextSize(textSize);
+			mBinding.editor.setTextSize(textSize);
 			ConstantsBridge.EDITORPREF_SIZE_CHANGED = false;
 		}
 		
@@ -216,12 +233,12 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 			if(prefs.getBoolean(PreferenceManager.KEY_EDITORFLAG_LINE_BREAK, true))
 				flags |= CodeEditor.FLAG_DRAW_LINE_SEPARATOR;
 
-			binding.editor.setNonPrintablePaintingFlags(flags);
+			mBinding.editor.setNonPrintablePaintingFlags(flags);
 			ConstantsBridge.EDITORPREF_FLAGS_CHANGED = false;
 		}
 		
 		if(drawHexChanged) {
-			binding.editor.setLineColorsEnabled(prefs.getBoolean(PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
+			mBinding.editor.setLineColorsEnabled(prefs.getBoolean(PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
 			ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED = false;
 		}
 		
@@ -229,7 +246,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
     
     public String getText() {
-        return binding.editor.getText().toString();
+        return mBinding.editor.getText().toString();
     }
 	
 	public boolean isModified() {
@@ -237,38 +254,38 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
 	
 	public void undo() {
-		if(binding.editor.canUndo())
-			binding.editor.undo();
+		if(mBinding.editor.canUndo())
+			mBinding.editor.undo();
 	}
 	
 	public void redo() {
-		if(binding.editor.canRedo())
-			binding.editor.redo();
+		if(mBinding.editor.canRedo())
+			mBinding.editor.redo();
 	}
     
     public void findDefinition() {
-        binding.editor.findDefinition();
+        mBinding.editor.findDefinition();
     }
     
     public void findReferences() {
-        binding.editor.findReferences();
+        mBinding.editor.findReferences();
     }
     
     public void commentLine() {
-        binding.editor.commentLine();
+        mBinding.editor.commentLine();
     }
     
     public void uncommentLine() {
-        binding.editor.uncommentLine();
+        mBinding.editor.uncommentLine();
     }
     
     public void beginSearch() {
-        binding.editor.beginSearchMode();
+        mBinding.editor.beginSearchMode();
     }
 
 	public void save() {
-        if(mFile == null || binding == null || binding.editor == null || binding.editor.getText() == null) return;
-        final String text = binding.editor.getText().toString();
+        if(mFile == null || mBinding == null || mBinding.editor == null || mBinding.editor.getText() == null) return;
+        final String text = mBinding.editor.getText().toString();
         final boolean wrote = FileIOUtils.writeFileFromString(mFile, text);
 		notifySaved(wrote, text);
 		isModified = false;
@@ -285,20 +302,20 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
 	
 	private void postRead() {
-        binding.editor.setFile(getFile());
+        mBinding.editor.setFile(getFile());
 		if (mFile.isFile() && mFile.getName().endsWith(EXT_JAVA)) {
-			binding.editor.setEditorLanguage(mJavaLanguage = new JavaLanguage(project));
+			mBinding.editor.setEditorLanguage(mJavaLanguage = new JavaLanguage(mProject));
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_XML)) {
-			binding.editor.setEditorLanguage(new XMLLanguage());
+			mBinding.editor.setEditorLanguage(new XMLLanguage());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_GRADLE)) {
-			binding.editor.setEditorLanguage(new GroovyLanguage());
+			mBinding.editor.setEditorLanguage(new GroovyLanguage());
 		} else {
-			binding.editor.setEditorLanguage(new EmptyLanguage());
+			mBinding.editor.setEditorLanguage(new EmptyLanguage());
 		}
-        binding.editor.setColorScheme(new SchemeAndroidIDE());
+        mBinding.editor.setColorScheme(new SchemeAndroidIDE());
 		isRead = true;
-        if(openListener != null)
-            openListener.onOpenSuccessful(getFile(), getText());
+        if(mOpenListener != null)
+            mOpenListener.onOpenSuccessful(getFile(), getText());
 	}
 	
 	private void closeCurrentTag(String text, int line, int col) {
@@ -334,7 +351,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
                 } else wasOpen = wasSlash = false;
             }
             if(currentNames.size() > 0) {
-                binding.editor.getText().insert(line, col + 2, currentNames.get(0));
+                mBinding.editor.getText().insert(line, col + 2, currentNames.get(0));
             }
         } catch (Throwable th) {}
 	}
@@ -359,8 +376,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 
     @Override
     public void onSetSelection(int startLine, int startCol, int endLine, int endCol) {
-        if(jlsRequestor != null) {
-            jlsRequestor.hideSignature();
+        if(mJLSRequestor != null) {
+            mJLSRequestor.hideSignature();
         }
     }
 
@@ -368,6 +385,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	public void afterDelete(CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
 		isModified = true;
         requestSignature();
+        
+        notifyModified();
 	}
     
 	@Override
@@ -384,16 +403,17 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
             }
         }
         
+        notifyModified();
         requestSignature();
 	}
 
     private void requestSignature() {
         try {
-            if (jlsRequestor != null) {
+            if (mJLSRequestor != null) {
                 TextDocumentPositionParams p = new TextDocumentPositionParams();
                 p.textDocument = new TextDocumentIdentifier(getFile().toURI());
-                p.position = new Position(binding.editor.getCursor().getLeftLine(), binding.editor.getCursor().getLeftColumn());
-                jlsRequestor.signatureHelp(p, getFile());
+                p.position = new Position(mBinding.editor.getCursor().getLeftLine(), mBinding.editor.getCursor().getLeftColumn());
+                mJLSRequestor.signatureHelp(p, getFile());
             }
         } catch (Throwable th) {}
     }
@@ -403,19 +423,32 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
     
     private void notifySaved(boolean wrote, String text) {
-        if (wrote && jlsRequestor != null) {
+        if (wrote && mJLSRequestor != null) {
             try {
                 TextDocumentIdentifier id = new TextDocumentIdentifier();
                 id.uri = mFile.toURI();
                 DidSaveTextDocumentParams p = new DidSaveTextDocumentParams();
                 p.text = text;
                 p.textDocument = id;
-                jlsRequestor.didSave(p);
+                mJLSRequestor.didSave(p);
             } catch (Throwable th) {}
         }
+        
+        if(mModificationStateListener != null)
+            mModificationStateListener.onSaved(this);
+    }
+    
+    private void notifyModified() {
+        if(mModificationStateListener != null)
+            mModificationStateListener.onModified(this);
     }
     
     public static interface FileOpenListener {
-        public void onOpenSuccessful(File file, String text);
+        void onOpenSuccessful(File file, String text);
+    }
+    
+    public static interface ModificationStateListener {
+        void onModified(EditorFragment editor);
+        void onSaved(EditorFragment editor);
     }
 }

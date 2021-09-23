@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:shape="rectangle">
+            <solid
+                android:color="@color/secondaryColor"/>
+            <corners
+                android:topLeftRadius="0dp"
+                android:topRightRadius="0dp"
+                android:bottomRightRadius="@dimen/file_tab_height"
+                android:bottomLeftRadius="@dimen/file_tab_height"/>
+        </shape>
+    </item>
+</layer-list>

@@ -27,7 +27,12 @@
 				android:layout_width="match_parent"
 				android:background="@color/primaryDarkColor"
 				android:id="@+id/editor_toolbar"/>
-
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/secondaryColor"/>
+            
 			<com.itsaky.androidide.views.MaterialBanner
 				android:id="@+id/syncBanner"
 				android:layout_height="wrap_content"
@@ -37,14 +42,16 @@
 			<com.google.android.material.tabs.TabLayout
 				android:id="@+id/tabs"
 				android:layout_width="match_parent"
-				android:layout_height="40dp"
+				android:layout_height="@dimen/file_tab_height"
 				android:background="@color/primaryDarkColor"
-				app:tabBackground="@drawable/bg_editor_tab"
-				app:tabIndicatorHeight="0dp"
+                app:tabIndicator="@drawable/bg_file_tab_indicator"
+                app:tabIndicatorColor="@color/secondaryColor"
+                app:tabIndicatorGravity="stretch"
+				app:tabIndicatorHeight="32dp"
+                app:tabTextAppearance="@style/AppTheme.TabLayout.Title"
+                app:tabSelectedTextColor="@color/primaryTextColor"
 				app:tabMode="scrollable"
-				app:tabGravity="fill"
-				app:tabSelectedTextColor="@color/editorTab_selectedText"
-				app:tabTextColor="@color/editorTab_unselectedText"/>
+				app:tabGravity="fill"/>
 
 		</com.google.android.material.appbar.AppBarLayout>
 		
