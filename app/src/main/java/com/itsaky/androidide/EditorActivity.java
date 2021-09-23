@@ -96,6 +96,7 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import com.itsaky.androidide.handlers.FileOptionsHandler;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -122,6 +123,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private JLSHandler mJLSHandler;
     private LanguageClientHandler mLanguageClientHandler;
     private BuildServiceHandler mBuildServiceHandler;
+    private FileOptionsHandler mFileOptionsHandler;
     
 	private LogLanguageImpl mLogLanguageImpl;
 	
@@ -134,12 +136,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     public final Stack<Message> pendingMessages = new Stack<>();
     
-	private final String RES_PATH_REGEX = "/.*/src/.*/res";
-	private final String LAYOUTRES_PATH_REGEX = "/.*/src/.*/res/layout";
-	private final String MENURES_PATH_REGEX = "/.*/src/.*/res/menu";
-	private final String DRAWABLERES_PATH_REGEX = "/.*/src/.*/res/drawable";
-	private final String JAVA_PATH_REGEX = "/.*/src/.*/java";
-	
 	private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
     public static final String TAG = "EditorActivity";
 	
@@ -205,6 +201,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mLanguageClientHandler = new LanguageClientHandler(this);
         mBuildServiceHandler = new BuildServiceHandler(this);
         mJLSHandler = new JLSHandler(mLanguageClientHandler, this);
+        mFileOptionsHandler = new FileOptionsHandler(this);
         
         getApp().checkAndUpdateGradle();
         startServices();
@@ -787,7 +784,19 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mProjectInfoSheet.setProject(mIDEProject);
         return mProjectInfoSheet;
     }
-
+    
+    public FileTreeFragment getFileTreeFragment() {
+        return mFileTreeFragment;
+    }
+    
+    public TreeNode getLastHoldTreeNode() {
+        return mLastHolded;
+    }
+    
+    public OptionsListFragment getFileOptionsFragment() {
+        return mFileOptionsFragment;
+    }
+    
     public OptionsListFragment getFileOptionsFragment(File file) {
         mFileOptionsFragment = new OptionsListFragment();
         mFileOptionsFragment.addOption(new SheetOption(0, R.drawable.ic_file_copy_path, R.string.copy_path, file));
@@ -797,7 +806,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             mFileOptionsFragment.addOption(new SheetOption(3, R.drawable.ic_new_file, R.string.new_file, file));
             mFileOptionsFragment.addOption(new SheetOption(4, R.drawable.ic_new_folder, R.string.new_folder, file));
         }
-        mFileOptionsFragment.setOnOptionsClickListener(o -> handleOptionClick(o));
+        mFileOptionsFragment.setOnOptionsClickListener(mFileOptionsHandler);
         return mFileOptionsFragment;
     }
 
@@ -1162,285 +1171,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		builder.setPositiveButton(android.R.string.ok, null);
 		builder.create().show();
 	}
-	
-	private void handleOptionClick(SheetOption o) {
-		if(o.extra != null && o.extra instanceof File) {
-			final File f = (File) o.extra;
-			switch(o.id) {
-				case 0 :
-					ClipboardUtils.copyText("[AndroidIDE] Copied File Path", f.getAbsolutePath());
-					getApp().toast(R.string.copied, Toaster.Type.SUCCESS);
-					break;
-				case 1 :
-					renameFile(f);
-					break;
-				case 2 :
-					delete(f);
-					break;
-				case 3 :
-					createNewFile(f);
-					break;
-				case 4 :
-					createNewFolder(f);
-					break;
-			}
-		}
-	}
-	
-	private void createNewFile(File f) {
-		createNewFile(f, false);
-	}
-	
-	private void createNewFile(final File f, boolean forceUnknownType) {
-		if(forceUnknownType) {
-			createNewEmptyFile(f);
-		} else {
-			final boolean isJava = Pattern.compile(Pattern.quote(mProject.getProjectPath()) + JAVA_PATH_REGEX).matcher(f.getAbsolutePath()).find();
-			final boolean isRes = Pattern.compile(Pattern.quote(mProject.getProjectPath()) + RES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
-			final boolean isLayoutRes = Pattern.compile(Pattern.quote(mProject.getProjectPath()) + LAYOUTRES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
-			final boolean isMenuRes = Pattern.compile(Pattern.quote(mProject.getProjectPath()) + MENURES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
-			final boolean isDrawableRes = Pattern.compile(Pattern.quote(mProject.getProjectPath()) + DRAWABLERES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
-			if(isJava) {
-				createJavaClass(f);
-			} else if(isLayoutRes && f.getName().equals("layout")) {
-				createLayoutRes(f);
-			} else if(isMenuRes && f.getName().equals("menu")) {
-				createMenuRes(f);
-			} else if(isDrawableRes && f.getName().equals("drawable")) {
-				createDrawableRes(f);
-			} else if(isRes && f.getName().equals("res")) {
-				createNewResource(f);
-			} else {
-				createNewEmptyFile(f);
-			}
-		}
-	}
-
-	private void createJavaClass(final File f) {
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
-		final LayoutCreateFileJavaBinding binding = LayoutCreateFileJavaBinding.inflate(getLayoutInflater());
-		builder.setView(binding.getRoot());
-		builder.setTitle(R.string.new_java_class);
-		builder.setPositiveButton(R.string.text_create, (p1, p2) -> {
-			p1.dismiss();
-			final String name = binding.name.getEditText().getText().toString().trim();
-			final String pkgName = ProjectWriter.getPackageName(f);
-			if(pkgName == null || pkgName.trim().length() <= 0) {
-				getApp().toast(R.string.msg_get_package_failed, Toaster.Type.ERROR);
-				return;
-			} else {
-				final int id = binding.typeGroup.getCheckedButtonId();
-				if(id == binding.typeClass.getId()) {
-					createFile(f, name.endsWith(".java") ? name : name.concat(".java"), ProjectWriter.createJavaClass(pkgName, !name.contains(".") ? name : name.substring(0, name.lastIndexOf("."))));
-				} else if(id == binding.typeInterface.getId()) {
-					createFile(f, name.endsWith(".java") ? name : name.concat(".java"), ProjectWriter.createJavaInterface(pkgName, !name.contains(".") ? name : name.substring(0, name.lastIndexOf("."))));
-				} else if(id == binding.typeEnum.getId()) {
-					createFile(f, name.endsWith(".java") ? name : name.concat(".java"), ProjectWriter.createJavaEnum(pkgName, !name.contains(".") ? name : name.substring(0, name.lastIndexOf("."))));
-				} else if(id == binding.typeActivity.getId()) {
-					createFile(f, name.endsWith(".java") ? name : name.concat(".java"), ProjectWriter.createActivity(pkgName, !name.contains(".") ? name : name.substring(0, name.lastIndexOf("."))));
-				} else {
-					createFile(f, name, "");
-				}
-				
-			}
-		});
-		builder.setNegativeButton(android.R.string.cancel, null);
-		builder.setCancelable(false);
-		builder.create().show();
-	}
-
-	private void createLayoutRes(File f) {
-		createNewFileWithContent(Environment.mkdirIfNotExits(f), ProjectWriter.createLayout(), ".xml");
-	}
-
-	private void createMenuRes(File f) {
-		createNewFileWithContent(Environment.mkdirIfNotExits(f), ProjectWriter.createMenu(), ".xml");
-	}
-
-	private void createDrawableRes(File f) {
-		createNewFileWithContent(Environment.mkdirIfNotExits(f), ProjectWriter.createDrawable(), ".xml");
-	}
-
-	private void createNewResource(File f) {
-		final String[] labels = {
-			getString(R.string.restype_drawable),
-			getString(R.string.restype_layout),
-			getString(R.string.restype_menu),
-			getString(R.string.restype_other)
-		};
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
-		builder.setTitle(R.string.new_xml_resource);
-		builder.setItems(labels, (p1, p2) -> {
-			final int pos = p2;
-			if(pos == 0) {
-				createDrawableRes(new File(f, "drawable"));
-			} else if(pos == 1) {
-				createLayoutRes(new File(f, "layout"));
-			} else if(pos == 2) {
-				createMenuRes(new File(f, "menu"));
-			} else if(pos == 3) {
-				createNewFile(f, true);
-			}
-		});
-		builder.create().show();
-	}
-	
-	private void createNewEmptyFile(File f) {
-		createNewFileWithContent(f, "");
-	}
-	
-	private void createNewFileWithContent(File f, String content) {
-		createNewFileWithContent(f, content, null);
-	}
-	
-	private void createNewFileWithContent(File folder, String content, String extension) {
-		final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(getLayoutInflater());
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
-		
-		binding.name.getEditText().setHint(R.string.file_name);
-
-		builder.setTitle(R.string.new_file);
-		builder.setMessage(getString(R.string.msg_can_contain_slashes).concat("\n\n").concat(getString(R.string.msg_newfile_dest, folder.getAbsolutePath())));
-		builder.setView(binding.getRoot());
-		builder.setCancelable(false);
-		builder.setPositiveButton(R.string.text_create, (p1, p2) -> {
-			p1.dismiss();
-			String name = binding.name.getEditText().getText().toString().trim();
-			if(extension != null && extension.trim().length() > 0) {
-				name = name.endsWith(extension) ? name : name.concat(extension);
-			}
-			createFile(folder, name, content);
-		});
-		builder.setNegativeButton(android.R.string.cancel, null);
-		builder.create().show();
-	}
-	
-	private void createFile(File f, String name, String content) {
-		if(name.length() > 0 && name.length() <= 40 && !name.startsWith("/")) {
-			final File file = new File(f, name);
-			if(file.exists()) {
-				getApp().toast(R.string.msg_file_exists, Toaster.Type.ERROR);
-			} else {
-				if(FileIOUtils.writeFileFromString(file, content)) {
-                    mJLSHandler.notifyFileCreated(file);
-					getApp().toast(R.string.msg_file_created, Toaster.Type.SUCCESS);
-					if(mLastHolded != null) {
-						TreeNode node = new TreeNode(file);
-						node.setViewHolder(new FileTreeViewHolder(this));
-						mLastHolded.addChild(node);
-						mFileTreeFragment.expandNode(mLastHolded);
-					} else {
-						mFileTreeFragment.listProjectFiles();
-					}
-				} else {
-					getApp().toast(R.string.msg_file_creation_failed, Toaster.Type.ERROR);
-				}
-			}
-		} else {
-			getApp().toast(R.string.msg_invalid_name, Toaster.Type.ERROR);
-		}
-	}
-
-	private void createNewFolder(File f) {
-		final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(getLayoutInflater());
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
-		
-		binding.name.getEditText().setHint(R.string.folder_name);
-
-		builder.setTitle(R.string.new_folder);
-		builder.setMessage(R.string.msg_can_contain_slashes);
-		builder.setView(binding.getRoot());
-		builder.setCancelable(false);
-		builder.setPositiveButton(R.string.text_create, (p1, p2) -> {
-			p1.dismiss();
-			final String name = binding.name.getEditText().getText().toString().trim();
-			if(name.length() > 0 && name.length() <= 40 && !name.startsWith("/")) {
-				final File file = new File(f, name);
-				if(file.exists()) {
-					getApp().toast(R.string.msg_folder_exists, Toaster.Type.ERROR);
-				} else {
-					if(file.mkdirs()) {
-						getApp().toast(R.string.msg_folder_created, Toaster.Type.SUCCESS);
-						if(mLastHolded != null) {
-							TreeNode node = new TreeNode(file);
-							node.setViewHolder(new FileTreeViewHolder(EditorActivity.this));
-							mLastHolded.addChild(node);
-							mFileTreeFragment.expandNode(mLastHolded);
-						} else {
-							mFileTreeFragment.listProjectFiles();
-						}
-					} else {
-						getApp().toast(R.string.msg_folder_creation_failed, Toaster.Type.ERROR);
-					}
-				}
-			} else {
-				getApp().toast(R.string.msg_invalid_name, Toaster.Type.ERROR);
-			}
-		});
-		builder.setNegativeButton(android.R.string.cancel, null);
-		builder.create().show();
-	}
-
-	private void delete(final File f) {
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
-		builder
-			.setNegativeButton(android.R.string.no, null)
-			.setPositiveButton(android.R.string.yes, (p1, p2) -> {
-			p1.dismiss();
-			final boolean deleted = FileUtils.delete(f);
-			getApp().toast(deleted ? R.string.deleted : R.string.delete_failed, deleted ? Toaster.Type.SUCCESS : Toaster.Type.ERROR);
-			if(deleted) {
-                mJLSHandler.notifyFileDeleted(f);
-				if(mLastHolded != null) {
-					TreeNode parent = mLastHolded.getParent();
-					parent.deleteChild(mLastHolded);
-					mFileTreeFragment.expandNode(parent);
-				} else {
-					mFileTreeFragment.listProjectFiles();
-				}
-                EditorFragment frag = mPagerAdapter.findEditorByFile(f);
-                if(frag != null) {
-                    closeFile(mPagerAdapter.getFragments().indexOf(frag));
-                }
-			}
-		})
-		.setTitle(R.string.title_confirm_delete)
-			.setMessage(getString(R.string.msg_confirm_delete, String.format("%s [%s]", f.getName(), f.getAbsolutePath())))
-			.setCancelable(false)
-			.create().show();
-	}
-
-	private void renameFile(File f) {
-		final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(LayoutInflater.from(this));
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
-
-		binding.name.getEditText().setHint(getString(R.string.new_name));
-		binding.name.getEditText().setText(f.getName());
-
-		builder.setTitle(R.string.rename_file);
-		builder.setMessage(R.string.msg_rename_file);
-		builder.setView(binding.getRoot());
-		builder.setNegativeButton(android.R.string.cancel, null);
-		builder.setPositiveButton(R.string.rename_file, (p1, p2) -> {
-			p1.dismiss();
-			String name = binding.name.getEditText().getText().toString().trim();
-			boolean renamed = name != null && name.length() > 0 && name.length() <= 40 && FileUtils.rename(f, name);
-			getApp().toast(renamed ? R.string.renamed : R.string.rename_failed, renamed ? Toaster.Type.SUCCESS : Toaster.Type.ERROR);
-			if(renamed) {
-				if(mLastHolded != null) {
-					TreeNode parent = mLastHolded.getParent();
-					parent.deleteChild(mLastHolded);
-					TreeNode node = new TreeNode(new File(f.getParentFile(), name));
-					node.setViewHolder(new FileTreeViewHolder(EditorActivity.this));
-					parent.addChild(node);
-					mFileTreeFragment.expandNode(parent);
-				} else {
-					mFileTreeFragment.listProjectFiles();
-				}
-			}
-		});
-		builder.create().show();
-	}
     
 	private void createQuickActions() {
 		ActionItem closeThis = new ActionItem(ACTIONID_CLOSE, getString(R.string.action_closeThis), R.drawable.ic_close_this);
@@ -1490,11 +1220,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         openFile(file);
 	}
     
-	private void closeFile(int index) {
+	public void closeFile(int index) {
 		closeFile(index, true);
 	}
 
-	private void closeFile(int index, boolean selectOther) {
+	public void closeFile(int index, boolean selectOther) {
 		mBinding.tabs.removeOnTabSelectedListener(this);
         
 		int pos = index;

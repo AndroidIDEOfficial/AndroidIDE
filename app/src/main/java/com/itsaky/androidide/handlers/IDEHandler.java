@@ -27,6 +27,18 @@ public abstract class IDEHandler {
         return provider.provideEditorActivity();
     }
     
+    protected JLSHandler jls() {
+        return provider.provideJLSHandler();
+    }
+    
+    protected AndroidProject androidProject() {
+        return provider.provideAndroidProject();
+    }
+    
+    protected IDEProject ideProject() {
+        return provider.provideIDEProject();
+    }
+    
     public abstract void start();
     
     public abstract void stop ();
