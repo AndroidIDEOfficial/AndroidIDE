@@ -384,8 +384,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	@Override
 	public void afterDelete(CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
 		isModified = true;
-        requestSignature();
-        
         notifyModified();
 	}
     
@@ -404,7 +402,13 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         }
         
         notifyModified();
-        requestSignature();
+        
+        if(insertedContent.length() == 1) {
+            char i = insertedContent.charAt(0);
+            if(i == '(' || i == ',') {
+                requestSignature();
+            }
+        }
 	}
 
     private void requestSignature() {

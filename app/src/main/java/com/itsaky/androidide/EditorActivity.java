@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,8 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
-import com.blankj.utilcode.util.ClipboardUtils;
-import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -36,11 +33,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialContainerTransform;
 import com.google.gson.JsonParser;
 import com.itsaky.androidide.adapters.EditorPagerAdapter;
-import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
-import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding;
-import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.FileTreeFragment;
@@ -49,6 +43,7 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.ProjectInfoSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.BuildServiceHandler;
+import com.itsaky.androidide.handlers.FileOptionsHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.handlers.jls.JLSHandler;
 import com.itsaky.androidide.handlers.jls.LanguageClientHandler;
@@ -69,9 +64,7 @@ import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
-import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.androidide.utils.ProjectWriter;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TransformUtils;
@@ -96,7 +89,6 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-import com.itsaky.androidide.handlers.FileOptionsHandler;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -999,6 +991,57 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         });
 	}
     
+    public void closeFile(int index) {
+        closeFile(index, true);
+    }
+
+    public void closeFile(int index, boolean selectOther) {
+        mBinding.tabs.removeOnTabSelectedListener(this);
+
+        int pos = index;
+        final List<Fragment> frags = mPagerAdapter.getFragments();
+        final List<File> files = mPagerAdapter.getOpenedFiles();
+
+        final File removed = files.get(index);
+
+        frags.remove(index);
+        files.remove(index);
+
+        mPagerAdapter = new EditorPagerAdapter(getSupportFragmentManager(), mProject, frags, files);
+        mBinding.editorViewPager.setAdapter(mPagerAdapter);
+        mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
+        mBinding.tabs.addOnTabSelectedListener(this);
+
+        if(selectOther) {
+            if(pos >= 0 && pos < frags.size()) {
+                mBinding.editorViewPager.setCurrentItem(pos, false);
+            } else {
+                int i = pos - 1;
+                if(i >= 0 && i < frags.size())
+                    pos = i;
+                else {
+                    i = pos + 1;
+                    if(i >= 0 && i < frags.size())
+                        pos = i;
+                }
+                mBinding.editorViewPager.setCurrentItem(pos, false);
+            }
+        }
+
+        TextDocumentIdentifier id = new TextDocumentIdentifier();
+        id.uri = removed.toURI();
+        DidCloseTextDocumentParams p = new DidCloseTextDocumentParams();
+        p.textDocument = id;
+        mJLSHandler.didClose(p);
+
+        if(mPagerAdapter.getCount() <= 0) {
+            mCurrentFragment = null;
+            mCurrentFile = null;
+        }
+
+        invalidateOptionsMenu();
+	}
+    
        /////////////////////////////////////////////////
       ////////////// PRIVATE APIS /////////////////////
      /////////////////////////////////////////////////
@@ -1012,6 +1055,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void startServices() {
+        // Actually, we don't need to start FileOptionsHandler
+        // Because it would work anyway
+        // But it's a good practice to call the start() method
+        mFileOptionsHandler.start();
+        
         mBuildServiceHandler.start();
         getBuildService().assembleDebug(false);
     }
@@ -1218,57 +1266,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
 		mBinding.tabs.addOnTabSelectedListener(this);
         openFile(file);
-	}
-    
-	public void closeFile(int index) {
-		closeFile(index, true);
-	}
-
-	public void closeFile(int index, boolean selectOther) {
-		mBinding.tabs.removeOnTabSelectedListener(this);
-        
-		int pos = index;
-		final List<Fragment> frags = mPagerAdapter.getFragments();
-		final List<File> files = mPagerAdapter.getOpenedFiles();
-        
-        final File removed = files.get(index);
-        
-		frags.remove(index);
-		files.remove(index);
-
-		mPagerAdapter = new EditorPagerAdapter(getSupportFragmentManager(), mProject, frags, files);
-		mBinding.editorViewPager.setAdapter(mPagerAdapter);
-		mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
-		mBinding.tabs.addOnTabSelectedListener(this);
-
-		if(selectOther) {
-			if(pos >= 0 && pos < frags.size()) {
-				mBinding.editorViewPager.setCurrentItem(pos, false);
-			} else {
-				int i = pos - 1;
-				if(i >= 0 && i < frags.size())
-					pos = i;
-				else {
-					i = pos + 1;
-					if(i >= 0 && i < frags.size())
-						pos = i;
-				}
-				mBinding.editorViewPager.setCurrentItem(pos, false);
-			}
-		}
-        
-        TextDocumentIdentifier id = new TextDocumentIdentifier();
-        id.uri = removed.toURI();
-        DidCloseTextDocumentParams p = new DidCloseTextDocumentParams();
-        p.textDocument = id;
-        mJLSHandler.didClose(p);
-        
-        if(mPagerAdapter.getCount() <= 0) {
-            mCurrentFragment = null;
-            mCurrentFile = null;
-        }
-        
-        invalidateOptionsMenu();
 	}
     
     private static final Logger LOG = Logger.instance("EditorActivity");
