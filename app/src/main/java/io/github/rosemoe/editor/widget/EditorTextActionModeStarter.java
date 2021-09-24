@@ -71,15 +71,8 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         android.R.attr.actionModePasteDrawable,
                 });
                 
-                List<Diagnostic> diags = mEditor.findDiagnosticsContainingLine(mEditor.getCursor().getLeftLine());
-                if(diags != null && diags.size() > 0) {
-                    this.actions = new ArrayList<>();
-                    for(Diagnostic d : diags) {
-                        if(d != null && d.codeActions != null) {
-                            this.actions.addAll(d.codeActions);
-                        }
-                    }
-                } else actions = null;
+                // TODO: Request code actions on selection change
+                actions = null;
                 
                 if(actions != null && actions.size() > 0) {
                     menu.add(0, 8, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.msg_code_actions))

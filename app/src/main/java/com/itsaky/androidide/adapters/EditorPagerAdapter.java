@@ -80,7 +80,8 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter implements Edi
 			mFragments.add(EditorFragment
                            .newInstance(file, project, selection)
                            .setFileOpenListener(listener)
-                           .setJLSRequestor(jlsRequestor));
+                           .setJLSRequestor(jlsRequestor)
+                           .setModificationStateListener(this));
 			mOpenedFiles.add(file);
 			notifyDataSetChanged();
 			return mFragments.size() - 1;

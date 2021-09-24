@@ -22,7 +22,4 @@ public class Diagnostic {
     
     @SerializedName("tags")
     public List<Integer> tags;
-    
-    @SerializedName("codeActions")
-    public List<CodeAction> codeActions = new ArrayList<>();
 }
