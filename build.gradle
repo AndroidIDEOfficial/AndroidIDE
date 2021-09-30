@@ -1,15 +1,14 @@
 buildscript {
     ext {
-		build_gradle_version = '4.0.1'
-		androidide_plugin_version = '1.0.6'
+		build_gradle_version = '7.0.1'
 	}
     project.ext {
-        compileSdk = 30
-        buildTools = "30.0.2"
+        compileSdk = 31
+        buildTools = "31.0.0"
         minSdk = 21
         targetSdk = 28
-        versionCode = 102210808
-        versionName = "1.0.2.1-alpha"
+        versionCode = 103210928
+        versionName = "1.0.3-alpha"
 		packageName = "com.itsaky.androidide"
     }
 
@@ -27,7 +26,6 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$build_gradle_version"
-		classpath "com.itsaky.androidide:gradle:$androidide_plugin_version"
 		classpath 'com.github.megatronking.stringfog:gradle-plugin:2.2.1'
 		classpath 'com.github.megatronking.stringfog:xor:1.1.0'
 		classpath 'com.google.gms:google-services:4.3.8'

@@ -20,9 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import com.itsaky.androidide.models.SuggestItem;
-import com.itsaky.androidide.utils.Either;
-import io.github.rosemoe.editor.struct.CompletionItem;
 import java.util.List;
+import org.eclipse.lsp4j.CompletionItem;
 
 /**
  * A class to make custom adapter for auto-completion window
@@ -32,7 +31,7 @@ import java.util.List;
 public abstract class EditorCompletionAdapter extends BaseAdapter {
 
     private EditorAutoCompleteWindow mWindow;
-    private List<Either<SuggestItem, CompletionItem>> mItems;
+    private List<CompletionItem> mItems;
 
     public void clear() {
         if(mItems != null)
@@ -42,13 +41,13 @@ public abstract class EditorCompletionAdapter extends BaseAdapter {
     /**
      * Called by {@link EditorAutoCompleteWindow} to attach some arguments
      */
-    public void attachAttributes(EditorAutoCompleteWindow window, List<Either<SuggestItem, CompletionItem>> items) {
+    public void attachAttributes(EditorAutoCompleteWindow window, List<CompletionItem> items) {
         mWindow = window;
         mItems = items;
     }
 
     @Override
-    public Either<SuggestItem, CompletionItem> getItem(int position) {
+    public CompletionItem getItem(int position) {
         return mItems.get(position);
     }
 

@@ -58,27 +58,21 @@ import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
-import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
 import com.itsaky.androidide.interfaces.JLSRequestor;
-import com.itsaky.androidide.managers.VersionedFileManager;
+import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.lsp.CodeAction;
 import com.itsaky.lsp.Diagnostic;
 import com.itsaky.lsp.DiagnosticSeverity;
-import com.itsaky.lsp.DidChangeTextDocumentParams;
-import com.itsaky.lsp.Position;
 import com.itsaky.lsp.Range;
-import com.itsaky.lsp.ReferenceContext;
-import com.itsaky.lsp.ReferenceParams;
-import com.itsaky.lsp.TextDocumentContentChangeEvent;
-import com.itsaky.lsp.TextDocumentIdentifier;
-import com.itsaky.lsp.TextDocumentPositionParams;
-import com.itsaky.lsp.VersionedTextDocumentIdentifier;
+import com.itsaky.toaster.Toaster;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
@@ -106,8 +100,29 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.itsaky.lsp.CodeActionParams;
-import com.itsaky.lsp.CodeAction;
+import java.util.concurrent.CompletableFuture;
+import org.eclipse.lsp4j.DefinitionParams;
+import org.eclipse.lsp4j.DidChangeTextDocumentParams;
+import org.eclipse.lsp4j.DidCloseTextDocumentParams;
+import org.eclipse.lsp4j.DidOpenTextDocumentParams;
+import org.eclipse.lsp4j.DidSaveTextDocumentParams;
+import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.LocationLink;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
+import org.eclipse.lsp4j.TextDocumentItem;
+import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4j.services.LanguageServer;
+import android.app.ProgressDialog;
+import com.blankj.utilcode.util.ThreadUtils;
+import com.itsaky.androidide.lsp.IDELanguageClient;
+import org.eclipse.lsp4j.ShowDocumentParams;
+import org.eclipse.lsp4j.CodeActionOptions;
+import org.eclipse.lsp4j.DefinitionOptions;
+import org.eclipse.lsp4j.ReferenceOptions;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -194,6 +209,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private int mCachedLineNumberWidth;
 	private int mErrorColor;
 	private int mWarningColor;
+    private int mFileVersion = 0;
     private float mDpUnit;
     private float mDividerWidth;
     private float mDividerMargin;
@@ -213,6 +229,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private boolean mLineNumberEnabled;
     private boolean mBlockLineEnabled;
     private boolean mAutoCompletionEnabled;
+    private boolean mFindReferencesEnabled;
+    private boolean mGotoDefinitionEnabled;
+    private boolean mCodeActionsEnabled;
     private boolean mCompletionOnComposing;
     private boolean mHighlightSelectedText;
     private boolean mHighlightCurrentBlock;
@@ -245,6 +264,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private EditorColorScheme mColors;
     private String mLnTip = "Line:";
     private EditorLanguage mLanguage;
+    private LanguageServer mLanguageServer;
     private long mLastMakeVisible = 0;
     private EditorAutoCompleteWindow mCompletionWindow;
     private DiagnosticWindow mDiagnosticWindow;
@@ -253,7 +273,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private GestureDetector mBasicDetector;
     protected EditorTextActionPresenter mTextActionPresenter;
     private ScaleGestureDetector mScaleDetector;
-    EditorInputConnection mConnection;
     private CursorAnchorInfo.Builder mAnchorInfoBuilder;
     private MaterialEdgeEffect mVerticalEdgeGlow;
     private MaterialEdgeEffect mHorizontalGlow;
@@ -269,6 +288,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private SymbolPairMatch mOverrideSymbolPairs;
     private LongArrayList mPostDrawLineNumbers = new LongArrayList();
     private CharPosition mLockedSelection;
+    EditorInputConnection mConnection;
     KeyMetaStates mKeyMetaStates = new KeyMetaStates(this);
 	
 	private Map<HexColor, Integer> mLineColors;
@@ -306,8 +326,42 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         return currentFile;
     }
     
+    /**
+     * Set the current file whose contents this editor is editing <br>
+     * This method must be called only once in this editors lifetime <br>
+     * This will also make sure to send 'textDocument/didOpen' to any provided language server.
+     *
+     * @param file The file that was opened
+     */
     public void setFile(File file) {
         this.currentFile = file;
+        
+        if(mLanguageServer != null) {
+            TextDocumentItem item = new TextDocumentItem();
+            item.setLanguageId(getLanguageIdForFile());
+            item.setText(getText().toString());
+            item.setUri(file.toURI().toString());
+            item.setVersion(mFileVersion = 0);
+            mLanguageServer.getTextDocumentService().didOpen(new DidOpenTextDocumentParams(item));
+        }
+    }
+    
+    private String getLanguageIdForFile() {
+        final String name = getFile().getName();
+        
+        if(name.endsWith(".java")) {
+            return "java";
+        }
+        
+        if(name.endsWith(".xml")) {
+            return "xml";
+        }
+        
+        if(name.endsWith(".kt")) {
+            return "kotlin";
+        }
+        
+        return "unknown";
     }
     
     /**
@@ -555,14 +609,14 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         int leftCol = getCursor().getLeftColumn();
         int rightLine = getCursor().getRightLine();
         int rightCol = getCursor().getRightColumn();
-        final Range range = new Range(new Position(leftLine, leftCol), new Position(rightLine, rightCol));
+        final org.eclipse.lsp4j. Range range = new org.eclipse.lsp4j. Range(new Position(leftLine, leftCol), new Position(rightLine, rightCol));
         final Set<Range> keys = mDiagnostics.keySet();
         Range found = null;
         for(Range r : keys) {
-            if(r.start.line <= range.start.line
-               && r.start.column <= range.start.column
-               && r.end.line >= range.end.line
-               && r.end.column >= range.end.column) {
+            if(r.start.line <= range.getStart().getLine()
+               && r.start.column <= range.getStart().getCharacter()
+               && r.end.line >= range.getEnd().getLine()
+               && r.end.column >= range.getEnd().getCharacter()) {
                 found = r;
                 break;
             }
@@ -749,7 +803,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             lang = new EmptyLanguage();
         }
         this.mLanguage = lang;
-
+        this.mLanguageServer = mLanguage.getLanguageServer();
+        
         // Update spanner
         if (mSpanner != null) {
             mSpanner.shutdown();
@@ -781,13 +836,63 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if (mCursor != null) {
             mCursor.setLanguage(mLanguage);
         }
+        
+        setupLanguageServerCapabilities();
+        
         invalidate();
     }
     
     public EditorLanguage getEditorLanguage() {
         return mLanguage;
     }
-
+    
+    /**
+     * Get the {@link org.eclipse.lsp4j.services.LanguageServer current language server} which is set to this editor
+     * May return null;
+     *
+     * @return Current language server or {@code null}.
+     */
+    public LanguageServer getLanguageServer () {
+        return mLanguageServer;
+    }
+    
+    /**
+     * Sets up this editor according to the capabilities of the current language server
+     */
+    private void setupLanguageServerCapabilities() {
+        if(mLanguage == null || mLanguageServer == null) return;
+        
+        ServerCapabilities c = LSPProvider.getServerCapabilitiesForLanguage(mLanguage.getLanguageCode());
+        if(c == null) {
+            mCodeActionsEnabled = mGotoDefinitionEnabled = mFindReferencesEnabled = false;
+            return;
+        }
+        
+        Either<Boolean, CodeActionOptions> codeActionOptions = c.getCodeActionProvider();
+        if(codeActionOptions.isLeft()) {
+            mCodeActionsEnabled = codeActionOptions.getLeft();
+        } else {
+            CodeActionOptions options = codeActionOptions.getRight();
+            mCodeActionsEnabled = options != null;
+        }
+        
+        Either<Boolean, DefinitionOptions> definitionOptions = c.getDefinitionProvider();
+        if(definitionOptions.isLeft()) {
+            mGotoDefinitionEnabled = definitionOptions.getLeft();
+        } else {
+            DefinitionOptions options = definitionOptions.getRight();
+            mGotoDefinitionEnabled = options != null;
+        }
+        
+        Either<Boolean, ReferenceOptions> referenceOptions = c.getReferencesProvider();
+        if(definitionOptions.isLeft()) {
+            mFindReferencesEnabled = referenceOptions.getLeft();
+        } else {
+            ReferenceOptions options = referenceOptions.getRight();
+            mFindReferencesEnabled = options != null;
+        }
+    }
+     
     /**
      * Getter
      *
@@ -2575,12 +2680,46 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mCompletionWindow.hide();
         }
     }
+    
+    /**
+     * Specify whether we should provide any code actions
+     * <p>
+     */
+    public void setCodeActionsEnabled(boolean codeActionsEnabled) {
+        mCodeActionsEnabled = codeActionsEnabled;
+    }
+    
+    /**
+     * Specify whether we should provide any 'Go to definition' support
+     */
+    public void setGotoDefinitionEnabled(boolean gotoDefinitionEnabled) {
+        mGotoDefinitionEnabled = gotoDefinitionEnabled;
+    }
+    
+    /**
+     * Specify whether we should provide any 'Find references' support
+     */
+    public void setFindReferencesEnabled(boolean findReferencesEnabled) {
+        mFindReferencesEnabled = findReferencesEnabled;
+    }
 
     /**
      * @see CodeEditor#setAutoCompletionEnabled(boolean)
      */
     public boolean isAutoCompletionEnabled() {
         return mAutoCompletionEnabled;
+    }
+    
+    public boolean isCodeActionsEnabled() {
+        return mCodeActionsEnabled && mLanguageServer != null;
+    }
+    
+    public boolean isGotoDefinitionEnabled() {
+        return mGotoDefinitionEnabled && mLanguageServer != null;
+    }
+    
+    public boolean isFindReferencesEnabled() {
+        return mFindReferencesEnabled && mLanguageServer != null;
     }
 
     /**
@@ -3767,8 +3906,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mListener.onNewTextSet(this);
         }
         
-        notifyChanged();
-        
         if (mInputMethodManager != null) {
             mInputMethodManager.restartInput(this);
         }
@@ -4495,42 +4632,142 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     public void findDefinition() {
-        if(jlsRequestor == null || getFile() == null) return;
+        if(!isGotoDefinitionEnabled()) return;
+        
+        final ProgressDialog pd = ProgressDialog.show(getContext(), null, getContext().getString(R.string.msg_finding_definition));
+        
         try {
-            TextDocumentPositionParams params = new TextDocumentPositionParams();
-            params.position = new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
-            params.textDocument = new TextDocumentIdentifier(getFile().toURI());
-            jlsRequestor.findDefinition(params);
+            final DefinitionParams params = new DefinitionParams();
+            params.setTextDocument(new TextDocumentIdentifier(getFile().toURI().toString()));
+            params.setPosition(getCursorAsLSPPosition());
+            final CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> future = mLanguageServer.getTextDocumentService().definition(params);
+            future.whenComplete((e, t) -> {
+                final Either<List<? extends Location>, List<? extends LocationLink>> either = e;
+                final Throwable th = t;
+                final IDELanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
+                if(client == null || future.isCancelled() || future.isCompletedExceptionally()) {
+                    showDefinitionNotFound(pd);
+                    return;
+                }
+                
+                if(either.isLeft()) {
+                    List<? extends Location> locations = either.getLeft();
+                    if(locations == null || locations.size() <= 0) {
+                        showDefinitionNotFound(pd);
+                        return;
+                    }
+                    
+                    if(locations.size() == 1) {
+                        Location location = locations.get(0);
+                        showDocument(client, location.getUri(), location.getRange());
+                    } else {
+                        client.showLocations(locations);
+                    }
+                } else if(either.isRight()) {
+                    List<? extends LocationLink> locations = either.getRight();
+                    if(locations == null || locations.size() <= 0) {
+                        showDefinitionNotFound(pd);
+                        return;
+                    }
+                    
+                    if(locations.size() == 1) {
+                        LocationLink location = locations.get(0);
+                        showDocument(client, location.getTargetUri(), location.getTargetSelectionRange());
+                    } else {
+                        client.showLocationLinks(locations);
+                    }
+                }
+            });
         } catch (Throwable th) {
-            LOG.error(ThrowableUtils.getFullStackTrace(th));
+            showDefinitionNotFound(pd);
         }
+    }
+    
+    private void showDefinitionNotFound(final ProgressDialog pd) {
+        ThreadUtils.runOnUiThread(() -> {
+            toast(R.string.msg_no_definition, Toaster.Type.ERROR);
+            pd.dismiss();
+        });
     }
     
     public void findReferences() {
-        if(jlsRequestor == null || getFile() == null) return;
+        if(!isFindReferencesEnabled()) return;
+        
+        final ProgressDialog pd = ProgressDialog.show(getContext(), null, getContext().getString(R.string.msg_finding_definition));
+        
         try {
-            ReferenceParams params = new ReferenceParams();
-            params.context = new ReferenceContext(true);
-            params.position = new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
-            params.textDocument = new TextDocumentIdentifier(getFile().toURI());
-            jlsRequestor.findReferences(params);
+
         } catch (Throwable th) {
-            LOG.error(ThrowableUtils.getFullStackTrace(th));
+            showReferencesNotFound(pd);
         }
     }
     
-    public void performCodeActions(List<CodeAction> actions) {
-        if(jlsRequestor != null && getFile() != null) {
-            jlsRequestor.performCodeActions(getFile(), actions);
+    private void showReferencesNotFound(final ProgressDialog pd) {
+        ThreadUtils.runOnUiThread(() -> {
+            toast(R.string.msg_no_references, Toaster.Type.ERROR);
+            pd.dismiss();
+        });
+    }
+    
+    /**
+     * Request the client to show the specific document in an editor and select the provided range
+     */
+    private void showDocument(IDELanguageClient client, String uri, org.eclipse.lsp4j.Range range) {
+        ShowDocumentParams params = new ShowDocumentParams();
+        params.setExternal(false);
+        params.setSelection(range);
+        params.setUri(uri);
+        client.showDocument(params);
+    }
+    
+    public void didSave () {
+        if(mLanguageServer != null && getFile() != null) {
+            mLanguageServer.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new org.eclipse.lsp4j.TextDocumentIdentifier(getFile().toURI().toString())));
         }
+    }
+    
+    public void close() {
+        if(mLanguageServer != null && getFile() != null) {
+            mLanguageServer.getTextDocumentService().didClose(new DidCloseTextDocumentParams(new org.eclipse.lsp4j.TextDocumentIdentifier(getFile().toURI().toString())));
+        }
+    }
+    
+    public void codeAction() {
+        
+    }
+    
+    public Position getCursorAsLSPPosition() {
+        return new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
+    }
+    
+    private boolean isInString() {
+        final int line = getCursor().getLeftLine();
+        final int column = getCursor().getLeftColumn();
+        if(stringMap == null || stringMap.isEmpty() || !stringMap.containsKey(line)) return false;
+        List<Range> strings = stringMap.get(line);
+        if(strings == null || strings.isEmpty()) return false;
+        for(int i=0;i<strings.size();i++) {
+            Range r = strings.get(i);
+            if(r.start.column <= column && column <= r.end.column)
+                return true;
+        }
+        return false;
+    }
+    
+    private void toast(int msg, Toaster.Type type) {
+        StudioApp.getInstance().toast(msg, type);
+    }
+    
+    private void toast(String msg, Toaster.Type type) {
+        StudioApp.getInstance().toast(msg, type);
     }
 
     @Override
     public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
+        notifyChanged();
+        
         if(mDiagnosticWindow != null)
             mDiagnosticWindow.hide();
-        
-        notifyChanged();
         
         // Update spans
         if (isSpanMapPrepared(true, endLine - startLine)) {
@@ -4591,44 +4828,13 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mListener.afterInsert(this, mText, startLine, startColumn, endLine, endColumn, insertedContent);
         }
     }
-
-    private boolean isInString() {
-        final int line = getCursor().getLeftLine();
-        final int column = getCursor().getLeftColumn();
-        if(stringMap == null || stringMap.isEmpty() || !stringMap.containsKey(line)) return false;
-        List<Range> strings = stringMap.get(line);
-        if(strings == null || strings.isEmpty()) return false;
-        for(int i=0;i<strings.size();i++) {
-            Range r = strings.get(i);
-            if(r.start.column <= column && column <= r.end.column)
-                return true;
-        }
-        return false;
-    }
-
-    private void notifyChanged() {
-        if (getFile() != null && getFile().getName().endsWith(".java") && jlsRequestor != null) {
-            TextDocumentContentChangeEvent event = new TextDocumentContentChangeEvent();
-            VersionedTextDocumentIdentifier id = new VersionedTextDocumentIdentifier();
-            DidChangeTextDocumentParams p = new DidChangeTextDocumentParams();
-            List<TextDocumentContentChangeEvent> changes = new ArrayList<>();
-            event.text = getText().toString();
-            event.range = null;
-            changes.add(event);
-            id.uri = getFile().toURI();
-            id.version = VersionedFileManager.incrementVersion(getFile());
-            p.textDocument = id;
-            p.contentChanges = changes;
-            jlsRequestor.didChange(p);
-        }
-    }
-
+    
     @Override
     public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
+        notifyChanged();
+        
         if(mDiagnosticWindow != null)
             mDiagnosticWindow.hide();
-            
-        notifyChanged();
         
         if (isSpanMapPrepared(false, endLine - startLine)) {
             if (startLine == endLine) {
@@ -4720,6 +4926,38 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             }
             postInvalidate();
         }
+    }
+    
+    private void notifyChanged() {
+        if(mLanguageServer != null) {
+            DidChangeTextDocumentParams p = didChangeParams();
+            if(p != null) {
+                mLanguageServer.getTextDocumentService().didChange(p);
+            }
+        }
+    }
+
+    protected DidChangeTextDocumentParams didChangeParams() {
+        if(getFile() == null) {
+            return null;
+        }
+
+        VersionedTextDocumentIdentifier doc = new VersionedTextDocumentIdentifier();
+        doc.setVersion(++mFileVersion);
+        doc.setUri(getFile().toURI().toString());
+        DidChangeTextDocumentParams p = new DidChangeTextDocumentParams();
+        p.setTextDocument(doc);
+        p.setContentChanges(createChangeEvents());
+
+        return p;
+    }
+
+    private List<TextDocumentContentChangeEvent> createChangeEvents() {
+        final List<TextDocumentContentChangeEvent> events = new ArrayList<>();
+        TextDocumentContentChangeEvent event = new TextDocumentContentChangeEvent();
+        event.setText(getText().toString());
+        events.add(event);
+        return events;
     }
 
     public void onEndTextSelect() {

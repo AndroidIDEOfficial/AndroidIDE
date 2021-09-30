@@ -4,6 +4,7 @@ import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.language.java.parser.JavaLexer;
 import com.itsaky.androidide.language.java.parser.JavaParser;
+import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.models.AndroidProject;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
@@ -13,6 +14,7 @@ import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.eclipse.lsp4j.services.LanguageServer;
 
 public class JavaLanguage extends BaseLanguage {
     
@@ -22,9 +24,19 @@ public class JavaLanguage extends BaseLanguage {
 
 	public JavaLanguage(AndroidProject project) {
 		this.analyzer = new JavaLanguageAnalyzer();
-		this.complete = new JavaAutoComplete(analyzer);
+		this.complete = new JavaAutoComplete(this);
 		this.project  = project;
 	}
+
+    @Override
+    public LanguageServer getLanguageServer() {
+        return LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
+    }
+
+    @Override
+    public String getLanguageCode() {
+        return LSPProvider.LANGUAGE_JAVA;
+    }
 
 	@Override
 	public CodeAnalyzer getAnalyzer() {
@@ -105,19 +117,6 @@ public class JavaLanguage extends BaseLanguage {
             return new HandleResult(sb, shiftLeft);
         }
     }
-
-	public static String[] getKeywords() {
-		return new String[] {
-			"abstract", "assert", "boolean", "break", "byte", "case", 
-			"catch", "char", "class", "const", "continue", "default", 
-			"do", "double", "else", "enum", "extends", "final", "finally", 
-			"float", "for", "if", "goto", "implements", "import", "instanceof", 
-			"int", "interface", "long", "native", "new", "package", "private", 
-			"protected", "public", "return", "short", "static", "strictfp", 
-			"super", "switch", "synchronized", "this", "throw", "throws", 
-			"transient", "try", "void", "volatile", "while", "null"
-		};
-	}
     
     private class JavaSymbolPairs extends SymbolPairMatch {
         public JavaSymbolPairs() {

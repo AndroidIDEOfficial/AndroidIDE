@@ -1,7 +1,6 @@
 package com.itsaky.androidide.language.xml.completion;
 
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
-import com.itsaky.androidide.models.CompletionListItem;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import io.github.rosemoe.editor.widget.CodeEditor;
@@ -17,10 +16,13 @@ import java.util.Map;
 import java.util.Set;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.eclipse.lsp4j.CompletionItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.eclipse.lsp4j.InsertTextFormat;
+import org.eclipse.lsp4j.CompletionItemKind;
 
 public class XMLCompletionService {
 	private HashMap<String, Attr> attrs;
@@ -50,11 +52,8 @@ public class XMLCompletionService {
 	}
 	
 	
-	public List<CompletionListItem> complete(CodeEditor editor, String prefix) {
-		prefix = prefix.toLowerCase(Locale.US).trim();
-		final int line = editor.getCursor().getLeftLine();
-		final int column = editor.getCursor().getLeftColumn();
-		final List<CompletionListItem> result = new ArrayList<>();
+	public List<CompletionItem> complete(int index, int line, int column, String prefix) {
+		final List<CompletionItem> result = new ArrayList<>();
 		if(prefix.startsWith("<") || prefix.startsWith("</")) {
 			boolean slash = false;
 			prefix = prefix.substring(1).trim();
@@ -63,13 +62,17 @@ public class XMLCompletionService {
 				prefix = prefix.substring(1);
 			}
 			for(String name : widgets) {
-				if(simpleName(name).toLowerCase(Locale.US).contains(prefix))
+				if(simpleName(name).toLowerCase(Locale.US).startsWith(prefix))
 					result.add(widgetNameAsCompletion(name, slash));
 			}
 			return handleResults(result);
 		} else {
-			final IsInValueScanner scanner = new IsInValueScanner(editor.getCursor().getLeft());
-			final String name = scanner.scan(editor.getText().toString());
+            /**
+             * TODO: Change to LSP
+             */
+            final String content = "";
+			final IsInValueScanner scanner = new IsInValueScanner(index);
+			final String name = scanner.scan(content);
 			if(name != null) {
 				final String attrName = name.contains(":") ? name.substring(name.indexOf(":") + 1) : name;
                 if (attrs.containsKey(attrName)) {
@@ -77,14 +80,14 @@ public class XMLCompletionService {
                     if(attr.hasPossibleValues()) {
                         Set<String> values = attr.possibleValues;
                         for(String value : values) 
-                            if(value.toLowerCase(Locale.US).contains(prefix))
+                            if(value.toLowerCase(Locale.US).startsWith(prefix))
                                 result.add(valueAsCompletion(value));
                     }
                 }
 			} else {
 				for(Map.Entry<String, Attr> entry : attrs.entrySet()) {
 					Attr attr = entry.getValue();
-					if(attr.name.toLowerCase(Locale.US).contains(prefix))
+					if(attr.name.toLowerCase(Locale.US).startsWith(prefix))
 						result.add(attrAsCompletion(attr));
 				}
 			}
@@ -92,39 +95,37 @@ public class XMLCompletionService {
 		return handleResults(result);
 	}
 
-	private CompletionListItem valueAsCompletion(String value) {
-		CompletionListItem item = new CompletionListItem();
-		item.setLabel(value)
-			.setCommit(value)
-			.setDesc("Attribute Value")
-			.setDetail(item.getDesc())
-			.setItemType("int")
-			.setType(CompletionListItem.Type.ATTRIBUTE)
-			.cursorOffset(item.getCommit().length());
+	private CompletionItem valueAsCompletion(String value) {
+		CompletionItem item = new CompletionItem();
+		item.setLabel(value);
+        item.setDetail("Attribute value");
+        item.setInsertText(value);
+        item.setInsertTextFormat(InsertTextFormat.PlainText);
+        item.setSortText("0" + value);
+        item.setKind(CompletionItemKind.Value);
 		return item;
 	}
 
-	private CompletionListItem attrAsCompletion(Attr attr) {
-		CompletionListItem item = new CompletionListItem();
-		item.setLabel(attr.name)
-			.setCommit(attr.prefix + ":" + attr.name + "=\"" + (attr.prefix.equals("android") && attr.name.equals("id") ? "@+id/\"" : "\""))
-			.setDesc("Attribute")
-			.setDetail(item.getDesc())
-			.setItemType("int")
-			.setType(CompletionListItem.Type.ATTRIBUTE)
-			.cursorOffset(item.getCommit().length() - 1);
+	private CompletionItem attrAsCompletion(Attr attr) {
+		CompletionItem item = new CompletionItem();
+        item.setLabel(attr.name);
+        item.setDetail("Attribute");
+        item.setInsertText(attr.prefix + ":" + attr.name + "=\"" + (attr.prefix.equals("android") && attr.name.equals("id") ? "@+id/\"" : "\""));
+        item.setInsertTextFormat(InsertTextFormat.PlainText);
+        item.setSortText("1" + attr.name);
+        item.setKind(CompletionItemKind.Snippet);
 		return item;
 	}
 
-	private CompletionListItem widgetNameAsCompletion(String name, boolean slash) {
-		CompletionListItem item = new CompletionListItem();
-		final String n = simpleName(name);
-		item.setLabel(n)
-			.setCommit("<" + (slash ? "/" : "") + n)
-			.setDesc(name)
-			.setDetail(item.getDesc())
-			.setItemType("  ")
-			.setType(CompletionListItem.Type.WIDGET);
+	private CompletionItem widgetNameAsCompletion(String name, boolean slash) {
+        final String n = simpleName(name);
+		CompletionItem item = new CompletionItem();
+        item.setLabel(n);
+        item.setDetail(name);
+        item.setInsertText("<" + (slash ? "/" : "") + n);
+        item.setInsertTextFormat(InsertTextFormat.PlainText);
+        item.setSortText("2" + n);
+        item.setKind(CompletionItemKind.Value);
 		return item;
 	}
 	
@@ -132,7 +133,7 @@ public class XMLCompletionService {
 		return name.substring(name.lastIndexOf(".") + 1);
 	}
 	
-	private List<CompletionListItem> handleResults(List<CompletionListItem> result) {
+	private List<CompletionItem> handleResults(List<CompletionItem> result) {
 		return result;
 	}
 	

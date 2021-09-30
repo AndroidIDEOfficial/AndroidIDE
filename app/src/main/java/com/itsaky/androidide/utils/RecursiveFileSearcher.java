@@ -4,19 +4,19 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
-import com.itsaky.lsp.Position;
-import com.itsaky.lsp.Range;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.HashMap;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 
 /**
  * This class provides API to search in files recursively
@@ -84,8 +84,8 @@ public class RecursiveFileSearcher {
                         final Range range = new Range();
                         final CharPosition start = content.getIndexer().getCharPosition(matcher.start());
                         final CharPosition end = content.getIndexer().getCharPosition(matcher.end());
-                        range.start = new Position(start.line, start.column);
-                        range.end = new Position(end.line, end.column);
+                        range.setStart(new Position(start.line, start.column));
+                        range.setEnd(new Position(end.line, end.column));
                         String sub = "...".concat(text.substring(Math.max(0, matcher.start() - 30), Math.min(matcher.end() + 31, text.length()))).trim().concat("...");
                         String match = content.subContent(start.line, start.column, end.line, end.column).toString();
                         ranges.add(new SearchResult(range, file, sub.replaceAll("\\s+", " "), match));

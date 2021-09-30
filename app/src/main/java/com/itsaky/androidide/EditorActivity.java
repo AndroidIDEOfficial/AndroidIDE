@@ -31,6 +31,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialContainerTransform;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.itsaky.androidide.adapters.EditorPagerAdapter;
 import com.itsaky.androidide.app.StudioActivity;
@@ -48,8 +50,11 @@ import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.handlers.jls.JLSHandler;
 import com.itsaky.androidide.handlers.jls.LanguageClientHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
+import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.language.buildout.BuildOutputLanguage;
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
+import com.itsaky.androidide.lsp.LSP;
+import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.VersionedFileManager;
 import com.itsaky.androidide.models.AndroidProject;
@@ -85,10 +90,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import org.eclipse.lsp4j.DidChangeConfigurationParams;
+import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.services.LanguageServer;
+import org.eclipse.lsp4j.Position;
+import com.itsaky.androidide.utils.LSPUtils;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -96,7 +107,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                                                         DiagnosticClickListener, 
                                                         EditorFragment.FileOpenListener,
                                                         EditorPagerAdapter.EditorStateListener,
-                                                        IDEHandler.Provider {
+                                                        IDEHandler.Provider,
+                                                        EditorActivityProvider {
     
     private ActivityEditorBinding mBinding;
 	private EditorPagerAdapter mPagerAdapter;
@@ -131,6 +143,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
 	private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
     public static final String TAG = "EditorActivity";
+    
+    private static final org.eclipse.lsp4j.Range Range_ofZero = new org.eclipse.lsp4j.Range(new Position(0, 0), new Position(0, 0));
 	
 	private static final int ACTIONID_CLOSE = 100;
 	private static final int ACTIONID_OTHERS = 101;
@@ -204,6 +218,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		registerLogReceiver();
 		setupContainers();
         setupSignatureText();
+        
+        startLanguageServers();
     }
     
 	@Override
@@ -380,6 +396,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		invalidateOptionsMenu();
 		return true;
 	}
+
+    @Override
+    public EditorActivity provide() {
+        return this;
+    }
     
     @Override
     public EditorActivity provideEditorActivity() {
@@ -592,7 +613,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
     @Override
     public void onDiagnosticClick(File file, Diagnostic diagnostic) {
-        openFileAndSelect(file, diagnostic.range);
+//        openFileAndSelect(file, diagnostic.getRange());
         hideDiagnostics();
     }
 
@@ -639,16 +660,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
     }
 
-    public void openFileAndSelect(File file, Range range) {
+    public void openFileAndSelect(File file, org.eclipse.lsp4j.Range range) {
         openFile(file, range);
         EditorFragment opened = mPagerAdapter.findEditorByFile(file);
         if (opened != null && opened.getEditor() != null) {
             CodeEditor editor = opened.getEditor();
             editor.post(() -> {
-                if (range.start.equals(range.end)) {
-                    editor.setSelection(range.start.line, range.start.column);
+                if (LSPUtils.isEqual(range.getStart(), range.getEnd())) {
+                    editor.setSelection(range.getStart().getLine(), range.getEnd().getCharacter());
                 } else {
-                    editor.setSelectionRegion(range.start.line, range.start.column, range.end.line, range.end.column);
+                    editor.setSelectionRegion(range.getStart().getLine(), range.getStart().getCharacter(), range.getEnd().getLine(), range.getEnd().getCharacter());
                 }
             });
         }
@@ -867,8 +888,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         openFile(file, null);
     }
 
-    public EditorFragment openFile(File file, Range selection) {
-        if(selection == null) selection = Range.ofZero();
+    public EditorFragment openFile(File file, org.eclipse.lsp4j.Range selection) {
+        if(selection == null) selection = Range_ofZero;
         int i = mPagerAdapter.openFile(file, selection, this, mJLSHandler);
         if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
             mBinding.tabs.getTabAt(i).select();
@@ -935,7 +956,27 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public void createServices() {
         new TaskExecutor().executeAsync(() -> {
             getApp().createCompletionService();
-            mJLSHandler.start();
+            
+            LanguageServer javaServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
+            if(javaServer == null) return null;
+            
+            List<String> cps = mProject.getClassPaths();
+            JsonObject settings = new JsonObject();
+            JsonObject java = new JsonObject();
+            JsonArray classPath = new JsonArray();
+            
+            for(int i=0;i<cps.size();i++) {
+                classPath.add(cps.get(i));
+            }
+            
+            java.add("classPath", classPath);
+            settings.add("java", java);
+            
+            DidChangeConfigurationParams params = new DidChangeConfigurationParams();
+            params.setSettings(settings);
+            
+            javaServer.getWorkspaceService().didChangeConfiguration(params);
+            
             return null;
         }, __ -> {
             setStatus(getString(getApp().areCompletorsStarted() ? R.string.msg_service_started : R.string.msg_starting_completion_failed));
@@ -997,6 +1038,19 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
       ////////////// PRIVATE APIS /////////////////////
      /////////////////////////////////////////////////
      
+    private void startLanguageServers() {
+        LSP.Java.start(() -> {
+            Optional<InitializeResult> result = LSP.Java.init(mProject.getProjectPath());
+
+            if(result.isPresent()) {
+                // TODO Handle initialize result
+                // TODO Register server capablities
+            } else if(true) {
+                // TODO Show user that we cant initialize Java language server
+            }
+        });
+    }
+    
     private void getProjectFromIntent() {
         this.mProject = getIntent().getParcelableExtra(EXTRA_PROJECT);
         getApp().getPrefManager().setOpenedProject(this.mProject.getProjectPath());

@@ -15,6 +15,11 @@
  */
 package io.github.rosemoe.editor.widget;
 
+/**
+ * Adapter to display results
+ *
+ * @author Rose
+ */
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -25,15 +30,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.models.SuggestItem;
-import com.itsaky.androidide.utils.Either;
-import io.github.rosemoe.editor.struct.CompletionItem;
+import org.eclipse.lsp4j.CompletionItem;
 
-/**
- * Adapter to display results
- *
- * @author Rose
- */
 @SuppressWarnings("CanBeFinal")
 class DefaultCompletionItemAdapter extends EditorCompletionAdapter {
 
@@ -47,29 +45,24 @@ class DefaultCompletionItemAdapter extends EditorCompletionAdapter {
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.default_completion_result_item, parent, false);
         }
-        Either<SuggestItem, CompletionItem> item = getItem(pos);
-		String label, desc;
-		Drawable icon;
-		if(item.isLeft()) {
-			label = item.getLeft().getName();
-			desc = item.getLeft().getDescription();
-			icon = ContextCompat.getDrawable(parent.getContext(), R.mipmap.box_red);
-		} else {
-			label = item.getRight().label;
-			desc = item.getRight().desc;
-			icon = item.getRight().icon;
-		}
-        TextView tv = (TextView) view.findViewById(R.id.result_item_label);
+        final CompletionItem item = getItem(pos);
+		final String label = item.getLabel();
+        final String desc = item.getDetail();
+        final Drawable icon = ContextCompat.getDrawable(parent.getContext(), R.mipmap.box_red);
+        
+        TextView tv = view.findViewById(R.id.result_item_label);
         tv.setText(label);
-        tv = (TextView) view.findViewById(R.id.result_item_desc);
+        tv = view.findViewById(R.id.result_item_desc);
         tv.setText(desc);
         view.setTag(pos);
+        
         if (isCurrentCursorPosition) {
             view.setBackgroundColor(0xffdddddd);
         } else {
             view.setBackgroundColor(0xffffffff);
         }
-        ImageView iv = (ImageView) view.findViewById(R.id.result_item_image);
+        
+        ImageView iv = view.findViewById(R.id.result_item_image);
         iv.setImageDrawable(icon);
         return view;
     }

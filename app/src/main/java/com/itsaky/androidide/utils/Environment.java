@@ -35,6 +35,7 @@ public final class Environment {
     
     public static final File INIT_SCRIPT;
     public static final File PROJECT_DATA_FILE;
+    public static final File JLS_JAR;
     
 	public static final File GRADLE_HOME;
 	public static final File GRADLE_PROPS;
@@ -71,7 +72,8 @@ public final class Environment {
         IDEPROPS = new File(SYSROOT, "etc/ide-environment.properties");
         LIBHOOK = new File(LIBDIR, "libhook.so");
         PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
-
+        JLS_JAR = new File(JLS_HOME, "jls.jar");
+        
         INIT_SCRIPT = new File(mkdirIfNotExits(new File(app.getIDEDataDir(), "init")), "androidide.init.gradle");
         BOOTCLASSPATH = new File("");
         GRADLE_USER_HOME = new File(HOME, ".gradle");

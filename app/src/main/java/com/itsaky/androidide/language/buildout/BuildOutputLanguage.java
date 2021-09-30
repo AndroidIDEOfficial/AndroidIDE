@@ -11,12 +11,23 @@ import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
+import org.eclipse.lsp4j.services.LanguageServer;
 
 public class BuildOutputLanguage extends BaseLanguage {
 
     @Override
     public AutoCompleteProvider getAutoCompleteProvider() {
         return new EmptyLanguage.EmptyAutoCompleteProvider();
+    }
+
+    @Override
+    public LanguageServer getLanguageServer() {
+        return null;
+    }
+
+    @Override
+    public String getLanguageCode() {
+        return null;
     }
 
     @Override

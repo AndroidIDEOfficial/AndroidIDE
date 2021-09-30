@@ -15,27 +15,36 @@
  */
 package io.github.rosemoe.editor.langs;
 
-import com.itsaky.androidide.models.SuggestItem;
-import com.itsaky.androidide.utils.Either;
-import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
-import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
-import io.github.rosemoe.editor.interfaces.NewlineHandler;
-import io.github.rosemoe.editor.struct.CompletionItem;
-import io.github.rosemoe.editor.text.TextAnalyzeResult;
-import io.github.rosemoe.editor.text.TextAnalyzer.AnalyzeThread.Delegate;
-import io.github.rosemoe.editor.widget.CodeEditor;
-import io.github.rosemoe.editor.widget.SymbolPairMatch;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Empty language without any effect
  *
  * @author Rose
  */
+import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
+import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
+import io.github.rosemoe.editor.interfaces.EditorLanguage;
+import io.github.rosemoe.editor.interfaces.NewlineHandler;
+import io.github.rosemoe.editor.text.TextAnalyzeResult;
+import io.github.rosemoe.editor.widget.CodeEditor;
+import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import java.util.ArrayList;
+import java.util.List;
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.xtend.lib.annotations.Delegate;
+import org.eclipse.lsp4j.services.LanguageServer;
+
 public class EmptyLanguage implements EditorLanguage {
 
+    @Override
+    public LanguageServer getLanguageServer() {
+        return null;
+    }
+
+    @Override
+    public String getLanguageCode() {
+        return null;
+    }
+    
     @Override
     public CharSequence format(CharSequence text) {
         return text;
@@ -80,8 +89,8 @@ public class EmptyLanguage implements EditorLanguage {
     public static class EmptyAutoCompleteProvider implements AutoCompleteProvider {
 
         @Override
-        public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(CodeEditor editor, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
-            return new ArrayList<Either<SuggestItem, CompletionItem>>();
+        public List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
+            return new ArrayList<CompletionItem>();
         }
 
     }
@@ -89,10 +98,9 @@ public class EmptyLanguage implements EditorLanguage {
     private static class EmptyCodeAnalyzer implements CodeAnalyzer {
 
         @Override
-        public void analyze(CharSequence content, TextAnalyzeResult colors, Delegate delegate) {
+        public void analyze(CharSequence content, TextAnalyzeResult colors, io.github.rosemoe.editor.text.TextAnalyzer.AnalyzeThread.Delegate delegate) {
             colors.addNormalIfNull();
         }
-
     }
 }
 

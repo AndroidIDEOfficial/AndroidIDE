@@ -44,6 +44,7 @@ import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 import io.github.rosemoe.editor.text.Content;
+import com.itsaky.androidide.utils.LSPUtils;
 
 public class EditorFragment extends BaseFragment implements EditorEventListener {
 	
@@ -104,13 +105,13 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         }
     }
     
-	public static EditorFragment newInstance(File file, AndroidProject project, Range selection) {
+	public static EditorFragment newInstance(File file, AndroidProject project, org.eclipse.lsp4j.Range selection) {
 		Bundle bundle = new Bundle();
 		bundle.putString(KEY_FILE_PATH, file.getAbsolutePath());
-        bundle.putInt(KEY_LINE_START, selection.start.line);
-        bundle.putInt(KEY_LINE_END, selection.end.line);
-        bundle.putInt(KEY_COLUMN_START, selection.start.column);
-        bundle.putInt(KEY_COLUMN_END, selection.end.column);
+        bundle.putInt(KEY_LINE_START, selection.getStart().getLine());
+        bundle.putInt(KEY_LINE_END, selection.getEnd().getLine());
+        bundle.putInt(KEY_COLUMN_START, selection.getStart().getCharacter());
+        bundle.putInt(KEY_COLUMN_END, selection.getEnd().getCharacter());
 		bundle.putParcelable(KEY_PROJECT, project);
 		EditorFragment frag = new EditorFragment();
 		frag.setArguments(bundle);
@@ -164,32 +165,32 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         
 		configureEditorIfNeeded();
 		
-        final Range range = fromArgs(getArguments());
+        final org.eclipse.lsp4j.Range range = fromArgs(getArguments());
 		new TaskExecutor().executeAsync(new ReadFileTask(mFile), result -> {
 			mBinding.editor.setText(result);
 			postRead();
             mBinding.editor.post(() -> {
-                if(range.start.equals(range.end)) {
-                    getEditor().setSelection(range.start.line, range.start.column);
+                if(LSPUtils.isEqual(range.getStart(), range.getEnd())) {
+                    getEditor().setSelection(range.getStart().getLine(), range.getStart().getCharacter());
                 } else {
-                    getEditor().setSelectionRegion(range.start.line, range.start.column, range.end.line, range.end.column);
+                    getEditor().setSelectionRegion(range.getStart().getLine(), range.getStart().getCharacter(), range.getEnd().getLine(), range.getEnd().getCharacter());
                 }
             });
 		});
 	}
 
-    private Range fromArgs(Bundle args) {
+    private org.eclipse.lsp4j.Range fromArgs(Bundle args) {
         if(!(args.containsKey(KEY_LINE_START)
          && args.containsKey(KEY_COLUMN_START)
          && args.containsKey(KEY_LINE_END)
          && args.containsKey(KEY_COLUMN_END)))
-            return Range.ofZero();
+            return LSPUtils.Range_ofZero;
             
-        return new Range(
-            new Position(
+        return new org.eclipse.lsp4j.Range(
+            new org.eclipse.lsp4j.Position(
                 args.getInt(KEY_LINE_START),
                 args.getInt(KEY_COLUMN_START)),
-            new Position(
+            new org.eclipse.lsp4j.Position(
                 args.getInt(KEY_LINE_END),
                 args.getInt(KEY_COLUMN_END)
                 ));
@@ -302,7 +303,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
 	
 	private void postRead() {
-        mBinding.editor.setFile(getFile());
 		if (mFile.isFile() && mFile.getName().endsWith(EXT_JAVA)) {
 			mBinding.editor.setEditorLanguage(mJavaLanguage = new JavaLanguage(mProject));
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_XML)) {
@@ -312,6 +312,11 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		} else {
 			mBinding.editor.setEditorLanguage(new EmptyLanguage());
 		}
+        
+        // File must be set only after setting the language server
+        // This will make sure that textDocument/didOpen is sent
+        mBinding.editor.setFile(getFile());
+        
         mBinding.editor.setColorScheme(new SchemeAndroidIDE());
 		isRead = true;
         if(mOpenListener != null)
@@ -427,16 +432,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	}
     
     private void notifySaved(boolean wrote, String text) {
-        if (wrote && mJLSRequestor != null) {
-            try {
-                TextDocumentIdentifier id = new TextDocumentIdentifier();
-                id.uri = mFile.toURI();
-                DidSaveTextDocumentParams p = new DidSaveTextDocumentParams();
-                p.text = text;
-                p.textDocument = id;
-                mJLSRequestor.didSave(p);
-            } catch (Throwable th) {}
-        }
+        mBinding.editor.didSave();
         
         if(mModificationStateListener != null)
             mModificationStateListener.onSaved(this);

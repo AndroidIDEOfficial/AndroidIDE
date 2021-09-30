@@ -16,6 +16,7 @@
 package io.github.rosemoe.editor.interfaces;
 
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import org.eclipse.lsp4j.services.LanguageServer;
 
 /**
  * Language for editor
@@ -32,7 +33,19 @@ import io.github.rosemoe.editor.widget.SymbolPairMatch;
  * @author Rose
  */
 public interface EditorLanguage {
-
+    
+    /**
+     * Get the language server for this available
+     * May return null.
+     */
+    LanguageServer getLanguageServer();
+    
+    /**
+     * Get the language code of this language.
+     * This must be the one specified in {@link com.itsaky.androidide.lsp.LSPProvider LSPProvider}
+     */
+    String getLanguageCode();
+     
     /**
      * Get CodeAnalyzer of this language object
      *

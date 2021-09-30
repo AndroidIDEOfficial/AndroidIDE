@@ -2,51 +2,54 @@ package com.itsaky.androidide.language.groovy;
 
 import com.itsaky.androidide.models.GradleSuggestItem;
 import com.itsaky.androidide.models.SuggestItem;
-import com.itsaky.androidide.utils.Either;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
-import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4j.InsertTextFormat;
+import org.eclipse.lsp4j.CompletionItemKind;
 
 public class GroovyAutoComplete implements AutoCompleteProvider {
 	
 	private static final List<String> ANDROIDX_ARTIFACTS = createArtifacts();
 	private static final List<String> CONFIGURATIONS = createConfigs();
 	private static final List<String> OTHERS = createOtherCompletions();
-	
-	@Override
-	public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(CodeEditor editor, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
-		List<Either<SuggestItem, CompletionItem>>  result = new ArrayList<>();
-		
-		for(String artifact : ANDROIDX_ARTIFACTS) {
-			if(!artifact.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) continue;
-			SuggestItem item = createCompletionItem(artifact, prefix, true);
-			Either<SuggestItem, CompletionItem> either = Either.forLeft(item);
-			result.add(either);
-		}
-		
-		for(String config : CONFIGURATIONS) {
-			if(!config.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) continue;
-			SuggestItem item = createCompletionItem(config, prefix, false);
-			Either<SuggestItem, CompletionItem> either = Either.forLeft(item);
-			result.add(either);
-		}
-		
-		for(String other : OTHERS) {
-			if(!other.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) continue;
-			SuggestItem item = createCompletionItem(other, prefix, false);
-			Either<SuggestItem, CompletionItem> either = Either.forLeft(item);
-			result.add(either);
-		}
-		
-		return result;
-	}
 
-	private SuggestItem createCompletionItem(String itemLabel, String prefix, boolean artifact) {
-		return new GradleSuggestItem(itemLabel, "", prefix, artifact);
+    @Override
+    public List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
+        List<CompletionItem>  result = new ArrayList<>();
+
+        for(String artifact : ANDROIDX_ARTIFACTS) {
+            if(!artifact.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) continue;
+            result.add(createCompletionItem(artifact, prefix, true));
+        }
+
+        for(String config : CONFIGURATIONS) {
+            if(!config.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) continue;
+            result.add(createCompletionItem(config, prefix, false));
+        }
+
+        for(String other : OTHERS) {
+            if(!other.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) continue;
+            result.add(createCompletionItem(other, prefix, false));
+        }
+
+		return result;
+    }
+    
+	private CompletionItem createCompletionItem(String itemLabel, String prefix, boolean artifact) {
+        CompletionItem item = new CompletionItem();
+        item.setLabel(itemLabel);
+        item.setDetail("");
+        item.setInsertText(itemLabel);
+        item.setSortText("0" + itemLabel);
+        item.setInsertTextFormat(InsertTextFormat.PlainText);
+        item.setKind(CompletionItemKind.Text);
+		return item;
 	}
 	
 	private static List<String> createArtifacts() {

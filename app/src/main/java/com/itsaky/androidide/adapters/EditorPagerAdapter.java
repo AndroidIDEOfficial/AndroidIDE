@@ -66,7 +66,7 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter implements Edi
         return null;
     }
 
-	public int openFile(File file, Range selection, EditorFragment.FileOpenListener listener, JLSRequestor jlsRequestor) {
+	public int openFile(File file, org.eclipse.lsp4j.Range selection, EditorFragment.FileOpenListener listener, JLSRequestor jlsRequestor) {
 		int openedFileIndex = -1;
 		for (int i=0;i < mOpenedFiles.size();i++) {
 			File f = mOpenedFiles.get(i);

@@ -65,7 +65,7 @@ public class JLSHandler extends IDEHandler implements JLSRequestor {
         this.client.start();
         
         this.languageServer = new JavaLanguageServer(project, this.client);
-        this.languageServer.startServer();
+//        this.languageServer.startServer();
         
         StudioApp.getInstance().setJavaLanguageServer(languageServer);
     }

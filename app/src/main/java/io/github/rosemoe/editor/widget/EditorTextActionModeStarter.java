@@ -54,8 +54,6 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
         }
         mActionMode = ((AppCompatActivity) mEditor.getContext()).startSupportActionMode(new ActionMode.Callback() {
             
-            private List<CodeAction> actions;
-            
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 mEditor.mStartedActionMode = CodeEditor.ACTION_MODE_SELECT_TEXT;
@@ -71,10 +69,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         android.R.attr.actionModePasteDrawable,
                 });
                 
-                // TODO: Request code actions on selection change
-                actions = null;
-                
-                if(actions != null && actions.size() > 0) {
+                if(mEditor.isCodeActionsEnabled()) {
                     menu.add(0, 8, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.msg_code_actions))
                         .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_quickfix))
                         .setShowAsActionFlags(1);
@@ -100,13 +95,17 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         .setIcon(array.getDrawable(3));
                 }
                 
-                menu.add(0, 4, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_definition))
-                    .setShowAsActionFlags(1)
-                    .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_goto_definition));
+                if(mEditor.isGotoDefinitionEnabled()) {
+                    menu.add(0, 4, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_definition))
+                        .setShowAsActionFlags(1)
+                        .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_goto_definition));
+                }
                     
-                menu.add(0, 5, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_references))
-                    .setShowAsActionFlags(1)
-                    .setIcon(createDrawable( com.itsaky.androidide.R.drawable.ic_find_references));
+                if(mEditor.isFindReferencesEnabled()) {
+                    menu.add(0, 5, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_references))
+                        .setShowAsActionFlags(1)
+                        .setIcon(createDrawable( com.itsaky.androidide.R.drawable.ic_find_references));
+                }
                     
                 menu.add(0, 6, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_comment_line))
                     .setShowAsActionFlags(1)
@@ -139,19 +138,25 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                 final MenuItem uncomment = menu.findItem(7);
                 final MenuItem codeActions = menu.findItem(8);
                 
-                def.setEnabled(isJava).getIcon().setAlpha(isJava ? 255 : 76);
-                ref.setEnabled(isJava).getIcon().setAlpha(isJava ? 255 : 76);
                 comment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
                 uncomment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
                 
                 /**
-                 * CodeActions menu item may, or may not be added
+                 * Thesw menu items may, or may not be added
                  * So we need to check if its null or not
                  * before we perform any further actions
                  */
                 if(codeActions != null)
                     codeActions.setEnabled(isJava).getIcon().setAlpha(isJava ? 255 : 76);
                 
+                if(def != null) {
+                    def.setEnabled(isJava).getIcon().setAlpha(isJava ? 255 : 76);
+                }
+                
+                if(ref != null) {
+                    ref.setEnabled(isJava).getIcon().setAlpha(isJava ? 255 : 76);
+                }
+                    
                 return true;
             }
 
@@ -183,7 +188,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         mEditor.uncommentLine();
                         break;
                     case 8:
-                        mEditor.performCodeActions(actions);
+                        mEditor.codeAction();
                         break;
                 }
                 if(menuItem.getItemId() != 0) {

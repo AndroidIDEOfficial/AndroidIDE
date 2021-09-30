@@ -2,18 +2,17 @@ package com.itsaky.androidide.language.logs;
 
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.androidide.models.SuggestItem;
-import com.itsaky.androidide.utils.Either;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
-import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.services.LanguageServer;
 
 public class LogLanguageImpl extends BaseLanguage {
 	
@@ -23,6 +22,16 @@ public class LogLanguageImpl extends BaseLanguage {
 	public LogAnalyzer addLine(LogLine line) {
 		return analyzer.addLine(line);
 	}
+
+    @Override
+    public LanguageServer getLanguageServer() {
+        return null;
+    }
+
+    @Override
+    public String getLanguageCode() {
+        return null;
+    }
 	
 	@Override
 	public CodeAnalyzer getAnalyzer() {
@@ -91,8 +100,8 @@ public class LogLanguageImpl extends BaseLanguage {
 	private static class LogCompletor implements AutoCompleteProvider {
 		
 		@Override
-		public List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(CodeEditor editor, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line) {
-			return new ArrayList<Either<SuggestItem, CompletionItem>>();
+		public List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
+			return new ArrayList<CompletionItem>();
 		}
 	}
 }

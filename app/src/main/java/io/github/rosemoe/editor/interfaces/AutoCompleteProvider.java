@@ -15,12 +15,11 @@
  */
 package io.github.rosemoe.editor.interfaces;
 
-import com.itsaky.androidide.models.SuggestItem;
-import com.itsaky.androidide.utils.Either;
-import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.List;
+import org.eclipse.lsp4j.CompletionItem;
+import com.itsaky.androidide.utils.Logger;
 
 /**
  * Interface for auto completion analysis
@@ -28,7 +27,7 @@ import java.util.List;
  * @author Rose
  */
 public interface AutoCompleteProvider {
-
+    
     /**
      * Analyze auto complete items
      *
@@ -38,7 +37,7 @@ public interface AutoCompleteProvider {
      * @param line          The line of cursor
      * @return Analyzed items
      */
-    List<Either<SuggestItem, CompletionItem>> getAutoCompleteItems(CodeEditor editor, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int line);
+    List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception;
 
 }
 

@@ -3,6 +3,7 @@ package com.itsaky.androidide.language.xml;
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
+import com.itsaky.androidide.lsp.LSPProvider;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
@@ -11,6 +12,7 @@ import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import org.eclipse.lsp4j.services.LanguageServer;
 
 public class XMLLanguage extends BaseLanguage {
 
@@ -24,6 +26,16 @@ public class XMLLanguage extends BaseLanguage {
 		this.newlineHandlers = new NewlineHandler[]{new IndentHandler()};
 	}
 
+    @Override
+    public LanguageServer getLanguageServer() {
+        return null;
+    }
+
+    @Override
+    public String getLanguageCode() {
+        return LSPProvider.LANGUAGE_XML;
+    }
+    
 	@Override
 	public CodeAnalyzer getAnalyzer() {
 		return analyzer;

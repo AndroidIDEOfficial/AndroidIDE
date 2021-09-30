@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -18,7 +19,6 @@ import com.itsaky.androidide.databinding.LayoutCompletionItemBinding;
 import com.itsaky.androidide.models.CompletionItemWrapper;
 import com.itsaky.androidide.models.CompletionListItem;
 import com.itsaky.androidide.models.SuggestItem;
-import com.itsaky.androidide.utils.Either;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.apiinfo.ApiInfo;
@@ -26,10 +26,10 @@ import com.itsaky.apiinfo.models.ClassInfo;
 import com.itsaky.apiinfo.models.FieldInfo;
 import com.itsaky.apiinfo.models.Info;
 import com.itsaky.apiinfo.models.MethodInfo;
-import com.itsaky.lsp.CompletionItemKind;
-import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.widget.EditorCompletionAdapter;
 import java.util.Locale;
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {
     
@@ -44,23 +44,10 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
     protected View getView(int position, View convertView, ViewGroup parent, boolean isCurrentCursorPosition) {
         LayoutCompletionItemBinding binding = LayoutCompletionItemBinding.inflate(LayoutInflater.from(getContext()), parent, false);
 
-		Either<SuggestItem, CompletionItem> e = getItem(position);
-		String label = "", desc = "", type = "";
-		String header = "";
-		if (e != null && e.isLeft()) {
-			SuggestItem s = e.getLeft();
-			label = s.getName();
-			desc = s.getDescription();
-			type = s.getReturnType();
-			header = String.valueOf(s.getTypeHeader()).toUpperCase(Locale.US);
-		} else if (e != null && e.isRight()) {
-			CompletionListItem item = (CompletionListItem) e.getRight();
-			header = item.getType() == null ? CompletionListItem.Type.OBJECT.getAsString() :  item.getType().getAsString();
-			label = item.getLabel();
-			type = item.getItemType().contains(".") ? item.getItemType().substring(item.getItemType().lastIndexOf(".") + 1) : item.getItemType();
-			desc = item.getType() != CompletionListItem.Type.NOT_IMPORTED_CLASS ? item.getDetail() : getContext().getString(R.string.label_not_imported, item.getDetail());
-		}
-
+		CompletionItem item = getItem(position);
+		String label = item.getLabel(), desc = item.getDetail(), type = item.getKind().toString();
+		String header = type == null || type.length() <= 0 ? "O" : String.valueOf(type.toString().charAt(0));
+		
         binding.completionIconText.setText(header);
         binding.completionLabel.setText(label);
         binding.completionType.setText(type);
@@ -75,8 +62,8 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
 
         binding.completionApiInfo.setVisibility(View.GONE);
         
-        if (e != null && e.isLeft() && e.getLeft() instanceof CompletionItemWrapper) {
-            showApiInfoIfNeeded((CompletionItemWrapper) e.getLeft(), binding.completionApiInfo);
+        if (item != null) {
+            showApiInfoIfNeeded(item, binding.completionApiInfo);
         }
         
         binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(() -> {
@@ -89,22 +76,22 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
         return binding.getRoot();
     }
 
-    private void showApiInfoIfNeeded(final CompletionItemWrapper item, final TextView completionApiInfo) {
+    private void showApiInfoIfNeeded(final CompletionItem item, final TextView completionApiInfo) {
         
         new Thread(() -> {
             final ApiInfo info = StudioApp.getInstance().getApiInfo();
             boolean hasRead = info != null && info.hasRead();
-            boolean isValid = isValidForApiVersion(item.getItem());
+            boolean isValid = isValidForApiVersion(item);
             
             if (hasRead && isValid) {
 
-                JsonElement element = item.getItem().data;
+                JsonElement element = new Gson().toJsonTree(item.getData());
                 if (element == null || !element.isJsonObject()) return;
                 JsonObject data = element.getAsJsonObject();
                 if (!data.has("className")) return;
                 
                 final String className = data.get("className").getAsString();
-                int kind = item.getItem().kind;
+                CompletionItemKind kind = item.getKind();
                 
                 ClassInfo clazz = info.getClassByName(className);
                 if(clazz == null) return;
@@ -168,10 +155,10 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
         }).start();
     }
 
-    private boolean isValidForApiVersion(com.itsaky.lsp.CompletionItem item) {
+    private boolean isValidForApiVersion(CompletionItem item) {
         if (item == null) return false;
-        final int type = item.kind;
-        JsonElement element = item.data;
+        final CompletionItemKind type = item.getKind();
+        JsonElement element = new Gson().toJsonTree(item.getData());
         if (
         
         /**

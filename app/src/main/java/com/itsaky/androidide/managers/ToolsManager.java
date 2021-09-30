@@ -17,7 +17,7 @@ public class ToolsManager {
     
     private static PreferenceManager prefs;
     
-    public static final int JLS_VERSION = 8;
+    public static final int JLS_VERSION = 12;
     public static final int LOGSENDER_VERSION = 1;
     public static final int CLEANER_VERSION = 1;
     public static final int GRADLE_API_VERSION = 2;
@@ -62,18 +62,9 @@ public class ToolsManager {
     
     
     private static void extractJlsIfNeeded() {
-        boolean gson = false, jls = false, proto = false;
-        final List<File> files = FileUtils.listFilesInDir(Environment.JLS_HOME, true);
-        for(File f : files) {
-            gson = gson == true ? gson : f.getName().equals("gson.jar");
-            jls = jls == true ? jls : f.getName().equals("jls.jar");
-            proto = proto == true ? proto : f.getName().equals("protobuf.jar");
-        }
-
-        final boolean exists = gson && jls && proto;
         final boolean isOld = JLS_VERSION > prefs.getInt(KEY_JLS_VERSION, 0);
         
-        if(!exists || isOld) {
+        if(!Environment.JLS_JAR.exists() || isOld) {
             try {
                 extractJls();
             } catch (Throwable e) {}
@@ -81,14 +72,7 @@ public class ToolsManager {
     }
 
     private static void extractJls(){
-        final File jlsZip = new File(Environment.JLS_HOME, "jls.zip");
-        ResourceUtils.copyFileFromAssets("data/jls.zip", jlsZip.getAbsolutePath());
-        try {
-            ZipFile file = new ZipFile(jlsZip, ConstantsBridge.JLS_ZIP_PASSWORD_HASH.toCharArray());
-            file.extractAll(Environment.JLS_HOME.getAbsolutePath());
-            FileUtils.delete(jlsZip);
-            prefs.putInt(KEY_JLS_VERSION, JLS_VERSION);
-        } catch (Throwable th) {}
+        ResourceUtils.copyFileFromAssets("data/jls.jar", Environment.JLS_JAR.getAbsolutePath());
     }
     
     

@@ -1,7 +1,7 @@
 package com.itsaky.androidide.models;
 
-import com.itsaky.lsp.Range;
 import java.io.File;
+import org.eclipse.lsp4j.Range;
 
 public class SearchResult extends Range {
     public File file;
@@ -9,8 +9,8 @@ public class SearchResult extends Range {
     public String match;
     
     public SearchResult(Range src, File file, String line, String match) {
-        this.start = src.start;
-        this.end = src.end;
+        this.setStart(src.getStart());
+        this.setEnd(src.getEnd());
         this.file = file;
         this.line = line;
         this.match = match;

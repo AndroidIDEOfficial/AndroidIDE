@@ -6,7 +6,6 @@ import android.view.View;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.gson.JsonElement;
-import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
@@ -24,7 +23,6 @@ import com.itsaky.lsp.Location;
 import com.itsaky.lsp.Message;
 import com.itsaky.lsp.ParameterInformation;
 import com.itsaky.lsp.PublishDiagnosticsParams;
-import com.itsaky.lsp.Range;
 import com.itsaky.lsp.ShowMessageParams;
 import com.itsaky.lsp.SignatureHelp;
 import com.itsaky.lsp.SignatureInformation;
@@ -82,31 +80,7 @@ public class LanguageClientHandler extends IDEHandler implements LanguageClient 
             activity().getApp().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
             return;
         }
-        Location loc = locations.get(0);
-        final File file = new File(loc.uri);
-        final Range range = loc.range;
-        try {
-            if(activity().getPagerAdapter() == null) return;
-            if(activity().getPagerAdapter().getCount() <= 0) {
-                activity().openFile(file, range);
-                return;
-            }
-            EditorFragment frag = activity().getPagerAdapter().getFrag(activity().getBinding().tabs.getSelectedTabPosition());
-            if(frag != null
-               && frag.getFile() != null
-               && frag.getEditor() != null
-               && frag.getFile().getAbsolutePath().equals(file.getAbsolutePath())) {
-                if(range.start.equals(range.end)) {
-                    frag.getEditor().setSelection(range.start.line, range.start.column);
-                } else {
-                    frag.getEditor().setSelectionRegion(range.start.line, range.start.column, range.end.line, range.end.column);
-                }
-            } else {
-                activity().openFileAndSelect(file, range);
-            }
-        } catch (Throwable th) {
-            LOG.error(ThrowableUtils.getFullStackTrace(th));
-        }
+        
     }
 
     @Override
@@ -125,36 +99,36 @@ public class LanguageClientHandler extends IDEHandler implements LanguageClient 
         }
 
         final Map<File, List<SearchResult>> results = new HashMap<>();
-        for(int i=0;i<references.size();i++) {
-            try {
-                final Location loc = references.get(i);
-                if(loc == null || loc.uri == null || loc.range == null) continue;
-                final File file = new File(loc.uri);
-                if(!file.exists() || !file.isFile()) continue;
-                EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
-                Content content;
-                if(frag != null && frag.getEditor() != null)
-                    content = frag.getEditor().getText();
-                else content = new Content(null, FileIOUtils.readFile2String(file));
-                final List<SearchResult> matches = results.containsKey(file) ? results.get(file) : new ArrayList<>();
-                matches.add(
-                    new SearchResult(
-                        loc.range,
-                        file,
-                        content.getLineString(loc.range.start.line),
-                        content.subContent(
-                            loc.range.start.line,
-                            loc.range.start.column,
-                            loc.range.end.line,
-                            loc.range.end.column
-                        ).toString()
-                    )
-                );
-                results.put(file, matches);
-            } catch (Throwable th) {
-                LOG.error(ThrowableUtils.getFullStackTrace(th));
-            }
-        }
+//        for(int i=0;i<references.size();i++) {
+//            try {
+//                final Location loc = references.get(i);
+//                if(loc == null || loc.uri == null || loc.range == null) continue;
+//                final File file = new File(loc.uri);
+//                if(!file.exists() || !file.isFile()) continue;
+//                EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+//                Content content;
+//                if(frag != null && frag.getEditor() != null)
+//                    content = frag.getEditor().getText();
+//                else content = new Content(null, FileIOUtils.readFile2String(file));
+//                final List<SearchResult> matches = results.containsKey(file) ? results.get(file) : new ArrayList<>();
+//                matches.add(
+//                    new SearchResult(
+//                        loc.range,
+//                        file,
+//                        content.getLineString(loc.range.start.line),
+//                        content.subContent(
+//                            loc.range.start.line,
+//                            loc.range.start.column,
+//                            loc.range.end.line,
+//                            loc.range.end.column
+//                        ).toString()
+//                    )
+//                );
+//                results.put(file, matches);
+//            } catch (Throwable th) {
+//                LOG.error(ThrowableUtils.getFullStackTrace(th));
+//            }
+//        }
 
         activity().handleSearchResults(results);
     }

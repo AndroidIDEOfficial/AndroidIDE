@@ -15,29 +15,30 @@
  */
 package io.github.rosemoe.editor.widget;
 
+/**
+ * Auto complete window for editing code quicker
+ *
+ * @author Rose
+ */
+ 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 import com.itsaky.androidide.databinding.LayoutCompletionWindowBinding;
-import com.itsaky.androidide.models.CompletionEdit;
-import com.itsaky.androidide.models.CompletionListItem;
-import com.itsaky.androidide.models.SuggestItem;
-import com.itsaky.androidide.utils.Either;
+import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
-import io.github.rosemoe.editor.struct.CompletionItem;
 import io.github.rosemoe.editor.text.CharPosition;
-import io.github.rosemoe.editor.text.Cursor;
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextEdit;
 
-/**
- * Auto complete window for editing code quicker
- *
- * @author Rose
- */
 public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
     private final static String TIP = "Refreshing...";
     private final CodeEditor mEditor;
@@ -185,46 +186,53 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
      * @param pos Index of auto complete item
      */
     public void select(int pos) {
-        Either<SuggestItem, CompletionItem> either = ((EditorCompletionAdapter) mBinding.list.getAdapter()).getItem(pos);
-		if(either != null && either.isLeft()) {
-			SuggestItem item = either.getLeft();
-			item.onSelectThis(mEditor);
-		} else if(either != null && either.isRight()) {
-			final CompletionItem item = either.getRight();
-			Cursor cursor = mEditor.getCursor();
-			if (!cursor.isSelected()) {
-				int l = 1;
-				if(mLastPrefix.endsWith("."))
-					l = 0;
-				else if(mLastPrefix.contains("."))
-					l = mLastPrefix.substring(mLastPrefix.lastIndexOf(".") + 1, mLastPrefix.length() - 1).length();
-				else l = mLastPrefix.length() - 1;
-				l++;
-				if(mLastPrefix.endsWith(".")) l--;
-				mEditor.getText().delete(cursor.getLeftLine(), cursor.getLeftColumn() - l, cursor.getLeftLine(), cursor.getLeftColumn());
-				cursor.onCommitText(item.commit);
-
-				if (item.cursorOffset != item.commit.length()) {
-					int delta = (item.commit.length() - item.cursorOffset);
-					if (delta != 0) {
-						int newSel = Math.max(mEditor.getCursor().getLeft() - delta, 0);
-						CharPosition charPosition = mEditor.getCursor().getIndexer().getCharPosition(newSel);
-						mEditor.setSelection(charPosition.line, charPosition.column);
-					}
-				}
-
-				if(item instanceof CompletionListItem && ((CompletionListItem) item).hasAdditionalEdits()) {
-					for(CompletionEdit edit : ((CompletionListItem) item).getAdditionalEdits()) {
-						if(edit.position.column == -1) {
-							int col = mEditor.getText().getColumnCount(edit.position.line);
-							edit.position.column = col;
-						}
-						mEditor.getText().insert(edit.position.line, edit.position.column, edit.insertText);
-					}
-				}
-			}
-		}
+        CompletionItem item = ((EditorCompletionAdapter) mBinding.list.getAdapter()).getItem(pos);
+        Range range = getIdentifierRange(mEditor.getCursor().getRight(), mEditor.getText());
+        String text = item.getInsertText() == null ? item.getLabel() : item.getInsertText();
+        final boolean shiftLeft = text.contains("$0");
+        final boolean atEnd = text.endsWith("$0");
+        text = text.replace("$0", "");
+        
+		mEditor.getText().delete(
+            range.getStart().getLine(),
+            range.getStart().getCharacter(),
+            range.getEnd().getLine(),
+            range.getEnd().getCharacter()
+         );
+        mEditor.getCursor().onCommitText(text);
+        
+        if(shiftLeft && !atEnd) {
+            mEditor.moveSelectionLeft();
+        }
+        
+        final List<TextEdit> edits = item.getAdditionalTextEdits();
+        if(edits != null && edits.size() > 0) {
+            for(int i=0;i<edits.size();i++) {
+                final TextEdit edit = edits.get(i);
+                if(edit == null || edit.getRange() == null || edit.getNewText() == null) continue;
+                final Position start = edit.getRange().getStart();
+                final Position end =  edit.getRange().getEnd();
+                if(start == null || end == null) continue;
+                if(start.equals(end)) {
+                    mEditor.getText().insert(start.getLine(), start.getCharacter(), edit.getNewText());
+                } else {
+                    mEditor.getText().replace(start.getLine(), start.getCharacter(), end.getLine(), end.getCharacter(), edit.getNewText());
+                }
+            }
+        }
+        
         mEditor.postHideCompletionWindow();
+    }
+    
+    private Range getIdentifierRange(int end, Content content) {
+        int start = end;
+        while(start > 0 && JavaCharacter.isJavaIdentifierPart(content.charAt(start - 1))) {
+            start--;
+        }
+
+        CharPosition startPos = content.getIndexer().getCharPosition(start);
+        CharPosition endPos = content.getIndexer().getCharPosition(end);
+        return new Range(new Position(startPos.line, startPos.column), new Position(endPos.line, endPos.column));
     }
 
     /**
@@ -261,7 +269,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
      * @param results     Items of analysis
      * @param requestTime The time that this thread starts
      */
-    public void displayResults(final List<Either<SuggestItem, CompletionItem>> results, long requestTime) {
+    public void displayResults(final List<CompletionItem> results, long requestTime) {
         mEditor.post(() -> {
             setLoading(false);
             if (results == null || results.isEmpty()) {
@@ -287,23 +295,29 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
     private class MatchThread extends Thread {
         private final long mTime;
         private final String mPrefix;
+        private final String mFileUri;
         private final boolean mInner;
         private final TextAnalyzeResult mColors;
+        private final int mIndex;
         private final int mLine;
+        private final int mColumn;
         private final AutoCompleteProvider mLocalProvider = mProvider;
 
         public MatchThread(long requestTime, String prefix) {
             mTime = requestTime;
             mPrefix = prefix;
+            mFileUri = mEditor.getFile() != null ? mEditor.getFile().toURI().toString() : null;
             mColors = mEditor.getTextAnalyzeResult();
+            mIndex = mEditor.getCursor().getLeft();
             mLine = mEditor.getCursor().getLeftLine();
+            mColumn = mEditor.getCursor().getLeftColumn();
             mInner = (!mEditor.isHighlightCurrentBlock()) || (mEditor.getBlockIndex() != -1);
         }
 
         @Override
         public void run() {
             try {
-                displayResults(mLocalProvider.getAutoCompleteItems(mEditor, mPrefix, mInner, mColors, mLine), mTime);
+                displayResults(mLocalProvider.getAutoCompleteItems(mFileUri, mPrefix, mInner, mColors, mIndex, mLine, mColumn), mTime);
             } catch (Exception e) {
                 e.printStackTrace();
                 displayResults(new ArrayList<>(), mTime);
