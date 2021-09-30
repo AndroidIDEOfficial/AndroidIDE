@@ -123,6 +123,10 @@ import org.eclipse.lsp4j.ShowDocumentParams;
 import org.eclipse.lsp4j.CodeActionOptions;
 import org.eclipse.lsp4j.DefinitionOptions;
 import org.eclipse.lsp4j.ReferenceOptions;
+import com.itsaky.androidide.tasks.TaskExecutor;
+import android.app.Dialog;
+import com.itsaky.androidide.utils.JSONUtility;
+import com.itsaky.androidide.lsp.LSP;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -4632,7 +4636,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     public void findDefinition() {
-        if(!isGotoDefinitionEnabled()) return;
+        if(!isGotoDefinitionEnabled() || getFile() == null) return;
         
         final ProgressDialog pd = ProgressDialog.show(getContext(), null, getContext().getString(R.string.msg_finding_definition));
         
@@ -4644,38 +4648,43 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             future.whenComplete((e, t) -> {
                 final Either<List<? extends Location>, List<? extends LocationLink>> either = e;
                 final Throwable th = t;
+
                 final IDELanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
                 if(client == null || future.isCancelled() || future.isCompletedExceptionally()) {
                     showDefinitionNotFound(pd);
                     return;
                 }
-                
+
                 if(either.isLeft()) {
                     List<? extends Location> locations = either.getLeft();
                     if(locations == null || locations.size() <= 0) {
                         showDefinitionNotFound(pd);
                         return;
                     }
-                    
+
                     if(locations.size() == 1) {
                         Location location = locations.get(0);
                         showDocument(client, location.getUri(), location.getRange());
                     } else {
                         client.showLocations(locations);
                     }
+
+                    dismissOnUiThread(pd);
                 } else if(either.isRight()) {
                     List<? extends LocationLink> locations = either.getRight();
                     if(locations == null || locations.size() <= 0) {
                         showDefinitionNotFound(pd);
                         return;
                     }
-                    
+
                     if(locations.size() == 1) {
                         LocationLink location = locations.get(0);
                         showDocument(client, location.getTargetUri(), location.getTargetSelectionRange());
                     } else {
                         client.showLocationLinks(locations);
                     }
+
+                    dismissOnUiThread(pd);
                 }
             });
         } catch (Throwable th) {
@@ -4690,13 +4699,19 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         });
     }
     
+    private void dismissOnUiThread(final Dialog dialog) {
+        ThreadUtils.runOnUiThread(() -> {
+            dialog.dismiss();
+        });
+    }
+    
     public void findReferences() {
         if(!isFindReferencesEnabled()) return;
         
         final ProgressDialog pd = ProgressDialog.show(getContext(), null, getContext().getString(R.string.msg_finding_definition));
         
         try {
-
+            
         } catch (Throwable th) {
             showReferencesNotFound(pd);
         }
@@ -4713,11 +4728,14 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * Request the client to show the specific document in an editor and select the provided range
      */
     private void showDocument(IDELanguageClient client, String uri, org.eclipse.lsp4j.Range range) {
+        LOG.info("showDocument called", "client = " + client, "uri" + uri, "range" + range);
         ShowDocumentParams params = new ShowDocumentParams();
         params.setExternal(false);
         params.setSelection(range);
         params.setUri(uri);
+        LOG.info("ShowDocumentParams", JSONUtility.prettyPrinter.toJson(params));
         client.showDocument(params);
+        LOG.info("sent showDocumentRequest");
     }
     
     public void didSave () {

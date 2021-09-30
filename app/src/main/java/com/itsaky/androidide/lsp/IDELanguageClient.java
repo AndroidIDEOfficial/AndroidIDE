@@ -18,6 +18,7 @@ import org.eclipse.lsp4j.ShowDocumentParams;
 import org.eclipse.lsp4j.ShowDocumentResult;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
+import com.itsaky.androidide.utils.JSONUtility;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
@@ -85,14 +86,14 @@ public abstract class IDELanguageClient implements LanguageClient {
      * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show locations in EditorActivity
      */
     public void showLocations(List<? extends Location> locations) {
-
+        LOG.info("showLocations", JSONUtility.prettyPrinter.toJson(locations));
     }
 
     /**
      * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show locations in EditorActivity
      */
     public void showLocationLinks(List<? extends LocationLink> locations) {
-
+        LOG.info("showLocationLinks", JSONUtility.prettyPrinter.toJson(locations));
     }
 
     /**
@@ -102,6 +103,11 @@ public abstract class IDELanguageClient implements LanguageClient {
     public CompletableFuture<ShowDocumentResult> showDocument(ShowDocumentParams params) {
         ShowDocumentResult result = new ShowDocumentResult();
         boolean success = false;
+        
+        if(activity() == null) {
+            result.setSuccess(success);
+            return CompletableFuture.completedFuture(result);
+        }
         
         if(params != null && params.getUri() != null && params.getSelection() != null) {
             File file = new File(URI.create(params.getUri()));

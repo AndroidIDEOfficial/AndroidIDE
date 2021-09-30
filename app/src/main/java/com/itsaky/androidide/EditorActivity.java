@@ -1039,6 +1039,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
      /////////////////////////////////////////////////
      
     private void startLanguageServers() {
+        LSP.setActivityProvider(this);
         LSP.Java.start(() -> {
             Optional<InitializeResult> result = LSP.Java.init(mProject.getProjectPath());
 

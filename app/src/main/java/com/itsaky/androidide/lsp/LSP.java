@@ -43,7 +43,7 @@ import com.itsaky.androidide.interfaces.EditorActivityProvider;
  */
 public class LSP {
     
-    private static EditorActivityProvider PROVIDER;
+    public static EditorActivityProvider PROVIDER;
     private static final Logger LOG = Logger.instance("LSP");
     
     /**

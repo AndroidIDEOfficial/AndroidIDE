@@ -91,11 +91,6 @@ public class JavaLanguageClient extends IDELanguageClient {
     }
 
     @Override
-    public CompletableFuture<ShowDocumentResult> showDocument(ShowDocumentParams p1) {
-        return null;
-    }
-
-    @Override
     public void showMessage(MessageParams p1) {
         LOG.info("showMessage: ", gson.toJson(p1));
     }
