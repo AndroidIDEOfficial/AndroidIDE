@@ -33,7 +33,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialContainerTransform;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorPagerAdapter;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
@@ -47,8 +47,6 @@ import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.BuildServiceHandler;
 import com.itsaky.androidide.handlers.FileOptionsHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
-import com.itsaky.androidide.handlers.jls.JLSHandler;
-import com.itsaky.androidide.handlers.jls.LanguageClientHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.language.buildout.BuildOutputLanguage;
@@ -56,7 +54,6 @@ import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.managers.VersionedFileManager;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
@@ -69,6 +66,7 @@ import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
@@ -76,13 +74,6 @@ import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
-import com.itsaky.lsp.Diagnostic;
-import com.itsaky.lsp.DidCloseTextDocumentParams;
-import com.itsaky.lsp.DidOpenTextDocumentParams;
-import com.itsaky.lsp.Message;
-import com.itsaky.lsp.Range;
-import com.itsaky.lsp.TextDocumentIdentifier;
-import com.itsaky.lsp.TextDocumentItem;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 import io.github.rosemoe.editor.widget.CodeEditor;
@@ -91,15 +82,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Stack;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeResult;
-import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.Position;
-import com.itsaky.androidide.utils.LSPUtils;
+import org.eclipse.lsp4j.services.LanguageServer;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -125,8 +115,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private static AndroidProject mProject;
     private IDEProject mIDEProject;
     
-    private JLSHandler mJLSHandler;
-    private LanguageClientHandler mLanguageClientHandler;
     private BuildServiceHandler mBuildServiceHandler;
     private FileOptionsHandler mFileOptionsHandler;
     
@@ -138,8 +126,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private ProgressSheet mSearchingProgress;
     private ProjectInfoSheet mProjectInfoSheet;
     private AlertDialog mFindInProjectDialog;
-    
-    public final Stack<Message> pendingMessages = new Stack<>();
     
 	private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
     public static final String TAG = "EditorActivity";
@@ -206,9 +192,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		
 		createQuickActions();
         
-        mLanguageClientHandler = new LanguageClientHandler(this);
         mBuildServiceHandler = new BuildServiceHandler(this);
-        mJLSHandler = new JLSHandler(mLanguageClientHandler, this);
         mFileOptionsHandler = new FileOptionsHandler(this);
         
         getApp().checkAndUpdateGradle();
@@ -418,11 +402,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     @Override
-    public JLSHandler provideJLSHandler() {
-        return mJLSHandler;
-    }
-
-    @Override
     public void editorStateChanged() {
         for(int i=0;i<mBinding.tabs.getTabCount();i++) {
             try {
@@ -613,7 +592,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
     @Override
     public void onDiagnosticClick(File file, Diagnostic diagnostic) {
-//        openFileAndSelect(file, diagnostic.getRange());
+        openFileAndSelect(file, diagnostic.getRange());
         hideDiagnostics();
     }
 
@@ -673,18 +652,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 }
             });
         }
-    }
-
-    public void addPendingMessage(Message msg) {
-        pendingMessages.push(msg);
-    }
-
-    public Message createMessage(String method, String data) {
-        Message msg = new Message();
-        msg.jsonrpc = "2.0";
-        msg.method = method;
-        msg.params = new JsonParser().parse(data);
-        return msg;
     }
 
     @Override
@@ -865,7 +832,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public RecyclerView createDiagnosticsList() {
         diagnosticList = new RecyclerView(this);
         diagnosticList.setLayoutManager(new LinearLayoutManager(this));
-        diagnosticList.setAdapter(mLanguageClientHandler.newDiagnosticsAdapter());
+        diagnosticList.setAdapter(new DiagnosticsAdapter(new ArrayList<DiagnosticGroup>(), this));
         return diagnosticList;
     }
 
@@ -890,7 +857,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
     public EditorFragment openFile(File file, org.eclipse.lsp4j.Range selection) {
         if(selection == null) selection = Range_ofZero;
-        int i = mPagerAdapter.openFile(file, selection, this, mJLSHandler);
+        int i = mPagerAdapter.openFile(file, selection, this);
         if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
             mBinding.tabs.getTabAt(i).select();
         mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
@@ -904,16 +871,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
     @Override
     public void onOpenSuccessful(File file, String text) {
-        if(file.getName().endsWith(".java")) {
-            TextDocumentItem doc = new TextDocumentItem();
-            doc.languageId = "java";
-            doc.uri = file.toURI();
-            doc.text = text;
-            doc.version = VersionedFileManager.fileOpened(file);
-            DidOpenTextDocumentParams p = new DidOpenTextDocumentParams();
-            p.textDocument = doc;
-            mJLSHandler.didOpen(p);
-        }
+        // textDocument/didOpen is now handled by CodeEditor
     }
 
     @Override
@@ -1020,12 +978,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             }
         }
 
-        TextDocumentIdentifier id = new TextDocumentIdentifier();
-        id.uri = removed.toURI();
-        DidCloseTextDocumentParams p = new DidCloseTextDocumentParams();
-        p.textDocument = id;
-        mJLSHandler.didClose(p);
-
         if(mPagerAdapter.getCount() <= 0) {
             mCurrentFragment = null;
             mCurrentFile = null;
@@ -1042,13 +994,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         LSP.setActivityProvider(this);
         LSP.Java.start(() -> {
             Optional<InitializeResult> result = LSP.Java.init(mProject.getProjectPath());
-
-            if(result.isPresent()) {
-                // TODO Handle initialize result
-                // TODO Register server capablities
-            } else if(true) {
-                // TODO Show user that we cant initialize Java language server
-            }
+            LSP.Java.initialized();
         });
     }
     
@@ -1169,8 +1115,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
         getApp().getPrefManager().setOpenedProject(PreferenceManager.NO_OPENED_PROJECT);
 
-        mJLSHandler.stop();
-
+        LSP.shutdownAll();
+        
         getApp().stopAllDaemons();
 
         if(manualFinish)

@@ -131,7 +131,6 @@ dependencies {
 	// Local projects
     implementation project(':api-info')
 	implementation project(':treeview')
-    implementation project(':lsp')
     implementation project(':emulator')
     implementation project(':emulatorview')
     implementation project(':javapoet')

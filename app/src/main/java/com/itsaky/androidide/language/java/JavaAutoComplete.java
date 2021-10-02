@@ -3,7 +3,6 @@ package com.itsaky.androidide.language.java;
 import com.itsaky.androidide.utils.Logger;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
-import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,20 +15,15 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageServer;
-import com.itsaky.androidide.utils.JSONUtility;
+import com.itsaky.androidide.lsp.LSPProvider;
 
 public class JavaAutoComplete implements AutoCompleteProvider {
     
-	private JavaLanguage language;
     private CompletableFuture<Either<List<CompletionItem>, CompletionList>> future;
-    
-	public JavaAutoComplete(JavaLanguage lang) {
-		this.language = lang;
-	}
 
 	@Override
 	public List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
-        LanguageServer languageServer = language.getLanguageServer();
+        LanguageServer languageServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
         if(languageServer != null && fileUri != null) {
             
             if(future != null && !future.isDone()) future.cancel(true);
@@ -50,7 +44,6 @@ public class JavaAutoComplete implements AutoCompleteProvider {
                     return sort(either.getRight().getItems());
                 
             } catch (Throwable th) {
-                LOG.error("Java completion error: ", th);
                 // Ignore this exception. An empty list will be sent after this
                 // This exeption is thrown probably because the request was cancelled or interrupted
             }

@@ -67,10 +67,6 @@ public class JavaLanguageClient extends IDELanguageClient {
     }
 
     @Override
-    public void publishDiagnostics(PublishDiagnosticsParams p1) {
-    }
-
-    @Override
     public CompletableFuture<Void> refreshCodeLenses() {
         return null;
     }

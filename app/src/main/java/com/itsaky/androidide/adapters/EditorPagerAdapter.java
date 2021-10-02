@@ -4,11 +4,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.itsaky.androidide.fragments.EditorFragment;
-import com.itsaky.androidide.interfaces.JLSRequestor;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.Range;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +64,7 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter implements Edi
         return null;
     }
 
-	public int openFile(File file, org.eclipse.lsp4j.Range selection, EditorFragment.FileOpenListener listener, JLSRequestor jlsRequestor) {
+	public int openFile(File file, org.eclipse.lsp4j.Range selection, EditorFragment.FileOpenListener listener) {
 		int openedFileIndex = -1;
 		for (int i=0;i < mOpenedFiles.size();i++) {
 			File f = mOpenedFiles.get(i);
@@ -80,7 +78,6 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter implements Edi
 			mFragments.add(EditorFragment
                            .newInstance(file, project, selection)
                            .setFileOpenListener(listener)
-                           .setJLSRequestor(jlsRequestor)
                            .setModificationStateListener(this));
 			mOpenedFiles.add(file);
 			notifyDataSetChanged();

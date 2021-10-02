@@ -16,6 +16,8 @@
 package io.github.rosemoe.editor.widget;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -58,20 +60,17 @@ import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
-import com.itsaky.androidide.interfaces.JLSRequestor;
+import com.itsaky.androidide.lsp.IDELanguageClient;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
-import com.itsaky.lsp.CodeAction;
-import com.itsaky.lsp.Diagnostic;
-import com.itsaky.lsp.DiagnosticSeverity;
-import com.itsaky.lsp.Range;
 import com.itsaky.toaster.Toaster;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
@@ -101,7 +100,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import org.eclipse.lsp4j.CodeActionOptions;
+import org.eclipse.lsp4j.DefinitionOptions;
 import org.eclipse.lsp4j.DefinitionParams;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
@@ -109,24 +112,23 @@ import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.ReferenceContext;
+import org.eclipse.lsp4j.ReferenceOptions;
+import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.ServerCapabilities;
+import org.eclipse.lsp4j.ShowDocumentParams;
+import org.eclipse.lsp4j.SignatureHelp;
+import org.eclipse.lsp4j.SignatureHelpContext;
+import org.eclipse.lsp4j.SignatureHelpOptions;
+import org.eclipse.lsp4j.SignatureHelpParams;
+import org.eclipse.lsp4j.SignatureHelpTriggerKind;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageServer;
-import android.app.ProgressDialog;
-import com.blankj.utilcode.util.ThreadUtils;
-import com.itsaky.androidide.lsp.IDELanguageClient;
-import org.eclipse.lsp4j.ShowDocumentParams;
-import org.eclipse.lsp4j.CodeActionOptions;
-import org.eclipse.lsp4j.DefinitionOptions;
-import org.eclipse.lsp4j.ReferenceOptions;
-import com.itsaky.androidide.tasks.TaskExecutor;
-import android.app.Dialog;
-import com.itsaky.androidide.utils.JSONUtility;
-import com.itsaky.androidide.lsp.LSP;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -236,6 +238,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private boolean mFindReferencesEnabled;
     private boolean mGotoDefinitionEnabled;
     private boolean mCodeActionsEnabled;
+    private boolean mSignatureHelpEnabled;
     private boolean mCompletionOnComposing;
     private boolean mHighlightSelectedText;
     private boolean mHighlightCurrentBlock;
@@ -295,6 +298,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     EditorInputConnection mConnection;
     KeyMetaStates mKeyMetaStates = new KeyMetaStates(this);
 	
+    private List<String> mSignatureHelpTriggerChars = new ArrayList<>();
+    
 	private Map<HexColor, Integer> mLineColors;
     private Map<Range, Diagnostic> mDiagnostics;
     private Map<Integer, List<Range>> stringMap;
@@ -617,10 +622,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         final Set<Range> keys = mDiagnostics.keySet();
         Range found = null;
         for(Range r : keys) {
-            if(r.start.line <= range.getStart().getLine()
-               && r.start.column <= range.getStart().getCharacter()
-               && r.end.line >= range.getEnd().getLine()
-               && r.end.column >= range.getEnd().getCharacter()) {
+            if(r.getStart().getLine() <= range.getStart().getLine()
+               && r.getStart().getCharacter() <= range.getStart().getCharacter()
+               && r.getEnd().getLine() >= range.getEnd().getLine()
+               && r.getEnd().getCharacter() >= range.getEnd().getCharacter()) {
                 found = r;
                 break;
             }
@@ -641,7 +646,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         
         for(Range r : keys) {
             if(r == null) continue;
-            if(r.start.line <= line && line <= r.end.line)
+            if(r.getStart().getLine() <= line && line <= r.getEnd().getLine())
                 diags.add(mDiagnostics.get(r));
         }
         
@@ -681,9 +686,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 	
 	public CodeEditor putLineColor(HexColor index, int color) {
 		createMapIfNull();
-		if(this.mLineColors != null) {
-			mLineColors.put(index, color);
-		}
+		mLineColors.put(index, color);
 		return this;
 	}
     
@@ -873,27 +876,47 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
         
         Either<Boolean, CodeActionOptions> codeActionOptions = c.getCodeActionProvider();
-        if(codeActionOptions.isLeft()) {
-            mCodeActionsEnabled = codeActionOptions.getLeft();
+        if(codeActionOptions == null) {
+            setCodeActionsEnabled(false);
         } else {
-            CodeActionOptions options = codeActionOptions.getRight();
-            mCodeActionsEnabled = options != null;
+            if(codeActionOptions.isLeft()) {
+                setCodeActionsEnabled(codeActionOptions.getLeft());
+            } else {
+                CodeActionOptions options = codeActionOptions.getRight();
+                setCodeActionsEnabled(options != null);
+            }
         }
         
         Either<Boolean, DefinitionOptions> definitionOptions = c.getDefinitionProvider();
-        if(definitionOptions.isLeft()) {
-            mGotoDefinitionEnabled = definitionOptions.getLeft();
+        if(definitionOptions == null) {
+            setGotoDefinitionEnabled(false);
         } else {
-            DefinitionOptions options = definitionOptions.getRight();
-            mGotoDefinitionEnabled = options != null;
+            if(definitionOptions.isLeft()) {
+                setGotoDefinitionEnabled(definitionOptions.getLeft());
+            } else {
+                DefinitionOptions options = definitionOptions.getRight();
+                setGotoDefinitionEnabled(options != null);
+            }
         }
         
         Either<Boolean, ReferenceOptions> referenceOptions = c.getReferencesProvider();
-        if(definitionOptions.isLeft()) {
-            mFindReferencesEnabled = referenceOptions.getLeft();
+        if(referenceOptions == null) {
+            setFindReferencesEnabled(false);
         } else {
-            ReferenceOptions options = referenceOptions.getRight();
-            mFindReferencesEnabled = options != null;
+            if(definitionOptions.isLeft()) {
+                setFindReferencesEnabled(referenceOptions.getLeft());
+            } else {
+                ReferenceOptions options = referenceOptions.getRight();
+                setFindReferencesEnabled(options != null);
+            }
+        }
+        
+        SignatureHelpOptions signatureOptions = c.getSignatureHelpProvider();
+        if(signatureOptions == null) {
+            setSignatureHelpEnabled(false);
+        } else {
+            setSignatureHelpEnabled(true);
+            mSignatureHelpTriggerChars = new ArrayList<String>(signatureOptions.getTriggerCharacters());
         }
     }
      
@@ -1485,10 +1508,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 for(int i=0;i<diags.size();i++) {
                     Diagnostic d = diags.get(i);
                     if(d == null) continue;
-                    int startCol = d.range.start.column;
-                    int endCol = d.range.end.column;
-                    if(line > d.range.start.line) startCol = 0;
-                    if(line > d.range.end.line) endCol = 0;
+                    int startCol = d.getRange().getStart().getCharacter();
+                    int endCol = d.getRange().getEnd().getCharacter();
+                    if(line > d.getRange().getStart().getCharacter()) startCol = 0;
+                    if(line > d.getRange().getEnd().getCharacter()) endCol = 0;
                     final int paintStart = Math.max(firstVisibleChar, startCol);
                     final int paintEnd = Math.min(lastVisibleChar, endCol);
                     final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
@@ -1497,7 +1520,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                     r.top = r.bottom - getRowHeight() * 0.2f;
                     r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
                     r.right = r.left + width;
-                    mPaint.setColor(diagnosticColor(d.severity));
+                    mPaint.setColor(diagnosticColor(d.getSeverity()));
                     drawZigzagUnderline(r, canvas, mPaint);
                 }
             }
@@ -1610,12 +1633,12 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
     }
     
-    private int diagnosticColor(int severity) {
+    private int diagnosticColor(DiagnosticSeverity severity) {
         int id = EditorColorScheme.DIAGNOSTIC_HINT;
         switch(severity) {
-            case DiagnosticSeverity.Error : id = EditorColorScheme.DIAGNOSTIC_ERROR; break;
-            case DiagnosticSeverity.Warning : id = EditorColorScheme.DIAGNOSTIC_WARNING; break;
-            case DiagnosticSeverity.Information : id = EditorColorScheme.DIAGNOSTIC_INFO; break;
+            case Error : id = EditorColorScheme.DIAGNOSTIC_ERROR; break;
+            case Warning : id = EditorColorScheme.DIAGNOSTIC_WARNING; break;
+            case Information : id = EditorColorScheme.DIAGNOSTIC_INFO; break;
             default : id = EditorColorScheme.DIAGNOSTIC_ERROR; break;
         }
         return mColors.getColor(id);
@@ -2706,6 +2729,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     public void setFindReferencesEnabled(boolean findReferencesEnabled) {
         mFindReferencesEnabled = findReferencesEnabled;
     }
+    
+    public void setSignatureHelpEnabled(boolean enabled) {
+        this.mSignatureHelpEnabled = enabled;
+    }
 
     /**
      * @see CodeEditor#setAutoCompletionEnabled(boolean)
@@ -2724,6 +2751,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     
     public boolean isFindReferencesEnabled() {
         return mFindReferencesEnabled && mLanguageServer != null;
+    }
+    
+    public boolean isSignatureHelpEnabled() {
+        return mSignatureHelpEnabled && mLanguageServer != null;
     }
 
     /**
@@ -4571,12 +4602,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
     }
     
-    private JLSRequestor jlsRequestor;
-    
-    public void setJLSRequestor(JLSRequestor requestor) {
-        this.jlsRequestor = requestor;
-    }
-    
     public void commentLine() {
         if(getFile() == null) return;
         
@@ -4642,7 +4667,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         
         try {
             final DefinitionParams params = new DefinitionParams();
-            params.setTextDocument(new TextDocumentIdentifier(getFile().toURI().toString()));
+            params.setTextDocument(getDocumentIdentifier());
             params.setPosition(getCursorAsLSPPosition());
             final CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> future = mLanguageServer.getTextDocumentService().definition(params);
             future.whenComplete((e, t) -> {
@@ -4650,39 +4675,43 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 final Throwable th = t;
 
                 final IDELanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
-                if(client == null || future.isCancelled() || future.isCompletedExceptionally()) {
+                if(either == null || client == null || future.isCancelled() || future.isCompletedExceptionally()) {
                     showDefinitionNotFound(pd);
                     return;
                 }
 
                 if(either.isLeft()) {
-                    List<? extends Location> locations = either.getLeft();
+                    final List<? extends Location> locations = either.getLeft();
                     if(locations == null || locations.size() <= 0) {
                         showDefinitionNotFound(pd);
                         return;
                     }
 
-                    if(locations.size() == 1) {
-                        Location location = locations.get(0);
-                        showDocument(client, location.getUri(), location.getRange());
-                    } else {
-                        client.showLocations(locations);
-                    }
+                    ThreadUtils.runOnUiThread(() -> {
+                        if(locations.size() == 1) {
+                            Location location = locations.get(0);
+                            showDocument(client, location.getUri(), location.getRange());
+                        } else {
+                            client.showLocations(locations);
+                        }
+                    });
 
                     dismissOnUiThread(pd);
                 } else if(either.isRight()) {
-                    List<? extends LocationLink> locations = either.getRight();
+                    final List<? extends LocationLink> locations = either.getRight();
                     if(locations == null || locations.size() <= 0) {
                         showDefinitionNotFound(pd);
                         return;
                     }
 
-                    if(locations.size() == 1) {
-                        LocationLink location = locations.get(0);
-                        showDocument(client, location.getTargetUri(), location.getTargetSelectionRange());
-                    } else {
-                        client.showLocationLinks(locations);
-                    }
+                    ThreadUtils.runOnUiThread(() -> {
+                        if(locations.size() == 1) {
+                            LocationLink location = locations.get(0);
+                            showDocument(client, location.getTargetUri(), location.getTargetSelectionRange());
+                        } else {
+                            client.showLocationLinks(locations);
+                        }
+                    });
 
                     dismissOnUiThread(pd);
                 }
@@ -4699,19 +4728,41 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         });
     }
     
-    private void dismissOnUiThread(final Dialog dialog) {
-        ThreadUtils.runOnUiThread(() -> {
-            dialog.dismiss();
-        });
-    }
-    
     public void findReferences() {
-        if(!isFindReferencesEnabled()) return;
+        if(!isFindReferencesEnabled() || getFile() == null) return;
         
-        final ProgressDialog pd = ProgressDialog.show(getContext(), null, getContext().getString(R.string.msg_finding_definition));
+        final ProgressDialog pd = ProgressDialog.show(getContext(), null, getContext().getString(R.string.msg_finding_references));
         
         try {
+            ReferenceParams params = new ReferenceParams();
+            params.setTextDocument(getDocumentIdentifier());
+            params.setPosition(getCursorAsLSPPosition());
+            params.setContext(new ReferenceContext(true));
             
+            final CompletableFuture<List<? extends Location>> future = mLanguageServer.getTextDocumentService().references(params);
+            
+            future.whenComplete((l, t) -> {
+                final List<? extends Location> locations = l;
+                final Throwable th = t;
+                
+                final IDELanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
+                
+                if(locations == null || client == null || future.isCancelled() || future.isCompletedExceptionally()) {
+                    showReferencesNotFound(pd);
+                    return;
+                }
+                
+                if(locations.isEmpty()) {
+                    showReferencesNotFound(pd);
+                    return;
+                } else {
+                    ThreadUtils.runOnUiThread(() -> {
+                        client.showLocations(locations);
+                    });
+                }
+                
+                dismissOnUiThread(pd);
+            });
         } catch (Throwable th) {
             showReferencesNotFound(pd);
         }
@@ -4724,18 +4775,56 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         });
     }
     
+    public void signatureHelp(String insertedContent) {
+        if(mSignatureHelpEnabled
+           && mLanguageServer != null
+           && getFile() != null
+           && mSignatureHelpTriggerChars != null
+           && mSignatureHelpTriggerChars.size() > 0
+           && mSignatureHelpTriggerChars.contains(insertedContent)) {
+
+            SignatureHelpContext context = new SignatureHelpContext();
+            context.setTriggerCharacter(insertedContent);
+            context.setTriggerKind(SignatureHelpTriggerKind.ContentChange);
+
+            SignatureHelpParams params = new SignatureHelpParams();
+            params.setPosition(getCursorAsLSPPosition());
+            params.setTextDocument(getDocumentIdentifier());
+            params.setContext(context);
+
+            CompletableFuture<SignatureHelp> future = mLanguageServer.getTextDocumentService().signatureHelp(params);
+            
+            future.whenComplete((h, t) -> {
+                final SignatureHelp help = h;
+                final Throwable th = t;
+                final IDELanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
+                
+                if(help == null || client == null || future.isCancelled() || future.isCompletedExceptionally()) {
+                    return;
+                }
+                
+                ThreadUtils.runOnUiThread(() -> {
+                    client.showSignatureHelp(help, getFile());
+                });
+            });
+        }
+    }
+    
+    private void dismissOnUiThread(final Dialog dialog) {
+        ThreadUtils.runOnUiThread(() -> {
+            dialog.dismiss();
+        });
+    }
+    
     /**
      * Request the client to show the specific document in an editor and select the provided range
      */
     private void showDocument(IDELanguageClient client, String uri, org.eclipse.lsp4j.Range range) {
-        LOG.info("showDocument called", "client = " + client, "uri" + uri, "range" + range);
         ShowDocumentParams params = new ShowDocumentParams();
         params.setExternal(false);
         params.setSelection(range);
         params.setUri(uri);
-        LOG.info("ShowDocumentParams", JSONUtility.prettyPrinter.toJson(params));
         client.showDocument(params);
-        LOG.info("sent showDocumentRequest");
     }
     
     public void didSave () {
@@ -4758,6 +4847,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         return new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
     }
     
+    public TextDocumentIdentifier getDocumentIdentifier() {
+        return new TextDocumentIdentifier(getFile().toURI().toString());
+    }
+    
     private boolean isInString() {
         final int line = getCursor().getLeftLine();
         final int column = getCursor().getLeftColumn();
@@ -4766,7 +4859,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if(strings == null || strings.isEmpty()) return false;
         for(int i=0;i<strings.size();i++) {
             Range r = strings.get(i);
-            if(r.start.column <= column && column <= r.end.column)
+            if(r.getStart().getCharacter() <= column && column <= r.getEnd().getCharacter())
                 return true;
         }
         return false;
@@ -4845,6 +4938,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if (mListener != null) {
             mListener.afterInsert(this, mText, startLine, startColumn, endLine, endColumn, insertedContent);
         }
+        
+        signatureHelp(insertedContent.toString());
     }
     
     @Override

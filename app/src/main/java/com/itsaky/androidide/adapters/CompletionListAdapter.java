@@ -16,9 +16,6 @@ import com.google.gson.JsonObject;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutCompletionItemBinding;
-import com.itsaky.androidide.models.CompletionItemWrapper;
-import com.itsaky.androidide.models.CompletionListItem;
-import com.itsaky.androidide.models.SuggestItem;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.apiinfo.ApiInfo;
@@ -27,7 +24,6 @@ import com.itsaky.apiinfo.models.FieldInfo;
 import com.itsaky.apiinfo.models.Info;
 import com.itsaky.apiinfo.models.MethodInfo;
 import io.github.rosemoe.editor.widget.EditorCompletionAdapter;
-import java.util.Locale;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 

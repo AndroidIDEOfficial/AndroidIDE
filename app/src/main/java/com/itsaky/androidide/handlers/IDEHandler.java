@@ -4,7 +4,6 @@ import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.project.IDEProject;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.androidide.handlers.jls.JLSHandler;
 
 /**
  * A handler is an implementation that handles a specific feature, data or anything else in AndroidIDE
@@ -25,10 +24,6 @@ public abstract class IDEHandler {
     
     protected EditorActivity activity() {
         return provider.provideEditorActivity();
-    }
-    
-    protected JLSHandler jls() {
-        return provider.provideJLSHandler();
     }
     
     protected AndroidProject androidProject() {
@@ -68,12 +63,5 @@ public abstract class IDEHandler {
          * @throws NullPointerException is this is required
          */
         IDEProject provideIDEProject();
-        
-        /**
-         * Called by handler to get a reference of the current {@link IDEProject}
-         *
-         * @throws NullPointerException is this is required
-         */
-        JLSHandler provideJLSHandler();
     }
 }

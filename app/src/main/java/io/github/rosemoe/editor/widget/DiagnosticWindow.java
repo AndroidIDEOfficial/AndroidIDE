@@ -5,8 +5,8 @@ import android.view.LayoutInflater;
 import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
-import com.itsaky.lsp.Diagnostic;
-import com.itsaky.lsp.DiagnosticSeverity;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 
 public class DiagnosticWindow extends EditorBasePopupWindow {
     
@@ -46,14 +46,14 @@ public class DiagnosticWindow extends EditorBasePopupWindow {
             binding.errorPosition.setText(
                 editor.getContext().getString(
                     com.itsaky.androidide.R.string.diagnostic_position,
-                    ""+ (diagnostic.range.start.line + 1),
-                    ""+ (diagnostic.range.start.column + 1),
-                    ""+ (diagnostic.range.end.line + 1),
-                    ""+ (diagnostic.range.end.column + 1)
+                    ""+ (diagnostic.getRange().getStart().getLine() + 1),
+                    ""+ (diagnostic.getRange().getStart().getCharacter() + 1),
+                    ""+ (diagnostic.getRange().getEnd().getLine() + 1),
+                    ""+ (diagnostic.getRange().getEnd().getCharacter() + 1)
                 )
             );
 
-            binding.msg.setText(diagnostic.message);
+            binding.msg.setText(diagnostic.getMessage());
             binding.msg.setTextIsSelectable(true);
         }
     }
@@ -64,17 +64,17 @@ public class DiagnosticWindow extends EditorBasePopupWindow {
     }
     
     private int getDiagnosticIconId() {
-        if(diagnostic.severity == DiagnosticSeverity.Error)
+        if(diagnostic.getSeverity() == DiagnosticSeverity.Error)
             return R.drawable.ic_compilation_error;
         return R.drawable.ic_info;
     }
     
     private String getDiagnosticTypeString() {
-        if(diagnostic.severity == DiagnosticSeverity.Error) {
+        if(diagnostic.getSeverity() == DiagnosticSeverity.Error) {
             return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_error);
-        } else if(diagnostic.severity == DiagnosticSeverity.Warning) {
+        } else if(diagnostic.getSeverity() == DiagnosticSeverity.Warning) {
             return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_warning);
-        } else if(diagnostic.severity == DiagnosticSeverity.Hint) {
+        } else if(diagnostic.getSeverity() == DiagnosticSeverity.Hint) {
             return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_hint);
         }
         return editor.getContext().getString(com.itsaky.androidide.R.string.diagnostic_info);

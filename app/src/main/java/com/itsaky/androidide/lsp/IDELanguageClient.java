@@ -1,24 +1,44 @@
 package com.itsaky.androidide.lsp;
 
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.view.View;
+import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
+import com.itsaky.androidide.R;
+import com.itsaky.androidide.adapters.DiagnosticsAdapter;
+import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
+import com.itsaky.androidide.models.DiagnosticGroup;
+import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
+import io.github.rosemoe.editor.text.Content;
+import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
+import org.eclipse.lsp4j.ParameterInformation;
+import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.ShowDocumentParams;
 import org.eclipse.lsp4j.ShowDocumentResult;
+import org.eclipse.lsp4j.SignatureHelp;
+import org.eclipse.lsp4j.SignatureInformation;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
-import com.itsaky.androidide.utils.JSONUtility;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
@@ -29,7 +49,8 @@ public abstract class IDELanguageClient implements LanguageClient {
     protected static final Logger LOG = Logger.instance("IDELanguageClient");
 
     protected EditorActivityProvider activityProvider;
-
+    
+    private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
     private final StarterListener starterListener;
     private final OnConnectedListener onConnectedListener;
 
@@ -82,18 +103,118 @@ public abstract class IDELanguageClient implements LanguageClient {
         return activityProvider.provide();
     }
 
+    @Override
+    public void publishDiagnostics(PublishDiagnosticsParams params) {
+        boolean error = params == null || params.getDiagnostics() == null || params.getDiagnostics().isEmpty();
+        activity().handleDiagnosticsResultVisibility(error);
+        
+        if(error) return;
+
+        File file = new File(URI.create(params.getUri()));
+        if(!file.exists() || !file.isFile()) return;
+
+        diagnostics.put(file, params.getDiagnostics());
+        activity().getDiagnosticsList().setAdapter(newDiagnosticsAdapter());
+
+        EditorFragment editor = null;
+        if(activity().getPagerAdapter() != null && (editor = activity().getPagerAdapter().findEditorByFile(new File(URI.create(params.getUri())))) != null) {
+            editor.setDiagnostics(params.getDiagnostics());
+        }
+    }
+    
     /**
-     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show locations in EditorActivity
+     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show signature help in EditorActivity
      */
-    public void showLocations(List<? extends Location> locations) {
-        LOG.info("showLocations", JSONUtility.prettyPrinter.toJson(locations));
+    public void showSignatureHelp(SignatureHelp signature, File file) {
+        if(signature == null || signature.getSignatures() == null) {
+            activity().getBinding().symbolText.setVisibility(View.GONE);
+            return;
+        }
+        SignatureInformation info = signature.getSignatures().get(signature.getActiveSignature());
+        activity().getBinding().symbolText.setText(formatSignature(info, signature.getActiveParameter()));
+        final EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+        if(frag != null) {
+            final CodeEditor editor = frag.getEditor();
+            final float[] cursor = editor.getCursorPosition();
+
+            float x = editor.updateCursorAnchor() - (activity().getBinding().symbolText.getWidth() / 2);
+            float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - activity().getBinding().symbolText.getHeight());
+            activity().getBinding().symbolText.setVisibility(View.VISIBLE);
+            activity().positionViewWithinScreen(activity().getBinding().symbolText, x, y);
+        }
     }
 
     /**
      * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show locations in EditorActivity
      */
+    public void showLocations(List<? extends Location> locations) {
+        
+        // Cannot show anything if the activity() is null
+        if(activity() == null) {
+            return;
+        }
+        
+        boolean error = locations == null || locations.isEmpty();
+        activity().handleSearchResultVisibility(error);
+
+
+        if(error) {
+            activity().getSearchResultList().setAdapter(new SearchListAdapter(null, null, null));
+            return;
+        }
+
+        final Map<File, List<SearchResult>> results = new HashMap<>();
+        for(int i=0;i<locations.size();i++) {
+            try {
+                final Location loc = locations.get(i);
+                if(loc == null || loc.getUri() == null || loc.getRange() == null) continue;
+                final File file = new File(URI.create(loc.getUri()));
+                if(!file.exists() || !file.isFile()) continue;
+                EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+                Content content;
+                if(frag != null && frag.getEditor() != null)
+                    content = frag.getEditor().getText();
+                else content = new Content(null, FileIOUtils.readFile2String(file));
+                final List<SearchResult> matches = results.containsKey(file) ? results.get(file) : new ArrayList<>();
+                matches.add(
+                    new SearchResult(
+                        loc.getRange(),
+                        file,
+                        content.getLineString(loc.getRange().getStart().getLine()),
+                        content.subContent(
+                            loc.getRange().getStart().getLine(),
+                            loc.getRange().getStart().getCharacter(),
+                            loc.getRange().getEnd().getLine(),
+                            loc.getRange().getEnd().getCharacter()
+                        ).toString()
+                    )
+                );
+                results.put(file, matches);
+            } catch (Throwable th) {
+                LOG.error(ThrowableUtils.getFullStackTrace(th));
+            }
+        }
+
+        activity().handleSearchResults(results);
+    }
+
+    /**
+     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show location links in EditorActivity.
+     * These location links are mapped as {@link org.eclipse.lsp4j.Location Location} and then {@link #showLocations(List) } is called.
+     */
     public void showLocationLinks(List<? extends LocationLink> locations) {
-        LOG.info("showLocationLinks", JSONUtility.prettyPrinter.toJson(locations));
+        
+        if(locations == null || locations.size() <= 0) {
+            return;
+        }
+        
+        showLocations(locations
+            .stream()
+                .filter(l -> l != null)
+                .map(l -> asLocation(l))
+                .filter(l -> l != null)
+                .collect(Collectors.toList())
+            );
     }
 
     /**
@@ -137,6 +258,62 @@ public abstract class IDELanguageClient implements LanguageClient {
     @Override
     public void telemetryEvent(Object p1) {
         LOG.info("telemetryEvent: ", gson.toJson(p1));
+    }
+    
+    private Location asLocation(LocationLink link) {
+        if(link == null || link.getTargetRange() == null || link.getTargetUri() == null) return null;
+        final Location location = new Location();
+        location.setUri(link.getTargetUri());
+        location.setRange(link.getTargetRange());
+        return location;
+    }
+    
+    /**
+     * Formats (highlights) a method signature
+     *
+     * @param signature Signature information
+     * @param paramIndex Currently active parameter index
+     */
+    private CharSequence formatSignature(SignatureInformation signature, int paramIndex) {
+        String name = signature.getLabel();
+        name = name.substring(0, name.indexOf("("));
+
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append(name, new ForegroundColorSpan(0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.append("(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        List<ParameterInformation> params = signature.getParameters();
+        for(int i=0;i<params.size();i++) {
+            int color = i == paramIndex ? 0xffff6060 : 0xffffffff;
+            final ParameterInformation info = params.get(i);
+            if(i == params.size() - 1) {
+                sb.append(info.getLabel().getLeft() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else {
+                sb.append(info.getLabel().getLeft() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(",", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(" ");
+            }
+        }
+        sb.append(")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sb;
+    }
+
+    private List<DiagnosticGroup> mapAsGroup(Map<File, List<Diagnostic>> diags) {
+        List<DiagnosticGroup> groups = new ArrayList<>();
+        if(diags == null || diags.size() <= 0)
+            return groups;
+        for(File file : diags.keySet()) {
+            List<Diagnostic> fileDiags = diags.get(file);
+            if(fileDiags == null || fileDiags.size() <= 0)
+                continue;
+            DiagnosticGroup group = new DiagnosticGroup(R.drawable.ic_language_java, file, fileDiags);
+            groups.add(group);
+        }
+        return groups;
+    }
+    
+    public DiagnosticsAdapter newDiagnosticsAdapter() {
+        return new DiagnosticsAdapter(mapAsGroup(this.diagnostics), activity());
     }
 
     /**

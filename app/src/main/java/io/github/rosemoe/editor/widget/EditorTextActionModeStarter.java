@@ -26,11 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
-import com.itsaky.lsp.CodeAction;
-import com.itsaky.lsp.Diagnostic;
 import io.github.rosemoe.editor.util.IntPair;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Action Mode style text action panel for editor
@@ -76,22 +72,22 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                 }
                 
                 menu.add(0, 0, 0, mEditor.getContext().getString(android.R.string.selectAll))
-                    .setShowAsActionFlags(1)
+                    .setShowAsActionFlags(2)
                     .setIcon(array.getDrawable(0));
 
                 if(mEditor.isEditable()) {
                     menu.add(0, 1, 0, mEditor.getContext().getString(android.R.string.cut))
-                        .setShowAsActionFlags(1)
+                        .setShowAsActionFlags(2)
                         .setIcon(array.getDrawable(1));
                 }
 
                 menu.add(0, 2, 0, mEditor.getContext().getString(android.R.string.copy))
-                    .setShowAsActionFlags(1)
+                    .setShowAsActionFlags(2)
                     .setIcon(array.getDrawable(2));
                     
                 if(mEditor.isEditable()) {
                     menu.add(0, 3, 0, mEditor.getContext().getString(android.R.string.paste))
-                        .setShowAsActionFlags(1)
+                        .setShowAsActionFlags(2)
                         .setIcon(array.getDrawable(3));
                 }
                 

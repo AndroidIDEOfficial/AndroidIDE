@@ -11,6 +11,7 @@ import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding;
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
+import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ProjectWriter;
@@ -201,7 +202,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
                 activity().getApp().toast(R.string.msg_file_exists, Toaster.Type.ERROR);
             } else {
                 if(FileIOUtils.writeFileFromString(file, content)) {
-                    jls().notifyFileCreated(file);
+                   LSP.notifyFileCreated(file);
                    activity(). getApp().toast(R.string.msg_file_created, Toaster.Type.SUCCESS);
                     if(activity().getLastHoldTreeNode() != null) {
                         TreeNode node = new TreeNode(file);
@@ -269,7 +270,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
             final boolean deleted = FileUtils.delete(f);
             activity(). getApp().toast(deleted ? R.string.deleted : R.string.delete_failed, deleted ? Toaster.Type.SUCCESS : Toaster.Type.ERROR);
             if(deleted) {
-                jls().notifyFileDeleted(f);
+                LSP.notifyFileDeleted(f);
                 if(activity().getLastHoldTreeNode() != null) {
                     TreeNode parent = activity().getLastHoldTreeNode().getParent();
                     parent.deleteChild(activity().getLastHoldTreeNode());
@@ -306,6 +307,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
             boolean renamed = name != null && name.length() > 0 && name.length() <= 40 && FileUtils.rename(f, name);
             activity(). getApp().toast(renamed ? R.string.renamed : R.string.rename_failed, renamed ? Toaster.Type.SUCCESS : Toaster.Type.ERROR);
             if(renamed) {
+                LSP.notifyFileRenamed(f, name);
                 if(activity().getLastHoldTreeNode() != null) {
                     TreeNode parent = activity().getLastHoldTreeNode().getParent();
                     parent.deleteChild(activity().getLastHoldTreeNode());

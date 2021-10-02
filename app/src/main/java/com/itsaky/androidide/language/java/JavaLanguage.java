@@ -5,7 +5,6 @@ import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.language.java.parser.JavaLexer;
 import com.itsaky.androidide.language.java.parser.JavaParser;
 import com.itsaky.androidide.lsp.LSPProvider;
-import com.itsaky.androidide.models.AndroidProject;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
@@ -18,14 +17,12 @@ import org.eclipse.lsp4j.services.LanguageServer;
 
 public class JavaLanguage extends BaseLanguage {
     
-	private JavaLanguageAnalyzer analyzer;
-	private JavaAutoComplete complete;
-	private AndroidProject project;
+	private final JavaLanguageAnalyzer analyzer;
+	private final JavaAutoComplete complete;
 
-	public JavaLanguage(AndroidProject project) {
+	public JavaLanguage() {
 		this.analyzer = new JavaLanguageAnalyzer();
-		this.complete = new JavaAutoComplete(this);
-		this.project  = project;
+		this.complete = new JavaAutoComplete();
 	}
 
     @Override

@@ -15,17 +15,16 @@
  */
 package io.github.rosemoe.editor.text;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.github.rosemoe.editor.struct.BlockLine;
+import io.github.rosemoe.editor.struct.HexColor;
 import io.github.rosemoe.editor.struct.NavigationItem;
 import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
+import java.util.ArrayList;
 import java.util.HashMap;
-import io.github.rosemoe.editor.struct.HexColor;
+import java.util.List;
 import java.util.Map;
-import com.itsaky.lsp.Range;
+import org.eclipse.lsp4j.Range;
 
 /**
  * The result of analysis

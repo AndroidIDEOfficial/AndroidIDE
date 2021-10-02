@@ -9,10 +9,8 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
 import com.itsaky.androidide.databinding.FragmentEditorBinding;
 import com.itsaky.androidide.fragments.preferences.EditorPreferences;
-import com.itsaky.androidide.interfaces.JLSRequestor;
 import com.itsaky.androidide.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.language.java.JavaLanguage;
-import com.itsaky.androidide.language.java.JavaLanguageAnalyzer;
 import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import com.itsaky.androidide.managers.PreferenceManager;
@@ -21,30 +19,21 @@ import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ReadFileTask;
+import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
-import com.itsaky.lsp.CodeAction;
-import com.itsaky.lsp.Diagnostic;
-import com.itsaky.lsp.DidSaveTextDocumentParams;
-import com.itsaky.lsp.JavaColors;
-import com.itsaky.lsp.Position;
-import com.itsaky.lsp.Range;
-import com.itsaky.lsp.TextDocumentIdentifier;
-import com.itsaky.lsp.TextDocumentPositionParams;
-import com.itsaky.lsp.TextEdit;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.io.StringReader;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import io.github.rosemoe.editor.text.Content;
-import com.itsaky.androidide.utils.LSPUtils;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.Range;
 
 public class EditorFragment extends BaseFragment implements EditorEventListener {
 	
@@ -56,10 +45,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	
     private ModificationStateListener mModificationStateListener;
     private FileOpenListener mOpenListener;
-    private JLSRequestor mJLSRequestor;
 	private static AndroidProject mProject;
-    
-    private JavaLanguage mJavaLanguage;
     
 	public static final String KEY_FILE_PATH = "file_path";
 	public static final String KEY_PROJECT = "project";
@@ -76,11 +62,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	public static final String EXT_KOTLIN = ".kt";
 	public static final String EXT_JSON = ".json";
     
-    public EditorFragment setJLSRequestor(JLSRequestor requestor) {
-        this.mJLSRequestor = requestor;
-        return this;
-    }
-    
     public EditorFragment setModificationStateListener(ModificationStateListener listener) {
         this.mModificationStateListener = listener;
         return this;
@@ -95,14 +76,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
             return title;
         }
         return "";
-    }
-    
-    public void setJavaColors(JavaColors colors) {
-        if(mJavaLanguage != null) {
-            JavaLanguageAnalyzer analyzer = (JavaLanguageAnalyzer) mJavaLanguage.getAnalyzer();
-            analyzer.setJavaColors(colors);
-            mBinding.editor.notifySpansChanged();
-        }
     }
     
 	public static EditorFragment newInstance(File file, AndroidProject project, org.eclipse.lsp4j.Range selection) {
@@ -161,7 +134,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         mBinding.editor.setAutoCompletionItemAdapter(new CompletionListAdapter());
 		mBinding.editor.setLineColorsEnabled(true);
 		mBinding.editor.setDividerWidth(SizeUtils.dp2px(1));
-        mBinding.editor.setJLSRequestor(mJLSRequestor);
         
 		configureEditorIfNeeded();
 		
@@ -202,7 +174,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
             for(int i=0;i<diags.size();i++) {
                 final Diagnostic d = diags.get(i);
                 if(d == null) continue;
-                map.put(d.range, d);
+                map.put(d.getRange(), d);
             }
             mBinding.editor.setDiagnostics(map);
         }
@@ -304,7 +276,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	
 	private void postRead() {
 		if (mFile.isFile() && mFile.getName().endsWith(EXT_JAVA)) {
-			mBinding.editor.setEditorLanguage(mJavaLanguage = new JavaLanguage(mProject));
+			mBinding.editor.setEditorLanguage(new JavaLanguage());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_XML)) {
 			mBinding.editor.setEditorLanguage(new XMLLanguage());
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_GRADLE)) {
@@ -381,9 +353,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 
     @Override
     public void onSetSelection(int startLine, int startCol, int endLine, int endCol) {
-        if(mJLSRequestor != null) {
-            mJLSRequestor.hideSignature();
-        }
+        
     }
 
 	@Override
@@ -407,25 +377,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         }
         
         notifyModified();
-        
-        if(insertedContent.length() == 1) {
-            char i = insertedContent.charAt(0);
-            if(i == '(' || i == ',') {
-                requestSignature();
-            }
-        }
 	}
-
-    private void requestSignature() {
-        try {
-            if (mJLSRequestor != null) {
-                TextDocumentPositionParams p = new TextDocumentPositionParams();
-                p.textDocument = new TextDocumentIdentifier(getFile().toURI());
-                p.position = new Position(mBinding.editor.getCursor().getLeftLine(), mBinding.editor.getCursor().getLeftColumn());
-                mJLSRequestor.signatureHelp(p, getFile());
-            }
-        } catch (Throwable th) {}
-    }
 
 	@Override
 	public void beforeReplace(CodeEditor editor, CharSequence content) {

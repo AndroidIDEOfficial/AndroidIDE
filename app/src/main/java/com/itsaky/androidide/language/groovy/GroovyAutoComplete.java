@@ -1,17 +1,13 @@
 package com.itsaky.androidide.language.groovy;
 
-import com.itsaky.androidide.models.GradleSuggestItem;
-import com.itsaky.androidide.models.SuggestItem;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
-import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.eclipse.lsp4j.InsertTextFormat;
 import org.eclipse.lsp4j.CompletionItemKind;
+import org.eclipse.lsp4j.InsertTextFormat;
 
 public class GroovyAutoComplete implements AutoCompleteProvider {
 	

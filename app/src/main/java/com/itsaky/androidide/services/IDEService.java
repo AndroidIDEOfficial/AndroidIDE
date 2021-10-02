@@ -7,9 +7,8 @@ import com.blankj.utilcode.util.FileUtils;
 import com.google.gson.Gson;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.language.java.server.JavaLanguageServer;
+import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.models.AndroidProject;
 import com.itsaky.androidide.models.project.IDEModule;
 import com.itsaky.androidide.models.project.IDEProject;
 import com.itsaky.androidide.shell.ShellServer;
@@ -19,9 +18,6 @@ import com.itsaky.androidide.tasks.gradle.build.AssembleDebug;
 import com.itsaky.androidide.tasks.gradle.resources.UpdateResourceClassesTask;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.DidChangeWatchedFilesParams;
-import com.itsaky.lsp.FileChangeType;
-import com.itsaky.lsp.FileEvent;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.io.FileFilter;
@@ -33,6 +29,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
+import org.eclipse.lsp4j.FileChangeType;
+import org.eclipse.lsp4j.FileEvent;
 
 public class IDEService implements ShellServer.Callback {
 
@@ -201,11 +200,7 @@ public class IDEService implements ShellServer.Callback {
      * get completions from updated classpaths
      */
     private void notifyExternalSourceChange() {
-        JavaLanguageServer server = app.getJavaLanguageServer();
-        if(mIDEProject == null || server == null) return;
-        
-        server.didChangeWatchedFiles(new DidChangeWatchedFilesParams(createSourceChangeEvents()));
-        server.buildModified();
+        LSP.notifyWatchedFilesChanged(new DidChangeWatchedFilesParams(createSourceChangeEvents()));
         
         if(listener != null) {
             listener.onBuildModified();
@@ -232,7 +227,7 @@ public class IDEService implements ShellServer.Callback {
             final List<File> sources = FileUtils.listFilesInDirWithFilter(generated, JAVA_FILTER, true);
             if(sources == null) continue;
             for(File source : sources) {
-                events.add(new FileEvent(source.toURI(), FileChangeType.Changed));
+                events.add(new FileEvent(source.toURI().toString(), FileChangeType.Changed));
             }
         }
         return events;

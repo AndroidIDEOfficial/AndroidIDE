@@ -1,8 +1,8 @@
 package com.itsaky.androidide.models;
 
-import com.itsaky.lsp.Diagnostic;
 import java.io.File;
 import java.util.List;
+import org.eclipse.lsp4j.Diagnostic;
 
 public class DiagnosticGroup {
     public int icon;

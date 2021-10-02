@@ -12,43 +12,31 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
 import com.blankj.utilcode.util.EncodeUtils;
 import com.blankj.utilcode.util.ResourceUtils;
-import com.blankj.utilcode.util.SPStaticUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.interfaces.LanguageServerListener;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
-import com.itsaky.androidide.language.java.server.JavaLanguageServer;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
-import com.itsaky.androidide.models.AndroidProject;
-import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.services.MessagingService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.StudioUtils;
-import com.itsaky.lsp.LanguageClient;
+import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import com.blankj.utilcode.util.FileUtils;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import com.itsaky.apiinfo.ApiInfo;
 
 public class StudioApp extends MultiDexApplication
 {
 	private static StudioApp instance;
 	private StudioUtils mUtils;
-    private JavaLanguageServer languageServer;
     private XMLCompletionService mXmlCompletionService;
 	private PreferenceManager mPrefsManager;
 	private NotificationManager mNotificationManager;
@@ -57,8 +45,6 @@ public class StudioApp extends MultiDexApplication
 	private String sArch = "";
     
     private ApiInfo mApiInfo;
-    
-    private List<LanguageServerListener> serveralisteners = new ArrayList<>();
     
 	public static final boolean DEBUG = com.itsaky.androidide.BuildConfig.DEBUG;
 	
@@ -169,14 +155,6 @@ public class StudioApp extends MultiDexApplication
     public void createCompletionService() {
         this.mXmlCompletionService = new XMLCompletionService();
     }
-    
-    public void setJavaLanguageServer(JavaLanguageServer server) {
-        this.languageServer = server;
-    }
-    
-    public JavaLanguageServer getJavaLanguageServer() {
-        return languageServer;
-    }
 	
 	public XMLCompletionService getXmlCompletionService() {
 		return mXmlCompletionService;
@@ -208,18 +186,6 @@ public class StudioApp extends MultiDexApplication
         shellServer.start();
         return shellServer;
     }
-    
-	public void addServerListener(LanguageServerListener listener) {
-        if(serveralisteners == null) serveralisteners = new ArrayList<>();
-        if(!serveralisteners.contains(listener))
-            serveralisteners.add(listener);
-    }
-    
-    public void removeServerListener(LanguageServerListener listener) {
-        if(serveralisteners == null) serveralisteners = new ArrayList<>();
-        if(serveralisteners.contains(listener))
-            serveralisteners.remove(listener);
-	}
     
 	public void writeException(Throwable th) {
 		FileUtil.writeFile(new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(), ThrowableUtils.getFullStackTrace(th));

@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDiagnosticItemBinding;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
-import com.itsaky.lsp.Diagnostic;
-import com.itsaky.lsp.DiagnosticSeverity;
-import java.util.List;
 import java.io.File;
+import java.util.List;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 
 public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAdpater.VH> {
     
@@ -36,8 +36,8 @@ public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAd
         final LayoutDiagnosticItemBinding binding = p1.binding;
         
         binding.icon.setImageResource(getDiagnosticIconId(diagnostic));
-        binding.icon.setColorFilter(ContextCompat.getColor(binding.icon.getContext(), diagnostic.severity == DiagnosticSeverity.Error ? R.color.diagnostic_error : R.color.diagnostic_warning), PorterDuff.Mode.SRC_ATOP);
-        binding.title.setText(diagnostic.message);
+        binding.icon.setColorFilter(ContextCompat.getColor(binding.icon.getContext(), diagnostic.getSeverity() == DiagnosticSeverity.Error ? R.color.diagnostic_error : R.color.diagnostic_warning), PorterDuff.Mode.SRC_ATOP);
+        binding.title.setText(diagnostic.getMessage());
         
         binding.getRoot().setOnClickListener(v -> {
             if(listener != null) {
@@ -52,7 +52,7 @@ public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAd
     }
     
     private int getDiagnosticIconId(Diagnostic diagnostic) {
-        if(diagnostic.severity == DiagnosticSeverity.Error)
+        if(diagnostic.getSeverity() == DiagnosticSeverity.Error)
             return R.drawable.ic_compilation_error;
         return R.drawable.ic_info;
     }

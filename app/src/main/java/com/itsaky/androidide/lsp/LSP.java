@@ -1,7 +1,7 @@
 package com.itsaky.androidide.lsp;
 
-import com.google.gson.Gson;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.client.java.JavaLanguageClient;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
@@ -9,32 +9,34 @@ import com.itsaky.androidide.utils.Logger;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.ClientInfo;
+import org.eclipse.lsp4j.ColorProviderCapabilities;
+import org.eclipse.lsp4j.CompletionCapabilities;
+import org.eclipse.lsp4j.CreateFilesParams;
+import org.eclipse.lsp4j.DeleteFilesParams;
+import org.eclipse.lsp4j.DidChangeConfigurationCapabilities;
+import org.eclipse.lsp4j.DidChangeWatchedFilesCapabilities;
+import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
+import org.eclipse.lsp4j.ExecuteCommandCapabilities;
+import org.eclipse.lsp4j.FileCreate;
+import org.eclipse.lsp4j.FileDelete;
+import org.eclipse.lsp4j.FileOperationsWorkspaceCapabilities;
 import org.eclipse.lsp4j.GeneralClientCapabilities;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.InitializedParams;
+import org.eclipse.lsp4j.SynchronizationCapabilities;
 import org.eclipse.lsp4j.TextDocumentClientCapabilities;
 import org.eclipse.lsp4j.WindowClientCapabilities;
 import org.eclipse.lsp4j.WorkspaceClientCapabilities;
 import org.eclipse.lsp4j.WorkspaceFolder;
 import org.eclipse.lsp4j.services.LanguageServer;
-import java.util.concurrent.ExecutionException;
-import java.util.Optional;
-import org.eclipse.lsp4j.CallHierarchyCapabilities;
-import org.eclipse.lsp4j.CodeActionCapabilities;
-import org.eclipse.lsp4j.DidChangeConfigurationCapabilities;
-import org.eclipse.lsp4j.DidChangeWatchedFilesCapabilities;
-import org.eclipse.lsp4j.ExecuteCommandCapabilities;
-import org.eclipse.lsp4j.FileOperationsWorkspaceCapabilities;
-import org.eclipse.lsp4j.SemanticTokensCapabilities;
-import org.eclipse.lsp4j.SynchronizationCapabilities;
-import org.eclipse.lsp4j.ColorProviderCapabilities;
-import org.eclipse.lsp4j.CompletionCapabilities;
-import org.eclipse.lsp4j.CompletionItemCapabilities;
-import com.itsaky.androidide.interfaces.EditorActivityProvider;
+import org.eclipse.lsp4j.RenameFilesParams;
+import org.eclipse.lsp4j.FileRename;
 
 /**
  * A manager class to manage Language Server Protocol implementations
@@ -109,6 +111,20 @@ public class LSP {
         }
         
         /**
+         * Send initialized notification to Language server
+         */
+        public static void initialized() {
+            
+            final LanguageServer server = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
+            if (server == null)
+                return;
+              
+            // Initialized params do not have any parameters
+            server.initialized(new InitializedParams());
+            
+        }
+        
+        /**
          * Sends a shutdown request to the java language server
          */
          
@@ -140,6 +156,83 @@ public class LSP {
     
     public static void setActivityProvider(EditorActivityProvider provider) {
         PROVIDER = provider;
+    }
+    
+    public static void notifyFileCreated(File file) {
+        if(!shouldSendFileActionNotification(file)) return;
+        
+        final CreateFilesParams params =
+            new CreateFilesParams(
+                List.of(
+                    new FileCreate(
+                        file.toURI().toString()
+                     )
+                 )
+             );
+        
+        for(Map.Entry<String, LanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
+            final LanguageServer server = entry.getValue();
+            if(server == null) {
+                server.getWorkspaceService().didCreateFiles(params);
+            }
+        }
+    }
+    
+    public static void notifyFileDeleted(File file) {
+        if(!shouldSendFileActionNotification(file)) return;
+        
+        final DeleteFilesParams params =
+            new DeleteFilesParams(
+            List.of(
+                new FileDelete(
+                    file.toURI().toString()
+                )
+            )
+        );
+
+        for(Map.Entry<String, LanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
+            final LanguageServer server = entry.getValue();
+            if(server == null) {
+                server.getWorkspaceService().didDeleteFiles(params);
+            }
+        }
+    }
+    
+    public static void notifyFileRenamed(File file, String newName) {
+        if(!shouldSendFileActionNotification(file))  return;
+        
+        final File newFile = new File(file.getParentFile(), newName);
+        final RenameFilesParams params =
+            new RenameFilesParams(
+            List.of(
+                new FileRename(
+                    file.toURI().toString(), // Old uri
+                    newFile.toURI().toString() // New uri
+                )
+            )
+        );
+
+        for(Map.Entry<String, LanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
+            final LanguageServer server = entry.getValue();
+            if(server == null) {
+                server.getWorkspaceService().didRenameFiles(params);
+            }
+        }
+    }
+    
+    public static void notifyWatchedFilesChanged(final DidChangeWatchedFilesParams params) {
+        for(Map.Entry<String, LanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
+            final LanguageServer server = entry.getValue();
+            if(server == null) {
+                server.getWorkspaceService().didChangeWatchedFiles(params);
+            }
+        }
+    }
+    
+    public static boolean shouldSendFileActionNotification(File file) {
+        // TODO Check if we should send notification to any language server
+        // which handles this type of files
+        return true;
     }
     
     /**
