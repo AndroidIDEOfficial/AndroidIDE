@@ -1,8 +1,8 @@
 package com.itsaky.androidide.lsp;
 
+import com.itsaky.lsp.services.IDELanguageServer;
 import java.util.HashMap;
 import java.util.Map;
-import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.ServerCapabilities;
 
 /**
@@ -34,7 +34,7 @@ public class LSPProvider {
     /**
      * Map a reference to active language servers with its language id as a key
      */
-    private static final Map<String, LanguageServer> serverMap = new HashMap<>();
+    private static final Map<String, IDELanguageServer> serverMap = new HashMap<>();
     
     /**
      * Maps a reference to the capabilities of a language server with its language id as a key
@@ -44,9 +44,9 @@ public class LSPProvider {
     /**
      * Maps a reference to the client of a language server with its language id as a key
      */
-    private static final Map<String, IDELanguageClient> clientMap = new HashMap<>();
+    private static final Map<String, AbstractLanguageClient> clientMap = new HashMap<>();
     
-    static void setLanguageServer(String languageCode, LanguageServer server) {
+    static void setLanguageServer(String languageCode, IDELanguageServer server) {
         serverMap.put(languageCode, server);
     }
     
@@ -54,11 +54,11 @@ public class LSPProvider {
         capabilitiesMap.put(languageCode, capabilities);
     }
     
-    static void setClientForLanguage(String languageCode, IDELanguageClient client) {
+    static void setClientForLanguage(String languageCode, AbstractLanguageClient client) {
         clientMap.put(languageCode, client);
     }
     
-    public static Map<String, LanguageServer> getAvailableServers() {
+    public static Map<String, IDELanguageServer> getAvailableServers() {
         return serverMap;
     }
     
@@ -66,11 +66,11 @@ public class LSPProvider {
         return capabilitiesMap;
     }
     
-    public static Map<String, IDELanguageClient> getAllServerClients() {
+    public static Map<String, AbstractLanguageClient> getAllServerClients() {
         return clientMap;
     }
     
-    public static LanguageServer getServerForLanguage(String languageCode) {
+    public static IDELanguageServer getServerForLanguage(String languageCode) {
         return languageCode == null ? null : serverMap.get(languageCode);
     }
     
@@ -78,7 +78,7 @@ public class LSPProvider {
         return language == null ? null : capabilitiesMap.get(language);
     }
     
-    public static IDELanguageClient getClientForLanguage(String language) {
+    public static AbstractLanguageClient getClientForLanguage(String language) {
         return language == null ? null : clientMap.get(language);
     }
 }

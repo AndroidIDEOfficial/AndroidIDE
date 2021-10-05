@@ -4,15 +4,16 @@ import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import com.itsaky.androidide.lsp.LSPProvider;
+import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import java.io.File;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.services.LanguageServer;
 
 public class XMLLanguage extends BaseLanguage {
 
@@ -20,14 +21,19 @@ public class XMLLanguage extends BaseLanguage {
 	private XMLAutoComplete completer;
 	private NewlineHandler[] newlineHandlers = new NewlineHandler[] {};
 
-	public XMLLanguage() {
+    public XMLLanguage() {
+        super(null);
+    }
+    
+	public XMLLanguage(File file) {
+        super(file);
 		this.completer = new XMLAutoComplete();
 		this.analyzer = new XMLAnalyzer();
 		this.newlineHandlers = new NewlineHandler[]{new IndentHandler()};
 	}
 
     @Override
-    public LanguageServer getLanguageServer() {
+    public IDELanguageServer getLanguageServer() {
         return null;
     }
 

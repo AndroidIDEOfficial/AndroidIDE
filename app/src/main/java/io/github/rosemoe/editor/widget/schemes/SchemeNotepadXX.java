@@ -28,7 +28,7 @@ public final class SchemeNotepadXX extends EditorColorScheme {
     public void applyDefault() {
         super.applyDefault();
         setColor(ANNOTATION, 0xff0000ff);
-        setColor(METHOD, 0xff000000);
+        setColor(METHOD_DECLARATION, 0xff000000);
         setColor(TYPE_NAME, 0xff000000);
         setColor(LOCAL_VARIABLE, 0xff000000);
         setColor(LITERAL, 0xff808080);

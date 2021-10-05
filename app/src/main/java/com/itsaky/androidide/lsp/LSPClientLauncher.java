@@ -2,6 +2,7 @@ package com.itsaky.androidide.lsp;
 
 import com.blankj.utilcode.util.CloseUtils;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.services.IDELanguageServer;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,8 +15,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
-import org.eclipse.lsp4j.launch.LSPLauncher;
-import org.eclipse.lsp4j.services.LanguageServer;
 
 /**
  * Launches a client for a Language server and handles connection.
@@ -25,12 +24,12 @@ public class LSPClientLauncher extends Thread {
 
     private final int PORT;
     private Future<Void> listeningFuture;
-    private final IDELanguageClient languageClient;
+    private final AbstractLanguageClient languageClient;
 
     private AsynchronousServerSocketChannel serverSocket;
-    private LanguageServer server;
+    private IDELanguageServer server;
 
-    public LSPClientLauncher(IDELanguageClient client, int port) {
+    public LSPClientLauncher(AbstractLanguageClient client, int port) {
         this.languageClient = client;
         this.PORT = port;
 
@@ -42,7 +41,7 @@ public class LSPClientLauncher extends Thread {
      *
      * @return The LanguageServer or {@code null}
      */
-    public LanguageServer getServer() {
+    public IDELanguageServer getServer() {
         return server;
     }
 
@@ -67,9 +66,9 @@ public class LSPClientLauncher extends Thread {
             final InputStream inReader   = Channels.newInputStream(server);
             languageClient.connectionReport("Server connected. Launching client...");
             
-            Launcher<LanguageServer> launcher = LSPLauncher.createClientLauncher(languageClient, inReader, outWriter);
+            Launcher<IDELanguageServer> launcher = createClientLauncher(languageClient, inReader, outWriter);
             listeningFuture = launcher.startListening();
-
+            
             this.server = launcher.getRemoteProxy();
             languageClient.onServerConnected(this.server);
             languageClient.connectionReport("Server is now listening.");
@@ -86,6 +85,15 @@ public class LSPClientLauncher extends Thread {
         } catch (Throwable th) {
             languageClient.connectionError(th);
         }
+    }
+    
+    private Launcher<IDELanguageServer> createClientLauncher(AbstractLanguageClient client, InputStream in, OutputStream out) {
+        return new Launcher.Builder<IDELanguageServer> ()
+            .setLocalService(client)
+            .setRemoteInterface(IDELanguageServer.class)
+            .setInput(in)
+            .setOutput(out)
+            .create();
     }
 
     /**

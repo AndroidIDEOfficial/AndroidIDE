@@ -15,9 +15,11 @@
  */
 package io.github.rosemoe.editor.interfaces;
 
-import io.github.rosemoe.editor.text.Content;
+import com.itsaky.lsp.SemanticHighlight;
+import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
+import java.io.File;
 
 /**
  * Interface for analyzing highlight
@@ -25,16 +27,25 @@ import io.github.rosemoe.editor.text.TextAnalyzer;
  * @author Rose
  */
 public interface CodeAnalyzer {
-
+    
+    /**
+     * Asks the analyzer to store the semantic highlight ranges provided by LanguageServer
+     */
+    void setSemanticHighlights(SemanticHighlight highlights);
+    
     /**
      * Analyze spans for the given input
      *
+     * @param languageServer The language server provided by this language. Maybe null.
+     * @param file The file opened in the editor
      * @param content  The input text
      * @param colors   Result dest
      * @param delegate Delegate between thread and analyzer
+     * @throws Exception
+     *
      * @see TextAnalyzer#analyze(Content)
      * @see TextAnalyzer.AnalyzeThread.Delegate#shouldAnalyze()
      */
-    void analyze(CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate);
+    void analyze(IDELanguageServer languageServer, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception;
 
 }

@@ -28,7 +28,7 @@ public final class SchemeGitHub extends EditorColorScheme {
     public void applyDefault() {
         super.applyDefault();
         setColor(ANNOTATION, 0xff6f42c1);
-        setColor(METHOD, 0xff24292e);
+        setColor(METHOD_DECLARATION, 0xff24292e);
         setColor(TYPE_NAME, 0xff24292e);
         setColor(LOCAL_VARIABLE, 0xff24292e);
         setColor(LITERAL, 0xff032f62);

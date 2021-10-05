@@ -2,12 +2,14 @@ package com.itsaky.androidide.language.xml;
 
 import android.graphics.Color;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
+import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.struct.HexColor;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
+import java.io.File;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -15,11 +17,12 @@ import java.util.regex.Pattern;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
+import com.itsaky.lsp.SemanticHighlight;
 
 public class XMLAnalyzer implements CodeAnalyzer {
 
 	@Override
-	public void analyze(CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
+	public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
 		try {
 			HashMap<HexColor, Integer> lineColors = new HashMap<>();
 			CodePointCharStream stream = CharStreams.fromReader(new StringReader(content.toString()));
@@ -82,6 +85,10 @@ public class XMLAnalyzer implements CodeAnalyzer {
 		} catch (Throwable th) {
 		}
 	}
+
+    @Override
+    public void setSemanticHighlights(SemanticHighlight highlights) {
+    }
 
 	private void addHexColorIfPresent(Token token, HashMap<HexColor, Integer> lineColors, int line, int column) {
 		Matcher m = HEX.matcher(token.getText());

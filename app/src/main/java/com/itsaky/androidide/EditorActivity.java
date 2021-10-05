@@ -49,7 +49,6 @@ import com.itsaky.androidide.handlers.FileOptionsHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
-import com.itsaky.androidide.language.buildout.BuildOutputLanguage;
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.lsp.LSPProvider;
@@ -74,8 +73,10 @@ import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
+import com.itsaky.lsp.services.IDELanguageServer;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
+import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.util.ArrayList;
@@ -89,7 +90,6 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.services.LanguageServer;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -785,7 +785,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         buildView = new CodeEditor(this);
         buildView.setEditable(false);
         buildView.setDividerWidth(0);
-        buildView.setEditorLanguage(new BuildOutputLanguage());
+        buildView.setEditorLanguage(new EmptyLanguage());
         buildView.setOverScrollEnabled(false);
         buildView.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
         buildView.setWordwrap(false);
@@ -915,7 +915,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         new TaskExecutor().executeAsync(() -> {
             getApp().createCompletionService();
             
-            LanguageServer javaServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
+            IDELanguageServer javaServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
             if(javaServer == null) return null;
             
             List<String> cps = mProject.getClassPaths();

@@ -1,6 +1,8 @@
 package com.itsaky.androidide.language.java;
 
+import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import java.util.ArrayList;
@@ -14,8 +16,6 @@ import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.eclipse.lsp4j.services.LanguageServer;
-import com.itsaky.androidide.lsp.LSPProvider;
 
 public class JavaAutoComplete implements AutoCompleteProvider {
     
@@ -23,7 +23,7 @@ public class JavaAutoComplete implements AutoCompleteProvider {
 
 	@Override
 	public List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
-        LanguageServer languageServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
+        IDELanguageServer languageServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
         if(languageServer != null && fileUri != null) {
             
             if(future != null && !future.isDone()) future.cancel(true);

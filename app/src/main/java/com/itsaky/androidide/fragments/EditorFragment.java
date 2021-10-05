@@ -276,11 +276,11 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 	
 	private void postRead() {
 		if (mFile.isFile() && mFile.getName().endsWith(EXT_JAVA)) {
-			mBinding.editor.setEditorLanguage(new JavaLanguage());
+			mBinding.editor.setEditorLanguage(new JavaLanguage(getFile()));
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_XML)) {
-			mBinding.editor.setEditorLanguage(new XMLLanguage());
+			mBinding.editor.setEditorLanguage(new XMLLanguage(getFile()));
 		} else if (mFile.isFile() && mFile.getName().endsWith(EXT_GRADLE)) {
-			mBinding.editor.setEditorLanguage(new GroovyLanguage());
+			mBinding.editor.setEditorLanguage(new GroovyLanguage(getFile()));
 		} else {
 			mBinding.editor.setEditorLanguage(new EmptyLanguage());
 		}

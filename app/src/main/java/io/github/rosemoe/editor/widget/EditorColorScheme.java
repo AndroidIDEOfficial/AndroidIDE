@@ -82,7 +82,8 @@ public class EditorColorScheme {
     public static final int RESOURCE_VARIABLE = 50;
     public static final int EXCEPTION_PARAM = 51;
     public static final int ANNOTATION = 28;
-    public static final int METHOD = 27;
+    public static final int METHOD_DECLARATION = 27;
+    public static final int METHOD_INVOCATION = 55;
     public static final int TYPE_NAME = 26;
     public static final int LOCAL_VARIABLE = 25;
     public static final int LITERAL = 24;
@@ -129,7 +130,7 @@ public class EditorColorScheme {
     /**
      * Max pre-defined color id
      */
-    protected static final int END_COLOR_ID = 54;
+    protected static final int END_COLOR_ID = 55;
     /**
      * Real color saver
      */
@@ -259,11 +260,12 @@ public class EditorColorScheme {
             case TYPE_NAME:
             case TYPE_PARAM :
             case PARAMETER :
-            case METHOD:
+            case METHOD_DECLARATION:
             case ENUM_TYPE :
             case INTERFACE :
             case CONSTRUCTOR :
             case EXCEPTION_PARAM :
+            case METHOD_INVOCATION :
                 color = 0xff333333;
                 break;
             case MATCHED_TEXT_BACKGROUND:

@@ -6,6 +6,7 @@ import com.itsaky.androidide.lsp.client.java.JavaLanguageClient;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.services.IDELanguageServer;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,18 +26,17 @@ import org.eclipse.lsp4j.ExecuteCommandCapabilities;
 import org.eclipse.lsp4j.FileCreate;
 import org.eclipse.lsp4j.FileDelete;
 import org.eclipse.lsp4j.FileOperationsWorkspaceCapabilities;
+import org.eclipse.lsp4j.FileRename;
 import org.eclipse.lsp4j.GeneralClientCapabilities;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.InitializedParams;
+import org.eclipse.lsp4j.RenameFilesParams;
 import org.eclipse.lsp4j.SynchronizationCapabilities;
 import org.eclipse.lsp4j.TextDocumentClientCapabilities;
 import org.eclipse.lsp4j.WindowClientCapabilities;
 import org.eclipse.lsp4j.WorkspaceClientCapabilities;
 import org.eclipse.lsp4j.WorkspaceFolder;
-import org.eclipse.lsp4j.services.LanguageServer;
-import org.eclipse.lsp4j.RenameFilesParams;
-import org.eclipse.lsp4j.FileRename;
 
 /**
  * A manager class to manage Language Server Protocol implementations
@@ -81,18 +81,23 @@ public class LSP {
          */
         public static Optional<InitializeResult> init(String rootPath) {
 
-            final LanguageServer server = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
+            final IDELanguageServer server = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
             if (server == null)
                 return Optional.empty();
 
             final List<WorkspaceFolder> folders = new ArrayList<>();
             final File file = new File(rootPath);
             final WorkspaceFolder folder = new WorkspaceFolder();
+            final WorkspaceFolder logsender = new WorkspaceFolder();
             
             folder.setUri(file.toURI().toString());
             folder.setName(file.getName().toString());
             folders.add(folder);
-
+            
+            logsender.setUri(StudioApp.getInstance().getLogSenderDir().toURI().toString());
+            logsender.setName(StudioApp.getInstance().getLogSenderDir().getName());
+            folders.add(logsender);
+            
             InitializeParams params = new InitializeParams();
             params.setClientInfo(LSP.getClientInfo());
             params.setWorkspaceFolders(folders);
@@ -115,7 +120,7 @@ public class LSP {
          */
         public static void initialized() {
             
-            final LanguageServer server = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
+            final IDELanguageServer server = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
             if (server == null)
                 return;
               
@@ -145,7 +150,7 @@ public class LSP {
         /**
          * Store the instance of Java Language Server in LSPProvider
          */
-        private static void storeServerInfoAndNotify(LanguageServer server, Runnable startedListener) {
+        private static void storeServerInfoAndNotify(IDELanguageServer server, Runnable startedListener) {
             LSPProvider.setLanguageServer(LSPProvider.LANGUAGE_JAVA, server);
             LSPProvider.setClientForLanguage(LSPProvider.LANGUAGE_JAVA, javaClient);
             
@@ -170,8 +175,8 @@ public class LSP {
                  )
              );
         
-        for(Map.Entry<String, LanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
-            final LanguageServer server = entry.getValue();
+        for(Map.Entry<String, IDELanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
+            final IDELanguageServer server = entry.getValue();
             if(server == null) {
                 server.getWorkspaceService().didCreateFiles(params);
             }
@@ -190,8 +195,8 @@ public class LSP {
             )
         );
 
-        for(Map.Entry<String, LanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
-            final LanguageServer server = entry.getValue();
+        for(Map.Entry<String, IDELanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
+            final IDELanguageServer server = entry.getValue();
             if(server == null) {
                 server.getWorkspaceService().didDeleteFiles(params);
             }
@@ -212,8 +217,8 @@ public class LSP {
             )
         );
 
-        for(Map.Entry<String, LanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
-            final LanguageServer server = entry.getValue();
+        for(Map.Entry<String, IDELanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
+            final IDELanguageServer server = entry.getValue();
             if(server == null) {
                 server.getWorkspaceService().didRenameFiles(params);
             }
@@ -221,8 +226,8 @@ public class LSP {
     }
     
     public static void notifyWatchedFilesChanged(final DidChangeWatchedFilesParams params) {
-        for(Map.Entry<String, LanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
-            final LanguageServer server = entry.getValue();
+        for(Map.Entry<String, IDELanguageServer> entry : LSPProvider.getAvailableServers().entrySet()) {
+            final IDELanguageServer server = entry.getValue();
             if(server == null) {
                 server.getWorkspaceService().didChangeWatchedFiles(params);
             }

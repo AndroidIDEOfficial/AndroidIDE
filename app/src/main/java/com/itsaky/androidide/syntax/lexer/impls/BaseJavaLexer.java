@@ -51,6 +51,7 @@ public abstract class BaseJavaLexer extends DefaultLexer {
 				start.getClass();
 				end.getClass();
 				key.getClass();
+                
 				value.getClass();
 
 				lineColors.put(key, value);

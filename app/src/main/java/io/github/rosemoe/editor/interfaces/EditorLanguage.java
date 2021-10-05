@@ -15,8 +15,10 @@
  */
 package io.github.rosemoe.editor.interfaces;
 
+import com.itsaky.lsp.SemanticHighlight;
+import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
-import org.eclipse.lsp4j.services.LanguageServer;
+import java.io.File;
 
 /**
  * Language for editor
@@ -38,13 +40,18 @@ public interface EditorLanguage {
      * Get the language server for this available
      * May return null.
      */
-    LanguageServer getLanguageServer();
+    IDELanguageServer getLanguageServer();
     
     /**
      * Get the language code of this language.
      * This must be the one specified in {@link com.itsaky.androidide.lsp.LSPProvider LSPProvider}
      */
     String getLanguageCode();
+    
+    /**
+     * File associated with this language
+     */
+    File getFile();
      
     /**
      * Get CodeAnalyzer of this language object

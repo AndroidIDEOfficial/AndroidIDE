@@ -4,28 +4,34 @@ import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.groovy.lexer.GroovyLexer;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.lsp.LSPProvider;
+import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import java.io.File;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.services.LanguageServer;
 
 public class GroovyLanguage extends BaseLanguage {
 	
 	private GroovyAnalyzer analyzer;
 	private GroovyAutoComplete completor;
 	
-	public GroovyLanguage() {
+    public GroovyLanguage() {
+        this(null);
+    }
+    
+	public GroovyLanguage(File file) {
+        super(file);
 		analyzer = new GroovyAnalyzer();
 		completor = new GroovyAutoComplete();
 	}
 
     @Override
-    public LanguageServer getLanguageServer() {
+    public IDELanguageServer getLanguageServer() {
         return null;
     }
 

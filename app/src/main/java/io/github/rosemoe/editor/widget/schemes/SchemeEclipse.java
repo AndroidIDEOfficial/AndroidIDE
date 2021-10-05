@@ -28,7 +28,7 @@ public final class SchemeEclipse extends EditorColorScheme {
     public void applyDefault() {
         super.applyDefault();
         setColor(ANNOTATION, 0xff646464);
-        setColor(METHOD, 0xff000000);
+        setColor(METHOD_DECLARATION, 0xff000000);
         setColor(TYPE_NAME, 0xff000000);
         setColor(LOCAL_VARIABLE, 0xffb8633e);
         setColor(LITERAL, 0xff2a00ff);

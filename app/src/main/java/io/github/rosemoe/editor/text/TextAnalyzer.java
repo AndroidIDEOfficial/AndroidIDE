@@ -15,11 +15,11 @@
  */
 package io.github.rosemoe.editor.text;
 
-import java.util.List;
-
-import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
+import com.itsaky.androidide.utils.Logger;
+import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.Span;
+import java.util.List;
 
 /**
  * This is a manager of analyzing text
@@ -31,28 +31,27 @@ public class TextAnalyzer {
     private static int sThreadId = 0;
     private final RecycleObjContainer mObjContainer = new RecycleObjContainer();
     private final Object mLock = new Object();
-    /**
-     * Debug:Start time
-     */
+    
     public long mOpStartTime;
     private TextAnalyzeResult mResult;
     private Callback mCallback;
     private AnalyzeThread mThread;
-    private CodeAnalyzer mCodeAnalyzer;
+    private EditorLanguage mLanguage;
+    
     /**
      * Create a new manager for the given codeAnalyzer
      *
      * @param codeAnalyzer0 Target codeAnalyzer
      */
-    public TextAnalyzer(CodeAnalyzer codeAnalyzer0) {
-        if (codeAnalyzer0 == null) {
+    public TextAnalyzer(EditorLanguage language) {
+        if (language == null || language.getAnalyzer() == null) {
             throw new IllegalArgumentException();
         }
         mResult = new TextAnalyzeResult();
         mResult.addNormalIfNull();
-        mCodeAnalyzer = codeAnalyzer0;
+        mLanguage = language;
     }
-
+    
     private synchronized static int nextThreadId() {
         sThreadId++;
         return sThreadId;
@@ -93,7 +92,7 @@ public class TextAnalyzer {
     public synchronized void analyze(Content origin) {
         AnalyzeThread thread = this.mThread;
         if (thread == null || !thread.isAlive()) {
-            thread = this.mThread = new AnalyzeThread(mLock, mCodeAnalyzer, origin);
+            thread = this.mThread = new AnalyzeThread(mLanguage, mLock, origin);
             thread.setName("TextAnalyzeDaemon-" + nextThreadId());
             thread.setDaemon(true);
             thread.start();
@@ -159,24 +158,24 @@ public class TextAnalyzer {
      * AnalyzeThread to control
      */
     public class AnalyzeThread extends Thread {
-
-        private final CodeAnalyzer codeAnalyzer;
+        
         private final Object lock;
         private volatile boolean waiting = false;
         private Content content;
-
+        private EditorLanguage language;
+        
         /**
          * Create a new thread
          *
          * @param a       The CodeAnalyzer to call
          * @param content The Content to analyze
          */
-        public AnalyzeThread(Object lock, CodeAnalyzer a, Content content) {
+        public AnalyzeThread(EditorLanguage lang, Object lock, Content content) {
+            this.language = lang;
             this.lock = lock;
-            codeAnalyzer = a;
             this.content = content;
         }
-
+        
         @Override
         public void run() {
             try {
@@ -186,8 +185,7 @@ public class TextAnalyzer {
                     mOpStartTime = System.currentTimeMillis();
                     do {
                         waiting = false;
-                        StringBuilder c = content.toStringBuilder();
-                        codeAnalyzer.analyze(c, colors, d);
+                        language.getAnalyzer().analyze(language.getLanguageServer(), language.getFile(), content, colors, d);
                         if (waiting) {
                             colors.mSpanMap.clear();
                             colors.mLast = null;
@@ -218,6 +216,7 @@ public class TextAnalyzer {
                     }
                 } while (true);
             } catch (Exception ex) {
+                Logger.instance().error("Analyze error", ex);
             }
         }
 

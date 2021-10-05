@@ -28,7 +28,7 @@ public class SchemeVS2019 extends EditorColorScheme {
     public void applyDefault() {
         super.applyDefault();
         setColor(ANNOTATION, 0xff4ec9b0);
-        setColor(METHOD, 0xff00BCD4);
+        setColor(METHOD_DECLARATION, 0xff00BCD4);
         setColor(TYPE_NAME, 0xff4ec9b0);
         setColor(LOCAL_VARIABLE, 0xffdcdcaa);
         setColor(LITERAL, 0xffd69d85);

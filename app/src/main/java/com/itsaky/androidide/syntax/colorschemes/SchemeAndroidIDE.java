@@ -38,7 +38,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         setColor(RESOURCE_VARIABLE, 0xfff5f5f5);
         setColor(PARAMETER, 0xfff5f5f5);
         setColor(EXCEPTION_PARAM, 0xfff5f5f5);
-        setColor(METHOD, 0xfff5f5f5);
+        setColor(METHOD_DECLARATION, 0xfff5f5f5);
         setColor(CONSTRUCTOR, 0xfff5f5f5);
         setColor(ANNOTATION, 0xff4fc3f7);
         setColor(PACKAGE_NAME, 0xfff0be4b);

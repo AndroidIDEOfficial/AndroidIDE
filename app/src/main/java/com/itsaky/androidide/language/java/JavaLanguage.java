@@ -1,32 +1,39 @@
 package com.itsaky.androidide.language.java;
 
+import com.itsaky.androidide.antlr4.java.JavaLexer;
+import com.itsaky.androidide.antlr4.java.JavaParser;
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
-import com.itsaky.androidide.language.java.parser.JavaLexer;
-import com.itsaky.androidide.language.java.parser.JavaParser;
 import com.itsaky.androidide.lsp.LSPProvider;
+import com.itsaky.androidide.syntax.lexer.impls.java.JavaLexerImpl;
+import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import java.io.File;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.services.LanguageServer;
 
 public class JavaLanguage extends BaseLanguage {
     
-	private final JavaLanguageAnalyzer analyzer;
+    private final JavaLexerImpl lexer;
 	private final JavaAutoComplete complete;
-
-	public JavaLanguage() {
-		this.analyzer = new JavaLanguageAnalyzer();
+    
+    public JavaLanguage() {
+        this(null);
+    }
+    
+	public JavaLanguage(File file) {
+        super(file);
+		this.lexer = new JavaLexerImpl();
 		this.complete = new JavaAutoComplete();
 	}
 
     @Override
-    public LanguageServer getLanguageServer() {
+    public IDELanguageServer getLanguageServer() {
         return LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
     }
 
@@ -37,7 +44,7 @@ public class JavaLanguage extends BaseLanguage {
 
 	@Override
 	public CodeAnalyzer getAnalyzer() {
-		return analyzer;
+		return lexer;
 	}
 
 	@Override

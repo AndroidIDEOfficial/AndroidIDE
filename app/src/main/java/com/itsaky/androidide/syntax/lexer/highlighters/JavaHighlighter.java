@@ -3,7 +3,7 @@ package com.itsaky.androidide.syntax.lexer.highlighters;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
-import com.itsaky.androidide.language.java.parser.JavaLexer;
+import com.itsaky.androidide.antlr4.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.StringReader;
@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
 public class JavaHighlighter implements Highlighter {
-    
+
     @Override
     public SpannableStringBuilder highlight(String code, String match) throws Exception {
         final JavaLexer lexer = new JavaLexer(CharStreams.fromReader(new StringReader(code)));
@@ -153,14 +153,14 @@ public class JavaHighlighter implements Highlighter {
         }
         final BackgroundColorSpan bg = new BackgroundColorSpan(0xffffff00);
         final ForegroundColorSpan fg = new ForegroundColorSpan(0xff000000);
-        
+
         Pattern pattern = Pattern.compile(Pattern.quote(match));
         Matcher matcher = pattern.matcher(code);
         while(matcher.find()) {
             sb.setSpan(bg, matcher.start(), matcher.end(), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
             sb.setSpan(fg, matcher.start(), matcher.end(), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        
+
         return sb;
     }
 }

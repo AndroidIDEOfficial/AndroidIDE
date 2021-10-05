@@ -21,7 +21,7 @@ public class SchemeWombat extends EditorColorScheme {
 		setColor(TYPE_NAME, 0xfff08080);
 		setColor(ANNOTATION, 0xff808080);
 		setColor(OPERATOR, 0xfff3f6ee);
-		setColor(METHOD, 0xfff3f6ee);
+		setColor(METHOD_DECLARATION, 0xfff3f6ee);
 		setColor(LITERAL, 0xff96e454);
 		setColor(OPERATOR, 0xff8ac6f2);
 		setColor(LOCAL_VARIABLE, 0xffd4c4a9);

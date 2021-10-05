@@ -65,16 +65,18 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
-import com.itsaky.androidide.lsp.IDELanguageClient;
+import com.itsaky.androidide.lsp.AbstractLanguageClient;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.lsp.services.IDELanguageServer;
 import com.itsaky.toaster.Toaster;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
+import io.github.rosemoe.editor.langs.AbstractEditorLanguage;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.HexColor;
@@ -128,7 +130,7 @@ import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.eclipse.lsp4j.services.LanguageServer;
+import com.itsaky.lsp.SemanticHighlight;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -271,7 +273,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private EditorColorScheme mColors;
     private String mLnTip = "Line:";
     private EditorLanguage mLanguage;
-    private LanguageServer mLanguageServer;
+    private IDELanguageServer mLanguageServer;
     private long mLastMakeVisible = 0;
     private EditorAutoCompleteWindow mCompletionWindow;
     private DiagnosticWindow mDiagnosticWindow;
@@ -344,6 +346,10 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      */
     public void setFile(File file) {
         this.currentFile = file;
+        
+        if(mLanguage != null && mLanguage instanceof AbstractEditorLanguage) {
+            ((AbstractEditorLanguage) mLanguage).setFile(file);
+        }
         
         if(mLanguageServer != null) {
             TextDocumentItem item = new TextDocumentItem();
@@ -817,7 +823,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mSpanner.shutdown();
             mSpanner.setCallback(null);
         }
-        mSpanner = new TextAnalyzer(lang.getAnalyzer());
+        mSpanner = new TextAnalyzer(mLanguage);
         mSpanner.setCallback(this);
         if (mText != null) {
             mSpanner.analyze(mText);
@@ -849,6 +855,14 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         invalidate();
     }
     
+    public void setSemanticHighlights(SemanticHighlight highlights) {
+        mLanguage.getAnalyzer().setSemanticHighlights(highlights);
+        
+        if(highlights != null) {
+            notifySpansChanged();
+        }
+    }
+    
     public EditorLanguage getEditorLanguage() {
         return mLanguage;
     }
@@ -859,7 +873,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      *
      * @return Current language server or {@code null}.
      */
-    public LanguageServer getLanguageServer () {
+    public IDELanguageServer getLanguageServer () {
         return mLanguageServer;
     }
     
@@ -3928,7 +3942,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mSpanner.setCallback(null);
             mSpanner.shutdown();
         }
-        mSpanner = new TextAnalyzer(mLanguage.getAnalyzer());
+        mSpanner = new TextAnalyzer(mLanguage);
         mSpanner.setCallback(this);
 
         TextAnalyzeResult colors = mSpanner.getResult();
@@ -4674,7 +4688,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 final Either<List<? extends Location>, List<? extends LocationLink>> either = e;
                 final Throwable th = t;
 
-                final IDELanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
+                final AbstractLanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
                 if(either == null || client == null || future.isCancelled() || future.isCompletedExceptionally()) {
                     showDefinitionNotFound(pd);
                     return;
@@ -4745,7 +4759,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 final List<? extends Location> locations = l;
                 final Throwable th = t;
                 
-                final IDELanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
+                final AbstractLanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
                 
                 if(locations == null || client == null || future.isCancelled() || future.isCompletedExceptionally()) {
                     showReferencesNotFound(pd);
@@ -4797,7 +4811,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             future.whenComplete((h, t) -> {
                 final SignatureHelp help = h;
                 final Throwable th = t;
-                final IDELanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
+                final AbstractLanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
                 
                 if(help == null || client == null || future.isCancelled() || future.isCompletedExceptionally()) {
                     return;
@@ -4819,7 +4833,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     /**
      * Request the client to show the specific document in an editor and select the provided range
      */
-    private void showDocument(IDELanguageClient client, String uri, org.eclipse.lsp4j.Range range) {
+    private void showDocument(AbstractLanguageClient client, String uri, org.eclipse.lsp4j.Range range) {
         ShowDocumentParams params = new ShowDocumentParams();
         params.setExternal(false);
         params.setSelection(range);

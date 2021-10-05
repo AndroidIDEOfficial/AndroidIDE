@@ -20,23 +20,23 @@ package io.github.rosemoe.editor.langs;
  *
  * @author Rose
  */
+import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
-import io.github.rosemoe.editor.widget.CodeEditor;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.xtend.lib.annotations.Delegate;
 import org.eclipse.lsp4j.services.LanguageServer;
+import com.itsaky.lsp.SemanticHighlight;
 
-public class EmptyLanguage implements EditorLanguage {
+public class EmptyLanguage extends AbstractEditorLanguage {
 
     @Override
-    public LanguageServer getLanguageServer() {
+    public IDELanguageServer getLanguageServer() {
         return null;
     }
 
@@ -98,8 +98,12 @@ public class EmptyLanguage implements EditorLanguage {
     private static class EmptyCodeAnalyzer implements CodeAnalyzer {
 
         @Override
-        public void analyze(CharSequence content, TextAnalyzeResult colors, io.github.rosemoe.editor.text.TextAnalyzer.AnalyzeThread.Delegate delegate) {
+        public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, io.github.rosemoe.editor.text.TextAnalyzer.AnalyzeThread.Delegate delegate) {
             colors.addNormalIfNull();
+        }
+
+        @Override
+        public void setSemanticHighlights(SemanticHighlight highlights) {
         }
     }
 }

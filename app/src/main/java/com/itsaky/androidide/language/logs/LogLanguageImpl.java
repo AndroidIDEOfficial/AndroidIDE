@@ -2,17 +2,18 @@ package com.itsaky.androidide.language.logs;
 
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
-import io.github.rosemoe.editor.widget.CodeEditor;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.services.LanguageServer;
+import com.itsaky.lsp.SemanticHighlight;
 
 public class LogLanguageImpl extends BaseLanguage {
 	
@@ -24,7 +25,7 @@ public class LogLanguageImpl extends BaseLanguage {
 	}
 
     @Override
-    public LanguageServer getLanguageServer() {
+    public IDELanguageServer getLanguageServer() {
         return null;
     }
 
@@ -85,7 +86,7 @@ public class LogLanguageImpl extends BaseLanguage {
 		}
 		
 		@Override
-		public void analyze(CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
+		public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
 			int lastLine = 0;
 			for(int i=0;i<lines.size() && delegate.shouldAnalyze();i++) {
 				if(i==0) colors.addNormalIfNull();
@@ -95,6 +96,10 @@ public class LogLanguageImpl extends BaseLanguage {
 			}
 			colors.determine(lastLine);
 		}
+
+        @Override
+        public void setSemanticHighlights(SemanticHighlight highlights) {
+        }
 	}
 	
 	private static class LogCompletor implements AutoCompleteProvider {
