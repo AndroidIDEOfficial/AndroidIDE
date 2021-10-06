@@ -30,13 +30,17 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.util.MutableInt;
 import android.util.TypedValue;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,6 +48,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.CursorAnchorInfo;
 import android.view.inputmethod.EditorInfo;
@@ -52,7 +57,9 @@ import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.OverScroller;
+import android.widget.PopupWindow;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,6 +67,9 @@ import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
@@ -71,6 +81,7 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageServer;
 import com.itsaky.toaster.Toaster;
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
@@ -113,6 +124,7 @@ import org.eclipse.lsp4j.DidOpenTextDocumentParams;
 import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
+import org.eclipse.lsp4j.ParameterInformation;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.ReferenceContext;
@@ -125,12 +137,13 @@ import org.eclipse.lsp4j.SignatureHelpContext;
 import org.eclipse.lsp4j.SignatureHelpOptions;
 import org.eclipse.lsp4j.SignatureHelpParams;
 import org.eclipse.lsp4j.SignatureHelpTriggerKind;
+import org.eclipse.lsp4j.SignatureInformation;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import com.itsaky.lsp.SemanticHighlight;
+import org.eclipse.lsp4j.CompletionOptions;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -858,9 +871,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     public void setSemanticHighlights(SemanticHighlight highlights) {
         mLanguage.getAnalyzer().setSemanticHighlights(highlights);
         
-        if(highlights != null) {
-            notifySpansChanged();
-        }
+        notifySpansChanged();
     }
     
     public EditorLanguage getEditorLanguage() {
@@ -888,6 +899,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mCodeActionsEnabled = mGotoDefinitionEnabled = mFindReferencesEnabled = false;
             return;
         }
+        
+        CompletionOptions completion =  c.getCompletionProvider();
+        setAutoCompletionEnabled(completion != null);
         
         Either<Boolean, CodeActionOptions> codeActionOptions = c.getCodeActionProvider();
         if(codeActionOptions == null) {
@@ -933,7 +947,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mSignatureHelpTriggerChars = new ArrayList<String>(signatureOptions.getTriggerCharacters());
         }
     }
-     
+    
     /**
      * Getter
      *
@@ -3746,6 +3760,13 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
         
         showOrHideDiagnosticWindow();
+        
+        if(mLanguage != null) {
+            AbstractLanguageClient client = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
+            if(client != null) {
+                client.hideSignatureHelp();
+            }
+        }
         
         if(mListener != null) {
             Cursor c = getCursor();

@@ -113,6 +113,86 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
             editor.getEditor().setSemanticHighlights(highlights);
         }
     }
+    
+    /**
+     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show signature help in EditorActivity
+     */
+    public void showSignatureHelp(SignatureHelp signature, File file) {
+        if(signature == null || signature.getSignatures() == null) {
+            activity().getBinding().symbolText.setVisibility(View.GONE);
+            return;
+        }
+        SignatureInformation info = signatureWithMostParams(signature);
+        if(info == null) return;
+        activity().getBinding().symbolText.setText(formatSignature(info, signature.getActiveParameter()));
+        final EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+        if(frag != null) {
+            final CodeEditor editor = frag.getEditor();
+            final float[] cursor = editor.getCursorPosition();
+
+            float x = editor.updateCursorAnchor() - (activity().getBinding().symbolText.getWidth() / 2);
+            float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - activity().getBinding().symbolText.getHeight());
+            activity().getBinding().symbolText.setVisibility(View.VISIBLE);
+            activity().positionViewWithinScreen(activity().getBinding().symbolText, x, y);
+        }
+    }
+    
+    /**
+     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to hide signature help in EditorActivity
+     */
+    public void hideSignatureHelp() {
+        activity().getBinding().symbolText.setVisibility(View.GONE);
+    }
+     
+    /**
+     * Find the signature with most parameters
+     *
+     * @param signature The SignatureHelp provided by @{link IDELanguageServer}
+     */
+    private SignatureInformation signatureWithMostParams(SignatureHelp signature) {
+        SignatureInformation signatureWithMostParams = null;
+        int mostParamCount = 0;
+        final List<SignatureInformation> signatures = signature.getSignatures();
+        for(int i=0;i<signatures.size();i++) {
+            final SignatureInformation info = signatures.get(i);
+            int count = info.getParameters().size();
+            if(mostParamCount < count) {
+                mostParamCount = count;
+                signatureWithMostParams = info;
+            }
+        }
+        return signatureWithMostParams;
+    }
+
+    /**
+     * Formats (highlights) a method signature
+     *
+     * @param signature Signature information
+     * @param paramIndex Currently active parameter index
+     */
+    private CharSequence formatSignature(SignatureInformation signature, int paramIndex) {
+        String name = signature.getLabel();
+        name = name.substring(0, name.indexOf("("));
+
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append(name, new ForegroundColorSpan(0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.append("(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        List<ParameterInformation> params = signature.getParameters();
+        for(int i=0;i<params.size();i++) {
+            int color = i == paramIndex ? 0xffff6060 : 0xffffffff;
+            final ParameterInformation info = params.get(i);
+            if(i == params.size() - 1) {
+                sb.append(info.getLabel().getLeft() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } else {
+                sb.append(info.getLabel().getLeft() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(",", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(" ");
+            }
+        }
+        sb.append(")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sb;
+    }
 
     @Override
     public void publishDiagnostics(PublishDiagnosticsParams params) {
@@ -133,28 +213,6 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
         }
     }
     
-    /**
-     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show signature help in EditorActivity
-     */
-    public void showSignatureHelp(SignatureHelp signature, File file) {
-        if(signature == null || signature.getSignatures() == null) {
-            activity().getBinding().symbolText.setVisibility(View.GONE);
-            return;
-        }
-        SignatureInformation info = signature.getSignatures().get(signature.getActiveSignature());
-        activity().getBinding().symbolText.setText(formatSignature(info, signature.getActiveParameter()));
-        final EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
-        if(frag != null) {
-            final CodeEditor editor = frag.getEditor();
-            final float[] cursor = editor.getCursorPosition();
-
-            float x = editor.updateCursorAnchor() - (activity().getBinding().symbolText.getWidth() / 2);
-            float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - activity().getBinding().symbolText.getHeight());
-            activity().getBinding().symbolText.setVisibility(View.VISIBLE);
-            activity().positionViewWithinScreen(activity().getBinding().symbolText, x, y);
-        }
-    }
-
     /**
      * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show locations in EditorActivity
      */
@@ -277,36 +335,6 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
         location.setUri(link.getTargetUri());
         location.setRange(link.getTargetRange());
         return location;
-    }
-    
-    /**
-     * Formats (highlights) a method signature
-     *
-     * @param signature Signature information
-     * @param paramIndex Currently active parameter index
-     */
-    private CharSequence formatSignature(SignatureInformation signature, int paramIndex) {
-        String name = signature.getLabel();
-        name = name.substring(0, name.indexOf("("));
-
-        SpannableStringBuilder sb = new SpannableStringBuilder();
-        sb.append(name, new ForegroundColorSpan(0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.append("(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        List<ParameterInformation> params = signature.getParameters();
-        for(int i=0;i<params.size();i++) {
-            int color = i == paramIndex ? 0xffff6060 : 0xffffffff;
-            final ParameterInformation info = params.get(i);
-            if(i == params.size() - 1) {
-                sb.append(info.getLabel().getLeft() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-            } else {
-                sb.append(info.getLabel().getLeft() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.append(",", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.append(" ");
-            }
-        }
-        sb.append(")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return sb;
     }
 
     private List<DiagnosticGroup> mapAsGroup(Map<File, List<Diagnostic>> diags) {

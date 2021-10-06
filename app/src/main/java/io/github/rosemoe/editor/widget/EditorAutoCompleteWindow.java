@@ -38,6 +38,7 @@ import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
+import org.eclipse.lsp4j.Command;
 
 public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
     private final static String TIP = "Refreshing...";
@@ -218,6 +219,17 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
                 } else {
                     mEditor.getText().replace(start.getLine(), start.getCharacter(), end.getLine(), end.getCharacter(), edit.getNewText());
                 }
+            }
+        }
+        
+        if(item.getCommand() != null) {
+            Command cmd = item.getCommand();
+            if("editor.action.triggerParameterHints".equals(cmd.getCommand())) {
+                
+                // Trigger signature help request included in CompletionItem
+                // TODO Don't rely on CompletionItem for requesting signature help
+                // If the insert text contains '(', automatically trigger this action
+                mEditor.signatureHelp("(");
             }
         }
         
