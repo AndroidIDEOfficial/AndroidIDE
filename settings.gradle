@@ -3,6 +3,7 @@ include ':treeview'
 include ':emulatorview'
 include ':emulator'
 include ':javapoet'
+include ':lemminx'
 include ':api-info'
 
 rootProject.name = "Android IDE"

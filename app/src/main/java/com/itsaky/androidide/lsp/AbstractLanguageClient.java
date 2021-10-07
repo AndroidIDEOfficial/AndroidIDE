@@ -6,6 +6,7 @@ import android.view.View;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
@@ -17,6 +18,7 @@ import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageClient;
 import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.text.Content;
@@ -32,6 +34,9 @@ import java.util.stream.Collectors;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
+import org.eclipse.lsp4j.LogTraceParams;
+import org.eclipse.lsp4j.MessageParams;
+import org.eclipse.lsp4j.MessageType;
 import org.eclipse.lsp4j.ParameterInformation;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
@@ -39,7 +44,6 @@ import org.eclipse.lsp4j.ShowDocumentParams;
 import org.eclipse.lsp4j.ShowDocumentResult;
 import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SignatureInformation;
-import com.itsaky.lsp.SemanticHighlight;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
@@ -141,6 +145,7 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
      * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to hide signature help in EditorActivity
      */
     public void hideSignatureHelp() {
+        if(activity() == null) return;
         activity().getBinding().symbolText.setVisibility(View.GONE);
     }
      
@@ -325,8 +330,26 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
     }
 
     @Override
-    public void telemetryEvent(Object p1) {
-        LOG.info("telemetryEvent: ", gson.toJson(p1));
+    public void telemetryEvent(Object params) {
+        FirebaseCrashlytics.getInstance().log("LanguageServer[" + this.getClass().getName() + "][TelemetryEvent]\n" + params.toString());
+    }
+
+    @Override
+    public void logMessage(MessageParams params) {
+        if(params.getType() == MessageType.Error) {
+            LOG.error(params.getMessage());
+        } else if(params.getType() == MessageType.Info) {
+            LOG.info(params.getMessage());
+        } else if(params.getType() == MessageType.Warning) {
+            LOG.warn(params.getMessage());
+        } else if(params.getType() == MessageType.Log) {
+            LOG.debug(params.getMessage());
+        }
+    }
+
+    @Override
+    public void logTrace(LogTraceParams params) {
+        
     }
     
     private Location asLocation(LocationLink link) {
@@ -358,12 +381,12 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
     /**
      * Reports connection progress
      */
-    protected abstract void connectionReport(String message);
+    protected void connectionReport(String message) {}
 
     /**
      * Called when there was an error connecting to server.
      */
-    protected abstract void connectionError(Throwable th);
+    protected void connectionError(Throwable th) {}
 
     public static interface StarterListener {
         void startServer();

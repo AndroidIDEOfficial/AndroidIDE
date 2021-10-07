@@ -1,0 +1,43 @@
+{
+  "New catalog bound using DTD": {
+    "prefix": "<catalog",
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE catalog",
+      "\tPUBLIC \"-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN\"",
+      "\t\"http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd\">",
+      "<catalog xmlns=\"urn:oasis:names:tc:entity:xmlns:xml:catalog\" prefer=\"public\">",
+      "\t<public publicId=\"${1}\" uri=\"${2}\" />${0}",
+      "</catalog>"
+    ],
+    "label": "$description",
+    "description": "New catalog bound using DTD"
+  },
+  "New catalog bound using XSD": {
+    "prefix": "<catalog",
+    "suffix": ">",
+    "body": [
+      "<catalog",
+      "\txmlns=\"urn:oasis:names:tc:entity:xmlns:xml:catalog\"",
+      "\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "\txsi:schemaLocation=\"urn:oasis:names:tc:entity:xmlns:xml:catalog",
+      "\t\thttp://www.oasis-open.org/committees/entity/release/1.1/catalog.xsd\"",
+      "\tprefer=\"public\">",
+      "\t<public publicId=\"${1}\" uri=\"${2}\" />${0}",
+      "</catalog>"
+    ],
+    "label": "$description",
+    "description": "New catalog bound using XSD"
+  },
+  "New catalog": {
+    "prefix": "<catalog",
+    "suffix": ">",
+    "body": [
+      "<catalog xmlns=\"urn:oasis:names:tc:entity:xmlns:xml:catalog\">",
+      "\t<public publicId=\"${1}\" uri=\"${2}\" />${0}",
+      "</catalog>"
+    ],
+    "label": "$description",
+    "description": "New catalog"
+  }
+}

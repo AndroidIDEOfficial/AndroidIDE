@@ -46,15 +46,15 @@ public class LSPProvider {
      */
     private static final Map<String, AbstractLanguageClient> clientMap = new HashMap<>();
     
-    static void setLanguageServer(String languageCode, IDELanguageServer server) {
+    public static void setLanguageServer(String languageCode, IDELanguageServer server) {
         serverMap.put(languageCode, server);
     }
     
-    static void setServerCapabilitesForLanguage(String languageCode, ServerCapabilities capabilities) {
+    public static void setServerCapabilitesForLanguage(String languageCode, ServerCapabilities capabilities) {
         capabilitiesMap.put(languageCode, capabilities);
     }
     
-    static void setClientForLanguage(String languageCode, AbstractLanguageClient client) {
+    public static void setClientForLanguage(String languageCode, AbstractLanguageClient client) {
         clientMap.put(languageCode, client);
     }
     

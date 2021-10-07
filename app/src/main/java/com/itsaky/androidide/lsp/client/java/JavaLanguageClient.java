@@ -27,16 +27,6 @@ public class JavaLanguageClient extends AbstractLanguageClient {
     }
     
     @Override
-    protected void connectionReport(String message) {
-        LOG.info("Connection report: ", message);
-    }
-
-    @Override
-    protected void connectionError(Throwable th) {
-        LOG.info("Connection error: ", th);
-    }
-    
-    @Override
     public CompletableFuture<ApplyWorkspaceEditResponse> applyEdit(ApplyWorkspaceEditParams p1) {
         return null;
     }
@@ -50,17 +40,7 @@ public class JavaLanguageClient extends AbstractLanguageClient {
     public CompletableFuture<Void> createProgress(WorkDoneProgressCreateParams p1) {
         return null;
     }
-
-    @Override
-    public void logMessage(MessageParams p1) {
-        LOG.info("logMessage: ", gson.toJson(p1));
-    }
-
-    @Override
-    public void logTrace(LogTraceParams p1) {
-        LOG.info("logTrace: ", gson.toJson(p1));
-    }
-
+    
     @Override
     public void notifyProgress(ProgressParams p1) {
         LOG.info("notifyProgress: ", gson.toJson(p1));

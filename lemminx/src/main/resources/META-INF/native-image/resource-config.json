@@ -1,0 +1,66 @@
+{
+	"resources": [
+		{
+			"pattern": "\\QMETA-INF/services/javax.xml.parsers.SAXParserFactory\\E"
+		},
+		{
+			"pattern": "\\QMETA-INF/services/org.eclipse.lemminx.services.extensions.IXMLExtension\\E"
+		},
+		{
+			"pattern": "\\Qorg/apache/xml/resolver/etc/catalog.dtd\\E"
+		},
+		{
+			"pattern": "\\Qorg/apache/xml/resolver/etc/catalog.rng\\E"
+		},
+		{
+			"pattern": "\\Qorg/apache/xml/resolver/etc/catalog.xsd\\E"
+		},
+		{
+			"pattern": "\\Qorg/apache/xml/resolver/etc/xcatalog.dtd\\E"
+		},
+		{
+			"pattern": "\\Qorg/jsoup/nodes/entities-base.properties\\E"
+		},
+		{
+			"pattern": "\\Qorg/jsoup/nodes/entities-full.properties\\E"
+		},
+		{
+			"pattern": "\\Qschemas/xsd/XMLSchema.dtd\\E"
+		},
+		{
+			"pattern": "\\Qschemas/xsd/XMLSchema.xsd\\E"
+		},
+		{
+			"pattern": "\\Qschemas/xsd/datatypes.dtd\\E"
+		},
+		{
+			"pattern": "\\Qschemas/xsd/xml.xsd\\E"
+		},
+		{
+			"pattern": "org/eclipse/lemminx/services/snippets/[^/]+\\.json$"
+		}
+	],
+	"bundles": [
+		{
+			"name": "XMLSchemaMessagesReformatted"
+		},
+		{
+			"name": "org.apache.xerces.impl.msg.XMLMessages"
+		},
+		{
+			"name": "org.eclipse.lemminx.extensions.xerces.xmlmodel.msg.XMLMessages"
+		},
+		{
+			"name": "org.apache.xerces.impl.msg.XMLSchemaMessages"
+		},
+		{
+			"name": "org.apache.xerces.impl.xpath.regex.message"
+		},
+		{
+			"name": "version"
+		},
+		{
+			"name": "git"
+		}
+	]
+}

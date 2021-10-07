@@ -88,6 +88,8 @@ public final class Environment {
         JAVA = new File(JAVA_HOME, "bin/java");
         BUSYBOX = new File(BINDIR, "busybox");
         SHELL = new File(BINDIR, "sh.sh");
+        
+        System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
 	}
     
     private static Map<String, String> readProperties() {
@@ -137,7 +139,6 @@ public final class Environment {
         map.put("BUSYBOX", BUSYBOX.getAbsolutePath());
         map.put("SHELL", SHELL.getAbsolutePath());
         map.put("TERM", "screen");
-//        map.put("COLORTERM", "truecolor");
         
         map.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
         map.put("GRADLE_HOME", GRADLE_HOME.getAbsolutePath());

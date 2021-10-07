@@ -1,0 +1,26 @@
+{
+  "Insert XML Declaration": {
+    "prefix": [
+      "<?xml"
+    ],
+    "suffix": "?>",
+    "body": [
+      "<?xml version=\"${1|1.0,1.1|}\" encoding=\"${2|UTF-8,ISO-8859-1,Windows-1251,Windows-1252,Shift JIS,GB2312,EUC-KR|}\"?>${0}"
+    ],
+    "label": "$description",
+    "description": "Insert XML Declaration",
+	"sortText": "0"
+  },
+  "Insert XML Declaration with standalone": {
+    "prefix": [
+      "<?xml"
+    ],
+    "suffix": "?>",
+    "body": [
+      "<?xml version=\"${1|1.0,1.1|}\" encoding=\"${2|UTF-8,ISO-8859-1,Windows-1251,Windows-1252,Shift JIS,GB2312,EUC-KR|}\" standalone=\"${3|yes,no|}\"?>${0}"
+    ],
+    "label": "$description",
+    "description": "Insert XML Declaration with standalone",
+	"sortText": "0"
+  }
+ }

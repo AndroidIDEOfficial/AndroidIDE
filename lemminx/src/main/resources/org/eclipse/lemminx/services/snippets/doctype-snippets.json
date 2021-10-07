@@ -1,0 +1,63 @@
+{
+  "Insert SYSTEM DOCTYPE": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} SYSTEM \"${2:file}.dtd\">"
+    ],
+    "label": "$description",
+    "description": "Insert SYSTEM DOCTYPE"
+  },
+  "Insert PUBLIC DOCTYPE": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} PUBLIC \"${2:public-id}\" \"${3:file}.dtd\">"
+    ],
+    "label": "$description",
+    "description": "Insert PUBLIC DOCTYPE"
+  },
+  "Insert SYSTEM DOCTYPE with subset": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} SYSTEM \"${2:file}.dtd\" [",
+      "${0}",
+      "]>"
+    ],
+    "label": "$description",
+    "description": "Insert SYSTEM DOCTYPE with subset"
+  },
+  "Insert PUBLIC DOCTYPE with subset": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} PUBLIC \"${2:public-id}\" \"${3:file}.dtd\" [",
+      "${0}",
+      "]>"
+    ],
+    "label": "$description",
+    "description": "Insert PUBLIC DOCTYPE with subset"
+  },
+  "Insert DOCTYPE with subset": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} [",
+      "\t<!ELEMENT ${1:root-element} (${2:#PCDATA})>",
+      "]>"
+    ],
+    "label": "$description",
+    "description": "Insert DOCTYPE with subset"
+  }
+ }

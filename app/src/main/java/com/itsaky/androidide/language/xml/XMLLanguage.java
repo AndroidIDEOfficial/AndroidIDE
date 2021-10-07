@@ -34,7 +34,7 @@ public class XMLLanguage extends BaseLanguage {
 
     @Override
     public IDELanguageServer getLanguageServer() {
-        return null;
+        return LSPProvider.getServerForLanguage(getLanguageCode());
     }
 
     @Override

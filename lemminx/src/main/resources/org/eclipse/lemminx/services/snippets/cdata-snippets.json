@@ -1,0 +1,12 @@
+{
+  "Insert CDATA": {
+    "prefix": [
+      "<![CDATA["
+    ],
+    "suffix": "]]>",
+    "body": [
+      "<![CDATA[ $1]]>"
+    ],
+    "description": "Insert CDATA"
+  }
+ }

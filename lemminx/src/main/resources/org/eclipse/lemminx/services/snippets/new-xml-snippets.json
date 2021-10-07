@@ -1,0 +1,104 @@
+{
+  "New XML with SYSTEM DOCTYPE": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} SYSTEM \"${2:file}.dtd\">",
+      "<${1:root-element}>${0}",
+      "</${1:root-element}>"
+    ],
+    "label": "$description",
+    "description": "New XML with SYSTEM DOCTYPE"
+  },
+  "New XML with PUBLIC DOCTYPE": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} PUBLIC \"${2:public-id}\" \"${3:file}.dtd\">",
+      "<${1:root-element}>${0}",
+      "</${1:root-element}>"
+    ],
+    "label": "$description",
+    "description": "New XML with PUBLIC DOCTYPE"
+  },
+  "New XML with SYSTEM DOCTYPE with subset": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} SYSTEM \"${2:file}.dtd\" [",
+      "${0}",
+      "]>",
+      "<${1:root-element}>${0}",
+      "</${1:root-element}>"
+    ],
+    "label": "$description",
+    "description": "New XML with SYSTEM DOCTYPE with subset"
+  },
+  "New XML with PUBLIC DOCTYPE with subset": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} PUBLIC \"${2:public-id}\" \"${3:file}.dtd\" [",
+      "${0}",
+      "]>",
+      "<${1:root-element}>${0}",
+      "</${1:root-element}>"
+    ],
+    "label": "$description",
+    "description": "New XML with PUBLIC DOCTYPE with subset"
+  },
+  "New XML with DOCTYPE with subset": {
+    "prefix": [
+      "<!DOCTYPE"
+    ],
+    "suffix": ">",
+    "body": [
+      "<!DOCTYPE ${1:root-element} [",
+      "\t<!ELEMENT ${1:root-element} (${2:#PCDATA})>",
+      "]>",
+      "<${1:root-element}>${0}",
+      "</${1:root-element}>"
+    ],
+    "label": "$description",
+    "description": "New XML with DOCTYPE with subset"
+  },
+  "New XML bound with schemaLocation": {
+    "prefix": [
+      "schemaLocation"
+    ],
+    "suffix": ">",
+    "body": [
+      "<${1:root-element} xmlns=\"${2:https://github.com/eclipse/lemminx}\"",
+      "\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "\txsi:schemaLocation=\"",
+      "\t\t${2:https://github.com/eclipse/lemminx} ${3:file}.xsd\">",
+      "\t${0}",
+      "</${1:root-element}>"
+    ],
+    "label": "$description",
+    "description": "New XML bound with xsi:schemaLocation"
+  },
+  "New XML bound with noNamespaceSchemaLocation": {
+    "prefix": [
+      "noNamespaceSchemaLocation"
+    ],
+    "suffix": ">",
+    "body": [
+      "<${1:root-element}",
+      "\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
+      "\txsi:noNamespaceSchemaLocation=\"${2:file}.xsd\">",
+      "\t${0}",
+      "</${1:root-element}>"
+    ],
+    "label": "$description",
+    "description": "New XML bound with xsi:noNamespaceSchemaLocation"
+  }
+ }

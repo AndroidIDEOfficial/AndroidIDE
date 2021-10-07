@@ -1,0 +1,12 @@
+{
+  "Insert Comment": {
+    "prefix": [
+      "<!--"
+    ],
+    "suffix": "-->",
+    "body": [
+      "<!-- $1-->"
+    ],
+    "description": "Insert Comment"
+  }
+ }

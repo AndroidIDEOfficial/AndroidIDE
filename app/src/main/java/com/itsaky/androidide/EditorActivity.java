@@ -996,6 +996,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             Optional<InitializeResult> result = LSP.Java.init(mProject.getProjectPath());
             LSP.Java.initialized();
         });
+        LSP.XML.start(() -> {
+            Optional<InitializeResult> result = LSP.XML.init(mProject.getProjectPath());
+            LSP.XML.initialized();
+        });
     }
     
     private void getProjectFromIntent() {

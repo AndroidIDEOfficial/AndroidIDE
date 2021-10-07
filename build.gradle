@@ -1,6 +1,6 @@
 buildscript {
     ext {
-		build_gradle_version = '7.0.1'
+		build_gradle_version = '7.0.2'
 	}
     project.ext {
         compileSdk = 31
@@ -10,6 +10,9 @@ buildscript {
         versionCode = 103210928
         versionName = "1.0.3-alpha"
 		packageName = "com.itsaky.androidide"
+        
+        javaSourceVersion = JavaVersion.VERSION_1_8
+        javaTargetVersion = JavaVersion.VERSION_1_8
     }
 
     repositories {
@@ -18,31 +21,24 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
         maven { url 'https://clojars.org/repo/'}
         maven { url 'https://jitpack.io'}
-		maven { url 'https://maven.google.com' }
-		maven { url 'https://androidide.com/build/plugin/'}
         google()
         mavenLocal()
 		mavenCentral()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$build_gradle_version"
-		classpath 'com.github.megatronking.stringfog:gradle-plugin:2.2.1'
-		classpath 'com.github.megatronking.stringfog:xor:1.1.0'
 		classpath 'com.google.gms:google-services:4.3.8'
 		classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
     }
 }
 
 allprojects {
-	
     repositories {
         maven { url 'https://maven.aliyun.com/repository/public/' } 
         maven { url 'https://maven.aliyun.com/repository/google/' }
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
         maven { url 'https://clojars.org/repo/'}
         maven { url 'https://jitpack.io'}
-		maven { url 'https://maven.google.com' }
-		maven { url 'https://androidide.com/build/plugin/'}
         mavenLocal()
 		mavenCentral()
         google()

@@ -1,0 +1,36 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/public/' } 
+    maven { url 'https://maven.aliyun.com/repository/google/' }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
+    maven { url 'https://clojars.org/repo/'}
+    maven { url 'https://jitpack.io'}
+    maven { url 'https://maven.google.com' }
+    google()
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:7.0.2'
+    implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'org.ow2.asm:asm:7.0'
+    implementation 'com.squareup:javapoet:1.9.0'
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDir 'src/main/groovy'
+        }
+
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
