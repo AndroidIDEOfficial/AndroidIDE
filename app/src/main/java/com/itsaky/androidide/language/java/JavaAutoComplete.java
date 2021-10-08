@@ -22,7 +22,7 @@ public class JavaAutoComplete implements AutoCompleteProvider {
     private CompletableFuture<Either<List<CompletionItem>, CompletionList>> future;
 
 	@Override
-	public List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
+	public List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
         IDELanguageServer languageServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
         if(languageServer != null && fileUri != null) {
             

@@ -14,13 +14,14 @@ import java.io.File;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+import com.itsaky.androidide.lsp.LanguageServerWrapper;
 
 public class XMLLanguage extends BaseLanguage {
 
 	private XMLAnalyzer analyzer;
 	private XMLAutoComplete completer;
 	private NewlineHandler[] newlineHandlers = new NewlineHandler[] {};
-
+    
     public XMLLanguage() {
         super(null);
     }
@@ -34,7 +35,7 @@ public class XMLLanguage extends BaseLanguage {
 
     @Override
     public IDELanguageServer getLanguageServer() {
-        return LSPProvider.getServerForLanguage(getLanguageCode());
+        return null;
     }
 
     @Override

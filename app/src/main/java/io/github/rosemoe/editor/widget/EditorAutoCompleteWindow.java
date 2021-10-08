@@ -39,6 +39,7 @@ import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.Command;
+import io.github.rosemoe.editor.text.ContentLine;
 
 public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
     private final static String TIP = "Refreshing...";
@@ -187,12 +188,11 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
      * @param pos Index of auto complete item
      */
     public void select(int pos) {
-        CompletionItem item = ((EditorCompletionAdapter) mBinding.list.getAdapter()).getItem(pos);
-        Range range = getIdentifierRange(mEditor.getCursor().getRight(), mEditor.getText());
+        final CompletionItem item = ((EditorCompletionAdapter) mBinding.list.getAdapter()).getItem(pos);
+        final Range range = getIdentifierRange(mEditor.getCursor().getRight(), mEditor.getText());
+        
         String text = item.getInsertText() == null ? item.getLabel() : item.getInsertText();
-        final boolean shiftLeft = text.contains("$0");
-        final boolean atEnd = text.endsWith("$0");
-        text = text.replace("$0", "");
+        final boolean shiftCursor = item.getInsertText() != null && text.contains("$0");
         
 		mEditor.getText().delete(
             range.getStart().getLine(),
@@ -202,8 +202,14 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
          );
         mEditor.getCursor().onCommitText(text);
         
-        if(shiftLeft && !atEnd) {
-            mEditor.moveSelectionLeft();
+        if(shiftCursor) {
+            final int line = mEditor.getCursor().getLeftLine();
+            final String lineText = mEditor.getText().getLineString(line);
+            final int column = lineText.lastIndexOf("$0");
+            if(column != -1){
+                mEditor.setSelection(line, column);
+                mEditor.getText().delete(line, column, line, column + 2);
+            }
         }
         
         final List<TextEdit> edits = item.getAdditionalTextEdits();
@@ -226,7 +232,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
             Command cmd = item.getCommand();
             if("editor.action.triggerParameterHints".equals(cmd.getCommand())) {
                 
-                // Trigger signature help request included in CompletionItem
+                // Trigger signature help request if included in CompletionItem
                 // TODO Don't rely on CompletionItem for requesting signature help
                 // If the insert text contains '(', automatically trigger this action
                 mEditor.signatureHelp("(");
@@ -308,6 +314,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
         private final long mTime;
         private final String mPrefix;
         private final String mFileUri;
+        private final CharSequence mContent;
         private final boolean mInner;
         private final TextAnalyzeResult mColors;
         private final int mIndex;
@@ -319,6 +326,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
             mTime = requestTime;
             mPrefix = prefix;
             mFileUri = mEditor.getFile() != null ? mEditor.getFile().toURI().toString() : null;
+            mContent = mEditor.getText();
             mColors = mEditor.getTextAnalyzeResult();
             mIndex = mEditor.getCursor().getLeft();
             mLine = mEditor.getCursor().getLeftLine();
@@ -329,7 +337,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
         @Override
         public void run() {
             try {
-                displayResults(mLocalProvider.getAutoCompleteItems(mFileUri, mPrefix, mInner, mColors, mIndex, mLine, mColumn), mTime);
+                displayResults(mLocalProvider.getAutoCompleteItems(mContent, mFileUri, mPrefix, mInner, mColors, mIndex, mLine, mColumn), mTime);
             } catch (Exception e) {
                 e.printStackTrace();
                 displayResults(new ArrayList<>(), mTime);

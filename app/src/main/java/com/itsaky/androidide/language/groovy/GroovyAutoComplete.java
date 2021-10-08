@@ -16,7 +16,7 @@ public class GroovyAutoComplete implements AutoCompleteProvider {
 	private static final List<String> OTHERS = createOtherCompletions();
 
     @Override
-    public List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
+    public List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
         List<CompletionItem>  result = new ArrayList<>();
 
         for(String artifact : ANDROIDX_ARTIFACTS) {

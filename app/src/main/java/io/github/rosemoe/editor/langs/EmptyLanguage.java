@@ -89,7 +89,7 @@ public class EmptyLanguage extends AbstractEditorLanguage {
     public static class EmptyAutoCompleteProvider implements AutoCompleteProvider {
 
         @Override
-        public List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
+        public List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
             return new ArrayList<CompletionItem>();
         }
 

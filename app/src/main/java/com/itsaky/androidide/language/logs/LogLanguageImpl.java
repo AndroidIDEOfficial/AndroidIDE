@@ -105,7 +105,7 @@ public class LogLanguageImpl extends BaseLanguage {
 	private static class LogCompletor implements AutoCompleteProvider {
 		
 		@Override
-		public List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
+		public List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
 			return new ArrayList<CompletionItem>();
 		}
 	}

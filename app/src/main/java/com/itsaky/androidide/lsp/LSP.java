@@ -2,8 +2,6 @@ package com.itsaky.androidide.lsp;
 
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.handlers.JLSHandler;
-import com.itsaky.androidide.lsp.handlers.LSPHandler;
-import com.itsaky.androidide.lsp.handlers.XMLLanguageServerHandler;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.services.IDELanguageServer;
 import java.io.File;
@@ -40,13 +38,7 @@ public class LSP {
     public static EditorActivityProvider PROVIDER;
     private static final Logger LOG = Logger.instance("LSP");
     
-    public static LSPHandler Java = new JLSHandler();
-    public static LSPHandler XML = new XMLLanguageServerHandler();
-    
-    public static void startAll(Runnable onStarted) {
-        LSP.Java.start(onStarted);
-        LSP.XML.start(onStarted);
-    }
+    public static JLSHandler Java = new JLSHandler();
     
     /**
      * Stores information about ports at which the specified language server must be started
@@ -142,7 +134,6 @@ public class LSP {
     public static void shutdownAll() {
         // Shutdown language servers one by one
         LSP.Java.shutdown();
-        LSP.XML.shutdown();
     }
 
     /**

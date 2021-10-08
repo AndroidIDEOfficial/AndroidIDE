@@ -285,7 +285,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 			mBinding.editor.setEditorLanguage(new EmptyLanguage());
 		}
         
-        // File must be set only after setting the language server
+        // File must be set only after setting the language
         // This will make sure that textDocument/didOpen is sent
         mBinding.editor.setFile(getFile());
         

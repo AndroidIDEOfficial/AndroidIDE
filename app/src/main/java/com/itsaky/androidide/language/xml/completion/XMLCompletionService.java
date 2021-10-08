@@ -3,7 +3,6 @@ package com.itsaky.androidide.language.xml.completion;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
-import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -17,16 +16,16 @@ import java.util.Set;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
+import org.eclipse.lsp4j.InsertTextFormat;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.eclipse.lsp4j.InsertTextFormat;
-import org.eclipse.lsp4j.CompletionItemKind;
 
 public class XMLCompletionService {
 	private HashMap<String, Attr> attrs;
-	private List<String> widgets;
+	private List<Widget> widgets;
 	private final File ANDROID_ATTRS;
 	private final File ANDROID_WIDGETS;
 	
@@ -37,6 +36,7 @@ public class XMLCompletionService {
 		this.ANDROID_WIDGETS = new File(Environment.BOOTCLASSPATH.getParentFile(), "data/widgets.txt");
 		this.attrs = new HashMap<>();
 		this.widgets = new ArrayList<>();
+        
 		if(ANDROID_ATTRS.exists() && ANDROID_ATTRS.isFile()) {
 			addAttributesFrom(ANDROID_ATTRS, true);
 		}
@@ -51,8 +51,7 @@ public class XMLCompletionService {
 		return initiated;
 	}
 	
-	
-	public List<CompletionItem> complete(int index, int line, int column, String prefix) {
+	public List<CompletionItem> complete(CharSequence content, int index, int line, int column, String prefix) {
 		final List<CompletionItem> result = new ArrayList<>();
 		if(prefix.startsWith("<") || prefix.startsWith("</")) {
 			boolean slash = false;
@@ -61,16 +60,12 @@ public class XMLCompletionService {
 				slash = true;
 				prefix = prefix.substring(1);
 			}
-			for(String name : widgets) {
-				if(simpleName(name).toLowerCase(Locale.US).startsWith(prefix))
-					result.add(widgetNameAsCompletion(name, slash));
+			for(Widget view : widgets) {
+				if(view.simpleName.toLowerCase(Locale.US).startsWith(prefix))
+					result.add(widgetNameAsCompletion(view, slash));
 			}
 			return handleResults(result);
 		} else {
-            /**
-             * TODO: Change to LSP
-             */
-            final String content = "";
 			final IsInValueScanner scanner = new IsInValueScanner(index);
 			final String name = scanner.scan(content);
 			if(name != null) {
@@ -110,24 +105,64 @@ public class XMLCompletionService {
 		CompletionItem item = new CompletionItem();
         item.setLabel(attr.name);
         item.setDetail("Attribute");
-        item.setInsertText(attr.prefix + ":" + attr.name + "=\"" + (attr.prefix.equals("android") && attr.name.equals("id") ? "@+id/\"" : "\""));
+        item.setInsertText(createAttributeInsertText(attr));
         item.setInsertTextFormat(InsertTextFormat.PlainText);
         item.setSortText("1" + attr.name);
         item.setKind(CompletionItemKind.Snippet);
 		return item;
 	}
 
-	private CompletionItem widgetNameAsCompletion(String name, boolean slash) {
-        final String n = simpleName(name);
+    private String createAttributeInsertText(Attr attr) {
+        StringBuilder xml = new StringBuilder();
+        xml.append(attr.prefix);
+        xml.append(":");
+        xml.append(attr.name);
+        xml.append("=");
+        xml.append("\"");
+        
+        if(attr.prefix.equals("android")
+        && attr.name.equals("id")) {
+            xml.append("@+id/");
+        }
+        
+        xml.append("$0");
+        xml.append("\"");
+        
+        return xml.toString();
+    }
+
+	private CompletionItem widgetNameAsCompletion(Widget view, boolean slash) {
 		CompletionItem item = new CompletionItem();
-        item.setLabel(n);
-        item.setDetail(name);
-        item.setInsertText("<" + (slash ? "/" : "") + n);
+        item.setLabel(view.simpleName);
+        item.setDetail(view.name);
+        item.setInsertText(createTagInsertText(view, slash));
         item.setInsertTextFormat(InsertTextFormat.PlainText);
-        item.setSortText("2" + n);
+        item.setSortText("2" + view.simpleName);
         item.setKind(CompletionItemKind.Value);
 		return item;
 	}
+
+    private String createTagInsertText(Widget view, boolean closing) {
+        StringBuilder sb = new StringBuilder();
+        
+        // Don't append leading '<' and trailing '>'
+        // They may have been already inserted by editor upon typing '<'
+        
+        sb.append(view.simpleName);
+        
+        if(!closing) {
+            if(view.isViewGroup) {
+                sb.append(">$0</");
+                sb.append(view.simpleName);
+            } else {
+                sb.append("$0/");
+            }
+        } else {
+            sb.append(">$0");
+        }
+        
+        return sb.toString();
+    }
 	
 	private String simpleName(String name) {
 		return name.substring(name.lastIndexOf(".") + 1);
@@ -142,9 +177,19 @@ public class XMLCompletionService {
 		if(read != null && read.length() > 0) {
 			widgets.clear();
 			for(String line : read.split("\\n")) {
-				String name = line.split("\\s")[0];
-				name = name.substring(1);
-				widgets.add(name);
+				final String name = line.split("\\s")[0];
+				if(name == null || name.trim().isEmpty()) continue;
+                
+                final char code = name.charAt(0);
+                
+                final String viewName = name.substring(1);
+                final String simpleViewName = simpleName(viewName);
+                final boolean isViewGroup = code == 'L'; // L -> Layout, W -> Widget, P -> LayoutParam
+                
+                // Don't add layout params
+                if(code != 'P') {
+                    widgets.add(new Widget(viewName, simpleViewName, isViewGroup));
+                }
 			}
 			Collections.sort(widgets);
 		}
@@ -199,9 +244,9 @@ public class XMLCompletionService {
 			return start <= cursorIndex && cursorIndex <= end;
 		}
 		
-		public String scan(String xmlContent) {
+		public String scan(CharSequence xmlContent) {
 			try {
-				XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(xmlContent)));
+				XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(xmlContent.toString())));
 				Token token;
 				String attrName = null;
 				while((token = lexer.nextToken()) != null && token.getType() != XMLLexer.EOF) {
@@ -219,7 +264,7 @@ public class XMLCompletionService {
 		
 	}
 	
-	private class Attr {
+	class Attr {
 		public String prefix;
 		public String name;
 		
@@ -240,4 +285,25 @@ public class XMLCompletionService {
 			return String.format("[%s=%s]", name, possibleValues.toString());
 		}
 	}
+    
+    class Widget implements Comparable {
+        String name;
+        String simpleName;
+        boolean isViewGroup;
+
+        public Widget(String name, String simpleName, boolean isViewGroup) {
+            this.name = name;
+            this.simpleName = simpleName;
+            this.isViewGroup = isViewGroup;
+        }
+
+        @Override
+        public int compareTo(Object p1) {
+            if(p1 instanceof Widget) {
+                final Widget that = (Widget) p1;
+                return this.simpleName.compareTo(that.simpleName);
+            }
+            return -1;
+        }
+    }
 }

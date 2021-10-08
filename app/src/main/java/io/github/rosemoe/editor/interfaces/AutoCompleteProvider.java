@@ -37,7 +37,7 @@ public interface AutoCompleteProvider {
      * @param line          The line of cursor
      * @return Analyzed items
      */
-    List<CompletionItem> getAutoCompleteItems(String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception;
+    List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception;
 
 }
 

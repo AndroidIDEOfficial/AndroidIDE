@@ -1,4 +1,5 @@
 package com.itsaky.androidide.lsp.handlers;
+
 import java.util.Optional;
 import org.eclipse.lsp4j.InitializeResult;
 
