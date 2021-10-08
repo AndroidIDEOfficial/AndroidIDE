@@ -135,7 +135,7 @@ dependencies {
 	implementation 'com.google.firebase:firebase-messaging'
     
 	// Local projects
-    implementation project(':api-info')
+    implementation project(':sdk-info')
 	implementation project(':treeview')
     implementation project(':emulator')
     implementation project(':emulatorview')

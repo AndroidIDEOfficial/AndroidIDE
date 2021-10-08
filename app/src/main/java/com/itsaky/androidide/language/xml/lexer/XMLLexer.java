@@ -1,4 +1,3 @@
-// Generated from XMLLexer.g4 by ANTLR 4.9.2
 package com.itsaky.androidide.language.xml.lexer;
 
 // Generated from XMLLexer.g4 by ANTLR 4.9.2

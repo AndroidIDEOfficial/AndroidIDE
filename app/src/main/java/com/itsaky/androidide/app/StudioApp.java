@@ -82,6 +82,9 @@ public class StudioApp extends MultiDexApplication
         
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_UPDATE);
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_DEV_MSGS);
+        
+        startXmlCompletor();
+        initializeApiInformation();
 	}
 	
 	private void handleLog(CharSequence seq) {
@@ -136,14 +139,10 @@ public class StudioApp extends MultiDexApplication
      */
     public void initializeApiInformation() {
         if(mApiInfo == null || !mApiInfo.hasRead()) {
-            File apiVersions = new File(Environment.BOOTCLASSPATH.getParentFile(), "data/api-versions.xml");
-            if(apiVersions.exists() && apiVersions.isFile()) {
-                mApiInfo = new ApiInfo(apiVersions);
-                try {
-                    mApiInfo.readAsync(null);
-                } catch (Exception e) {
-                    LOG.error("Failed to read API version information", e);
-                }
+            try {
+                mApiInfo = new ApiInfo(this);
+            } catch (Exception e) {
+                LOG.error("Failed to read API version information", e);
             }
         }
     }
@@ -152,7 +151,7 @@ public class StudioApp extends MultiDexApplication
         newShell(null).bgAppend("gradle --stop");
     }
 	
-    public void createCompletionService() {
+    public void startXmlCompletor() {
         this.mXmlCompletionService = new XMLCompletionService();
     }
 	

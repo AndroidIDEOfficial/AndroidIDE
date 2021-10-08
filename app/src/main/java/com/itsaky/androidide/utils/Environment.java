@@ -114,8 +114,6 @@ public final class Environment {
 
 	public static void setBootClasspath(File file) {
         BOOTCLASSPATH = new File(file.getAbsolutePath());
-        
-        StudioApp.getInstance().initializeApiInformation();
     }
     
     public static Map<String, String> getEnvironment(boolean publicUse) {

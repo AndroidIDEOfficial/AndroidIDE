@@ -913,8 +913,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
     public void createServices() {
         new TaskExecutor().executeAsync(() -> {
-            getApp().createCompletionService();
-            
             IDELanguageServer javaServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
             if(javaServer == null) return null;
             

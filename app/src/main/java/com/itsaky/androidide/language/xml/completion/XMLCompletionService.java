@@ -1,14 +1,13 @@
 package com.itsaky.androidide.language.xml.completion;
 
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
-import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.FileUtil;
-import java.io.File;
+import com.itsaky.attrinfo.AttrInfo;
+import com.itsaky.attrinfo.models.Attr;
+import com.itsaky.widgets.WidgetInfo;
+import com.itsaky.widgets.models.Widget;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,37 +17,26 @@ import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.InsertTextFormat;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 public class XMLCompletionService {
-	private HashMap<String, Attr> attrs;
-	private List<Widget> widgets;
-	private final File ANDROID_ATTRS;
-	private final File ANDROID_WIDGETS;
+    
+    private final AttrInfo attrs;
+    private final WidgetInfo widgets;
 	
-	private boolean initiated = false;
-	
+	private boolean attrsInitialized = false;
+	private boolean widgetsInitialized = false;
+    
+    private static final String INITIAL_TAG_ATTRIBUTES =
+    "android:layout_width=\"wrap_content\"\n" + 
+    "android:layout_height=\"wrap_content\"";
+    
 	public XMLCompletionService() {
-		this.ANDROID_ATTRS = new File(Environment.BOOTCLASSPATH.getParentFile(), "data/res/values/attrs.xml");
-		this.ANDROID_WIDGETS = new File(Environment.BOOTCLASSPATH.getParentFile(), "data/widgets.txt");
-		this.attrs = new HashMap<>();
-		this.widgets = new ArrayList<>();
-        
-		if(ANDROID_ATTRS.exists() && ANDROID_ATTRS.isFile()) {
-			addAttributesFrom(ANDROID_ATTRS, true);
-		}
-
-		if(ANDROID_WIDGETS.exists()) {
-			processWidgetNames();
-		}
-		initiated = true;
+		this.attrs = new AttrInfo(StudioApp.getInstance(), () -> attrsInitialized = true);
+		this.widgets = new WidgetInfo(StudioApp.getInstance(), () -> widgetsInitialized = true);
 	}
 	
 	public boolean isInitiated() {
-		return initiated;
+		return attrsInitialized && widgetsInitialized;
 	}
 	
 	public List<CompletionItem> complete(CharSequence content, int index, int line, int column, String prefix) {
@@ -60,7 +48,7 @@ public class XMLCompletionService {
 				slash = true;
 				prefix = prefix.substring(1);
 			}
-			for(Widget view : widgets) {
+			for(Widget view : widgets.getWidgets()) {
 				if(view.simpleName.toLowerCase(Locale.US).startsWith(prefix))
 					result.add(widgetNameAsCompletion(view, slash));
 			}
@@ -70,8 +58,8 @@ public class XMLCompletionService {
 			final String name = scanner.scan(content);
 			if(name != null) {
 				final String attrName = name.contains(":") ? name.substring(name.indexOf(":") + 1) : name;
-                if (attrs.containsKey(attrName)) {
-                    Attr attr = attrs.get(attrName);
+                if (attrs.getAttrs().containsKey(attrName)) {
+                    Attr attr = attrs.getAttrs().get(attrName);
                     if(attr.hasPossibleValues()) {
                         Set<String> values = attr.possibleValues;
                         for(String value : values) 
@@ -80,7 +68,7 @@ public class XMLCompletionService {
                     }
                 }
 			} else {
-				for(Map.Entry<String, Attr> entry : attrs.entrySet()) {
+				for(Map.Entry<String, Attr> entry : attrs.getAttrs().entrySet()) {
 					Attr attr = entry.getValue();
 					if(attr.name.toLowerCase(Locale.US).startsWith(prefix))
 						result.add(attrAsCompletion(attr));
@@ -151,6 +139,8 @@ public class XMLCompletionService {
         sb.append(view.simpleName);
         
         if(!closing) {
+            sb.append("\n");
+            sb.append(INITIAL_TAG_ATTRIBUTES);
             if(view.isViewGroup) {
                 sb.append(">$0</");
                 sb.append(view.simpleName);
@@ -164,72 +154,10 @@ public class XMLCompletionService {
         return sb.toString();
     }
 	
-	private String simpleName(String name) {
-		return name.substring(name.lastIndexOf(".") + 1);
-	}
-	
 	private List<CompletionItem> handleResults(List<CompletionItem> result) {
 		return result;
 	}
-	
-	private void processWidgetNames() {
-		String read = FileUtil.readFile(ANDROID_WIDGETS.getAbsolutePath());
-		if(read != null && read.length() > 0) {
-			widgets.clear();
-			for(String line : read.split("\\n")) {
-				final String name = line.split("\\s")[0];
-				if(name == null || name.trim().isEmpty()) continue;
-                
-                final char code = name.charAt(0);
-                
-                final String viewName = name.substring(1);
-                final String simpleViewName = simpleName(viewName);
-                final boolean isViewGroup = code == 'L'; // L -> Layout, W -> Widget, P -> LayoutParam
-                
-                // Don't add layout params
-                if(code != 'P') {
-                    widgets.add(new Widget(viewName, simpleViewName, isViewGroup));
-                }
-			}
-			Collections.sort(widgets);
-		}
-	}
-
-	private void addAttributesFrom(File f, boolean isAndroid) {
-		try {
-			Document doc = Jsoup.parse(f, null);
-			Elements attrs = doc.getElementsByTag("resources").first().getElementsByTag("attr");
-			for(Element attr : attrs) {
-				Attr a = new Attr(attr.attr("name"), isAndroid);
-				if(a.name.contains(":")) {
-					String[] split = a.name.split(":");
-					a.prefix = split[0];
-					a.name = split[1];
-				}
-				if(attr.hasAttr("format") && attr.attr("format").contains("boolean")) {
-					a.possibleValues.add("true");
-					a.possibleValues.add("false");
-				}
-				Elements enums = attr.getElementsByTag("enum");
-				Elements flags = attr.getElementsByTag("flag");
-				if(enums != null && enums.size() > 0) {
-					for(Element e : enums)
-						a.possibleValues.add(e.attr("name"));
-				}
-				if(flags != null && flags.size() > 0) {
-					for(Element e : flags)
-						a.possibleValues.add(e.attr("name"));
-				}
-				if(this.attrs.containsKey(a.name)) {
-					Attr b = this.attrs.get(a.name);
-					if(b != null && b.hasPossibleValues())
-						a.possibleValues.addAll(b.possibleValues);
-				}
-				this.attrs.put(a.name, a);
-			}
-		} catch (Throwable th) {}
-	}
-	
+    
 	private class IsInValueScanner {
 		
 		private int cursorIndex;
@@ -263,47 +191,4 @@ public class XMLCompletionService {
 		}
 		
 	}
-	
-	class Attr {
-		public String prefix;
-		public String name;
-		
-		public Set<String> possibleValues;
-
-		public Attr(String name, boolean isAndroid) {
-			this.name = name;
-			this.prefix = isAndroid ? "android" : "app";
-			this.possibleValues = new HashSet<>();
-		}
-		
-		public boolean hasPossibleValues() {
-			return possibleValues != null && possibleValues.size() > 0;
-		}
-
-		@Override
-		public String toString() {
-			return String.format("[%s=%s]", name, possibleValues.toString());
-		}
-	}
-    
-    class Widget implements Comparable {
-        String name;
-        String simpleName;
-        boolean isViewGroup;
-
-        public Widget(String name, String simpleName, boolean isViewGroup) {
-            this.name = name;
-            this.simpleName = simpleName;
-            this.isViewGroup = isViewGroup;
-        }
-
-        @Override
-        public int compareTo(Object p1) {
-            if(p1 instanceof Widget) {
-                final Widget that = (Widget) p1;
-                return this.simpleName.compareTo(that.simpleName);
-            }
-            return -1;
-        }
-    }
 }

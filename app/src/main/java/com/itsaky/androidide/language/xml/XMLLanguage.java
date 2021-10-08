@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.StringReader;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import com.itsaky.androidide.lsp.LanguageServerWrapper;
 
 public class XMLLanguage extends BaseLanguage {
 
@@ -70,6 +69,7 @@ public class XMLLanguage extends BaseLanguage {
 				switch (token.getType()) {
 					case XMLLexer.OPEN:
 					case XMLLexer.OPEN_SLASH :
+                    case XMLLexer.XMLDeclOpen :
 						advance++;
 						break;
 					case XMLLexer.CLOSE:
