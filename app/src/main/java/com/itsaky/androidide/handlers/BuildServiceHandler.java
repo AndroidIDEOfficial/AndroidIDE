@@ -115,8 +115,6 @@ public class BuildServiceHandler extends IDEHandler implements IDEService.BuildL
             activity().setStatus(msg);
         }
         
-        activity().showViewOptions();
-        activity().showBuildResult();
         activity().getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
         activity().invalidateOptionsMenu();
     }

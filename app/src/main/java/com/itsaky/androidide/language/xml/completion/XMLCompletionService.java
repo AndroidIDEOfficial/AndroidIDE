@@ -141,12 +141,7 @@ public class XMLCompletionService {
         if(!closing) {
             sb.append("\n");
             sb.append(INITIAL_TAG_ATTRIBUTES);
-            if(view.isViewGroup) {
-                sb.append(">$0</");
-                sb.append(view.simpleName);
-            } else {
-                sb.append("$0/");
-            }
+            sb.append("\n$0/");
         } else {
             sb.append(">$0");
         }

@@ -1,7 +1,7 @@
 package com.itsaky.lsp.services;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java9.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CreateFilesParams;
 import org.eclipse.lsp4j.DeleteFilesParams;

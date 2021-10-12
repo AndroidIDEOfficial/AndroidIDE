@@ -189,8 +189,6 @@ class EditorInputConnection extends BaseInputConnection {
 
     @Override
     public boolean commitText(CharSequence text, int newCursorPosition) {
-        //Logs.log("Commit text: text = " + text + ", newCursorPosition = " + newCursorPosition);
-        //Log.d(LOG_TAG, "commit text:text = " + text + ", newCur = " + newCursorPosition);
         if (!mEditor.isEditable() || mInvalid) {
             return false;
         }

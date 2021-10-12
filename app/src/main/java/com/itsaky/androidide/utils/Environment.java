@@ -120,11 +120,11 @@ public final class Environment {
         final Map<String, String> map = new HashMap<>();
         map.put("HOME", HOME.getAbsolutePath());
         map.put("GRADLE_USER_HOME", GRADLE_USER_HOME.getAbsolutePath());
+        map.put("GRADLE_HOME", GRADLE_HOME.getAbsolutePath());
         map.put("TMPDIR", TMP_DIR.getAbsolutePath());
         map.put("PROJECT_DIR", PROJECTS_DIR.getAbsolutePath());
-        map.put("ANDROID_DATA", "/data");
-        map.put("ANDROID_ROOT", "/system");
         map.put("LANG", "en_US.UTF-8");
+        map.put("LC_ALL", "en_US.UTF-8");
         
         if(!publicUse) {
             // These environment variables must not be provided to users
@@ -132,10 +132,10 @@ public final class Environment {
         }
         
         map.put("SYSROOT", SYSROOT.getAbsolutePath());
-        map.put("PREFIX", SYSROOT.getAbsolutePath());
         
         map.put("BUSYBOX", BUSYBOX.getAbsolutePath());
         map.put("SHELL", SHELL.getAbsolutePath());
+        map.put("CONFIG_SHELL", SHELL.getAbsolutePath());
         map.put("TERM", "screen");
         
         map.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
@@ -181,7 +181,7 @@ public final class Environment {
             environment.put(name, value);
         }
     }
-
+    
 	public static String path(File file) {
 		return file.getAbsolutePath();
 	}

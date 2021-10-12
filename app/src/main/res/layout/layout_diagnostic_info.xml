@@ -1,69 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.itsaky.androidide.views.TooltipLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:background="@android:color/transparent"
-    android:paddingBottom="8dp">
-
-	<RelativeLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@color/secondaryColor"
-		android:paddingTop="5dp"
-		android:paddingBottom="5dp"
-		android:gravity="center">
-
-		<ImageView
-			android:layout_height="30dp"
-			android:layout_width="30dp"
-			android:scaleType="center"
-			app:srcCompat="@drawable/ic_compilation_error"
-			android:layout_centerVertical="true"
-			android:layout_alignParentStart="true"
-			android:id="@+id/icon"
-			android:layout_marginStart="8dp"
-			android:layout_marginEnd="8dp"/>
-
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:id="@+id/errorType"
-			android:textColor="@color/primaryTextColor"
-			android:textAllCaps="true"
-			android:textStyle="bold"
-			android:paddingStart="8dp"
-			android:paddingEnd="8dp"
-			android:singleLine="true"
-			android:textSize="13sp"
-			android:gravity="center_vertical"
-			android:layout_alignParentTop="true"
-			android:layout_toEndOf="@id/icon"/>
-
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:id="@+id/errorPosition"
-			android:textColor="@color/secondaryTextColor_lighter"
-			android:paddingStart="8dp"
-			android:paddingEnd="8dp"
-			android:maxLines="2"
-			android:textSize="10sp"
-			android:gravity="center_vertical"
-			android:layout_below="@id/errorType"
-			android:layout_toEndOf="@id/icon"/>
-
-	</RelativeLayout>
-
-	<TextView
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:id="@+id/msg"
-		android:padding="8dp"
-		android:textColor="@color/primaryTextColor"
-		android:textSize="11sp"
-        android:textIsSelectable="true"/>
-
-</com.itsaky.androidide.views.TooltipLayout>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/msg"
+    android:padding="8dp"
+    android:textColor="@color/primaryTextColor"
+    android:textSize="11sp"
+    android:textIsSelectable="true"/>

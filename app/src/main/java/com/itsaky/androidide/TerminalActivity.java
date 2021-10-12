@@ -201,6 +201,7 @@ public class TerminalActivity extends StudioActivity {
         public boolean onKeyDown(int keyCode, KeyEvent e, TerminalSession session) {
             if(keyCode == KeyEvent.KEYCODE_ENTER && !session.isRunning()) {
                 finish();
+                return true;
             }
             return false;
         }
@@ -258,15 +259,7 @@ public class TerminalActivity extends StudioActivity {
 
         @Override
         public float onScale(float scale) {
-            if(scale < 0.9f || scale > 1.1f) {
-                boolean increase = scale > 1.1f;
-                int newSize = (increase ? 1 : -1) * 2;
-                currentTextSize += newSize;
-                if(terminal != null)
-                    terminal.setTextSize(currentTextSize);
-            }
-            
-            return scale;
+            return 1.0f;
         }
 
         @Override
@@ -313,6 +306,16 @@ public class TerminalActivity extends StudioActivity {
         public boolean readAltKey() {
             Boolean state = binding.virtualKeyTable.readSpecialButton(SpecialButton.ALT, true);
             return state != null && state.booleanValue();
+        }
+
+        @Override
+        public boolean readFnKey() {
+            return false;
+        }
+
+        @Override
+        public boolean readShiftKey() {
+            return false;
         }
 
         @Override

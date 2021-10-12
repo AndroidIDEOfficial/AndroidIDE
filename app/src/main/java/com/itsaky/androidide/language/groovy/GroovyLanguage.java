@@ -89,7 +89,7 @@ public class GroovyLanguage extends BaseLanguage {
 
 	@Override
 	public boolean useTab() {
-		return true;
+		return false;
 	}
 
 	@Override

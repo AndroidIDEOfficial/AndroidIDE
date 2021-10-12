@@ -76,9 +76,14 @@ public interface EditorLanguage {
     boolean isAutoCompleteChar(char ch);
 
     /**
+     * Return {@code true} if the language needs whole previous content for #getIndentAdvance(String)
+     */
+    boolean needsWholePreviousContentForIndent();
+    
+    /**
      * Get advance for indent
      *
-     * @param content Content of a line
+     * @param content Content of a line if 
      * @return Advance space count
      */
     int getIndentAdvance(String content);

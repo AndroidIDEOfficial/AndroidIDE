@@ -23,4 +23,9 @@ public abstract class AbstractEditorLanguage implements EditorLanguage {
     public File getFile() {
         return this.file;
     }
+
+    @Override
+    public boolean needsWholePreviousContentForIndent() {
+        return false;
+    }
 }

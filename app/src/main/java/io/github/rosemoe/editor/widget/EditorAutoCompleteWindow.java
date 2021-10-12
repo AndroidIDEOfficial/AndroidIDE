@@ -200,7 +200,15 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
             range.getEnd().getLine(),
             range.getEnd().getCharacter()
          );
-        mEditor.getCursor().onCommitText(text);
+        if(!text.contains("\n")) {
+            mEditor.getCursor().onCommitText(text);
+        } else {
+            final String[] lines = text.split("\n");
+            mEditor.getCursor().onCommitText(lines[0]);
+            for(int i=1;i<lines.length;i++) {
+                mEditor.getCursor().onCommitText("\n" + lines[i].trim());
+            }
+        }
         
         if(shiftCursor) {
             final int line = mEditor.getCursor().getLeftLine();

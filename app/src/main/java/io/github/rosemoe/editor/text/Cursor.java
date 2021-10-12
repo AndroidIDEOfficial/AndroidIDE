@@ -17,9 +17,11 @@ package io.github.rosemoe.editor.text;
 
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.util.IntPair;
-import java.util.List;
-import java.util.ArrayList;
 import io.github.rosemoe.editor.widget.CodeEditor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Rose

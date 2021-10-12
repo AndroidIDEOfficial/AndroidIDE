@@ -2,7 +2,7 @@ package com.itsaky.androidide.lsp.client.java;
 
 import com.itsaky.androidide.lsp.AbstractLanguageClient;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java9.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
 import org.eclipse.lsp4j.ApplyWorkspaceEditResponse;
 import org.eclipse.lsp4j.ConfigurationParams;
@@ -60,8 +60,7 @@ public class JavaLanguageClient extends AbstractLanguageClient {
     public CompletableFuture<Void> registerCapability(RegistrationParams p1) {
         return null;
     }
-
-    @Override
+    
     public void setTrace(SetTraceParams p1) {
         LOG.info("setTrace: ", gson.toJson(p1));
     }

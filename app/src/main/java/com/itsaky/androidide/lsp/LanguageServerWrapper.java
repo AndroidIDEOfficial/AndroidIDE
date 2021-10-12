@@ -6,7 +6,7 @@ import com.itsaky.lsp.services.IDELanguageServer;
 import com.itsaky.lsp.services.IDETextDocumentService;
 import com.itsaky.lsp.services.IDEWorkspaceService;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java9.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CallHierarchyIncomingCall;
 import org.eclipse.lsp4j.CallHierarchyIncomingCallsParams;
 import org.eclipse.lsp4j.CallHierarchyItem;

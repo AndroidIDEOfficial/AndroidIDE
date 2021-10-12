@@ -90,6 +90,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Position;
+import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -101,6 +102,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                                                         EditorActivityProvider {
     
     private ActivityEditorBinding mBinding;
+    private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
 	private EditorPagerAdapter mPagerAdapter;
 	private FileTreeFragment mFileTreeFragment;
 	private EditorFragment mCurrentFragment;
@@ -162,6 +164,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	@Override
 	protected View bindLayout() {
 		mBinding = ActivityEditorBinding.inflate(getLayoutInflater());
+        mDiagnosticInfoBinding = mBinding.diagnosticInfo;
 		return mBinding.getRoot();
 	}
 
@@ -202,6 +205,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		registerLogReceiver();
 		setupContainers();
         setupSignatureText();
+        setupDiagnosticInfo();
         
         startLanguageServers();
     }
@@ -603,6 +607,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public ActivityEditorBinding getBinding() {
         return mBinding;
     }
+    
+    public LayoutDiagnosticInfoBinding getDiagnosticBinding() {
+        return mDiagnosticInfoBinding;
+    }
 
     /**
      * Positions the view to the provided coordinates and within screen
@@ -611,13 +619,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
      * @param initialX Initial X coordinate of view
      * @param initialY Initial Y coordinate of view
      */
-    public void positionViewWithinScreen(View view, float initialX, float initialY) {
+    public void positionViewWithinScreen(final View view, final float initialX, final float initialY) {
         view.setX(initialX);
         view.setY(initialY);
 
-        Rect r = new Rect();
-        int width = view.getWidth();
-        initialX = view.getX();
+        final Rect r = new Rect();
+        final int width = view.getWidth();
         view.getWindowVisibleDisplayFrame(r);
         if (r.width() != width) {
 
@@ -625,16 +632,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
              * Will be true when the view is going out of screen to left 
              */
             if (initialX < r.left) {
-                initialX = SizeUtils.dp2px(8); // an offset of 8dp from the left edge of screen
-                view.setX(initialX);
+                view.setX(SizeUtils.dp2px(8)); // an offset of 8dp from the left edge of screen
             }
 
             /**
              * Will be true when the view is going out of screen to right
              */
             if (initialX + width > r.right) {
-                initialX = r.right - SizeUtils.dp2px(8) - width; // position to the right but leaving 8dp space from the right edge of screen
-                view.setX(initialX); 
+                view.setX(r.right - SizeUtils.dp2px(8) - width);  // position to the right but leaving 8dp space from the right edge of screen
             }
         }
     }
@@ -1009,6 +1014,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         gd.setCornerRadius(8);
         mBinding.symbolText.setBackgroundDrawable(gd);
         mBinding.symbolText.setVisibility(View.GONE);
+    }
+    
+    private void setupDiagnosticInfo() {
+        GradientDrawable gd = new GradientDrawable();
+        gd.setShape(GradientDrawable.RECTANGLE);
+        gd.setColor(0xff212121);
+        gd.setStroke(1, 0xffffffff);
+        gd.setCornerRadius(8);
+        mDiagnosticInfoBinding.getRoot().setBackground(gd);
+        mDiagnosticInfoBinding.getRoot().setVisibility(View.GONE);
     }
 
     private void setupContainers() {

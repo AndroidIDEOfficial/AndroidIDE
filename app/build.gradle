@@ -77,6 +77,10 @@ android {
 		exclude 'about_files/LICENSE-2.0.txt'
 		exclude 'plugin.xml'
 		exclude 'plugin.properties'
+        exclude 'about.mappings'
+        exclude 'about.properties'
+        exclude 'about.ini'
+        exclude 'modeling32.png'
 	}
 }
 
@@ -141,9 +145,6 @@ dependencies {
     implementation project(':emulatorview')
     implementation project(':javapoet')
     implementation project(':lsp')
-    
-    // LSP4J
-    implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.12.0'
     
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	

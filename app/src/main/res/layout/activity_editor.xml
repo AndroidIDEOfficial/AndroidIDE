@@ -369,6 +369,10 @@
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
             tools:ignore="MissingConstraints"/>
+        
+        <include
+            android:id="@+id/diagnosticInfo"
+            layout="@layout/layout_diagnostic_info"/>
 
 		<com.google.android.material.floatingactionbutton.FloatingActionButton
 			android:id="@+id/fab_view"

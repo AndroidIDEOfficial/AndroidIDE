@@ -3,6 +3,10 @@ package com.itsaky.androidide.lsp;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import androidx.transition.ChangeBounds;
+import androidx.transition.Fade;
+import androidx.transition.TransitionManager;
+import androidx.transition.TransitionSet;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
@@ -12,6 +16,7 @@ import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
+import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.models.DiagnosticGroup;
@@ -29,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import java9.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Location;
@@ -60,6 +65,8 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
     private final OnConnectedListener onConnectedListener;
 
     private boolean isConnected;
+    
+    public static final int DIAGNOSTIC_TRANSITION_DURATION = 80;
 
     public AbstractLanguageClient(StarterListener starterListener, OnConnectedListener onConnectedListener) {
         this.starterListener = starterListener;
@@ -118,12 +125,55 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
         }
     }
     
+    public void showDiagnostic(Diagnostic diagnostic, final CodeEditor editor) {
+        if(activity() == null || activity().getDiagnosticBinding() == null) {
+            return;
+        }
+        
+        if(diagnostic == null) {
+            hideDiagnostics();
+            return;
+        }
+        
+        final LayoutDiagnosticInfoBinding binding = activity().getDiagnosticBinding();
+        binding.getRoot().setText(diagnostic.getMessage());
+        
+        TransitionSet set = new TransitionSet();
+        set.addTransition(new ChangeBounds());
+        set.addTransition(new Fade());
+        set.setDuration(DIAGNOSTIC_TRANSITION_DURATION);
+        
+        binding.getRoot().setVisibility(View.VISIBLE);
+        
+        final float[] cursor = editor.getCursorPosition();
+
+        float x = editor.updateCursorAnchor() - (binding.getRoot().getWidth() / 2);
+        float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - binding.getRoot().getHeight());
+        binding.getRoot().setX(x);
+        binding.getRoot().setY(y);
+        activity().positionViewWithinScreen(binding.getRoot(), x, y);
+        
+    }
+    
+    public void hideDiagnostics() {
+        if(activity() == null || activity().getDiagnosticBinding() == null) {
+            return;
+        }
+        
+        TransitionSet set = new TransitionSet();
+        set.addTransition(new ChangeBounds());
+        set.addTransition(new Fade());
+        set.setDuration(DIAGNOSTIC_TRANSITION_DURATION);
+        
+        activity().getDiagnosticBinding().getRoot().setVisibility(View.GONE);
+    }
+    
     /**
      * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show signature help in EditorActivity
      */
     public void showSignatureHelp(SignatureHelp signature, File file) {
         if(signature == null || signature.getSignatures() == null) {
-            activity().getBinding().symbolText.setVisibility(View.GONE);
+            hideSignatureHelp();
             return;
         }
         SignatureInformation info = signatureWithMostParams(signature);
@@ -136,6 +186,7 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
 
             float x = editor.updateCursorAnchor() - (activity().getBinding().symbolText.getWidth() / 2);
             float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - activity().getBinding().symbolText.getHeight());
+            TransitionManager.beginDelayedTransition(activity().getBinding().getRoot());
             activity().getBinding().symbolText.setVisibility(View.VISIBLE);
             activity().positionViewWithinScreen(activity().getBinding().symbolText, x, y);
         }
@@ -146,6 +197,7 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
      */
     public void hideSignatureHelp() {
         if(activity() == null) return;
+        TransitionManager.beginDelayedTransition(activity().getBinding().getRoot());
         activity().getBinding().symbolText.setVisibility(View.GONE);
     }
      

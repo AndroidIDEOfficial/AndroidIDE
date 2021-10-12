@@ -29,7 +29,7 @@ public class XMLLanguage extends BaseLanguage {
         super(file);
 		this.completer = new XMLAutoComplete();
 		this.analyzer = new XMLAnalyzer();
-		this.newlineHandlers = new NewlineHandler[]{new IndentHandler()};
+		this.newlineHandlers = new NewlineHandler[0];
 	}
 
     @Override
@@ -58,6 +58,11 @@ public class XMLLanguage extends BaseLanguage {
         || ch == '<'
         || ch == '/';
 	}
+
+    @Override
+    public boolean needsWholePreviousContentForIndent() {
+        return true;
+    }
 
 	@Override
 	public int getIndentAdvance(String content) {
@@ -94,7 +99,7 @@ public class XMLLanguage extends BaseLanguage {
 
 	@Override
 	public boolean useTab() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -105,21 +110,5 @@ public class XMLLanguage extends BaseLanguage {
     @Override
     public NewlineHandler[] getNewlineHandlers() {
         return newlineHandlers;
-    }
-
-    class IndentHandler implements NewlineHandler {
-
-        @Override
-        public boolean matchesRequirement(String beforeText, String afterText) {
-			return true;
-        }
-
-        @Override
-        public HandleResult handleNewline(String beforeText, String afterText, int tabSize) {
-            int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
-            int advanceBefore = getIndentAdvance(beforeText);
-            StringBuilder sb = new StringBuilder("\n").append(TextUtils.createIndent(count + advanceBefore, tabSize, useTab()));
-            return new HandleResult(sb, 0);
-        }
     }
 }

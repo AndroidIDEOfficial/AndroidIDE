@@ -86,7 +86,7 @@ public class JavaLanguage extends BaseLanguage {
 
 	@Override
 	public boolean useTab() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -105,8 +105,6 @@ public class JavaLanguage extends BaseLanguage {
 
         @Override
         public boolean matchesRequirement(String beforeText, String afterText) {
-			beforeText = beforeText.trim();
-			afterText = afterText.trim();
             return beforeText.endsWith("{") && afterText.startsWith("}");
         }
 
@@ -116,7 +114,10 @@ public class JavaLanguage extends BaseLanguage {
             int advanceBefore = getIndentAdvance(beforeText);
             int advanceAfter = getIndentAdvance(afterText);
             String text;
-            StringBuilder sb = new StringBuilder("\n").append(TextUtils.createIndent(count + advanceBefore, tabSize, useTab())).append('\n').append(text = TextUtils.createIndent(count + advanceAfter, tabSize, useTab()));
+            StringBuilder sb = new StringBuilder("\n")
+                .append(TextUtils.createIndent(count + advanceBefore, tabSize, useTab()))
+                .append('\n')
+                .append(text = TextUtils.createIndent(count + advanceAfter, tabSize, useTab()));
             int shiftLeft = text.length() + 1;
             return new HandleResult(sb, shiftLeft);
         }
