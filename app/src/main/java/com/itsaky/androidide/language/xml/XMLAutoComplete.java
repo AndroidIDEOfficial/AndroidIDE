@@ -8,6 +8,7 @@ import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import org.eclipse.lsp4j.CompletionItem;
 
 public class XMLAutoComplete implements AutoCompleteProvider {
@@ -28,7 +29,7 @@ public class XMLAutoComplete implements AutoCompleteProvider {
 	@Override
 	public List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
 		final XMLCompletionService service = StudioApp.getInstance().getXmlCompletionService();
-		return sort(service.complete(content, index, line, column, prefix.toLowerCase().trim()));
+		return sort(service.complete(content, index, line, column, prefix.toLowerCase(Locale.US).trim()));
 	}
 	
 	private List<CompletionItem> sort(List<CompletionItem> result) {

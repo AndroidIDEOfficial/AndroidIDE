@@ -1,8 +1,9 @@
 package com.itsaky.androidide.utils;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.app.StudioApp;
 import java.io.File;
 import java.io.StringReader;
@@ -11,13 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import android.os.Build;
-import com.itsaky.apiinfo.ApiInfo;
-import com.itsaky.apiinfo.models.ClassInfo;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.itsaky.apiinfo.models.MethodInfo;
 
+@SuppressLint("SdCardPath")
 public final class Environment {
 	
     public static final File ROOT;
@@ -52,6 +48,7 @@ public final class Environment {
 	public static List<File> AARS = new ArrayList<>();
     
     public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
+    
     private static final String DEFAULT_JAVA_HOME = "/data/data/com.itsaky.androidide/files/framework/jdk";
     private static final String DEFAULT_ANDROID_HOME = "/data/data/com.itsaky.androidide/files/framework/android-sdk";
     private static final String DEFAULT_GRADLE_HOME = "/data/data/com.itsaky.androidide/files/framework/gradle-7.1.1";

@@ -176,9 +176,11 @@ public class TerminalActivity extends StudioActivity {
                 terminal.onKeyDown(keyCode, keyEvent);
             } else {
                 // not a control char
-                key.codePoints().forEach(codePoint -> {
+                for(int off=0;off<key.length();) {
+                    int codePoint = key.codePointAt(off);
                     terminal.inputCodePoint(codePoint, ctrlDown, altDown);
-                });
+                    off += Character.charCount(codePoint);
+                }
             }
         }
 

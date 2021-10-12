@@ -18,6 +18,7 @@ import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.InitializedParams;
 import org.eclipse.lsp4j.WorkspaceFolder;
+import java.util.Locale;
 
 public class JLSHandler implements LSPHandler {
     
@@ -99,7 +100,7 @@ public class JLSHandler implements LSPHandler {
      */
     private void startJLS(boolean quiet) {
         mShell = StudioApp.getInstance().newShell(t -> LOG.verbose(t));
-        mShell.append(String.format("java -Djls.client.port=%d -jar %s%s", LSP.Ports.JAVA, Environment.JLS_JAR.getAbsolutePath(), quiet ? /* IMPORTANT: Do not forget the leading space */ " --quiet" : ""));
+        mShell.append(String.format(Locale.US, "java -Djls.client.port=%d -jar %s%s", LSP.Ports.JAVA, Environment.JLS_JAR.getAbsolutePath(), quiet ? /* IMPORTANT: Do not forget the leading space */ " --quiet" : ""));
     }
 
     /**

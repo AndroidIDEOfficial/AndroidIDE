@@ -65,12 +65,6 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         android.R.attr.actionModePasteDrawable,
                 });
                 
-                if(mEditor.isCodeActionsEnabled()) {
-                    menu.add(0, 8, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.msg_code_actions))
-                        .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_quickfix))
-                        .setShowAsActionFlags(1);
-                }
-                
                 menu.add(0, 0, 0, mEditor.getContext().getString(android.R.string.selectAll))
                     .setShowAsActionFlags(2)
                     .setIcon(array.getDrawable(0));
@@ -132,7 +126,6 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                 final MenuItem ref = menu.findItem(5);
                 final MenuItem comment = menu.findItem(6);
                 final MenuItem uncomment = menu.findItem(7);
-                final MenuItem codeActions = menu.findItem(8);
                 
                 comment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
                 uncomment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
@@ -142,9 +135,6 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                  * So we need to check if its null or not
                  * before we perform any further actions
                  */
-                if(codeActions != null)
-                    codeActions.setEnabled(isJava).getIcon().setAlpha(isJava ? 255 : 76);
-                
                 if(def != null) {
                     def.setEnabled(isJava).getIcon().setAlpha(isJava ? 255 : 76);
                 }
@@ -182,9 +172,6 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         break;
                     case 7:
                         mEditor.uncommentLine();
-                        break;
-                    case 8:
-                        mEditor.codeAction();
                         break;
                 }
                 if(menuItem.getItemId() != 0) {

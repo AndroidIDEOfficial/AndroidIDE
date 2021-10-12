@@ -69,6 +69,7 @@ public class MessagingService extends FirebaseMessagingService {
 		}
 
 		if (i != null) {
+            //noinspection
 			PendingIntent intent = PendingIntent.getActivity(this, 0, i, flag);
 			showNotification(title, msg, intent, StudioApp.NOTIFICATION_ID_UPDATE);
 		}

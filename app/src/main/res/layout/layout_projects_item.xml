@@ -114,7 +114,7 @@
 				android:layout_marginStart="4dp"
 				android:clickable="true"
 				android:focusable="true"
-				android:tint="@color/secondaryColor"
+				app:tint="@color/secondaryColor"
 				android:background="?attr/selectableItemBackgroundBorderless"/>
 
 			<ImageView
@@ -128,7 +128,7 @@
 				android:layout_marginStart="8dp"
 				android:clickable="true"
 				android:focusable="true"
-				android:tint="@color/bg_green"
+				app:tint="@color/bg_green"
 				android:background="?attr/selectableItemBackgroundBorderless"/>
 
 			<TextView

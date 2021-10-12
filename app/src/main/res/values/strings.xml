@@ -25,7 +25,7 @@
     <string name="msg_package_name"    >Package      : %s</string>
     <string name="msg_min_sdk"         >Min SDK      : %s</string>
     <string name="msg_target_sdk"      >Target SDK   : %s</string>
-    <string name="msg_empty_view">I have nothing to show you...</string>
+    <string name="msg_empty_view">I have nothing to show you&#8230;</string>
     <string name="msg_init_project_failed">Failed to initialize project!</string>
     <string name="btn_terminal">Terminal</string>
     <string name="msg_shell_verbose">Verbose output is enabled!</string>
@@ -63,7 +63,7 @@
     <string name="msg_select_search_modules">Select modules to search</string>
     <string name="msg_searching_project">Finding in project, please wait&#8230;</string>
     <string name="msg_final_build_result_prefix">========== FINAL BUILD RESULT ==========</string>
-    <string name="msg_final_build_result">BUILD %s for task %s in %d seconds</string>
+    <string tools:ignore="PluralsCandidate" name="msg_final_build_result">BUILD %s for task %s in %d seconds</string>
     <string name="view_search_results">Search results</string>
     <string name="msg_no_definition">Definition not found</string>
     <string name="msg_no_references">No references found</string>

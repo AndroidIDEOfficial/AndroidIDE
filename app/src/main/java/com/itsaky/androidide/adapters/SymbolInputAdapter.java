@@ -1,10 +1,10 @@
 package com.itsaky.androidide.adapters;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.databinding.LayoutSymbolItemBinding;
-import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.views.SymbolInputView.Symbol;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import io.github.rosemoe.editor.widget.SymbolChannel;
@@ -27,6 +27,7 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
 		return setSymbols(false, symbols);
 	}
 	
+    @SuppressLint("NotifyDataSetChanged")
 	public SymbolInputAdapter setSymbols(boolean notify, Symbol... symbols) {
 		this.symbols = symbols;
 		if(notify) {

@@ -41,13 +41,15 @@
 	</LinearLayout>
 
 	<HorizontalScrollView
+        tools:ignore="RtlSymmetry"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:fillViewport="true"
 		android:layout_below="@id/item"
         android:paddingStart="16dp"
         android:clipChildren="false"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        tools:ignore="ScrollViewSize">
 
 		<androidx.recyclerview.widget.RecyclerView
 			android:id="@+id/items"

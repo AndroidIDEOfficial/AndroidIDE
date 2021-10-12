@@ -88,7 +88,7 @@
 		android:layout_marginEnd="8dp"
 		android:layout_alignParentStart="true"
 		android:id="@+id/tempImageView1"
-		android:tint="@color/secondaryColor"/>
+		app:tint="@color/secondaryColor"/>
 
 	<TextView
 		android:layout_width="wrap_content"
@@ -141,7 +141,7 @@
 		android:id="@+id/installIcon"
 		android:layout_below="@id/chooseDirDesc"
 		android:layout_marginTop="16dp"
-		android:tint="@color/secondaryColor"/>
+		app:tint="@color/secondaryColor"/>
 
 	<TextView
 		android:layout_width="wrap_content"

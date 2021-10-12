@@ -2,6 +2,7 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
@@ -11,7 +12,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:fillViewport="true"
-		android:layout_marginBottom="24dp">
+		android:layout_marginBottom="24dp"
+        tools:ignore="ScrollViewSize">
 
 		<LinearLayout
 			android:orientation="horizontal"
@@ -24,7 +26,6 @@
 				android:layout_height="30dp"
 				android:layout_width="30dp"
 				android:scaleType="fitCenter"
-				android:layout_centerVertical="true"
 				app:srcCompat="@drawable/ic_bug"
 				android:layout_marginStart="16dp"
 				android:layout_marginEnd="16dp"
@@ -46,7 +47,6 @@
 				android:clickable="true"
 				android:focusable="true"
 				android:background="?attr/selectableItemBackgroundBorderless"
-				android:layout_centerVertical="true"
 				app:srcCompat="@drawable/ic_telegram"/>
 
 			<ImageView
@@ -61,7 +61,6 @@
 				android:clickable="true"
 				android:focusable="true"
 				android:background="?attr/selectableItemBackgroundBorderless"
-				android:layout_centerVertical="true"
 				app:srcCompat="@drawable/ic_email"/>
 
 			<ImageView
@@ -73,7 +72,6 @@
 				android:layout_marginEnd="16dp"
 				android:layout_marginTop="8dp"
 				android:layout_marginBottom="8dp"
-				android:layout_centerVertical="true"
 				android:clickable="true"
 				android:focusable="true"
 				android:background="?attr/selectableItemBackgroundBorderless"

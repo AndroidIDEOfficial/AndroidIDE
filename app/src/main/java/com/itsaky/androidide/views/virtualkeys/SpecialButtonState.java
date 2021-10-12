@@ -38,7 +38,9 @@ public class SpecialButtonState {
     /** Set {@link #isActive}. */
     public void setIsActive(boolean value) {
         isActive = value;
-        buttons.forEach(button -> button.setTextColor(value ? mVirtualKeysView.getButtonActiveTextColor() : mVirtualKeysView.getButtonTextColor()));
+        for(Button button : buttons) {
+            button.setTextColor(value ? mVirtualKeysView.getButtonActiveTextColor() : mVirtualKeysView.getButtonTextColor());
+        }
     }
 
     /** Set {@link #isLocked}. */

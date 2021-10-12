@@ -5,7 +5,7 @@ import com.itsaky.androidide.lsp.handlers.JLSHandler;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.services.IDELanguageServer;
 import java.io.File;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import org.eclipse.lsp4j.ClientCapabilities;
 import org.eclipse.lsp4j.ClientInfo;
@@ -56,7 +56,7 @@ public class LSP {
         
         final CreateFilesParams params =
             new CreateFilesParams(
-                List.of(
+                Collections.singletonList(
                     new FileCreate(
                         file.toURI().toString()
                      )
@@ -76,7 +76,7 @@ public class LSP {
         
         final DeleteFilesParams params =
             new DeleteFilesParams(
-            List.of(
+            Collections.singletonList(
                 new FileDelete(
                     file.toURI().toString()
                 )
@@ -97,7 +97,7 @@ public class LSP {
         final File newFile = new File(file.getParentFile(), newName);
         final RenameFilesParams params =
             new RenameFilesParams(
-            List.of(
+            Collections.singletonList(
                 new FileRename(
                     file.toURI().toString(), // Old uri
                     newFile.toURI().toString() // New uri

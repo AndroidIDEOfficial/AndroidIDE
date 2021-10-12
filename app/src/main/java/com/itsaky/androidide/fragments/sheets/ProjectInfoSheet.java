@@ -1,6 +1,6 @@
 package com.itsaky.androidide.fragments.sheets;
 
-import android.graphics.PorterDuff;
+import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
@@ -14,6 +14,7 @@ import com.itsaky.androidide.adapters.ModuleInfoAdapter;
 import com.itsaky.androidide.databinding.LayoutProjectDetailsBinding;
 import com.itsaky.androidide.models.project.IDEProject;
 import java.io.File;
+import java.util.Locale;
 
 public class ProjectInfoSheet extends BaseBottomSheetFragment {
     
@@ -21,6 +22,7 @@ public class ProjectInfoSheet extends BaseBottomSheetFragment {
     private IDEProject project;
     
     @Override
+    @SuppressLint("SetTextI18n")
     protected void bind(LinearLayout container) {
         binding = LayoutProjectDetailsBinding.inflate(getLayoutInflater());
         container.addView(binding.getRoot());
@@ -48,7 +50,7 @@ public class ProjectInfoSheet extends BaseBottomSheetFragment {
             binding.appIcon.setVisibility(iconInvisible ? View.INVISIBLE : View.VISIBLE);
             
             String name = project.displayName.trim();
-            name = name.substring(0, 1).toUpperCase() + name.substring(1);
+            name = name.substring(0, 1).toUpperCase(Locale.US) + name.substring(1);
             
             binding.projectName.setText(name);
             

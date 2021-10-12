@@ -22,7 +22,9 @@
 		android:largeHeap="true"
 		android:allowNativeHeapPointerTagging="false"
 		android:hardwareAccelerated="true">
-        <activity android:name=".SplashActivity">
+        <activity
+            android:name=".SplashActivity"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -78,5 +80,8 @@
 		<meta-data
 			android:name="com.google.firebase.messaging.default_notification_channel_id"
 			android:value="@string/cms_channel_id_devs" />
+        <property
+            android:name="android.media.PROPERTY_MEDIA_CAPABILITIES"
+            android:resource="@xml/media_capabilities" />
     </application>
 </manifest>

@@ -2609,15 +2609,17 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      */
     public float updateCursorAnchor() {
         CursorAnchorInfo.Builder builder = mAnchorInfoBuilder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder.reset();
-            mMatrix.set(getMatrix());
-            int[] b = new int[2];
-            getLocationOnScreen(b);
-            mMatrix.postTranslate(b[0], b[1]);
-            builder.setMatrix(mMatrix);
-            builder.setSelectionRange(mCursor.getLeft(), mCursor.getRight());
-        }
+        
+        // No need to check for min sdk 21
+        builder.reset();
+        mMatrix.set(getMatrix());
+        int[] b = new int[2];
+        getLocationOnScreen(b);
+        mMatrix.postTranslate(b[0], b[1]);
+        builder.setMatrix(mMatrix);
+        builder.setSelectionRange(mCursor.getLeft(), mCursor.getRight());
+        //
+        
         int l = mCursor.getRightLine();
         int column = mCursor.getRightColumn();
         prepareLine(l);
@@ -4254,11 +4256,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 pasteText();
                 return true;
             case AccessibilityNodeInfo.ACTION_SET_TEXT:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    setText(arguments.getCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE));
-                    return true;
-                }
-                return false;
+                setText(arguments.getCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE));
+                return true;
             case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD:
                 movePageDown();
                 return true;
@@ -4819,10 +4818,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if(mLanguageServer != null && getFile() != null) {
             mLanguageServer.getTextDocumentService().didClose(new DidCloseTextDocumentParams(new org.eclipse.lsp4j.TextDocumentIdentifier(getFile().toURI().toString())));
         }
-    }
-    
-    public void codeAction() {
-        
     }
     
     public Position getCursorAsLSPPosition() {

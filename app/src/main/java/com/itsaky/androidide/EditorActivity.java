@@ -954,11 +954,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         int pos = index;
         final List<Fragment> frags = mPagerAdapter.getFragments();
         final List<File> files = mPagerAdapter.getOpenedFiles();
-
+        
+        final EditorFragment editorFragment = mPagerAdapter.getFrag(index);
         final File removed = files.get(index);
 
         frags.remove(index);
         files.remove(index);
+        
+        if(editorFragment != null && editorFragment.getEditor() != null) {
+            editorFragment.getEditor().close();
+        }
 
         mPagerAdapter = new EditorPagerAdapter(getSupportFragmentManager(), mProject, frags, files);
         mBinding.editorViewPager.setAdapter(mPagerAdapter);

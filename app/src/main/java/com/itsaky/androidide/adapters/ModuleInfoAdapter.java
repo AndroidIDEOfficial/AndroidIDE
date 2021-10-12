@@ -1,5 +1,6 @@
 package com.itsaky.androidide.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import com.itsaky.androidide.databinding.LayoutModuleInfoItemBinding;
 import com.itsaky.androidide.models.project.IDEModule;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ModuleInfoAdapter extends RecyclerView.Adapter<ModuleInfoAdapter.VH> {
     
@@ -26,11 +28,12 @@ public class ModuleInfoAdapter extends RecyclerView.Adapter<ModuleInfoAdapter.VH
     }
 
     @Override
+    @SuppressLint("SetTextI18n")
     public void onBindViewHolder(ModuleInfoAdapter.VH p1, int p2) {
         final IDEModule module = modules.get(p2);
         final LayoutModuleInfoItemBinding binding = p1.binding;
         final Context ctx = binding.getRoot().getContext();
-        binding.moduleName.setText(module.displayName.substring(0, 1).toUpperCase() + module.displayName.substring(1));
+        binding.moduleName.setText(module.displayName.substring(0, 1).toUpperCase(Locale.US) + module.displayName.substring(1));
         
         SpannableStringBuilder summaryBuilder = new SpannableStringBuilder();
         if(!module.isLibrary) {
