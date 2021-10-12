@@ -7,10 +7,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.nio.channels.AsynchronousServerSocketChannel;
-import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.Channels;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
@@ -26,7 +24,7 @@ public class LSPClientLauncher extends Thread {
     private Future<Void> listeningFuture;
     private final AbstractLanguageClient languageClient;
 
-    private AsynchronousServerSocketChannel serverSocket;
+    private ServerSocket serverSocket;
     private IDELanguageServer server;
 
     public LSPClientLauncher(AbstractLanguageClient client, int port) {
@@ -56,14 +54,13 @@ public class LSPClientLauncher extends Thread {
     public void run() {
         try { 
             languageClient.connectionReport("Starting server socket");
-            serverSocket = AsynchronousServerSocketChannel.open();
-            serverSocket.bind(new InetSocketAddress(PORT));
+            serverSocket = new ServerSocket(PORT);
             languageClient.connectionReport("Waiting for server to connect...");
             languageClient.startServer();
 
-            final AsynchronousSocketChannel server = serverSocket.accept().get();
-            final OutputStream outWriter = new OutputStreamWrapper(Channels.newOutputStream(server));
-            final InputStream inReader   = Channels.newInputStream(server);
+            final Socket server = serverSocket.accept();
+            final OutputStream outWriter = new OutputStreamWrapper(server.getOutputStream());
+            final InputStream inReader   = server.getInputStream();
             languageClient.connectionReport("Server connected. Launching client...");
             
             Launcher<IDELanguageServer> launcher = createClientLauncher(languageClient, inReader, outWriter);
@@ -133,7 +130,12 @@ public class LSPClientLauncher extends Thread {
         public void write(int p1) throws IOException {
             // Not needed
         }
-
+        
+        
+        /**
+         * LSP4J always calls this method to write to server.
+         * See https://github.com/eclipse/lsp4j/blob/253aef9a702659f2524ecefaab7e829278c2ffd3/org.eclipse.lsp4j.jsonrpc/src/main/java/org/eclipse/lsp4j/jsonrpc/json/StreamMessageConsumer.java#L67
+         */
         @Override
         public void write(byte[] b) throws IOException {
             // Do not call super.write(b);
