@@ -34,8 +34,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java9.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java9.util.concurrent.CompletableFuture;
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
@@ -49,6 +51,8 @@ import org.eclipse.lsp4j.ShowDocumentParams;
 import org.eclipse.lsp4j.ShowDocumentResult;
 import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SignatureInformation;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
@@ -123,6 +127,29 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
         if(editor != null) {
             editor.getEditor().setSemanticHighlights(highlights);
         }
+    }
+    
+    public void showCodeActions(List<Either<Command, CodeAction>> actions) {
+        final String[] titles = new String[actions.size()];
+        
+        int i=0;
+        for(Either<Command, CodeAction> either : actions) {
+            if(either.isLeft()) {
+                titles[i] = "[Command] " + either.getLeft().getTitle();
+            } else if(either.isRight()) {
+                titles[i] = "[Action] " + either.getRight().getTitle();
+            }
+            ++i;
+        }
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+        builder.setTitle(R.string.msg_code_actions);
+        builder.setItems(titles, null);
+        builder.show();
+    }
+    
+    public void hideCodeActions() {
+        if(activity() == null) return;
+        
     }
     
     public void showDiagnostic(Diagnostic diagnostic, final CodeEditor editor) {
@@ -429,7 +456,7 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
     public DiagnosticsAdapter newDiagnosticsAdapter() {
         return new DiagnosticsAdapter(mapAsGroup(this.diagnostics), activity());
     }
-
+    
     /**
      * Reports connection progress
      */

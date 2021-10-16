@@ -48,15 +48,15 @@
 		android:layout_below="@id/item"
         android:paddingStart="16dp"
         android:clipChildren="false"
-        android:clipToPadding="false"
-        tools:ignore="ScrollViewSize">
+        android:clipToPadding="false">
 
 		<androidx.recyclerview.widget.RecyclerView
 			android:id="@+id/items"
 			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
 			android:paddingStart="8dp"
-			android:paddingEnd="8dp"/>
+			android:paddingEnd="8dp"
+            tools:ignore="ScrollViewSize"/>
 
 	</HorizontalScrollView>
 

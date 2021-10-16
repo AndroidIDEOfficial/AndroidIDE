@@ -7,8 +7,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.nio.channels.AsynchronousServerSocketChannel;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.Channels;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
@@ -24,7 +26,7 @@ public class LSPClientLauncher extends Thread {
     private Future<Void> listeningFuture;
     private final AbstractLanguageClient languageClient;
 
-    private ServerSocket serverSocket;
+    private AsynchronousServerSocketChannel serverSocket;
     private IDELanguageServer server;
 
     public LSPClientLauncher(AbstractLanguageClient client, int port) {
@@ -54,13 +56,14 @@ public class LSPClientLauncher extends Thread {
     public void run() {
         try { 
             languageClient.connectionReport("Starting server socket");
-            serverSocket = new ServerSocket(PORT);
+            serverSocket  = AsynchronousServerSocketChannel.open();
+            serverSocket.bind(new InetSocketAddress(PORT));
             languageClient.connectionReport("Waiting for server to connect...");
             languageClient.startServer();
 
-            final Socket server = serverSocket.accept();
-            final OutputStream outWriter = new OutputStreamWrapper(server.getOutputStream());
-            final InputStream inReader   = server.getInputStream();
+            final AsynchronousSocketChannel server     = serverSocket.accept().get();
+            final OutputStream outWriter = new OutputStreamWrapper(Channels.newOutputStream(server));
+            final InputStream inReader   = Channels.newInputStream(server);
             languageClient.connectionReport("Server connected. Launching client...");
             
             Launcher<IDELanguageServer> launcher = createClientLauncher(languageClient, inReader, outWriter);
@@ -70,13 +73,16 @@ public class LSPClientLauncher extends Thread {
             languageClient.onServerConnected(this.server);
             languageClient.connectionReport("Server is now listening.");
 
-            while (!(listeningFuture.isCancelled() || listeningFuture.isDone())) {
-                // Take some rest
-                sleep(50);
+            try {
+                LOG.info("Waiting for server connection result");
+                listeningFuture.get();
+                LOG.info("listeningFuture.get returned");
+            } catch (Throwable th) {
+                LOG.error("listeningFuture.get error", th);
             }
             
             // Make sure we close the server. Sockets are limited resources...
-            CloseUtils.closeIOQuietly(inReader, outWriter, server);
+            CloseUtils.closeIOQuietly(serverSocket, server, outWriter, inReader);
             languageClient.connectionReport("Server disconnected.");
             languageClient.onServerDisconnected();
         } catch (Throwable th) {
@@ -103,6 +109,9 @@ public class LSPClientLauncher extends Thread {
                 server.exit();
             }
             serverSocket.close();
+            if(listeningFuture != null && !listeningFuture.isDone()) {
+                listeningFuture.cancel(true);
+            }
         } catch (Throwable th) {
             // Ignored
         }
@@ -113,15 +122,17 @@ public class LSPClientLauncher extends Thread {
      * Writing to a socket's output stream is considered as network operation
      * Trying to write to a socket on UI Thread will result in NetworkOnMainThreadExeption
      */
-
     private class OutputStreamWrapper extends OutputStream {
         
         private final AsyncWriter writer;
         private final Thread writerThread;
         
+        private final OutputStream actualStream;
+        
         public OutputStreamWrapper(OutputStream actualStream) {
             this.writer = new AsyncWriter(actualStream);
             this.writerThread = new Thread(writer);
+            this.actualStream = actualStream;
             
             this.writerThread.start();
         }
@@ -133,11 +144,11 @@ public class LSPClientLauncher extends Thread {
         
         
         /**
-         * LSP4J always calls this method to write to server.
+         * LSP4J always calls this method to write to remote proxy.
          * See https://github.com/eclipse/lsp4j/blob/253aef9a702659f2524ecefaab7e829278c2ffd3/org.eclipse.lsp4j.jsonrpc/src/main/java/org/eclipse/lsp4j/jsonrpc/json/StreamMessageConsumer.java#L67
          */
         @Override
-        public void write(byte[] b) throws IOException {
+        public void write(final byte[] b) throws IOException {
             // Do not call super.write(b);
             // If done, it will further call write(int)
             this.writer.write(b);
@@ -177,7 +188,7 @@ public class LSPClientLauncher extends Thread {
                     this.out.write(data.data);
                     this.out.flush();
                 } catch (Throwable e) {
-                    LOG.error("Error writing to LanguageServer");
+                    LOG.error("Error writing to LanguageServer[closed=" + closed + "]", e);
                 }
             }
             
@@ -186,8 +197,8 @@ public class LSPClientLauncher extends Thread {
 
         @Override
         public void close() throws IOException {
-            this.closed = true;
             this.out.close();
+            this.closed = true;
         }
 
         class Writable {

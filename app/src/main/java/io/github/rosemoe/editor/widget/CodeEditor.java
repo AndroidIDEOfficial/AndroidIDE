@@ -67,6 +67,7 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
 import com.itsaky.androidide.lsp.AbstractLanguageClient;
 import com.itsaky.androidide.lsp.LSPProvider;
+import com.itsaky.androidide.lsp.providers.CodeActionProvider;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.Symbols;
@@ -103,7 +104,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java9.util.concurrent.CompletableFuture;
+import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionOptions;
+import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.DefinitionOptions;
 import org.eclipse.lsp4j.DefinitionParams;
@@ -276,6 +279,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private EditorLanguage mLanguage;
     private IDELanguageServer mLanguageServer;
     private AbstractLanguageClient mLanguageClient;
+    private CodeActionProvider mCodeActionProvider;
     private long mLastMakeVisible = 0;
     private EditorAutoCompleteWindow mCompletionWindow;
     private EditorTouchEventHandler mEventHandler;
@@ -560,6 +564,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         setFocusableInTouchMode(true);
         mConnection = new EditorInputConnection(this);
         mCompletionWindow = new EditorAutoCompleteWindow(this);
+        mCodeActionProvider = new CodeActionProvider();
         
         mVerticalEdgeGlow = new MaterialEdgeEffect();
         mHorizontalGlow = new MaterialEdgeEffect();
@@ -1478,7 +1483,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                     drawWhitespaces(canvas, paintingOffset, row, firstVisibleChar, lastVisibleChar, trailingWhitespaceStart, columnCount, circleRadius);
                 }
             }
-
+            
             // Draw composing text underline
             if (line == mConnection.mComposingLine) {
                 int composingStart = mConnection.mComposingStart;
@@ -4820,8 +4825,45 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
     }
     
+    /**
+     * Request code actions from server at the given position containing given diagnostics
+     * <p>
+     * Called by {@link EditorTouchEventHandler}
+     * <p>
+     * TODO The current implementation in JLS does not work. Make it work!
+     */
+    public void requestCodeActions() {
+        if(mLanguageServer == null && mLanguageClient == null) return;
+        
+        final List<Diagnostic> diagnostics = findDiagnosticsContainingLine(getCursor().getLeftLine());
+        final CompletableFuture<List<Either<Command, CodeAction>>> future = mCodeActionProvider.codeActions(mLanguageServer, getDocumentIdentifier(), getCursorRange(), diagnostics);
+        
+        if(future == null) {
+            return;
+        }
+        
+        future.whenComplete((l, t) -> {
+            final List<Either<Command, CodeAction>> actions = l;
+            final Throwable th = t;
+            
+            if(future.isCancelled() || future.isCompletedExceptionally() || actions == null || actions.isEmpty()) {
+                mLanguageClient.hideCodeActions();
+                return;
+            }
+            
+            mLanguageClient.showCodeActions(actions);
+        });
+    }
+    
     public Position getCursorAsLSPPosition() {
         return new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
+    }
+    
+    public Range getCursorRange() {
+        final Cursor cursor = getCursor();
+        final Position start = new Position(cursor.getLeftLine(), cursor.getLeftColumn());
+        final Position end = new Position(cursor.getRightLine(), cursor.getRightColumn());
+        return new Range(start, end);
     }
     
     public TextDocumentIdentifier getDocumentIdentifier() {
