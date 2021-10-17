@@ -36,10 +36,6 @@ public class ShellServer extends Thread {
         ProcessBuilder processBuilder = new ProcessBuilder(new String[]{command});
         processBuilder.directory(new File(dirPath));
         processBuilder.redirectErrorStream(redirectErrors);
-        
-        if(!redirectErrors)
-            processBuilder.redirectError(new File("/sdcard/ide_xlog/process_error.txt"));
-            
         processBuilder.environment().putAll(Environment.getEnvironment(false));
         try {
             this.process = processBuilder.start();

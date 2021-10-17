@@ -2,7 +2,7 @@ package com.itsaky.androidide.lsp.client.java;
 
 import com.itsaky.androidide.lsp.AbstractLanguageClient;
 import java.util.List;
-import java9.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
 import org.eclipse.lsp4j.ApplyWorkspaceEditResponse;
 import org.eclipse.lsp4j.ConfigurationParams;

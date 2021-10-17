@@ -1,21 +1,15 @@
 package com.itsaky.androidide.lsp;
 
-import com.blankj.utilcode.util.CloseUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.services.IDELanguageServer;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.nio.channels.AsynchronousServerSocketChannel;
-import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.Channels;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Future;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
-import java.util.Objects;
 
 /**
  * Launches a client for a Language server and handles connection.
@@ -167,5 +161,5 @@ public abstract class LSPClientLauncher extends Thread {
         }
     }
 
-    private static final Logger LOG = Logger.instance("LSPClientLauncher");
+    protected static final Logger LOG = Logger.instance("LSPClientLauncher");
 }

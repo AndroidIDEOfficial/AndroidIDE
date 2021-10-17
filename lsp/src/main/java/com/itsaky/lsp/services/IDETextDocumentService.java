@@ -1,7 +1,7 @@
 package com.itsaky.lsp.services;
 
 import java.util.List;
-import java9.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture;
 
 import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.SemanticHighlightsParams;

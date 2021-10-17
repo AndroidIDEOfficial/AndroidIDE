@@ -145,6 +145,9 @@ dependencies {
     implementation project(':javapoet')
     implementation project(':lsp')
     
+    // LSP4J
+    implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.12.0'
+    
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	
 	coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'

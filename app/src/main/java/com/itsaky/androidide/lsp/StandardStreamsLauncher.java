@@ -2,6 +2,8 @@ package com.itsaky.androidide.lsp;
 
 import com.blankj.utilcode.util.CloseUtils;
 import com.itsaky.lsp.services.IDELanguageServer;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Future;
@@ -16,8 +18,8 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
     
     public StandardStreamsLauncher(AbstractLanguageClient client, InputStream in, OutputStream out) {
         super(client);
-        this.in = in;
-        this.out = out;
+        this.in = new BufferedInputStream( in );
+        this.out = new BufferedOutputStream( out );
     }
 
     @Override
@@ -32,6 +34,7 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
         try {
             listening.get();
         } catch (Throwable th) {
+            LOG.error("listening.get error", th);
         }
         
         shutdown();
