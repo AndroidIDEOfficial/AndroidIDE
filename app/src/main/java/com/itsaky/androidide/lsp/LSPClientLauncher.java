@@ -15,25 +15,22 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
+import java.util.Objects;
 
 /**
  * Launches a client for a Language server and handles connection.
  * A callback is sent to the IDELanguageClient to tell the client to start the server if necessary.
  */
-public class LSPClientLauncher extends Thread {
-
-    private final int PORT;
-    private Future<Void> listeningFuture;
-    private final AbstractLanguageClient languageClient;
-
-    private AsynchronousServerSocketChannel serverSocket;
-    private IDELanguageServer server;
-
-    public LSPClientLauncher(AbstractLanguageClient client, int port) {
-        this.languageClient = client;
-        this.PORT = port;
-
+public abstract class LSPClientLauncher extends Thread {
+    
+    protected final AbstractLanguageClient languageClient;
+    protected IDELanguageServer server;
+    
+    public LSPClientLauncher(AbstractLanguageClient client) {
+        Objects.requireNonNull(client);
         setDaemon(true);
+        
+        this.languageClient = client;
     }
 
     /**
@@ -42,7 +39,7 @@ public class LSPClientLauncher extends Thread {
      * @return The LanguageServer or {@code null}
      */
     public IDELanguageServer getServer() {
-        return server;
+        return this.server;
     }
 
     /**
@@ -51,46 +48,23 @@ public class LSPClientLauncher extends Thread {
     public boolean isConnected() {
         return languageClient != null && languageClient.isConnected();
     }
+    
+    /**
+     * Actual logic to start the server
+     */
+    protected abstract void launch() throws Exception;
 
     @Override
     public void run() {
-        try { 
-            languageClient.connectionReport("Starting server socket");
-            serverSocket  = AsynchronousServerSocketChannel.open();
-            serverSocket.bind(new InetSocketAddress(PORT));
-            languageClient.connectionReport("Waiting for server to connect...");
-            languageClient.startServer();
-
-            final AsynchronousSocketChannel server     = serverSocket.accept().get();
-            final OutputStream outWriter = new OutputStreamWrapper(Channels.newOutputStream(server));
-            final InputStream inReader   = Channels.newInputStream(server);
-            languageClient.connectionReport("Server connected. Launching client...");
-            
-            Launcher<IDELanguageServer> launcher = createClientLauncher(languageClient, inReader, outWriter);
-            listeningFuture = launcher.startListening();
-            
-            this.server = launcher.getRemoteProxy();
-            languageClient.onServerConnected(this.server);
-            languageClient.connectionReport("Server is now listening.");
-
-            try {
-                LOG.info("Waiting for server connection result");
-                listeningFuture.get();
-                LOG.info("listeningFuture.get returned");
-            } catch (Throwable th) {
-                LOG.error("listeningFuture.get error", th);
-            }
-            
-            // Make sure we close the server. Sockets are limited resources...
-            CloseUtils.closeIOQuietly(serverSocket, server, outWriter, inReader);
-            languageClient.connectionReport("Server disconnected.");
-            languageClient.onServerDisconnected();
+        try {
+            launch();
         } catch (Throwable th) {
+            LOG.error("Connection error", th);
             languageClient.connectionError(th);
         }
     }
     
-    private Launcher<IDELanguageServer> createClientLauncher(AbstractLanguageClient client, InputStream in, OutputStream out) {
+    protected Launcher<IDELanguageServer> createClientLauncher(AbstractLanguageClient client, InputStream in, OutputStream out) {
         return new Launcher.Builder<IDELanguageServer> ()
             .setLocalService(client)
             .setRemoteInterface(IDELanguageServer.class)
@@ -102,27 +76,14 @@ public class LSPClientLauncher extends Thread {
     /**
      * Shut down the language server
      */
-    public void shutdown() {
-        try {
-            if (this.server != null) {
-                server.shutdown();
-                server.exit();
-            }
-            serverSocket.close();
-            if(listeningFuture != null && !listeningFuture.isDone()) {
-                listeningFuture.cancel(true);
-            }
-        } catch (Throwable th) {
-            // Ignored
-        }
-    }
+    public abstract void shutdown();
 
     /**
      * Wraps an output stream to make sure that we don't write on UI Thread
      * Writing to a socket's output stream is considered as network operation
      * Trying to write to a socket on UI Thread will result in NetworkOnMainThreadExeption
      */
-    private class OutputStreamWrapper extends OutputStream {
+    protected class OutputStreamWrapper extends OutputStream {
         
         private final AsyncWriter writer;
         private final Thread writerThread;
@@ -187,12 +148,8 @@ public class LSPClientLauncher extends Thread {
                     Writable data = writeQueue.take();
                     this.out.write(data.data);
                     this.out.flush();
-                } catch (Throwable e) {
-                    LOG.error("Error writing to LanguageServer[closed=" + closed + "]", e);
-                }
+                } catch (Throwable e) { }
             }
-            
-            LOG.info("Writer thread stopped");
         }
 
         @Override

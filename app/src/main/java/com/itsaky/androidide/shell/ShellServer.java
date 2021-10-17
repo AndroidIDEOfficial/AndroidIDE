@@ -8,18 +8,18 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Map;
 
 public class ShellServer extends Thread {
+    
     private final List<Callback> callbacks = Collections.synchronizedList(new ArrayList<Callback>());
     private BufferedReader output;
     private Process process;
@@ -27,10 +27,19 @@ public class ShellServer extends Thread {
     private static final Logger LOG = Logger.instance("ShellServer");
     
     public ShellServer(Callback callback, String command, String dirPath) {
+        this(callback, command, dirPath, true);
+    }
+    
+    public ShellServer(Callback callback, String command, String dirPath, boolean redirectErrors) {
         addCallback(callback);
+        
         ProcessBuilder processBuilder = new ProcessBuilder(new String[]{command});
         processBuilder.directory(new File(dirPath));
-		processBuilder.redirectErrorStream(true);
+        processBuilder.redirectErrorStream(redirectErrors);
+        
+        if(!redirectErrors)
+            processBuilder.redirectError(new File("/sdcard/ide_xlog/process_error.txt"));
+            
         processBuilder.environment().putAll(Environment.getEnvironment(false));
         try {
             this.process = processBuilder.start();
@@ -60,6 +69,14 @@ public class ShellServer extends Thread {
             }
         }
         return pid;
+    }
+    
+    public InputStream getProcessInputStream() {
+        return process.getInputStream();
+    }
+    
+    public OutputStream getProcessOutputStream() {
+        return process.getOutputStream();
     }
 
     public ShellServer addCallback(Callback callback) {
@@ -153,4 +170,26 @@ public class ShellServer extends Thread {
 	public interface Callback {
 		public void output(CharSequence charSequence);
 	}
+    
+    class ErrorReader implements Runnable {
+        
+        private final InputStream error;
+
+        public ErrorReader(InputStream error) {
+            this.error = error;
+        }
+        
+        @Override
+        public void run() {
+            try {
+                final BufferedReader r = new BufferedReader(new InputStreamReader(error));
+                String line = "";
+                while((line = r.readLine()) != null) {
+                    LOG.info("Error stream", line);
+                }
+            } catch (Throwable th) {
+                LOG.error("Cannot read error stream");
+            }
+        }
+    }
 }

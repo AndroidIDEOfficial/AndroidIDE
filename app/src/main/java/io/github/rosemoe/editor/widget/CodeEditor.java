@@ -884,7 +884,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         
         ServerCapabilities c = LSPProvider.getServerCapabilitiesForLanguage(mLanguage.getLanguageCode());
         if(c == null) {
-            mCodeActionsEnabled = mGotoDefinitionEnabled = mFindReferencesEnabled = false;
+            mAutoCompletionEnabled = mCodeActionsEnabled = mGotoDefinitionEnabled = mFindReferencesEnabled = false;
             return;
         }
         

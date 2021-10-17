@@ -108,7 +108,7 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
      * Called when the ServerSocket is started. At this point, the {@link LSPClient} waits for the server to connect. <br>
      * This is (probably) the proper time to start your language server as ServerSocket is waiting for a client to connect.
      */
-    protected void startServer() {
+    protected void startServerViaCommand() {
         if (this.starterListener != null) {
             starterListener.startServer();
         }
@@ -460,12 +460,16 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
     /**
      * Reports connection progress
      */
-    protected void connectionReport(String message) {}
+    protected void connectionReport(String message) {
+        LOG.info("LSP Connection report", message);
+    }
 
     /**
      * Called when there was an error connecting to server.
      */
-    protected void connectionError(Throwable th) {}
+    protected void connectionError(Throwable th) {
+        LOG.error("LSP connection error", th);
+    }
 
     public static interface StarterListener {
         void startServer();
