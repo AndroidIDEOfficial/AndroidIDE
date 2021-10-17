@@ -3,7 +3,7 @@ package com.itsaky.androidide.lsp.providers;
 import com.itsaky.lsp.services.IDELanguageServer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java9.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionContext;
 import org.eclipse.lsp4j.CodeActionParams;
