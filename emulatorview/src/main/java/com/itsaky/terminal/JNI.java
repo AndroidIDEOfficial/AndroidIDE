@@ -1,7 +1,7 @@
 package com.itsaky.terminal;
 
 /**
- * Native methods for creating and managing pseudoterminal subprocesses. C code is in jni/termux.c.
+ * Native methods for creating and managing pseudoterminal subprocesses.
  */
 final class JNI {
 

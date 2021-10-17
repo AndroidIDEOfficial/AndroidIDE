@@ -86,6 +86,22 @@ public final class Environment {
         BUSYBOX = new File(BINDIR, "busybox");
         SHELL = new File(BINDIR, "sh.sh");
         
+        if(!GRADLE.canExecute()) {
+            GRADLE.setExecutable(true);
+        }
+        
+        if(!JAVA.canExecute()) {
+            JAVA.setExecutable(true);
+        }
+        
+        if(!BUSYBOX.canExecute()) {
+            BUSYBOX.setExecutable(true);
+        }
+        
+        if(!SHELL.canExecute()) {
+            SHELL.setExecutable(true);
+        }
+        
         System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
 	}
     
@@ -124,7 +140,7 @@ public final class Environment {
         map.put("LC_ALL", "en_US.UTF-8");
         
         if(!publicUse) {
-            // These environment variables must not be provided to users
+            // These environment variables must not be accessed to users
             map.put("JLS_HOME", JLS_HOME.getAbsolutePath());
         }
         

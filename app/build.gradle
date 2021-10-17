@@ -141,7 +141,6 @@ dependencies {
 	// Local projects
     implementation project(':sdk-info')
 	implementation project(':treeview')
-    implementation project(':emulator')
     implementation project(':emulatorview')
     implementation project(':javapoet')
     implementation project(':lsp')

@@ -1,7 +1,6 @@
 include ':app'
 include ':treeview'
 include ':emulatorview'
-include ':emulator'
 include ':javapoet'
 include ':lsp'
 include ':sdk-info'
