@@ -877,6 +877,15 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     /**
+     * Get the language client attached to this Editor
+     *
+     * @return The language client currently attached
+     */
+    public AbstractLanguageClient getLanguageClient() {
+        return mLanguageClient;
+    }
+    
+    /**
      * Sets up this editor according to the capabilities of the current language server
      */
     private void setupLanguageServerCapabilities() {
@@ -4835,7 +4844,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * @return A {@link CompletableFuture}. May return {@code null}.
      */
     public CompletableFuture<List<Either<Command, CodeAction>>> requestCodeActions() {
-        if(mLanguageServer == null && mLanguageClient == null) return null;
+        if(mLanguageServer == null || mLanguageClient == null) return null;
         
         final List<Diagnostic> diagnostics = findDiagnosticsContainingLine(getCursor().getLeftLine());
         return mCodeActionProvider.codeActions(mLanguageServer, getDocumentIdentifier(), getCursorRange(), diagnostics);

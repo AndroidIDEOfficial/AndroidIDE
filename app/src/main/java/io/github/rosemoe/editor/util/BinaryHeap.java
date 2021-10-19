@@ -157,7 +157,7 @@ public class BinaryHeap {
     public void update(int id, int newValue) {
         int position = idToPosition.get(id, 0);
         if (position == 0) {
-            throw new IllegalArgumentException("trying to update with an invalid id");
+            return;
         }
         int origin = nodes[position].data;
         nodes[position].data = newValue;
@@ -177,7 +177,7 @@ public class BinaryHeap {
     public void remove(int id) {
         int position = idToPosition.get(id, 0);
         if (position == 0) {
-            throw new IllegalArgumentException("trying to remove with an invalid id");
+            return;
         }
         idToPosition.delete(id);
         //Replace removed node with last node

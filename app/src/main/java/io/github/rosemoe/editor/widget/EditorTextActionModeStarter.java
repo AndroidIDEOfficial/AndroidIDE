@@ -22,11 +22,27 @@ import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.toaster.Toaster;
 import io.github.rosemoe.editor.util.IntPair;
+import java.util.List;
+import java9.util.concurrent.CompletableFuture;
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.Command;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import android.view.View;
+import android.widget.TextView;
+import com.blankj.utilcode.util.SizeUtils;
+import java.util.stream.Collectors;
+import android.view.Gravity;
 
 /**
  * Action Mode style text action panel for editor
@@ -41,7 +57,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
     EditorTextActionModeStarter(CodeEditor editor) {
         mEditor = editor;
     }
-    
+
     @SuppressLint("RestrictedApi")
     @Override
     public void onBeginTextSelect() {
@@ -49,145 +65,253 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
             return;
         }
         mActionMode = ((AppCompatActivity) mEditor.getContext()).startSupportActionMode(new ActionMode.Callback() {
-            
-            @Override
-            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-                mEditor.mStartedActionMode = CodeEditor.ACTION_MODE_SELECT_TEXT;
-                if(menu instanceof MenuBuilder){
-                    MenuBuilder builder = (MenuBuilder) menu;
-                    builder.setOptionalIconsVisible(true);
-                }
-                actionMode.setTitle(android.R.string.selectTextMode);
-                TypedArray array = mEditor.getContext().getTheme().obtainStyledAttributes(new int[]{
-                        android.R.attr.actionModeSelectAllDrawable,
-                        android.R.attr.actionModeCutDrawable,
-                        android.R.attr.actionModeCopyDrawable,
-                        android.R.attr.actionModePasteDrawable,
-                });
-                
-                menu.add(0, 0, 0, mEditor.getContext().getString(android.R.string.selectAll))
-                    .setShowAsActionFlags(2)
-                    .setIcon(array.getDrawable(0));
 
-                if(mEditor.isEditable()) {
-                    menu.add(0, 1, 0, mEditor.getContext().getString(android.R.string.cut))
+                private List<Either<Command, CodeAction>> fixes;
+
+                @Override
+                public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                    mEditor.mStartedActionMode = CodeEditor.ACTION_MODE_SELECT_TEXT;
+                    if (menu instanceof MenuBuilder) {
+                        MenuBuilder builder = (MenuBuilder) menu;
+                        builder.setOptionalIconsVisible(true);
+                    }
+                    actionMode.setTitle(android.R.string.selectTextMode);
+                    TypedArray array = mEditor.getContext().getTheme().obtainStyledAttributes(new int[]{
+                                                                                                  android.R.attr.actionModeSelectAllDrawable,
+                                                                                                  android.R.attr.actionModeCutDrawable,
+                                                                                                  android.R.attr.actionModeCopyDrawable,
+                                                                                                  android.R.attr.actionModePasteDrawable,
+                                                                                              });
+
+                    final CompletableFuture<List<Either<Command, CodeAction>>> future = mEditor.requestCodeActions();
+
+                    if (future != null) {
+
+                        future.whenComplete((a, b) -> {
+                            fixes = a;
+                        });
+
+                        menu.add(0, 8, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.msg_code_actions))
+                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
+                            .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_quickfix));
+                    }
+
+                    menu.add(0, 0, 0, mEditor.getContext().getString(android.R.string.selectAll))
                         .setShowAsActionFlags(2)
-                        .setIcon(array.getDrawable(1));
-                }
+                        .setIcon(array.getDrawable(0));
 
-                menu.add(0, 2, 0, mEditor.getContext().getString(android.R.string.copy))
-                    .setShowAsActionFlags(2)
-                    .setIcon(array.getDrawable(2));
-                    
-                if(mEditor.isEditable()) {
-                    menu.add(0, 3, 0, mEditor.getContext().getString(android.R.string.paste))
+                    if (mEditor.isEditable()) {
+                        menu.add(0, 1, 0, mEditor.getContext().getString(android.R.string.cut))
+                            .setShowAsActionFlags(2)
+                            .setIcon(array.getDrawable(1));
+                    }
+
+                    menu.add(0, 2, 0, mEditor.getContext().getString(android.R.string.copy))
                         .setShowAsActionFlags(2)
-                        .setIcon(array.getDrawable(3));
-                }
-                
-                if(mEditor.isGotoDefinitionEnabled()) {
-                    menu.add(0, 4, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_definition))
+                        .setIcon(array.getDrawable(2));
+
+                    if (mEditor.isEditable()) {
+                        menu.add(0, 3, 0, mEditor.getContext().getString(android.R.string.paste))
+                            .setShowAsActionFlags(2)
+                            .setIcon(array.getDrawable(3));
+                    }
+
+                    if (mEditor.isGotoDefinitionEnabled()) {
+                        menu.add(0, 4, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_definition))
+                            .setShowAsActionFlags(1)
+                            .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_goto_definition));
+                    }
+
+                    if (mEditor.isFindReferencesEnabled()) {
+                        menu.add(0, 5, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_references))
+                            .setShowAsActionFlags(1)
+                            .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_find_references));
+                    }
+
+                    menu.add(0, 6, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_comment_line))
                         .setShowAsActionFlags(1)
-                        .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_goto_definition));
-                }
-                    
-                if(mEditor.isFindReferencesEnabled()) {
-                    menu.add(0, 5, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_references))
+                        .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_comment_line));
+
+                    menu.add(0, 7, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_uncomment_line))
                         .setShowAsActionFlags(1)
-                        .setIcon(createDrawable( com.itsaky.androidide.R.drawable.ic_find_references));
+                        .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_uncomment_line));
+
+                    array.recycle();
+                    return true;
                 }
+
+                private Drawable createDrawable(int icon) {
+                    final Drawable d = ContextCompat.getDrawable(mEditor.getContext(), icon);
+                    d.setColorFilter(ContextCompat.getColor(mEditor.getContext(), com.itsaky.androidide.R.color.secondaryColor), PorterDuff.Mode.SRC_ATOP);
+                    return d;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                    if (mEditor.getFile() == null) return false;
+
+                    final String name = mEditor.getFile().getName();
+                    final boolean isJava = name.endsWith(".java") || name.endsWith(".gradle");
+                    final boolean isXml = name.endsWith(".xml");
+                    final MenuItem def = menu.findItem(4);
+                    final MenuItem ref = menu.findItem(5);
+                    final MenuItem comment = menu.findItem(6);
+                    final MenuItem uncomment = menu.findItem(7);
+                    final MenuItem quickfix = menu.findItem(8);
+
+                    comment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
+                    uncomment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
+
+                    /**
+                     * Thesw menu items may, or may not be added
+                     * So we need to check if its null or not
+                     * before we perform any further actions
+                     */
+                    if (def != null) {
+                        def.getIcon().setAlpha(isJava ? 255 : 76);
+                        def.setVisible(isJava);
+                    }
+
+                    if (ref != null) {
+                        ref.getIcon().setAlpha(isJava ? 255 : 76);
+                        ref.setVisible(isJava);
+                    }
+
+                    if (quickfix != null) {
+                        quickfix.getIcon().setAlpha(isJava ? 255 : 76);
+                        quickfix.setVisible(isJava && fixes != null && !fixes.isEmpty());
+                    }
+
+                    return true;
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case 0:
+                            mEditor.selectAll();
+                            break;
+                        case 1:
+                            mEditor.cutText();
+                            break;
+                        case 2:
+                            mEditor.copyText();
+                            break;
+                        case 3:
+                            mEditor.pasteText();
+                            break;
+                        case 4:
+                            mEditor.findDefinition();
+                            break;
+                        case 5:
+                            mEditor.findReferences();
+                            break;
+                        case 6:
+                            mEditor.commentLine();
+                            break;
+                        case 7:
+                            mEditor.uncommentLine();
+                            break;
+                        case 8 :
+                            if (fixes == null || fixes.isEmpty()) {
+                                StudioApp.getInstance().toast(com.itsaky.androidide.R.string.msg_no_code_actions, Toaster.Type.INFO);
+                                break;
+                            }
+                            showFixes();
+                            break;
+                    }
+
+                    if (menuItem.getItemId() != 0) {
+                        onExit();
+                    }
+                    return false;
+                }
+
+                @Override
+                public void onDestroyActionMode(ActionMode actionMode) {
+                    mEditor.mStartedActionMode = CodeEditor.ACTION_MODE_NONE;
+                    mActionMode = null;
+                    mEditor.setSelection(mEditor.getCursor().getLeftLine(), mEditor.getCursor().getLeftColumn());
+                }
+
+                void showFixes() {
+                    final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(mEditor.getContext(), com.itsaky.androidide.R.style.AppTheme_MaterialAlertDialog);
+                    builder.setTitle(com.itsaky.androidide.R.string.msg_code_actions);
+                    builder.setView(createFixesListView());
+                    builder.show();
+                }
+
+                ListView createFixesListView() {
+                    final ListView list = new ListView(mEditor.getContext());
+                    final QuickFixAdapter adapter = new QuickFixAdapter(
+                        fixes.stream()
+                            .filter(e -> e != null && e.isRight())
+                            .map(e -> e.getRight())
+                            .collect(Collectors.toList())
+                        );
+                    list.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    list.setAdapter(adapter);
+                    list.setOnItemClickListener((a, b, c, d) -> {
+                        performCodeAction(adapter.getItem(c));
+                    });
+                    return list;
+                }
+
+                class QuickFixAdapter extends BaseAdapter {
                     
-                menu.add(0, 6, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_comment_line))
-                    .setShowAsActionFlags(1)
-                    .setIcon(createDrawable( com.itsaky.androidide.R.drawable.ic_comment_line));
+                    private final List<CodeAction> actions;
+                    private final int dp16 = SizeUtils.dp2px(16);
+                    private final int dp4 = SizeUtils.dp2px(4);
+                    private final int dp48 = SizeUtils.dp2px(48);
                     
-                menu.add(0, 7, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_uncomment_line))
-                    .setShowAsActionFlags(1)
-                    .setIcon(createDrawable( com.itsaky.androidide.R.drawable.ic_uncomment_line));
-                      
-                array.recycle();
-                return true;
-            }
-
-            private Drawable createDrawable(int icon) {
-                final Drawable d = ContextCompat.getDrawable(mEditor.getContext(), icon);
-                d.setColorFilter(ContextCompat.getColor(mEditor.getContext(), com.itsaky.androidide.R.color.secondaryColor), PorterDuff.Mode.SRC_ATOP);
-                return d;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-                if(mEditor.getFile() == null) return false;
-                
-                final String name = mEditor.getFile().getName();
-                final boolean isJava = name.endsWith(".java") || name.endsWith(".gradle");
-                final boolean isXml = name.endsWith(".xml");
-                final MenuItem def = menu.findItem(4);
-                final MenuItem ref = menu.findItem(5);
-                final MenuItem comment = menu.findItem(6);
-                final MenuItem uncomment = menu.findItem(7);
-                
-                comment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
-                uncomment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
-                
-                /**
-                 * Thesw menu items may, or may not be added
-                 * So we need to check if its null or not
-                 * before we perform any further actions
-                 */
-                if(def != null) {
-                    def.setEnabled(isJava).getIcon().setAlpha(isJava ? 255 : 76);
-                }
-                
-                if(ref != null) {
-                    ref.setEnabled(isJava).getIcon().setAlpha(isJava ? 255 : 76);
-                }
+                    public QuickFixAdapter(List<CodeAction> actions) {
+                        this.actions = actions;
+                    }
                     
-                return true;
-            }
+                    @Override
+                    public int getCount() {
+                        return actions.size();
+                    }
+                    
+                    @Override
+                    public CodeAction getItem(int position) {
+                        return actions.get(position);
+                    }
+                    
+                    @Override
+                    public long getItemId(int position) {
+                        return position;
+                    }
+                    
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        if(convertView == null) {
+                            convertView = createItemTextView(position, parent);
+                        }
+                        return convertView;
+                    }
 
-            @Override
-            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case 0:
-                        mEditor.selectAll();
-                        break;
-                    case 1:
-                        mEditor.cutText();
-                        break;
-                    case 2:
-                        mEditor.copyText();
-                        break;
-                    case 3:
-                        mEditor.pasteText();
-                        break;
-                    case 4:
-                        mEditor.findDefinition();
-                        break;
-                    case 5:
-                        mEditor.findReferences();
-                        break;
-                    case 6:
-                        mEditor.commentLine();
-                        break;
-                    case 7:
-                        mEditor.uncommentLine();
-                        break;
+                    private View createItemTextView(int position, ViewGroup parent) {
+                        final CodeAction action = getItem(position);
+                        final TextView text = new TextView(parent.getContext());
+                        final String title = action.getTitle();
+                        
+                        text.setText(title);
+                        text.setPaddingRelative(dp16, dp4, dp16, dp4);
+                        text.setMinHeight(dp48);
+                        text.setGravity(Gravity.CENTER_VERTICAL);
+                        
+                        return text;
+                    }
                 }
-                if(menuItem.getItemId() != 0) {
-                    onExit();
+                
+                void performCodeAction(CodeAction action) {
+                    if(mEditor.getLanguageClient() != null) {
+                        mEditor.getLanguageClient().performCodeAction(mEditor, action);
+                    }
                 }
-                return false;
-            }
 
-            @Override
-            public void onDestroyActionMode(ActionMode actionMode) {
-                mEditor.mStartedActionMode = CodeEditor.ACTION_MODE_NONE;
-                mActionMode = null;
-                mEditor.setSelection(mEditor.getCursor().getLeftLine(), mEditor.getCursor().getLeftColumn());
-            }
-
-        });
+            });
     }
 
     @Override

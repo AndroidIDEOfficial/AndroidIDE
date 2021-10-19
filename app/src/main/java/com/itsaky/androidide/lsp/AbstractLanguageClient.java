@@ -16,16 +16,20 @@ import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
+import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.SearchResult;
+import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageClient;
 import com.itsaky.lsp.services.IDELanguageServer;
+import com.itsaky.toaster.Toaster;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
@@ -37,7 +41,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java9.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
@@ -51,8 +54,7 @@ import org.eclipse.lsp4j.ShowDocumentParams;
 import org.eclipse.lsp4j.ShowDocumentResult;
 import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SignatureInformation;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import org.eclipse.lsp4j.TextEdit;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
@@ -341,9 +343,43 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
                 .collect(Collectors.toList())
             );
     }
+    
+    /**
+     * Perform the given {@link CodeAction}
+     *
+     * @param editor The {@link CodeEditor} that invoked the code action request.
+     *            This is required to reduce the time finding the code action from the edits.
+     * @param action The action to perform
+     */
+    public void performCodeAction(CodeEditor editor, CodeAction action) {
+        if(activity() == null || editor == null || action == null) {
+            StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+            return;
+        }
+        
+        final ProgressSheet progress = new ProgressSheet();
+        progress.setSubMessageEnabled(false);
+        progress.setWelcomeTextEnabled(false);
+        progress.setCancelable(false);
+        progress.setMessage(activity().getString(R.string.msg_performing_fixes));
+        progress.show(activity().getSupportFragmentManager(), "quick_fix_progress");
+        
+        new TaskExecutor().executeAsyncProvideError(() -> performCodeActionAsync(editor, action), (a, b) -> {
+            final Boolean complete = a;
+            final Throwable error = b;
+            
+            progress.dismiss();
+            
+            if(complete == null || error != null || !complete.booleanValue()) {
+                StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+                LOG.error("Quickfix error", error);
+                return;
+            }
+        });
+    }
 
     /**
-     * Usually called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show a specific document in EditorActivity and select the specified range
+     * Usually called {@link CodeEditor} to show a specific document in EditorActivity and select the specified range
      */
     @Override
     public CompletableFuture<ShowDocumentResult> showDocument(ShowDocumentParams params) {
@@ -423,6 +459,58 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
             groups.add(group);
         }
         return groups;
+    }
+    
+    private Boolean performCodeActionAsync(final CodeEditor editor, final CodeAction action) {
+        final Map <String, List<TextEdit>> edits = action.getEdit().getChanges();
+        if(edits == null || edits.isEmpty()) {
+            return Boolean.FALSE;
+        }
+        
+        for(Map.Entry<String, List<TextEdit>> entry : edits.entrySet()) {
+            final File file = new File(URI.create(entry.getKey()));
+            if(!file.exists()) continue;
+
+            for(TextEdit edit : entry.getValue()) {
+                final String editorFilepath = editor.getFile() == null ? "" : editor.getFile().getAbsolutePath();
+                if(file.getAbsolutePath().equals(editorFilepath)) {
+                    // Edit is in the same editor which requested the code action
+                    editInEditor(editor, edit);
+                } else {
+                    EditorFragment openedFrag = activity().getPagerAdapter().findEditorByFile(file);
+
+                    if(openedFrag != null && openedFrag.getEditor() != null) {
+                        // Edit is in another 'opened' file
+                        editInEditor(openedFrag.getEditor(), edit);
+                    } else {
+                        // Edit is in some other file which is not opened
+                        // We should open that file and perform the edit
+                        openedFrag = activity().openFile(file);
+                        if(openedFrag != null && openedFrag.getEditor() != null) {
+                            editInEditor(openedFrag.getEditor(), edit);
+                        }
+                    }
+                }
+            }
+        }
+
+        return Boolean.TRUE;
+    }
+    
+    private void editInEditor (final CodeEditor editor, final TextEdit edit) {
+        final Range range = edit.getRange();
+        final int startLine = range.getStart().getLine();
+        final int startCol = range.getStart().getCharacter();
+        final int endLine = range.getEnd().getLine();
+        final int endCol = range.getEnd().getCharacter();
+        
+        activity().runOnUiThread(() -> {
+            if(startLine == endLine && startCol == endCol) {
+                editor.getText().insert(startLine, startCol, edit.getNewText());
+            } else {
+                editor.getText().replace(startLine, startCol, endLine, endCol, edit.getNewText());
+            }
+        });
     }
     
     public DiagnosticsAdapter newDiagnosticsAdapter() {

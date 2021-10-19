@@ -214,7 +214,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 	}
 
 	public interface FileActionListener {
-		public void openFile(File file);
+		public EditorFragment openFile(File file);
 		public void showFileOptions(File file, TreeNode node);
 	}
 }

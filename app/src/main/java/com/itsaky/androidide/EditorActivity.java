@@ -856,8 +856,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     @Override
-    public void openFile(File file) {
-        openFile(file, null);
+    public EditorFragment openFile(File file) {
+        return openFile(file, null);
     }
 
     public EditorFragment openFile(File file, org.eclipse.lsp4j.Range selection) {
@@ -865,7 +865,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         int i = mPagerAdapter.openFile(file, selection, this);
         if(i >= 0 && !mBinding.tabs.getTabAt(i).isSelected())
             mBinding.tabs.getTabAt(i).select();
-        mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
+        
+        if(mBinding.editorDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+            mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
+        }
+        
         invalidateOptionsMenu();
         try {
             return mPagerAdapter.getFrag(i);
