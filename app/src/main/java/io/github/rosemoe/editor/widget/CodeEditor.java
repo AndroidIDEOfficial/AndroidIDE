@@ -4831,28 +4831,14 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * Called by {@link EditorTouchEventHandler}
      * <p>
      * TODO The current implementation in JLS does not work. Make it work!
+     *
+     * @return A {@link CompletableFuture}. May return {@code null}.
      */
-    public void requestCodeActions() {
-        if(mLanguageServer == null && mLanguageClient == null) return;
+    public CompletableFuture<List<Either<Command, CodeAction>>> requestCodeActions() {
+        if(mLanguageServer == null && mLanguageClient == null) return null;
         
         final List<Diagnostic> diagnostics = findDiagnosticsContainingLine(getCursor().getLeftLine());
-        final CompletableFuture<List<Either<Command, CodeAction>>> future = mCodeActionProvider.codeActions(mLanguageServer, getDocumentIdentifier(), getCursorRange(), diagnostics);
-        
-        if(future == null) {
-            return;
-        }
-        
-        future.whenComplete((l, t) -> {
-            final List<Either<Command, CodeAction>> actions = l;
-            final Throwable th = t;
-            
-            if(future.isCancelled() || future.isCompletedExceptionally() || actions == null || actions.isEmpty()) {
-                mLanguageClient.hideCodeActions();
-                return;
-            }
-            
-            mLanguageClient.showCodeActions(actions);
-        });
+        return mCodeActionProvider.codeActions(mLanguageServer, getDocumentIdentifier(), getCursorRange(), diagnostics);
     }
     
     public Position getCursorAsLSPPosition() {

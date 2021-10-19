@@ -45,14 +45,14 @@ android {
     signingConfigs {
 		
         debug {
-            storeFile file("/sdcard/Android App Projects/publishKey.keystore")
+            storeFile file("/sdcard/AndroidAppProjects/publishKey.keystore")
             storePassword "itsaky"
             keyAlias "itsaky"
             keyPassword "itsaky"
         }
         
         release {
-            storeFile file("/sdcard/Android App Projects/publishKey.keystore")
+            storeFile file("/sdcard/AndroidAppProjects/publishKey.keystore")
             storePassword "itsaky"
             keyAlias "itsaky"
             keyPassword "itsaky"

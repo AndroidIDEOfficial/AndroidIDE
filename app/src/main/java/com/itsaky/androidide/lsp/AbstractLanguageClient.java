@@ -129,29 +129,6 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
         }
     }
     
-    public void showCodeActions(List<Either<Command, CodeAction>> actions) {
-        final String[] titles = new String[actions.size()];
-        
-        int i=0;
-        for(Either<Command, CodeAction> either : actions) {
-            if(either.isLeft()) {
-                titles[i] = "[Command] " + either.getLeft().getTitle();
-            } else if(either.isRight()) {
-                titles[i] = "[Action] " + either.getRight().getTitle();
-            }
-            ++i;
-        }
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
-        builder.setTitle(R.string.msg_code_actions);
-        builder.setItems(titles, null);
-        builder.show();
-    }
-    
-    public void hideCodeActions() {
-        if(activity() == null) return;
-        
-    }
-    
     public void showDiagnostic(Diagnostic diagnostic, final CodeEditor editor) {
         if(activity() == null || activity().getDiagnosticBinding() == null) {
             return;
@@ -164,11 +141,6 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
         
         final LayoutDiagnosticInfoBinding binding = activity().getDiagnosticBinding();
         binding.getRoot().setText(diagnostic.getMessage());
-        
-        TransitionSet set = new TransitionSet();
-        set.addTransition(new ChangeBounds());
-        set.addTransition(new Fade());
-        set.setDuration(DIAGNOSTIC_TRANSITION_DURATION);
         
         binding.getRoot().setVisibility(View.VISIBLE);
         
