@@ -72,6 +72,28 @@
 				android:layout_width="match_parent"
 				android:orientation="vertical">
                 
+                <HorizontalScrollView
+                    android:id="@+id/diagnostic_text_container"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:background="@color/content_background"
+                    android:fillViewport="true">
+                    
+                    <TextView
+                        android:id="@+id/diagnostic_text"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textSize="12sp"
+                        android:padding="8dp"
+                        android:textColor="@color/primaryTextColor"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="@drawable/bg_ripple"/>
+                    
+                </HorizontalScrollView>
+                
 				<TextView
 					android:id="@+id/editor_statusText"
 					android:layout_height="wrap_content"

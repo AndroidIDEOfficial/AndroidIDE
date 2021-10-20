@@ -1,15 +1,19 @@
 package com.itsaky.androidide.lsp;
 
+import android.content.DialogInterface;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import androidx.core.content.ContextCompat;
 import androidx.transition.ChangeBounds;
 import androidx.transition.Fade;
 import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
@@ -17,6 +21,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
@@ -35,12 +40,14 @@ import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java9.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
@@ -55,6 +62,11 @@ import org.eclipse.lsp4j.ShowDocumentResult;
 import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SignatureInformation;
 import org.eclipse.lsp4j.TextEdit;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import java.util.function.Consumer;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
@@ -133,6 +145,7 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
     
     public void showDiagnostic(Diagnostic diagnostic, final CodeEditor editor) {
         if(activity() == null || activity().getDiagnosticBinding() == null) {
+            hideDiagnostics();
             return;
         }
         
@@ -143,7 +156,6 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         
         final LayoutDiagnosticInfoBinding binding = activity().getDiagnosticBinding();
         binding.getRoot().setText(diagnostic.getMessage());
-        
         binding.getRoot().setVisibility(View.VISIBLE);
         
         final float[] cursor = editor.getCursorPosition();
@@ -153,7 +165,54 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         binding.getRoot().setX(x);
         binding.getRoot().setY(y);
         activity().positionViewWithinScreen(binding.getRoot(), x, y);
+    }
+
+    /**
+     * Shows the diagnostic at the bottom of the screen (just above the status text)
+     * and requests code actions from language server
+     *
+     * @param diagnostic The diagnostic to show
+     * @param editor The CodeEditor that requested
+     */
+    public void showDiagnosticAtBottom(final Diagnostic diagnostic, final CodeEditor editor) {
+        if(activity() == null || activity().getBinding() == null || diagnostic == null) {
+            hideBottomDiagnosticView();
+            return;
+        }
         
+        final ActivityEditorBinding binding = activity().getBinding();
+        binding.diagnosticTextContainer.setVisibility(View.VISIBLE);
+        binding.diagnosticText.setClickable(false);
+        binding.diagnosticText.setText(diagnostic.getMessage());
+        
+        final CompletableFuture <List<Either<Command, CodeAction>>> future = editor.codeActions(Collections.singletonList(diagnostic));
+        if(future == null) {
+            return;
+        }
+        
+        future.whenComplete((a, b) -> {
+            final Throwable error = b;
+            if(a == null || a.isEmpty()) {
+                hideBottomDiagnosticView();
+                return;
+            }
+            final List<CodeAction> actions = a.stream().filter(e -> e.isRight()).map (e -> e.getRight()).collect(Collectors.toList());
+            if(actions == null || actions.isEmpty()) {
+                hideBottomDiagnosticView();
+                return;
+            }
+            ThreadUtils.runOnUiThread(() -> {
+                final SpannableStringBuilder sb = new SpannableStringBuilder();
+                sb.append(activity().getString(R.string.msg_fix_diagnostic), new ForegroundColorSpan(ContextCompat.getColor(activity(), R.color.secondaryColor)), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(" ");
+                sb.append(diagnostic.getMessage());
+                binding.diagnosticText.setText(sb);
+                binding.diagnosticText.setClickable(true);
+                binding.diagnosticText.setOnClickListener(v -> {
+                    showAvailableQuickfixes(editor, actions);
+                });
+            });
+        });
     }
     
     public void hideDiagnostics() {
@@ -165,8 +224,15 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         set.addTransition(new ChangeBounds());
         set.addTransition(new Fade());
         set.setDuration(DIAGNOSTIC_TRANSITION_DURATION);
-        
+    }
+
+    private void hideBottomDiagnosticView() {
+        if(activity() == null || activity().getBinding() == null || activity().getDiagnosticBinding() == null) {
+            return;
+        }
         activity().getDiagnosticBinding().getRoot().setVisibility(View.GONE);
+        activity().getBinding().diagnosticTextContainer.setVisibility(View.GONE);
+        activity().getBinding().diagnosticText.setClickable(false);
     }
     
     /**
@@ -459,6 +525,29 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
             groups.add(group);
         }
         return groups;
+    }
+    
+    private void showAvailableQuickfixes (CodeEditor editor, List<CodeAction> actions) {
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+        builder.setTitle(R.string.msg_code_actions);
+        builder.setItems(asArray(actions), (d, w) -> {
+            final DialogInterface dialog = d;
+            final int which = w;
+            
+            dialog.dismiss();
+            hideDiagnostics();
+            hideBottomDiagnosticView();
+            performCodeAction(editor, actions.get(which));
+        });
+        builder.show();
+    }
+
+    private CharSequence[] asArray(List<CodeAction> actions) {
+        final String[] arr = new String[actions.size()];
+        for(int i=0;i<actions.size();i++) {
+            arr[i] = actions.get(i).getTitle();
+        }
+        return arr;
     }
     
     private Boolean performCodeActionAsync(final CodeEditor editor, final CodeAction action) {

@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="msg_fix_diagnostic">[QuickFix]</string>
     <string name="title_confirm_changes">Confirm changes</string>
     <string name="msg_confirm_changes">These files will be modified:\n%s</string>
     <string name="msg_no_code_actions">No quickfix found</string>

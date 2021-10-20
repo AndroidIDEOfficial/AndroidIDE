@@ -103,7 +103,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java9.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionOptions;
 import org.eclipse.lsp4j.Command;
@@ -3704,10 +3704,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         
         showOrHideDiagnosticWindow();
         
-        if(mLanguage != null) {
-            if(mLanguageClient != null) {
-                mLanguageClient.hideSignatureHelp();
-            }
+        if(mLanguageClient != null) {
+            mLanguageClient.hideSignatureHelp();
+            mLanguageClient.showDiagnosticAtBottom(getEditorLanguage().getAnalyzer().findDiagnosticContaining(getCursor().getLeftLine(), getCursor().getLeftColumn()), this);
         }
         
         if(mListener != null) {
@@ -4811,17 +4810,15 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     
     /**
      * Request code actions from server at the given position containing given diagnostics
-     * <p>
-     * Called by {@link EditorTouchEventHandler}
-     * <p>
-     * TODO The current implementation in JLS does not work. Make it work!
      *
      * @return A {@link CompletableFuture}. May return {@code null}.
      */
-    public CompletableFuture<List<Either<Command, CodeAction>>> requestCodeActions() {
+    public CompletableFuture<List<Either<Command, CodeAction>>> codeActions() {
+        return codeActions(getEditorLanguage().getAnalyzer().findDiagnosticsContainingLine(getCursor().getLeftLine()));
+    }
+     
+    public CompletableFuture<List<Either<Command, CodeAction>>> codeActions(List<Diagnostic> diagnostics) {
         if(mLanguageServer == null || mLanguageClient == null) return null;
-        
-        final List<Diagnostic> diagnostics = getEditorLanguage().getAnalyzer().findDiagnosticsContainingLine(getCursor().getLeftLine());
         return mCodeActionProvider.codeActions(mLanguageServer, getDocumentIdentifier(), getCursorRange(), diagnostics);
     }
     

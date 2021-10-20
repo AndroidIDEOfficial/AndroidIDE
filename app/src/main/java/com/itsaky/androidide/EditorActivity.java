@@ -37,6 +37,7 @@ import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorPagerAdapter;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
+import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.FileTreeFragment;
@@ -90,7 +91,6 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Position;
-import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -184,7 +184,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		loadFragment(mFileTreeFragment);
         
         symbolInput = new SymbolInputView(this);
-        mBinding.inputContainer.addView(symbolInput, 0, new ViewGroup.LayoutParams(-1, -2));
+        mBinding.inputContainer.addView(symbolInput, 1, new ViewGroup.LayoutParams(-1, -2));
         
         
         mBinding.editorViewPager.setOffscreenPageLimit(9);
@@ -192,7 +192,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
         mBinding.tabs.setOnTabSelectedListener(this);
 		mBinding.fabView.setOnClickListener(v -> showViewOptions());
-		
+//		mBinding.diagnosticTextContainer.setVisibility(View.GONE);
+//      mBinding.diagnosticText.setClickable(false);
+        
 		createQuickActions();
         
         mBuildServiceHandler = new BuildServiceHandler(this);
