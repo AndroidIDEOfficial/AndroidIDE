@@ -44,7 +44,7 @@ public class LSPProvider {
     /**
      * Maps a reference to the client of a language server with its language id as a key
      */
-    private static final Map<String, AbstractLanguageClient> clientMap = new HashMap<>();
+    private static final Map<String, IDELanguageClientImpl> clientMap = new HashMap<>();
     
     public static void setLanguageServer(String languageCode, IDELanguageServer server) {
         serverMap.put(languageCode, server);
@@ -54,7 +54,7 @@ public class LSPProvider {
         capabilitiesMap.put(languageCode, capabilities);
     }
     
-    public static void setClientForLanguage(String languageCode, AbstractLanguageClient client) {
+    public static void setClientForLanguage(String languageCode, IDELanguageClientImpl client) {
         clientMap.put(languageCode, client);
     }
     
@@ -66,7 +66,7 @@ public class LSPProvider {
         return capabilitiesMap;
     }
     
-    public static Map<String, AbstractLanguageClient> getAllServerClients() {
+    public static Map<String, IDELanguageClientImpl> getAllServerClients() {
         return clientMap;
     }
     
@@ -78,7 +78,7 @@ public class LSPProvider {
         return language == null ? null : capabilitiesMap.get(language);
     }
     
-    public static AbstractLanguageClient getClientForLanguage(String language) {
+    public static IDELanguageClientImpl getClientForLanguage(String language) {
         return language == null ? null : clientMap.get(language);
     }
 }

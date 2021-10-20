@@ -18,8 +18,10 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
 import com.itsaky.lsp.SemanticHighlight;
+import java.util.Map;
+import org.eclipse.lsp4j.Diagnostic;
 
-public class XMLAnalyzer implements CodeAnalyzer {
+public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
 	@Override
 	public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
@@ -88,6 +90,10 @@ public class XMLAnalyzer implements CodeAnalyzer {
 
     @Override
     public void setSemanticHighlights(SemanticHighlight highlights) {
+    }
+
+    @Override
+    public void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
     }
 
 	private void addHexColorIfPresent(Token token, HashMap<HexColor, Integer> lineColors, int line, int column) {

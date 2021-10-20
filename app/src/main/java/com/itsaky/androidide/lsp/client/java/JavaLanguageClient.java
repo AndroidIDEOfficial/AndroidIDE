@@ -1,6 +1,6 @@
 package com.itsaky.androidide.lsp.client.java;
 
-import com.itsaky.androidide.lsp.AbstractLanguageClient;
+import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import java.util.List;
 import java9.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
@@ -20,7 +20,7 @@ import org.eclipse.lsp4j.UnregistrationParams;
 import org.eclipse.lsp4j.WorkDoneProgressCreateParams;
 import org.eclipse.lsp4j.WorkspaceFolder;
 
-public class JavaLanguageClient extends AbstractLanguageClient {
+public class JavaLanguageClient extends IDELanguageClientImpl {
     
     public JavaLanguageClient(StarterListener starterListener, OnConnectedListener onConnectedListener) {
         super(starterListener, onConnectedListener);

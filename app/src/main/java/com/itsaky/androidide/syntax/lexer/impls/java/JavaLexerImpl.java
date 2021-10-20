@@ -8,23 +8,29 @@ import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageServer;
-import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.struct.BlockLine;
+import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.antlr.v4.runtime.CharStreams;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticTag;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
-public class JavaLexerImpl implements CodeAnalyzer {
+public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
     private SemanticHighlight highlights;
-
+    private Map<Integer, Map<Integer, Diagnostic>> diagnostics = new HashMap<>();
+    
     @Override
     public void setSemanticHighlights(SemanticHighlight highlights) {
         this.highlights = highlights;
@@ -43,8 +49,82 @@ public class JavaLexerImpl implements CodeAnalyzer {
             lexer.maxSwitch = lexer.currSwitch;
 
         colors.determine(lexer.lastLine);
+        
+        for(Map.Entry<Integer, Map<Integer, Diagnostic>> entry1 : diagnostics.entrySet()) {
+            for(Map.Entry<Integer, Diagnostic> entry2 : entry1.getValue().entrySet()) {
+                final Diagnostic diag = entry2.getValue();
+                final Range range = diag.getRange();
+                final Position start = range.getStart();
+                final Position end = range.getEnd();
+                
+                colors.markProblemRegion(getDiagnosticSpanFlag(diag), start.getLine(), start.getCharacter(), end.getLine(), end.getCharacter());
+            }
+        }
+        
         colors.setSuppressSwitch(lexer.maxSwitch + 10);
         colors.setHexColors(lexer.lineColors);
+    }
+
+    @Override
+    public void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
+        if(diagnostics == null) {
+            diagnostics = new HashMap<>();
+        }
+        this.diagnostics = diagnostics;
+    }
+
+    @Override
+    public Diagnostic findDiagnosticContaining(int line, int column) {
+        final Map<Integer, Diagnostic> mappedByColumn = diagnostics.get(line);
+        if(mappedByColumn != null) {
+            Diagnostic diag = mappedByColumn.get(column);
+            if(diag != null) {
+                return diag;
+            } else {
+                for(Map.Entry<Integer, Diagnostic> entry : mappedByColumn.entrySet()) {
+                    diag = entry.getValue();
+                    final int start = diag.getRange().getStart().getCharacter();
+                    final int end = diag.getRange().getEnd().getCharacter();
+                    
+                    if(column >= start && column <= end) {
+                        return diag;
+                    }
+                }
+            }
+        }
+        return super.findDiagnosticContaining(line, column);
+    }
+
+    @Override
+    public List<Diagnostic> findDiagnosticsContainingLine(int line) {
+        final Map<Integer, Diagnostic> diags = diagnostics.get(line);
+        if(diags == null) {
+            return super.findDiagnosticsContainingLine(line);
+        }
+        return diags.entrySet().stream()
+            .filter(d -> d != null && d.getValue() != null)
+            .map(d -> d.getValue())
+            .collect(Collectors.toList());
+    }
+    
+    private int getDiagnosticSpanFlag (final Diagnostic diagnostic) {
+
+        if(diagnostic.getTags() != null && diagnostic.getTags().contains(DiagnosticTag.Deprecated)) {
+            return Span.FLAG_DEPRECATED;
+        }
+
+        switch (diagnostic.getSeverity()) {
+            case Error :
+                return Span.FLAG_ERROR;
+            case Warning :
+                return Span.FLAG_WARNING;
+            case Hint :
+                return Span.FLAG_HINT;
+            case Information :
+                return Span.FLAG_INFO;
+            default :
+                return 0;
+        }
     }
     
     public class JavaLexerAnalyzer extends BaseJavaLexer implements Lexer {
@@ -95,13 +175,15 @@ public class JavaLexerImpl implements CodeAnalyzer {
         public String text() {
             return currentToken.getText();
         }
-
+        
         @Override
         public TokenType type() {
             final int line = line();
             final int column = column();
             final int tokenType = currentToken.getType();
             TokenType type = TokenType.TEXT;
+            
+            Span span = null;
             switch(tokenType) {
                 case JavaLexer.WS :
                     type = TokenType.WS;
@@ -151,7 +233,7 @@ public class JavaLexerImpl implements CodeAnalyzer {
                 case JavaLexer.WHILE:
                 case JavaLexer.VAR :
                     type = TokenType.KEYWORD;
-                    colors.addIfNeeded(line, column, EditorColorScheme.KEYWORD);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.KEYWORD);
                     wasClassName = false;
                     break;
                 case JavaLexer.DECIMAL_LITERAL:
@@ -164,12 +246,12 @@ public class JavaLexerImpl implements CodeAnalyzer {
                 case JavaLexer.CHAR_LITERAL:
                 case JavaLexer.NULL_LITERAL:
                     type = TokenType.NUMBER_LITERAL;
-                    colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
                     wasClassName = false;
                     break;
                 case JavaLexer.STRING_LITERAL :
                     type = TokenType.STRING_LITERAL;
-                    colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
                     wasClassName = false;
 
                     Position start = new Position(line, column);
@@ -223,7 +305,7 @@ public class JavaLexerImpl implements CodeAnalyzer {
                 case JavaLexer.ELLIPSIS :
                 case JavaLexer.DOT :
                     type = TokenType.OPERATOR;
-                    colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
                     wasClassName = false;
                     break;
                 case JavaLexer.BOOLEAN:
@@ -236,119 +318,119 @@ public class JavaLexerImpl implements CodeAnalyzer {
                 case JavaLexer.LONG:
                 case JavaLexer.SHORT:
                     type = TokenType.TYPE;
-                    colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
                     wasClassName = true;
                     break;
 
                 case JavaLexer.COMMENT :
                 case JavaLexer.LINE_COMMENT :
                     type = TokenType.COMMENT;
-                    colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
                     wasClassName = false;
                     break;
                 case JavaLexer.AT :
                     type = TokenType.ANNOTATION;
-                    colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
                     wasClassName = false;
                     break;
                 case JavaLexer.IDENTIFIER :
                     type = TokenType.IDENTIFIER;
 
                     if(isPackageName(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.PACKAGE_NAME);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.PACKAGE_NAME);
                         break;
                     }
 
                     if(isEnumType(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.ENUM_TYPE);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.ENUM_TYPE);
                         break;
                     }
 
                     if(isClassName(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
                         break;
                     }
 
                     if(isAnnotationType(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
                         break;
                     }
 
                     if(isInterface(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.INTERFACE);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.INTERFACE);
                         break;
                     }
 
                     if(isEnum(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.ENUM);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.ENUM);
                         break;
                     }
 
                     if(isStaticField(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.STATIC_FIELD);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.STATIC_FIELD);
                         break;
                     }
 
                     if(isField(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.FIELD);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.FIELD);
                         break;
                     }
 
                     if(isParameter(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.PARAMETER);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.PARAMETER);
                         break;
                     }
 
                     if(isLocal(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.LOCAL_VARIABLE);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.LOCAL_VARIABLE);
                         break;
                     }
 
                     if(isExceptionParam(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.EXCEPTION_PARAM);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.EXCEPTION_PARAM);
                         break;
                     }
 
                     if(isMethodDeclaration(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.METHOD_DECLARATION);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.METHOD_DECLARATION);
                         break;
                     }
                     
                     if(isMethodInvocation(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.METHOD_INVOCATION);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.METHOD_INVOCATION);
                         break;
                     }
 
                     if(isConstructor(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.CONSTRUCTOR);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.CONSTRUCTOR);
                         break;
                     }
 
                     if(isStaticInit(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.STATIC_INIT);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.STATIC_INIT);
                         break;
                     }
 
                     if(isInstanceInit(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.INSTANCE_INIT);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.INSTANCE_INIT);
                         break;
                     }
 
                     if(isTypeParam(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.TYPE_PARAM);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_PARAM);
                         break;
                     }
 
                     if(isResourceVariable(line, column)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.RESOURCE_VARIABLE);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.RESOURCE_VARIABLE);
                         break;
                     }
 
-                    colors.addIfNeeded(line, column, EditorColorScheme.TEXT_NORMAL);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.TEXT_NORMAL);
                     break;
                 case JavaLexer.LBRACE :
                     type = TokenType.OPERATOR;
-                    colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
                     wasClassName = false;
                     if (stack.isEmpty()) {
                         if (currSwitch > maxSwitch)
@@ -363,7 +445,7 @@ public class JavaLexerImpl implements CodeAnalyzer {
                     break;
                 case JavaLexer.RBRACE :
                     type = TokenType.OPERATOR;
-                    colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
                     wasClassName = false;
                     if (!stack.isEmpty()) {
                         BlockLine block2 = stack.pop();
@@ -377,10 +459,10 @@ public class JavaLexerImpl implements CodeAnalyzer {
                     type = TokenType.TEXT;
                     wasClassName = false;
                     if (tokenType == JavaLexer.LBRACK || (tokenType == JavaLexer.RBRACK && previous == JavaLexer.LBRACK)) {
-                        colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+                        span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
                         break;
                     }
-                    colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
                     break;
             }
 
@@ -388,7 +470,7 @@ public class JavaLexerImpl implements CodeAnalyzer {
             if(tokenType != JavaLexer.WS) {
                 previous = tokenType;
             }
-
+            
             return type;
         }
         

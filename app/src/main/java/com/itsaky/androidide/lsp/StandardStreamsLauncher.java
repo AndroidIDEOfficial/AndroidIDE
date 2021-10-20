@@ -16,7 +16,7 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
     
     private Future<Void> listening;
     
-    public StandardStreamsLauncher(AbstractLanguageClient client, InputStream in, OutputStream out) {
+    public StandardStreamsLauncher(IDELanguageClientImpl client, InputStream in, OutputStream out) {
         super(client);
         this.in = new BufferedInputStream( in );
         this.out = new BufferedOutputStream( out );

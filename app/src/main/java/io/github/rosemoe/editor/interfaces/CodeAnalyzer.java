@@ -20,6 +20,9 @@ import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import java.io.File;
+import java.util.List;
+import java.util.Map;
+import org.eclipse.lsp4j.Diagnostic;
 
 /**
  * Interface for analyzing highlight
@@ -29,9 +32,35 @@ import java.io.File;
 public interface CodeAnalyzer {
     
     /**
-     * Asks the analyzer to store the semantic highlight ranges provided by LanguageServer
+     * Tells the analyzer to store the semantic highlight ranges provided by LanguageServer
      */
     void setSemanticHighlights(SemanticHighlight highlights);
+    
+    /**
+     * Tells the analyzer to update the diagnostics locally.
+     * They will be then used to provide spans
+     *
+     * @param diagnostics The diagnostics to update to.
+                 They are first mapped by their start line and then by their start column.
+     */
+    void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics);
+    
+    /**
+     * Find the diagnostic containing the specific position
+     *
+     * @param line The line to find
+     * @param column The column to find
+     * @return The found {@link Diagnostic} or {@code null}
+     */
+    Diagnostic findDiagnosticContaining(int line, int column);
+    
+    /**
+     * Find all diagnostics at the specified line
+     *
+     * @param line The line to find
+     * @return A list containing all diagnostics at the line. Should never be null.
+     */
+    List<Diagnostic> findDiagnosticsContainingLine(int line);
     
     /**
      * Analyze spans for the given input

@@ -17,10 +17,10 @@ import org.eclipse.lsp4j.jsonrpc.Launcher;
  */
 public abstract class LSPClientLauncher extends Thread {
     
-    protected final AbstractLanguageClient languageClient;
+    protected final IDELanguageClientImpl languageClient;
     protected IDELanguageServer server;
     
-    public LSPClientLauncher(AbstractLanguageClient client) {
+    public LSPClientLauncher(IDELanguageClientImpl client) {
         Objects.requireNonNull(client);
         setDaemon(true);
         
@@ -58,7 +58,7 @@ public abstract class LSPClientLauncher extends Thread {
         }
     }
     
-    protected Launcher<IDELanguageServer> createClientLauncher(AbstractLanguageClient client, InputStream in, OutputStream out) {
+    protected Launcher<IDELanguageServer> createClientLauncher(IDELanguageClientImpl client, InputStream in, OutputStream out) {
         return new Launcher.Builder<IDELanguageServer> ()
             .setLocalService(client)
             .setRemoteInterface(IDELanguageServer.class)

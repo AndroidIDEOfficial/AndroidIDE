@@ -32,6 +32,8 @@ import java.util.List;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.services.LanguageServer;
 import com.itsaky.lsp.SemanticHighlight;
+import java.util.Map;
+import org.eclipse.lsp4j.Diagnostic;
 
 public class EmptyLanguage extends AbstractEditorLanguage {
 
@@ -95,7 +97,7 @@ public class EmptyLanguage extends AbstractEditorLanguage {
 
     }
 
-    private static class EmptyCodeAnalyzer implements CodeAnalyzer {
+    private static class EmptyCodeAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
         @Override
         public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, io.github.rosemoe.editor.text.TextAnalyzer.AnalyzeThread.Delegate delegate) {
@@ -104,6 +106,10 @@ public class EmptyLanguage extends AbstractEditorLanguage {
 
         @Override
         public void setSemanticHighlights(SemanticHighlight highlights) {
+        }
+
+        @Override
+        public void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
         }
     }
 }

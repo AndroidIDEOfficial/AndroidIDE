@@ -20,7 +20,7 @@ public class AsynchronousSocketLauncher extends LSPClientLauncher {
     private Future<Void> listeningFuture;
     private AsynchronousServerSocketChannel serverSocket;
     
-    public AsynchronousSocketLauncher (AbstractLanguageClient client, int port) {
+    public AsynchronousSocketLauncher (IDELanguageClientImpl client, int port) {
         super(client);
         this.port = port;
     }

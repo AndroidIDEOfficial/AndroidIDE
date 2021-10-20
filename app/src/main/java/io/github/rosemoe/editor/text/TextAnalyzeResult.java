@@ -39,6 +39,8 @@ public class TextAnalyzeResult {
     protected Span mLast;
     protected int mSuppressSwitch = Integer.MAX_VALUE;
     
+    private boolean determined = false;
+    
     private final Map<Integer, List<Range>> stringMap = new HashMap<>();
 
     /**
@@ -87,12 +89,13 @@ public class TextAnalyzeResult {
      * @param spanLine Line
      * @param column   Column
      * @param colorId  Type
+     * @return The span that was added
      */
-    public void addIfNeeded(int spanLine, int column, int colorId) {
+    public Span addIfNeeded(int spanLine, int column, int colorId) {
         if (mLast != null && mLast.colorId == colorId) {
-            return;
+            return mLast;
         }
-        add(spanLine, Span.obtain(column, colorId));
+        return add(spanLine, Span.obtain(spanLine, column, colorId));
     }
 
     /**
@@ -102,15 +105,16 @@ public class TextAnalyzeResult {
      *
      * @param spanLine The line position of span
      * @param span     The span
+     * @return The span that was added
      */
-    public void add(int spanLine, Span span) {
+    public Span add(int spanLine, Span span) {
         int mapLine = mSpanMap.size() - 1;
         if (spanLine == mapLine) {
             mSpanMap.get(spanLine).add(span);
         } else if (spanLine > mapLine) {
             Span extendedSpan = mLast;
             if (extendedSpan == null) {
-                extendedSpan = Span.obtain(0, EditorColorScheme.TEXT_NORMAL);
+                extendedSpan = Span.obtain(spanLine, 0, EditorColorScheme.TEXT_NORMAL);
             }
             while (mapLine < spanLine) {
                 List<Span> lineSpans = new ArrayList<>();
@@ -127,6 +131,7 @@ public class TextAnalyzeResult {
             throw new IllegalStateException("Invalid position");
         }
         mLast = span;
+        return span;
     }
 
     /**
@@ -138,7 +143,7 @@ public class TextAnalyzeResult {
         int mapLine = mSpanMap.size() - 1;
         Span extendedSpan = mLast;
         if (mLast == null) {
-            extendedSpan = Span.obtain(0, EditorColorScheme.TEXT_NORMAL);
+            extendedSpan = Span.obtain(line, 0, EditorColorScheme.TEXT_NORMAL);
         }
         while (mapLine < line) {
             List<Span> lineSpans = new ArrayList<>();
@@ -146,6 +151,7 @@ public class TextAnalyzeResult {
             mSpanMap.add(lineSpans);
             mapLine++;
         }
+        determined = true;
     }
 
     /**
@@ -182,7 +188,7 @@ public class TextAnalyzeResult {
     public void addNormalIfNull() {
         if (mSpanMap.isEmpty()) {
             List<Span> spanList = new ArrayList<>();
-            spanList.add(Span.obtain(0, EditorColorScheme.TEXT_NORMAL));
+            spanList.add(Span.obtain(0, 0, EditorColorScheme.TEXT_NORMAL));
             mSpanMap.add(spanList);
         }
     }
@@ -240,5 +246,62 @@ public class TextAnalyzeResult {
      */
     public List<List<Span>> getSpanMap() {
         return mSpanMap;
+    }
+    
+    /**
+     * Marks a region with the given flag.
+     * This can only be called after {@link TextAnalyzeResult#determine(int)} is called.
+     */
+    public void markProblemRegion(int newFlag, int startLine, int startColumn, int endLine, int endColumn) {
+        if (!determined) {
+            return;
+        }
+        for (int line = startLine; line <= endLine; line++) {
+            int start = (line == startLine ? startColumn : 0);
+            int end = (line == endLine ? endColumn : Integer.MAX_VALUE);
+            List<Span> spans = mSpanMap.get(line);
+            int increment;
+            for (int i = 0; i < spans.size(); i += increment) {
+                Span span = spans.get(i);
+                increment = 1;
+                if (span.column >= end) {
+                    break;
+                }
+                int spanEnd = (i + 1 >= spans.size() ? Integer.MAX_VALUE : spans.get(i + 1).column);
+                if (spanEnd >= start) {
+                    int regionStartInSpan = Math.max(span.column, start);
+                    int regionEndInSpan = Math.min(end, spanEnd);
+                    if (regionStartInSpan == span.column) {
+                        if (regionEndInSpan == spanEnd) {
+                            span.problemFlags |= newFlag;
+                        } else {
+                            increment = 2;
+                            Span nSpan = span.copy();
+                            nSpan.column = regionEndInSpan;
+                            spans.add(i + 1, nSpan);
+                            span.problemFlags |= newFlag;
+                        }
+                    } else {
+                        //regionStartInSpan > span.column
+                        if (regionEndInSpan == spanEnd) {
+                            increment = 2;
+                            Span nSpan = span.copy();
+                            nSpan.column = regionStartInSpan;
+                            spans.add(i + 1, nSpan);
+                            nSpan.problemFlags |= newFlag;
+                        } else {
+                            increment = 3;
+                            Span span1 = span.copy();
+                            span1.column = regionStartInSpan;
+                            span1.problemFlags |= newFlag;
+                            Span span2 = span.copy();
+                            span2.column = regionEndInSpan;
+                            spans.add(i + 1, span1);
+                            spans.add(i + 2, span2);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

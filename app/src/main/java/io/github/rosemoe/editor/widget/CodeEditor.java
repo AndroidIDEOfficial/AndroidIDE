@@ -65,7 +65,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
-import com.itsaky.androidide.lsp.AbstractLanguageClient;
+import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.lsp.providers.CodeActionProvider;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
@@ -270,6 +270,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private Paint mPaint;
     private Paint mPaintOther;
     private Paint mPaintGraph;
+    private Path mPath;
     private char[] mBuffer;
     private char[] mBuffer2;
     private Matrix mMatrix;
@@ -278,7 +279,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private String mLnTip = "Line:";
     private EditorLanguage mLanguage;
     private IDELanguageServer mLanguageServer;
-    private AbstractLanguageClient mLanguageClient;
+    private IDELanguageClientImpl mLanguageClient;
     private CodeActionProvider mCodeActionProvider;
     private long mLastMakeVisible = 0;
     private EditorAutoCompleteWindow mCompletionWindow;
@@ -308,7 +309,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private List<String> mSignatureHelpTriggerChars = new ArrayList<>();
     
 	private Map<HexColor, Integer> mLineColors;
-    private Map<Range, Diagnostic> mDiagnostics;
     private Map<Integer, List<Range>> stringMap;
     
     private File currentFile;
@@ -545,6 +545,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mRightHandle = new RectF();
         mVerticalScrollBar = new RectF();
         mHorizontalScrollBar = new RectF();
+        mPath = new Path();
         mDividerMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, Resources.getSystem().getDisplayMetrics());
         mDividerWidth = mDividerMargin;
         mInsertSelWidth = mDividerWidth / 2;
@@ -601,8 +602,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 		mErrorColor = Color.parseColor("#FF5252");
 		mWarningColor = Color.parseColor("#FFD740");
 		mRect2.set(-1, -1, -1, -1);
-        
-        mDiagnostics = new HashMap<>();
     }
     
     /**
@@ -623,62 +622,19 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         return mPinLineNumber;
     }
     
-    public Diagnostic findDiagnosticInCursorRange() {
-        if(mDiagnostics == null)
-            return null;
-        int leftLine = getCursor().getLeftLine();
-        int leftCol = getCursor().getLeftColumn();
-        int rightLine = getCursor().getRightLine();
-        int rightCol = getCursor().getRightColumn();
-        final org.eclipse.lsp4j. Range range = new org.eclipse.lsp4j. Range(new Position(leftLine, leftCol), new Position(rightLine, rightCol));
-        final Set<Range> keys = mDiagnostics.keySet();
-        Range found = null;
-        for(Range r : keys) {
-            if(r.getStart().getLine() <= range.getStart().getLine()
-               && r.getStart().getCharacter() <= range.getStart().getCharacter()
-               && r.getEnd().getLine() >= range.getEnd().getLine()
-               && r.getEnd().getCharacter() >= range.getEnd().getCharacter()) {
-                found = r;
-                break;
-            }
-        }
-        
-        if(found != null) {
-            return mDiagnostics.get(found);
-        }
-        
-        return null;
-    }
-    
-    public List<Diagnostic> findDiagnosticsContainingLine(int line) {
-        final List<Diagnostic> diags = new ArrayList<>();
-        if(mDiagnostics == null || mDiagnostics.size() <= 0) return diags;
-        
-        final Set<Range> keys = mDiagnostics.keySet();
-        
-        for(Range r : keys) {
-            if(r == null) continue;
-            if(r.getStart().getLine() <= line && line <= r.getEnd().getLine())
-                diags.add(mDiagnostics.get(r));
-        }
-        
-        return diags;
-    }
-    
     public void showOrHideDiagnosticWindow() {
-        if(mDiagnostics == null || mLanguageClient == null) return;
-        Diagnostic d = findDiagnosticInCursorRange();
-        if(d != null) {
-            mLanguageClient.showDiagnostic(d, this);
-        } else {
-            mLanguageClient.hideDiagnostics();
+        if(mLanguageClient == null) {
+            return;
         }
-    }
-    
-    public void setDiagnostics(Map<Range, Diagnostic> diags) {
-        if(diags == null)
-            diags = new HashMap<>();
-        this.mDiagnostics = diags;
+        final int line = getCursor().getLeftLine();
+        final int column = getCursor().getLeftColumn();
+        final Diagnostic diag = getEditorLanguage().getAnalyzer().findDiagnosticContaining(line, column);
+        
+        if(diag == null) {
+            mLanguageClient.hideDiagnostics();
+        } else {
+            mLanguageClient.showDiagnostic(diag, this);
+        }
     }
     
     public void setStringMap(Map<Integer, List<Range>> map) {
@@ -881,7 +837,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      *
      * @return The language client currently attached
      */
-    public AbstractLanguageClient getLanguageClient() {
+    public IDELanguageClientImpl getLanguageClient() {
         return mLanguageClient;
     }
     
@@ -1328,6 +1284,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * @param postDrawCursor      Cursors to be drawn later
      */
     private void drawRows(Canvas canvas, float offset, LongArrayList postDrawLineNumbers, List<CursorPaintAction> postDrawCursor, LongArrayList postDrawCurrentLines, MutableInt requiredFirstLn) {
+        final float waveLength = getDpUnit() * 10;
+        final float amplitude = getDpUnit() * 4;
         RowIterator rowIterator = mLayout.obtainRowIterator(getFirstVisibleRow());
         List<Span> temporaryEmptySpans = null;
         List<List<Span>> spanMap = mSpanner.getResult().getSpanMap();
@@ -1426,13 +1384,28 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 if (spans == null || spans.size() == 0) {
                     if (temporaryEmptySpans == null) {
                         temporaryEmptySpans = new LinkedList<>();
-                        temporaryEmptySpans.add(Span.obtain(0, EditorColorScheme.TEXT_NORMAL));
+                        temporaryEmptySpans.add(Span.obtain(line, 0, EditorColorScheme.TEXT_NORMAL));
                     }
                     spans = temporaryEmptySpans;
                 }
-                // Seek for first span
+                float phi = 0f;
                 while (spanOffset + 1 < spans.size()) {
                     if (spans.get(spanOffset + 1).column <= firstVisibleChar) {
+                        // Update phi
+                        Span span = spans.get(spanOffset);
+                        if (span.problemFlags > 0 && Integer.highestOneBit(span.problemFlags) != Span.FLAG_DEPRECATED) {
+                            float lineWidth;
+                            int spanEnd = Math.min(rowInf.endColumn, spans.get(spanOffset + 1).column);
+                            if (isWordwrap()) {
+                                lineWidth = measureText(mBuffer, Math.max(firstVisibleChar, span.column), spanEnd - Math.max(firstVisibleChar, span.column)) + phi;
+                            } else {
+                                lineWidth = measureText(mBuffer, span.column, spanEnd - span.column) + phi;
+                            }
+                            int waveCount = (int) Math.ceil(lineWidth / waveLength);
+                            phi = waveLength - (waveCount * waveLength - lineWidth);
+                        } else {
+                            phi = 0f;
+                        }
                         spanOffset++;
                     } else {
                         break;
@@ -1457,7 +1430,60 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                         mRect.right = paintingOffset + width;
                         drawColor(canvas, span.underlineColor, mRect);
                     }
-
+                    
+                    if (span.problemFlags > 0 && Integer.highestOneBit(span.problemFlags) != Span.FLAG_DEPRECATED) {
+                        int color = 0;
+                        switch (Integer.highestOneBit(span.problemFlags)) {
+                            case Span.FLAG_ERROR:
+                                color = mColors.getColor(EditorColorScheme.DIAGNOSTIC_ERROR);
+                                break;
+                            case Span.FLAG_WARNING:
+                                color = mColors.getColor(EditorColorScheme.DIAGNOSTIC_WARNING);
+                                break;
+                            case Span.FLAG_INFO:
+                                color = mColors.getColor(EditorColorScheme.DIAGNOSTIC_INFO);
+                                break;
+                            case Span.FLAG_HINT:
+                                color = mColors.getColor(EditorColorScheme.DIAGNOSTIC_HINT);
+                                break;
+                        }
+                        if (color != 0 && span.column >= 0 && spanEnd - span.column >= 0) {
+                            // Start and end X offset
+                            float startOffset;
+                            float lineWidth;
+                            if (isWordwrap()) {
+                                startOffset = measureTextRegionOffset() + measureText(mBuffer, firstVisibleChar, Math.max(0, span.column - firstVisibleChar)) - getOffsetX();
+                                lineWidth = measureText(mBuffer, Math.max(firstVisibleChar, span.column), spanEnd - Math.max(firstVisibleChar, span.column)) + phi;
+                            } else {
+                                startOffset = measureTextRegionOffset() + measureText(mBuffer, 0, span.column) - getOffsetX();
+                                lineWidth = measureText(mBuffer, span.column, spanEnd - span.column) + phi;
+                            }
+                            float centerY = getRowBottom(row) - getOffsetY() - amplitude;
+                            // Clip region due not to draw outside the horizontal region
+                            canvas.save();
+                            canvas.clipRect(startOffset, 0, startOffset + lineWidth, canvas.getHeight());
+                            canvas.translate(startOffset - phi, centerY);
+                            // Draw waves
+                            mPath.reset();
+                            mPath.moveTo(0, 0);
+                            int waveCount = (int) Math.ceil(lineWidth / waveLength);
+                            for (int i = 0; i < waveCount; i++) {
+                                mPath.quadTo(waveLength * i + waveLength / 4, amplitude, waveLength * i + waveLength / 2, 0);
+                                mPath.quadTo(waveLength * i + waveLength * 3 / 4, -amplitude, waveLength * i + waveLength, 0);
+                            }
+                            phi = waveLength - (waveCount * waveLength - lineWidth);
+                            // Draw path
+                            mPaint.setStrokeWidth(getDpUnit() * 1.8f);
+                            mPaintOther.setStyle(Paint.Style.STROKE);
+                            mPaintOther.setColor(color);
+                            canvas.drawPath(mPath, mPaintOther);
+                            canvas.restore();
+                        }
+                        mPaintOther.setStyle(Paint.Style.FILL);
+                    } else {
+                        phi = 0f;
+                    }
+                    
                     paintingOffset += width;
 
                     if (paintEnd == lastVisibleChar) {
@@ -1527,29 +1553,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 				}
 			}
             
-            // Draw diagnostics
-            final List<Diagnostic> diags = findDiagnosticsContainingLine(line);
-            if(diags.size() > 0) {
-                for(int i=0;i<diags.size();i++) {
-                    Diagnostic d = diags.get(i);
-                    if(d == null) continue;
-                    int startCol = d.getRange().getStart().getCharacter();
-                    int endCol = d.getRange().getEnd().getCharacter();
-                    if(line > d.getRange().getStart().getCharacter()) startCol = 0;
-                    if(line > d.getRange().getEnd().getCharacter()) endCol = 0;
-                    final int paintStart = Math.max(firstVisibleChar, startCol);
-                    final int paintEnd = Math.min(lastVisibleChar, endCol);
-                    final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
-                    final RectF r = new RectF();
-                    r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
-                    r.top = r.bottom - getRowHeight() * 0.2f;
-                    r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
-                    r.right = r.left + width;
-                    mPaint.setColor(diagnosticColor(d.getSeverity()));
-                    drawZigzagUnderline(r, canvas, mPaint);
-                }
-            }
-            
             // Draw cursors
             if (mCursor.isSelected()) {
                 if (mTextActionPresenter.shouldShowCursor()) {
@@ -1576,34 +1579,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mRect.left = 0;
         mRect.right = right;
         drawColor(canvas, color, mRect);
-    }
-    
-    private void drawZigzagUnderline(RectF boundaries, Canvas canvas, Paint paint) {
-        Path path = new Path();
-        path.moveTo(boundaries.right, boundaries.bottom);
-        
-        float left = boundaries.left;
-        float right = boundaries.right;
-        float y = boundaries.bottom;
-        float h = boundaries.height();
-        float seed = 2 * h;
-        float width = right - left;
-        int count  = (int) (width / seed);
-        float diff = width - seed * count;
-        float sideDiff = diff / 2;
-        float halfSeed = seed / 2;
-        float innerHeight = y - h;
-        for (int i=count;i>=1;i--) {
-            float startSeed = i * seed + sideDiff + left;
-            float endSeed = startSeed - seed;
-            if (i == 1) {
-                endSeed -= sideDiff;
-            }
-            path.lineTo(startSeed - halfSeed, innerHeight);
-            path.lineTo(endSeed, y);
-        }
-        
-        canvas.drawPath(path, paint);
     }
 	
 	/**
@@ -4814,7 +4789,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     /**
      * Request the client to show the specific document in an editor and select the provided range
      */
-    private void showDocument(AbstractLanguageClient client, String uri, org.eclipse.lsp4j.Range range) {
+    private void showDocument(IDELanguageClientImpl client, String uri, org.eclipse.lsp4j.Range range) {
         ShowDocumentParams params = new ShowDocumentParams();
         params.setExternal(false);
         params.setSelection(range);
@@ -4846,7 +4821,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     public CompletableFuture<List<Either<Command, CodeAction>>> requestCodeActions() {
         if(mLanguageServer == null || mLanguageClient == null) return null;
         
-        final List<Diagnostic> diagnostics = findDiagnosticsContainingLine(getCursor().getLeftLine());
+        final List<Diagnostic> diagnostics = getEditorLanguage().getAnalyzer().findDiagnosticsContainingLine(getCursor().getLeftLine());
         return mCodeActionProvider.codeActions(mLanguageServer, getDocumentIdentifier(), getCursorRange(), diagnostics);
     }
     

@@ -59,7 +59,7 @@ import org.eclipse.lsp4j.TextEdit;
 /**
  * AndroidIDE specific implementation of the LanguageClient
  */
-public abstract class AbstractLanguageClient implements IDELanguageClient {
+public abstract class IDELanguageClientImpl implements IDELanguageClient {
 
     protected static final Gson gson = new Gson();
     protected static final Logger LOG = Logger.instance("AbstractLanguageClient");
@@ -74,7 +74,7 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
     
     public static final int DIAGNOSTIC_TRANSITION_DURATION = 80;
 
-    public AbstractLanguageClient(StarterListener starterListener, OnConnectedListener onConnectedListener) {
+    public IDELanguageClientImpl(StarterListener starterListener, OnConnectedListener onConnectedListener) {
         this.starterListener = starterListener;
         this.onConnectedListener = onConnectedListener;
     }
@@ -258,13 +258,13 @@ public abstract class AbstractLanguageClient implements IDELanguageClient {
         activity().handleDiagnosticsResultVisibility(error);
         
         if(error) return;
-
+        
         File file = new File(URI.create(params.getUri()));
         if(!file.exists() || !file.isFile()) return;
-
+        
         diagnostics.put(file, params.getDiagnostics());
         activity().getDiagnosticsList().setAdapter(newDiagnosticsAdapter());
-
+        
         EditorFragment editor = null;
         if(activity().getPagerAdapter() != null && (editor = activity().getPagerAdapter().findEditorByFile(new File(URI.create(params.getUri())))) != null) {
             editor.setDiagnostics(params.getDiagnostics());

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.lsp4j.CompletionItem;
 import com.itsaky.lsp.SemanticHighlight;
+import java.util.Map;
+import org.eclipse.lsp4j.Diagnostic;
 
 public class LogLanguageImpl extends BaseLanguage {
 	
@@ -74,7 +76,7 @@ public class LogLanguageImpl extends BaseLanguage {
 		return new NewlineHandler[0];
 	}
 	
-	private static class LogAnalyzer implements CodeAnalyzer {
+	private static class LogAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 		
 		private static final List<LogLine> lines = new ArrayList<>();
 		
@@ -99,6 +101,10 @@ public class LogLanguageImpl extends BaseLanguage {
 
         @Override
         public void setSemanticHighlights(SemanticHighlight highlights) {
+        }
+
+        @Override
+        public void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
         }
 	}
 	

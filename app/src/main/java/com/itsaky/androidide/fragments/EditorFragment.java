@@ -33,6 +33,7 @@ import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
 public class EditorFragment extends BaseFragment implements EditorEventListener {
@@ -78,7 +79,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         return "";
     }
     
-	public static EditorFragment newInstance(File file, AndroidProject project, org.eclipse.lsp4j.Range selection) {
+	public static EditorFragment newInstance(File file, AndroidProject project, Range selection) {
 		Bundle bundle = new Bundle();
 		bundle.putString(KEY_FILE_PATH, file.getAbsolutePath());
         bundle.putInt(KEY_LINE_START, selection.getStart().getLine());
@@ -137,7 +138,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         
 		configureEditorIfNeeded();
 		
-        final org.eclipse.lsp4j.Range range = fromArgs(getArguments());
+        final Range range = fromArgs(getArguments());
 		new TaskExecutor().executeAsync(new ReadFileTask(mFile), result -> {
 			mBinding.editor.setText(result);
 			postRead();
@@ -151,18 +152,18 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		});
 	}
 
-    private org.eclipse.lsp4j.Range fromArgs(Bundle args) {
+    private Range fromArgs(Bundle args) {
         if(!(args.containsKey(KEY_LINE_START)
          && args.containsKey(KEY_COLUMN_START)
          && args.containsKey(KEY_LINE_END)
          && args.containsKey(KEY_COLUMN_END)))
             return LSPUtils.Range_ofZero;
             
-        return new org.eclipse.lsp4j.Range(
-            new org.eclipse.lsp4j.Position(
+        return new Range(
+            new Position(
                 args.getInt(KEY_LINE_START),
                 args.getInt(KEY_COLUMN_START)),
-            new org.eclipse.lsp4j.Position(
+            new Position(
                 args.getInt(KEY_LINE_END),
                 args.getInt(KEY_COLUMN_END)
                 ));
@@ -170,13 +171,21 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     
 	public void setDiagnostics(List<Diagnostic> diags) {
 		if(mBinding.editor != null && diags != null) {
-            Map<Range, Diagnostic> map = new HashMap<>();
+            Map<Integer, Map<Integer, Diagnostic>> map = new HashMap<>();
             for(int i=0;i<diags.size();i++) {
                 final Diagnostic d = diags.get(i);
                 if(d == null) continue;
-                map.put(d.getRange(), d);
+                final Range range = d.getRange();
+                final int line = range.getStart().getLine();
+                final int column = range.getStart().getCharacter();
+                Map<Integer, Diagnostic> mappedByColumn = map.get(line);
+                if(mappedByColumn == null) {
+                    mappedByColumn = new HashMap<>();
+                }
+                mappedByColumn.put(column, d);
+                map.put(line, mappedByColumn);
             }
-            mBinding.editor.setDiagnostics(map);
+            mBinding.editor.getEditorLanguage().getAnalyzer().updateDiagnostics(map);
         }
 	}
 	

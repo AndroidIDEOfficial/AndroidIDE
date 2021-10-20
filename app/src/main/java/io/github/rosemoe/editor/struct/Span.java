@@ -20,6 +20,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import io.github.rosemoe.editor.widget.EditorColorScheme;
+import org.eclipse.lsp4j.Range;
 
 /**
  * The span model
@@ -27,29 +28,66 @@ import io.github.rosemoe.editor.widget.EditorColorScheme;
  * @author Rose
  */
 public class Span {
-
+    
+    /**
+     * Flag for {@link Span#problemFlags}.
+     *
+     * Indicates this span is in ERROR region
+     */
+    public static final int FLAG_ERROR = 1 << 4;
+    /**
+     * Flag for {@link Span#problemFlags}.
+     *
+     * Indicates this span is in WARNING region
+     */
+    public static final int FLAG_WARNING = 1 << 3;
+    /**
+     * Flag for {@link Span#problemFlags}.
+     *
+     * Indicates this span is in INFO region
+     */
+    public static final int FLAG_INFO = 1 << 2;
+    /**
+     * Flag for {@link Span#problemFlags}.
+     *
+     * Indicates this span is in INFO region
+     */
+    public static final int FLAG_HINT = 1 << 1;
+    /**
+     * Flag for {@link Span#problemFlags}.
+     *
+     * Indicates this span is in DEPRECATED region
+     */
+    public static final int FLAG_DEPRECATED = 1;
+    
     private static final BlockingQueue<Span> cacheQueue = new ArrayBlockingQueue<>(8192 * 2);
+    public int line;
     public int column;
     public int colorId;
     public int underlineColor = 0;
+    public int problemFlags;
+    public Range problemRange;
 
     /**
      * Create a new span
      *
+     * @param line    Start line of span
      * @param column  Start column of span
      * @param colorId Type of span
      * @see Span#obtain(int, int)
      */
-    private Span(int column, int colorId) {
+    private Span(int line, int column, int colorId) {
+        this.line = line;
         this.column = column;
         this.colorId = colorId;
     }
 
-    public static Span obtain(int column, int colorId) {
+    public static Span obtain(int line, int column, int colorId) {
         Span span = cacheQueue.poll();
         if (span == null) {
-            return new Span(column, colorId);
+            return new Span(line, column, colorId);
         } else {
+            span.line = line;
             span.column = column;
             span.colorId = colorId;
             return span;
@@ -97,7 +135,7 @@ public class Span {
      * Make a copy of this span
      */
     public Span copy() {
-        Span copy = obtain(column, colorId);
+        Span copy = obtain(line, column, colorId);
         copy.setUnderlineColor(underlineColor);
         return copy;
     }

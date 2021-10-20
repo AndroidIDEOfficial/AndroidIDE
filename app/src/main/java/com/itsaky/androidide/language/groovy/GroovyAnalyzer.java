@@ -7,8 +7,10 @@ import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import java.io.File;
 import com.itsaky.lsp.SemanticHighlight;
+import java.util.Map;
+import org.eclipse.lsp4j.Diagnostic;
 
-public class GroovyAnalyzer implements CodeAnalyzer {
+public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
 	@Override
 	public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
@@ -34,5 +36,9 @@ public class GroovyAnalyzer implements CodeAnalyzer {
 
     @Override
     public void setSemanticHighlights(SemanticHighlight highlights) {
+    }
+
+    @Override
+    public void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
     }
 }
