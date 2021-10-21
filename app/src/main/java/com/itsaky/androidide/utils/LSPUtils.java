@@ -1,5 +1,7 @@
 package com.itsaky.androidide.utils;
 
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
@@ -27,5 +29,32 @@ public class LSPUtils {
 
         return LSPUtils.isEqual(r1.getStart(), r2.getStart())
             && LSPUtils.isEqual(r1.getEnd(), r2.getEnd());
+    }
+    
+    public static Diagnostic newInfoDiagnostic(int line, int column, int length, String message, String text) {
+        final Diagnostic diag = new Diagnostic();
+        diag.setCode("todo");
+        diag.setMessage(message);
+        diag.setRange(getSingleLineRange(line, column, length));
+        diag.setSeverity(DiagnosticSeverity.Information);
+        diag.setSource(text);
+        return diag;
+    }
+
+    public static Diagnostic newWarningDiagnostic(int line, int column, int length, String message, String text) {
+        final Diagnostic diag = new Diagnostic();
+        diag.setCode("custom_warning");
+        diag.setMessage(message);
+        diag.setRange(getSingleLineRange(line, column, length));
+        diag.setSeverity(DiagnosticSeverity.Warning);
+        diag.setSource(text);
+        return diag;
+    }
+
+    public static Range getSingleLineRange(int line, int column, int length) {
+        final Range range = new Range();
+        range.setStart(new Position(line, column));
+        range.setEnd(new Position(line, column + length));
+        return range;
     }
 }

@@ -1,10 +1,12 @@
 package com.itsaky.androidide.syntax.lexer.impls.java;
 
 import com.itsaky.androidide.antlr4.java.JavaLexer;
+import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.lexer.Lexer;
 import com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer;
 import com.itsaky.androidide.syntax.lexer.tokens.Token;
 import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
+import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageServer;
@@ -16,13 +18,14 @@ import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DiagnosticTag;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
@@ -30,6 +33,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
 
     private SemanticHighlight highlights;
     private Map<Integer, Map<Integer, Diagnostic>> diagnostics = new HashMap<>();
+    private final Map<Integer, Map<Integer, Diagnostic>> customDiagnostics = new HashMap<>();
     
     @Override
     public void setSemanticHighlights(SemanticHighlight highlights) {
@@ -49,18 +53,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
             lexer.maxSwitch = lexer.currSwitch;
 
         colors.determine(lexer.lastLine);
-        
-        for(Map.Entry<Integer, Map<Integer, Diagnostic>> entry1 : diagnostics.entrySet()) {
-            for(Map.Entry<Integer, Diagnostic> entry2 : entry1.getValue().entrySet()) {
-                final Diagnostic diag = entry2.getValue();
-                final Range range = diag.getRange();
-                final Position start = range.getStart();
-                final Position end = range.getEnd();
-                
-                colors.markProblemRegion(getDiagnosticSpanFlag(diag), start.getLine(), start.getCharacter(), end.getLine(), end.getCharacter());
-            }
-        }
-        
         colors.setSuppressSwitch(lexer.maxSwitch + 10);
         colors.setHexColors(lexer.lineColors);
     }
@@ -106,25 +98,10 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
             .map(d -> d.getValue())
             .collect(Collectors.toList());
     }
-    
-    private int getDiagnosticSpanFlag (final Diagnostic diagnostic) {
 
-        if(diagnostic.getTags() != null && diagnostic.getTags().contains(DiagnosticTag.Deprecated)) {
-            return Span.FLAG_DEPRECATED;
-        }
-
-        switch (diagnostic.getSeverity()) {
-            case Error :
-                return Span.FLAG_ERROR;
-            case Warning :
-                return Span.FLAG_WARNING;
-            case Hint :
-                return Span.FLAG_HINT;
-            case Information :
-                return Span.FLAG_INFO;
-            default :
-                return 0;
-        }
+    @Override
+    public Map<Integer, Diagnostic> getDiagnosticsAtLine(int line) {
+        return diagnostics.get(line);
     }
     
     public class JavaLexerAnalyzer extends BaseJavaLexer implements Lexer {
@@ -321,12 +298,34 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                     span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
                     wasClassName = true;
                     break;
-
-                case JavaLexer.COMMENT :
+                    
+                case JavaLexer.JAVADOC_COMMENT :
+                    // TODO Highlight javadoc
+                    break;
+                case JavaLexer.BLOCK_COMMENT :
+                    type = TokenType.COMMENT;
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
+                    break;
                 case JavaLexer.LINE_COMMENT :
                     type = TokenType.COMMENT;
                     span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
                     wasClassName = false;
+                    
+                    String lineComment = currentToken.getText();
+                    if(lineComment != null) {
+                        lineComment = lineComment.trim();
+                        if(lineComment.startsWith("//")) {
+                            lineComment = lineComment.substring(2).trim();
+                        }
+                        final String text = new String (lineComment.toCharArray());
+                        lineComment = lineComment.toLowerCase(Locale.getDefault());
+                        if(lineComment.startsWith("todo ")) {
+                            diagnostics.put(line, Collections.singletonMap(column, LSPUtils.newInfoDiagnostic(line, column, currentToken.getText().length(), text, currentToken.getText())));
+                        } else if (lineComment.startsWith(ConstantsBridge.CUSTOM_COMMENT_WARNING_TOKEN)) {
+                            diagnostics.put(line, Collections.singletonMap(column, LSPUtils.newWarningDiagnostic(line, column, currentToken.getText().length(), text, currentToken.getText())));
+                        }
+                    }
+                    
                     break;
                 case JavaLexer.AT :
                     type = TokenType.ANNOTATION;

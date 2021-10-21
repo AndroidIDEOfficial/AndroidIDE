@@ -270,7 +270,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private Paint mPaint;
     private Paint mPaintOther;
     private Paint mPaintGraph;
-    private Path mPath;
     private char[] mBuffer;
     private char[] mBuffer2;
     private Matrix mMatrix;
@@ -545,7 +544,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mRightHandle = new RectF();
         mVerticalScrollBar = new RectF();
         mHorizontalScrollBar = new RectF();
-        mPath = new Path();
         mDividerMargin = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, Resources.getSystem().getDisplayMetrics());
         mDividerWidth = mDividerMargin;
         mInsertSelWidth = mDividerWidth / 2;
@@ -1284,8 +1282,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * @param postDrawCursor      Cursors to be drawn later
      */
     private void drawRows(Canvas canvas, float offset, LongArrayList postDrawLineNumbers, List<CursorPaintAction> postDrawCursor, LongArrayList postDrawCurrentLines, MutableInt requiredFirstLn) {
-        final float waveLength = getDpUnit() * 10;
-        final float amplitude = getDpUnit() * 4;
         RowIterator rowIterator = mLayout.obtainRowIterator(getFirstVisibleRow());
         List<Span> temporaryEmptySpans = null;
         List<List<Span>> spanMap = mSpanner.getResult().getSpanMap();
@@ -1388,24 +1384,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                     }
                     spans = temporaryEmptySpans;
                 }
-                float phi = 0f;
+                
                 while (spanOffset + 1 < spans.size()) {
                     if (spans.get(spanOffset + 1).column <= firstVisibleChar) {
-                        // Update phi
-                        Span span = spans.get(spanOffset);
-                        if (span.problemFlags > 0 && Integer.highestOneBit(span.problemFlags) != Span.FLAG_DEPRECATED) {
-                            float lineWidth;
-                            int spanEnd = Math.min(rowInf.endColumn, spans.get(spanOffset + 1).column);
-                            if (isWordwrap()) {
-                                lineWidth = measureText(mBuffer, Math.max(firstVisibleChar, span.column), spanEnd - Math.max(firstVisibleChar, span.column)) + phi;
-                            } else {
-                                lineWidth = measureText(mBuffer, span.column, spanEnd - span.column) + phi;
-                            }
-                            int waveCount = (int) Math.ceil(lineWidth / waveLength);
-                            phi = waveLength - (waveCount * waveLength - lineWidth);
-                        } else {
-                            phi = 0f;
-                        }
                         spanOffset++;
                     } else {
                         break;
@@ -1429,59 +1410,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                         mRect.left = paintingOffset;
                         mRect.right = paintingOffset + width;
                         drawColor(canvas, span.underlineColor, mRect);
-                    }
-                    
-                    if (span.problemFlags > 0 && Integer.highestOneBit(span.problemFlags) != Span.FLAG_DEPRECATED) {
-                        int color = 0;
-                        switch (Integer.highestOneBit(span.problemFlags)) {
-                            case Span.FLAG_ERROR:
-                                color = mColors.getColor(EditorColorScheme.DIAGNOSTIC_ERROR);
-                                break;
-                            case Span.FLAG_WARNING:
-                                color = mColors.getColor(EditorColorScheme.DIAGNOSTIC_WARNING);
-                                break;
-                            case Span.FLAG_INFO:
-                                color = mColors.getColor(EditorColorScheme.DIAGNOSTIC_INFO);
-                                break;
-                            case Span.FLAG_HINT:
-                                color = mColors.getColor(EditorColorScheme.DIAGNOSTIC_HINT);
-                                break;
-                        }
-                        if (color != 0 && span.column >= 0 && spanEnd - span.column >= 0) {
-                            // Start and end X offset
-                            float startOffset;
-                            float lineWidth;
-                            if (isWordwrap()) {
-                                startOffset = measureTextRegionOffset() + measureText(mBuffer, firstVisibleChar, Math.max(0, span.column - firstVisibleChar)) - getOffsetX();
-                                lineWidth = measureText(mBuffer, Math.max(firstVisibleChar, span.column), spanEnd - Math.max(firstVisibleChar, span.column)) + phi;
-                            } else {
-                                startOffset = measureTextRegionOffset() + measureText(mBuffer, 0, span.column) - getOffsetX();
-                                lineWidth = measureText(mBuffer, span.column, spanEnd - span.column) + phi;
-                            }
-                            float centerY = getRowBottom(row) - getOffsetY() - amplitude;
-                            // Clip region due not to draw outside the horizontal region
-                            canvas.save();
-                            canvas.clipRect(startOffset, 0, startOffset + lineWidth, canvas.getHeight());
-                            canvas.translate(startOffset - phi, centerY);
-                            // Draw waves
-                            mPath.reset();
-                            mPath.moveTo(0, 0);
-                            int waveCount = (int) Math.ceil(lineWidth / waveLength);
-                            for (int i = 0; i < waveCount; i++) {
-                                mPath.quadTo(waveLength * i + waveLength / 4, amplitude, waveLength * i + waveLength / 2, 0);
-                                mPath.quadTo(waveLength * i + waveLength * 3 / 4, -amplitude, waveLength * i + waveLength, 0);
-                            }
-                            phi = waveLength - (waveCount * waveLength - lineWidth);
-                            // Draw path
-                            mPaint.setStrokeWidth(getDpUnit() * 1.8f);
-                            mPaintOther.setStyle(Paint.Style.STROKE);
-                            mPaintOther.setColor(color);
-                            canvas.drawPath(mPath, mPaintOther);
-                            canvas.restore();
-                        }
-                        mPaintOther.setStyle(Paint.Style.FILL);
-                    } else {
-                        phi = 0f;
                     }
                     
                     paintingOffset += width;
@@ -1553,6 +1481,36 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 				}
 			}
             
+            final Paint.Style style = mPaint.getStyle();
+            final float stroke = mPaint.getStrokeWidth();
+
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(getDpUnit() * 1.4f);
+            final List<Diagnostic> diags = getEditorLanguage().getAnalyzer().findDiagnosticsContainingLine(line);
+            if(diags != null && diags.size() > 0) {
+                for(int i=0;i<diags.size();i++) {
+                    Diagnostic d = diags.get(i);
+                    if(d == null) continue;
+                    int startCol = d.getRange().getStart().getCharacter();
+                    int endCol = d.getRange().getEnd().getCharacter();
+                    if(line > d.getRange().getStart().getCharacter()) startCol = 0;
+                    if(line > d.getRange().getEnd().getCharacter()) endCol = 0;
+                    final int paintStart = Math.max(firstVisibleChar, startCol);
+                    final int paintEnd = Math.min(lastVisibleChar, endCol);
+                    final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
+                    final RectF r = new RectF();
+                    r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
+                    r.top = r.bottom - getRowHeight() * 0.2f;
+                    r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
+                    r.right = r.left + width;
+                    mPaint.setColor(diagnosticColor(d.getSeverity()));
+                    drawDiagnostics(r, canvas, mPaint);
+                }
+            }
+            
+            mPaint.setStyle(style);
+            mPaint.setStrokeWidth(stroke);
+            
             // Draw cursors
             if (mCursor.isSelected()) {
                 if (mTextActionPresenter.shouldShowCursor()) {
@@ -1571,6 +1529,29 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             }
 
         }
+    }
+
+    private void drawDiagnostics(RectF rect, Canvas canvas, Paint paint) {
+        final Path path = new Path();
+        final float right = rect.right;
+        final float bottom = rect.bottom;
+        final float waveLength = getDpUnit() * 5f;
+        final float halfLength = waveLength / 2;
+        final float waveAmplitude = getDpUnit() * 4f;
+        
+        path.moveTo(rect.left, rect.bottom);
+        float x = rect.left;
+        while (right > x) {
+            path.quadTo(x + halfLength, bottom - waveAmplitude, x + waveLength, bottom);
+            x += waveLength;
+            path.quadTo(x + halfLength, bottom + waveAmplitude, x + waveLength, bottom);
+            x += waveLength;
+            if(x > right) {
+                x = right;
+            }
+        }
+        
+        canvas.drawPath(path, paint);
     }
     
     private void drawRowBackground(Canvas canvas, int color, int row, int right) {
@@ -1639,7 +1620,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             case Error : id = EditorColorScheme.DIAGNOSTIC_ERROR; break;
             case Warning : id = EditorColorScheme.DIAGNOSTIC_WARNING; break;
             case Information : id = EditorColorScheme.DIAGNOSTIC_INFO; break;
-            default : id = EditorColorScheme.DIAGNOSTIC_ERROR; break;
+            default : id = EditorColorScheme.DIAGNOSTIC_HINT; break;
         }
         return mColors.getColor(id);
     }

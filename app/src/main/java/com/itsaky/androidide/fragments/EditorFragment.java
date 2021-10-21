@@ -170,7 +170,11 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     }
     
 	public void setDiagnostics(List<Diagnostic> diags) {
-		if(mBinding.editor != null && diags != null) {
+        if(diags == null && mBinding.editor != null) {
+            mBinding.editor.getEditorLanguage().getAnalyzer().updateDiagnostics(new HashMap<Integer, Map<Integer, Diagnostic>>());
+            return;
+        }
+		if(mBinding.editor != null) {
             Map<Integer, Map<Integer, Diagnostic>> map = new HashMap<>();
             for(int i=0;i<diags.size();i++) {
                 final Diagnostic d = diags.get(i);

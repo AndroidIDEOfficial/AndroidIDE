@@ -63,6 +63,13 @@ public interface CodeAnalyzer {
     List<Diagnostic> findDiagnosticsContainingLine(int line);
     
     /**
+     * Get diagnostics at the specified line.
+     *
+     * @return A map containing the diagnostics mapped by their columns
+     */
+    Map<Integer, Diagnostic> getDiagnosticsAtLine(int line);
+    
+    /**
      * Analyze spans for the given input
      *
      * @param languageServer The language server provided by this language. Maybe null.

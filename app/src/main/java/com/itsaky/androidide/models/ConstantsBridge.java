@@ -22,6 +22,8 @@ public class ConstantsBridge {
     // Real password is gradle-api@admin@androidide
     public static final String GRADLE_API_ZIP_PASSWORD_HASH = "b50b462f8e8c5789f32428d7e1967da2";
     
+    // Always compared in lowercase
+    public static final String CUSTOM_COMMENT_WARNING_TOKEN = "#warn ";
     
     public static final String VIRTUAL_KEYS =
     "["
