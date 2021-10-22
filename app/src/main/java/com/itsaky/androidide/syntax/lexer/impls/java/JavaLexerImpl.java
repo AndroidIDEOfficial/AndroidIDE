@@ -4,6 +4,7 @@ import com.itsaky.androidide.antlr4.java.JavaLexer;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.lexer.Lexer;
 import com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer;
+import com.itsaky.androidide.syntax.lexer.impls.javadoc.JavaDocLexer;
 import com.itsaky.androidide.syntax.lexer.tokens.Token;
 import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
 import com.itsaky.androidide.utils.LSPUtils;
@@ -298,14 +299,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                     span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
                     wasClassName = true;
                     break;
-                    
-                case JavaLexer.JAVADOC_COMMENT :
-                    // TODO Highlight javadoc
-                    break;
                 case JavaLexer.BLOCK_COMMENT :
-                    type = TokenType.COMMENT;
-                    span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
-                    break;
                 case JavaLexer.LINE_COMMENT :
                     type = TokenType.COMMENT;
                     span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);

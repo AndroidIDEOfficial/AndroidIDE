@@ -142,7 +142,6 @@ public class JavaHighlighter implements Highlighter {
                 case JavaLexer.SHORT:
                     sb.append(token.getText(), new ForegroundColorSpan(scheme.getColor(EditorColorScheme.TYPE_NAME)), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
                     break;
-                case JavaLexer.JAVADOC_COMMENT :
                 case JavaLexer.BLOCK_COMMENT :
                 case JavaLexer.LINE_COMMENT :
                     sb.append(token.getText(), new ForegroundColorSpan(scheme.getColor(EditorColorScheme.COMMENT)), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);

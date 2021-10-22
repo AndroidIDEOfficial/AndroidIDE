@@ -15,154 +15,154 @@ public class JavadocParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitDocumentation(JavadocParser.DocumentationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDocumentation(JavadocParser.DocumentationContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitDocumentationContent(JavadocParser.DocumentationContentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDocumentationContent(JavadocParser.DocumentationContentContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitSkipWhitespace(JavadocParser.SkipWhitespaceContext ctx) { return visitChildren(ctx); }
+	@Override public T visitSkipWhitespace(JavadocParser.SkipWhitespaceContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitDescription(JavadocParser.DescriptionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDescription(JavadocParser.DescriptionContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitDescriptionLine(JavadocParser.DescriptionLineContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDescriptionLine(JavadocParser.DescriptionLineContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitDescriptionLineStart(JavadocParser.DescriptionLineStartContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDescriptionLineStart(JavadocParser.DescriptionLineStartContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitDescriptionLineNoSpaceNoAt(JavadocParser.DescriptionLineNoSpaceNoAtContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDescriptionLineNoSpaceNoAt(JavadocParser.DescriptionLineNoSpaceNoAtContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitDescriptionLineElement(JavadocParser.DescriptionLineElementContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDescriptionLineElement(JavadocParser.DescriptionLineElementContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitDescriptionLineText(JavadocParser.DescriptionLineTextContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDescriptionLineText(JavadocParser.DescriptionLineTextContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitDescriptionNewline(JavadocParser.DescriptionNewlineContext ctx) { return visitChildren(ctx); }
+	@Override public T visitDescriptionNewline(JavadocParser.DescriptionNewlineContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitTagSection(JavadocParser.TagSectionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTagSection(JavadocParser.TagSectionContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitBlockTag(JavadocParser.BlockTagContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBlockTag(JavadocParser.BlockTagContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitBlockTagName(JavadocParser.BlockTagNameContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBlockTagName(JavadocParser.BlockTagNameContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitBlockTagContent(JavadocParser.BlockTagContentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBlockTagContent(JavadocParser.BlockTagContentContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitBlockTagText(JavadocParser.BlockTagTextContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBlockTagText(JavadocParser.BlockTagTextContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitBlockTagTextElement(JavadocParser.BlockTagTextElementContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBlockTagTextElement(JavadocParser.BlockTagTextElementContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitInlineTag(JavadocParser.InlineTagContext ctx) { return visitChildren(ctx); }
+	@Override public T visitInlineTag(JavadocParser.InlineTagContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitInlineTagName(JavadocParser.InlineTagNameContext ctx) { return visitChildren(ctx); }
+	@Override public T visitInlineTagName(JavadocParser.InlineTagNameContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitInlineTagContent(JavadocParser.InlineTagContentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitInlineTagContent(JavadocParser.InlineTagContentContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitBraceExpression(JavadocParser.BraceExpressionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBraceExpression(JavadocParser.BraceExpressionContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitBraceContent(JavadocParser.BraceContentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBraceContent(JavadocParser.BraceContentContext context) { return visitChildren(context); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+	 * {@link #visitChildren} on {@code context}.</p>
 	 */
-	@Override public T visitBraceText(JavadocParser.BraceTextContext ctx) { return visitChildren(ctx); }
+	@Override public T visitBraceText(JavadocParser.BraceTextContext context) { return visitChildren(context); }
 }

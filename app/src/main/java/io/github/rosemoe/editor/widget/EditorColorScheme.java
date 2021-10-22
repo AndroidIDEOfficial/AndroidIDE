@@ -52,6 +52,9 @@ import io.github.rosemoe.editor.util.Objects;
  */
 public class EditorColorScheme {
 	
+    public static final int JAVADOC_INLINE_TAG = 57;
+    public static final int JAVADOC_TAG = 56;
+    
     public static final int DIAGNOSTIC_ERROR = 38;
     public static final int DIAGNOSTIC_WARNING = 39;
     public static final int DIAGNOSTIC_HINT = 40;
@@ -130,7 +133,7 @@ public class EditorColorScheme {
     /**
      * Max pre-defined color id
      */
-    protected static final int END_COLOR_ID = 55;
+    protected static final int END_COLOR_ID = 57;
     /**
      * Real color saver
      */
@@ -232,6 +235,8 @@ public class EditorColorScheme {
                 color = 0xFF2196F3;
                 break;
             case COMMENT:
+            case JAVADOC_INLINE_TAG :
+            case JAVADOC_TAG :
                 color = 0xffa8a8a8;
                 break;
             case LITERAL:

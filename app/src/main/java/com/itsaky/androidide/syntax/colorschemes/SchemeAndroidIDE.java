@@ -57,6 +57,9 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         setColor(DIAGNOSTIC_INFO, 0xff4CAF50);
         setColor(DIAGNOSTIC_HINT, 0xffffffff);
         
+        setColor(JAVADOC_INLINE_TAG, 0xffff6060);
+        setColor(JAVADOC_TAG, 0xffff6060);
+        
         setColor(STDERR, 0xfff44336);
         setColor(STDOUT, 0xff4CAF50);
     }
