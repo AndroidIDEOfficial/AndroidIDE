@@ -25,7 +25,6 @@ jobs:
       run: ./gradlew build
     - name: Upload Debug APK
       uses: actions/upload-artifact@v2
-        if: ${{ !github.head_ref }}
         with:
           name: apk-debug
           path: app/build/outputs/apk/debug
