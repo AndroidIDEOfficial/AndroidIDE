@@ -42,20 +42,25 @@ android {
 	
 	buildFeatures.viewBinding true
     
-    signingConfigs {
+    def key = new File("/sdcard/AndroidAppProjects/publishKey.keystore");
+    def isKeyAvailable = key.exists()
+
+    if(isKeyAvailable) {
+        signingConfigs {
 		
-        debug {
-            storeFile file("/sdcard/AndroidAppProjects/publishKey.keystore")
-            storePassword "itsaky"
-            keyAlias "itsaky"
-            keyPassword "itsaky"
-        }
+            debug {
+                storeFile file("/sdcard/AndroidAppProjects/publishKey.keystore")
+                storePassword "itsaky"
+                keyAlias "itsaky"
+                keyPassword "itsaky"
+            }
         
-        release {
-            storeFile file("/sdcard/AndroidAppProjects/publishKey.keystore")
-            storePassword "itsaky"
-            keyAlias "itsaky"
-            keyPassword "itsaky"
+            release {
+                storeFile file("/sdcard/AndroidAppProjects/publishKey.keystore")
+                storePassword "itsaky"
+                keyAlias "itsaky"
+                keyPassword "itsaky"
+            }
         }
     }
 
@@ -63,12 +68,12 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            if(isKeyAvailable) { signingConfig signingConfigs.debug }
         }
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            if(isKeyAvailable) { signingConfig signingConfigs.release }
         }
     }
 	
