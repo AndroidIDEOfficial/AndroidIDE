@@ -63,7 +63,7 @@ android {
             }
         }
     }
-
+    
     buildTypes {
         debug {
             minifyEnabled false
