@@ -1,26 +1,22 @@
 package com.itsaky.androidide.syntax.lexer.impls.groovy;
 
-import android.graphics.Color;
 import com.itsaky.androidide.language.groovy.lexer.GroovyLexer;
 import com.itsaky.androidide.syntax.lexer.Lexer;
 import com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer;
 import com.itsaky.androidide.syntax.lexer.tokens.Token;
 import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
 import io.github.rosemoe.editor.struct.BlockLine;
-import io.github.rosemoe.editor.struct.HexColor;
-import io.github.rosemoe.editor.text.CharPosition;
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.antlr.v4.runtime.CharStreams;
 
 public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 
-	public GroovyLexerImpl(String content, TextAnalyzeResult colors) {
+	public GroovyLexerImpl(Content content, TextAnalyzeResult colors) {
 		this.content = content;
 		this.colors = colors;
 		this.maxSwitch = 0;
@@ -44,7 +40,7 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 
 	@Override
 	public void init() throws IOException {
-		lexer = new GroovyLexer(CharStreams.fromReader(new StringReader(content)));
+		lexer = new GroovyLexer(CharStreams.fromReader(new StringReader(content.toString())));
 	}
 
 	@Override

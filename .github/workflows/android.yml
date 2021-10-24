@@ -1,5 +1,3 @@
-
-   
 name: CI
 
 on:
@@ -31,7 +29,7 @@ jobs:
       - name: Build debug apk
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: build
+          arguments: :app:build
           distributions-cache-enabled: true
           dependencies-cache-enabled: true
           configuration-cache-enabled: true

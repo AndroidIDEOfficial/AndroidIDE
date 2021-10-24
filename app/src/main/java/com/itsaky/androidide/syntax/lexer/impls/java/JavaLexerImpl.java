@@ -1,10 +1,10 @@
 package com.itsaky.androidide.syntax.lexer.impls.java;
 
+import androidx.core.util.Pair;
 import com.itsaky.androidide.antlr4.java.JavaLexer;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.lexer.Lexer;
 import com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer;
-import com.itsaky.androidide.syntax.lexer.impls.javadoc.JavaDocLexer;
 import com.itsaky.androidide.syntax.lexer.tokens.Token;
 import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
 import com.itsaky.androidide.utils.LSPUtils;
@@ -13,6 +13,9 @@ import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.Span;
+import io.github.rosemoe.editor.text.CharPosition;
+import io.github.rosemoe.editor.text.Content;
+import io.github.rosemoe.editor.text.Indexer;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
@@ -32,18 +35,19 @@ import org.eclipse.lsp4j.Range;
 
 public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
-    private SemanticHighlight highlights;
+    private HighlightRangeHelper helper;
     private Map<Integer, Map<Integer, Diagnostic>> diagnostics = new HashMap<>();
     private final Map<Integer, Map<Integer, Diagnostic>> customDiagnostics = new HashMap<>();
     
     @Override
     public void setSemanticHighlights(SemanticHighlight highlights) {
-        this.highlights = highlights;
+        this.helper = new HighlightRangeHelper(highlights);
+        this.helper.sort();
     }
     
     @Override
     public void analyze(IDELanguageServer languageServer, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception {
-        final JavaLexerAnalyzer lexer = new JavaLexerAnalyzer(content.toString(), colors, this.highlights);
+        final JavaLexerAnalyzer lexer = new JavaLexerAnalyzer((Content) content, colors, this.helper);
         lexer.init();
         while (delegate.shouldAnalyze()) {
             // null = EOF
@@ -107,12 +111,12 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
     
     public class JavaLexerAnalyzer extends BaseJavaLexer implements Lexer {
         
-        private final SemanticHighlight highlights;
+        private final HighlightRangeHelper helper;
         
-        public JavaLexerAnalyzer(String content, TextAnalyzeResult colors, SemanticHighlight highlights) {
+        public JavaLexerAnalyzer(Content content, TextAnalyzeResult colors, HighlightRangeHelper helper) {
             this.content = content;
             this.colors = colors;
-            this.highlights = highlights;
+            this.helper = helper;
             this.maxSwitch = 0;
             this.currSwitch = 0;
             this.previous = -1;
@@ -122,7 +126,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
         
         @Override
         public void init() throws IOException {
-            lexer = new JavaLexer(CharStreams.fromReader(new StringReader(content)));
+            lexer = new JavaLexer(CharStreams.fromReader(new StringReader(content.toString())));
         }
 
         @Override
@@ -300,6 +304,75 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                     wasClassName = true;
                     break;
                 case JavaLexer.BLOCK_COMMENT :
+                    
+                    /**
+                     * Comment span must be initially added to
+                     * highlight '/**' and starting comment text as a comment.
+                     */
+                    type = TokenType.COMMENT;
+                    span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
+                    wasClassName = false;
+                    
+                    // Walk through the comment
+                    final Indexer indexer = content.getIndexer();
+                    final CharPosition endPos = indexer.getCharPosition(currentToken.getStopIndex());
+                    
+                    int l = line;
+                    int c = column;
+                    
+                    int el = -1;
+                    int ec = -1;
+                    
+                    try {
+                        scan_comment: while (helper != null) {
+                            if(l == endPos.line && c == endPos.column) {
+                                // Reached end of comment
+                                // Nothing to search for
+                                break scan_comment;
+                            }
+
+                            final Pair<Integer, Range> result = helper.findJavadocColorSchemeId(l, c);
+                            final int colorId = result.first;
+                            final Range range = result.second;
+                            if(colorId != HighlightRangeHelper.NOT_FOUND) {
+
+                                // We found a valid start position of a JavaDoc element
+                                // Add it to the scheme
+                                colors.addIfNeeded(l, c, colorId);
+
+                                // Store end line and column
+                                el = range.getEnd().getLine();
+                                ec = range.getEnd().getCharacter();
+                                
+                                if(el >= content.getLineCount()) {
+                                    break scan_comment;
+                                }
+                                
+                                // Skip to the end line and column
+                                l = el;
+                                c = ec;
+                                
+                                // Again add the normal comment highlight
+                                // After the javadoc element
+                                if(ec >= content.getColumnCount(el)) {
+                                    el ++;
+                                    ec = 0;
+                                }
+                                
+                                colors.addIfNeeded(el, ec, EditorColorScheme.COMMENT);
+                            }
+
+                            c ++;
+                            if(c >= content.getColumnCount(l)) {
+                                l ++;
+                                c = 0;
+                            }
+                        }
+                    } catch (Throwable th) {
+                        LOG.error("Error while highlighting comment", th);
+                    }
+                    
+                    break;
                 case JavaLexer.LINE_COMMENT :
                     type = TokenType.COMMENT;
                     span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
@@ -329,92 +402,92 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                 case JavaLexer.IDENTIFIER :
                     type = TokenType.IDENTIFIER;
 
-                    if(isPackageName(line, column)) {
+                    if(helper != null && helper.isPackageName(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.PACKAGE_NAME);
                         break;
                     }
 
-                    if(isEnumType(line, column)) {
+                    if(helper != null && helper.isEnumType(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.ENUM_TYPE);
                         break;
                     }
 
-                    if(isClassName(line, column)) {
+                    if(helper != null && helper.isClassName(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
                         break;
                     }
 
-                    if(isAnnotationType(line, column)) {
+                    if(helper != null && helper.isAnnotationType(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
                         break;
                     }
 
-                    if(isInterface(line, column)) {
+                    if(helper != null && helper.isInterface(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.INTERFACE);
                         break;
                     }
 
-                    if(isEnum(line, column)) {
+                    if(helper != null && helper.isEnum(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.ENUM);
                         break;
                     }
 
-                    if(isStaticField(line, column)) {
+                    if(helper != null && helper.isStaticField(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.STATIC_FIELD);
                         break;
                     }
 
-                    if(isField(line, column)) {
+                    if(helper != null && helper.isField(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.FIELD);
                         break;
                     }
 
-                    if(isParameter(line, column)) {
+                    if(helper != null && helper.isParameter(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.PARAMETER);
                         break;
                     }
 
-                    if(isLocal(line, column)) {
+                    if(helper != null && helper.isLocal(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.LOCAL_VARIABLE);
                         break;
                     }
 
-                    if(isExceptionParam(line, column)) {
+                    if(helper != null && helper.isExceptionParam(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.EXCEPTION_PARAM);
                         break;
                     }
 
-                    if(isMethodDeclaration(line, column)) {
+                    if(helper != null && helper.isMethodDeclaration(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.METHOD_DECLARATION);
                         break;
                     }
                     
-                    if(isMethodInvocation(line, column)) {
+                    if(helper != null && helper.isMethodInvocation(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.METHOD_INVOCATION);
                         break;
                     }
 
-                    if(isConstructor(line, column)) {
+                    if(helper != null && helper.isConstructor(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.CONSTRUCTOR);
                         break;
                     }
 
-                    if(isStaticInit(line, column)) {
+                    if(helper != null && helper.isStaticInit(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.STATIC_INIT);
                         break;
                     }
 
-                    if(isInstanceInit(line, column)) {
+                    if(helper != null && helper.isInstanceInit(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.INSTANCE_INIT);
                         break;
                     }
 
-                    if(isTypeParam(line, column)) {
+                    if(helper != null && helper.isTypeParam(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_PARAM);
                         break;
                     }
 
-                    if(isResourceVariable(line, column)) {
+                    if(helper != null && helper.isResourceVariable(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.RESOURCE_VARIABLE);
                         break;
                     }
@@ -465,108 +538,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
             }
             
             return type;
-        }
-        
-        private boolean isEnumType(int line, int column) {
-            if(highlights == null || highlights.enumTypes == null) return false;
-            return isInRange(highlights.enumTypes, line, column);
-        }
-
-        private boolean isAnnotationType(int line, int column) {
-            if(highlights == null || highlights.annotationTypes == null) return false;
-            return isInRange(highlights.annotationTypes, line, column);
-        }
-
-        private boolean isInterface(int line, int column) {
-            if(highlights == null || highlights.interfaces == null) return false;
-            return isInRange(highlights.interfaces, line, column);
-        }
-
-        private boolean isEnum(int line, int column) {
-            if(highlights == null || highlights.enums == null) return false;
-            return isInRange(highlights.enums, line, column);
-        }
-
-        private boolean isParameter(int line, int column) {
-            if(highlights == null || highlights.parameters == null) return false;
-            return isInRange(highlights.parameters, line, column);
-        }
-
-        private boolean isExceptionParam(int line, int column) {
-            if(highlights == null || highlights.exceptionParams == null) return false;
-            return isInRange(highlights.exceptionParams, line, column);
-        }
-
-        private boolean isConstructor(int line, int column) {
-            if(highlights == null || highlights.constructors == null) return false;
-            return isInRange(highlights.constructors, line, column);
-        }
-
-        private boolean isStaticInit(int line, int column) {
-            if(highlights == null || highlights.staticInits == null) return false;
-            return isInRange(highlights.staticInits, line, column);
-        }
-
-        private boolean isInstanceInit(int line, int column) {
-            if(highlights == null || highlights.instanceInits == null) return false;
-            return isInRange(highlights.instanceInits, line, column);
-        }
-
-        private boolean isTypeParam(int line, int column) {
-            if(highlights == null || highlights.typeParams == null) return false;
-            return isInRange(highlights.typeParams, line, column);
-        }
-
-        private boolean isResourceVariable(int line, int column) {
-            if(highlights == null || highlights.resourceVariables == null) return false;
-            return isInRange(highlights.resourceVariables, line, column);
-        }
-
-        private boolean isPackageName(int line, int column) {
-            if(highlights == null || highlights.packages == null) return false;
-            return isInRange(highlights.packages, line, column);
-        }
-
-        private boolean isClassName(int line, int column) {
-            if(highlights == null || highlights.classNames == null) return false;
-            return isInRange(highlights.classNames, line, column);
-        }
-
-        private boolean isField(int line, int column) {
-            if(highlights == null || highlights.fields == null) return false;
-            return isInRange(highlights.fields, line, column);
-        }
-
-        private boolean isStaticField(int line, int column) {
-            if(highlights == null || highlights.statics == null) return false;
-            return isInRange(highlights.statics, line, column);
-        }
-
-        private boolean isMethodDeclaration(int line, int column) {
-            if(highlights == null || highlights.methodDeclarations == null) return false;
-            return isInRange(highlights.methodDeclarations, line, column);
-        }
-        
-        private boolean isMethodInvocation(int line, int column) {
-            if(highlights == null || highlights.methodInvocations == null) return false;
-            return isInRange(highlights.methodInvocations, line, column);
-        }
-
-        private boolean isLocal(int line, int column) {
-            if(highlights == null || highlights.locals == null) return false;
-            return isInRange(highlights.locals, line, column);
-        }
-
-        private boolean isInRange(List<Range> ranges, int line, int column) {
-            if(ranges != null && ranges.size() > 0) {
-                for(int i=0;i<ranges.size();i++) {
-                    final Range range = ranges.get(i);
-                    if(range == null) continue;
-                    if(range.getStart().getLine() == line && range.getStart().getCharacter() == column)
-                        return true;
-                }
-            } 
-            return false;
         }
     }
     

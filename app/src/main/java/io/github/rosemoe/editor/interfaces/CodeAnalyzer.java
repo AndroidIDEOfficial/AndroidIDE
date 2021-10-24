@@ -70,6 +70,11 @@ public interface CodeAnalyzer {
     Map<Integer, Diagnostic> getDiagnosticsAtLine(int line);
     
     /**
+     * Get any hex color string is present in provided line
+     */
+    Map<Integer, Integer> getHexColorsInLine (int line);
+    
+    /**
      * Analyze spans for the given input
      *
      * @param languageServer The language server provided by this language. Maybe null.

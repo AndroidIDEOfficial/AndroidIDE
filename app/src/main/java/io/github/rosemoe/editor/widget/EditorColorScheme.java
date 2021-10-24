@@ -16,7 +16,6 @@
 package io.github.rosemoe.editor.widget;
 
 import android.util.SparseIntArray;
-
 import io.github.rosemoe.editor.util.Objects;
 
 /**
@@ -52,8 +51,54 @@ import io.github.rosemoe.editor.util.Objects;
  */
 public class EditorColorScheme {
 	
-    public static final int JAVADOC_INLINE_TAG = 57;
-    public static final int JAVADOC_TAG = 56;
+    //------------------- -< JavaDoc >- -----------------------
+    public static final int JD_UNKNOWN_INLINETAG_CONTENT = 102;
+    public static final int JD_UNKNOWN_INLINETAG = 101;
+    public static final int JD_UNKNOWN_BLOCKTAG_CONTENT= 100;
+    public static final int JD_UNKNOWN_BLOCKTAG = 99;
+    public static final int JD_VERSION_BODY = 98;
+    public static final int JD_VERSION_TAG = 97;
+    public static final int JD_VALUE_REFERENCE = 96;
+    public static final int JD_VALUE_TAG = 95;
+    public static final int JD_USES_SERVICETYPE = 94;
+    public static final int JD_USES_DESCRIPTION = 93;
+    public static final int JD_USES_TAG = 92;
+    public static final int JD_THROWS_NAME = 91;
+    public static final int JD_THROWS_DESCRIPTION = 90;
+    public static final int JD_THROWS_TAG = 89;
+    public static final int JD_SUMMARY_MESSAGE = 88;
+    public static final int JD_SUMMARY_TAG = 87;
+    public static final int JD_SINCE_TAG = 86;
+    public static final int JD_SINCE_BODY = 85;
+    public static final int JD_SERIAL_TAG = 84;
+    public static final int JD_SERIALDATA_DESCRIPTION = 83;
+    public static final int JD_SERIALDATA_TAG = 82;
+    public static final int JD_SEE_REFERENCE = 81;
+    public static final int JD_SEE_TAG = 80;
+    public static final int JD_RETURN_DESCRIPTION = 79;
+    public static final int JD_RETURN_TAG = 78;
+    public static final int JD_PROVIDES_SERVICETYPE = 77;
+    public static final int JD_PROVIDES_DESCRIPTION = 76;
+    public static final int JD_PROVIDES_TAG = 75;
+    public static final int JD_PARAM_DESCRIPTION = 74;
+    public static final int JD_PARAM_NAME = 73;
+    public static final int JD_PARAM_TAG = 72;
+    public static final int JD_LITERAL_TEXT = 71;
+    public static final int JD_LITERAL_TAG = 70;
+    public static final int JD_LINK_REFERENCE = 69;
+    public static final int JD_LINK_LABEL = 68;
+    public static final int JD_LINK_TAG = 67;
+    public static final int JD_INHERITDOC_TAG = 66;
+    public static final int JD_INDEX_SEARCH_TERM = 65;
+    public static final int JD_INDEX_DESCRIPTION = 64;
+    public static final int JD_INDEX_TAG = 63;
+    public static final int JD_HIDDEN_TAG = 62;
+    public static final int JD_HIDDEN_MESSAGE = 61;
+    public static final int JD_DOCROOT_TAG = 60;
+    public static final int JD_DEPRECATED_MESSAGE= 59;
+    public static final int JD_DEPRECATED_TAG = 58;
+    public static final int JD_AUTHOR_NAME = 57;
+    public static final int JD_AUTHOR_TAG = 56;
     
     public static final int DIAGNOSTIC_ERROR = 38;
     public static final int DIAGNOSTIC_WARNING = 39;
@@ -124,6 +169,21 @@ public class EditorColorScheme {
     public static final int LINE_NUMBER_BACKGROUND = 3;
     public static final int LINE_NUMBER = 2;
     public static final int LINE_DIVIDER = 1;
+    
+    /**
+     * Default comment color
+     */
+    protected static int COMMENT_DEFAULT = 0xffa8a8a8;
+    
+    /**
+     * Start index of Javadoc related color IDs
+     */
+    public static final int JD_SCHEME_START = 56;
+    
+    /**
+     * End index of Javadoc related color IDs
+     */
+    public static final int JD_SCHEME_END = 102;
 
     /**
      * Min pre-defined color id
@@ -133,7 +193,7 @@ public class EditorColorScheme {
     /**
      * Max pre-defined color id
      */
-    protected static final int END_COLOR_ID = 57;
+    protected static final int END_COLOR_ID = 102;
     /**
      * Real color saver
      */
@@ -187,6 +247,12 @@ public class EditorColorScheme {
      * @param type The type
      */
     private void applyDefault(int type) {
+        
+        // By default, all javadoc syntax will be treated as comments
+        if(type >= JD_SCHEME_START && type <= JD_SCHEME_END) {
+            setColor(type, COMMENT_DEFAULT); // Comment
+        }
+        
         int color;
         switch (type) {
             case LINE_DIVIDER:
@@ -235,9 +301,7 @@ public class EditorColorScheme {
                 color = 0xFF2196F3;
                 break;
             case COMMENT:
-            case JAVADOC_INLINE_TAG :
-            case JAVADOC_TAG :
-                color = 0xffa8a8a8;
+                color = COMMENT_DEFAULT;
                 break;
             case LITERAL:
                 color = 0xFF008080;
@@ -311,7 +375,49 @@ public class EditorColorScheme {
             default:
                 color = 0xffffffff;
         }
+        
         setColor(type, color);
+    }
+    
+    public void setJavadocBlockTagColor(final int color) {
+        for (int i=JD_SCHEME_START;i<=JD_SCHEME_END;i++) {
+            if(isJavadocBlockTag(i)) {
+                setColor(i, color);
+            }
+        }
+    }
+    
+    public void setJavadocInlineTagColor(final int color) {
+        for (int i=JD_SCHEME_START;i<=JD_SCHEME_END;i++) {
+            if(isJavadocInlineTag(i)) {
+                setColor(i, color);
+            }
+        }
+    }
+    
+    public boolean isJavadocBlockTag (int type) {
+        return type == JD_AUTHOR_TAG
+        || type == JD_DEPRECATED_TAG
+        || type == JD_PARAM_TAG
+        || type == JD_RETURN_TAG
+        || type == JD_SERIALDATA_TAG
+        || type == JD_SERIAL_TAG
+        || type == JD_SINCE_TAG
+        || type == JD_THROWS_TAG
+        || type == JD_UNKNOWN_BLOCKTAG
+        || type == JD_VERSION_TAG
+        
+        // In AndroidIDE, @hidden is considered as a block tag
+        || type == JD_HIDDEN_TAG;
+    }
+    
+    public boolean isJavadocInlineTag (int type) {
+        return type == JD_DOCROOT_TAG
+        || type == JD_INHERITDOC_TAG
+        || type == JD_LINK_TAG
+        || type == JD_LITERAL_TAG
+        || type == JD_UNKNOWN_INLINETAG
+        || type == JD_VALUE_TAG;
     }
 
     /**

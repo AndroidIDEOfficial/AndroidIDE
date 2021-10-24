@@ -32,4 +32,9 @@ public abstract class AbstractCodeAnalyzer implements CodeAnalyzer {
     public Map<Integer, Diagnostic> getDiagnosticsAtLine(int line) {
         return new HashMap<Integer, Diagnostic>();
     }
+
+    @Override
+    public Map<Integer, Integer> getHexColorsInLine(int line) {
+        return new HashMap<Integer, Integer>();
+    }
 }

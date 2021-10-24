@@ -4,6 +4,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import java.util.Comparator;
 
 public class LSPUtils {
     
@@ -57,4 +58,43 @@ public class LSPUtils {
         range.setEnd(new Position(line, column + length));
         return range;
     }
+    
+    public static final Comparator<Range> RANGE_START_COMPARATOR = new Comparator<Range>() {
+
+        @Override
+        public int compare(Range r1, Range r2) {
+            // Check if ranges are null
+            if(r1 == null && r2 != null) {
+                return 1;
+            } else if (r1 != null && r2 == null) {
+                return -1;
+            } else if (r1 == null && r2 == null) {
+                return 0;
+            } else {
+                final int r1StartLine = r1.getStart().getLine();
+                final int r1StartCol = r1.getStart().getCharacter();
+                final int r2StartLine = r2.getStart().getLine();
+                final int r2StartCol = r2.getStart().getCharacter();
+                
+                // Compare by lines
+                if(r1StartLine < r2StartLine) {
+                    return -1;
+                } else if (r1StartLine > r2StartLine) {
+                    return 1;
+                } else {
+                    
+                    // Lines are same
+                    // Compare by columns
+                    if(r1StartCol < r2StartCol) {
+                        return -1;
+                    } else if (r1StartCol > r2StartCol) {
+                        return 1;
+                    } else {
+                        // Both ranges have same start position
+                        return 0;
+                    }
+                }
+            }
+        }
+    };
 }

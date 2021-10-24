@@ -6,7 +6,16 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     
     @Override
     public void applyDefault() {
+        // Change the default comment color
+        // This will make sure that all javadoc elements
+        // which are not implemented in this scheme are 
+        // same as other comments
+        COMMENT_DEFAULT = 0xffbdbdbd;
+        
+        // Apply default colors
         super.applyDefault();
+        
+        // Apply customized colors
         setColor(WHOLE_BACKGROUND, 0xff212121);
         setColor(LINE_NUMBER_BACKGROUND, 0xff212121);
         setColor(LINE_DIVIDER, 0xff9e9e9e);
@@ -30,7 +39,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         setColor(MATCHED_TEXT_BACKGROUND, 0xffFF8F00);
         setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
         setColor(KEYWORD, 0xffff6060);
-        setColor(COMMENT, 0xffbdbdbd);
+        setColor(COMMENT, COMMENT_DEFAULT);
         setColor(OPERATOR, 0xff4fc3f7);
         setColor(LITERAL, 0xff8bc34a);
         setColor(TYPE_NAME, 0xff4fc3f7);
@@ -57,10 +66,26 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         setColor(DIAGNOSTIC_INFO, 0xff4CAF50);
         setColor(DIAGNOSTIC_HINT, 0xffffffff);
         
-        setColor(JAVADOC_INLINE_TAG, 0xffff6060);
-        setColor(JAVADOC_TAG, 0xffff6060);
-        
         setColor(STDERR, 0xfff44336);
         setColor(STDOUT, 0xff4CAF50);
+        
+        // Common colors for all block and inline tags
+        setJavadocInlineTagColor(0xff92d7ff);
+        setJavadocBlockTagColor(0xffffa9a9);
+        
+        // JavaDoc colors for tag members, like, param name and description
+        setColor(JD_PARAM_NAME, 0xffa9b7ff);
+        setColor(JD_PARAM_DESCRIPTION, 0xffbbffc0);
+        setColor(JD_RETURN_DESCRIPTION, 0xffbbffc0);
+        setColor(JD_LITERAL_TEXT, 0xffffef83);
+        setColor(JD_LINK_LABEL, 0xffa9b7ff);
+        setColor(JD_LINK_REFERENCE, 0xff2196f3);
+        setColor(JD_THROWS_TAG, 0xffff2532);
+        setColor(JD_THROWS_NAME, 0xffa9b7ff);
+        setColor(JD_THROWS_DESCRIPTION, 0xffbbffc0);
+        setColor(JD_SEE_REFERENCE, 0xff2196f3);
+        setColor(JD_SUMMARY_MESSAGE, 0xffbbffc0);
+        setColor(JD_HIDDEN_MESSAGE, 0xffbbffc0);
+        setColor(JD_AUTHOR_NAME, 0xfffaff00);
     }
 }

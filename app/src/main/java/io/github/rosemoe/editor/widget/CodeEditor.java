@@ -1487,25 +1487,24 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(getDpUnit() * 1.4f);
             final List<Diagnostic> diags = getEditorLanguage().getAnalyzer().findDiagnosticsContainingLine(line);
-            if(diags != null && diags.size() > 0) {
-                for(int i=0;i<diags.size();i++) {
-                    Diagnostic d = diags.get(i);
-                    if(d == null) continue;
-                    int startCol = d.getRange().getStart().getCharacter();
-                    int endCol = d.getRange().getEnd().getCharacter();
-                    if(line > d.getRange().getStart().getCharacter()) startCol = 0;
-                    if(line > d.getRange().getEnd().getCharacter()) endCol = 0;
-                    final int paintStart = Math.max(firstVisibleChar, startCol);
-                    final int paintEnd = Math.min(lastVisibleChar, endCol);
-                    final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
-                    final RectF r = new RectF();
-                    r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
-                    r.top = r.bottom - getRowHeight() * 0.2f;
-                    r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
-                    r.right = r.left + width;
-                    mPaint.setColor(diagnosticColor(d.getSeverity()));
-                    drawDiagnostics(r, canvas, mPaint);
-                }
+            final int size = diags == null ? 0 : diags.size();
+            for(int i=0;i<size;i++) {
+                Diagnostic d = diags.get(i);
+                if(d == null) continue;
+                int startCol = d.getRange().getStart().getCharacter();
+                int endCol = d.getRange().getEnd().getCharacter();
+                if(line > d.getRange().getStart().getCharacter()) startCol = 0;
+                if(line > d.getRange().getEnd().getCharacter()) endCol = 0;
+                final int paintStart = Math.max(firstVisibleChar, startCol);
+                final int paintEnd = Math.min(lastVisibleChar, endCol);
+                final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
+                final RectF r = new RectF();
+                r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
+                r.top = r.bottom - getRowHeight() * 0.2f;
+                r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
+                r.right = r.left + width;
+                mPaint.setColor(diagnosticColor(d.getSeverity()));
+                drawDiagnostics(r, canvas, mPaint);
             }
             
             mPaint.setStyle(style);
@@ -1531,7 +1530,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
     }
 
-    private void drawDiagnostics(RectF rect, Canvas canvas, Paint paint) {
+    private void drawDiagnostics(final RectF rect, final Canvas canvas, final Paint paint) {
         final Path path = new Path();
         final float right = rect.right;
         final float bottom = rect.bottom;
@@ -2221,14 +2220,20 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * @return The width measured
      */
     private float measureText(char[] src, int index, int count) {
-        int tabCount = 0;
-        for (int i = 0; i < count; i++) {
-            if (src[index + i] == '\t') {
-                tabCount++;
-            }
-        }
-        float extraWidth = mFontCache.measureChar(' ', mPaint) * getTabWidth() - mFontCache.measureChar('\t', mPaint);
-        return mFontCache.measureText(src, index, index + count, mPaint) + tabCount * extraWidth;
+        
+        // AndroidIDE does not allow tabs
+        // Due to Java Language Server
+        
+//        int tabCount = 0;
+//        for (int i = 0; i < count; i++) {
+//            if (src[index + i] == '\t') {
+//                tabCount++;
+//            }
+//        }
+//        float extraWidth = mFontCache.measureChar(' ', mPaint) * getTabWidth() - mFontCache.measureChar('\t', mPaint);
+//        return mFontCache.measureText(src, index, index + count, mPaint) + tabCount * extraWidth;
+        
+        return mFontCache.measureText(src, index, index + count, mPaint);
     }
 
     /**

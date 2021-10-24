@@ -5,6 +5,7 @@ import com.itsaky.androidide.syntax.lexer.DefaultLexer;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.HexColor;
 import io.github.rosemoe.editor.text.CharPosition;
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import org.antlr.v4.runtime.Lexer;
 public abstract class BaseJavaLexer extends DefaultLexer {
 	
     protected Lexer lexer;
-	protected String content;
+	protected Content content;
 	public int lastLine;
 	public int maxSwitch;
 	public int currSwitch;

@@ -316,8 +316,8 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
 
     @Override
     public void publishDiagnostics(PublishDiagnosticsParams params) {
-        boolean error = params == null || params.getDiagnostics() == null || params.getDiagnostics().isEmpty();
-        activity().handleDiagnosticsResultVisibility(error);
+        boolean error = params == null || params.getDiagnostics() == null;
+        activity().handleDiagnosticsResultVisibility(error || params.getDiagnostics().isEmpty());
         
         if(error) return;
         
@@ -328,7 +328,7 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         activity().getDiagnosticsList().setAdapter(newDiagnosticsAdapter());
         
         EditorFragment editor = null;
-        if(activity().getPagerAdapter() != null && (editor = activity().getPagerAdapter().findEditorByFile(new File(URI.create(params.getUri())))) != null) {
+        if(activity().getPagerAdapter() != null && (editor = activity().getPagerAdapter().findEditorByFile(file)) != null) {
             editor.setDiagnostics(params.getDiagnostics());
         }
     }
