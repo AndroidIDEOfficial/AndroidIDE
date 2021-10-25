@@ -10,7 +10,9 @@ import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.SemanticHighlight;
+import com.itsaky.lsp.SemanticHighlightsParams;
 import com.itsaky.lsp.services.IDELanguageServer;
+import com.itsaky.lsp.services.IDETextDocumentService;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.CharPosition;
@@ -27,11 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
 
 public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
@@ -47,6 +52,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
     
     @Override
     public void analyze(IDELanguageServer languageServer, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception {
+        
         final JavaLexerAnalyzer lexer = new JavaLexerAnalyzer((Content) content, colors, this.helper);
         lexer.init();
         while (delegate.shouldAnalyze()) {
@@ -60,6 +66,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
         colors.determine(lexer.lastLine);
         colors.setSuppressSwitch(lexer.maxSwitch + 10);
         colors.setHexColors(lexer.lineColors);
+   
     }
 
     @Override

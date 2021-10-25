@@ -228,7 +228,7 @@ public class HighlightRangeHelper {
     }
     
     private int containsStartPosition (List<Range> ranges, int line, int column) {
-        int index = binarySearchTypeFrom(ranges, line, column);
+        int index = binarySearchStartPosition(ranges, line, column);
         if(index >= 0 && index < ranges.size()) {
             return index;
         }
@@ -236,7 +236,7 @@ public class HighlightRangeHelper {
         return -1;
     }
 
-    private int binarySearchTypeFrom(List<Range> ranges, int line, int column) {
+    private int binarySearchStartPosition(List<Range> ranges, int line, int column) {
         
         int left = 0, right = ranges.size() - 1;
         while (left <= right) {

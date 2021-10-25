@@ -69,6 +69,7 @@ import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.lsp.providers.CodeActionProvider;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.JSONUtility;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
@@ -102,7 +103,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.CodeActionOptions;
@@ -135,6 +135,7 @@ import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import android.os.Handler;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -210,10 +211,14 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     static final int ACTION_MODE_NONE = 0;
     static final int ACTION_MODE_SEARCH_TEXT = 1;
     static final int ACTION_MODE_SELECT_TEXT = 2;
+    
     private static final String LOG_TAG = "CodeEditor";
+    
     protected SymbolPairMatch mLanguageSymbolPairs;
+    
     Layout mLayout;
     int mStartedActionMode;
+    
     private int mTabWidth;
     private int mCursorPosition;
     private int mInputType;
@@ -228,6 +233,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private float mInsertSelWidth;
     private float mBlockLineWidth;
     private float mLineInfoTextSize;
+    private long mLastEdited;
     private boolean mWait;
     private boolean mDrag;
     private boolean mScalable;
@@ -302,6 +308,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private SymbolPairMatch mOverrideSymbolPairs;
     private LongArrayList mPostDrawLineNumbers = new LongArrayList();
     private CharPosition mLockedSelection;
+    
     EditorInputConnection mConnection;
     KeyMetaStates mKeyMetaStates = new KeyMetaStates(this);
 	
@@ -528,6 +535,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mPaintOther.setTypeface(Typeface.MONOSPACE);
         mBuffer = new char[256];
         mBuffer2 = new char[16];
+        mLastEdited = 0;
         mStartedActionMode = ACTION_MODE_NONE;
         setTextSize(DEFAULT_TEXT_SIZE);
         setLineInfoTextSize(mPaint.getTextSize());
@@ -1488,6 +1496,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mPaint.setStrokeWidth(getDpUnit() * 1.4f);
             final List<Diagnostic> diags = getEditorLanguage().getAnalyzer().findDiagnosticsContainingLine(line);
             final int size = diags == null ? 0 : diags.size();
+            LOG.info("Diagnostics for line " + line, JSONUtility.prettyPrinter.toJson(diags), "size=" + size);
             for(int i=0;i<size;i++) {
                 Diagnostic d = diags.get(i);
                 if(d == null) continue;
@@ -5015,6 +5024,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     
     private void notifyChanged() {
         if(mLanguageServer != null) {
+            mLastEdited = System.currentTimeMillis();
             DidChangeTextDocumentParams p = didChangeParams();
             if(p != null) {
                 mLanguageServer.getTextDocumentService().didChange(p);

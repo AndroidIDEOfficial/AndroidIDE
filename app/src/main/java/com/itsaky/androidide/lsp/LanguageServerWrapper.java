@@ -165,11 +165,6 @@ public class LanguageServerWrapper implements IDELanguageServer {
         }
         
         @Override
-        public CompletableFuture<List<SemanticHighlight>> semanticHighlights(SemanticHighlightsParams params) {
-            return CompletableFuture.completedFuture(Collections.singletonList((SemanticHighlight) null));
-        }
-
-        @Override
         public CompletableFuture<List<CallHierarchyIncomingCall>> callHierarchyIncomingCalls(CallHierarchyIncomingCallsParams p1) {
             return service.callHierarchyIncomingCalls(p1);
         }
