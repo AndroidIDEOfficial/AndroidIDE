@@ -136,6 +136,7 @@ import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import android.os.Handler;
+import com.itsaky.androidide.utils.LSPUtils;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -313,9 +314,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     KeyMetaStates mKeyMetaStates = new KeyMetaStates(this);
 	
     private List<String> mSignatureHelpTriggerChars = new ArrayList<>();
-    
-	private Map<HexColor, Integer> mLineColors;
-    private Map<Integer, List<Range>> stringMap;
     
     private File currentFile;
     
@@ -604,7 +602,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             setDefaultFocusHighlightEnabled(false);
         }
 		
-		mLineColors = new HashMap<HexColor, Integer>();
 		mErrorColor = Color.parseColor("#FF5252");
 		mWarningColor = Color.parseColor("#FFD740");
 		mRect2.set(-1, -1, -1, -1);
@@ -642,21 +639,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mLanguageClient.showDiagnostic(diag, this);
         }
     }
-    
-    public void setStringMap(Map<Integer, List<Range>> map) {
-        this.stringMap = map;
-    }
-	
-	public CodeEditor setLineColors(HashMap<HexColor, Integer> map) {
-		this.mLineColors = map;
-		return this;
-	}
-	
-	public CodeEditor putLineColor(HexColor index, int color) {
-		createMapIfNull();
-		mLineColors.put(index, color);
-		return this;
-	}
     
     public void notifySpansChanged() {
         if(mSpanner != null) {
@@ -1128,12 +1110,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if (time > 3.0) {
         }
     }
-	
-	private void createMapIfNull() {
-		if(this.mLineColors == null) {
-			this.mLineColors = new HashMap<HexColor, Integer>();
-		}
-	}
 
     /**
      * Paint the view on given Canvas
@@ -1471,7 +1447,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             }
 			
 			// Draw hex colors
-			if(isLineColorsEnabled() && mLineColors != null && mLineColors.size() > 0) {
+            final Map<HexColor, Integer> mLineColors = isLineColorsEnabled() && mSpanner != null ? mSpanner.getResult().getHexColors() : null;
+			if(mLineColors != null && mLineColors.size() > 0) {
 				for(HexColor c : mLineColors.keySet()) {
 					if(c != null && c.isSameLine(line) && mLineColors.get(c) != null) {
 						final int paintStart = Math.max(firstVisibleChar, c.start.column);
@@ -1496,7 +1473,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mPaint.setStrokeWidth(getDpUnit() * 1.4f);
             final List<Diagnostic> diags = getEditorLanguage().getAnalyzer().findDiagnosticsContainingLine(line);
             final int size = diags == null ? 0 : diags.size();
-            LOG.info("Diagnostics for line " + line, JSONUtility.prettyPrinter.toJson(diags), "size=" + size);
+            
             for(int i=0;i<size;i++) {
                 Diagnostic d = diags.get(i);
                 if(d == null) continue;
@@ -1510,7 +1487,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 final RectF r = new RectF();
                 r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
                 r.top = r.bottom - getRowHeight() * 0.2f;
-                r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
+                r.left = measureText(mBuffer, 0, startCol) - getOffsetX();
                 r.right = r.left + width;
                 mPaint.setColor(diagnosticColor(d.getSeverity()));
                 drawDiagnostics(r, canvas, mPaint);
@@ -4832,17 +4809,42 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         return new TextDocumentIdentifier(getFile().toURI().toString());
     }
     
-    private boolean isInString() {
+    private boolean isCursorInString() {
         final int line = getCursor().getLeftLine();
         final int column = getCursor().getLeftColumn();
-        if(stringMap == null || stringMap.isEmpty() || !stringMap.containsKey(line)) return false;
-        List<Range> strings = stringMap.get(line);
-        if(strings == null || strings.isEmpty()) return false;
-        for(int i=0;i<strings.size();i++) {
-            Range r = strings.get(i);
-            if(r.getStart().getCharacter() <= column && column <= r.getEnd().getCharacter())
-                return true;
+        
+        final Map<Integer, List<Range>> stringMap = mSpanner == null ? null : mSpanner.getResult().getStringMap();
+        if(stringMap == null || stringMap.isEmpty()) {
+            return false;
         }
+        
+        return isInRanges(stringMap.get(line), line, column);
+    }
+    
+    private boolean isCursorInComment () {
+        final int line = getCursor().getLeftLine();
+        final int column = getCursor().getLeftColumn();
+        
+        final Map<Integer, List<Range>> commentMap = mSpanner == null ? null : mSpanner.getResult().getCommentMap();
+        if(commentMap == null || commentMap.isEmpty()) {
+            return false;
+        }
+        
+        return isInRanges(commentMap.get(line), line, column);
+    }
+    
+    private boolean isInRanges (List<Range> ranges, int line, int column) {
+        
+        if(ranges == null || ranges.isEmpty()) {
+            return false;
+        }
+        
+        for (Range range : ranges) {
+            if (LSPUtils.isInRange(range, line, column)) {
+                return true;
+            }
+        }
+        
         return false;
     }
     
@@ -4881,7 +4883,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 
         // Auto completion
         // Trigger only when autocompletion is enabled and cursor is not in a string token
-        if (isAutoCompletionEnabled() && !isInString()) {
+        if (isAutoCompletionEnabled() && !isCursorInString() && !isCursorInComment()) {
             if ((mConnection.mComposingLine == -1 || mCompletionOnComposing) && endColumn != 0 && startLine == endLine) {
                 int end = endColumn;
                 while (endColumn > 0) {
@@ -5009,12 +5011,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     @Override
     public void onAnalyzeDone(TextAnalyzer provider) {
         if (provider == mSpanner) {
-			if(mSpanner.getResult().getHexColors().size() > 0) {
-				setLineColors(mSpanner.getResult().getHexColors());
-			}
-            if(mSpanner.getResult().getStringMap().size() > 0) {
-                setStringMap(mSpanner.getResult().getStringMap());
-            }
             if (mHighlightCurrentBlock) {
                 mCursorPosition = findCursorBlock();
             }

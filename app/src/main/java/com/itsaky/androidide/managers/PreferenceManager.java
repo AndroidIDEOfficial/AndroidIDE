@@ -22,7 +22,7 @@ public class PreferenceManager {
     public static final String KEY_EDITORFLAG_WS_EMPTY_LINE = "idepref_editor_wsEmptyLine";
     public static final String KEY_EDITORFLAG_LINE_BREAK = "idepref_editor_lineBreak";
     public static final String KEY_EDITOR_DRAW_HEX = "idepref_editor_drawHexColors";
-
+    
     public static final String KEY_GRADLE_CURRENT_DIR = "idepref_customGradle_currentFolder";
     public static final String KEY_GRADLE_FILENAMES = "idepref_customGradle_folderNames";
     public static final String KEY_GRADLECMD_STACKTRACRE = "idepref_gradleCmd_stacktrace";
@@ -40,7 +40,7 @@ public class PreferenceManager {
     public PreferenceManager(Context ctx) {
         this.prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
     }
-
+    
     public PreferenceManager putInt(String key, int val) {
         prefs.edit().putInt(key, val).apply();
         return this;
@@ -164,4 +164,13 @@ public class PreferenceManager {
     public boolean confirmProjectOpen() {
         return getBoolean(GeneralPreferences.KEY_CONFIRM_PROJECT_OPEN, false);
     }
+    
+    public void setJavadocHighlightEnabled (boolean enabled) {
+        putBoolean(EditorPreferences.KEY_EDITOR_JAVADOC_ENABLED, enabled);
+    }
+    
+    public boolean isJavadocHighlightEnabled() {
+        return getBoolean(EditorPreferences.KEY_EDITOR_JAVADOC_ENABLED, true);
+    }
+    
 }

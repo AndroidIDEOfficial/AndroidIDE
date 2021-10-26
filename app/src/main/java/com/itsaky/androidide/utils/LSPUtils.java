@@ -1,10 +1,12 @@
 package com.itsaky.androidide.utils;
 
+import java.util.Comparator;
+import java.util.List;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import java.util.Comparator;
+import java.util.ArrayList;
 
 public class LSPUtils {
     
@@ -22,6 +24,25 @@ public class LSPUtils {
         
         return p1.getLine() == p2.getLine()
             && p1.getCharacter() == p2.getCharacter();
+    }
+    
+    public static boolean isInRange (Range range, Position position) {
+        final int line = position.getLine();
+        final int column = position.getCharacter();
+        return isInRange(range, line, column);
+    }
+    
+    public static boolean isInRange (Range range, int line, int column) {
+        final int startLine = range.getStart().getLine();
+        final int startCol = range.getStart().getCharacter();
+        final int endLine = range.getEnd().getLine();
+        final int endCol = range.getEnd().getCharacter();
+        
+        if(startLine == endLine) {
+            return startCol <= column && column <= endCol;
+        } else {
+            return startLine <= line && line <= endLine;
+        }
     }
     
     public static boolean isEqual(Range r1, Range r2) {
@@ -57,6 +78,35 @@ public class LSPUtils {
         range.setStart(new Position(line, column));
         range.setEnd(new Position(line, column + length));
         return range;
+    }
+    
+    public static int binarySearchStartPosition(List<Range> ranges, int line, int column) {
+        int left = 0, right = ranges.size() - 1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            final Range range = ranges.get(mid);
+            final int l = range.getStart().getLine();
+            final int c = range.getStart().getCharacter();
+            
+            // Compare lines
+            if(l < line) {
+                left = mid + 1;
+            } else if(l > line) {
+                right = mid - 1;
+            } else {
+                // Lines are same. Compare by columns
+                if(c < column) {
+                    left = mid + 1;
+                } else if (c > column) {
+                    right = mid - 1;
+                } else {
+                    // Found!
+                    return mid;
+                }
+            }
+        }
+        
+        return -1;
     }
     
     public static final Comparator<Range> RANGE_START_COMPARATOR = new Comparator<Range>() {

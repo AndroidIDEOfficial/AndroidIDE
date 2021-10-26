@@ -19,6 +19,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 	public static final String KEY_EDITOR_PRINTABLE_CHARS = "idepref_editor_nonPrintableFlags";
 	public static final String KEY_EDITOR_DRAW_HEX = "idepref_editor_drawHexColors";
 	public static final String KEY_EDITOR_TAB_SIZE = "idepref_editor_tabSize";
+    public static final String KEY_EDITOR_JAVADOC_ENABLED = "idepref_editor_javadocEnabled";
     
     @Override
 	public void onCreatePreferences(Bundle p1, String p2) {

@@ -15,12 +15,10 @@
  */
 package io.github.rosemoe.editor.struct;
 
+import android.graphics.Typeface;
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
-import io.github.rosemoe.editor.widget.EditorColorScheme;
-import org.eclipse.lsp4j.Range;
 
 /**
  * The span model
@@ -29,45 +27,12 @@ import org.eclipse.lsp4j.Range;
  */
 public class Span {
     
-    /**
-     * Flag for {@link Span#problemFlags}.
-     *
-     * Indicates this span is in ERROR region
-     */
-    public static final int FLAG_ERROR = 1 << 4;
-    /**
-     * Flag for {@link Span#problemFlags}.
-     *
-     * Indicates this span is in WARNING region
-     */
-    public static final int FLAG_WARNING = 1 << 3;
-    /**
-     * Flag for {@link Span#problemFlags}.
-     *
-     * Indicates this span is in INFO region
-     */
-    public static final int FLAG_INFO = 1 << 2;
-    /**
-     * Flag for {@link Span#problemFlags}.
-     *
-     * Indicates this span is in INFO region
-     */
-    public static final int FLAG_HINT = 1 << 1;
-    /**
-     * Flag for {@link Span#problemFlags}.
-     *
-     * Indicates this span is in DEPRECATED region
-     */
-    public static final int FLAG_DEPRECATED = 1;
-    
     private static final BlockingQueue<Span> cacheQueue = new ArrayBlockingQueue<>(8192 * 2);
     public int line;
     public int column;
     public int colorId;
     public int underlineColor = 0;
-    public int problemFlags;
-    public Range problemRange;
-
+    
     /**
      * Create a new span
      *
@@ -113,7 +78,7 @@ public class Span {
         underlineColor = color;
         return this;
     }
-
+    
     /**
      * Get span start column
      *
@@ -144,5 +109,4 @@ public class Span {
         colorId = column = underlineColor = 0;
         return cacheQueue.offer(this);
     }
-
 }

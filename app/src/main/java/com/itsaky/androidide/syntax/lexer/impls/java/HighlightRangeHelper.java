@@ -228,39 +228,9 @@ public class HighlightRangeHelper {
     }
     
     private int containsStartPosition (List<Range> ranges, int line, int column) {
-        int index = binarySearchStartPosition(ranges, line, column);
+        int index = LSPUtils.binarySearchStartPosition(ranges, line, column);
         if(index >= 0 && index < ranges.size()) {
             return index;
-        }
-        
-        return -1;
-    }
-
-    private int binarySearchStartPosition(List<Range> ranges, int line, int column) {
-        
-        int left = 0, right = ranges.size() - 1;
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            final Range range = ranges.get(mid);
-            final int l = range.getStart().getLine();
-            final int c = range.getStart().getCharacter();
-            
-            // Compare lines
-            if(l < line) {
-                left = mid + 1;
-            } else if(l > line) {
-                right = mid - 1;
-            } else {
-                // Lines are same. Compare by columns
-                if(c < column) {
-                    left = mid + 1;
-                } else if (c > column) {
-                    right = mid - 1;
-                } else {
-                    // Found!
-                    return mid;
-                }
-            }
         }
         
         return -1;

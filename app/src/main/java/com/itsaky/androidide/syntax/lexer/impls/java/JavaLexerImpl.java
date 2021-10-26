@@ -42,7 +42,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
 
     private HighlightRangeHelper helper;
     private Map<Integer, Map<Integer, Diagnostic>> diagnostics = new HashMap<>();
-    private final Map<Integer, Map<Integer, Diagnostic>> customDiagnostics = new HashMap<>();
     
     @Override
     public void setSemanticHighlights(SemanticHighlight highlights) {
@@ -324,6 +323,10 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                     final Indexer indexer = content.getIndexer();
                     final CharPosition endPos = indexer.getCharPosition(currentToken.getStopIndex());
                     
+                    final Position startPosition = new Position(line, column);
+                    final Position endPosition = new Position(endPos.line, endPos.column);
+                    colors.addCommentRange(line, new Range(startPosition, endPosition));
+                    
                     int l = line;
                     int c = column;
                     
@@ -384,6 +387,11 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                     type = TokenType.COMMENT;
                     span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
                     wasClassName = false;
+                    
+                    final CharPosition a = content.getIndexer().getCharPosition(currentToken.getStopIndex());
+                    final Position s = new Position(line, column);
+                    final Position e = new Position(a.line, a.column);
+                    colors.addCommentRange(line, new Range(s, e));
                     
                     String lineComment = currentToken.getText();
                     if(lineComment != null) {

@@ -1,11 +1,8 @@
 package com.itsaky.androidide.lsp;
 
-import com.itsaky.lsp.SemanticHighlight;
-import com.itsaky.lsp.SemanticHighlightsParams;
 import com.itsaky.lsp.services.IDELanguageServer;
 import com.itsaky.lsp.services.IDETextDocumentService;
 import com.itsaky.lsp.services.IDEWorkspaceService;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.eclipse.lsp4j.CallHierarchyIncomingCall;
@@ -153,7 +150,6 @@ public class LanguageServerWrapper implements IDELanguageServer {
 
     @Override
     public void setTrace(SetTraceParams params) {
-        
     }
     
     class TextDocumentServiceWrapper implements IDETextDocumentService {

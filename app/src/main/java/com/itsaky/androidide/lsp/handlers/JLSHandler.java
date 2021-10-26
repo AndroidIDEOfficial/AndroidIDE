@@ -45,9 +45,6 @@ public class JLSHandler implements LSPHandler {
         }
         
         try {
-            // Why not directly use 'java' command?
-            // I tried doing the same, but it ends up throwing unexpected errors.
-            // Something related to FileSystem...
             mShellBuilder = new ProcessBuilder("/system/bin/sh");
             mShellBuilder.directory(Environment.HOME);
             mShellBuilder.redirectErrorStream(false);

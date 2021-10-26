@@ -91,6 +91,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Position;
+import java.util.Collections;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -926,24 +927,24 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         new TaskExecutor().executeAsync(() -> {
             IDELanguageServer javaServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
             if(javaServer == null) return null;
-            
+
             List<String> cps = mProject.getClassPaths();
             JsonObject settings = new JsonObject();
             JsonObject java = new JsonObject();
             JsonArray classPath = new JsonArray();
-            
+
             for(int i=0;i<cps.size();i++) {
                 classPath.add(cps.get(i));
             }
-            
+
             java.add("classPath", classPath);
             settings.add("java", java);
-            
+
             DidChangeConfigurationParams params = new DidChangeConfigurationParams();
             params.setSettings(settings);
-            
+
             javaServer.getWorkspaceService().didChangeConfiguration(params);
-            
+
             return null;
         }, __ -> {
             setStatus(getString(getApp().areCompletorsStarted() ? R.string.msg_service_started : R.string.msg_starting_completion_failed));
@@ -962,8 +963,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final List<File> files = mPagerAdapter.getOpenedFiles();
         
         final EditorFragment editorFragment = mPagerAdapter.getFrag(index);
-        final File removed = files.get(index);
-
+        
         frags.remove(index);
         files.remove(index);
         

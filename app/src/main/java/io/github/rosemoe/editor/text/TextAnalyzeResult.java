@@ -42,7 +42,8 @@ public class TextAnalyzeResult {
     private boolean determined = false;
     
     private final Map<Integer, List<Range>> stringMap = new HashMap<>();
-
+    private final Map<Integer, List<Range>> commentMap = new HashMap<>();
+    
     /**
      * Create a new result
      */
@@ -57,16 +58,26 @@ public class TextAnalyzeResult {
         return stringMap;
     }
     
+    public Map<Integer, List<Range>> getCommentMap() {
+        return commentMap;
+    }
+    
     public void addStringRange(int line, Range range) {
-        if(stringMap.containsKey(line)) {
-            List<Range> ranges = stringMap.get(line);
-            ranges.add(range);
-            stringMap.put(line, ranges);
-        } else {
-            List<Range> ranges = new ArrayList<>();
-            ranges.add(range);
-            stringMap.put(line, ranges);
+        List<Range> ranges = stringMap.get(line);
+        if(ranges == null) {
+            ranges = new ArrayList<>();
         }
+        ranges.add(range);
+        stringMap.put(line, ranges);
+    }
+    
+    public void addCommentRange (int line, Range range) {
+        List<Range> ranges = commentMap.get(line);
+        if(ranges == null) {
+            ranges = new ArrayList<>();
+        }
+        ranges.add(range);
+        commentMap.put(line, ranges);
     }
 	
 	public void addHexColor(HexColor index, int color) {
@@ -246,62 +257,5 @@ public class TextAnalyzeResult {
      */
     public List<List<Span>> getSpanMap() {
         return mSpanMap;
-    }
-    
-    /**
-     * Marks a region with the given flag.
-     * This can only be called after {@link TextAnalyzeResult#determine(int)} is called.
-     */
-    public void markProblemRegion(int newFlag, int startLine, int startColumn, int endLine, int endColumn) {
-        if (!determined) {
-            return;
-        }
-        for (int line = startLine; line <= endLine; line++) {
-            int start = (line == startLine ? startColumn : 0);
-            int end = (line == endLine ? endColumn : Integer.MAX_VALUE);
-            List<Span> spans = mSpanMap.get(line);
-            int increment;
-            for (int i = 0; i < spans.size(); i += increment) {
-                Span span = spans.get(i);
-                increment = 1;
-                if (span.column >= end) {
-                    break;
-                }
-                int spanEnd = (i + 1 >= spans.size() ? Integer.MAX_VALUE : spans.get(i + 1).column);
-                if (spanEnd >= start) {
-                    int regionStartInSpan = Math.max(span.column, start);
-                    int regionEndInSpan = Math.min(end, spanEnd);
-                    if (regionStartInSpan == span.column) {
-                        if (regionEndInSpan == spanEnd) {
-                            span.problemFlags |= newFlag;
-                        } else {
-                            increment = 2;
-                            Span nSpan = span.copy();
-                            nSpan.column = regionEndInSpan;
-                            spans.add(i + 1, nSpan);
-                            span.problemFlags |= newFlag;
-                        }
-                    } else {
-                        //regionStartInSpan > span.column
-                        if (regionEndInSpan == spanEnd) {
-                            increment = 2;
-                            Span nSpan = span.copy();
-                            nSpan.column = regionStartInSpan;
-                            spans.add(i + 1, nSpan);
-                            nSpan.problemFlags |= newFlag;
-                        } else {
-                            increment = 3;
-                            Span span1 = span.copy();
-                            span1.column = regionStartInSpan;
-                            span1.problemFlags |= newFlag;
-                            Span span2 = span.copy();
-                            span2.column = regionEndInSpan;
-                            spans.add(i + 1, span1);
-                            spans.add(i + 2, span2);
-                        }
-                    }
-                }
-            }
-        }
     }
 }
