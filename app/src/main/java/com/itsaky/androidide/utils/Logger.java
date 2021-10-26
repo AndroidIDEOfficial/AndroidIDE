@@ -13,24 +13,6 @@ public class Logger {
     private static Logger instance;
     private static com.elvishew.xlog.Logger xLogger;
     private static String TAG = "AndroidIDE";
-
-    public Logger warn(Object... messages) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append(TAG);
-        sb.append("]");
-        sb.append("\n");
-        if(messages == null) {
-            xLogger.w("null");
-            return this;
-        }
-        for(Object msg : messages) {
-            sb.append(msg);
-            sb.append("\n");
-        }
-        xLogger.w(sb.toString());
-        return this;
-    }
     
     public static Logger instance() {
         return instance == null ? createInstance(TAG) : instance;
@@ -62,6 +44,24 @@ public class Logger {
         
         instance = new Logger(tag);
         return instance;
+    }
+    
+    public Logger warn(Object... messages) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        sb.append(TAG);
+        sb.append("]");
+        sb.append("\n");
+        if(messages == null) {
+            xLogger.w("null");
+            return this;
+        }
+        for(Object msg : messages) {
+            sb.append(msg);
+            sb.append("\n");
+        }
+        xLogger.w(sb.toString());
+        return this;
     }
     
     public Logger debug(Object... messages) {

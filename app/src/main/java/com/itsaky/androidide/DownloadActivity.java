@@ -109,12 +109,11 @@ public class DownloadActivity extends StudioActivity {
         }
         sb.append("echo 'Cleaning unsupported flags in binaries...' && $BUSYBOX find $JAVA_HOME -type f -exec androidide-cleaner {} \\; && ");
         sb.append("echo " + DONE);
-        LOG.debug("Installation commands ", sb.toString().replace("&&", "\n"));
+        
 		server.bgAppend(sb.toString());
 	}
     
 	private void checkInstalled(CharSequence out) {
-        LOG.verbose("Installation output: ", out);
 		if(out != null) {
 			final String line = out.toString().trim();
 			runOnUiThread(() -> {

@@ -34,7 +34,7 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
         try {
             listening.get();
         } catch (Throwable th) {
-            LOG.error("listening.get error", th);
+            
         }
         
         shutdown();

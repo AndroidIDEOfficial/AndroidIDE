@@ -19,7 +19,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import com.itsaky.androidide.models.SuggestItem;
 import java.util.List;
 import org.eclipse.lsp4j.CompletionItem;
 
@@ -58,7 +57,7 @@ public abstract class EditorCompletionAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mItems.size();
+        return mItems != null ? mItems.size() : 0;
     }
 
     @Override

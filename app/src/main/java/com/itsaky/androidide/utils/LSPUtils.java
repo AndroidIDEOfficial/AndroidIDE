@@ -38,11 +38,8 @@ public class LSPUtils {
         final int endLine = range.getEnd().getLine();
         final int endCol = range.getEnd().getCharacter();
         
-        if(startLine == endLine) {
-            return startCol <= column && column <= endCol;
-        } else {
-            return startLine <= line && line <= endLine;
-        }
+        return startLine <= line && line <= endLine
+        && startCol <= column && column <= endCol;
     }
     
     public static boolean isEqual(Range r1, Range r2) {

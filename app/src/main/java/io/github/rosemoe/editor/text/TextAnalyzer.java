@@ -216,7 +216,6 @@ public class TextAnalyzer {
                     }
                 } while (true);
             } catch (Exception ex) {
-                Logger.instance().error("Analyze error", ex);
             }
         }
 

@@ -42,6 +42,7 @@ import org.eclipse.lsp4j.Command;
 import io.github.rosemoe.editor.text.ContentLine;
 
 public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
+    
     private final static String TIP = "Refreshing...";
     private final CodeEditor mEditor;
     private final GradientDrawable mBg;
@@ -95,6 +96,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
         if (mCancelShowUp) {
             return;
         }
+        
         super.show();
     }
 
@@ -298,12 +300,12 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
     public void displayResults(final List<CompletionItem> results, long requestTime) {
         mEditor.post(() -> {
             setLoading(false);
+            mAdapter.clear();
+            mAdapter.attachAttributes(this, results);
             if (results == null || results.isEmpty()) {
                 hide();
                 return;
             }
-            mAdapter.clear();
-            mAdapter.attachAttributes(this, results);
             mBinding.list.setAdapter(mAdapter);
             mCurrent = 0;
             float newHeight = mEditor.getDpUnit() * mAdapter.getItemHeight() * results.size();
@@ -348,7 +350,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
                 displayResults(mLocalProvider.getAutoCompleteItems(mContent, mFileUri, mPrefix, mInner, mColors, mIndex, mLine, mColumn), mTime);
             } catch (Exception e) {
                 e.printStackTrace();
-                displayResults(new ArrayList<>(), mTime);
+                displayResults(new ArrayList<CompletionItem>(), mTime);
             }
         }
 

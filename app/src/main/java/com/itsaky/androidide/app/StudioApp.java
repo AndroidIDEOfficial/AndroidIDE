@@ -68,12 +68,15 @@ public class StudioApp extends MultiDexApplication
 	public void onCreate() {
 		this.instance = this;
 		this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        
 		Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> handleCrash(thread, ex));
+        
 		super.onCreate();
+        
 		mPrefsManager = new PreferenceManager(this);
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        JavaCharacter.initMap();
         
+        JavaCharacter.initMap();
         ToolsManager.init(this, null);
         
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -142,7 +145,6 @@ public class StudioApp extends MultiDexApplication
             try {
                 mApiInfo = new ApiInfo(this);
             } catch (Exception e) {
-                LOG.error("Failed to read API version information", e);
             }
         }
     }

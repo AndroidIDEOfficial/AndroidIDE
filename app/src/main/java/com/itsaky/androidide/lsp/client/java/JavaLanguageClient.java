@@ -43,7 +43,6 @@ public class JavaLanguageClient extends IDELanguageClientImpl {
     
     @Override
     public void notifyProgress(ProgressParams p1) {
-        LOG.info("notifyProgress: ", gson.toJson(p1));
     }
 
     @Override
@@ -62,12 +61,10 @@ public class JavaLanguageClient extends IDELanguageClientImpl {
     }
     
     public void setTrace(SetTraceParams p1) {
-        LOG.info("setTrace: ", gson.toJson(p1));
     }
 
     @Override
     public void showMessage(MessageParams p1) {
-        LOG.info("showMessage: ", gson.toJson(p1));
     }
 
     @Override

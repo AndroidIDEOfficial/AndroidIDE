@@ -45,7 +45,7 @@ public final class Environment {
     public static File BOOTCLASSPATH;
     
 	public static final String SAMPLE_GRADLE_PROP_CONTENTS = "# Specify global Gradle properties in this file\n# These properties will be applicable for every project you build with Gradle.";
-	public static List<File> AARS = new ArrayList<>();
+    public static final Map<String, String> IDE_PROPS = new HashMap<>();
     
     public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
     
@@ -76,10 +76,10 @@ public final class Environment {
         GRADLE_USER_HOME = new File(HOME, ".gradle");
         GRADLE_PROPS = new File(GRADLE_USER_HOME, "gradle.properties");
 
-        final Map<String, String> props = readProperties();
-        ANDROID_HOME = new File(props.getOrDefault("ANDROID_HOME", DEFAULT_ANDROID_HOME));
-        JAVA_HOME = new File(props.getOrDefault("JAVA_HOME", DEFAULT_JAVA_HOME));
-        GRADLE_HOME = new File(props.getOrDefault("GRADLE_HOME", DEFAULT_GRADLE_HOME));
+        IDE_PROPS.putAll(readProperties());
+        ANDROID_HOME = new File(readProp("ANDROID_HOME", DEFAULT_ANDROID_HOME));
+        JAVA_HOME = new File(readProp("JAVA_HOME", DEFAULT_JAVA_HOME));
+        GRADLE_HOME = new File(readProp("GRADLE_HOME", DEFAULT_GRADLE_HOME));
         
         GRADLE = new File(GRADLE_HOME, "bin/gradle");
         JAVA = new File(JAVA_HOME, "bin/java");
@@ -114,11 +114,10 @@ public final class Environment {
             for(Map.Entry entry : p.entrySet()) {
                 props.put(entry.getKey() + "", entry.getValue() + "");
             }
-            return props;
         } catch (Throwable th) {
-            LOG.error("Error reading properties", th);
-            return props;
+            // ignored
         }
+        return props;
     }
 	
 	public static File getGradleDir() {
@@ -135,7 +134,7 @@ public final class Environment {
         map.put("GRADLE_USER_HOME", GRADLE_USER_HOME.getAbsolutePath());
         map.put("GRADLE_HOME", GRADLE_HOME.getAbsolutePath());
         map.put("TMPDIR", TMP_DIR.getAbsolutePath());
-        map.put("PROJECT_DIR", PROJECTS_DIR.getAbsolutePath());
+        map.put("PROJECTS", PROJECTS_DIR.getAbsolutePath());
         map.put("LANG", "en_US.UTF-8");
         map.put("LC_ALL", "en_US.UTF-8");
         
@@ -185,6 +184,14 @@ public final class Environment {
         
         map.put("PATH", path);
         
+        for (String key : IDE_PROPS.keySet()) {
+            if (blacklistedVariables().contains(key.trim())) {
+                continue;
+            } else {
+                map.put(key, readProp(key, ""));
+            }
+        }
+        
         return map;
     }
     
@@ -193,6 +200,24 @@ public final class Environment {
         if (value != null) {
             environment.put(name, value);
         }
+    }
+    
+    public static String readProp (String key) {
+        return readProp(key, null);
+    }
+    
+    public static String readProp(String key, String defaultValue) {
+        String value = IDE_PROPS.getOrDefault(key, defaultValue);
+        if(value == null ) {
+            return defaultValue;
+        }
+        if(value.contains("$HOME")) {
+            value = value.replace("$HOME", HOME.getAbsolutePath());
+        }
+        if(value.contains("$SYSROOT")) {
+            value = value.replace("$SYSROOT", SYSROOT.getAbsolutePath());
+        }
+        return value;
     }
     
 	public static String path(File file) {
@@ -205,4 +230,14 @@ public final class Environment {
 			
 		return in;
 	}
+    
+    private static final List<String> blacklist = new ArrayList<>();
+    private static List<String> blacklistedVariables() {
+        if(blacklist.isEmpty()) {
+            blacklist.add("HOME");
+            blacklist.add("SYSROOT");
+            blacklist.add("JLS_HOME");
+        }
+        return blacklist;
+    }
 }

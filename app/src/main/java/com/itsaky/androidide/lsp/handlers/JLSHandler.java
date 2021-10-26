@@ -48,11 +48,6 @@ public class JLSHandler implements LSPHandler {
             mShellBuilder = new ProcessBuilder("/system/bin/sh");
             mShellBuilder.directory(Environment.HOME);
             mShellBuilder.redirectErrorStream(false);
-            
-            if(StudioApp.DEBUG) {
-                mShellBuilder.redirectError(new File("/sdcard/ide_xlog/process_error.txt"));
-            }
-            
             mShellBuilder.environment().putAll(Environment.getEnvironment(false));
             mShell = mShellBuilder.start();
             

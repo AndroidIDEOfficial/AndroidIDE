@@ -381,7 +381,7 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
                 );
                 results.put(file, matches);
             } catch (Throwable th) {
-                LOG.error(ThrowableUtils.getFullStackTrace(th));
+                
             }
         }
 
@@ -435,7 +435,6 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
             
             if(complete == null || error != null || !complete.booleanValue()) {
                 StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
-                LOG.error("Quickfix error", error);
                 return;
             }
         });
@@ -486,15 +485,7 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
 
     @Override
     public void logMessage(MessageParams params) {
-        if(params.getType() == MessageType.Error) {
-            LOG.error(params.getMessage());
-        } else if(params.getType() == MessageType.Info) {
-            LOG.info(params.getMessage());
-        } else if(params.getType() == MessageType.Warning) {
-            LOG.warn(params.getMessage());
-        } else if(params.getType() == MessageType.Log) {
-            LOG.debug(params.getMessage());
-        }
+        // No logs
     }
 
     @Override
@@ -607,14 +598,14 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
      * Reports connection progress
      */
     protected void connectionReport(String message) {
-        LOG.info("LSP Connection report", message);
+        
     }
 
     /**
      * Called when there was an error connecting to server.
      */
     protected void connectionError(Throwable th) {
-        LOG.error("LSP connection error", th);
+        
     }
 
     public static interface StarterListener {

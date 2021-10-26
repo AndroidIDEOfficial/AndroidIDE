@@ -53,7 +53,12 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
     public void analyze(IDELanguageServer languageServer, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception {
         
         final JavaLexerAnalyzer lexer = new JavaLexerAnalyzer((Content) content, colors, this.helper);
-        lexer.init();
+        
+        try {
+            lexer.init();
+        } catch (Throwable th) {
+            return;
+        }
         while (delegate.shouldAnalyze()) {
             // null = EOF
             if(lexer.nextToken() == null)
@@ -131,8 +136,8 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
         }
         
         @Override
-        public void init() throws IOException {
-            lexer = new JavaLexer(CharStreams.fromReader(new StringReader(content.toString())));
+        public void init() {
+            lexer = new JavaLexer(CharStreams.fromString(content.toString()));
         }
 
         @Override
@@ -319,7 +324,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                     span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
                     wasClassName = false;
                     
-                    // Walk through the comment
                     final Indexer indexer = content.getIndexer();
                     final CharPosition endPos = indexer.getCharPosition(currentToken.getStopIndex());
                     
@@ -371,7 +375,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                                 
                                 colors.addIfNeeded(el, ec, EditorColorScheme.COMMENT);
                             }
-
+                            
                             c ++;
                             if(c >= content.getColumnCount(l)) {
                                 l ++;
@@ -379,7 +383,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                             }
                         }
                     } catch (Throwable th) {
-                        LOG.error("Error while highlighting comment", th);
                     }
                     
                     break;
@@ -395,10 +398,22 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                     
                     String lineComment = currentToken.getText();
                     if(lineComment != null) {
-                        lineComment = lineComment.trim();
                         if(lineComment.startsWith("//")) {
-                            lineComment = lineComment.substring(2).trim();
+                            lineComment = lineComment.substring(2);
                         }
+                        
+                        // Trim leading whitespaces
+                        int startsFrom = 0;
+                        whitespace_checker: for (int i=0;i<lineComment.length();i++) {
+                            if(Character.isWhitespace(lineComment.charAt(i))) {
+                                startsFrom++;
+                            } else {
+                                break whitespace_checker;
+                            }
+                        }
+                        
+                        lineComment = lineComment.substring(startsFrom);
+                        
                         final String text = new String (lineComment.toCharArray());
                         lineComment = lineComment.toLowerCase(Locale.getDefault());
                         if(lineComment.startsWith("todo ")) {
@@ -421,57 +436,57 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                         span = colors.addIfNeeded(line, column, EditorColorScheme.PACKAGE_NAME);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isEnumType(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.ENUM_TYPE);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isClassName(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isAnnotationType(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isInterface(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.INTERFACE);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isEnum(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.ENUM);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isStaticField(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.STATIC_FIELD);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isField(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.FIELD);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isParameter(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.PARAMETER);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isLocal(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.LOCAL_VARIABLE);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isExceptionParam(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.EXCEPTION_PARAM);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isMethodDeclaration(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.METHOD_DECLARATION);
                         break;
@@ -481,32 +496,32 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                         span = colors.addIfNeeded(line, column, EditorColorScheme.METHOD_INVOCATION);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isConstructor(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.CONSTRUCTOR);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isStaticInit(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.STATIC_INIT);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isInstanceInit(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.INSTANCE_INIT);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isTypeParam(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_PARAM);
                         break;
                     }
-
+                    
                     if(helper != null && helper.isResourceVariable(line, column)) {
                         span = colors.addIfNeeded(line, column, EditorColorScheme.RESOURCE_VARIABLE);
                         break;
                     }
-
+                    
                     span = colors.addIfNeeded(line, column, EditorColorScheme.TEXT_NORMAL);
                     break;
                 case JavaLexer.LBRACE :

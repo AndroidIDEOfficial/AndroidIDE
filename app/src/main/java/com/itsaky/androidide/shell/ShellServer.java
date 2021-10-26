@@ -41,7 +41,6 @@ public class ShellServer extends Thread {
             this.process = processBuilder.start();
             this.output = new BufferedReader(new InputStreamReader(process.getInputStream()));
         } catch (Throwable th) {
-            LOG.error(ThrowableUtils.getFullStackTrace(th));
             if (callback != null) {
                 String out = ThrowableUtils.getFullStackTrace(th).concat("\n");
                 callback.output(out);
@@ -114,7 +113,6 @@ public class ShellServer extends Thread {
 			this.process.getOutputStream().write(str.concat("\n").getBytes());
 			this.process.getOutputStream().flush();
 		} catch (IOException e) {
-            LOG.error(ThrowableUtils.getFullStackTrace(e));
 		}
     }
 
@@ -166,26 +164,4 @@ public class ShellServer extends Thread {
 	public interface Callback {
 		public void output(CharSequence charSequence);
 	}
-    
-    class ErrorReader implements Runnable {
-        
-        private final InputStream error;
-
-        public ErrorReader(InputStream error) {
-            this.error = error;
-        }
-        
-        @Override
-        public void run() {
-            try {
-                final BufferedReader r = new BufferedReader(new InputStreamReader(error));
-                String line = "";
-                while((line = r.readLine()) != null) {
-                    LOG.info("Error stream", line);
-                }
-            } catch (Throwable th) {
-                LOG.error("Cannot read error stream");
-            }
-        }
-    }
 }

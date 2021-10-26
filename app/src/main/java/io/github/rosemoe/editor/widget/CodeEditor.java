@@ -4890,7 +4890,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 
         // Auto completion
         // Trigger only when autocompletion is enabled and cursor is not in a string token
-        if (isAutoCompletionEnabled() && !isCursorInString() && !isCursorInComment()) {
+        if (isAutoCompletionEnabled() && !(isCursorInString() || isCursorInComment())) {
             if ((mConnection.mComposingLine == -1 || mCompletionOnComposing) && endColumn != 0 && startLine == endLine) {
                 int end = endColumn;
                 while (endColumn > 0) {
