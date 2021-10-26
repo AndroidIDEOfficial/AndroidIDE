@@ -189,12 +189,10 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         future.whenComplete((a, b) -> {
             final Throwable error = b;
             if(a == null || a.isEmpty()) {
-                hideBottomDiagnosticView();
                 return;
             }
             final List<CodeAction> actions = a.stream().filter(e -> e.isRight()).map (e -> e.getRight()).collect(Collectors.toList());
             if(actions == null || actions.isEmpty()) {
-                hideBottomDiagnosticView();
                 return;
             }
             ThreadUtils.runOnUiThread(() -> {
@@ -220,6 +218,9 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         set.addTransition(new ChangeBounds());
         set.addTransition(new Fade());
         set.setDuration(DIAGNOSTIC_TRANSITION_DURATION);
+        TransitionManager.beginDelayedTransition(activity().getBinding().getRoot(), set);
+        
+        activity().getDiagnosticBinding().getRoot().setVisibility(View.GONE);
     }
 
     private void hideBottomDiagnosticView() {
