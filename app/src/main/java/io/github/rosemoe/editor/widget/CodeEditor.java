@@ -1479,16 +1479,23 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 if(d == null) continue;
                 int startCol = d.getRange().getStart().getCharacter();
                 int endCol = d.getRange().getEnd().getCharacter();
-                if(line > d.getRange().getStart().getCharacter()) startCol = 0;
-                if(line > d.getRange().getEnd().getCharacter()) endCol = 0;
+                startCol = line > d.getRange().getStart().getCharacter() ? 0 : startCol;
+                endCol = line > d.getRange().getEnd().getCharacter() ? 0 : endCol;
+                
+                if(startCol == endCol) {
+                    endCol++;
+                }
+                
                 final int paintStart = Math.max(firstVisibleChar, startCol);
                 final int paintEnd = Math.min(lastVisibleChar, endCol);
                 final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
+                
                 final RectF r = new RectF();
-                r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
+                r.bottom = getRowBottom(line) - getOffsetY() - mDpUnit;
                 r.top = r.bottom - getRowHeight() * 0.2f;
-                r.left = measureText(mBuffer, 0, startCol) - getOffsetX();
+                r.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
                 r.right = r.left + width;
+                
                 mPaint.setColor(diagnosticColor(d.getSeverity()));
                 drawDiagnostics(r, canvas, mPaint);
             }
