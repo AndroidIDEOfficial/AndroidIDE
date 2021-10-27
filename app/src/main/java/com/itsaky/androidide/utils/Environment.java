@@ -155,13 +155,14 @@ public final class Environment {
         map.put("JAVA_HOME", JAVA_HOME.getAbsolutePath());
         
         /**
-         * If LD_LIBRARY_PATH is set, prepend $SYSROOT/lib to it,
+         * If LD_LIBRARY_PATH is set, append $SYSROOT/lib to it,
          * else set it to $SYSROOT/lib
          */
         String ld = System.getenv("LD_LIBRARY_PATH");
         if(ld == null || ld.trim().length() <= 0)
             ld = "";
-        else ld = LIBDIR.getAbsolutePath() + File.pathSeparator + ld;
+        else ld += File.pathSeparator;
+        ld += LIBDIR.getAbsolutePath();
         map.put("LD_LIBRARY_PATH", ld);
         
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

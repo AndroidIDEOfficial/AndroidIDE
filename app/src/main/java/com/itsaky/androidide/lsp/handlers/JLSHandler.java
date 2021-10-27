@@ -49,9 +49,14 @@ public class JLSHandler implements LSPHandler {
             mShellBuilder.directory(Environment.HOME);
             mShellBuilder.redirectErrorStream(false);
             mShellBuilder.environment().putAll(Environment.getEnvironment(false));
+            
+            if(StudioApp.DEBUG && android.os.Build.VERSION.SDK_INT >= 26) {
+                mShellBuilder.redirectError(new File("/sdcard/ide_xlog/jls.txt"));
+            }
+            
             mShell = mShellBuilder.start();
             
-            mShell.getOutputStream().write(("java -jar " + Environment.JLS_JAR.getAbsolutePath() + (QUIET ? " --quiet" : "") + "\n").getBytes());
+            mShell.getOutputStream().write(("java -agentlib:hook2 -jar " + Environment.JLS_JAR.getAbsolutePath() + (QUIET ? " --quiet" : "") + "\n").getBytes());
             mShell.getOutputStream().flush();
             
             javaClient = new JavaLanguageClient(null, server -> storeServerInfoAndNotify(server, onStarted));
