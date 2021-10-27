@@ -17,6 +17,7 @@ import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.InsertTextFormat;
+import com.google.gson.JsonObject;
 
 public class XMLCompletionService {
     
@@ -126,7 +127,14 @@ public class XMLCompletionService {
         item.setInsertText(createTagInsertText(view, slash));
         item.setInsertTextFormat(InsertTextFormat.PlainText);
         item.setSortText("2" + view.simpleName);
-        item.setKind(CompletionItemKind.Value);
+        item.setKind(CompletionItemKind.Class);
+        
+        // Required to show API information in completion list
+        final JsonObject data = new JsonObject();
+        data.addProperty("className", view.name);
+        
+        item.setData(data);
+        
 		return item;
 	}
 

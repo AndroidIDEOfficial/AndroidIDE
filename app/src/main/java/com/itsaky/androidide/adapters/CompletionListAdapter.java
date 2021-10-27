@@ -26,6 +26,8 @@ import com.itsaky.apiinfo.models.MethodInfo;
 import io.github.rosemoe.editor.widget.EditorCompletionAdapter;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {
     
@@ -38,7 +40,7 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
 
     @Override
     protected View getView(int position, View convertView, ViewGroup parent, boolean isCurrentCursorPosition) {
-        LayoutCompletionItemBinding binding = LayoutCompletionItemBinding.inflate(LayoutInflater.from(getContext()), parent, false);
+        final LayoutCompletionItemBinding binding = LayoutCompletionItemBinding.inflate(LayoutInflater.from(getContext()), parent, false);
 
 		CompletionItem item = getItem(position);
 		String label = item.getLabel(), desc = item.getDetail(), type = item.getKind().toString();
@@ -58,25 +60,28 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
 
         binding.completionApiInfo.setVisibility(View.GONE);
         
-        if (item != null) {
-            showApiInfoIfNeeded(item, binding.completionApiInfo);
-        }
+        showApiInfoIfNeeded(item, binding.completionApiInfo);
         
-        binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            
-            ViewGroup.LayoutParams p = binding.completionIconText.getLayoutParams();
-            p.height = binding.getRoot().getHeight();
-            binding.completionIconText.setLayoutParams(p);
-        });
+        final ViewTreeObserver.OnGlobalLayoutListener listener = new ViewTreeObserver.OnGlobalLayoutListener(){
 
+            @Override
+            public void onGlobalLayout() {
+                binding.getRoot().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                ViewGroup.LayoutParams p = binding.completionIconText.getLayoutParams();
+                p.height = binding.getRoot().getHeight();
+                binding.completionIconText.setLayoutParams(p);
+            }
+        };
+        binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(listener);
+        
         return binding.getRoot();
     }
 
     private void showApiInfoIfNeeded(final CompletionItem item, final TextView completionApiInfo) {
         
         new Thread(() -> {
-            final ApiInfo info = StudioApp.getInstance().getApiInfo();
-            boolean hasRead = info != null && info.hasRead();
+            final ApiInfo apiInfo = StudioApp.getInstance().getApiInfo();
+            boolean hasRead = apiInfo != null && apiInfo.hasRead();
             boolean isValid = isValidForApiVersion(item);
             
             if (hasRead && isValid) {
@@ -89,10 +94,10 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
                 final String className = data.get("className").getAsString();
                 CompletionItemKind kind = item.getKind();
                 
-                ClassInfo clazz = info.getClassByName(className);
+                ClassInfo clazz = apiInfo.getClassByName(className);
                 if(clazz == null) return;
                 
-                Info apiInfo = clazz;
+                Info info = clazz;
 
                 /**
                  * If this Info is not a class info, find the right member
@@ -112,7 +117,7 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
                         MethodInfo method = clazz.getMethod(simpleName, paramTypes);
                         
                         if(method != null) {
-                            apiInfo = method;
+                            info = method;
                         }
                     }
                 } else if(kind == CompletionItemKind.Field
@@ -121,23 +126,23 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
                     FieldInfo field = clazz.getFieldByName(simpleName);
                     
                     if(field != null) {
-                        apiInfo = field;
+                        info = field;
                     }
                 }
 
                 final StringBuilder infoBuilder = new StringBuilder();
-                if (apiInfo != null && apiInfo.since > 1) {
-                    infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_since, apiInfo.since));
+                if (info != null && info.since > 1) {
+                    infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_since, info.since));
                     infoBuilder.append("\n");
                 }
 
-                if (apiInfo != null && apiInfo.removed > 0) {
-                    infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_removed, apiInfo.removed));
+                if (info != null && info.removed > 0) {
+                    infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_removed, info.removed));
                     infoBuilder.append("\n");
                 }
 
-                if (apiInfo != null && apiInfo.deprecated > 0) {
-                    infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_deprecated, apiInfo.deprecated));
+                if (info != null && info.deprecated > 0) {
+                    infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_deprecated, info.deprecated));
                     infoBuilder.append("\n");
                 }
                 
