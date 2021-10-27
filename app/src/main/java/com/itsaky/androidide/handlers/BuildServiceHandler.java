@@ -1,6 +1,6 @@
 package com.itsaky.androidide.handlers;
 
-import com.itsaky.androidide.EditorActivity;
+import android.view.View;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.AndroidProject;
@@ -106,6 +106,7 @@ public class BuildServiceHandler extends IDEHandler implements IDEService.BuildL
 
         activity().getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
         activity().invalidateOptionsMenu();
+        activity().getBinding().buildProgressIndicator.setVisibility(View.GONE);
     }
     
     @Override
@@ -117,6 +118,7 @@ public class BuildServiceHandler extends IDEHandler implements IDEService.BuildL
         
         activity().getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
         activity().invalidateOptionsMenu();
+        activity().getBinding().buildProgressIndicator.setVisibility(View.GONE);
     }
     
     @Override
@@ -136,12 +138,13 @@ public class BuildServiceHandler extends IDEHandler implements IDEService.BuildL
     }
     
     @Override
-    public void prepare() {
+    public void prepareBuild() {
         boolean isFirstBuild = activity().getApp().getPrefManager().getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true);
         activity().setStatus(activity().getString(isFirstBuild ? R.string.preparing_first : R.string.preparing));
         if(isFirstBuild) {
             activity().showFirstBuildNotice();
         }
+        activity().getBinding().buildProgressIndicator.setVisibility(View.VISIBLE);
     }
     
     private boolean isClasspathValid(String path) {

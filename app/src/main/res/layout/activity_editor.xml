@@ -28,6 +28,14 @@
 				android:background="@color/primaryDarkColor"
 				android:id="@+id/editor_toolbar"/>
             
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/build_progress_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorColor="@color/secondaryColor"/>
+            
 			<com.itsaky.androidide.views.MaterialBanner
 				android:id="@+id/syncBanner"
 				android:layout_height="wrap_content"

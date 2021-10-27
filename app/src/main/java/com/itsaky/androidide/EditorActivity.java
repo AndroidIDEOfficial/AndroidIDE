@@ -193,8 +193,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
         mBinding.tabs.setOnTabSelectedListener(this);
 		mBinding.fabView.setOnClickListener(v -> showViewOptions());
-//		mBinding.diagnosticTextContainer.setVisibility(View.GONE);
-//      mBinding.diagnosticText.setClickable(false);
         
 		createQuickActions();
         
@@ -705,6 +703,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             startActivity(IntentUtils.getShareTextIntent(getString(R.string.msg_share_app)));
         } else if(id == R.id.editornav_close_project) {
             confirmProjectClose();
+        } else if (id == R.id.editornav_terminal) {
+            openTerminal();
         }
         mBinding.getRoot().closeDrawer(GravityCompat.START);
         return false;
@@ -1003,6 +1003,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
        /////////////////////////////////////////////////
       ////////////// PRIVATE APIS /////////////////////
      /////////////////////////////////////////////////
+     
+     private void openTerminal () {
+         final Intent intent = new Intent(this, TerminalActivity.class);
+         intent.putExtra(TerminalActivity.KEY_WORKING_DIRECTORY, mProject.getProjectPath());
+         startActivity(intent);
+     }
      
     private void startLanguageServers() {
         LSP.setActivityProvider(this);

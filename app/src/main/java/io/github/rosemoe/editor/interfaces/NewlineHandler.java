@@ -14,6 +14,7 @@
  *   limitations under the License.
  */
 package io.github.rosemoe.editor.interfaces;
+import io.github.rosemoe.editor.text.CharPosition;
 
 /**
  * Perform text processing when user enters '\n' and selection size is 0
@@ -27,7 +28,7 @@ public interface NewlineHandler {
      * @param afterText  Text of line after cursor
      * @return Whether this handler should be called
      */
-    boolean matchesRequirement(String beforeText, String afterText);
+    boolean matchesRequirement(String beforeText, String afterText, CharPosition cursor);
 
     /**
      * Handle newline and return processed content to insert

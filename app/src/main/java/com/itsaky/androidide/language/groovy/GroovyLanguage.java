@@ -8,6 +8,7 @@ import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
+import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.File;
@@ -26,7 +27,7 @@ public class GroovyLanguage extends BaseLanguage {
     
 	public GroovyLanguage(File file) {
         super(file);
-		analyzer = new GroovyAnalyzer();
+		analyzer = new GroovyAnalyzer(this);
 		completor = new GroovyAutoComplete();
 	}
 
@@ -107,7 +108,7 @@ public class GroovyLanguage extends BaseLanguage {
     class BraceHandler implements NewlineHandler {
 
         @Override
-        public boolean matchesRequirement(String beforeText, String afterText) {
+        public boolean matchesRequirement(String beforeText, String afterText, CharPosition cursor) {
 			beforeText = beforeText.trim();
 			afterText = afterText.trim();
             return beforeText.endsWith("{") && afterText.startsWith("}");

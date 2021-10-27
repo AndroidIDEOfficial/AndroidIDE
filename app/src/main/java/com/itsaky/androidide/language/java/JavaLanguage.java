@@ -10,6 +10,7 @@ import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
+import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.File;
@@ -22,14 +23,20 @@ public class JavaLanguage extends BaseLanguage {
     private final JavaLexerImpl lexer;
 	private final JavaAutoComplete complete;
     
+    private final NewlineHandler[] newlineHandlers;
+    
     public JavaLanguage() {
         this(null);
     }
     
 	public JavaLanguage(File file) {
         super(file);
-		this.lexer = new JavaLexerImpl();
+		this.lexer = new JavaLexerImpl(this);
 		this.complete = new JavaAutoComplete();
+        
+        this.newlineHandlers = new NewlineHandler[2];
+        this.newlineHandlers[0] = new BraceHandler();
+        this.newlineHandlers[1] = this.lexer.stringHandler;
 	}
 
     @Override
@@ -92,10 +99,8 @@ public class JavaLanguage extends BaseLanguage {
 	@Override
 	public CharSequence format(CharSequence content) {
 		return content;
-	}
-
-    private NewlineHandler[] newlineHandlers = new NewlineHandler[] { new BraceHandler() };
-
+    }
+    
     @Override
     public NewlineHandler[] getNewlineHandlers() {
         return newlineHandlers;
@@ -104,7 +109,7 @@ public class JavaLanguage extends BaseLanguage {
     class BraceHandler implements NewlineHandler {
 
         @Override
-        public boolean matchesRequirement(String beforeText, String afterText) {
+        public boolean matchesRequirement(String beforeText, String afterText, CharPosition cursor) {
             return beforeText.endsWith("{") && afterText.startsWith("}");
         }
 

@@ -6,6 +6,10 @@
         android:title="@string/group_project"
         android:id="@+id/editornav_group_project">
         <item
+            android:id="@+id/editornav_terminal"
+            android:icon="@drawable/ic_terminal"
+			android:title="@string/btn_terminal"/>
+        <item
             android:id="@+id/editornav_close_project"
             android:icon="@drawable/ic_close"
 			android:title="@string/title_close_project"/>

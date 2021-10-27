@@ -5,18 +5,32 @@ import com.itsaky.androidide.syntax.lexer.Lexer;
 import com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer;
 import com.itsaky.androidide.syntax.lexer.tokens.Token;
 import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
+import com.itsaky.androidide.utils.LSPUtils;
+import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.struct.BlockLine;
+import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
+import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
+import org.eclipse.lsp4j.Range;
+import io.github.rosemoe.editor.interfaces.EditorLanguage;
 
 public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
-
-	public GroovyLexerImpl(Content content, TextAnalyzeResult colors) {
+    
+    private final EditorLanguage language;
+    private final Map<Integer, List<Range>> stringMap = new HashMap<>();
+    public final MultilineStringHandler stringHandler = new MultilineStringHandler();
+    
+	public GroovyLexerImpl(EditorLanguage language, Content content, TextAnalyzeResult colors) {
+        this.language = language;
 		this.content = content;
 		this.colors = colors;
 		this.maxSwitch = 0;
@@ -283,4 +297,46 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 
 		return type;
 	}
+    
+    private class MultilineStringHandler implements NewlineHandler {
+
+        @Override
+        public boolean matchesRequirement(String beforeText, String afterText, CharPosition cursor) {
+            if(language == null || stringMap == null || stringMap.isEmpty()) {
+                return false;
+            }
+
+            final List<Range> ranges = stringMap.get(cursor.line);
+            if(ranges == null || ranges.isEmpty()) {
+                return false;
+            }
+
+            return isInRanges(ranges, cursor.line, cursor.column);
+        }
+
+        @Override
+        public NewlineHandler.HandleResult handleNewline(String beforeText, String afterText, int tabSize) {
+            int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
+            int advance = language.getIndentAdvance(beforeText) + 1;
+            final StringBuilder sb = new StringBuilder("\\n\" + \n") // Appends: \n" + <new-line>
+                .append(TextUtils.createIndent(count + advance, tabSize, language.useTab()))
+                .append("\"");
+            return new HandleResult(sb, 0);
+        }
+
+        private boolean isInRanges (List<Range> ranges, int line, int column) {
+
+            if(ranges == null || ranges.isEmpty()) {
+                return false;
+            }
+
+            for (Range range : ranges) {
+                if (LSPUtils.isInRange(range, line, column)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 }

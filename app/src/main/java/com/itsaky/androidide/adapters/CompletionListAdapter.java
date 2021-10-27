@@ -62,17 +62,11 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
         
         showApiInfoIfNeeded(item, binding.completionApiInfo);
         
-        final ViewTreeObserver.OnGlobalLayoutListener listener = new ViewTreeObserver.OnGlobalLayoutListener(){
-
-            @Override
-            public void onGlobalLayout() {
-                binding.getRoot().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                ViewGroup.LayoutParams p = binding.completionIconText.getLayoutParams();
-                p.height = binding.getRoot().getHeight();
-                binding.completionIconText.setLayoutParams(p);
-            }
-        };
-        binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(listener);
+        binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            ViewGroup.LayoutParams p = binding.completionIconText.getLayoutParams();
+            p.height = binding.getRoot().getHeight();
+            binding.completionIconText.setLayoutParams(p);
+        });
         
         return binding.getRoot();
     }

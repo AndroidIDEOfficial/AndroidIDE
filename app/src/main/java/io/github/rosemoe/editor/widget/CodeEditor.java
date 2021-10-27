@@ -4334,7 +4334,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                         boolean consumed = false;
                         for (NewlineHandler handler : handlers) {
                             if (handler != null) {
-                                if (handler.matchesRequirement(beforeText, afterText)) {
+                                if (handler.matchesRequirement(beforeText, afterText, getCursor().left())) {
                                     try {
                                         NewlineHandler.HandleResult result = handler.handleNewline(beforeText, afterText, getTabWidth());
                                         if (result != null) {

@@ -28,6 +28,7 @@ import com.itsaky.terminal.view.TerminalView;
 import com.itsaky.terminal.view.TerminalViewClient;
 import java.util.Map;
 import org.json.JSONException;
+import android.os.Bundle;
 
 public class TerminalActivity extends StudioActivity {
     
@@ -42,12 +43,14 @@ public class TerminalActivity extends StudioActivity {
     private final Client client = new Client();
     private static final Logger LOG = Logger.instance("TerminalActivity");
     
+    public static final String KEY_WORKING_DIRECTORY = "terminal_workingDirectory";
+    
     @Override
     protected View bindLayout() {
         binding = ActivityTerminalBinding.inflate(getLayoutInflater());
         terminal = new TerminalView(this, null);
         terminal.setTerminalViewClient(client);
-        terminal.attachSession(createSession());
+        terminal.attachSession(createSession(getWorkingDirectory()));
         terminal.setKeepScreenOn(true);
         terminal.setTextSize(currentTextSize = SizeUtils.dp2px(10));
         terminal.setTypeface(TypefaceUtils.jetbrainsMono());
@@ -64,6 +67,18 @@ public class TerminalActivity extends StudioActivity {
         }
 
         return binding.getRoot();
+    }
+
+    private String getWorkingDirectory() {
+        final Bundle extras = getIntent().getExtras();
+        if(extras != null && extras.containsKey(KEY_WORKING_DIRECTORY)) {
+            String directory = extras.getString(KEY_WORKING_DIRECTORY, null);
+            if(directory == null || directory.trim().length() <= 0) {
+                directory = Environment.HOME.getAbsolutePath();
+            }
+            return directory;
+        }
+        return Environment.HOME.getAbsolutePath();
     }
     
     private KeyListener getKeyListener() {
@@ -99,7 +114,7 @@ public class TerminalActivity extends StudioActivity {
         }
     }
     
-    private TerminalSession createSession() {
+    private TerminalSession createSession(final String workingDirectory) {
         final Map<String, String> envs = Environment.getEnvironment(true);
         final String[] env = new String[envs.size()];
         int i=0;
@@ -110,7 +125,7 @@ public class TerminalActivity extends StudioActivity {
         
         session = new TerminalSession(
             Environment.SHELL.getAbsolutePath(), // Shell command
-            Environment.HOME.getAbsolutePath(), // Working directory
+            workingDirectory, // Working directory
             new String[]{}, // Arguments
             env, // Environment variables
             TerminalEmulator.DEFAULT_TERMINAL_TRANSCRIPT_ROWS, // Transcript rows

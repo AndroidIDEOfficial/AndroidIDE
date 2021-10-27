@@ -10,9 +10,8 @@ import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.SemanticHighlight;
-import com.itsaky.lsp.SemanticHighlightsParams;
 import com.itsaky.lsp.services.IDELanguageServer;
-import com.itsaky.lsp.services.IDETextDocumentService;
+import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.CharPosition;
@@ -20,28 +19,34 @@ import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.Indexer;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
+import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4j.TextDocumentIdentifier;
+import io.github.rosemoe.editor.interfaces.EditorLanguage;
 
 public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
+    private final EditorLanguage language;
     private HighlightRangeHelper helper;
     private Map<Integer, Map<Integer, Diagnostic>> diagnostics = new HashMap<>();
+    private final Map<Integer, List<Range>> stringMap = new HashMap<>();
+    
+    public final MultilineStringHandler stringHandler = new MultilineStringHandler();
+
+    public JavaLexerImpl(EditorLanguage language) {
+        this.language = language;
+    }
     
     @Override
     public void setSemanticHighlights(SemanticHighlight highlights) {
@@ -59,6 +64,9 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
         } catch (Throwable th) {
             return;
         }
+        
+        stringMap.clear();
+        
         while (delegate.shouldAnalyze()) {
             // null = EOF
             if(lexer.nextToken() == null)
@@ -118,6 +126,48 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
     @Override
     public Map<Integer, Diagnostic> getDiagnosticsAtLine(int line) {
         return diagnostics.get(line);
+    }
+    
+    private class MultilineStringHandler implements NewlineHandler {
+        
+        @Override
+        public boolean matchesRequirement(String beforeText, String afterText, CharPosition cursor) {
+            if(language == null || stringMap == null || stringMap.isEmpty()) {
+                return false;
+            }
+            
+            final List<Range> ranges = stringMap.get(cursor.line);
+            if(ranges == null || ranges.isEmpty()) {
+                return false;
+            }
+            
+            return isInRanges(ranges, cursor.line, cursor.column);
+        }
+        
+        @Override
+        public NewlineHandler.HandleResult handleNewline(String beforeText, String afterText, int tabSize) {
+            int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
+            int advance = language.getIndentAdvance(beforeText) + 1;
+            final StringBuilder sb = new StringBuilder("\\n\" + \n") // Appends: \n" + <new-line>
+                .append(TextUtils.createIndent(count + advance, tabSize, language.useTab()))
+                .append("\"");
+            return new HandleResult(sb, 0);
+        }
+        
+        private boolean isInRanges (List<Range> ranges, int line, int column) {
+
+            if(ranges == null || ranges.isEmpty()) {
+                return false;
+            }
+
+            for (Range range : ranges) {
+                if (LSPUtils.isInRange(range, line, column)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
     
     public class JavaLexerAnalyzer extends BaseJavaLexer implements Lexer {
@@ -250,7 +300,16 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                     Position start = new Position(line, column);
                     Position end = new Position(line, column + currentToken.getText().length());
                     colors.addStringRange(line, new Range(start, end));
-
+                    
+                    {
+                        List<Range> ranges = stringMap.get(line);
+                        if(ranges == null) {
+                            ranges = new ArrayList<>();
+                        }
+                        ranges.add(new Range(start, end));
+                        stringMap.put(line, ranges);
+                    }
+                    
                     addHexColorIfPresent();
                     break;
                 case JavaLexer.LPAREN :
