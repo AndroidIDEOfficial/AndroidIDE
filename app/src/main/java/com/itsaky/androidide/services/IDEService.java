@@ -33,6 +33,8 @@ import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
 import org.eclipse.lsp4j.FileChangeType;
 import org.eclipse.lsp4j.FileEvent;
 import com.blankj.utilcode.util.ThreadUtils;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class IDEService implements ShellServer.Callback {
 
@@ -238,8 +240,9 @@ public class IDEService implements ShellServer.Callback {
         final PreferenceManager prefs = app.getPrefManager();
         final List<String> args = new ArrayList<>();
         
-        args.add("gradle");
-        args.addAll(tasks);
+        args.add("sh");
+        args.add("gradlew");
+        args.addAll(asAppTasks(tasks));
         args.add("--init-script");
         args.add(Environment.INIT_SCRIPT.getAbsolutePath());
 
@@ -262,6 +265,17 @@ public class IDEService implements ShellServer.Callback {
 
         return TextUtils.join(" ", args);
     }
+
+    private Collection<? extends String> asAppTasks(List<String> tasks) {
+        return tasks.stream()
+            .filter(t -> t != null)
+            .map(t -> asAppModuleTask(t))
+            .collect(Collectors.toList());
+    }
+    
+    private String asAppModuleTask (String name) {
+        return name.startsWith(":app:") ? name : ":app:" + name;
+    }
     
     public IDEProject getIDEProject () {
         return mIDEProject;
@@ -283,7 +297,7 @@ public class IDEService implements ShellServer.Callback {
             Environment.mkdirIfNotExits(Environment.TMP_DIR);
             currentTask = task;
             listener.appendOutput(task, getString(R.string.msg_task_begin, currentTime(), task.getName()));
-            shell.bgAppend(String.format("cd \"%s\"", new File(projectRoot, "app").getAbsolutePath()));
+            shell.bgAppend(String.format("cd '%s'", projectRoot.getAbsolutePath()));
             shell.bgAppend(getArguments(task.getTasks()));
 			isBuilding = true;
             listener.prepareBuild();
@@ -330,7 +344,7 @@ public class IDEService implements ShellServer.Callback {
     }
 
     public void stopAllDaemons() {
-        app.newShell(null).bgAppend("gradle --stop");
+        app.newShell(null).bgAppend(String.format(Locale.US, "cd '%s' && sh gradlew --stop", projectRoot.getAbsolutePath()));
         if(isBuilding()) {
             if(listener != null)
                 listener.onBuildFailed(currentTask, getString(R.string.msg_daemons_stopped));
@@ -351,9 +365,7 @@ public class IDEService implements ShellServer.Callback {
     }
     
     public void updateResourceClasses() {
-        if(mAppModule != null) {
-            execTask(new UpdateResourceClassesTask(mAppModule.viewBindingEnabled));
-        }
+        execTask(new UpdateResourceClassesTask(mAppModule != null && mAppModule.viewBindingEnabled));
     }
     
     public String typeString(int type) {

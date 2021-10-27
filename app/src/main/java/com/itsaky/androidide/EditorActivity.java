@@ -199,7 +199,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBuildServiceHandler = new BuildServiceHandler(this);
         mFileOptionsHandler = new FileOptionsHandler(this);
         
-        getApp().checkAndUpdateGradle();
         startServices();
         
 		KeyboardUtils.registerSoftInputChangedListener(this, __ -> onSoftInputChanged());

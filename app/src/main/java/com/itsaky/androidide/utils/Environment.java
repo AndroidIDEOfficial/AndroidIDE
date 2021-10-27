@@ -33,11 +33,9 @@ public final class Environment {
     public static final File PROJECT_DATA_FILE;
     public static final File JLS_JAR;
     
-	public static final File GRADLE_HOME;
 	public static final File GRADLE_PROPS;
 	public static final File GRADLE_USER_HOME;
     
-    public static final File GRADLE;
     public static final File JAVA;
     public static final File BUSYBOX;
     public static final File SHELL;
@@ -51,7 +49,6 @@ public final class Environment {
     
     private static final String DEFAULT_JAVA_HOME = "/data/data/com.itsaky.androidide/files/framework/jdk";
     private static final String DEFAULT_ANDROID_HOME = "/data/data/com.itsaky.androidide/files/framework/android-sdk";
-    private static final String DEFAULT_GRADLE_HOME = "/data/data/com.itsaky.androidide/files/framework/gradle-7.1.1";
     
     private static final Logger LOG = Logger.instance("Environment");
     
@@ -79,16 +76,10 @@ public final class Environment {
         IDE_PROPS.putAll(readProperties());
         ANDROID_HOME = new File(readProp("ANDROID_HOME", DEFAULT_ANDROID_HOME));
         JAVA_HOME = new File(readProp("JAVA_HOME", DEFAULT_JAVA_HOME));
-        GRADLE_HOME = new File(readProp("GRADLE_HOME", DEFAULT_GRADLE_HOME));
         
-        GRADLE = new File(GRADLE_HOME, "bin/gradle");
         JAVA = new File(JAVA_HOME, "bin/java");
         BUSYBOX = new File(BINDIR, "busybox");
         SHELL = new File(BINDIR, "sh.sh");
-        
-        if(!GRADLE.canExecute()) {
-            GRADLE.setExecutable(true);
-        }
         
         if(!JAVA.canExecute()) {
             JAVA.setExecutable(true);
@@ -119,11 +110,7 @@ public final class Environment {
         }
         return props;
     }
-	
-	public static File getGradleDir() {
-		return GRADLE_HOME;
-	}
-
+    
 	public static void setBootClasspath(File file) {
         BOOTCLASSPATH = new File(file.getAbsolutePath());
     }
@@ -131,8 +118,9 @@ public final class Environment {
     public static Map<String, String> getEnvironment(boolean publicUse) {
         final Map<String, String> map = new HashMap<>();
         map.put("HOME", HOME.getAbsolutePath());
+        map.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
+        map.put("JAVA_HOME", JAVA_HOME.getAbsolutePath());
         map.put("GRADLE_USER_HOME", GRADLE_USER_HOME.getAbsolutePath());
-        map.put("GRADLE_HOME", GRADLE_HOME.getAbsolutePath());
         map.put("TMPDIR", TMP_DIR.getAbsolutePath());
         map.put("PROJECTS", PROJECTS_DIR.getAbsolutePath());
         map.put("LANG", "en_US.UTF-8");
@@ -149,10 +137,6 @@ public final class Environment {
         map.put("SHELL", SHELL.getAbsolutePath());
         map.put("CONFIG_SHELL", SHELL.getAbsolutePath());
         map.put("TERM", "screen");
-        
-        map.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
-        map.put("GRADLE_HOME", GRADLE_HOME.getAbsolutePath());
-        map.put("JAVA_HOME", JAVA_HOME.getAbsolutePath());
         
         /**
          * If LD_LIBRARY_PATH is set, append $SYSROOT/lib to it,
@@ -177,7 +161,6 @@ public final class Environment {
         
         String path = "";
         path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
-        path += String.format(":%s/bin", GRADLE_HOME.getAbsolutePath());
         path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
         path += String.format(":%s/cmake/bin", ANDROID_HOME.getAbsolutePath());
         path += String.format(":%s/bin", SYSROOT.getAbsolutePath());

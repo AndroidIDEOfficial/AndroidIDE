@@ -73,7 +73,6 @@ public class SplashActivity extends StudioActivity
 	}
 
     private void goToMain() {
-		getApp().checkAndUpdateGradle();
         mHandler.removeCallbacks(mRunnable);
         mHandler.postDelayed(mRunnable, 1000);
     }

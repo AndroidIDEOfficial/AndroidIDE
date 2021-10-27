@@ -314,22 +314,6 @@ public class StudioApp extends MultiDexApplication
         return new StringBuffer().append(getAssetsDataFile()).append(str).toString();
     }
 	
-	public void checkAndUpdateGradle() {
-		File gradle = new File(Environment.GRADLE_HOME, "bin/gradle");
-		if(gradle.exists()) {
-			String[] txt = FileUtil.readFile(gradle.getAbsolutePath()).split("\n");
-			if(txt != null && txt.length > 1) {
-                String line1 = txt[0];
-                if(line1.startsWith("#!")) {
-                    txt[0] = "";
-                }
-				FileUtil.writeFile(gradle.getAbsolutePath(), TextUtils.join("\n", txt));
-				if(!gradle.canExecute())
-					gradle.setExecutable(true);
-			}
-		}
-	}
-	
 	public StudioUtils getUtils() {
 		return mUtils == null ? mUtils = new StudioUtils(this) : mUtils;
 	}
