@@ -159,12 +159,7 @@ public final class Environment {
         addToEnvIfPresent(map, "ANDROID_RUNTIME_ROOT");
         addToEnvIfPresent(map, "ANDROID_TZDATA_ROOT");
         
-        String path = "";
-        path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
-        path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
-        path += String.format(":%s/cmake/bin", ANDROID_HOME.getAbsolutePath());
-        path += String.format(":%s/bin", SYSROOT.getAbsolutePath());
-        path += String.format(":%s", System.getenv("PATH"));
+        String path = createPath();
         
         map.put("PATH", path);
         
@@ -177,6 +172,16 @@ public final class Environment {
         }
         
         return map;
+    }
+
+    private static String createPath() {
+        String path = "";
+        path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
+        path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
+        path += String.format(":%s/cmake/bin", ANDROID_HOME.getAbsolutePath());
+        path += String.format(":%s/bin", SYSROOT.getAbsolutePath());
+        path += String.format(":%s", System.getenv("PATH"));
+        return path;
     }
     
     public static void addToEnvIfPresent(Map<String, String> environment, String name) {
@@ -200,6 +205,9 @@ public final class Environment {
         }
         if(value.contains("$SYSROOT")) {
             value = value.replace("$SYSROOT", SYSROOT.getAbsolutePath());
+        }
+        if(value.contains("$PATH")) {
+            value = value.replace("$PATH", createPath());
         }
         return value;
     }

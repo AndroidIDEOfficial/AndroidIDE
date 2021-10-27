@@ -41,6 +41,10 @@ public class LogLine {
 		this.tag = tag;
 		this.message = message;
 		this.priority = parsePriority(priorityChar);
+        
+        if(tag.length() > 25) {
+            this.tag = "...".concat(tag.substring(tag.length() - 25));
+        }
 	}
 	
 	private int parsePriority(String s) {
@@ -73,6 +77,6 @@ public class LogLine {
 
 	@Override
 	public String toString() {
-		return String.format("%-6s %-13s %-6s %-6s %-2s %-26s %s", date, time, pid, tid, priorityChar, tag, message);
+		return String.format("%-6s %-13s %-6s %-6s %-2s %-40s %s", date, time, pid, tid, priorityChar, tag, message);
 	}
 }
