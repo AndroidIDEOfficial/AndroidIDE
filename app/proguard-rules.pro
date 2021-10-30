@@ -25,6 +25,9 @@
 -keep class androidx.arch.** { *; }
 -keep class androidx.lifecycle.** { *; }
 
+-keep class org.eclipse.lsp4j.** { *; }
+-keep class com.itsaky.lsp.** { *; }
+
 -keepclasseswithmembernames,includedescriptorclasses class * { native <methods>; }
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken

@@ -90,7 +90,7 @@
                     <TextView
                         android:id="@+id/diagnostic_text"
                         android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:textSize="12sp"
                         android:padding="8dp"
                         android:textColor="@color/primaryTextColor"

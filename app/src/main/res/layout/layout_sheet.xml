@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<Button
-		android:id="@+id/title"
-		android:layout_height="56dp"
-		android:layout_width="match_parent"
-		android:gravity="center_vertical"
-		android:textStyle="bold"
-		android:textSize="18sp"
-		android:text="@string/build_output"
-		android:singleLine="true"
-		android:ellipsize="end"
-		android:textColor="@color/primaryTextColor"
-		android:elevation="0dp"
-		android:background="@color/primaryDarkColor"
-		app:rippleColor="@color/rippleHighlightColor"
-		app:icon="@drawable/ic_chevron_down"
-		app:iconPadding="8dp"
-		app:iconTint="@color/primaryTextColor"
-		style="@style/Widget.MaterialComponents.Button.Icon"/>
+    <Button
+        android:id="@+id/title"
+        android:layout_height="56dp"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="@string/build_output"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textColor="@color/primaryTextColor"
+        android:elevation="0dp"
+        android:background="@color/primaryDarkColor"
+        app:rippleColor="@color/rippleHighlightColor"
+        app:icon="@drawable/ic_chevron_down"
+        app:iconPadding="8dp"
+        app:iconTint="@color/primaryTextColor"
+        style="@style/Widget.MaterialComponents.Button.Icon"/>
 
-	<LinearLayout
-		android:orientation="horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="10dp"
-		android:background="@drawable/bg_shadow"
-		android:id="@+id/shadow"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@drawable/bg_shadow"
+        android:id="@+id/shadow"/>
 
-	<LinearLayout
-		android:orientation="vertical"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_marginTop="-6dp"
-		android:paddingTop="-2dp"
-		android:paddingStart="16dp"
-		android:paddingEnd="16dp"
-		android:paddingBottom="8dp"
-		android:id="@+id/container"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="-6dp"
+        android:paddingTop="-2dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        android:id="@+id/container"/>
 
 </LinearLayout>

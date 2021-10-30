@@ -233,7 +233,7 @@ public class StudioApp extends MultiDexApplication
 	}
 	
 	public final File getTempProjectDir() {
-		return Environment.mkdirIfNotExits(new File(getRootDir(), "tempProject"));
+		return Environment.mkdirIfNotExits(new File(Environment.TMP_DIR, "tempProject"));
 	}
 	
 	public final File getTempClassesDir() {
@@ -265,12 +265,7 @@ public class StudioApp extends MultiDexApplication
 	}
 	
 	public boolean is64Bit() {
-		if(Build.VERSION.SDK_INT >= 23) {
-			return android.os.Process.is64Bit();
-		} else {
-			String[] abis = Build.SUPPORTED_64_BIT_ABIS;
-			return abis != null && abis.length > 0;
-		}
+		return android.os.Process.is64Bit();
 	}
 
 	public String getArch() {

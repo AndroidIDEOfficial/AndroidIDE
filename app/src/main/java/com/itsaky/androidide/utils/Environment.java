@@ -28,6 +28,7 @@ public final class Environment {
     public static final File PROJECTS_DIR;
     public static final File IDEPROPS;
     public static final File LIBHOOK;
+    public static final File LIBHOOK2;
     
     public static final File INIT_SCRIPT;
     public static final File PROJECT_DATA_FILE;
@@ -44,6 +45,7 @@ public final class Environment {
     
 	public static final String SAMPLE_GRADLE_PROP_CONTENTS = "# Specify global Gradle properties in this file\n# These properties will be applicable for every project you build with Gradle.";
     public static final Map<String, String> IDE_PROPS = new HashMap<>();
+    public static final Map<String, String> ENV_VARS = new HashMap<>();
     
     public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
     
@@ -65,6 +67,7 @@ public final class Environment {
         
         IDEPROPS = new File(SYSROOT, "etc/ide-environment.properties");
         LIBHOOK = new File(LIBDIR, "libhook.so");
+        LIBHOOK2 = new File(LIBDIR, "libhook2.so");
         PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
         JLS_JAR = new File(JLS_HOME, "jls.jar");
         
@@ -116,27 +119,31 @@ public final class Environment {
     }
     
     public static Map<String, String> getEnvironment(boolean publicUse) {
-        final Map<String, String> map = new HashMap<>();
-        map.put("HOME", HOME.getAbsolutePath());
-        map.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
-        map.put("JAVA_HOME", JAVA_HOME.getAbsolutePath());
-        map.put("GRADLE_USER_HOME", GRADLE_USER_HOME.getAbsolutePath());
-        map.put("TMPDIR", TMP_DIR.getAbsolutePath());
-        map.put("PROJECTS", PROJECTS_DIR.getAbsolutePath());
-        map.put("LANG", "en_US.UTF-8");
-        map.put("LC_ALL", "en_US.UTF-8");
+        
+        if(!ENV_VARS.isEmpty()) {
+            return ENV_VARS;
+        }
+        
+        ENV_VARS.put("HOME", HOME.getAbsolutePath());
+        ENV_VARS.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
+        ENV_VARS.put("JAVA_HOME", JAVA_HOME.getAbsolutePath());
+        ENV_VARS.put("GRADLE_USER_HOME", GRADLE_USER_HOME.getAbsolutePath());
+        ENV_VARS.put("TMPDIR", TMP_DIR.getAbsolutePath());
+        ENV_VARS.put("PROJECTS", PROJECTS_DIR.getAbsolutePath());
+        ENV_VARS.put("LANG", "en_US.UTF-8");
+        ENV_VARS.put("LC_ALL", "en_US.UTF-8");
         
         if(!publicUse) {
             // These environment variables must not be accessed to users
-            map.put("JLS_HOME", JLS_HOME.getAbsolutePath());
+            ENV_VARS.put("JLS_HOME", JLS_HOME.getAbsolutePath());
         }
         
-        map.put("SYSROOT", SYSROOT.getAbsolutePath());
+        ENV_VARS.put("SYSROOT", SYSROOT.getAbsolutePath());
         
-        map.put("BUSYBOX", BUSYBOX.getAbsolutePath());
-        map.put("SHELL", SHELL.getAbsolutePath());
-        map.put("CONFIG_SHELL", SHELL.getAbsolutePath());
-        map.put("TERM", "screen");
+        ENV_VARS.put("BUSYBOX", BUSYBOX.getAbsolutePath());
+        ENV_VARS.put("SHELL", SHELL.getAbsolutePath());
+        ENV_VARS.put("CONFIG_SHELL", SHELL.getAbsolutePath());
+        ENV_VARS.put("TERM", "screen");
         
         /**
          * If LD_LIBRARY_PATH is set, append $SYSROOT/lib to it,
@@ -147,31 +154,31 @@ public final class Environment {
             ld = "";
         else ld += File.pathSeparator;
         ld += LIBDIR.getAbsolutePath();
-        map.put("LD_LIBRARY_PATH", ld);
+        ENV_VARS.put("LD_LIBRARY_PATH", ld);
         
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            map.put("LD_PRELOAD", LIBHOOK.getAbsolutePath());
+            ENV_VARS.put("LD_PRELOAD", LIBHOOK.getAbsolutePath());
         }
         
-        addToEnvIfPresent(map, "ANDROID_ART_ROOT");
-        addToEnvIfPresent(map, "DEX2OATBOOTCLASSPATH");
-        addToEnvIfPresent(map, "ANDROID_I18N_ROOT");
-        addToEnvIfPresent(map, "ANDROID_RUNTIME_ROOT");
-        addToEnvIfPresent(map, "ANDROID_TZDATA_ROOT");
+        addToEnvIfPresent(ENV_VARS, "ANDROID_ART_ROOT");
+        addToEnvIfPresent(ENV_VARS, "DEX2OATBOOTCLASSPATH");
+        addToEnvIfPresent(ENV_VARS, "ANDROID_I18N_ROOT");
+        addToEnvIfPresent(ENV_VARS, "ANDROID_RUNTIME_ROOT");
+        addToEnvIfPresent(ENV_VARS, "ANDROID_TZDATA_ROOT");
         
         String path = createPath();
         
-        map.put("PATH", path);
+        ENV_VARS.put("PATH", path);
         
         for (String key : IDE_PROPS.keySet()) {
             if (blacklistedVariables().contains(key.trim())) {
                 continue;
             } else {
-                map.put(key, readProp(key, ""));
+                ENV_VARS.put(key, readProp(key, ""));
             }
         }
         
-        return map;
+        return ENV_VARS;
     }
 
     private static String createPath() {

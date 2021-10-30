@@ -187,7 +187,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         symbolInput = new SymbolInputView(this);
         mBinding.inputContainer.addView(symbolInput, 1, new ViewGroup.LayoutParams(-1, -2));
         
-        
         mBinding.editorViewPager.setOffscreenPageLimit(9);
         mBinding.editorViewPager.setAdapter(mPagerAdapter);
         mBinding.tabs.setupWithViewPager(mBinding.editorViewPager);
@@ -418,9 +417,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         getSearchResultList().setAdapter(new com.itsaky.androidide.adapters.SearchListAdapter(results, file -> {
             openFile(file);
             hideSearchResults();
+            hideViewOptions();
         }, match -> {
             openFileAndSelect(match.file, match);
             hideSearchResults();
+            hideViewOptions();
         }));
         mBinding.transformScrim.setVisibility(View.VISIBLE);
         mBinding.fabView.setVisibility(View.GONE);
@@ -591,6 +592,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
            && FileUtils.isUtf8(group.file))
         {
             openFile(group.file);
+            hideViewOptions();
         }
     }
 
@@ -598,6 +600,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public void onDiagnosticClick(File file, Diagnostic diagnostic) {
         openFileAndSelect(file, diagnostic.getRange());
         hideDiagnostics();
+        hideViewOptions();
     }
 
     public EditorPagerAdapter getPagerAdapter(){
@@ -1052,6 +1055,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBinding.buildContainer.setVisibility(View.GONE);
         mBinding.buildOutToolbar.setNavigationOnClickListener(v -> hideBuildResult());
         mBinding.buildOutToolbar.setOnClickListener(v -> hideBuildResult());
+        
+        getMenuInflater().inflate(R.menu.menu_build_output, mBinding.buildOutToolbar.getMenu());
+        mBinding.buildOutToolbar.setOnMenuItemClickListener(item -> {
+            if(item.getItemId() == R.id.buildOut_clear) {
+                getBuildView().setText("");
+                setStatus("");
+                return true;
+            }
+            return false;
+        });
 
         mBinding.logOutcontainer.addView(getLogView(), new ViewGroup.LayoutParams(-1, -1));
         mBinding.logContainer.setVisibility(View.GONE);

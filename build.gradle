@@ -1,13 +1,10 @@
 buildscript {
-    ext {
-		build_gradle_version = '7.0.2'
-	}
     project.ext {
         compileSdk = 31
         buildTools = "31.0.0"
         minSdk = 24
         targetSdk = 28
-        versionCode = 103211027
+        versionCode = 103211029
         versionName = "1.0.3-alpha"
 		packageName = "com.itsaky.androidide"
         
@@ -27,8 +24,9 @@ buildscript {
         mavenLocal()
 		mavenCentral()
     }
+    
     dependencies {
-        classpath "com.android.tools.build:gradle:$build_gradle_version"
+        classpath "com.android.tools.build:gradle:7.0.2"
 		classpath 'com.google.gms:google-services:4.3.8'
 		classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
     }

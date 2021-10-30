@@ -26,7 +26,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build debug apk
+      - name: Build APK
         uses: eskatos/gradle-command-action@v1
         with:
           arguments: :app:build
@@ -34,9 +34,16 @@ jobs:
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
 
-      - name: Upload artifact
+      - name: Upload debug APK
         uses: actions/upload-artifact@v2
         if: ${{ !github.head_ref }}
         with:
           name: apk-debug
           path: app/build/outputs/apk/debug
+          
+      - name: Upload release APK
+        uses: actions/upload-artifact@v2
+        if: ${{ !github.head_ref }}
+        with:
+          name: apk-release
+          path: app/build/outputs/apk/release

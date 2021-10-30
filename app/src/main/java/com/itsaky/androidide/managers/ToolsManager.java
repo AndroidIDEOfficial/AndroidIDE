@@ -18,7 +18,7 @@ public class ToolsManager {
     private static PreferenceManager prefs;
     
     public static final int JLS_VERSION = 25;
-    public static final int LOGSENDER_VERSION = 1;
+    public static final int LOGSENDER_VERSION = 2;
     public static final int CLEANER_VERSION = 1;
     public static final int GRADLE_API_VERSION = 2;
     
@@ -33,6 +33,7 @@ public class ToolsManager {
         copyBusyboxIfNeeded();
         extractJlsIfNeeded();
         extractLogsenderIfNeeded();
+        extractLibHooks();
         
         writeInitScript();
         
@@ -40,6 +41,16 @@ public class ToolsManager {
         
         if(onFinish != null)
             onFinish.run();
+    }
+
+    private static void extractLibHooks() {
+        if(!Environment.LIBHOOK.exists()) {
+            ResourceUtils.copyFileFromAssets("data/libhook.so", Environment.LIBHOOK.getAbsolutePath());
+        }
+        
+        if(!Environment.LIBHOOK2.exists()) {
+            ResourceUtils.copyFileFromAssets("data/libhook2.so", Environment.LIBHOOK2.getAbsolutePath());
+        }
     }
 
     private static void rewriteProjectData() {

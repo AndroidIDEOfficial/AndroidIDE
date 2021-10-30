@@ -12,6 +12,7 @@ import com.itsaky.androidide.SplashActivity;
 import java.util.Map;
 import android.provider.Settings;
 import androidx.core.app.NotificationManagerCompat;
+import android.annotation.SuppressLint;
 
 public class MessagingService extends FirebaseMessagingService {
     
@@ -57,19 +58,18 @@ public class MessagingService extends FirebaseMessagingService {
 			}
 		}
 	}
-
+    
 	private void showNotificationWithAction(String action, String title, String msg) {
 		Intent i = null;
-		int flag = 0;
+		int flag = PendingIntent.FLAG_IMMUTABLE;
 		if (action.equals(ACTION_OPEN_APP)) {
 			i = StudioApp.getInstance().getPackageManager().getLaunchIntentForPackage(StudioApp.getInstance().getPackageName());
 		} else if (action.startsWith(ACTION_OPEN_URL)) {
 			i = createOpenUrlIntent(action.substring(ACTION_OPEN_URL.length()));
-			flag = Intent.FLAG_ACTIVITY_NEW_TASK;
+			flag |= Intent.FLAG_ACTIVITY_NEW_TASK;
 		}
 
 		if (i != null) {
-            //noinspection
 			PendingIntent intent = PendingIntent.getActivity(this, 0, i, flag);
 			showNotification(title, msg, intent, StudioApp.NOTIFICATION_ID_UPDATE);
 		}

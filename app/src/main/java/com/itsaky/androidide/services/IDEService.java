@@ -35,6 +35,12 @@ import org.eclipse.lsp4j.FileEvent;
 import com.blankj.utilcode.util.ThreadUtils;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
+import java.util.concurrent.BlockingQueue;
+import com.blankj.utilcode.util.ResourceUtils;
+import com.blankj.utilcode.util.ZipUtils;
+import java.io.IOException;
 
 public class IDEService implements ShellServer.Callback {
 
@@ -292,15 +298,85 @@ public class IDEService implements ShellServer.Callback {
             return;
         }
         
-        if (listener != null) {
-            listener.saveFiles();
-            Environment.mkdirIfNotExits(Environment.TMP_DIR);
-            currentTask = task;
-            listener.appendOutput(task, getString(R.string.msg_task_begin, currentTime(), task.getName()));
-            shell.bgAppend(String.format("cd '%s'", projectRoot.getAbsolutePath()));
-            shell.bgAppend(getArguments(task.getTasks()));
-			isBuilding = true;
-            listener.prepareBuild();
+        execTask(task, stopIfRunning, isGradleWrapperAvailable() ? CompletableFuture.completedFuture(Boolean.TRUE) : installWrapper());
+    }
+    
+    private void execTask (GradleTask task, boolean stopIfRunning, CompletableFuture<Boolean> installing) {
+        
+        final Runnable taskRunner = () -> {
+            if(installing != null) {
+                Boolean result = null;
+                String failure = "";
+                try {
+                    result = installing.get();
+                } catch (Throwable th) {
+                    result = Boolean.FALSE;
+                    failure = th.getMessage();
+                }
+                
+                if(result.equals(Boolean.FALSE)) {
+                    if(listener != null) {
+                        listener.appendOutput(task, "-------------------- ERROR --------------------");
+                        listener.appendOutput(task, getString(R.string.msg_gradlew_installation_failed, failure));
+                        listener.appendOutput(task, "-----------------------------------------------");
+                    }
+                    return;
+                }
+            }
+
+            if (listener != null) {
+                listener.saveFiles();
+                Environment.mkdirIfNotExits(Environment.TMP_DIR);
+                currentTask = task;
+                listener.appendOutput(task, getString(R.string.msg_task_begin, currentTime(), task.getName()));
+                shell.bgAppend(String.format("cd '%s'", projectRoot.getAbsolutePath()));
+                shell.bgAppend(getArguments(task.getTasks()));
+                isBuilding = true;
+                listener.prepareBuild();
+            }
+        };
+        
+        final Thread thread = new Thread(taskRunner, "Gradle Task Executor");
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private CompletableFuture<Boolean> installWrapper() {
+        if(listener != null) {
+            listener.appendOutput(null, "-------------------- NOTE --------------------");
+            listener.appendOutput(null, getString(R.string.msg_installing_gradlew));
+            listener.appendOutput(null, "----------------------------------------------");
+        }
+        
+        return CompletableFutures.computeAsync(checker -> {
+            final File extracted = new File(Environment.TMP_DIR, "gradle-wrapper.zip");
+            if(ResourceUtils.copyFileFromAssets("data/gradle-wrapper.zip", extracted.getAbsolutePath())) {
+                try {
+                    final List<File> files = ZipUtils.unzipFile(extracted, projectRoot);
+                    if(files != null && !files.isEmpty()) {
+                        return Boolean.TRUE;
+                    }
+                } catch (IOException e) {
+                    return Boolean.FALSE;
+                }
+            }
+            
+            return Boolean.FALSE;
+        });
+    }
+    
+    public boolean isGradleWrapperAvailable () {
+        if (projectRoot == null || !projectRoot.exists()) {
+            return false;
+        }
+        final File gradlew = new File(projectRoot, "gradlew");
+        final File gradleWrapperJar = new File(projectRoot, "gradle/wrapper/gradle-wrapper.jar");
+        final File gradleWrapperProps = new File(projectRoot, "gradle/wrapper/gradle-wrapper.properties");
+        
+        if(!gradlew.exists() || !gradleWrapperJar.exists() || !gradleWrapperProps.exists()) {
+            return false;
+        } else {
+            return true;
         }
     }
     

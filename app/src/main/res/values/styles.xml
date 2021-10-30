@@ -23,6 +23,11 @@
 	<style name="AppTheme.MaterialToggleButton" parent="">
 		<item name="colorPrimary">@color/secondaryColor</item>
 	</style>
+    <style name="AppTheme.Sheet.Text.Title" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
     <style name="AppTheme.TabLayout.Title" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
         <item name="android:textAllCaps">false</item>
@@ -91,14 +96,11 @@
         <item name="colorPrimary">@color/primaryDarkColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
-
         <item name="android:statusBarColor">@color/primaryDarkColor</item>
         <item name="android:windowBackground">@color/content_background</item>
         <item name="android:navigationBarColor">@color/primaryDarkColor</item>
-
         <!-- textColorPrimary is for toolbar title text  -->
         <item name="android:textColorPrimary">@color/primaryTextColor</item>
-
         <!-- textColorSecondary is for toolbar action icons tint-->
         <item name="android:textColorSecondary">@color/primaryIconColor</item>
         <item name="unicorn.colorAccent">@color/secondaryColor</item>
@@ -117,13 +119,11 @@
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
-
     <style name="VerticalDivider">
         <item name="android:layout_width">0.8dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
-
     <style name="TextButton.IconOnly" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="iconPadding">0dp</item>
         <item name="cornerFamily">cut</item>
@@ -136,7 +136,6 @@
         <item name="android:minWidth">48dp</item>
         <item name="android:minHeight">48dp</item>
     </style>
-
     <style name="OutlinedButton.IconOnly" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="iconPadding">0dp</item>
         <item name="android:insetTop">0dp</item>
@@ -146,14 +145,12 @@
         <item name="android:minWidth">48dp</item>
         <item name="android:minHeight">48dp</item>
     </style>
-
     <style name="RoundOutlinedButton.IconOnly" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
         <item name="android:maxWidth">48dp</item>
         <item name="android:maxHeight">48dp</item>
     </style>
-
     <style name="ButtonBar.IconOnly.Left" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">8dp</item>
@@ -161,12 +158,10 @@
         <item name="cornerSizeBottomLeft">8dp</item>
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
-
     <style name="ButtonBar.IconOnly.Middle" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">0dp</item>
     </style>
-
     <style name="ButtonBar.IconOnly.Right" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">0dp</item>
@@ -174,7 +169,6 @@
         <item name="cornerSizeBottomLeft">0dp</item>
         <item name="cornerSizeBottomRight">8dp</item>
     </style>
-
     <style name="PopupAnimation">
         <item name="android:windowEnterAnimation">@anim/popup_in</item>
         <item name="android:windowExitAnimation">@anim/popup_out</item>

@@ -133,7 +133,7 @@ public class ProjectWriter {
 		if(!FileUtils.delete(temp) || !Environment.mkdirIfNotExits(temp).exists()) notifyFailed(instance.getString(R.string.cannot_create_temp));
 		notifyTask(instance.getString(R.string.copying_assets));
 		projectDir.mkdirs();
-		File destZip = new File(instance.getRootDir(), "templates/" + id + ".zip");
+		File destZip = new File(Environment.TMP_DIR, "templates/" + id + ".zip");
 		Environment.mkdirIfNotExits(destZip.getParentFile());
 		if(ResourceUtils.copyFileFromAssets("templates/" + destZip.getName(), destZip.getAbsolutePath())) {
 			ZipUtils.unzipFile(destZip, temp);
