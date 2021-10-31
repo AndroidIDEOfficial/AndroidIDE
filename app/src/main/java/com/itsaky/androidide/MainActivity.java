@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import android.os.Environment;
 
 public class MainActivity extends StudioActivity implements View.OnClickListener, ProjectWriterCallback {
 
@@ -277,7 +278,7 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
             .addConfigBuilder()
             .addItemDivider(false)
             .selectMultipleFiles(false)
-            .setRootDirectory(getApp().getProjectsDir().getAbsolutePath())
+            .setRootDirectory(Environment.getExternalStorageDirectory().getAbsolutePath())
             .showHiddenFiles(true)
             .showOnlyDirectory(true)
             .theme(R.style.AppTheme_FilePicker)

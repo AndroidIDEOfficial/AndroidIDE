@@ -91,7 +91,6 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Position;
-import java.util.Collections;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -468,7 +467,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
         ShellServer shell = getApp().newShell(t -> getDaemonStatusFragment().append(t.toString()));
         shell.bgAppend(String.format("echo '%s'", getString(R.string.msg_getting_daemom_status)));
-        shell.bgAppend("gradle --status");
+        shell.bgAppend(String.format("cd '%s' && sh gradlew --status", mProject.getProjectPath()));
         if(!getDaemonStatusFragment().isShowing())
             getDaemonStatusFragment().show(getSupportFragmentManager(), "daemon_status");
     }
@@ -1056,6 +1055,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBinding.buildOutToolbar.setNavigationOnClickListener(v -> hideBuildResult());
         mBinding.buildOutToolbar.setOnClickListener(v -> hideBuildResult());
         
+        mBinding.buildOutToolbar.getMenu().clear();
         getMenuInflater().inflate(R.menu.menu_build_output, mBinding.buildOutToolbar.getMenu());
         mBinding.buildOutToolbar.setOnMenuItemClickListener(item -> {
             if(item.getItemId() == R.id.buildOut_clear) {

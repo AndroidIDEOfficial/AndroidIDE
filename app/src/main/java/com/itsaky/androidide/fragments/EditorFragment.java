@@ -79,6 +79,10 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         return "";
     }
     
+    public FragmentEditorBinding getBinding() {
+        return mBinding;
+    }
+    
 	public static EditorFragment newInstance(File file, AndroidProject project, Range selection) {
 		Bundle bundle = new Bundle();
 		bundle.putString(KEY_FILE_PATH, file.getAbsolutePath());

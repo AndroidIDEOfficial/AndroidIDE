@@ -12,7 +12,6 @@ import androidx.transition.TransitionSet;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
-import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
@@ -21,7 +20,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.databinding.ActivityEditorBinding;
+import com.itsaky.androidide.databinding.FragmentEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
@@ -53,7 +52,6 @@ import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.LogTraceParams;
 import org.eclipse.lsp4j.MessageParams;
-import org.eclipse.lsp4j.MessageType;
 import org.eclipse.lsp4j.ParameterInformation;
 import org.eclipse.lsp4j.PublishDiagnosticsParams;
 import org.eclipse.lsp4j.Range;
@@ -170,29 +168,38 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
      * @param diagnostic The diagnostic to show
      * @param editor The CodeEditor that requested
      */
-    public void showDiagnosticAtBottom(final Diagnostic diagnostic, final CodeEditor editor) {
-        if(activity() == null || activity().getBinding() == null || diagnostic == null) {
-            hideBottomDiagnosticView();
+    public void showDiagnosticAtBottom(final File file, final Diagnostic diagnostic, final CodeEditor editor) {
+        if(activity() == null || activity().getPagerAdapter() == null || file == null || diagnostic == null) {
+            hideBottomDiagnosticView(file);
             return;
         }
         
-        final ActivityEditorBinding binding = activity().getBinding();
+        final EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+        if(frag == null || frag.getBinding() == null) {
+            hideBottomDiagnosticView(file);
+            return;
+        }
+        
+        final FragmentEditorBinding binding = frag.getBinding();
         binding.diagnosticTextContainer.setVisibility(View.VISIBLE);
         binding.diagnosticText.setClickable(false);
         binding.diagnosticText.setText(diagnostic.getMessage());
         
         final CompletableFuture <List<Either<Command, CodeAction>>> future = editor.codeActions(Collections.singletonList(diagnostic));
         if(future == null) {
+            hideBottomDiagnosticView(file);
             return;
         }
         
         future.whenComplete((a, b) -> {
             final Throwable error = b;
             if(a == null || a.isEmpty()) {
+                hideBottomDiagnosticView(file);
                 return;
             }
             final List<CodeAction> actions = a.stream().filter(e -> e.isRight()).map (e -> e.getRight()).collect(Collectors.toList());
             if(actions == null || actions.isEmpty()) {
+                hideBottomDiagnosticView(file);
                 return;
             }
             ThreadUtils.runOnUiThread(() -> {
@@ -223,13 +230,18 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         activity().getDiagnosticBinding().getRoot().setVisibility(View.GONE);
     }
 
-    private void hideBottomDiagnosticView() {
-        if(activity() == null || activity().getBinding() == null || activity().getDiagnosticBinding() == null) {
+    private void hideBottomDiagnosticView(final File file) {
+        if(activity() == null || activity().getPagerAdapter() == null || file == null) {
             return;
         }
-        activity().getDiagnosticBinding().getRoot().setVisibility(View.GONE);
-        activity().getBinding().diagnosticTextContainer.setVisibility(View.GONE);
-        activity().getBinding().diagnosticText.setClickable(false);
+        
+        final EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+        if(frag == null || frag.getBinding() == null) {
+            return;
+        }
+        
+        frag.getBinding().diagnosticTextContainer.setVisibility(View.GONE);
+        frag.getBinding().diagnosticText.setClickable(false);
     }
     
     /**
@@ -524,7 +536,7 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
             
             dialog.dismiss();
             hideDiagnostics();
-            hideBottomDiagnosticView();
+            hideBottomDiagnosticView(editor.getFile());
             performCodeAction(editor, actions.get(which));
         });
         builder.show();

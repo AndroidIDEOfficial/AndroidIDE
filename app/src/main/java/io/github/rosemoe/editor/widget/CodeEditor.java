@@ -3685,7 +3685,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         
         if(mLanguageClient != null) {
             mLanguageClient.hideSignatureHelp();
-            mLanguageClient.showDiagnosticAtBottom(getEditorLanguage().getAnalyzer().findDiagnosticContaining(getCursor().getLeftLine(), getCursor().getLeftColumn()), this);
+            mLanguageClient.showDiagnosticAtBottom(getFile(), getEditorLanguage().getAnalyzer().findDiagnosticContaining(getCursor().getLeftLine(), getCursor().getLeftColumn()), this);
         }
         
         if(mListener != null) {
