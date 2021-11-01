@@ -7,8 +7,11 @@ import com.itsaky.androidide.tasks.BaseGradleTask;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.Collections;
+import java.util.HashSet;
 
-public class AssembleDebug extends BaseGradleTask {
+public class AssembleDebug extends ApkGeneratingTask {
 	
 	private boolean installApk = true;
 
@@ -22,15 +25,12 @@ public class AssembleDebug extends BaseGradleTask {
 		return StudioApp.getInstance().getString(R.string.build_debug);
 	}
 
-	@Override
-	public boolean buildsApk() {
-		return installApk;
-	}
-
-	@Override
-	public File getApk(String buildFolder, String moduleName) {
-		return new File(buildFolder, "outputs/apk/debug/" + moduleName + "-debug.apk");
-	}
+    @Override
+    protected Set<File> provideApkDirectories(File buildDir) {
+        final Set<File> dirs = new HashSet<>();
+        dirs.add(new File(buildDir, "outputs/apk/debug"));
+        return dirs;
+    }
 	
 	@Override
 	public String getCommands() {

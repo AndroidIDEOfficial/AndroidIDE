@@ -8,12 +8,16 @@ import com.itsaky.androidide.models.project.IDEModule;
 import com.itsaky.androidide.models.project.IDEProject;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.tasks.GradleTask;
+import com.itsaky.androidide.tasks.gradle.build.ApkGeneratingTask;
 import com.itsaky.androidide.utils.Environment;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import java.util.Collection;
 
 public class BuildServiceHandler extends IDEHandler implements IDEService.BuildListener {
     
@@ -92,14 +96,19 @@ public class BuildServiceHandler extends IDEHandler implements IDEService.BuildL
     
     @Override
     public void onBuildSuccessful(GradleTask task, String msg) {
-        if(task == null) return;
+        if(task == null || activity() == null) return;
         if(task.canOutput())
             activity().setStatus(msg);
-
-        if(task.getType() == GradleTask.Type.BUILD) {
-            if(task.getTaskID() == IDEService.TASK_ASSEMBLE_DEBUG) {
-                if(task.buildsApk()) {
-                    activity().install(task.getApk(new File(provider.provideAndroidProject().getMainModulePath(), "build").getAbsolutePath(), provider.provideAndroidProject().getMainModule()));
+            
+        // If this task generates APK, ask user if he/she wants to install them
+        if (task instanceof ApkGeneratingTask) {
+            final IDEProject project = activity().provideIDEProject();
+            final Optional<IDEModule> app = project.getModuleByPath(":app"); // TODO Handle multiple application modules
+            if(app.isPresent()) {
+                final String path = app.get().projectDir;
+                if(path != null) {
+                    final File buildDir = new File (path, "build");
+                    installApks (((ApkGeneratingTask) task).getApks(buildDir));
                 }
             }
         }
@@ -115,7 +124,7 @@ public class BuildServiceHandler extends IDEHandler implements IDEService.BuildL
         if(task.canOutput()) {
             activity().setStatus(msg);
         }
-        
+         
         activity().getApp().getPrefManager().putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
         activity().invalidateOptionsMenu();
         activity().getBinding().buildProgressIndicator.setVisibility(View.GONE);
@@ -156,5 +165,36 @@ public class BuildServiceHandler extends IDEHandler implements IDEService.BuildL
              * Release R.jar shouldn't be included in classpath
              */
             && !file.getAbsolutePath().endsWith("/release/R.jar");
+    }
+    
+    private void installApks (final Set<File> apks) {
+        if (activity () == null || apks == null || apks.isEmpty()) {
+            return;
+        }
+        
+        if(apks.size() == 1) {
+            activity().install(apks.iterator().next());
+        } else {
+            final List<File> files = new ArrayList<File> (apks);
+            final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+            builder.setTitle(activity().getString(R.string.title_install_apks));
+            builder.setItems(getNames(files), (d, w) -> {
+                d.dismiss();
+                activity().install(files.get(w));
+            });
+            builder.show();
+        }
+    }
+    
+    private CharSequence[] getNames (final Collection<File> apks) {
+        final String[] names = new String[apks.size()];
+        
+        int i = 0;
+        for (File apk : apks) {
+            names[i] = apk.getName();
+            ++i;
+        }
+        
+        return names;
     }
 }

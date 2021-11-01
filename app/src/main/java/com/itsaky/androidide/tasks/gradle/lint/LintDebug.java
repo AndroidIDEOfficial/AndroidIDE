@@ -36,16 +36,6 @@ public class LintDebug extends BaseGradleTask {
 	}
 
 	@Override
-	public boolean buildsApk() {
-		return false;
-	}
-
-	@Override
-	public File getApk(String buildFolder, String moduleName) {
-		return null;
-	}
-
-	@Override
 	public Type getType() {
 		return Type.LINT;
 	}

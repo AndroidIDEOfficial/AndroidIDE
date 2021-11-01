@@ -1154,7 +1154,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             getBuildService().setListener(null);
             getBuildService().exit();
         }
-
+        
+        // Make sure we close files
+        // This fill further make sure that file contents are not erased.
+        closeAll();
+        
         getApp().getPrefManager().setOpenedProject(PreferenceManager.NO_OPENED_PROJECT);
 
         LSP.shutdownAll();

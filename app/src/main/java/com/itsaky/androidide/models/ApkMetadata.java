@@ -73,6 +73,8 @@ public class ApkMetadata {
 
     public static class ArtifactType {
         
+        public static String TYPE_APK = "APK";
+        
         @SerializedName("type")
         private String type;
         

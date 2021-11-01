@@ -12,8 +12,6 @@ public interface GradleTask {
     public boolean affectsGeneratedSources();
 	public boolean shouldSaveFiles();
 	public boolean canOutput();
-	public boolean buildsApk();
-	public File getApk(String buildFolder, String moduleName);
 	public Type getType();
 	
 	public static enum Type {

@@ -34,16 +34,6 @@ public class InitializeIDEProject extends BaseGradleTask {
     }
 
     @Override
-    public boolean buildsApk() {
-        return false;
-    }
-
-    @Override
-    public File getApk(String buildFolder, String moduleName) {
-        return null;
-    }
-
-    @Override
     public GradleTask.Type getType() {
         return Type.ANDROIDIDE_PLUGIN;
     }

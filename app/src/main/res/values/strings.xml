@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="title_install_apks">Install APK(s)</string>
     <string name="title_clear_output">Clear output</string>
     <string name="msg_gradlew_installation_failed">Failed to install Gradle Wrapper: %s</string>
     <string name="msg_installing_gradlew">Gradle Wrapper is not available!\nInstalling default one. Gradle v7.1.1 will be downloaded if necessary.</string>

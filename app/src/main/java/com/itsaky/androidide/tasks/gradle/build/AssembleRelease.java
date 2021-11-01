@@ -3,13 +3,14 @@ package com.itsaky.androidide.tasks.gradle.build;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.services.IDEService;
-import com.itsaky.androidide.tasks.BaseGradleTask;
 import com.itsaky.androidide.tasks.GradleTask;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class AssembleRelease extends BaseGradleTask {
+public class AssembleRelease extends ApkGeneratingTask {
 	
 	@Override
 	public String getName() {
@@ -17,14 +18,11 @@ public class AssembleRelease extends BaseGradleTask {
 	}
 
 	@Override
-	public boolean buildsApk() {
-		return true;
-	}
-
-	@Override
-	public File getApk(String buildFolder, String moduleName) {
-		return new File(buildFolder, "outputs/apk/release/" + moduleName + "-release.apk");
-	}
+    protected Set<File> provideApkDirectories(File buildDir) {
+        final Set<File> dirs = new HashSet<>();
+        dirs.add(new File(buildDir, "outputs/apk/release"));
+        return dirs;
+    }
 	
 
 	@Override

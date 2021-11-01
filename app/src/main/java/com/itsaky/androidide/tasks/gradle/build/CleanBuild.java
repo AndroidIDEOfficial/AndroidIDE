@@ -15,18 +15,7 @@ public class CleanBuild extends BaseGradleTask {
 	public String getName() {
 		return StudioApp.getInstance().getString(R.string.clean_amp_build);
 	}
-
-	@Override
-	public boolean buildsApk() {
-		return false;
-	}
-
-	@Override
-	public File getApk(String buildFolder, String moduleName) {
-		return null;
-	}
-	
-
+    
 	@Override
 	public String getCommands() {
 		return "clean build";
