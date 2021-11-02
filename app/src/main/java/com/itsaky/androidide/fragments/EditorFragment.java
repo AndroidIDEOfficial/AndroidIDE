@@ -140,6 +140,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		mBinding.editor.setLineColorsEnabled(true);
 		mBinding.editor.setDividerWidth(SizeUtils.dp2px(1));
         
+        mBinding.diagnosticTextContainer.setVisibility(View.GONE);
+        
 		configureEditorIfNeeded();
 		
         final Range range = fromArgs(getArguments());

@@ -96,7 +96,9 @@ public class EditorPagerAdapter extends FragmentStatePagerAdapter implements Edi
 	public void save(int index, SaveResult result) {
 		if (index >= 0 && index < mFragments.size()) {
 			EditorFragment frag = getFrag(index);
-            
+            if (frag == null || frag.getFile() == null) {
+                return;
+            }
             /**
              * Must be called before frag.save()
              * Otherwise, it'll always return false

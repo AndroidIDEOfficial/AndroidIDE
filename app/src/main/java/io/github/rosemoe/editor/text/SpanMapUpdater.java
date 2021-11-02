@@ -15,11 +15,10 @@
  */
 package io.github.rosemoe.editor.text;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Update spans on text change event
@@ -29,6 +28,11 @@ import io.github.rosemoe.editor.widget.EditorColorScheme;
 public class SpanMapUpdater {
 
     public static void shiftSpansOnMultiLineDelete(List<List<Span>> map, int startLine, int startColumn, int endLine, int endColumn) {
+        
+        if (map == null || map.isEmpty()) {
+            return;
+        }
+        
         int lineCount = endLine - startLine - 1;
         // Remove unrelated lines
         while (lineCount > 0) {
@@ -36,7 +40,7 @@ public class SpanMapUpdater {
             lineCount--;
         }
         // Clean up start line
-        List<Span> startLineSpans = map.get(startLine);
+        List<Span> startLineSpans = emptyIfNull(map.get(startLine));
         int index = startLineSpans.size() - 1;
         while (index > 0) {
             if (startLineSpans.get(index).column >= startColumn) {
@@ -47,7 +51,7 @@ public class SpanMapUpdater {
             }
         }
         // Shift end line
-        List<Span> endLineSpans = map.get(startLine + 1);
+        List<Span> endLineSpans = emptyIfNull(map.get(startLine + 1));
         while (endLineSpans.size() > 1) {
             Span first = endLineSpans.get(0);
             if (first.column >= endColumn) {
@@ -76,7 +80,7 @@ public class SpanMapUpdater {
         if (map == null || map.isEmpty()) {
             return;
         }
-        List<Span> spanList = map.get(line);
+        List<Span> spanList = emptyIfNull(map.get(line));
         int startIndex = findSpanIndexFor(spanList, 0, startCol);
         if (startIndex == -1) {
             //No span is to be updated
@@ -114,7 +118,7 @@ public class SpanMapUpdater {
         if (map == null || map.isEmpty()) {
             return;
         }
-        List<Span> spanList = map.get(line);
+        List<Span> spanList = emptyIfNull( map.get(line));
         int index = findSpanIndexFor(spanList, 0, startCol);
         if (index == -1) {
             return;
@@ -138,7 +142,7 @@ public class SpanMapUpdater {
 
     public static void shiftSpansOnMultiLineInsert(List<List<Span>> map, int startLine, int startColumn, int endLine, int endColumn) {
         // Find extended span
-        List<Span> startLineSpans = map.get(startLine);
+        List<Span> startLineSpans = emptyIfNull( map.get(startLine));
         int extendedSpanIndex = findSpanIndexFor(startLineSpans, 0, startColumn);
         if (extendedSpanIndex == -1) {
             extendedSpanIndex = startLineSpans.size() - 1;
@@ -159,7 +163,7 @@ public class SpanMapUpdater {
             map.add(startLine + 1, list);
         }
         // Add original spans to new line
-        List<Span> endLineSpans = map.get(endLine);
+        List<Span> endLineSpans = emptyIfNull(map.get(endLine));
         if (endColumn == 0 && extendedSpanIndex + 1 < startLineSpans.size()) {
             endLineSpans.clear();
         }
@@ -174,12 +178,21 @@ public class SpanMapUpdater {
     }
 
     private static int findSpanIndexFor(List<Span> spans, int initialPosition, int targetCol) {
+        spans = emptyIfNull(spans);
         for (int i = initialPosition; i < spans.size(); i++) {
             if (spans.get(i).column >= targetCol) {
                 return i;
             }
         }
         return -1;
+    }
+    
+    private static <T> List<T> emptyIfNull (List<T> original) {
+        if (original == null) {
+            original = new ArrayList<T>();
+        }
+        
+        return original;
     }
 
 }

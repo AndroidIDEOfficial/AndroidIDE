@@ -47,7 +47,7 @@ public class TreeNode {
     }
 
     public TreeNode(File value) {
-        children = new ArrayList<>();
+        children = Collections.synchronizedList(new ArrayList<TreeNode>());
         mValue = value;
     }
 
@@ -93,7 +93,7 @@ public class TreeNode {
     }
 
     public List<TreeNode> getChildren() {
-        return children == null ? new ArrayList<TreeNode>() : children;
+        return children == null ? Collections.synchronizedList(new ArrayList<TreeNode>()) : children;
     }
 
     public int size() {

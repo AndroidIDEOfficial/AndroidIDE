@@ -182,6 +182,7 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         
         final FragmentEditorBinding binding = frag.getBinding();
         binding.diagnosticTextContainer.setVisibility(View.VISIBLE);
+        binding.diagnosticText.setVisibility(View.VISIBLE);
         binding.diagnosticText.setClickable(false);
         binding.diagnosticText.setText(diagnostic.getMessage());
         
@@ -221,12 +222,6 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
             return;
         }
         
-        TransitionSet set = new TransitionSet();
-        set.addTransition(new ChangeBounds());
-        set.addTransition(new Fade());
-        set.setDuration(DIAGNOSTIC_TRANSITION_DURATION);
-        TransitionManager.beginDelayedTransition(activity().getBinding().getRoot(), set);
-        
         activity().getDiagnosticBinding().getRoot().setVisibility(View.GONE);
     }
 
@@ -241,6 +236,7 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         }
         
         frag.getBinding().diagnosticTextContainer.setVisibility(View.GONE);
+        frag.getBinding().diagnosticText.setVisibility(View.GONE);
         frag.getBinding().diagnosticText.setClickable(false);
     }
     

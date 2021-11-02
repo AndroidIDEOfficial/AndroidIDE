@@ -223,10 +223,9 @@ public class AndroidTreeView {
         node.setExpanded(true);
         final TreeNode.BaseNodeViewHolder parentViewHolder = getViewHolderForNode(node);
         parentViewHolder.getNodeItemsView().removeAllViews();
-
-
+        
         parentViewHolder.toggle(true);
-		
+	    
 		final Iterator<TreeNode> nodes = node.getChildren().iterator();
         while (nodes.hasNext()) {
 			final TreeNode n = nodes.next();

@@ -258,7 +258,7 @@
 	<string name="label_splash_image">Splash image</string>
 	<string name="msg_checking_storage_permissions">Checking storage permissions</string>
 	<string name="msg_failed_list_files">Failed to list project files!</string>
-	<string name="msg_failed_save">Failed to save some files!</string>
+	<string name="msg_failed_save">Failed to save files!</string>
 	<string name="msg_service_started">Service Started</string>
 	<string name="msg_starting_completion">Starting services</string>
 	<string name="msg_starting_completion_failed">Failed to start Completion Services</string>

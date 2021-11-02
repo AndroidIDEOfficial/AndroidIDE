@@ -11,7 +11,7 @@ buildscript {
         javaSourceVersion = JavaVersion.VERSION_1_8
         javaTargetVersion = JavaVersion.VERSION_1_8
         
-        stringfogEnabled = false
+        stringfogEnabled = true
     }
 
     repositories {

@@ -113,7 +113,8 @@ public class ShellServer extends Thread {
         try {
 			this.process.getOutputStream().write(str.concat("\n").getBytes());
 			this.process.getOutputStream().flush();
-		} catch (IOException e) {
+		} catch (Throwable e) {
+            // Ignored
 		}
     }
 

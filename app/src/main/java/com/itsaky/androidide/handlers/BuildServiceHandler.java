@@ -1,6 +1,7 @@
 package com.itsaky.androidide.handlers;
 
 import android.view.View;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.AndroidProject;
@@ -12,12 +13,11 @@ import com.itsaky.androidide.tasks.gradle.build.ApkGeneratingTask;
 import com.itsaky.androidide.utils.Environment;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import java.util.Collection;
 
 public class BuildServiceHandler extends IDEHandler implements IDEService.BuildListener {
     

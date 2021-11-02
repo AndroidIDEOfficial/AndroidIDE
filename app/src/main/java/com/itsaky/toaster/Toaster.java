@@ -70,6 +70,8 @@ public class Toaster {
 	}
 
     public void show() {
+        
+        // Always run on UI Thread
         ThreadUtils.runOnUiThread(() -> {
             showInternal();
         });

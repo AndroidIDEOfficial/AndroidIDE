@@ -184,7 +184,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		loadFragment(mFileTreeFragment);
         
         symbolInput = new SymbolInputView(this);
-        mBinding.inputContainer.addView(symbolInput, 1, new ViewGroup.LayoutParams(-1, -2));
+        mBinding.inputContainer.addView(symbolInput, 0, new ViewGroup.LayoutParams(-1, -2));
         
         mBinding.editorViewPager.setOffscreenPageLimit(9);
         mBinding.editorViewPager.setAdapter(mPagerAdapter);
@@ -232,6 +232,26 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             confirmProjectClose();
 		}
 	}
+
+    @Override
+    protected void onPause() {
+        new Thread(() -> {
+            
+            boolean saved = false;
+            try {
+                saveAll();
+                saved = true;
+            } catch (Throwable th) {
+                LOG.error(":onPause(): Failed to save files", th);
+                saved = false;
+            }
+            
+            if(!saved) {
+                getApp().toast(R.string.msg_failed_save, Toaster.Type.ERROR);
+            }
+        }, "AndroidIDE FileSaver").start();
+        super.onPause();
+    }
 
 	@Override
 	protected void onResume() {
