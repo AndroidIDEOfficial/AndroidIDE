@@ -93,13 +93,15 @@
 				android:id="@+id/menuEditor_runStopDaemons"
 				android:title="@string/stop_gradle_daemons"
 				app:showAsAction="never"/>
-			<!--<item
-				android:icon="@drawable/ic_recreate"
-				android:id="@+id/menuEditor_runRecreate"
-				android:title="@string/recreate_completion_services"
-				app:showAsAction="never"/>-->
 		</menu>
 	</item>
+    
+    <item
+        android:icon="@drawable/ic_preview_layout"
+        android:id="@+id/menuEditor_viewLayout"
+        android:title="@string/title_preview_layout"
+		app:showAsAction="always"/>
+    
 	<item
 		android:icon="@drawable/ic_save"
 		android:id="@+id/menuEditor_save"

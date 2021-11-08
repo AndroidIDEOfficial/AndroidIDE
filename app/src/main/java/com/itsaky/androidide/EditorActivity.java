@@ -1,6 +1,7 @@
 package com.itsaky.androidide;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
@@ -27,6 +28,7 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -66,6 +68,8 @@ import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.ui.inflater.ILayoutInflater;
+import com.itsaky.androidide.ui.inflater.LayoutInflaterConfiguration;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
@@ -81,9 +85,11 @@ import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
@@ -247,7 +253,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             }
             
             if(!saved) {
-                getApp().toast(R.string.msg_failed_save, Toaster.Type.ERROR);
+                ThreadUtils.runOnUiThread( () -> {
+                    getApp().toast(R.string.msg_failed_save, Toaster.Type.ERROR);
+                });
             }
         }, "AndroidIDE FileSaver").start();
         super.onPause();
@@ -294,41 +302,54 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         MenuItem comment = menu.findItem(R.id.menuEditor_commentLine);
         MenuItem uncomment = menu.findItem(R.id.menuEditor_uncommentLine);
         MenuItem findFile = menu.findItem(R.id.menuEditor_findFile);
+        MenuItem viewLayout = menu.findItem(R.id.menuEditor_viewLayout);
         
 		if(KeyboardUtils.isSoftInputVisible(this)) {
 			run1.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 			run2.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 			undo.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			redo.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+            
+            viewLayout.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 		} else {
 			run1.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			run2.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			undo.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 			redo.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            
+            viewLayout.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		}
         
-        final boolean enabled1 = mCurrentFile != null;
-        final boolean enabled2 = enabled1 && mCurrentFile.getName().endsWith(".java");
-        final int alpha1 = enabled1 ? 255 : 76;
-        final int alpha2 = enabled2 ? 255 : 76;
+        final boolean notNull = mCurrentFile != null;
+        final boolean isJava = notNull && mCurrentFile.getName().endsWith(".java");
+        final boolean isXml = notNull && mCurrentFile.getName().endsWith(".xml");
+        final boolean isLayout = isXml && Pattern.compile (FileOptionsHandler.LAYOUTRES_PATH_REGEX).matcher(mCurrentFile.getParentFile().getAbsolutePath()).matches();
+        final int nullableAlpha = notNull ? 255 : 76;
+        final int javaFileAlpha = isJava ? 255 : 76;
+        final int xmlFileAlpha = isXml ? 255 : 76;
+        final int layoutFileAlpha = isLayout ? 255 : 76;
         
-        undo.setEnabled(enabled1);
-        redo.setEnabled(enabled1);
-        save.setEnabled(enabled1);
-        comment.setEnabled(enabled1);
-        uncomment.setEnabled(enabled1);
-        findFile.setEnabled(enabled1);
-        def.setEnabled(enabled2);
-        ref.setEnabled(enabled2);
+        undo.setEnabled(notNull);
+        redo.setEnabled(notNull);
+        save.setEnabled(notNull);
+        comment.setEnabled(notNull);
+        uncomment.setEnabled(notNull);
+        findFile.setEnabled(notNull);
+        def.setEnabled(isJava);
+        ref.setEnabled(isJava);
         
-        undo.getIcon().setAlpha(alpha1);
-        redo.getIcon().setAlpha(alpha1);
-        save.getIcon().setAlpha(alpha1);
-        comment.getIcon().setAlpha(alpha1);
-        uncomment.getIcon().setAlpha(alpha1);
-        findFile.getIcon().setAlpha(alpha1);
-        def.getIcon().setAlpha(alpha2);
-        ref.getIcon().setAlpha(alpha2);
+        undo.getIcon().setAlpha(nullableAlpha);
+        redo.getIcon().setAlpha(nullableAlpha);
+        save.getIcon().setAlpha(nullableAlpha);
+        comment.getIcon().setAlpha(nullableAlpha);
+        uncomment.getIcon().setAlpha(nullableAlpha);
+        findFile.getIcon().setAlpha(nullableAlpha);
+        def.getIcon().setAlpha(javaFileAlpha);
+        ref.getIcon().setAlpha(javaFileAlpha);
+        
+        viewLayout.setEnabled(isLayout);
+        viewLayout.getIcon().setAlpha(layoutFileAlpha);
+        viewLayout.setShowAsActionFlags(isLayout ? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
         
 		return true;
 	}
@@ -398,6 +419,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             if(!getProjectInfoSheet().isShowing()) {
                 getProjectInfoSheet().show(getSupportFragmentManager(), "project_info_sheet");
             }
+        } else if (id == R.id.menuEditor_viewLayout && mCurrentFile != null) {
+            previewLayout();
         }
 		invalidateOptionsMenu();
 		return true;
@@ -968,7 +991,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 
             return null;
         }, __ -> {
-            setStatus(getString(getApp().areCompletorsStarted() ? R.string.msg_service_started : R.string.msg_starting_completion_failed));
+            setStatus(getString(getApp().isXmlServiceStarted() ? R.string.msg_service_started : R.string.msg_starting_completion_failed));
         });
 	}
     
@@ -1024,6 +1047,56 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
        /////////////////////////////////////////////////
       ////////////// PRIVATE APIS /////////////////////
      /////////////////////////////////////////////////
+     
+     private void previewLayout () {
+         try {
+             saveAll(false);
+             if (getApp().getLayoutInflater() == null) {
+                 getApp().createInflater(createInflaterConfig());
+             }
+
+             final Intent intent = new Intent (this, DesignerActivity.class);
+             intent.putExtra(DesignerActivity.KEY_LAYOUT_PATH, mCurrentFile.getAbsolutePath());
+             startActivity(intent);
+         } catch (Throwable th) {
+             LOG.error("Unable to preview layout", th);
+             getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
+         }
+     }
+
+     private LayoutInflaterConfiguration createInflaterConfig() {
+         return new LayoutInflaterConfiguration.Builder ()
+             .setAttrInfo(getApp().attrInfo())
+             .setWidgetInfo(getApp().widgetInfo())
+             .setResourceProvider(new com.itsaky.androidide.project.ProjectResourceFinder())
+             .setResourceDirectories(getResourceDirectories())
+             .setContextProvider(getContextProvider())
+             .create();
+     }
+
+     private ILayoutInflater.ContextProvider getContextProvider() {
+         return new ILayoutInflater.ContextProvider() {
+             @Override
+             public Context getContext() {
+                 return provide();
+             }
+         };
+     }
+
+     private Set<File> getResourceDirectories() {
+         final Set<File> dirs = new HashSet<>();
+         if (mProject != null && mProject.getModulePaths() != null && !mProject.getModulePaths().isEmpty()) {
+             for (String path : mProject.getModulePaths()) {
+                 if(path != null && new File (path).exists()) {
+                     File res = new File (path, "src/main/res");
+                     if(res.exists()) {
+                         dirs.add(res);
+                     }
+                 }
+             }
+         }
+         return dirs;
+     }
      
      private void openTerminal () {
          final Intent intent = new Intent(this, TerminalActivity.class);

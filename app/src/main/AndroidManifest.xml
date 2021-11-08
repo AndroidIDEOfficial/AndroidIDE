@@ -34,6 +34,10 @@
             android:name=".MainActivity"
 			android:configChanges="orientation|screenSize|uiMode">
 		</activity>
+        <activity 
+            android:name=".DesignerActivity"
+            android:configChanges="orientation|screenSize|uiMode">
+		</activity>
 		<activity 
 			android:name=".DownloadActivity"
 			android:configChanges="orientation|screenSize|uiMode">

@@ -1,5 +1,6 @@
 package com.itsaky.androidide.language.xml.completion;
 
+import com.google.gson.JsonObject;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.xml.lexer.XMLLexer;
 import com.itsaky.attrinfo.AttrInfo;
@@ -17,7 +18,6 @@ import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.InsertTextFormat;
-import com.google.gson.JsonObject;
 
 public class XMLCompletionService {
     
@@ -31,17 +31,22 @@ public class XMLCompletionService {
     "android:layout_width=\"wrap_content\"\n" + 
     "android:layout_height=\"wrap_content\"";
     
-	public XMLCompletionService() {
-		this.attrs = new AttrInfo(StudioApp.getInstance(), () -> attrsInitialized = true);
-		this.widgets = new WidgetInfo(StudioApp.getInstance(), () -> widgetsInitialized = true);
+	public XMLCompletionService(InitializeListener listener) {
+		this.attrs = new AttrInfo(StudioApp.getInstance(), onAttrInit(listener));
+		this.widgets = new WidgetInfo(StudioApp.getInstance(), onWidgetInit(listener));
 	}
 	
 	public boolean isInitiated() {
-		return attrsInitialized && widgetsInitialized;
+        return attrsInitialized && widgetsInitialized;
 	}
-	
+    
 	public List<CompletionItem> complete(CharSequence content, int index, int line, int column, String prefix) {
 		final List<CompletionItem> result = new ArrayList<>();
+        
+        if (!isInitiated()) {
+            return handleCompletionResults(result);
+        }
+        
 		if(prefix.startsWith("<") || prefix.startsWith("</")) {
 			boolean slash = false;
 			prefix = prefix.substring(1).trim();
@@ -53,7 +58,7 @@ public class XMLCompletionService {
 				if(view.simpleName.toLowerCase(Locale.US).startsWith(prefix))
 					result.add(widgetNameAsCompletion(view, slash));
 			}
-			return handleResults(result);
+			return handleCompletionResults(result);
 		} else {
 			final IsInValueScanner scanner = new IsInValueScanner(index);
 			final String name = scanner.scan(content);
@@ -76,7 +81,7 @@ public class XMLCompletionService {
 				}
 			}
 		}
-		return handleResults(result);
+		return handleCompletionResults(result);
 	}
 
 	private CompletionItem valueAsCompletion(String value) {
@@ -157,9 +162,35 @@ public class XMLCompletionService {
         return sb.toString();
     }
 	
-	private List<CompletionItem> handleResults(List<CompletionItem> result) {
+	private List<CompletionItem> handleCompletionResults(List<CompletionItem> result) {
 		return result;
 	}
+    
+    private Runnable onAttrInit (final InitializeListener listener) {
+        return new Runnable() {
+
+            @Override
+            public void run() {
+                attrsInitialized = true;
+                if(listener != null) {
+                    listener.onAttrsInitialize(attrs);
+                }
+            }
+        };
+    }
+
+    private Runnable onWidgetInit (final InitializeListener listener) {
+        return new Runnable() {
+
+            @Override
+            public void run() {
+                widgetsInitialized = true;
+                if(listener != null) {
+                    listener.onWidgetsInitialize(widgets);
+                }
+            }
+        };
+    }
     
 	private class IsInValueScanner {
 		
@@ -194,4 +225,9 @@ public class XMLCompletionService {
 		}
 		
 	}
+    
+    public static interface InitializeListener {
+        void onAttrsInitialize (AttrInfo info);
+        void onWidgetsInitialize (WidgetInfo info);
+    }
 }

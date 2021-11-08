@@ -7,21 +7,26 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class WidgetInfo {
     
-    private final List<Widget> widgets;
+    private final SortedMap<String, Widget> widgets;
     
     public WidgetInfo (final Context ctx, final Runnable onFinish) {
-        this.widgets = new ArrayList<>();
+        this.widgets = new TreeMap<>();
         
         readWidgets(ctx.getResources(), onFinish);
     }
     
-    public List<Widget> getWidgets() {
-        return this.widgets;
+    public Widget getWidgetBySimpleName (String simpleName) {
+        return this.widgets.getOrDefault(simpleName, null);
+    }
+    
+    public Collection<Widget> getWidgets() {
+        return this.widgets.values();
     }
 
     private void readWidgets(final Resources resources, final Runnable onFinish) {
@@ -45,7 +50,7 @@ public class WidgetInfo {
 
                     // Don't add layout params
                     if(code != 'P') {
-                        widgets.add(new Widget(viewName, simpleViewName, isViewGroup));
+                        widgets.put(simpleViewName, new Widget(viewName, simpleViewName, isViewGroup));
                     }
                 }
                 

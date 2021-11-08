@@ -144,11 +144,11 @@ dependencies {
 	implementation 'com.google.firebase:firebase-messaging'
     
 	// Local projects
-    implementation project(':sdk-info')
 	implementation project(':treeview')
     implementation project(':emulatorview')
     implementation project(':javapoet')
     implementation project(':lsp')
+    implementation project(':layout-inflater')
     
     // LSP4J
     implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.12.0'

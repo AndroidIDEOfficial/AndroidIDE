@@ -1,0 +1,3 @@
+<resources>
+    <string name="msg_cannot_create_view">Cannot create view for tag: %s</string>
+</resources>

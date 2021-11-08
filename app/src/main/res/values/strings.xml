@@ -1,4 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="msg_cannot_preview_layout">Unable to preview layout!</string>
+    <string name="title_preview_layout">Preview Layout</string>
     <string name="title_install_apks">Install APK(s)</string>
     <string name="title_clear_output">Clear output</string>
     <string name="msg_gradlew_installation_failed">Failed to install Gradle Wrapper: %s</string>

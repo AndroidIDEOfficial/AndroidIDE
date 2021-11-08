@@ -47,10 +47,9 @@ public class Toaster {
 		createView();
 	}
 
-	protected View createView() {
+	protected void createView() {
 		binding = LayoutToastBinding.inflate(LayoutInflater.from(mContext));
-		binding.toastToastWrapper.setToasterInstance(this);
-		return binding.getRoot();
+        binding.toastToastWrapper.setToasterInstance(this);
 	}
 
 	protected Drawable createBackgroundDrawable() {
@@ -70,41 +69,33 @@ public class Toaster {
 	}
 
     public void show() {
-        
-        // Always run on UI Thread
-        ThreadUtils.runOnUiThread(() -> {
-            showInternal();
-        });
-    }
-
-	protected void showInternal() {
-		int dp16 = toPx(16);
-		mIconColor = mType == Type.SUCCESS ? COLOR_SUCCESS :
+        int dp16 = toPx(16);
+        mIconColor = mType == Type.SUCCESS ? COLOR_SUCCESS :
             mType == Type.ERROR ? COLOR_ERROR :
             Color.DKGRAY;
-		int gravity = mGravity == Gravity.TOP_LEFT ? (android.view.Gravity.TOP | android.view.Gravity.START) :
+        int gravity = mGravity == Gravity.TOP_LEFT ? (android.view.Gravity.TOP | android.view.Gravity.START) :
             mGravity == Gravity.TOP_RIGHT ? (android.view.Gravity.TOP | android.view.Gravity.END) :
             mGravity == Gravity.BOTTOM_RIGHT ? (android.view.Gravity.BOTTOM | android.view.Gravity.END) :
             mGravity == Gravity.BOTTOM_LEFT ? (android.view.Gravity.BOTTOM | android.view.Gravity.START) :
             android.view.Gravity.TOP | android.view.Gravity.END;
 
-		mIcon = createToastIconAnimation(mIconColor);
+        mIcon = createToastIconAnimation(mIconColor);
 
-		mToast = Toast.makeText(mContext, binding.toastText.getText(), mDuration);
-		mToast.setGravity(gravity, dp16, dp16);
-		mToast.setDuration(mDuration);
-		mToast.setView(binding.getRoot());
-		mToast.show();
+        mToast = Toast.makeText(mContext, binding.toastText.getText(), mDuration);
+        mToast.setGravity(gravity, dp16, dp16);
+        mToast.setDuration(mDuration);
+        mToast.setView(binding.getRoot());
+        mToast.show();
 
-		binding.toastImage.setImageDrawable(mIcon);
+        binding.toastImage.setImageDrawable(mIcon);
 		mIcon.start();
-	}
+    }
 
 	public Toaster setText(String text) {
 		if (binding.toastText == null)
 			createView();
-
-		binding.toastText.setText(text);
+            
+        binding.toastText.setText(text);
 		return this;
 	}
 

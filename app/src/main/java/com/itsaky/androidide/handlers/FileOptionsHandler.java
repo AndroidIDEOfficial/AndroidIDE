@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 
 public class FileOptionsHandler extends IDEHandler implements OptionsListFragment.OnOptionsClickListener {
     
-    private final String RES_PATH_REGEX = "/.*/src/.*/res";
-    private final String LAYOUTRES_PATH_REGEX = "/.*/src/.*/res/layout";
-    private final String MENURES_PATH_REGEX = "/.*/src/.*/res/menu";
-    private final String DRAWABLERES_PATH_REGEX = "/.*/src/.*/res/drawable";
-    private final String JAVA_PATH_REGEX = "/.*/src/.*/java";
+    public static final String RES_PATH_REGEX = "/.*/src/.*/res";
+    public static final String LAYOUTRES_PATH_REGEX = "/.*/src/.*/res/layout";
+    public static final String MENURES_PATH_REGEX = "/.*/src/.*/res/menu";
+    public static final String DRAWABLERES_PATH_REGEX = "/.*/src/.*/res/drawable";
+    public static final String JAVA_PATH_REGEX = "/.*/src/.*/java";
     
     public FileOptionsHandler(Provider provider) {
         super(provider);

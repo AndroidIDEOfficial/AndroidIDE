@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-import android.text.TextUtils;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
 import com.blankj.utilcode.util.EncodeUtils;
@@ -22,29 +21,40 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.services.MessagingService;
 import com.itsaky.androidide.shell.ShellServer;
+import com.itsaky.androidide.ui.inflater.ILayoutInflater;
+import com.itsaky.androidide.ui.inflater.LayoutInflaterConfiguration;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.StudioUtils;
 import com.itsaky.apiinfo.ApiInfo;
+import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.toaster.Toaster;
+import com.itsaky.widgets.WidgetInfo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Locale;
+import com.itsaky.androidide.ui.inflater.InflateException;
 
-public class StudioApp extends MultiDexApplication
-{
+public class StudioApp extends MultiDexApplication implements XMLCompletionService.InitializeListener {
+    
 	private static StudioApp instance;
+    
 	private StudioUtils mUtils;
-    private XMLCompletionService mXmlCompletionService;
 	private PreferenceManager mPrefsManager;
 	private NotificationManager mNotificationManager;
 	
     private boolean stopGradleDaemon = true;
 	private String sArch = "";
     
-    private ApiInfo mApiInfo;
+    private static ApiInfo mApiInfo;
+    private static AttrInfo mAttrInfo;
+    private static WidgetInfo mWidgetInfo;
+    
+    private XMLCompletionService mXmlCompletionService;
+    private static ILayoutInflater mLayoutInflater;
     
 	public static final boolean DEBUG = com.itsaky.androidide.BuildConfig.DEBUG;
 	
@@ -86,10 +96,21 @@ public class StudioApp extends MultiDexApplication
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_UPDATE);
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_DEV_MSGS);
         
-        startXmlCompletor();
+        this.mXmlCompletionService = new XMLCompletionService(this);
+        
         initializeApiInformation();
 	}
-	
+
+    @Override
+    public void onAttrsInitialize(AttrInfo info) {
+        this.mAttrInfo = info;
+    }
+
+    @Override
+    public void onWidgetsInitialize(WidgetInfo info) {
+        this.mWidgetInfo = info;
+    }
+    
 	private void handleLog(CharSequence seq) {
 		if(seq == null)
 			return;
@@ -137,6 +158,22 @@ public class StudioApp extends MultiDexApplication
 		return getString(R.string.cms_channel_id_devs);
 	}
     
+    public AttrInfo attrInfo () {
+        return this.mAttrInfo;
+    }
+    
+    public WidgetInfo widgetInfo () {
+        return this.mWidgetInfo;
+    }
+    
+    public void createInflater (LayoutInflaterConfiguration config) {
+        this.mLayoutInflater = ILayoutInflater.newInstance(config);
+    }
+    
+    public ILayoutInflater getLayoutInflater () {
+        return mLayoutInflater;
+    }
+    
     /**
      * Reads API version information from api-versions.xml
      */
@@ -153,10 +190,6 @@ public class StudioApp extends MultiDexApplication
         newShell(null).bgAppend("gradle --stop");
     }
 	
-    public void startXmlCompletor() {
-        this.mXmlCompletionService = new XMLCompletionService();
-    }
-	
 	public XMLCompletionService getXmlCompletionService() {
 		return mXmlCompletionService;
 	}
@@ -165,7 +198,7 @@ public class StudioApp extends MultiDexApplication
         return mApiInfo;
     }
 	
-	public boolean areCompletorsStarted() {
+	public boolean isXmlServiceStarted() {
 		return mXmlCompletionService != null
 			&& mXmlCompletionService.isInitiated();
 	}
@@ -274,16 +307,20 @@ public class StudioApp extends MultiDexApplication
         }
         return sArch;
     }
-	
+    
 	private void handleCrash(Thread thread, Throwable th) {
-		if(true/*DEBUG*/)
-			writeException(th);
+		writeException(th);
+        
 		if(this.uncaughtExceptionHandler != null) {
 			this.uncaughtExceptionHandler.uncaughtException(thread, th);
 		}
+        
+        // TODO Show exception in another activity
 		try {
 			android.os.Process.killProcess(android.os.Process.myPid());
-		} catch (Throwable ignored) {}
+		} catch (Throwable ignored) {
+            // ignored
+        }
 	}
 
     private String getArch(String str) {
