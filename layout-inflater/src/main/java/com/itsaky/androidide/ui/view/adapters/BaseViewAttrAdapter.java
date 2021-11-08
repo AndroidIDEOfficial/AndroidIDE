@@ -40,7 +40,7 @@ public class BaseViewAttrAdapter implements IAttributeAdapter {
         final String namespace = attribute.getNamespace();
         final String name = attribute.getNamespace();
         final String value = attribute.getValue();
-        final ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        final ViewGroup.LayoutParams params = view.getLayoutParams();
         final Resources res = view.getResources();
         final DisplayMetrics dm = res.getDisplayMetrics();
         final Context ctx = view.getContext();
@@ -168,28 +168,6 @@ public class BaseViewAttrAdapter implements IAttributeAdapter {
             case "scrollY" :
                 view.setScrollY((int) parseFloat(value));
                 break;
-            case "layout_margin" :
-                final int margin = parseDimension(value, 0, dm, resFinder);
-                params.setMargins(margin, margin, margin, margin);
-                break;
-            case "layout_marginLeft" :
-                params.leftMargin = parseDimension(value, 0, dm, resFinder);
-                break;
-            case "layout_marginTop" :
-                params.topMargin = parseDimension(value, 0, dm, resFinder);
-                break;
-            case "layout_marginRight" :
-                params.rightMargin = parseDimension(value, 0, dm, resFinder);
-                break;
-            case "layout_marginBottom" :
-                params.bottomMargin = parseDimension(value, 0, dm, resFinder);
-                break;
-            case "layout_marginStart" :
-                params.setMarginStart(parseDimension(value, 0, dm, resFinder));
-                break;
-            case "layout_marginEnd" :
-                params.setMarginEnd(parseDimension(value, 0, dm, resFinder));
-                break;
             case "textAlignment" :
                 view.setTextAlignment(parseTextAlignment(value));
                 break;
@@ -222,6 +200,36 @@ public class BaseViewAttrAdapter implements IAttributeAdapter {
             default :
                 handled = false;
                 break;
+        }
+        
+        // In case these attributes are related to margins
+        // We need to apply them by casting the params to ViewGroup.MarginLayoutParams
+        if (!handled && params instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
+            switch (name) {
+                case "layout_margin" :
+                    final int margin = parseDimension(value, 0, dm, resFinder);
+                    marginParams.setMargins(margin, margin, margin, margin);
+                    break;
+                case "layout_marginLeft" :
+                    marginParams.leftMargin = parseDimension(value, 0, dm, resFinder);
+                    break;
+                case "layout_marginTop" :
+                    marginParams.topMargin = parseDimension(value, 0, dm, resFinder);
+                    break;
+                case "layout_marginRight" :
+                    marginParams.rightMargin = parseDimension(value, 0, dm, resFinder);
+                    break;
+                case "layout_marginBottom" :
+                    marginParams.bottomMargin = parseDimension(value, 0, dm, resFinder);
+                    break;
+                case "layout_marginStart" :
+                    marginParams.setMarginStart(parseDimension(value, 0, dm, resFinder));
+                    break;
+                case "layout_marginEnd" :
+                    marginParams.setMarginEnd(parseDimension(value, 0, dm, resFinder));
+                    break;
+            }
         }
         
         view.setLayoutParams(params);
@@ -275,7 +283,7 @@ public class BaseViewAttrAdapter implements IAttributeAdapter {
         return result;
     }
 
-    private int gravityFor(String gravity) {
+    protected int gravityFor(String gravity) {
         switch (gravity) {
             case "center" :
                 return Gravity.CENTER;
@@ -502,7 +510,6 @@ public class BaseViewAttrAdapter implements IAttributeAdapter {
                 case "fill_parent"  :
                     return ViewGroup.LayoutParams.MATCH_PARENT;
                 case "wrap_content" :
-                    return ViewGroup.LayoutParams.WRAP_CONTENT;
                 default :
                     return ViewGroup.LayoutParams.WRAP_CONTENT;
             }

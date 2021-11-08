@@ -18,19 +18,22 @@ public abstract class BaseView implements IView {
     
     protected final String qualifiedName;
     protected final View view;
-    protected final IViewGroup parent;
+    protected IViewGroup parent;
 
     private boolean isPlaceholder = false;
 
-    public BaseView(String qualifiedName, View view, IViewGroup parent) {
-        this(qualifiedName, view, parent, false);
+    public BaseView(String qualifiedName, View view) {
+        this(qualifiedName, view, false);
     }
 
-    public BaseView(String qualifiedName, View view, IViewGroup parent, boolean isPlaceholder) {
+    public BaseView(String qualifiedName, View view, boolean isPlaceholder) {
         this.qualifiedName = qualifiedName;
         this.view = view;
-        this.parent = parent;
         this.isPlaceholder = isPlaceholder;
+    }
+    
+    public void setParent (IViewGroup parent) {
+        this.parent = parent;
     }
     
     public void setPlaceholder (boolean placeholder) {
@@ -90,5 +93,25 @@ public abstract class BaseView implements IView {
     
     protected Set<IAttributeAdapter> getAttributeAdapters () {
         return attrAdapters;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        
+        if (obj == null) {
+            return false;
+        }
+        
+        if (obj instanceof IView) {
+            IView that = (IView) obj;
+            return this.asView().equals(that.asView());
+        }
+        
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return asView().hashCode();
     }
 }

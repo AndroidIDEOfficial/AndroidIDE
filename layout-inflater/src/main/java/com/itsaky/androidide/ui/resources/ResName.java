@@ -1,4 +1,4 @@
-package com.itsaky.androidide.ui.parser;
+package com.itsaky.androidide.ui.resources;
 
 import androidx.annotation.NonNull;
 import java.io.File;

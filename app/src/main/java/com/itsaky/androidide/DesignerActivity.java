@@ -19,7 +19,6 @@ public class DesignerActivity extends StudioActivity {
     private ActivityDesignerBinding mBinding;
     
     public static final String KEY_LAYOUT_PATH = "designer_layoutPath";
-    
     private static final Logger LOG = Logger.instance("DesignerActivity");
     
     @Override
@@ -40,17 +39,11 @@ public class DesignerActivity extends StudioActivity {
         final String path = extras.getString(KEY_LAYOUT_PATH, null);
         
         try {
-            
-            LOG.info ("android.R.class", printRClassHierarchy());
-            
             final ILayoutInflater inflater = getApp().getLayoutInflater();
+            inflater.resetContextProvider(newContextProvider());
             
-            // Reset the context so we could override the default behavior of Theme#obtainStylesAttributes
-            inflater.resetContextProvider( newContextProvider());
-            
-            final IView view = inflater.inflatePath(path);
+            final IView view = inflater.inflatePath(path, mBinding.realContainer);
             mBinding.realContainer.addView(view.asView());
-            
         } catch (Throwable th) {
             mBinding.realContainer.removeAllViews();
             mBinding.realContainer.addView(createErrorText(th));

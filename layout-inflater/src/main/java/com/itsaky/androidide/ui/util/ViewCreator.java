@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.ui.inflater.ILayoutInflater;
 import com.itsaky.androidide.ui.inflater.IResourceFinder;
 import com.itsaky.androidide.ui.inflater.InflateException;
-import com.itsaky.androidide.ui.parser.ResourceTable;
+import com.itsaky.androidide.ui.resources.ResourceTable;
 import com.itsaky.androidide.ui.view.IAttribute;
 import com.itsaky.androidide.ui.view.IAttributeAdapter;
 import com.itsaky.androidide.ui.view.IView;
@@ -20,6 +20,7 @@ import com.itsaky.androidide.ui.view.adapters.BaseViewGroupAttrAdapter;
 import com.itsaky.androidide.ui.view.adapters.ButtonAttrAdapter;
 import com.itsaky.androidide.ui.view.adapters.LinearLayoutAttrAdapter;
 import com.itsaky.androidide.ui.view.adapters.TextViewAttrAdapter;
+import com.itsaky.androidide.ui.view.impl.BaseView;
 import com.itsaky.androidide.ui.view.impl.UiAttribute;
 import com.itsaky.androidide.ui.view.impl.UiView;
 import com.itsaky.androidide.ui.view.impl.UiViewGroup;
@@ -75,7 +76,7 @@ public class ViewCreator {
         }
     }
     
-    public static IView create (Element tag, IViewGroup parent) throws InflateException {
+    public static IView create (Element tag, ViewGroup parent) throws InflateException {
         if (tag == null) {
             return null;
         }
@@ -106,19 +107,23 @@ public class ViewCreator {
             addAtrributesTo(root, tag.attributes());
         }
         
-        if (tag.childrenSize() > 0
-        && root instanceof IViewGroup
-        && !root.isPlaceholder()) {
-            final IViewGroup thisParent = (IViewGroup) root;
-            for (Element child : tag.children()) {
-                final IView created = ViewCreator.create(child, thisParent);
-                if(created != null) {
-                    thisParent.addView(created);
-                }
-            }
+        if (root instanceof IViewGroup) {
+            addChildren (tag, (IViewGroup) root, parent);
         }
         
         return root;
+    }
+
+    private static void addChildren(Element tag, IViewGroup root, ViewGroup parent) {
+        if (tag.childrenSize() > 0 && !root.isPlaceholder()) {
+            for (Element child : tag.children()) {
+                final BaseView created = (BaseView) ViewCreator.create(child, (ViewGroup) root.asView());
+                if(created != null) {
+                    root.addView(created);
+                    created.setParent(root);
+                }
+            }
+        }
     }
     
     private static int parseFrameworkStyle (String value) throws InflateException{
@@ -158,7 +163,8 @@ public class ViewCreator {
             final String name = split[1];
             final String value = attr.getValue();
             
-            view.addAttribute(asAttribute (namespace, name, value), resFinder);
+            final IAttribute iAttr = asAttribute (namespace, name, value);
+            view.addAttribute(iAttr, resFinder);
         }
     }
 
@@ -166,7 +172,7 @@ public class ViewCreator {
         return new UiAttribute (namespace, name, value);
     }
     
-    public static IView create (String name, IViewGroup parent, int style) throws InflateException {
+    public static IView create (String name, ViewGroup parent, int style) throws InflateException {
         if (!name.contains(".")) {
             return createFromSimpleName (name, parent, style);
         } else {
@@ -174,22 +180,22 @@ public class ViewCreator {
         }
     }
     
-    public static IView createFromInclude (Attributes attrs, IViewGroup parent) {
+    public static IView createFromInclude (Attributes attrs, ViewGroup parent) {
         throw new UnsupportedOperationException ("Inflating from <include> is not supported yet!");
     }
     
-    public static IView createFromSimpleName(String name, IViewGroup parent, int style) throws InflateException {
+    public static IView createFromSimpleName(String name, ViewGroup parent, int style) throws InflateException {
         checkInitialized();
         
         final Widget widget = widgetInfo.getWidgetBySimpleName(name);
         if (widget == null) {
-            return createErrorView(name, getString(com.itsaky.androidide.ui.inflater.R.string.msg_cannot_create_view, name), parent);
+            return createErrorView(name, getString(com.itsaky.androidide.ui.inflater.R.string.msg_cannot_create_view, name));
         }
         
         return createFromQualifiedName(widget.name, parent, style);
     }
     
-    public static IView createFromQualifiedName(String name, IViewGroup parent, int style) throws InflateException {
+    public static IView createFromQualifiedName(String name, ViewGroup parent, int style) throws InflateException {
         checkInitialized();
         assertNotBlank(name, "Invalid tag name: " + name);
         
@@ -198,19 +204,23 @@ public class ViewCreator {
             final Class<? extends View> loaded = Class.forName(name).asSubclass(View.class);
             final Constructor<? extends View> constructor = loaded.getConstructor(Context.class, AttributeSet.class, int.class);
             final View created = constructor.newInstance(contextProvider.getContext(), null, style);
-            return applyLayoutParams(created instanceof ViewGroup ? new UiViewGroup (name, (ViewGroup) created, parent) : new UiView (name, created, parent));
+            final BaseView view =
+                created instanceof ViewGroup
+                    ? new UiViewGroup (name, (ViewGroup) created)
+                    : new UiView (name, created);
+            return applyLayoutParams(view, parent);
         } catch (Throwable th) {
-            return createErrorView(name, "Cannot create view for: " + name, parent);
+            return createErrorView(name, "Cannot create view for: " + name);
         }
     }
 
-    private static IView applyLayoutParams(IView view) {
-        final ViewGroup.MarginLayoutParams params = new ViewGroup.MarginLayoutParams (-2, -2);
+    private static IView applyLayoutParams(IView view, ViewGroup parent) {
+        final ViewGroup.LayoutParams params = LayoutParamGenerator.generateParams(parent);
         view.asView().setLayoutParams(params);
         return view;
     }
     
-    public static IView createErrorView (String name, String msg, IViewGroup parent) throws InflateException {
+    public static IView createErrorView (String name, String msg) throws InflateException {
         
         checkInitialized();
         
@@ -223,7 +233,7 @@ public class ViewCreator {
         error.setTextColor(ContextCompat.getColor(ctx, android.R.color.black));
         error.setBackgroundColor(ContextCompat.getColor(ctx, android.R.color.white));
         
-        return new UiView (name, error, parent, true);
+        return new UiView (name, error, true);
     }
     
     private static String getString (@StringRes int id, Object... format) throws InflateException {

@@ -1,4 +1,4 @@
-package com.itsaky.androidide.ui.parser;
+package com.itsaky.androidide.ui.resources;
 
 import androidx.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -16,40 +16,17 @@ public class ResourceTableFactory {
         final Class<?> androidR = android.R.class;
         try {
             processResources(table, androidR);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
+        } catch (IllegalArgumentException|IllegalAccessException e) {
             return null;
         }
         return table;
     }
 
     private static void processResources(ResourceTable table, Class<?> rClass) throws IllegalArgumentException, IllegalAccessException {
-        addRClassValues(table, rClass);
-        addMissingStyleableAttributes(table, rClass);
-    }
-    
-    private static void addRClassValues(ResourceTable resourceTable, Class<?> rClass) throws IllegalArgumentException, IllegalAccessException {
-        for (Class<?> innerClass : rClass.getClasses()) {
-            String resourceType = innerClass.getSimpleName();
-            if (!resourceType.equals("styleable")) {
-                for (Field field : innerClass.getDeclaredFields()) {
-                    if (field.getType().equals(Integer.TYPE) && Modifier.isStatic(field.getModifiers())) {
-                        int id = field.getInt(null);
-                        String resourceName = field.getName();
-                        if (id == 0) {
-                            continue;
-                        }
-                        resourceTable.addResource(id, resourceType, resourceName);
-                    }
-                }
-            }
-        }
-    }
-    
-    private static void addMissingStyleableAttributes (ResourceTable table, Class<?> rClass) throws IllegalArgumentException, IllegalAccessException {
         final Map<String, List<Integer>> styleableMap = new HashMap<>();
         for (Class<?> innerClass : rClass.getClasses()) {
             if ("styleable".equals(innerClass.getSimpleName())) {
-                for (Field attr : innerClass.getDeclaredFields()) {
+                for (final Field attr : innerClass.getDeclaredFields()) {
                     final Class<?> attrClassType = attr.getType();
                     if (attrClassType == int[].class) { // <declare-styleable> declaration
                         addStyleableGroup (styleableMap, attr);
@@ -57,12 +34,21 @@ public class ResourceTableFactory {
                         addStyleableMember (table, styleableMap, attr);
                     }
                 }
-                break;
+            } else {
+                for (Field field : innerClass.getDeclaredFields()) {
+                    if (field.getType().equals(Integer.TYPE) && Modifier.isStatic(field.getModifiers())) {
+                        int id = field.getInt(null);
+                        String resourceName = field.getName();
+                        if (id != 0) {
+                            table.addResource(id, innerClass.getSimpleName(), resourceName);
+                        }
+                    }
+                }
             }
         }
     }
-
-    private static void addStyleableGroup(Map<String, List<Integer>> styleableMap, Field attr) throws IllegalArgumentException, IllegalAccessException {
+    
+    private static void addStyleableGroup(final Map<String, List<Integer>> styleableMap, final Field attr) throws IllegalArgumentException, IllegalAccessException {
         final String name = attr.getName();
         List<Integer> members = styleableMap.get(name);
         if (members == null) {
@@ -80,7 +66,7 @@ public class ResourceTableFactory {
         styleableMap.put(name, members);
     }
 
-    private static void addStyleableMember(ResourceTable table, Map<String, List<Integer>> styleableMap, Field attr) throws IllegalArgumentException, IllegalAccessException {
+    private static void addStyleableMember(final ResourceTable table, final Map<String, List<Integer>> styleableMap, final Field attr) throws IllegalArgumentException, IllegalAccessException {
         final String name = attr.getName();
         final int separator = findGroupAndAttrNameSeparator (styleableMap, name); // If this is a <declare-styleable> member, then the name will definitely contain am underscore
         final String groupName = name.substring(0, separator);
@@ -103,7 +89,6 @@ public class ResourceTableFactory {
         int index = name.length() - 1;
         
          while (index > 0) {
-             // LinearLayout_Layout_layout_gravity
              int i = name.lastIndexOf("_", index);
              String group = name.substring(0, i);
              List<Integer> mm = styleableMap.get(group);
@@ -115,25 +100,5 @@ public class ResourceTableFactory {
          }
         
         return -1;
-    }
-    
-    private static void addMissingStyleableAttributes2(ResourceTable resourceTable, Class<?> rClass) throws IllegalArgumentException, IllegalAccessException {
-        for (Class<?> innerClass : rClass.getClasses()) {
-            if (innerClass.getSimpleName().equals("styleable")) {
-                String styleableName = null;
-                int[] styleableArray = null;
-                for (Field field : innerClass.getDeclaredFields()) {
-                    if (field.getType().equals(int[].class) && Modifier.isStatic(field.getModifiers())) {
-                        styleableName = field.getName();
-                        styleableArray = (int[]) (field.get(null));
-                    } else if (field.getType().equals(Integer.TYPE) && Modifier.isStatic(field.getModifiers())) {
-                        String attributeName = field.getName().substring(styleableName.length() + 1);
-                        int styleableIndex = field.getInt(null);
-                        int attributeResId = styleableArray[styleableIndex];
-                        resourceTable.addResource(attributeResId, "attr", attributeName);
-                    }
-                }
-            }
-        }
     }
 }

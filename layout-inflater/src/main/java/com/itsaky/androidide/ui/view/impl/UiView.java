@@ -5,11 +5,11 @@ import com.itsaky.androidide.ui.view.IViewGroup;
 
 public class UiView extends BaseView {
     
-    public UiView(String qualifiedName, View view, IViewGroup parent) {
-        this(qualifiedName, view, parent, false);
+    public UiView(String qualifiedName, View view) {
+        this(qualifiedName, view, false);
     }
 
-    public UiView(String qualifiedName, View view, IViewGroup parent, boolean isPlaceholder) {
-        super(qualifiedName, view, parent, isPlaceholder);
+    public UiView(String qualifiedName, View view, boolean isPlaceholder) {
+        super(qualifiedName, view, isPlaceholder);
     }
 }

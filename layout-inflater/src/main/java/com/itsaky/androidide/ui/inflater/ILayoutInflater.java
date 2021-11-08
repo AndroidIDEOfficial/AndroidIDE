@@ -9,6 +9,7 @@ import com.itsaky.androidide.ui.view.IView;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import android.view.ViewGroup;
 
 /**
  * A layout inflater which inflates layout from a raw XML file
@@ -27,7 +28,7 @@ public abstract class ILayoutInflater {
      * @throws InflateException when there was an error inflating the layout
      */
     @NonNull
-    protected abstract IView doInflate (String layout) throws InflateException;
+    protected abstract IView doInflate (String layout, ViewGroup parent) throws InflateException;
     
     /**
      * Reset the {@link ContextProvider} of this inflater
@@ -37,6 +38,23 @@ public abstract class ILayoutInflater {
     public abstract void resetContextProvider (ContextProvider provider);
     
     /**
+     * Register the inflate listener to this inflater.
+     * <p>
+     * NOTE: Do not register too much listeners as they may affect the inflation time.
+     * </p>
+     *
+     * @param listener The listener to register.
+     */
+    public abstract void registerInflateListener (IInflateListener listener);
+    
+    /**
+     * Unregister the inflate listener if it is registered.
+     *
+     * @param listener The listener to unregister
+     */
+    public abstract void unregisterListener (IInflateListener listener);
+    
+    /**
      * Inflate the layout from the given file path
      *
      * @param path The file path to inflate layout from
@@ -44,10 +62,10 @@ public abstract class ILayoutInflater {
      * @throws InflateException when there was an error inflating the layout
      */
     @NonNull
-    public IView inflatePath (String path) throws InflateException {
+    public IView inflatePath (String path, ViewGroup parent) throws InflateException {
         Preconditions.assertNotBlank(path, "Layout file path is blank!");
         
-        return inflate(new File(path));
+        return inflate(new File(path), parent);
     }
     
     /**
@@ -58,7 +76,7 @@ public abstract class ILayoutInflater {
      * @throws InflateException when there was an error inflating the layout
      */
     @NonNull
-    public IView inflate (File file) throws InflateException {
+    public IView inflate (File file, ViewGroup parent) throws InflateException {
         
         Preconditions.assertNotnull(file, "Cannot inflate null file");
         
@@ -76,7 +94,7 @@ public abstract class ILayoutInflater {
             throw new InflateException ("File is not UTF-8 or is empty!");
         }
         
-        return inflate(FileIOUtils.readFile2String(file));
+        return inflate(FileIOUtils.readFile2String(file), parent);
     }
     
     /**
@@ -87,7 +105,7 @@ public abstract class ILayoutInflater {
      * @throws InflateException when there was an error inflating the layout
      */
     @NonNull
-    public IView inflate (String layout) throws InflateException {
+    public IView inflate (String layout, ViewGroup parent) throws InflateException {
         
         Preconditions.assertNotBlank(layout, "Layout code is blank!");
         
@@ -99,7 +117,7 @@ public abstract class ILayoutInflater {
             layout = layout.substring(matcher.end()).trim();
         }
         
-        return doInflate(layout);
+        return doInflate(layout, parent);
     }
     
     /**

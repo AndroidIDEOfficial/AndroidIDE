@@ -12,12 +12,12 @@ public class UiViewGroup extends BaseViewGroup {
     private final ViewGroup viewGroup;
     private final List<IView> children;
     
-    public UiViewGroup(String qualifiedName, ViewGroup view, IViewGroup parent) {
-        this(qualifiedName, view, parent, false);
+    public UiViewGroup(String qualifiedName, ViewGroup view) {
+        this(qualifiedName, view, false);
     }
     
-    public UiViewGroup(String qualifiedName, ViewGroup view, IViewGroup parent, boolean isPlaceholder) {
-        super(qualifiedName, view, parent, isPlaceholder);
+    public UiViewGroup(String qualifiedName, ViewGroup view, boolean isPlaceholder) {
+        super(qualifiedName, view, isPlaceholder);
         
         this.viewGroup = view;
         this.children = new ArrayList<>();
@@ -33,18 +33,27 @@ public class UiViewGroup extends BaseViewGroup {
         super.addView(view, index);
         this.viewGroup.addView(view.asView(), index);
         this.children.add(index, view);
+        
+        onViewAdded(view);
     }
     
     @Override
     public void removeView(int index) {
+        
+        final IView view = children.get(index);
+        
         this.viewGroup.removeViewAt(index);
         this.children.remove(index);
+        
+        onViewRemoved(view);
     }
     
     @Override
     public void removeView(IView view) {
         this.viewGroup.removeView(view.asView());
         this.children.remove(view);
+        
+        onViewRemoved(view);
     }
     
     @Override

@@ -1,11 +1,11 @@
-package com.itsaky.androidide.ui.parser;
+package com.itsaky.androidide.ui.resources;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 public class ResourceTable {
     
-    private int packageIdentifier;
+    private int packageIdentifier = 0;
     private final String packageName;
     private final BiMap<Integer, ResName> resourceTable = HashBiMap.create();
     

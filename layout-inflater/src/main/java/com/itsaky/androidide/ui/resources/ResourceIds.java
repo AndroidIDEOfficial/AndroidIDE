@@ -1,4 +1,4 @@
-package com.itsaky.androidide.ui.parser;
+package com.itsaky.androidide.ui.resources;
 
 public class ResourceIds {
     public static boolean isFrameworkResource(int resId) {

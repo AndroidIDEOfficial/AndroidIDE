@@ -8,12 +8,12 @@ import com.itsaky.androidide.ui.view.IViewGroup;
 
 public abstract class BaseViewGroup extends BaseView implements IViewGroup {
     
-    public BaseViewGroup(String qualifiedName, ViewGroup view, IViewGroup parent) {
-        this(qualifiedName, view, parent, false);
+    public BaseViewGroup(String qualifiedName, ViewGroup view) {
+        this(qualifiedName, view, false);
     }
 
-    public BaseViewGroup(String qualifiedName, ViewGroup view, IViewGroup parent, boolean isPlaceholder) {
-        super(qualifiedName, view, parent, isPlaceholder);
+    public BaseViewGroup(String qualifiedName, ViewGroup view, boolean isPlaceholder) {
+        super(qualifiedName, view, isPlaceholder);
     }
     
     @Override
@@ -27,4 +27,18 @@ public abstract class BaseViewGroup extends BaseView implements IViewGroup {
             view.registerAttributeAdapter(adapter);
         }
     }
+    
+    /**
+     * Called when a new view has been added to this group
+     *
+     * @param view The view that was added
+     */
+    protected void onViewAdded (IView view) {}
+    
+    /**
+     * Called when a new view has been removed from this group
+     *
+     * @param view The view that was removed
+     */
+    protected void onViewRemoved (IView view) {}
 }
