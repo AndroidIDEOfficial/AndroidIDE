@@ -31,7 +31,7 @@ public abstract class BaseLayoutInflater extends ILayoutInflater {
         }
     }
     
-    protected void postInflateView (IView view) {
+    protected void postCreateView (IView view) {
         for (IInflateListener listener : inflateListeners) {
             listener.onInflateView(view, view.getParent());
         }

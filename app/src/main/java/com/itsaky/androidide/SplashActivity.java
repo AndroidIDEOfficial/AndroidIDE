@@ -54,7 +54,7 @@ public class SplashActivity extends StudioActivity
 
 	private void proceed()
 	{
-		if(false && !getApp().is64Bit()) {
+		if(!getApp().isAbiSupported()) {
 			final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
 			builder.setTitle(R.string.title_device_not_supported);
 			builder.setMessage(R.string.msg_device_not_supported);

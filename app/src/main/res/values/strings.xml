@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="msg_sdk_info_load_failed">Failed to load SDK information</string>
     <string name="msg_cannot_preview_layout">Unable to preview layout!</string>
     <string name="title_preview_layout">Preview Layout</string>
     <string name="title_install_apks">Install APK(s)</string>
@@ -211,7 +212,7 @@
 	<string name="please_wait">Please wait for a moment &#8230;</string>
 	<string name="download_manager">AndroidIDE Download Manager</string>
 	<string name="title_device_not_supported">Device Not Supported</string>
-	<string name="msg_device_not_supported">Unfortunately, 32-bit devices are not supported at the moment. We are sorry for the inconvenience.</string>
+	<string name="msg_device_not_supported">Unfortunately, your device is not supported at the moment. We are sorry for the inconvenience.\n\nSupported CPU ABIs: aarch64 and armeabi-v7a</string>
 	<string name="msg_folder_creation_failed">Failed to create folder!</string>
 	<string name="msg_file_creation_failed">Failed to create file!</string>
 	<string name="msg_folder_created">Folder created successfully!</string>

@@ -1,17 +1,13 @@
 package com.itsaky.androidide.managers;
 
 import com.blankj.utilcode.util.FileIOUtils;
-import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import net.lingala.zip4j.ZipFile;
 
 public class ToolsManager {
     
@@ -27,6 +23,8 @@ public class ToolsManager {
     public static final String KEY_CLEANER_VERSION = "tools_cleanerVersion";
     public static final String KEY_GRADLE_API_VERSION = "tools_gradleApiVersion";
     
+    public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + StudioApp.getArch();
+    public static String COMMON_ASSET_DATA_DIR = "data/common";
     
     public static void init(StudioApp app, Runnable onFinish) {
         prefs = app.getPrefManager();
@@ -45,11 +43,11 @@ public class ToolsManager {
 
     private static void extractLibHooks() {
         if(!Environment.LIBHOOK.exists()) {
-            ResourceUtils.copyFileFromAssets("data/libhook.so", Environment.LIBHOOK.getAbsolutePath());
+            ResourceUtils.copyFileFromAssets(getArchSpecificAsset("libhook.so"), Environment.LIBHOOK.getAbsolutePath());
         }
         
         if(!Environment.LIBHOOK2.exists()) {
-            ResourceUtils.copyFileFromAssets("data/libhook2.so", Environment.LIBHOOK2.getAbsolutePath());
+            ResourceUtils.copyFileFromAssets(getArchSpecificAsset("libhook2.so"), Environment.LIBHOOK2.getAbsolutePath());
         }
     }
 
@@ -61,7 +59,7 @@ public class ToolsManager {
         File exec = Environment.BUSYBOX;
         if(exec.exists()) return;
         Environment.mkdirIfNotExits(exec.getParentFile());
-        ResourceUtils.copyFileFromAssets("data/busybox", exec.getAbsolutePath());
+        ResourceUtils.copyFileFromAssets(getArchSpecificAsset("busybox"), exec.getAbsolutePath());
         if(!exec.canExecute()) {
             exec.setExecutable(true);
         }
@@ -83,21 +81,29 @@ public class ToolsManager {
     }
 
     private static void extractJls(){
-        ResourceUtils.copyFileFromAssets("data/jls.jar", Environment.JLS_JAR.getAbsolutePath());
+        ResourceUtils.copyFileFromAssets(getCommonAsset("jls.jar"), Environment.JLS_JAR.getAbsolutePath());
     }
-    
-    
     
     private static void extractLogsenderIfNeeded() {
         try {
             final boolean isOld = LOGSENDER_VERSION > prefs.getInt(KEY_LOGSENDER_VERSION, 0);
             if(isOld) {
                 final File logsenderZip = new File(Environment.JLS_HOME, "logsender.zip");
-                ResourceUtils.copyFileFromAssets("data/logsender.zip", logsenderZip.getAbsolutePath());
+                ResourceUtils.copyFileFromAssets(getCommonAsset("logsender.zip"), logsenderZip.getAbsolutePath());
                 ZipUtils.unzipFile(logsenderZip, Environment.HOME);
                 prefs.putInt(KEY_LOGSENDER_VERSION, LOGSENDER_VERSION);
             }
         } catch (IOException e) {}
+    }
+    
+    public static String getArchSpecificAsset (String name) {
+        LOG.info ("ARCH_SPECIFIC_ASSET: " + ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name);
+        return ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name;
+    }
+    
+    public static String getCommonAsset (String name) {
+        LOG.info ("COMMON_ASSET: " + COMMON_ASSET_DATA_DIR + "/" + name);
+        return COMMON_ASSET_DATA_DIR + "/" + name;
     }
     
     private static final String INIT_SCRIPT = 

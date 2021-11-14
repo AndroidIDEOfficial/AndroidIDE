@@ -11,6 +11,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
 import com.blankj.utilcode.util.EncodeUtils;
 import com.blankj.utilcode.util.ResourceUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.R;
@@ -34,11 +35,9 @@ import com.itsaky.widgets.WidgetInfo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Locale;
-import com.itsaky.androidide.ui.inflater.InflateException;
+import java.util.Arrays;
 
-public class StudioApp extends MultiDexApplication implements XMLCompletionService.InitializeListener {
+public class StudioApp extends MultiDexApplication {
     
 	private static StudioApp instance;
     
@@ -47,7 +46,8 @@ public class StudioApp extends MultiDexApplication implements XMLCompletionServi
 	private NotificationManager mNotificationManager;
 	
     private boolean stopGradleDaemon = true;
-	private String sArch = "";
+    
+	private static String sArch = "";
     
     private static ApiInfo mApiInfo;
     private static AttrInfo mAttrInfo;
@@ -96,20 +96,8 @@ public class StudioApp extends MultiDexApplication implements XMLCompletionServi
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_UPDATE);
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_DEV_MSGS);
         
-        this.mXmlCompletionService = new XMLCompletionService(this);
-        
         initializeApiInformation();
 	}
-
-    @Override
-    public void onAttrsInitialize(AttrInfo info) {
-        this.mAttrInfo = info;
-    }
-
-    @Override
-    public void onWidgetsInitialize(WidgetInfo info) {
-        this.mWidgetInfo = info;
-    }
     
 	private void handleLog(CharSequence seq) {
 		if(seq == null)
@@ -158,14 +146,6 @@ public class StudioApp extends MultiDexApplication implements XMLCompletionServi
 		return getString(R.string.cms_channel_id_devs);
 	}
     
-    public AttrInfo attrInfo () {
-        return this.mAttrInfo;
-    }
-    
-    public WidgetInfo widgetInfo () {
-        return this.mWidgetInfo;
-    }
-    
     public void createInflater (LayoutInflaterConfiguration config) {
         this.mLayoutInflater = ILayoutInflater.newInstance(config);
     }
@@ -178,12 +158,17 @@ public class StudioApp extends MultiDexApplication implements XMLCompletionServi
      * Reads API version information from api-versions.xml
      */
     public void initializeApiInformation() {
-        if(mApiInfo == null || !mApiInfo.hasRead()) {
+        new Thread(() -> {
             try {
-                mApiInfo = new ApiInfo(this);
-            } catch (Exception e) {
+                mApiInfo = new ApiInfo (StudioApp.this);
+                mAttrInfo = new AttrInfo (StudioApp.this);
+                mWidgetInfo = new WidgetInfo (StudioApp.this);
+            } catch (Throwable th) {
+                ThreadUtils.runOnUiThread(() -> {
+                    toast(R.string.msg_sdk_info_load_failed, Toaster.Type.ERROR);
+                });
             }
-        }
+        }, "SDK Information Loader").start();
     }
     
     public void stopAllDaemons() {
@@ -194,8 +179,16 @@ public class StudioApp extends MultiDexApplication implements XMLCompletionServi
 		return mXmlCompletionService;
 	}
     
-    public ApiInfo getApiInfo() {
-        return mApiInfo;
+    public ApiInfo apiInfo() {
+        return this.mApiInfo;
+    }
+    
+    public AttrInfo attrInfo () {
+        return this.mAttrInfo;
+    }
+
+    public WidgetInfo widgetInfo () {
+        return this.mWidgetInfo;
     }
 	
 	public boolean isXmlServiceStarted() {
@@ -237,7 +230,7 @@ public class StudioApp extends MultiDexApplication implements XMLCompletionServi
 		File f = new File(getRootDir(), "d8.jar");
 		if(f.exists() && f.isFile())
 			return f;
-		if(ResourceUtils.copyFileFromAssets("data/d8.jar", f.getAbsolutePath())) {
+		if(ResourceUtils.copyFileFromAssets(ToolsManager.getCommonAsset("d8.jar"), f.getAbsolutePath())) {
 			return f;
 		}
 		
@@ -297,15 +290,33 @@ public class StudioApp extends MultiDexApplication implements XMLCompletionServi
 		return getProjectsDir().listFiles(p1 -> p1.isDirectory());
 	}
 	
-	public boolean is64Bit() {
-		return android.os.Process.is64Bit();
+	public static boolean is64Bit() {
+		return isAarch64();
 	}
+    
+    public static boolean is32Bit() {
+        return isArmv7a();
+	}
+    
+    public static boolean isAbiSupported () {
+        return isAarch64() || isArmv7a();
+    }
+    
+    public static boolean isAarch64 () {
+        return Arrays.stream(android.os.Build.SUPPORTED_ABIS).anyMatch("arm64-v8a"::equals);
+    }
+    
+    public static boolean isArmv7a () {
+        return Arrays.stream(android.os.Build.SUPPORTED_ABIS).anyMatch("armeabi-v7a"::equals);
+    }
 
-	public String getArch() {
-        if (sArch == null) {
-            sArch = getArch(System.getProperty("os.arch"));
+	public static String getArch() {
+        if (StudioApp.isAarch64()) {
+            return "arm64-v8a";
+        } else if (StudioApp.isArmv7a()) {
+            return "armeabi-v7a";
         }
-        return sArch;
+        throw new UnsupportedOperationException ("Device not supported");
     }
     
 	private void handleCrash(Thread thread, Throwable th) {
@@ -322,21 +333,6 @@ public class StudioApp extends MultiDexApplication implements XMLCompletionServi
             // ignored
         }
 	}
-
-    private String getArch(String str) {
-        if (str.length() > 0) {
-            switch (str.toLowerCase(Locale.US).charAt(0)) {
-                case 'a':
-                    return str.equals("amd64") ? "x86_64" : str.contains("64") ? "arm64" : "arm";
-                case 'i':
-                case 'x':
-                    return str.contains("64") ? "x86_64" : "x86";
-                case 'm':
-                    return str.contains("64") ? "mips64" : "mips";
-            }
-        }
-        return "unknown";
-    }
 	
 	public String getAssetsDataFile() {
         return ASSETS_DATA_DIR;

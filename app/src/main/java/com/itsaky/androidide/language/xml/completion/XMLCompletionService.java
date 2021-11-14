@@ -18,11 +18,12 @@ import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.InsertTextFormat;
+import java.io.IOException;
 
 public class XMLCompletionService {
     
-    private final AttrInfo attrs;
-    private final WidgetInfo widgets;
+    private AttrInfo attrs;
+    private WidgetInfo widgets;
 	
 	private boolean attrsInitialized = false;
 	private boolean widgetsInitialized = false;
@@ -31,9 +32,9 @@ public class XMLCompletionService {
     "android:layout_width=\"wrap_content\"\n" + 
     "android:layout_height=\"wrap_content\"";
     
-	public XMLCompletionService(InitializeListener listener) {
-		this.attrs = new AttrInfo(StudioApp.getInstance(), onAttrInit(listener));
-		this.widgets = new WidgetInfo(StudioApp.getInstance(), onWidgetInit(listener));
+	public XMLCompletionService(final AttrInfo attrs, final WidgetInfo widgets) {
+		this.attrs = attrs;
+        this.widgets = widgets;
 	}
 	
 	public boolean isInitiated() {
@@ -166,32 +167,6 @@ public class XMLCompletionService {
 		return result;
 	}
     
-    private Runnable onAttrInit (final InitializeListener listener) {
-        return new Runnable() {
-
-            @Override
-            public void run() {
-                attrsInitialized = true;
-                if(listener != null) {
-                    listener.onAttrsInitialize(attrs);
-                }
-            }
-        };
-    }
-
-    private Runnable onWidgetInit (final InitializeListener listener) {
-        return new Runnable() {
-
-            @Override
-            public void run() {
-                widgetsInitialized = true;
-                if(listener != null) {
-                    listener.onWidgetsInitialize(widgets);
-                }
-            }
-        };
-    }
-    
 	private class IsInValueScanner {
 		
 		private int cursorIndex;
@@ -225,9 +200,4 @@ public class XMLCompletionService {
 		}
 		
 	}
-    
-    public static interface InitializeListener {
-        void onAttrsInitialize (AttrInfo info);
-        void onWidgetsInitialize (WidgetInfo info);
-    }
 }

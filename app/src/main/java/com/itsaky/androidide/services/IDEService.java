@@ -41,6 +41,8 @@ import org.eclipse.lsp4j.FileChangeType;
 import org.eclipse.lsp4j.FileEvent;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 
+import static com.itsaky.androidide.managers.ToolsManager.*;
+
 public class IDEService implements ShellServer.Callback {
 
     private ShellServer shell;
@@ -349,7 +351,7 @@ public class IDEService implements ShellServer.Callback {
         
         return CompletableFutures.computeAsync(checker -> {
             final File extracted = new File(Environment.TMP_DIR, "gradle-wrapper.zip");
-            if(ResourceUtils.copyFileFromAssets("data/gradle-wrapper.zip", extracted.getAbsolutePath())) {
+            if(ResourceUtils.copyFileFromAssets(getCommonAsset("gradle-wrapper.zip"), extracted.getAbsolutePath())) {
                 try {
                     final List<File> files = ZipUtils.unzipFile(extracted, projectRoot);
                     if(files != null && !files.isEmpty()) {

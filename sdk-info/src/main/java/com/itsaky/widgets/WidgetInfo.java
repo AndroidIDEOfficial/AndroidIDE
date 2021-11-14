@@ -15,10 +15,9 @@ public class WidgetInfo {
     
     private final SortedMap<String, Widget> widgets;
     
-    public WidgetInfo (final Context ctx, final Runnable onFinish) {
+    public WidgetInfo (final Context ctx) throws IOException {
         this.widgets = new TreeMap<>();
-        
-        readWidgets(ctx.getResources(), onFinish);
+        readWidgets(ctx.getResources());
     }
     
     public Widget getWidgetBySimpleName (String simpleName) {
@@ -29,36 +28,27 @@ public class WidgetInfo {
         return this.widgets.values();
     }
 
-    private void readWidgets(final Resources resources, final Runnable onFinish) {
+    private void readWidgets(final Resources resources) throws IOException {
         final InputStream in = resources.openRawResource(com.itsaky.sdkinfo.R.raw.widgets);
         if(in == null) return;
         
-        // It's good not to block the UI Thread.
-        new Thread(() -> {
-            try {
-                final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                String line;
-                while((line = reader.readLine()) != null) {
-                    final String name = line.split("\\s")[0];
-                    if(name == null || name.trim().isEmpty()) continue;
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String line;
+        while((line = reader.readLine()) != null) {
+            final String name = line.split("\\s")[0];
+            if(name == null || name.trim().isEmpty()) continue;
 
-                    final char code = name.charAt(0);
+            final char code = name.charAt(0);
 
-                    final String viewName = name.substring(1);
-                    final String simpleViewName = simpleName(viewName);
-                    final boolean isViewGroup = code == 'L'; // L -> Layout, W -> Widget, P -> LayoutParam
+            final String viewName = name.substring(1);
+            final String simpleViewName = simpleName(viewName);
+            final boolean isViewGroup = code == 'L'; // L -> Layout, W -> Widget, P -> LayoutParam
 
-                    // Don't add layout params
-                    if(code != 'P') {
-                        widgets.put(simpleViewName, new Widget(viewName, simpleViewName, isViewGroup));
-                    }
-                }
-                
-                if(onFinish != null) {
-                    onFinish.run();
-                }
-            } catch (IOException e) {}
-        }).start();
+            // Don't add layout params
+            if(code != 'P') {
+                widgets.put(simpleViewName, new Widget(viewName, simpleViewName, isViewGroup));
+            }
+        }
     }
     
     private String simpleName(String name) {

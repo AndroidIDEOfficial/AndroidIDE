@@ -6,7 +6,17 @@ public class Preconditions {
     
     public static void assertNotnull (Object obj, String msg) throws InflateException {
         if (obj == null) {
-            throw new InflateException(msg);
+            throw new NullPointerException(msg);
+        }
+    }
+    
+    public static void assertAllNotNull (String msg, Object ... objs) {
+        int i = 0;
+        for (Object obj : objs) {
+            if (obj == null) {
+                throw new NullPointerException ("[" + i + "] " + msg);
+            }
+            ++i;
         }
     }
     

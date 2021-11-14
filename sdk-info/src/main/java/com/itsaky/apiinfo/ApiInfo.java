@@ -33,8 +33,7 @@ public class ApiInfo {
     
     public ApiInfo(Context ctx) throws Exception {
         this.classInfos = new HashMap<String, ClassInfo>();
-        
-        readAsync(ctx.getResources(), null);
+        doRead(ctx.getResources());
     }
     
     public boolean hasRead() {
@@ -45,29 +44,24 @@ public class ApiInfo {
         return classInfos.get(qualifiedName);
     }
     
-    public void readAsync(Resources resources, Runnable onFinish) throws Exception {
+    public void doRead(Resources resources) throws Exception {
         final InputStream in = resources.openRawResource(com.itsaky.sdkinfo.R.raw.versions);
-        if(in == null)
+        if(in == null) {
             throw new Resources.NotFoundException("Cannot find versions.xml");
-        new Thread(() -> {
-            try {
-                Document doc = Jsoup.parse(readStream(in));
-                Elements classes = doc.getElementsByTag("api").first().getElementsByTag("class");
-                if(classes == null || classes.size() <= 0) {
-                    return;
-                }
+        }
+        Document doc = Jsoup.parse(readStream(in));
+        Elements classes = doc.getElementsByTag("api").first().getElementsByTag("class");
+        if(classes == null || classes.size() <= 0) {
+            return;
+        }
 
-                for(Element clazz : classes) {
-                    ClassInfo info = parseClassInfo(clazz);
-                    if(info != null)
-                        classInfos.put(info.name, info);
-                }
+        for(Element clazz : classes) {
+            ClassInfo info = parseClassInfo(clazz);
+            if(info != null)
+                classInfos.put(info.name, info);
+        }
 
-                read = true;
-                if(onFinish != null)
-                    onFinish.run();
-            } catch (Throwable th) {}
-        }).start();
+        read = true;
     }
 
     private String readStream(InputStream in) throws IOException {

@@ -97,7 +97,7 @@ public class DownloadActivity extends StudioActivity {
 		if(files != null) {
             for(File f : files) {
                 if(f.getName().endsWith(".tar.xz")) {
-                    if(f.getName().equals("androidide-sysroot.tar.xz")) {
+                    if(f.getName().startsWith("androidide-sysroot")) {
                         sb.append("cd $SYSROOT/.. && ");
                     }
                     sb.append("$BUSYBOX tar xvJf '" + f.getAbsolutePath() + "' && ");

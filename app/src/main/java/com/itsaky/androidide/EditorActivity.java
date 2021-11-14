@@ -63,6 +63,7 @@ import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.models.project.IDEProject;
+import com.itsaky.androidide.project.ProjectResourceFinder;
 import com.itsaky.androidide.receivers.LogReceiver;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
@@ -1054,7 +1055,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
              if (getApp().getLayoutInflater() == null) {
                  getApp().createInflater(createInflaterConfig());
              }
-
+             
              final Intent intent = new Intent (this, DesignerActivity.class);
              intent.putExtra(DesignerActivity.KEY_LAYOUT_PATH, mCurrentFile.getAbsolutePath());
              startActivity(intent);
@@ -1068,7 +1069,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
          return new LayoutInflaterConfiguration.Builder ()
              .setAttrInfo(getApp().attrInfo())
              .setWidgetInfo(getApp().widgetInfo())
-             .setResourceProvider(new com.itsaky.androidide.project.ProjectResourceFinder())
+             .setResourceFinder(new ProjectResourceFinder())
              .setResourceDirectories(getResourceDirectories())
              .setContextProvider(getContextProvider())
              .create();

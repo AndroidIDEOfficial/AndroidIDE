@@ -74,7 +74,7 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
     private void showApiInfoIfNeeded(final CompletionItem item, final TextView completionApiInfo) {
         
         new Thread(() -> {
-            final ApiInfo apiInfo = StudioApp.getInstance().getApiInfo();
+            final ApiInfo apiInfo = StudioApp.getInstance().apiInfo();
             boolean hasRead = apiInfo != null && apiInfo.hasRead();
             boolean isValid = isValidForApiVersion(item);
             
