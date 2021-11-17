@@ -18,7 +18,7 @@ public class ButtonAttrAdapter extends TextViewAttrAdapter {
             return true;
         }
         
-        boolean handled = true;
+        boolean handled = false;
         
         // Button does not have special attributes 
         // All attributes are inherited from TextView
