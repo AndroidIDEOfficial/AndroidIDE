@@ -30,8 +30,6 @@ public class AsynchronousSocketLauncher extends LSPClientLauncher {
         serverSocket  = AsynchronousServerSocketChannel.open();
         serverSocket.bind(new InetSocketAddress(this.port));
         
-        languageClient.startServerViaCommand();
-        
         final AsynchronousSocketChannel server     = serverSocket.accept().get();
         final OutputStream outWriter               = new OutputStreamWrapper(Channels.newOutputStream(server));
         final InputStream inReader                 = Channels.newInputStream(server);
@@ -39,8 +37,6 @@ public class AsynchronousSocketLauncher extends LSPClientLauncher {
         final Launcher<IDELanguageServer> launcher = createClientLauncher(languageClient, inReader, outWriter);
         this.listeningFuture = launcher.startListening();
         this.server = launcher.getRemoteProxy();
-        
-        this.languageClient.onServerConnected(this.server);
         
         try {
             listeningFuture.get();
@@ -62,7 +58,5 @@ public class AsynchronousSocketLauncher extends LSPClientLauncher {
         }
         
         CloseUtils.closeIOQuietly(serverSocket);
-        
-        this.languageClient.onServerDisconnected();
     }
 }

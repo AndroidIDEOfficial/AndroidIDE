@@ -213,7 +213,7 @@ public class StudioApp extends MultiDexApplication {
     }
     
     public ShellServer newShell(ShellServer.Callback callback, boolean redirectErrors) {
-        ShellServer shellServer = new ShellServer(callback, "sh", Environment.mkdirIfNotExits(getRootDir()).getAbsolutePath(), redirectErrors);
+        ShellServer shellServer = new ShellServer(callback, "sh", Environment.mkdirIfNotExits(getRootDir()).getAbsolutePath(), Environment.getEnvironment(true), redirectErrors);
         shellServer.start();
         return shellServer;
     }

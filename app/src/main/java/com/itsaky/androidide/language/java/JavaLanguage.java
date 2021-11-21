@@ -1,7 +1,7 @@
 package com.itsaky.androidide.language.java;
 
-import com.itsaky.androidide.antlr4.java.JavaLexer;
-import com.itsaky.androidide.antlr4.java.JavaParser;
+import com.itsaky.androidide.lexers.java.JavaLexer;
+import com.itsaky.androidide.lexers.java.JavaParser;
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.lsp.LSPProvider;

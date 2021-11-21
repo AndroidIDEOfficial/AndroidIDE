@@ -2,7 +2,7 @@ package com.itsaky.androidide.language.xml;
 
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
-import com.itsaky.androidide.language.xml.lexer.XMLLexer;
+import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;

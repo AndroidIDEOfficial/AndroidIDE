@@ -40,6 +40,7 @@ public final class Environment {
     public static final File JAVA;
     public static final File BUSYBOX;
     public static final File SHELL;
+    public static final File BUSYBOX_SH;
     
     public static File BOOTCLASSPATH;
     
@@ -83,6 +84,7 @@ public final class Environment {
         JAVA = new File(JAVA_HOME, "bin/java");
         BUSYBOX = new File(BINDIR, "busybox");
         SHELL = new File(BINDIR, "sh.sh");
+        BUSYBOX_SH = new File (BINDIR, "sh");
         
         if(!JAVA.canExecute()) {
             JAVA.setExecutable(true);
@@ -96,6 +98,7 @@ public final class Environment {
             SHELL.setExecutable(true);
         }
         
+        System.setProperty("user.home", HOME.getAbsolutePath());
         System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
 	}
     

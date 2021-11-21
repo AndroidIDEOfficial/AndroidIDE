@@ -1,4 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="title_installation_failed">Installation failed</string>
+    <string name="msg_installation_failed">Installation process terminated with exit code %1$d. Make sure you downloaded the build tools from original sources.\n\nYou could try to clear data of AndroidIDE and install again.</string>
     <string name="msg_sdk_info_load_failed">Failed to load SDK information</string>
     <string name="msg_cannot_preview_layout">Unable to preview layout!</string>
     <string name="title_preview_layout">Preview Layout</string>

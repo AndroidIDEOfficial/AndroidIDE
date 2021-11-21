@@ -14,7 +14,7 @@ import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.adapters.ProjectsListAdapter;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutProjectsBinding;
-import com.itsaky.androidide.models.AndroidProject;
+import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.FileUtil;
 import fr.arnaudguyon.xmltojsonlib.XmlToJson;
@@ -26,7 +26,7 @@ import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.itsaky.androidide.project.utils.ProjectFinder;
+import com.itsaky.androidide.utils.ProjectFinder;
 
 public class ProjectsFragment extends BaseFragment {
 	

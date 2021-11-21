@@ -68,7 +68,7 @@
 			</intent-filter>
 		</service>
 		<receiver
-			android:name="com.itsaky.androidide.receivers.LogReceiver"
+			android:name="com.itsaky.androidide.services.LogReceiver"
 			android:enabled="true"
 			android:exported="true">
 			<intent-filter>

@@ -1,11 +1,12 @@
 package com.itsaky.androidide.syntax.lexer.impls.groovy;
 
-import com.itsaky.androidide.language.groovy.lexer.GroovyLexer;
+import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.syntax.lexer.Lexer;
 import com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer;
 import com.itsaky.androidide.syntax.lexer.tokens.Token;
 import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
 import com.itsaky.androidide.utils.LSPUtils;
+import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.text.CharPosition;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.lsp4j.Range;
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
 
 public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
     
@@ -54,7 +54,7 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 
 	@Override
 	public void init() throws IOException {
-		lexer = new GroovyLexer(CharStreams.fromReader(new StringReader(content.toString())));
+		lexer = new GroovyLexer(content.toString());
 	}
 
 	@Override

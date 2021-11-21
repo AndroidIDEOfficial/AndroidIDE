@@ -244,6 +244,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
                 
                 // Trigger signature help request if included in CompletionItem
                 // TODO Don't rely on CompletionItem for requesting signature help
+                
                 // If the insert text contains '(', automatically trigger this action
                 mEditor.signatureHelp("(");
             }

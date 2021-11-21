@@ -13,13 +13,15 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
     
     private final InputStream in;
     private final OutputStream out;
+    private final String langCode;
     
     private Future<Void> listening;
     
-    public StandardStreamsLauncher(IDELanguageClientImpl client, InputStream in, OutputStream out) {
+    public StandardStreamsLauncher(IDELanguageClientImpl client, InputStream in, OutputStream out, String langCode) {
         super(client);
         this.in = new BufferedInputStream( in );
         this.out = new BufferedOutputStream( out );
+        this.langCode = langCode;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
         this.server = server.getRemoteProxy();
         this.listening = server.startListening();
         
-        languageClient.onServerConnected(this.server);
+        LSPProvider.setLanguageServer(this.langCode, this.server);
         
         try {
             listening.get();
@@ -52,7 +54,5 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
             listening.cancel(true);
         }
         CloseUtils.closeIO(in, out);
-
-        languageClient.onServerDisconnected();
     }
 }

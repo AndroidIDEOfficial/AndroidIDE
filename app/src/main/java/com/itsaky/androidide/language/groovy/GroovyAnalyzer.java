@@ -14,10 +14,10 @@ import org.eclipse.lsp4j.Diagnostic;
 public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
     
     private final EditorLanguage language;
+    
     public GroovyAnalyzer (EditorLanguage language) {
         this.language = language;
     }
-    
     
 	@Override
 	public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
@@ -25,7 +25,7 @@ public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeA
 			GroovyLexerImpl lexer = new GroovyLexerImpl(this.language, (Content) content, colors);
 			lexer.init();
 
-			// Adding spans, hex colors, block lines and all is handled by JavaLexerImpl
+			// Adding spans, hex colors, block lines and all is handled by GroovyLexerImpl
 			while (delegate.shouldAnalyze()) {
 				// null = EOF
 				if(lexer.nextToken() == null)

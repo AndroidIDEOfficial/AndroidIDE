@@ -1,8 +1,8 @@
 package com.itsaky.androidide.language.groovy;
 
 import com.itsaky.androidide.language.BaseLanguage;
-import com.itsaky.androidide.language.groovy.lexer.GroovyLexer;
 import com.itsaky.androidide.language.java.manager.JavaCharacter;
+import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;

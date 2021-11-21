@@ -2,7 +2,7 @@ package com.itsaky.androidide.language.xml.completion;
 
 import com.google.gson.JsonObject;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.language.xml.lexer.XMLLexer;
+import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.widgets.WidgetInfo;

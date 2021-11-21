@@ -61,28 +61,57 @@ import org.eclipse.lsp4j.SignatureHelp;
 import org.eclipse.lsp4j.SignatureInformation;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4j.SetTraceParams;
+import org.eclipse.lsp4j.ApplyWorkspaceEditResponse;
+import org.eclipse.lsp4j.WorkDoneProgressCreateParams;
+import org.eclipse.lsp4j.ProgressParams;
+import org.eclipse.lsp4j.ConfigurationParams;
+import org.eclipse.lsp4j.RegistrationParams;
+import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
+import org.eclipse.lsp4j.MessageActionItem;
+import org.eclipse.lsp4j.WorkspaceFolder;
+import org.eclipse.lsp4j.ShowMessageRequestParams;
+import org.eclipse.lsp4j.UnregistrationParams;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
  */
-public abstract class IDELanguageClientImpl implements IDELanguageClient {
-
+public class IDELanguageClientImpl implements IDELanguageClient {
+    
     protected static final Gson gson = new Gson();
     protected static final Logger LOG = Logger.instance("AbstractLanguageClient");
-
-    protected EditorActivityProvider activityProvider;
+    public static final int DIAGNOSTIC_TRANSITION_DURATION = 80;
     
     private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
-    private final StarterListener starterListener;
-    private final OnConnectedListener onConnectedListener;
-
+    private static IDELanguageClientImpl mInstance;
+    
+    protected EditorActivityProvider activityProvider;
     private boolean isConnected;
     
-    public static final int DIAGNOSTIC_TRANSITION_DURATION = 80;
-
-    public IDELanguageClientImpl(StarterListener starterListener, OnConnectedListener onConnectedListener) {
-        this.starterListener = starterListener;
-        this.onConnectedListener = onConnectedListener;
+    private IDELanguageClientImpl (EditorActivityProvider provider) {
+        setActivityProvider(provider);
+    }
+    
+    public static IDELanguageClientImpl getInstance () {
+        if (mInstance == null) {
+            throw new IllegalStateException ("Client not initialized");
+        }
+        
+        return mInstance;
+    }
+    
+    public static IDELanguageClientImpl initialize (EditorActivityProvider provider) {
+        if (mInstance != null) {
+            throw new IllegalStateException ("Client is already initialized");
+        }
+        
+        mInstance = new IDELanguageClientImpl (provider);
+        
+        return getInstance();
+    }
+    
+    public static boolean isInitialized () {
+        return mInstance != null;
     }
 
     public void setActivityProvider(EditorActivityProvider provider) {
@@ -95,33 +124,7 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
     public boolean isConnected() {
         return isConnected;
     }
-
-    /**
-     * Called when the LanguageServer is connected successfully
-     */
-    protected void onServerConnected(IDELanguageServer server) {
-        this.isConnected = true;
-        if (onConnectedListener != null)
-            onConnectedListener.onConnected(server);
-    }
-
-    /**
-     * Called when the connection to the LanguageServer was cancelled.
-     */
-    protected void onServerDisconnected() {
-        this.isConnected = false;
-    }
-
-    /**
-     * Called when the ServerSocket is started. At this point, the {@link LSPClient} waits for the server to connect. <br>
-     * This is (probably) the proper time to start your language server as ServerSocket is waiting for a client to connect.
-     */
-    protected void startServerViaCommand() {
-        if (this.starterListener != null) {
-            starterListener.startServer();
-        }
-    }
-
+    
     protected EditorActivity activity() {
         if (activityProvider == null) return null;
         return activityProvider.provide();
@@ -602,25 +605,65 @@ public abstract class IDELanguageClientImpl implements IDELanguageClient {
         return new DiagnosticsAdapter(mapAsGroup(this.diagnostics), activity());
     }
     
-    /**
-     * Reports connection progress
-     */
-    protected void connectionReport(String message) {
-        
+    
+    /**************************************************
+             UNUSED METHODS
+    **************************************************/
+    
+    @Override
+    public CompletableFuture<ApplyWorkspaceEditResponse> applyEdit(ApplyWorkspaceEditParams p1) {
+        return null;
     }
 
-    /**
-     * Called when there was an error connecting to server.
-     */
-    protected void connectionError(Throwable th) {
-        
+    @Override
+    public CompletableFuture<List<Object>> configuration(ConfigurationParams p1) {
+        return null;
     }
 
-    public static interface StarterListener {
-        void startServer();
+    @Override
+    public CompletableFuture<Void> createProgress(WorkDoneProgressCreateParams p1) {
+        return null;
     }
 
-    public static interface OnConnectedListener {
-        void onConnected(IDELanguageServer server);
+    @Override
+    public void notifyProgress(ProgressParams p1) {
+    }
+
+    @Override
+    public CompletableFuture<Void> refreshCodeLenses() {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> refreshSemanticTokens() {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> registerCapability(RegistrationParams p1) {
+        return null;
+    }
+
+    @Override
+    public void setTrace(SetTraceParams p1) {
+    }
+
+    @Override
+    public void showMessage(MessageParams p1) {
+    }
+
+    @Override
+    public CompletableFuture<MessageActionItem> showMessageRequest(ShowMessageRequestParams p1) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> unregisterCapability(UnregistrationParams p1) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<List<WorkspaceFolder>> workspaceFolders() {
+        return null;
     }
 }

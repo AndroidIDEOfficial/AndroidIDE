@@ -1,5 +1,6 @@
 package com.itsaky.androidide.lsp;
 
+import com.itsaky.lsp.services.IDELanguageClient;
 import com.itsaky.lsp.services.IDELanguageServer;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,20 +55,12 @@ public class LSPProvider {
         capabilitiesMap.put(languageCode, capabilities);
     }
     
-    public static void setClientForLanguage(String languageCode, IDELanguageClientImpl client) {
-        clientMap.put(languageCode, client);
-    }
-    
     public static Map<String, IDELanguageServer> getAvailableServers() {
         return serverMap;
     }
     
     public static Map<String, ServerCapabilities> getAllServerCapabilities() {
         return capabilitiesMap;
-    }
-    
-    public static Map<String, IDELanguageClientImpl> getAllServerClients() {
-        return clientMap;
     }
     
     public static IDELanguageServer getServerForLanguage(String languageCode) {
@@ -78,7 +71,7 @@ public class LSPProvider {
         return language == null ? null : capabilitiesMap.get(language);
     }
     
-    public static IDELanguageClientImpl getClientForLanguage(String language) {
-        return language == null ? null : clientMap.get(language);
+    public static IDELanguageClientImpl getClient() {
+        return IDELanguageClientImpl.isInitialized() ? IDELanguageClientImpl.getInstance() : null;
     }
 }

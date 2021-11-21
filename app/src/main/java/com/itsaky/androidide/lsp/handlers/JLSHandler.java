@@ -1,15 +1,23 @@
 package com.itsaky.androidide.lsp.handlers;
 
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.lsp.LSPClientLauncher;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.lsp.StandardStreamsLauncher;
-import com.itsaky.androidide.lsp.client.java.JavaLanguageClient;
+import com.itsaky.androidide.shell.IProcessExecutor;
+import com.itsaky.androidide.shell.IProcessExitListener;
+import com.itsaky.androidide.shell.ProcessExecutorFactory;
+import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.FileUtil;
+import com.itsaky.androidide.utils.InputStreamWriter;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.services.IDELanguageServer;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,18 +29,6 @@ import org.eclipse.lsp4j.WorkspaceFolder;
 
 public class JLSHandler implements LSPHandler {
     
-    /**
-     * Why not use {@link com.itsaky.androidide.shell.ShellServer ShellServer} instead?
-     * Because it will try to read from the process's input stream
-     * and at the same time, LSP4J will try to do the same. But,
-     * as {@code ShellServer} will be started first, LSP4J will not he able to read at all.
-     * <p>
-     * That's why we use a ProcessBuilder without redirecting {@code System.err} of the process
-     */
-    private static ProcessBuilder mShellBuilder;
-    private static Process mShell;
-    
-    private static JavaLanguageClient javaClient;
     private static LSPClientLauncher mLauncher;
     
     private static final Logger LOG = Logger.instance("JLSHandler");
@@ -40,26 +36,32 @@ public class JLSHandler implements LSPHandler {
     
     @Override
     public void start(Runnable onStarted) {
-        if (mShell != null && mLauncher != null && mLauncher.isConnected()) {
-            return;
-        }
-        
         try {
-            mShellBuilder = new ProcessBuilder("/system/bin/sh");
-            mShellBuilder.directory(Environment.HOME);
-            mShellBuilder.redirectErrorStream(false);
-            mShellBuilder.environment().putAll(Environment.getEnvironment(false));
+            final IProcessExecutor executor = ProcessExecutorFactory.commonExecutor();
+            final ProcessStreamsHolder holder = new ProcessStreamsHolder();
+            final IProcessExitListener listener = new IProcessExitListener() {
+                @Override
+                public void onExit(int code) {
+                    LOG.info("Java Language server terminated with exit code " + code);
+                    shutdown();
+                }
+            };
             
-            mShell = mShellBuilder.start();
+            executor.execAsync(holder, listener, false, Environment.JAVA.getAbsolutePath(), "-agentlib:hook2", "-jar", Environment.JLS_JAR.getAbsolutePath(), QUIET ? "--quiet" : "");
+            startReader (holder.err); // holder.in is used by LSP4J
             
-            mShell.getOutputStream().write(("java -agentlib:hook2 -jar " + Environment.JLS_JAR.getAbsolutePath() + (QUIET ? " --quiet" : "") + "\n").getBytes());
-            mShell.getOutputStream().flush();
+            if (!IDELanguageClientImpl.isInitialized()) {
+                IDELanguageClientImpl.initialize(LSP.PROVIDER);
+            }
             
-            javaClient = new JavaLanguageClient(null, server -> storeServerInfoAndNotify(server, onStarted));
-            javaClient.setActivityProvider(LSP.PROVIDER);
-            mLauncher = new StandardStreamsLauncher(javaClient, mShell.getInputStream(), mShell.getOutputStream());
+            IDELanguageClientImpl client = IDELanguageClientImpl.getInstance();
+            
+            mLauncher = new StandardStreamsLauncher(client, holder.in, holder.out, LSPProvider.LANGUAGE_JAVA);
             mLauncher.start();
-        } catch (Throwable th) {}
+            
+        } catch (Throwable th) {
+            LOG.error("Unable to start Java Language server", th);
+        }
     }
     
     @Override
@@ -89,6 +91,7 @@ public class JLSHandler implements LSPHandler {
         params.setCapabilities(LSP.getCapabilities());
 
         CompletableFuture<InitializeResult> initResult = server.initialize(params);
+        
         try {
             InitializeResult result = initResult.get();
             if(result.getCapabilities() != null) {
@@ -106,8 +109,6 @@ public class JLSHandler implements LSPHandler {
         final IDELanguageServer server = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
         if (server == null)
             return;
-            
-        // Initialized params do not have any parameters
         server.initialized(new InitializedParams());
 
     }
@@ -117,19 +118,16 @@ public class JLSHandler implements LSPHandler {
         if(mLauncher != null) {
             mLauncher.shutdown();
         }
-        if(mShell != null) {
-            mShell.destroy();
-        }
+    }
+    
+    private void startReader(InputStream in) throws FileNotFoundException {
+        final InputStreamWriter writer = new InputStreamWriter (in, getOutputFile());
+        final Thread readerThread = new Thread (writer, "JavaLanguageServerOutputReader");
+        readerThread.setDaemon(true);
+        readerThread.start();
     }
 
-    /**
-     * Store the instance of Java Language Server in LSPProvider
-     */
-    private void storeServerInfoAndNotify(IDELanguageServer server, Runnable startedListener) {
-        LSPProvider.setLanguageServer(LSPProvider.LANGUAGE_JAVA, server);
-        LSPProvider.setClientForLanguage(LSPProvider.LANGUAGE_JAVA, javaClient);
-
-        if(startedListener != null)
-            startedListener.run();
+    private File getOutputFile () {
+        return new File (FileUtil.getExternalStorageDir(), "ide_xlog/jls_output.txt");
     }
 }

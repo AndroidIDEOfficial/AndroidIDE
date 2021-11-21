@@ -53,7 +53,7 @@ public abstract class LSPClientLauncher extends Thread {
         try {
             launch();
         } catch (Throwable th) {
-            languageClient.connectionError(th);
+            // TODO Log this
         }
     }
     

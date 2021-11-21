@@ -56,15 +56,15 @@ import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.models.AndroidProject;
+import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
-import com.itsaky.androidide.models.project.IDEProject;
+import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.project.ProjectResourceFinder;
-import com.itsaky.androidide.receivers.LogReceiver;
+import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.services.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
@@ -98,6 +98,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Position;
+import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
 														TabLayout.OnTabSelectedListener,
@@ -1199,9 +1200,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void startServices() {
+        
+        if (!IDELanguageClientImpl.isInitialized()) {
+            IDELanguageClientImpl.initialize(this);
+        }
+        
         // Actually, we don't need to start FileOptionsHandler
         // Because it would work anyway
-        // But it's a good practice to call the start() method
+        // But still we do...
         mFileOptionsHandler.start();
         
         mBuildServiceHandler.start();

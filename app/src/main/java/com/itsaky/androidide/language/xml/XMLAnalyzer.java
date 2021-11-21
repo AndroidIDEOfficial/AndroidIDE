@@ -1,9 +1,9 @@
 package com.itsaky.androidide.language.xml;
 
 import android.graphics.Color;
-import com.itsaky.androidide.language.xml.lexer.XMLLexer;
+import com.itsaky.androidide.lexers.xml.XMLLexer;
+import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageServer;
-import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.struct.HexColor;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
@@ -12,13 +12,12 @@ import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.File;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
-import com.itsaky.lsp.SemanticHighlight;
-import java.util.Map;
 import org.eclipse.lsp4j.Diagnostic;
 
 public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
@@ -87,15 +86,15 @@ public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnal
 		} catch (Throwable th) {
 		}
 	}
-
+    
     @Override
     public void setSemanticHighlights(SemanticHighlight highlights) {
     }
-
+    
     @Override
     public void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
     }
-
+    
 	private void addHexColorIfPresent(Token token, HashMap<HexColor, Integer> lineColors, int line, int column) {
 		Matcher m = HEX.matcher(token.getText());
 		if (m.find()) {
@@ -104,17 +103,11 @@ public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnal
 				final CharPosition end = new CharPosition(line, start.column + (m.end() - m.start()));
 				final HexColor key = new HexColor(start, end);
 				final Integer value = Color.parseColor(token.getText().substring(m.start(), m.end()));
-				
-				// Null checks
-				start.getClass();
-				end.getClass();
-				key.getClass();
-				value.getClass();
-				
+                
 				lineColors.put(key, value);
 			} catch (Throwable th) {} 
 		} 
 	}
-
+    
 	private final Pattern HEX = Pattern.compile("#[a-fA-F0-9]{3,8}");
 }

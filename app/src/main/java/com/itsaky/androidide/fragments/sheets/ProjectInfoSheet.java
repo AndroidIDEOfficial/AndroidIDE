@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.itsaky.androidide.adapters.ModuleInfoAdapter;
 import com.itsaky.androidide.databinding.LayoutProjectDetailsBinding;
-import com.itsaky.androidide.models.project.IDEProject;
+import com.itsaky.androidide.project.IDEProject;
 import java.io.File;
 import java.util.Locale;
 

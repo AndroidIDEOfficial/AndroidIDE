@@ -3,7 +3,7 @@ package com.itsaky.androidide.syntax.lexer.highlighters;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
-import com.itsaky.androidide.antlr4.java.JavaLexer;
+import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.StringReader;

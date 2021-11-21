@@ -761,7 +761,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
         this.mLanguage = lang;
         this.mLanguageServer = mLanguage.getLanguageServer();
-        this.mLanguageClient = LSPProvider.getClientForLanguage(mLanguage.getLanguageCode());
+        this.mLanguageClient = LSPProvider.getClient();
         
         // Update spanner
         if (mSpanner != null) {

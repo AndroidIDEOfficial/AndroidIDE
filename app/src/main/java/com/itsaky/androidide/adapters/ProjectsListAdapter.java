@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutProjectsItemBinding;
-import com.itsaky.androidide.models.AndroidProject;
+import com.itsaky.androidide.project.AndroidProject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;

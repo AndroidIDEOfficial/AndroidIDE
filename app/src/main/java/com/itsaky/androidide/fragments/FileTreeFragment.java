@@ -16,7 +16,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutEditorFileTreeBinding;
-import com.itsaky.androidide.models.AndroidProject;
+import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.FileTreeCallable;
 import com.itsaky.androidide.utils.Environment;

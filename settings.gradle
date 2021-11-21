@@ -5,5 +5,7 @@ include ':javapoet'
 include ':lsp'
 include ':sdk-info'
 include ':layout-inflater'
+include ':lexers'
+include ':shell'
 
 rootProject.name = "AndroidIDE"

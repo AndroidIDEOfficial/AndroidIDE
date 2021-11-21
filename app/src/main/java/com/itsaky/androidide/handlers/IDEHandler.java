@@ -1,8 +1,8 @@
 package com.itsaky.androidide.handlers;
 
 import com.itsaky.androidide.EditorActivity;
-import com.itsaky.androidide.models.AndroidProject;
-import com.itsaky.androidide.models.project.IDEProject;
+import com.itsaky.androidide.project.AndroidProject;
+import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.utils.Logger;
 
 /**

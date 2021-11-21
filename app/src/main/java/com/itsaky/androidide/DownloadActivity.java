@@ -9,22 +9,28 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import androidx.core.content.ContextCompat;
 import androidx.transition.TransitionManager;
+import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityDownloadBinding;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.shell.ShellServer;
+import com.itsaky.androidide.shell.IProcessExecutor;
+import com.itsaky.androidide.shell.ProcessExecutorFactory;
+import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ListDirectoryCallable;
+import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
+import com.itsaky.androidide.utils.InputStreamLineReader;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
-import com.itsaky.androidide.utils.Environment;
 
 public class DownloadActivity extends StudioActivity {
 	
@@ -68,7 +74,7 @@ public class DownloadActivity extends StudioActivity {
                     .build()
                     .forResult(abhishekti7.unicorn.filepicker.utils.Constants.REQ_UNICORN_FILE);
             } catch (Throwable th){
-                getApp().writeException(th);
+                LOG.error("Unable to start file picker", th);
             }
 		} else if(id == binding.install.getId()) {
 			if(choosenDir == null) {
@@ -86,47 +92,119 @@ public class DownloadActivity extends StudioActivity {
 	}
 	
 	private final String DONE = "DONE";
+    
 	private void installAll() {
 		showProgress();
 		getApp().getPrefManager().putBoolean(PreferenceManager.KEY_FRAMEWORK_DOWNLOADED, true);
-		final ShellServer server = getApp().newShell(__ -> checkInstalled(__));
-		final StringBuilder sb = new StringBuilder();
-		sb.append("cd $HOME && ");
-		sb.append("echo 'Installing...' && ");
-		File[] files = choosenDir.listFiles(ARCHIVE_FILTER);
-		if(files != null) {
-            for(File f : files) {
-                if(f.getName().endsWith(".tar.xz")) {
-                    if(f.getName().startsWith("androidide-sysroot")) {
-                        sb.append("cd $SYSROOT/.. && ");
-                    }
-                    sb.append("$BUSYBOX tar xvJf '" + f.getAbsolutePath() + "' && ");
-                    sb.append("cd $HOME && ");
-                } else if(f.getName().endsWith(".zip")) {
-                    sb.append("$BUSYBOX unzip '" + f.getAbsolutePath() + "' && ");
-                }
-			}
+		
+        try {
+            final File script = createExtractScript();
+            final ProcessStreamsHolder holder = new ProcessStreamsHolder ();
+            final IProcessExecutor executor = ProcessExecutorFactory.commonExecutor();
+            
+            executor.execAsync(holder,
+                code -> onInstallProcessExit (code),
+                true,
+                Environment.BUSYBOX.getAbsolutePath(), "sh",// We use busybox's sh, because Environment.SHELL is not installed yet...
+                script.getAbsolutePath()
+            );
+            
+            final InputStreamLineReader reader = new InputStreamLineReader (holder.in, line -> onInstallationOutput (line));
+            new Thread (reader).start();
+            
+        } catch (DownloadActivity.InstallationException e) {
+            LOG.error("Installation error", e);
+            onInstallationFailed(e.exitCode);
+        } catch (IOException e) {
+            LOG.error("Installation error", e);
+            onInstallationFailed(5); // Exit code 5 : I/O Error
         }
-        sb.append("echo 'Cleaning unsupported flags in binaries...' && $BUSYBOX find $JAVA_HOME -type f -exec androidide-cleaner {} \\; && ");
-        sb.append("echo " + DONE);
-        
-		server.bgAppend(sb.toString());
 	}
     
-	private void checkInstalled(CharSequence out) {
-		if(out != null) {
-			final String line = out.toString().trim();
-			runOnUiThread(() -> {
-				getProgressSheet().setSubMessage(line);
-				if(line.contains(DONE)) {
-					getApp().getPrefManager().putBoolean(PreferenceManager.KEY_FRAMEWORK_INSTALLED, true);
-					showRestartNeeded();
-                    if(getProgressSheet().isShowing())
-                        getProgressSheet().dismiss();
-				}
-			});
-		}
-	}
+    private void onInstallationOutput (final String line) {
+        ThreadUtils.runOnUiThread(() -> {
+            getProgressSheet().setSubMessage(line);
+        });
+    }
+    
+    private void onInstallProcessExit (final int code) {
+        ThreadUtils.runOnUiThread(() -> {
+            if (code == 0) { // 0 = normal execution
+                getApp().getPrefManager().putBoolean(PreferenceManager.KEY_FRAMEWORK_INSTALLED, true);
+                showRestartNeeded();
+                if(getProgressSheet().isShowing()) {
+                    getProgressSheet().dismiss();
+                }
+            } else {
+                onInstallationFailed (code);
+            }
+        });
+    }
+
+    private void onInstallationFailed(int code) {
+        // TODO Can this be improved by adding some animations?
+        
+        if(getProgressSheet().isShowing()) {
+            getProgressSheet().dismiss();
+        }
+        
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder (this, R.style.AppTheme_MaterialAlertDialog);
+        builder.setTitle(R.string.title_installation_failed);
+        builder.setMessage(getString(R.string.msg_installation_failed, code));
+        builder.setPositiveButton(android.R.string.ok, (d, w) -> {
+            d.dismiss();
+            finishAffinity();
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.show();
+    }
+
+    private File createExtractScript() throws DownloadActivity.InstallationException {
+        final StringBuilder sb = new StringBuilder ();
+        sb.append("cd");
+        joiner(sb);
+        sb.append("echo 'Installing...'");
+        joiner(sb);
+        
+        File[] files = choosenDir.listFiles(ARCHIVE_FILTER);
+        
+        if (files == null || files.length <= 0) {
+            throw new InstallationException (2);
+        }
+        
+        for (File f : files) {
+            if(f.getName().endsWith(".tar.xz")) {
+                if(f.getName().startsWith("androidide-sysroot")) {
+                    sb.append("cd $SYSROOT/..");
+                    joiner(sb);
+                }
+                sb.append("$BUSYBOX tar xvJf '" + f.getAbsolutePath() + "'");
+                joiner(sb);
+                sb.append("cd $HOME");
+                joiner(sb);
+            } else if(f.getName().endsWith(".zip")) {
+                sb.append("$BUSYBOX unzip '" + f.getAbsolutePath() + "'");
+                joiner(sb);
+            }
+        }
+        
+        sb.append("echo 'Cleaning unsupported flags in binaries...'");
+        joiner(sb);
+        sb.append("$BUSYBOX find $JAVA_HOME -type f -exec androidide-cleaner {} \\;");
+        joiner(sb);
+        sb.append("echo " + DONE);
+        
+        final File script = new File (Environment.TMP_DIR, "extract_tools.sh");
+        if (!FileIOUtils.writeFileFromString(script, sb.toString())) {
+            throw new InstallationException (2);
+        }
+        
+        return script;
+    }
+    
+    private void joiner (StringBuilder sb) {
+        sb.append(" && ");
+    }
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -200,4 +278,11 @@ public class DownloadActivity extends StudioActivity {
 			return p1.isFile() && (p1.getName().endsWith(".tar.xz") || p1.getName().endsWith(".zip"));
 		}
 	};
+    
+    private class InstallationException extends Exception {
+        private final int exitCode;
+        public InstallationException(int exitCode) {
+            this.exitCode = exitCode;
+        }
+    }
 }

@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 import com.itsaky.androidide.databinding.LayoutModuleInfoItemBinding;
-import com.itsaky.androidide.models.project.IDEModule;
+import com.itsaky.androidide.project.IDEModule;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.itsaky.androidide.fragments.EditorFragment;
-import com.itsaky.androidide.models.AndroidProject;
+import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.utils.Logger;
 import java.io.File;

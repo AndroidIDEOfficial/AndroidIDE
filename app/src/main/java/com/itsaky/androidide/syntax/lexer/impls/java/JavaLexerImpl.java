@@ -1,7 +1,7 @@
 package com.itsaky.androidide.syntax.lexer.impls.java;
 
 import androidx.core.util.Pair;
-import com.itsaky.androidide.antlr4.java.JavaLexer;
+import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.lexer.Lexer;
 import com.itsaky.androidide.syntax.lexer.impls.BaseJavaLexer;
