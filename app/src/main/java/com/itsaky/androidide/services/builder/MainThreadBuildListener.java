@@ -16,63 +16,63 @@ class MainThreadBuildListener implements BuildListener {
 
     @Override
     public void onBuildModified() {
-        ThreadUtils.runOnUiThread() -> {
+        ThreadUtils.runOnUiThread(() -> {
             listener.onBuildModified();
         });
     }
 
     @Override
     public void onProjectLoaded(IDEProject project, Optional<IDEModule> appModule) {
-        ThreadUtils.runOnUiThread() -> {
+        ThreadUtils.runOnUiThread(() -> {
             listener.onProjectLoaded(project, appModule);
         });
     }
 
     @Override
     public void onStartingGradleDaemon(GradleTask task) {
-        ThreadUtils.runOnUiThread() -> {
+        ThreadUtils.runOnUiThread(() -> {
             listener.onStartingGradleDaemon(task);
         });
     }
 
     @Override
     public void onRunTask(GradleTask task, String name) {
-        ThreadUtils.runOnUiThread() -> {
+        ThreadUtils.runOnUiThread(() -> {
             listener.onRunTask(task, name);
         });
     }
 
     @Override
     public void onBuildSuccessful(GradleTask task, String msg) {
-        ThreadUtils.runOnUiThread() -> {
+        ThreadUtils.runOnUiThread(() -> {
             listener.onBuildSuccessful(task, msg);
         });
     }
 
     @Override
     public void onBuildFailed(GradleTask task, String msg) {
-        ThreadUtils.runOnUiThread() -> {
+        ThreadUtils.runOnUiThread(() -> {
             listener.onBuildFailed(task, msg);
         });
     }
 
     @Override
     public void saveFiles() {
-        ThreadUtils.runOnUiThread() -> {
+        ThreadUtils.runOnUiThread(() -> {
             listener.saveFiles();
         });
     }
 
     @Override
     public void appendOutput(GradleTask task, CharSequence text) {
-        ThreadUtils.runOnUiThread() -> {
+        ThreadUtils.runOnUiThread(() -> {
             listener.appendOutput(task, text);
         });
     }
 
     @Override
     public void prepareBuild() {
-        ThreadUtils.runOnUiThread() -> {
+        ThreadUtils.runOnUiThread(() -> {
             listener.prepareBuild();
         });
     }

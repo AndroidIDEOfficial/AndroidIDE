@@ -13,6 +13,8 @@ import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.project.IDEModule;
 import com.itsaky.androidide.project.IDEProject;
+import com.itsaky.androidide.shell.IProcessExecutor;
+import com.itsaky.androidide.shell.ProcessExecutorFactory;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.BaseGradleTasks;
@@ -41,10 +43,13 @@ import org.eclipse.lsp4j.FileEvent;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 
 import static com.itsaky.androidide.managers.ToolsManager.*;
+import com.itsaky.androidide.shell.ProcessStreamsHolder;
+import com.itsaky.androidide.shell.IProcessExitListener;
+import java.io.InputStream;
+import com.itsaky.androidide.utils.InputStreamLineReader;
 
-public class IDEService implements ShellServer.Callback {
-
-    private ShellServer shell;
+public class IDEService {
+    
     private BuildListener listener;
     private GradleTask currentTask;
     private StudioApp app;
@@ -53,11 +58,11 @@ public class IDEService implements ShellServer.Callback {
     private IDEModule mAppModule;
     
     private final File projectRoot;
+    private final IProcessExecutor processExecutor;
     
     private boolean isBuilding = false;
     private boolean isRunning = false;
-	private boolean recreateShellOnDone = false;
-    
+	
     private final String RUN_TASK = "> Task";
     private final String STARTING_DAEMON = "Starting a ";
     private final String BUILD_SUCCESS = "BUILD SUCCESSFUL";
@@ -79,10 +84,33 @@ public class IDEService implements ShellServer.Callback {
     
     public static final Logger LOG = Logger.instance("IDEService");
     
+    private final InputStreamLineReader.OnReadListener mOutputReadListener = new InputStreamLineReader.OnReadListener() {
+        @Override
+        public void onRead(String line) {
+            onBuildOutput(line);
+        }
+    };
+    
+    private final IProcessExitListener mProcessExitListener = new IProcessExitListener() {
+        @Override
+        public void onExit(int code) {
+            isBuilding = false;
+            if (listener != null) {
+                final String msg = getString(R.string.msg_gradle_terminated, code);
+                if (code == 0) {
+                    onBuildSuccessful(currentTask, msg);
+                } else {
+                    onBuildFailed(currentTask, msg);
+                }
+            }
+        }
+    };
+    
     public IDEService(File projectRoot) {
         this.projectRoot = projectRoot;
         this.app = StudioApp.getInstance();
-        this.shell = app.newShell(this);
+        this.processExecutor = ProcessExecutorFactory.commonExecutor();
+        
         this.isRunning = true;
     }
     
@@ -90,53 +118,51 @@ public class IDEService implements ShellServer.Callback {
         this.listener = listener == null ? null : new MainThreadBuildListener(listener);
         return this;
     }
-
-    @Override
-    public void output(CharSequence charSequence) {
-        if(listener == null || charSequence == null) return;
-        final String line = charSequence.toString().trim();
+    
+    public void onBuildOutput(String line) {
+        if(listener == null || line == null) return;
+        line = line.trim();
             
         if(line.contains(PROJECT_INITIALIZED)) {
             readIdeProject();
             return;
         }
-            
-        boolean shouldOutput = true;
         
-        if(shouldOutput) {
-            String text = line.replace(StudioApp.getInstance().getRootDir().getAbsolutePath(), "ANDROIDIDE_HOME");
-            listener.appendOutput(currentTask, text);
+        String text = line;
+        
+        // Try to shorten common file paths
+        if (line.contains(app.getRootDir().getAbsolutePath())) {
+            text = line.replace(app.getRootDir().getAbsolutePath(), "HOME");
         }
-        if(charSequence.toString().contains(RUN_TASK)) {
-            listener.onRunTask(currentTask, charSequence.toString().trim());
-        } else
-        if(charSequence.toString().startsWith(STARTING_DAEMON)) {
+        if (line.contains(app.getRootDir().getParentFile().getAbsolutePath())) {
+            text = line.replace(app.getRootDir().getParentFile().getAbsolutePath(), "ROOT_DIR");
+        }
+        
+        listener.appendOutput(currentTask, text);
+        
+        if(line.contains(RUN_TASK)) {
+            listener.onRunTask(currentTask, line.trim());
+        } else if(line.startsWith(STARTING_DAEMON)) {
             listener.onStartingGradleDaemon(currentTask);
-        } else
-        if(charSequence.toString().contains(BUILD_SUCCESS)) {
-            isBuilding = false;
-            if(recreateShellOnDone)
-                createShell();
-            if(currentTask != null && currentTask.getTaskID() != TASK_SHOW_DEPENDENCIES)
-                listener.onBuildSuccessful(currentTask, charSequence.toString().trim());
-            appendOutputSeparator();
-            
-            if(currentTask != null && currentTask.affectsGeneratedSources()) {
-                /**
-                 * If a task affects generated sources,
-                 * we have to notify Java Language Server
-                 */
-                notifyExternalSourceChange();
-            }
-        } else
-        if(charSequence.toString().contains(BUILD_FAILED)) {
-            isBuilding = false;
-            if(recreateShellOnDone)
-                createShell();
-            listener.onBuildFailed(currentTask, line.trim());
-            appendOutputSeparator();
         }
 	}
+    
+    protected void onBuildSuccessful (GradleTask task, String msg) {
+        if(currentTask != null && currentTask.getTaskID() != TASK_SHOW_DEPENDENCIES) {
+            listener.onBuildSuccessful(currentTask, msg.trim());
+        }
+        appendOutputSeparator();
+
+        if(currentTask != null && currentTask.affectsGeneratedSources()) {
+            notifyExternalSourceChange();
+        }
+    }
+    
+    protected void onBuildFailed (GradleTask task, String msg) {
+        isBuilding = false;
+        listener.onBuildFailed(currentTask, msg.trim());
+        appendOutputSeparator();
+    }
 
     private void readIdeProject() {
         // Parsing project data is meaningless if there is no one listening...
@@ -164,13 +190,6 @@ public class IDEService implements ShellServer.Callback {
 
     private void appendOutputSeparator() {
         listener.appendOutput(currentTask, "\n\n");
-    }
-    
-    private void createShell() {
-        if(shell != null)
-            shell.exit();
-        shell = app.newShell(this);
-        recreateShellOnDone = false;
     }
 
     public void exit() {
@@ -228,12 +247,12 @@ public class IDEService implements ShellServer.Callback {
         return events;
     }
 
-    private String getArguments(List<String> tasks) {
+    private String[] getArguments(List<String> tasks) {
         final PreferenceManager prefs = app.getPrefManager();
         final List<String> args = new ArrayList<>();
         
-        args.add("sh");
-        args.add("gradlew");
+        args.add(Environment.BUSYBOX_SH.getAbsolutePath());
+        args.add(new File (projectRoot, "gradlew").getAbsolutePath());
         args.addAll(asAppTasks(tasks));
         args.add("--init-script");
         args.add(Environment.INIT_SCRIPT.getAbsolutePath());
@@ -255,7 +274,7 @@ public class IDEService implements ShellServer.Callback {
             args.add("all");
         }
 
-        return TextUtils.join(" ", args);
+        return args.toArray(new String[args.size()]);
     }
 
     private Collection<? extends String> asAppTasks(List<String> tasks) {
@@ -311,20 +330,35 @@ public class IDEService implements ShellServer.Callback {
             }
 
             if (listener != null) {
+                
+                final ProcessStreamsHolder holder = new ProcessStreamsHolder();
+                
                 listener.saveFiles();
                 Environment.mkdirIfNotExits(Environment.TMP_DIR);
                 currentTask = task;
                 listener.appendOutput(task, getString(R.string.msg_task_begin, currentTime(), task.getName()));
-                shell.bgAppend(String.format("cd '%s'", projectRoot.getAbsolutePath()));
-                shell.bgAppend(getArguments(task.getTasks()));
-                isBuilding = true;
-                listener.prepareBuild();
+                try {
+                    processExecutor.execAsync(holder, mProcessExitListener, projectRoot.getAbsolutePath(), true, getArguments(task.getTasks()));
+                    isBuilding = true;
+                    
+                    startReading (holder.in);
+                    
+                    listener.prepareBuild();
+                } catch (Throwable e) {
+                    listener.onBuildFailed(task, e.getMessage());
+                }
             }
         };
         
-        final Thread thread = new Thread(taskRunner, "Gradle Task Executor");
+        final Thread thread = new Thread(taskRunner, "GradleTaskExecutor");
         thread.setDaemon(true);
         thread.start();
+    }
+
+    private void startReading(InputStream in) {
+        final Thread reader = new Thread (new InputStreamLineReader (in, mOutputReadListener), "GradleProcessOutputReader");
+        reader.setDaemon(true);
+        reader.start();
     }
 
     private CompletableFuture<Boolean> installWrapper() {

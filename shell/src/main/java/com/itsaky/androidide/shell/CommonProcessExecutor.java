@@ -11,7 +11,7 @@ import java.util.Map;
  * Creates subprocesses using a {@link ProcessBuilder}
  */
 public class CommonProcessExecutor implements IProcessExecutor {
-
+    
     final File HOME = getHome();
 
     @Override
@@ -21,20 +21,34 @@ public class CommonProcessExecutor implements IProcessExecutor {
 
     @Override
     public int exec(ProcessStreamsHolder holder, boolean redirectErr, String... args) throws IOException, InterruptedException {
-        final Process proc = newProcess(args, redirectErr, holder);
+        return exec (holder, HOME.getAbsolutePath(), redirectErr, args);
+    }
+    
+    @Override
+    public int exec(ProcessStreamsHolder holder, String cwd, boolean redirectErr, String[] args) throws IOException, InterruptedException {
+        final Process proc = newProcess(args, cwd, redirectErr, holder);
         return proc.waitFor();
     }
 
     @Override
-    public void execAsync(ProcessStreamsHolder holder, IProcessExitListener onExit, boolean redirectErr, String[] args) throws IOException {
-        final Process proc = newProcess(args, redirectErr, holder);
+    public void execAsync(ProcessStreamsHolder holder, IProcessExitListener onExit, boolean redirectErr, String... args) throws IOException {
+        execAsync(holder, onExit, HOME.getAbsolutePath(), redirectErr, args);
+    }
+    
+    @Override
+    public void execAsync(ProcessStreamsHolder holder, IProcessExitListener onExit, String cwd, boolean redirectErr, String... args) throws IOException {
+        final Process proc = newProcess(args, cwd, redirectErr, holder);
         final Thread exitListener = new Thread(new ExitListenerRunnable (proc, onExit), "ProcessExitListener");
         exitListener.start();
     }
-
-    private Process newProcess(String[] args, boolean redirectErr, ProcessStreamsHolder holder) throws IOException {
+    
+    private Process newProcess (String[] args, String cwd, boolean redirectErr, ProcessStreamsHolder holder) throws IOException {
+        return newProcess(args, new File(cwd), redirectErr, holder);
+    }
+    
+    private Process newProcess(String[] args, File cwd, boolean redirectErr, ProcessStreamsHolder holder) throws IOException {
         final ProcessBuilder builder = new ProcessBuilder(args);
-        builder.directory(HOME);
+        builder.directory(cwd);
         builder.redirectErrorStream(redirectErr);
         builder.environment().putAll(getEnv());
         

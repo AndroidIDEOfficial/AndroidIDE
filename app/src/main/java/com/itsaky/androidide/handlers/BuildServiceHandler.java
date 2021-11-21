@@ -97,6 +97,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     
     @Override
     public void onBuildSuccessful(GradleTask task, String msg) {
+        appendOutput(task, msg);
         if(task == null || activity() == null) return;
         if(task.canOutput())
             activity().setStatus(msg);
@@ -121,6 +122,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     
     @Override
     public void onBuildFailed(GradleTask task, String msg) {
+        appendOutput(task, msg);
         if(task == null) return;
         if(task.canOutput()) {
             activity().setStatus(msg);
