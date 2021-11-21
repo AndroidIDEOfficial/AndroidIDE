@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.services.build.IDEService;
+import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.utils.Logger;
 
 public abstract class StudioActivity extends AppCompatActivity {

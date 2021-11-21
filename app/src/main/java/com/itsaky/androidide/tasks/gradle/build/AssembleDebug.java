@@ -2,7 +2,7 @@ package com.itsaky.androidide.tasks.gradle.build;
 
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.services.build.IDEService;
+import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.tasks.BaseGradleTask;
 import java.io.File;
 import java.util.Arrays;

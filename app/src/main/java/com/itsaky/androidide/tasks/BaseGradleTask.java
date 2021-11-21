@@ -1,6 +1,6 @@
 package com.itsaky.androidide.tasks;
 
-import com.itsaky.androidide.services.build.IDEService;
+import com.itsaky.androidide.services.builder.IDEService;
 
 public abstract class BaseGradleTask implements GradleTask {
 
