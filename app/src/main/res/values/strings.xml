@@ -8,7 +8,7 @@
     <string name="title_install_apks">Install APK(s)</string>
     <string name="title_clear_output">Clear output</string>
     <string name="msg_gradlew_installation_failed">Failed to install Gradle Wrapper: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper is not available!\nInstalling default one. Gradle v7.1.1 will be downloaded if necessary.</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper is not available!\nInstalling default one. Gradle v7.3 will be downloaded if necessary.</string>
     <string name="msg_fix_diagnostic">[QuickFix]</string>
     <string name="title_confirm_changes">Confirm changes</string>
     <string name="msg_confirm_changes">These files will be modified:\n%s</string>
