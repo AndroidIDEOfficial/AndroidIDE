@@ -65,7 +65,7 @@ import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.project.ProjectResourceFinder;
 import com.itsaky.androidide.services.LogReceiver;
-import com.itsaky.androidide.services.IDEService;
+import com.itsaky.androidide.services.build.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;

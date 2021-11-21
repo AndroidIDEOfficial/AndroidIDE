@@ -7,7 +7,8 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.project.IDEModule;
 import com.itsaky.androidide.project.IDEProject;
-import com.itsaky.androidide.services.IDEService;
+import com.itsaky.androidide.services.build.BuildListener;
+import com.itsaky.androidide.services.build.IDEService;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.build.ApkGeneratingTask;
 import com.itsaky.androidide.utils.Environment;
@@ -19,7 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BuildServiceHandler extends IDEHandler implements IDEService.BuildListener {
+public class BuildServiceHandler extends IDEHandler implements BuildListener {
     
     private IDEService service;
     

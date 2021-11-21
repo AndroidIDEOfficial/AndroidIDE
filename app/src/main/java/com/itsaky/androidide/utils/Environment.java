@@ -159,7 +159,7 @@ public final class Environment {
         ld += LIBDIR.getAbsolutePath();
         ENV_VARS.put("LD_LIBRARY_PATH", ld);
         
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && StudioApp.isAarch64()) {
             ENV_VARS.put("LD_PRELOAD", LIBHOOK.getAbsolutePath());
         }
         
@@ -168,6 +168,8 @@ public final class Environment {
         addToEnvIfPresent(ENV_VARS, "ANDROID_I18N_ROOT");
         addToEnvIfPresent(ENV_VARS, "ANDROID_RUNTIME_ROOT");
         addToEnvIfPresent(ENV_VARS, "ANDROID_TZDATA_ROOT");
+        addToEnvIfPresent(ENV_VARS, "ANDROID_DATA");
+        addToEnvIfPresent(ENV_VARS, "ANDROID_ROOT");
         
         String path = createPath();
         
