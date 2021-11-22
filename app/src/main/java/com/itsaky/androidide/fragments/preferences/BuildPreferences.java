@@ -5,21 +5,14 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.databinding.LayoutInstallToolsBinding;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
-import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
-import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.toaster.Toaster;
 import java.io.File;
 
 import static com.itsaky.androidide.managers.PreferenceManager.*;
-import com.itsaky.androidide.utils.Logger;
 
 public class BuildPreferences extends BasePreferenceFragment implements Preference.OnPreferenceClickListener {
 	

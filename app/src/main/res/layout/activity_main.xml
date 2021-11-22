@@ -73,7 +73,7 @@
             android:id="@+id/greetingText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/start_your_new_awesome_project"
+            android:text="@string/msg_create_new_project_greeting"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/primaryTextColorLight"
             android:layout_marginBottom="16dp"

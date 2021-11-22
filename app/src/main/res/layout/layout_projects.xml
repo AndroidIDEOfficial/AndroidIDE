@@ -41,7 +41,7 @@
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="@string/looks_like_you_havent_created"
+			android:text="@string/msg_no_projects"
 			android:textColor="@color/secondaryTextColor"
 			android:textAppearance="?android:attr/textAppearanceSmall"/>
 

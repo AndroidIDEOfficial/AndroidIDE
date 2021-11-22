@@ -1,6 +1,5 @@
 package com.itsaky.androidide.services.builder;
 
-import android.text.TextUtils;
 import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
@@ -14,18 +13,21 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.project.IDEModule;
 import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.shell.IProcessExecutor;
+import com.itsaky.androidide.shell.IProcessExitListener;
 import com.itsaky.androidide.shell.ProcessExecutorFactory;
-import com.itsaky.androidide.shell.ShellServer;
+import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.BaseGradleTasks;
 import com.itsaky.androidide.tasks.gradle.build.AssembleDebug;
 import com.itsaky.androidide.tasks.gradle.resources.UpdateResourceClassesTask;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.InputStreamLineReader;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,10 +45,6 @@ import org.eclipse.lsp4j.FileEvent;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 
 import static com.itsaky.androidide.managers.ToolsManager.*;
-import com.itsaky.androidide.shell.ProcessStreamsHolder;
-import com.itsaky.androidide.shell.IProcessExitListener;
-import java.io.InputStream;
-import com.itsaky.androidide.utils.InputStreamLineReader;
 
 public class IDEService {
     
@@ -65,8 +63,6 @@ public class IDEService {
 	
     private final String RUN_TASK = "> Task";
     private final String STARTING_DAEMON = "Starting a ";
-    private final String BUILD_SUCCESS = "BUILD SUCCESSFUL";
-    private final String BUILD_FAILED = "BUILD FAILED";
     private final String PROJECT_INITIALIZED = ">>> PROJECT INITIALIZED <<<";
     
     public static final int TASK_SHOW_DEPENDENCIES       = GradleTask.TASK_SHOW_DEPENDENCIES;
@@ -119,7 +115,7 @@ public class IDEService {
         return this;
     }
     
-    public void onBuildOutput(String line) {
+    protected void onBuildOutput(String line) {
         if(listener == null || line == null) return;
         line = line.trim();
             
