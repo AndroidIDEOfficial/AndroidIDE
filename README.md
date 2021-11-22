@@ -64,7 +64,7 @@ The app is still being developed actively. It's in beta stage and may not be sta
 - [Create your first project](https://itsaky.github.io/create-your-first-project-in-androidIDE/)  
   - Author: [Akash Yadav](https://github.com/itsaky)
 
-### DEVELOPERS
+### Developers
 This project was initially developed by [Akash Yadav](https://github.com/itsaky) and [Marvin Stelter](https://github.com/MarvinStelter). We appreciate the efforts of anyone who contributes to this project.
 
 ### Special Thanks
