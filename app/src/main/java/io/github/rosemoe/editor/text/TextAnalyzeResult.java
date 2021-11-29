@@ -16,7 +16,6 @@
 package io.github.rosemoe.editor.text;
 
 import io.github.rosemoe.editor.struct.BlockLine;
-import io.github.rosemoe.editor.struct.HexColor;
 import io.github.rosemoe.editor.struct.NavigationItem;
 import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
@@ -33,7 +32,7 @@ public class TextAnalyzeResult {
 
     protected final List<BlockLine> mBlocks;
     protected final List<List<Span>> mSpanMap;
-	protected final HashMap<HexColor, Integer> mHexColor;
+	
     public Object mExtra;
     protected List<NavigationItem> mLabels;
     protected Span mLast;
@@ -51,7 +50,6 @@ public class TextAnalyzeResult {
         mLast = null;
         mSpanMap = new ArrayList<>(2048);
         mBlocks = new ArrayList<>(1024);
-		mHexColor = new HashMap<>();
     }
     
     public Map<Integer, List<Range>> getStringMap() {
@@ -80,20 +78,6 @@ public class TextAnalyzeResult {
         commentMap.put(line, ranges);
     }
 	
-	public void addHexColor(HexColor index, int color) {
-		mHexColor.put(index, color);
-	}
-	
-	public HashMap<HexColor, Integer> getHexColors() {
-		return mHexColor;
-	}
-	
-	public TextAnalyzeResult setHexColors(HashMap<HexColor, Integer> colors) {
-		this.mHexColor.clear();
-		this.mHexColor.putAll(colors);
-		return this;
-	}
-
     /**
      * Add a new span if required (colorId is different from last)
      *

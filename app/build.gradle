@@ -2,10 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
-if(rootProject.ext.stringfogEnabled) {
-    apply plugin: com.github.megatronking.stringfog.plugin.StringFogPlugin
-}
-
 android {
     compileSdkVersion rootProject.ext.compileSdk
 	buildToolsVersion rootProject.ext.buildTools
@@ -27,6 +23,7 @@ android {
         targetCompatibility rootProject.ext.javaTargetVersion
 	}
     
+    // This is to get completions for R.java in AIDE
     aaptOptions {
         additionalParameters "--java", "$buildDir/gen"
     }
@@ -41,25 +38,20 @@ android {
 	
 	buildFeatures.viewBinding true
     
-    def key = new File("/sdcard/AndroidAppProjects/publishKey.keystore");
-    def isKeyAvailable = key.exists()
-
-    if(isKeyAvailable) {
-        signingConfigs {
-		
-            debug {
-                storeFile file("/sdcard/AndroidAppProjects/publishKey.keystore")
-                storePassword "itsaky"
-                keyAlias "itsaky"
-                keyPassword "itsaky"
-            }
+    signingConfigs {
         
-            release {
-                storeFile file("/sdcard/AndroidAppProjects/publishKey.keystore")
-                storePassword "itsaky"
-                keyAlias "itsaky"
-                keyPassword "itsaky"
-            }
+        debug {
+            storeFile file("dev.keystore")
+            keyAlias "androidide"
+            storePassword "ed68424fb109e5aa8146e4b86caa72e3"
+            keyPassword "ed68424fb109e5aa8146e4b86caa72e3"
+        }
+        
+        release {
+            storeFile file("dev.keystore")
+            keyAlias "androidide"
+            storePassword "ed68424fb109e5aa8146e4b86caa72e3"
+            keyPassword "ed68424fb109e5aa8146e4b86caa72e3"
         }
     }
     
@@ -67,12 +59,13 @@ android {
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if(isKeyAvailable) { signingConfig signingConfigs.debug }
+            signingConfig signingConfigs.debug
         }
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            if(isKeyAvailable) { signingConfig signingConfigs.release }
+            signingConfig signingConfigs.release
         }
     }
 	
@@ -88,14 +81,7 @@ android {
 	}
 }
 
-if(rootProject.ext.stringfogEnabled) {
-    stringfog {
-        key 'WVV0aGMwaEFZVzVFVW05SlJFbGtaUT09'
-        enable true
-        implementation 'com.github.megatronking.stringfog.xor.StringFogImpl'
-    }
-}
-
+// This is to get completions for view binding classes in AIDE
 task copyBindings(type: Copy) {
     from "build/generated/data_binding_base_class_source_out/debug/out"
     into 'build/gen'

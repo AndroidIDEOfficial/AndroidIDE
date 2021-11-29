@@ -1,7 +1,7 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- * Copyright (C) 2021 Akash Yadav
+ *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
 **************************************************************************************/
 
-
 package com.itsaky.androidide.language.groovy;
 
 import com.itsaky.androidide.syntax.lexer.impls.groovy.GroovyLexerImpl;
@@ -31,6 +30,7 @@ import io.github.rosemoe.editor.text.TextAnalyzer;
 import java.io.File;
 import java.util.Map;
 import org.eclipse.lsp4j.Diagnostic;
+import java.io.IOException;
 
 public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
     
@@ -41,25 +41,24 @@ public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeA
     }
     
 	@Override
-	public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
-		try {
-			GroovyLexerImpl lexer = new GroovyLexerImpl(this.language, (Content) content, colors);
-			lexer.init();
+	public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws IOException {
+		GroovyLexerImpl lexer = new GroovyLexerImpl(this.language, (Content) content, colors);
+        lexer.init();
+        
+        // Adding spans, hex colors, block lines and all is handled by GroovyLexerImpl
+        while (delegate.shouldAnalyze()) {
+            // null = EOF
+            if(lexer.nextToken() == null) {
+                break;
+            }
+        }
+        
+        if (lexer.stack.isEmpty() && lexer.currSwitch > lexer.maxSwitch) {
+            lexer.maxSwitch = lexer.currSwitch;
+        }
 
-			// Adding spans, hex colors, block lines and all is handled by GroovyLexerImpl
-			while (delegate.shouldAnalyze()) {
-				// null = EOF
-				if(lexer.nextToken() == null)
-					break;
-			}
-			if (lexer.stack.isEmpty() && lexer.currSwitch > lexer.maxSwitch)
-				lexer.maxSwitch = lexer.currSwitch;
-
-			colors.determine(lexer.lastLine);
-			colors.setSuppressSwitch(lexer.maxSwitch + 10);
-			colors.setHexColors(lexer.lineColors);
-		} catch (Throwable e) {
-		}
+        colors.determine(lexer.lastLine);
+        colors.setSuppressSwitch(lexer.maxSwitch + 10);
 	}
 
     @Override

@@ -32,6 +32,10 @@ public class Span {
     public int column;
     public int colorId;
     public int underlineColor = 0;
+    public float underlineHeight;
+    
+    public static final float DEFAULT_UNDERLINE_HEIGHT = 0.1f;
+    public static final float HEX_COLOR_UNDERLINE_HEIGHT = 0.27f;
     
     /**
      * Create a new span
@@ -45,6 +49,8 @@ public class Span {
         this.line = line;
         this.column = column;
         this.colorId = colorId;
+        this.underlineColor = 0;
+        this.underlineHeight = DEFAULT_UNDERLINE_HEIGHT;
     }
 
     public static Span obtain(int line, int column, int colorId) {
@@ -77,6 +83,15 @@ public class Span {
     public Span setUnderlineColor(int color) {
         underlineColor = color;
         return this;
+    }
+    
+    /**
+     * Set the height of the underline of this span
+     *
+     * @param height The new height of the span's underline
+     */
+    public void setUnderlineHeight (float height) {
+        this.underlineHeight = height;
     }
     
     /**

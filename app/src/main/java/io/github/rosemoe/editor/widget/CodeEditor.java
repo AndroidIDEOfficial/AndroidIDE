@@ -23,7 +23,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -69,7 +68,7 @@ import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.lsp.providers.CodeActionProvider;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.utils.JSONUtility;
+import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
@@ -82,7 +81,6 @@ import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.langs.AbstractEditorLanguage;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.struct.BlockLine;
-import io.github.rosemoe.editor.struct.HexColor;
 import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
@@ -99,7 +97,6 @@ import io.github.rosemoe.editor.util.IntPair;
 import io.github.rosemoe.editor.util.LongArrayList;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -135,8 +132,6 @@ import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.TextDocumentItem;
 import org.eclipse.lsp4j.VersionedTextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import android.os.Handler;
-import com.itsaky.androidide.utils.LSPUtils;
 
 /**
  * CodeEditor is a editor that can highlight text regions by doing basic syntax analyzing
@@ -225,8 +220,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private int mInputType;
     private int mNonPrintableOptions;
     private int mCachedLineNumberWidth;
-	private int mErrorColor;
-	private int mWarningColor;
     private int mFileVersion = 0;
     private float mDpUnit;
     private float mDividerWidth;
@@ -602,8 +595,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             setDefaultFocusHighlightEnabled(false);
         }
 		
-		mErrorColor = Color.parseColor("#FF5252");
-		mWarningColor = Color.parseColor("#FFD740");
 		mRect2.set(-1, -1, -1, -1);
     }
     
@@ -1099,18 +1090,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mFontCache.clearCache();
     }
 
-    private long startClock;
-
-    private void record() {
-        startClock = System.nanoTime();
-    }
-
-    private void print() {
-        double time = (System.nanoTime() - startClock) / 1e6;
-        if (time > 3.0) {
-        }
-    }
-
     /**
      * Paint the view on given Canvas
      *
@@ -1386,11 +1365,11 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
 
                     // Draw text
                     drawRegionText(canvas, paintingOffset, getRowBaseline(row) - getOffsetY(), line, paintStart, paintEnd, columnCount, mColors.getColor(span.colorId));
-
+                    
                     // Draw underline
                     if (span.underlineColor != 0) {
-                        mRect.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
-                        mRect.top = mRect.bottom - getRowHeight() * 0.1f;
+                        mRect.bottom = getRowBottom(line) - getOffsetY() - (mDpUnit * 0.5f);
+                        mRect.top = mRect.bottom - getRowHeight() * span.underlineHeight;
                         mRect.left = paintingOffset;
                         mRect.right = paintingOffset + width;
                         drawColor(canvas, span.underlineColor, mRect);
@@ -1445,26 +1424,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                     drawColor(canvas, mColors.getColor(EditorColorScheme.UNDERLINE), mRect);
                 }
             }
-			
-			// Draw hex colors
-            final Map<HexColor, Integer> mLineColors = isLineColorsEnabled() && mSpanner != null ? mSpanner.getResult().getHexColors() : null;
-			if(mLineColors != null && mLineColors.size() > 0) {
-				for(HexColor c : mLineColors.keySet()) {
-					if(c != null && c.isSameLine(line) && mLineColors.get(c) != null) {
-						final int paintStart = Math.max(firstVisibleChar, c.start.column);
-						final int paintEnd = Math.min(lastVisibleChar, c.end.column);
-						final float width = measureText(mBuffer, paintStart, paintEnd - paintStart);
-						final Integer i = mLineColors.get(c);
-						if(i == null) continue;
-						final int col = i.intValue();
-						mRect.bottom = getRowBottom(line) - getOffsetY() - mDpUnit * 1;
-                        mRect.top = mRect.bottom - getRowHeight() * 0.2f;
-                        mRect.left = paintingOffset + measureText(mBuffer, firstVisibleChar, paintStart - firstVisibleChar);
-                        mRect.right = mRect.left + width;
-                        drawColor(canvas, col, mRect);
-					}
-				}
-			}
             
             final Paint.Style style = mPaint.getStyle();
             final float stroke = mPaint.getStrokeWidth();

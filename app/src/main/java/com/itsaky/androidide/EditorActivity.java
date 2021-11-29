@@ -1,7 +1,7 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- * Copyright (C) 2021 Akash Yadav
+ *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
 
 package com.itsaky.androidide;
 
@@ -268,7 +267,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             
             boolean saved = false;
             try {
-                saveAll();
+                saveAll(false /* No notification */);
                 saved = true;
             } catch (Throwable th) {
                 LOG.error(":onPause(): Failed to save files", th);

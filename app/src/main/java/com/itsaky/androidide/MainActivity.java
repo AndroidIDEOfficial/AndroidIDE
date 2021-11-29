@@ -1,7 +1,7 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- * Copyright (C) 2021 Akash Yadav
+ *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,16 @@
  *
 **************************************************************************************/
 
-
 package com.itsaky.androidide;
 
 import abhishekti7.unicorn.filepicker.UnicornFilePicker;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.transition.MaterialContainerTransform;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
@@ -35,20 +36,18 @@ import com.itsaky.androidide.databinding.LayoutCreateProjectContentBinding;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.ProjectWriterCallback;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.project.AndroidProject;
+import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
-import com.itsaky.androidide.utils.ProjectFinder;
+import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ProjectCreatorCallable;
+import com.itsaky.androidide.utils.ProjectFinder;
 import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
-import com.itsaky.androidide.models.ConstantsBridge;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import android.os.Environment;
 
 public class MainActivity extends StudioActivity implements View.OnClickListener, ProjectWriterCallback {
 

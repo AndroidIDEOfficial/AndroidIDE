@@ -1,7 +1,7 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- * Copyright (C) 2021 Akash Yadav
+ *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,16 +24,15 @@ package com.itsaky.androidide.syntax.lexer.impls;
 import android.graphics.Color;
 import com.itsaky.androidide.syntax.lexer.DefaultLexer;
 import io.github.rosemoe.editor.struct.BlockLine;
-import io.github.rosemoe.editor.struct.HexColor;
-import io.github.rosemoe.editor.text.CharPosition;
+import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.Token;
 
 /**
  * Java and Groovy lexer is almost same
@@ -54,31 +53,20 @@ public abstract class BaseJavaLexer extends DefaultLexer {
 	protected org.antlr.v4.runtime.Token currentToken;
 
 	protected TextAnalyzeResult colors;
-	public final HashMap<HexColor, Integer> lineColors = new HashMap<>();
 	public final Stack<BlockLine> stack = new Stack<BlockLine>();
 	protected ArrayList<Integer> builtinTypes;
 	
-	protected void addHexColorIfPresent() {
-		Matcher m = HEX.matcher(text());
-		final int line= line();
-		final int column = column();
-		if (m.find()) {
-			try {
-				final CharPosition start = new CharPosition(line, column + m.start());
-				final CharPosition end = new CharPosition(line, start.column + (m.end() - m.start()));
-				final HexColor key = new HexColor(start, end);
-				final Integer value = Color.parseColor(text().substring(m.start(), m.end()));
-
-				// Null checks
-				start.getClass();
-				end.getClass();
-				key.getClass();
-                
-				value.getClass();
-
-				lineColors.put(key, value);
-			} catch (Throwable th) {}
-		}
+	protected void addHexColorIfPresent(Token token, final Span span) {
+        Matcher m = HEX.matcher(token.getText());
+        if (m.find()) {
+            try {
+                span.underlineColor = Color.parseColor(token.getText().substring(m.start(), m.end())); 
+                span.underlineHeight = Span.HEX_COLOR_UNDERLINE_HEIGHT;
+            } catch (Throwable th) {
+                // ignored
+                // The hex color may not be a valid color code
+            } 
+        } 
 	}
 
 	protected final Pattern HEX = Pattern.compile("#[a-fA-F0-9]{3,8}");

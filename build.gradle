@@ -4,25 +4,19 @@ buildscript {
         buildTools = "31.0.0"
         minSdk = 24
         targetSdk = 28
-        versionCode = 2001211120
+        versionCode = 200
         versionName = "2.0-beta"
 		packageName = "com.itsaky.androidide"
         
         javaSourceVersion = JavaVersion.VERSION_1_8
         javaTargetVersion = JavaVersion.VERSION_1_8
-        
-        stringfogEnabled = false
     }
 
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/public/' } 
-        maven { url 'https://maven.aliyun.com/repository/google/' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
-        maven { url 'https://clojars.org/repo/'}
-        maven { url 'https://jitpack.io'}
         google()
         mavenLocal()
 		mavenCentral()
+        maven { url 'https://jitpack.io'}
     }
     
     dependencies {
@@ -34,15 +28,11 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/public/' } 
-        maven { url 'https://maven.aliyun.com/repository/google/' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
-        maven { url 'https://clojars.org/repo/'}
-        maven { url 'https://jitpack.io'}
-        mavenLocal()
-		mavenCentral()
         google()
-   }
+        mavenLocal()
+        mavenCentral()
+        maven { url 'https://jitpack.io'}
+    }
 }
 
 task clean(type: Delete) {

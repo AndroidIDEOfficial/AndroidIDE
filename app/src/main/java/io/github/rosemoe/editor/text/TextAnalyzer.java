@@ -216,6 +216,7 @@ public class TextAnalyzer {
                     }
                 } while (true);
             } catch (Exception ex) {
+                // ignored
             }
         }
 

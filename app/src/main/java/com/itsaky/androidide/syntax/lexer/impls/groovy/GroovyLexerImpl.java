@@ -1,7 +1,7 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- * Copyright (C) 2021 Akash Yadav
+ *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
 **************************************************************************************/
 
-
 package com.itsaky.androidide.syntax.lexer.impls.groovy;
 
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
@@ -30,18 +29,17 @@ import com.itsaky.androidide.utils.LSPUtils;
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.struct.BlockLine;
+import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.lsp4j.Range;
 
 public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
@@ -111,7 +109,10 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 		final int line = line();
 		final int column = column();
 		final int tokenType = currentToken.getType();
+        
 		TokenType type = TokenType.TEXT;
+        
+        Span span;
 		switch(tokenType) {
 			case GroovyLexer.WS :
 				type = TokenType.WS;
@@ -160,7 +161,7 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 			case GroovyLexer.VOLATILE:
 			case GroovyLexer.WHILE:
 				type = TokenType.KEYWORD;
-				colors.addIfNeeded(line, column, EditorColorScheme.KEYWORD);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.KEYWORD);
 				wasClassName = false;
 				break;
 			case GroovyLexer.DECIMAL_LITERAL:
@@ -173,15 +174,15 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 			case GroovyLexer.CHAR_LITERAL:
 			case GroovyLexer.NULL_LITERAL:
 				type = TokenType.NUMBER_LITERAL;
-				colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
 				wasClassName = false;
 				break;
 			case GroovyLexer.STRING_LITERAL :
 			case GroovyLexer.SINGLE_QUOTE_STRING :
 				type = TokenType.STRING_LITERAL;
-				colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
 				wasClassName = false;
-				addHexColorIfPresent();
+				addHexColorIfPresent(currentToken, span);
 				break;
 			case GroovyLexer.LPAREN :
 			case GroovyLexer.RPAREN :
@@ -228,7 +229,7 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 			case GroovyLexer.ELLIPSIS :
 			case GroovyLexer.DOT :
 				type = TokenType.OPERATOR;
-				colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
 				wasClassName = false;
 				break;
 			case GroovyLexer.BOOLEAN:
@@ -241,41 +242,41 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 			case GroovyLexer.LONG:
 			case GroovyLexer.SHORT:
 				type = TokenType.TYPE;
-				colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.TYPE_NAME);
 				wasClassName = true;
 				break;
 
 			case GroovyLexer.COMMENT :
 			case GroovyLexer.LINE_COMMENT :
 				type = TokenType.COMMENT;
-				colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
 				wasClassName = false;
 				break;
 			case GroovyLexer.AT :
 				type = TokenType.ANNOTATION;
-				colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
 				wasClassName = false;
 				break;
 			case GroovyLexer.IDENTIFIER :
 				type = TokenType.IDENTIFIER;
 
 				if (previous == GroovyLexer.AT) {
-					colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
+					span = colors.addIfNeeded(line, column, EditorColorScheme.ANNOTATION);
 					wasClassName = false;
 					break;
 				}
 
 				if ((previous == GroovyLexer.IDENTIFIER || builtinTypes.contains(previous)) && wasClassName) {
-					colors.addIfNeeded(line, column, EditorColorScheme.LOCAL_VARIABLE);
+					span = colors.addIfNeeded(line, column, EditorColorScheme.LOCAL_VARIABLE);
 					wasClassName = false;
 					break;
 				}
 
-				colors.addIfNeeded(line, column, EditorColorScheme.TEXT_NORMAL);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.TEXT_NORMAL);
 				break;
 			case GroovyLexer.LBRACE :
 				type = TokenType.OPERATOR;
-				colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
 				wasClassName = false;
 				if (stack.isEmpty()) {
 					if (currSwitch > maxSwitch)
@@ -290,7 +291,7 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 				break;
 			case GroovyLexer.RBRACE :
 				type = TokenType.OPERATOR;
-				colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
 				wasClassName = false;
 				if (!stack.isEmpty()) {
 					BlockLine block2 = stack.pop();
@@ -304,10 +305,10 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 				type = TokenType.TEXT;
 				wasClassName = false;
 				if (tokenType == GroovyLexer.LBRACK || (tokenType == GroovyLexer.RBRACK && previous == GroovyLexer.LBRACK)) {
-					colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+					span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
 					break;
 				}
-				colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
+				span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
 				break;
 		}
 

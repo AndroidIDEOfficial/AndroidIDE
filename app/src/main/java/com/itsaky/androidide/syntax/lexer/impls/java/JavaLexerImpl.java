@@ -1,7 +1,7 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- * Copyright (C) 2021 Akash Yadav
+ *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
 
 package com.itsaky.androidide.syntax.lexer.impls.java;
 
@@ -98,8 +97,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
 
         colors.determine(lexer.lastLine);
         colors.setSuppressSwitch(lexer.maxSwitch + 10);
-        colors.setHexColors(lexer.lineColors);
-   
     }
 
     @Override
@@ -331,7 +328,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                         stringMap.put(line, ranges);
                     }
                     
-                    addHexColorIfPresent();
+                    addHexColorIfPresent(currentToken, span);
                     break;
                 case JavaLexer.LPAREN :
                 case JavaLexer.RPAREN :
