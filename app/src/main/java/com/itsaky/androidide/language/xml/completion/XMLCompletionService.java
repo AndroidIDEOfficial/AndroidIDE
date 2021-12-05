@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
- *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,12 +15,9 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.language.xml.completion;
 
 import com.google.gson.JsonObject;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.attrinfo.models.Attr;
@@ -39,15 +34,11 @@ import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.InsertTextFormat;
-import java.io.IOException;
 
 public class XMLCompletionService {
     
     private AttrInfo attrs;
     private WidgetInfo widgets;
-	
-	private boolean attrsInitialized = false;
-	private boolean widgetsInitialized = false;
     
     private static final String INITIAL_TAG_ATTRIBUTES =
     "android:layout_width=\"wrap_content\"\n" + 
@@ -57,17 +48,9 @@ public class XMLCompletionService {
 		this.attrs = attrs;
         this.widgets = widgets;
 	}
-	
-	public boolean isInitiated() {
-        return attrsInitialized && widgetsInitialized;
-	}
     
 	public List<CompletionItem> complete(CharSequence content, int index, int line, int column, String prefix) {
 		final List<CompletionItem> result = new ArrayList<>();
-        
-        if (!isInitiated()) {
-            return handleCompletionResults(result);
-        }
         
 		if(prefix.startsWith("<") || prefix.startsWith("</")) {
 			boolean slash = false;

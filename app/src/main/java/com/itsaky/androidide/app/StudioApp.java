@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.app;
 
 import android.annotation.SuppressLint;
@@ -32,7 +28,6 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
 import com.blankj.utilcode.util.EncodeUtils;
 import com.blankj.utilcode.util.ResourceUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.R;
@@ -184,10 +179,10 @@ public class StudioApp extends MultiDexApplication {
                 mApiInfo = new ApiInfo (StudioApp.this);
                 mAttrInfo = new AttrInfo (StudioApp.this);
                 mWidgetInfo = new WidgetInfo (StudioApp.this);
+                
+                mXmlCompletionService = new XMLCompletionService (mAttrInfo, mWidgetInfo);
             } catch (Throwable th) {
-                ThreadUtils.runOnUiThread(() -> {
-                    toast(R.string.msg_sdk_info_load_failed, Toaster.Type.ERROR);
-                });
+                LOG.error ("Unable to start XML completion service", th);
             }
         }, "SDK Information Loader").start();
     }
@@ -213,8 +208,7 @@ public class StudioApp extends MultiDexApplication {
     }
 	
 	public boolean isXmlServiceStarted() {
-		return mXmlCompletionService != null
-			&& mXmlCompletionService.isInitiated();
+		return mXmlCompletionService != null;
 	}
     
     public void setStopGradleDaemon(boolean startGradleDaemon) {
