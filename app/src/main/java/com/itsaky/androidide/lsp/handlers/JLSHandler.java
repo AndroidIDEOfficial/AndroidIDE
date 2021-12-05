@@ -74,6 +74,7 @@ public class JLSHandler implements LSPHandler {
             IDELanguageClientImpl client = IDELanguageClientImpl.getInstance();
             
             mLauncher = new StandardStreamsLauncher(client, holder.in, holder.out, LSPProvider.LANGUAGE_JAVA);
+            mLauncher.setLaunchListener(server -> onStarted.run());
             mLauncher.start();
             
         } catch (Throwable th) {

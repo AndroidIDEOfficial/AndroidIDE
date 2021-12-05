@@ -50,6 +50,8 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
         
         LSPProvider.setLanguageServer(this.langCode, this.server);
         
+        notifyServerStarted();
+        
         try {
             listening.get();
         } catch (Throwable th) {

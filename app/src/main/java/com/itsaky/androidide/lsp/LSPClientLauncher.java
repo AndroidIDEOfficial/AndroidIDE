@@ -38,11 +38,23 @@ public abstract class LSPClientLauncher extends Thread {
     protected final IDELanguageClientImpl languageClient;
     protected IDELanguageServer server;
     
+    protected LaunchListener mLaunchListener;
+    
     public LSPClientLauncher(IDELanguageClientImpl client) {
         Objects.requireNonNull(client);
         setDaemon(true);
         
         this.languageClient = client;
+    }
+    
+    /**
+     * Set the listener to get notified about language server start
+     * event.
+     *
+     * @param listener The listener.
+     */
+    public void setLaunchListener (LaunchListener listener) {
+        this.mLaunchListener = listener;
     }
 
     /**
@@ -83,11 +95,34 @@ public abstract class LSPClientLauncher extends Thread {
             .setOutput(out)
             .create();
     }
+    
+    /**
+     * Notify the {@link LaunchListener} instance that the server is started.
+     * Does nothing if the listener instance is {@code null}.
+     */
+    protected void notifyServerStarted () {
+        if (mLaunchListener != null) {
+            mLaunchListener.onStarted(this.server);
+        }
+    }
 
     /**
      * Shut down the language server
      */
     public abstract void shutdown();
+    
+    /**
+     * A listener to listen for language server start event.
+     */
+    public static interface LaunchListener {
+        
+        /**
+         * Called when the language server is started.
+         *
+         * @param server The language server instance.
+         */
+        void onStarted (IDELanguageServer server);
+    }
 
     /**
      * Wraps an output stream to make sure that we don't write on UI Thread
