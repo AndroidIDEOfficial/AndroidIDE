@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.language.java;
 
 import com.itsaky.androidide.lsp.LSPProvider;
@@ -54,26 +50,33 @@ public class JavaAutoComplete implements AutoCompleteProvider {
             params.setTextDocument(new TextDocumentIdentifier(fileUri));
             future = languageServer.getTextDocumentService().completion(params);
             
-            if(future.isCancelled()) return new ArrayList<CompletionItem>();
+            if(future.isCancelled()) {
+                LOG.debug ("Completion request was cancelled");
+                return finalizeResults(new ArrayList<CompletionItem>());
+            }
             
             try {
                 Either<List<CompletionItem>, CompletionList> either = future.get();
-                if(either.isLeft())
-                    return sort(either.getLeft());
+                if(either.isLeft()) {
+                    return finalizeResults(either.getLeft());
+                }
                 
-                if(either.isRight())
-                    return sort(either.getRight().getItems());
+                if(either.isRight()) {
+                    return finalizeResults(either.getRight().getItems());
+                }
                 
             } catch (Throwable th) {
-                // Ignore this exception. An empty list will be sent after this
-                // This exeption is thrown probably because the request was cancelled or interrupted
+                LOG.error("CompletionError", th);
             }
+        } else {
+            LOG.error("Cannot compute completions for Java file. No LanguageServer implementation found.");
         }
         return new ArrayList<CompletionItem>();
 	}
     
-    private List<CompletionItem> sort(List<CompletionItem> items) {
+    private List<CompletionItem> finalizeResults(List<CompletionItem> items) {
         Collections.sort(items, RESULT_SORTER);
+        LOG.debug ("CompletionResults", items);
         return items;
     }
     

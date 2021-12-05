@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
- *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
 package com.itsaky.androidide.lsp.handlers;
 
 import com.itsaky.androidide.app.StudioApp;
@@ -89,9 +86,11 @@ public class JLSHandler implements LSPHandler {
 
         final IDELanguageServer server = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
         
-        if (server == null)
+        if (server == null) {
+            LOG.error ("Cannot initialize Java Language Server. Server instance is null!");
             return Optional.empty();
-
+        }
+        
         final List<WorkspaceFolder> folders = new ArrayList<>();
         final File file = new File(rootPath);
         final WorkspaceFolder folder = new WorkspaceFolder();
@@ -119,18 +118,18 @@ public class JLSHandler implements LSPHandler {
             }
             return Optional.of(result);
         } catch (Throwable e) {
+            LOG.error ("An error occurred while initializing language server.", e);
             return Optional.empty();
         }
     }
     
     @Override
     public void initialized() {
-        
         final IDELanguageServer server = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
-        if (server == null)
+        if (server == null) {
             return;
+        }
         server.initialized(new InitializedParams());
-
     }
     
     @Override
@@ -146,7 +145,7 @@ public class JLSHandler implements LSPHandler {
         readerThread.setDaemon(true);
         readerThread.start();
     }
-
+    
     private File getOutputFile () {
         return new File (FileUtil.getExternalStorageDir(), "ide_xlog/jls_output.txt");
     }

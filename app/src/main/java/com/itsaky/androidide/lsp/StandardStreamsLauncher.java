@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.lsp;
 
 import com.blankj.utilcode.util.CloseUtils;
@@ -44,7 +40,7 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
         this.out = new BufferedOutputStream( out );
         this.langCode = langCode;
     }
-
+    
     @Override
     protected void launch() {
         final Launcher<IDELanguageServer> server = createClientLauncher(languageClient, in, out);
@@ -57,7 +53,11 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
         try {
             listening.get();
         } catch (Throwable th) {
-            
+            LOG.error (
+                "---> StandardStreamsLauncher <---",
+                "An error occured while waiting for language server process to stop",
+                th
+            );
         }
         
         shutdown();
@@ -74,6 +74,7 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
         if (listening != null && !listening.isDone()) {
             listening.cancel(true);
         }
+        
         CloseUtils.closeIO(in, out);
     }
 }

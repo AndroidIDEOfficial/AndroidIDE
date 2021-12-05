@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
- *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
 
 package com.itsaky.androidide.managers;
 
@@ -118,12 +115,10 @@ public class ToolsManager {
     }
     
     public static String getArchSpecificAsset (String name) {
-        LOG.info ("ARCH_SPECIFIC_ASSET: " + ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name);
         return ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name;
     }
     
     public static String getCommonAsset (String name) {
-        LOG.info ("COMMON_ASSET: " + COMMON_ASSET_DATA_DIR + "/" + name);
         return COMMON_ASSET_DATA_DIR + "/" + name;
     }
     

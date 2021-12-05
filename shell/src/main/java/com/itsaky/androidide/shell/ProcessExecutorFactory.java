@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
- *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,17 +28,5 @@ public class ProcessExecutorFactory {
     
     public static IProcessExecutor commonExecutor () {
         return executor;
-    }
-    
-    public static int exec (ProcessStreamsHolder holder, String ... args) throws InterruptedException, IOException {
-        return executor.exec(holder, args);
-    }
-    
-    public static int exec (ProcessStreamsHolder holder, boolean redirectErr, String ... args) throws InterruptedException, IOException {
-        return executor.exec(holder, redirectErr, args);
-    }
-    
-    public static void execAsync (ProcessStreamsHolder holder, IProcessExitListener exitListener, boolean redirectErr, String ... args) throws IOException {
-        executor.execAsync(holder, exitListener, redirectErr, args);
     }
 }

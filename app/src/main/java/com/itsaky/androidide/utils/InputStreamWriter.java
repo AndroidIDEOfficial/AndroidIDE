@@ -51,12 +51,12 @@ public class InputStreamWriter implements Runnable {
         try {
             final BufferedReader reader = new BufferedReader (new InputStreamReader (in));
             while (true) {
-                final int data = reader.read();
-                if (data == -1) {
+                final String data = reader.readLine();
+                if (data == null) {
                     break;
                 }
                 
-                os.write(data);
+                os.write(data.concat("\n").getBytes());
                 os.flush();
             }
         } catch (Throwable th) {

@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,10 +15,8 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
 package com.itsaky.androidide.syntax.lexer.impls.java;
 
-import androidx.core.util.Pair;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.lexer.Lexer;
@@ -31,12 +27,12 @@ import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageServer;
+import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
-import io.github.rosemoe.editor.text.Indexer;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.text.TextUtils;
@@ -53,7 +49,6 @@ import org.antlr.v4.runtime.CharStreams;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
 
 public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
@@ -392,77 +387,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                     wasClassName = true;
                     break;
                 case JavaLexer.BLOCK_COMMENT :
-                    
-                    /**
-                     * Comment span must be initially added to
-                     * highlight '/**' and starting comment text as a comment.
-                     */
-                    type = TokenType.COMMENT;
-                    span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);
-                    wasClassName = false;
-                    
-                    final Indexer indexer = content.getIndexer();
-                    final CharPosition endPos = indexer.getCharPosition(currentToken.getStopIndex());
-                    
-                    final Position startPosition = new Position(line, column);
-                    final Position endPosition = new Position(endPos.line, endPos.column);
-                    colors.addCommentRange(line, new Range(startPosition, endPosition));
-                    
-                    int l = line;
-                    int c = column;
-                    
-                    int el = -1;
-                    int ec = -1;
-                    
-                    try {
-                        scan_comment: while (helper != null) {
-                            if(l == endPos.line && c == endPos.column) {
-                                // Reached end of comment
-                                // Nothing to search for
-                                break scan_comment;
-                            }
-
-                            final Pair<Integer, Range> result = helper.findJavadocColorSchemeId(l, c);
-                            final int colorId = result.first;
-                            final Range range = result.second;
-                            if(colorId != HighlightRangeHelper.NOT_FOUND) {
-
-                                // We found a valid start position of a JavaDoc element
-                                // Add it to the scheme
-                                colors.addIfNeeded(l, c, colorId);
-
-                                // Store end line and column
-                                el = range.getEnd().getLine();
-                                ec = range.getEnd().getCharacter();
-                                
-                                if(el >= content.getLineCount()) {
-                                    break scan_comment;
-                                }
-                                
-                                // Skip to the end line and column
-                                l = el;
-                                c = ec;
-                                
-                                // Again add the normal comment highlight
-                                // After the javadoc element
-                                if(ec >= content.getColumnCount(el)) {
-                                    el ++;
-                                    ec = 0;
-                                }
-                                
-                                colors.addIfNeeded(el, ec, EditorColorScheme.COMMENT);
-                            }
-                            
-                            c ++;
-                            if(c >= content.getColumnCount(l)) {
-                                l ++;
-                                c = 0;
-                            }
-                        }
-                    } catch (Throwable th) {
-                    }
-                    
-                    break;
                 case JavaLexer.LINE_COMMENT :
                     type = TokenType.COMMENT;
                     span = colors.addIfNeeded(line, column, EditorColorScheme.COMMENT);

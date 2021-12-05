@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.lsp;
 
 import com.itsaky.androidide.utils.Logger;
@@ -31,6 +27,7 @@ import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
+import java.util.Locale;
 
 /**
  * Launches a client for a Language server and handles connection.
@@ -74,7 +71,7 @@ public abstract class LSPClientLauncher extends Thread {
         try {
             launch();
         } catch (Throwable th) {
-            // TODO Log this
+            LOG.error("Error starting language server", th);
         }
     }
     
@@ -162,7 +159,9 @@ public abstract class LSPClientLauncher extends Thread {
                     Writable data = writeQueue.take();
                     this.out.write(data.data);
                     this.out.flush();
-                } catch (Throwable e) { }
+                } catch (Throwable e) {
+                    LOG.error ("Failed to write to LSP4J socket", e);
+                }
             }
         }
 
@@ -174,7 +173,6 @@ public abstract class LSPClientLauncher extends Thread {
 
         class Writable {
             byte[] data;
-
             public Writable(byte[] data) {
                 this.data = data;
             }
