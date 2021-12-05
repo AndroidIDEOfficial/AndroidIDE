@@ -25,6 +25,7 @@ More features will be implemented as we continue to develop this app.
 - [x] SDK Manager (Available via terminal)
 - [x] Gradlew support (with some limitations)
 - [x] API information for classes and their members (since, removed, deprecated).
+- [ ] Implement language server for XML and Kotlin
 - [ ] UI Designer
 - [ ] Layout Inspector
 - [ ] String Translator
