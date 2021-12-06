@@ -43,7 +43,7 @@ public class BaseViewGroupAttrAdapter extends BaseViewAttrAdapter {
         }
         final ViewGroup group = (ViewGroup) view;
         final String namespace = attribute.getNamespace();
-        final String name = attribute.getNamespace();
+        final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
         
         if (!canHandleNamespace(namespace)) {

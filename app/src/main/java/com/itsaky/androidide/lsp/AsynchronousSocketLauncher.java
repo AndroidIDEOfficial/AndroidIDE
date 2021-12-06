@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.lsp;
 
 import androidx.annotation.RequiresApi;
@@ -79,5 +75,10 @@ public class AsynchronousSocketLauncher extends LSPClientLauncher {
         }
         
         CloseUtils.closeIOQuietly(serverSocket);
+    }
+
+    @Override
+    public String getLanguageCode() {
+        return "";
     }
 }

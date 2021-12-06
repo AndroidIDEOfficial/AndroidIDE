@@ -32,5 +32,6 @@ dependencies {
     implementation 'com.blankj:utilcodex:1.30.6'
     implementation 'org.jsoup:jsoup:1.14.2'
     
+    implementation project (":common")
     api project (':sdk-info')
 }

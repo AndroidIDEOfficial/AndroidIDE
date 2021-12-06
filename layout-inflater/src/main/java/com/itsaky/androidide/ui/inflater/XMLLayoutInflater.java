@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,8 +25,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
-import com.itsaky.androidide.ui.resources.ResourceTable;
-import com.itsaky.androidide.ui.resources.ResourceTableFactory;
 import com.itsaky.androidide.ui.util.Preconditions;
 import com.itsaky.androidide.ui.view.IAttribute;
 import com.itsaky.androidide.ui.view.IAttributeAdapter;
@@ -65,7 +61,6 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     private final Set<File> resDirs;
     private final AttrInfo attrInfo;
     private final WidgetInfo widgetInfo;
-    private final ResourceTable frameworkResourceTable;
     private final IResourceFinder resFinder;
     
     private ContextProvider contextProvider;
@@ -94,9 +89,8 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         this.widgetInfo = config.widgetInfo;
         this.resFinder = config.resFinder;
         this.contextProvider = config.contextProvider;
-        this.frameworkResourceTable = ResourceTableFactory.newFrameworkResourceTable();
         
-        Preconditions.assertAllNotNull("LayoutInflater parameters cannot be null", resDirs, attrInfo, widgetInfo, resFinder, frameworkResourceTable);
+        Preconditions.assertAllNotNull("LayoutInflater parameters cannot be null", resDirs, attrInfo, widgetInfo, resFinder);
     }
 
     @Override

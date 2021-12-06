@@ -78,7 +78,7 @@ public class JLSHandler implements LSPHandler {
             mLauncher.start();
             
         } catch (Throwable th) {
-            LOG.error("Unable to start Java Language server", th);
+            LOG.error(StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_cannot_start_server, LSPProvider.LANGUAGE_JAVA), th);
         }
     }
     
@@ -88,7 +88,7 @@ public class JLSHandler implements LSPHandler {
         final IDELanguageServer server = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
         
         if (server == null) {
-            LOG.error ("Cannot initialize Java Language Server. Server instance is null!");
+            LOG.error (StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_no_server_implementation));
             return Optional.empty();
         }
         
@@ -119,7 +119,7 @@ public class JLSHandler implements LSPHandler {
             }
             return Optional.of(result);
         } catch (Throwable e) {
-            LOG.error ("An error occurred while initializing language server.", e);
+            LOG.error (StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_init_server), e);
             return Optional.empty();
         }
     }

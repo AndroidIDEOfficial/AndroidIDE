@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
- *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -43,7 +41,7 @@ public class LinearLayoutAttrAdapter extends BaseViewGroupAttrAdapter {
         
         final LinearLayout linear = (LinearLayout) view;
         final String namespace = attribute.getNamespace();
-        final String name = attribute.getNamespace();
+        final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
         
         if (!canHandleNamespace(namespace)) {

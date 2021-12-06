@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,6 +22,7 @@ import com.itsaky.androidide.ui.view.IAttribute;
 import com.itsaky.androidide.ui.view.IFixedValue;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Objects;
 
 public class UiAttribute implements IAttribute {
     
@@ -76,18 +75,14 @@ public class UiAttribute implements IAttribute {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof UiAttribute) {
-            UiAttribute that = (UiAttribute) obj;
-            return this.getNamespace().equals(that.getNamespace())
-            && this.getAttributeName().equals(that.getAttributeName())
-            && this.getValue().equals(that.getValue())
-            && this.getFixedValues().equals(that.getFixedValues());
+        if (obj == null) {
+            return false;
         }
-        return false;
+        return this.hashCode() == obj.hashCode();
     }
 
     @Override
     public int hashCode() {
-        return toString().hashCode();
+        return Objects.hash(namespace, name, value, fixedValues);
     }
 }

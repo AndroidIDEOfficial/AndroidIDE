@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
- *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
 package com.itsaky.androidide.services.builder;
 
 import androidx.annotation.StringRes;
@@ -151,12 +148,12 @@ public class IDEService {
             text = line.replace(app.getRootDir().getAbsolutePath(), "HOME");
         }
         if (line.contains(app.getRootDir().getParentFile().getAbsolutePath())) {
-            text = line.replace(app.getRootDir().getParentFile().getAbsolutePath(), "ROOT_DIR");
+            text = line.replace(app.getRootDir().getParentFile().getAbsolutePath(), "ROOT");
         }
         
         listener.appendOutput(currentTask, text);
         
-        if(line.contains(RUN_TASK)) {
+        if(line.startsWith(RUN_TASK)) {
             listener.onRunTask(currentTask, line.trim());
         } else if(line.startsWith(STARTING_DAEMON)) {
             listener.onStartingGradleDaemon(currentTask);

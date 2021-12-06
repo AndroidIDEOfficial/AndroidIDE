@@ -28,6 +28,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import java.util.Locale;
+import com.itsaky.androidide.app.StudioApp;
 
 /**
  * Launches a client for a Language server and handles connection.
@@ -83,7 +84,7 @@ public abstract class LSPClientLauncher extends Thread {
         try {
             launch();
         } catch (Throwable th) {
-            LOG.error("Error starting language server", th);
+            LOG.error(StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_cannot_start_server, getLanguageCode()), th);
         }
     }
     
@@ -110,6 +111,11 @@ public abstract class LSPClientLauncher extends Thread {
      * Shut down the language server
      */
     public abstract void shutdown();
+    
+    /**
+     * Get the language code for the server
+     */
+    public abstract String getLanguageCode();
     
     /**
      * A listener to listen for language server start event.
@@ -195,7 +201,7 @@ public abstract class LSPClientLauncher extends Thread {
                     this.out.write(data.data);
                     this.out.flush();
                 } catch (Throwable e) {
-                    LOG.error ("Failed to write to LSP4J socket", e);
+                    LOG.error (StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_cannot_write_socket), e);
                 }
             }
         }

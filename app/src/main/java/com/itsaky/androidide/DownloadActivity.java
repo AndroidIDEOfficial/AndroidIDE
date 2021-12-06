@@ -95,7 +95,7 @@ public class DownloadActivity extends StudioActivity {
                     .build()
                     .forResult(abhishekti7.unicorn.filepicker.utils.Constants.REQ_UNICORN_FILE);
             } catch (Throwable th){
-                LOG.error("Unable to start file picker", th);
+                LOG.error(getString (R.string.err_cannot_start_file_picker), th);
             }
 		} else if(id == binding.install.getId()) {
 			if(choosenDir == null) {
@@ -134,10 +134,10 @@ public class DownloadActivity extends StudioActivity {
             new Thread (reader).start();
             
         } catch (DownloadActivity.InstallationException e) {
-            LOG.error("Installation error", e);
+            LOG.error(getString(R.string.err_installation), e);
             onInstallationFailed(e.exitCode);
         } catch (IOException e) {
-            LOG.error("Installation error", e);
+            LOG.error(getString(R.string.err_installation), e);
             onInstallationFailed(5); // Exit code 5 : I/O Error
         }
 	}

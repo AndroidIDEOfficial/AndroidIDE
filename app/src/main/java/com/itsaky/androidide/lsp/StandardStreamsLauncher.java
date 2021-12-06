@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Future;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
+import com.itsaky.androidide.app.StudioApp;
 
 public class StandardStreamsLauncher extends LSPClientLauncher {
     
@@ -56,8 +57,7 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
             listening.get();
         } catch (Throwable th) {
             LOG.error (
-                "---> StandardStreamsLauncher <---",
-                "An error occured while waiting for language server process to stop",
+                StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_server_disconnected),
                 th
             );
         }
@@ -78,5 +78,10 @@ public class StandardStreamsLauncher extends LSPClientLauncher {
         }
         
         CloseUtils.closeIO(in, out);
+    }
+
+    @Override
+    public String getLanguageCode() {
+        return this.langCode;
     }
 }

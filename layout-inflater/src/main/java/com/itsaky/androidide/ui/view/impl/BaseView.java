@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
- *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,10 +27,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Objects;
 
 public abstract class BaseView implements IView {
     
-    protected final List<IAttribute> attributes = new ArrayList<>();
+    protected final Set<IAttribute> attributes = new HashSet<>();
     protected final Set<IAttributeAdapter> attrAdapters = new HashSet<>();
     
     protected final String qualifiedName;
@@ -83,14 +82,13 @@ public abstract class BaseView implements IView {
         this.attributes.add(attr);
         
         for (IAttributeAdapter adapter : attrAdapters) {
-            if (adapter.isApplicableTo(asView())) {
-                if (adapter.apply(attr, asView(), resFinder)) {
+            if (adapter.isApplicableTo(asView())
+                && adapter.apply(attr, asView(), resFinder)) {
                     break;
-                }
             }
         }
     }
-
+    
     @Override
     public void removeAttribute(IAttribute attr) {
         this.attributes.remove(attr);
@@ -121,16 +119,18 @@ public abstract class BaseView implements IView {
             return false;
         }
         
-        if (obj instanceof IView) {
-            IView that = (IView) obj;
-            return this.asView().equals(that.asView());
-        }
-        
-        return false;
+        return this.hashCode() == obj.hashCode();
     }
 
     @Override
     public int hashCode() {
-        return asView().hashCode();
+        return Objects.hash(
+            attributes,
+            attrAdapters,
+            qualifiedName,
+            view,
+            parent,
+            isPlaceholder
+        );
     }
 }

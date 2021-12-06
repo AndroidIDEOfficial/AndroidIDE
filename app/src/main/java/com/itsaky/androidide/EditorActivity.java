@@ -270,7 +270,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 saveAll(false /* No notification */);
                 saved = true;
             } catch (Throwable th) {
-                LOG.error(":onPause(): Failed to save files", th);
+                LOG.error(getString(R.string.err_cannot_save_files), th);
                 saved = false;
             }
             
@@ -1081,7 +1081,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
              intent.putExtra(DesignerActivity.KEY_LAYOUT_PATH, mCurrentFile.getAbsolutePath());
              startActivity(intent);
          } catch (Throwable th) {
-             LOG.error("Unable to preview layout", th);
+             LOG.error(getString(R.string.err_cannot_preview_layout), th);
              getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
          }
      }

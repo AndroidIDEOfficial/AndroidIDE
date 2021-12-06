@@ -92,7 +92,7 @@ public class StudioApp extends BaseApplication {
                 
                 mXmlCompletionService = new XMLCompletionService (mAttrInfo, mWidgetInfo);
             } catch (Throwable th) {
-                LOG.error ("Unable to start XML completion service", th);
+                LOG.error (getString (com.itsaky.androidide.R.string.err_init_sdkinfo), th);
             }
         }, "SDK Information Loader").start();
     }

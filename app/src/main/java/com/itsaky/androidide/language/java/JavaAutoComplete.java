@@ -33,6 +33,7 @@ import org.eclipse.lsp4j.CompletionParams;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import com.itsaky.androidide.app.StudioApp;
 
 public class JavaAutoComplete implements AutoCompleteProvider {
     
@@ -66,10 +67,10 @@ public class JavaAutoComplete implements AutoCompleteProvider {
                 }
                 
             } catch (Throwable th) {
-                LOG.error("CompletionError", th);
+                LOG.error(StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_completion), th);
             }
         } else {
-            LOG.error("Cannot compute completions for Java file. No LanguageServer implementation found.");
+            LOG.error(StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_no_server_implementation));
         }
         return new ArrayList<CompletionItem>();
 	}

@@ -275,4 +275,19 @@
 	<string name="msg_editor_font_size">Please choose default font size of editor :</string>
 	<string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\nIMPORTANT: This will also delete AAPT2. You will need to reinstall it otherwise you\'ll end up with a build failure.\n\nAre you sure you want to delete caches?</string>
     
+    
+    <!-- Error Messages used while Logging -->
+    <string name="err_installation">Installation error</string>
+    <string name="err_completion">Completion error</string>
+    <string name="err_no_server_implementation">No LanguageServer implementation found.</string>
+    <string name="err_init_server">Error initializing language server</string>
+    <string name="err_init_sdkinfo">Unable to initialize SDK Info</string>
+    <string name="err_cannot_start_file_picker">Unable to start file picker</string>
+    <string name="err_cannot_parse_apk_metadata">Failed to parse APK metadata</string>
+    <string name="err_cannot_save_files">Unable to save files</string>
+    <string name="err_cannot_preview_layout">Unable to preview layout</string>
+    <string name="err_cannot_inflate_layout">Unable to inflate layout</string>
+    <string name="err_cannot_start_server">Unable to start Language Server for: %s</string>
+    <string name="err_cannot_write_socket">Failed to write to Socket stream</string>
+    <string name="err_server_disconnected">Language server process unexpectedly exited.</string>
 </resources>

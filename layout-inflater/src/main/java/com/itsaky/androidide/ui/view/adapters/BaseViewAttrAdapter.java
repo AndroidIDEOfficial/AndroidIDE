@@ -1,7 +1,5 @@
 /************************************************************************************
- * This file is part of AndroidIDE.
- *
- *  
+ * This file is part of AndroidIDE
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +34,7 @@ import androidx.core.view.GravityCompat;
 import com.itsaky.androidide.ui.inflater.IResourceFinder;
 import com.itsaky.androidide.ui.view.IAttribute;
 import com.itsaky.androidide.ui.view.IAttributeAdapter;
+import com.itsaky.androidide.utils.Logger;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.regex.Pattern;
@@ -47,34 +46,40 @@ public class BaseViewAttrAdapter implements IAttributeAdapter {
     
     private final Pattern HEX_COLOR = Pattern.compile("#[a-fA-F0-9]{6,8}");
     
+    protected static final Logger LOG = Logger.instance ("BaseViewAttrAdapter");
     public static final int ENUM_NOT_FOUND = -4116;
     
     @Override
     public boolean isApplicableTo(View view) {
-        return true;
+        return true; // Can be applied to any view
     }
     
     @Override
     public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
         final String namespace = attribute.getNamespace();
-        final String name = attribute.getNamespace();
+        final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
         final ViewGroup.LayoutParams params = view.getLayoutParams();
         final Resources res = view.getResources();
         final DisplayMetrics dm = res.getDisplayMetrics();
         final Context ctx = view.getContext();
         
-        if (canHandleNamespace(namespace)) {
+        if (!canHandleNamespace(namespace)) {
+            LOG.error("Cannot handle namespace: " + namespace);
             return false;
         }
+        
+        LOG.debug ("Adding attribute", attribute);
         
         boolean handled = true;
         switch (name) {
             case "layout_height" :
                 params.height = parseDimension (value, -2, dm, resFinder);
+                LOG.error("Added layout_height", params.height);
                 break;
             case "layout_width"  :
                 params.width  = parseDimension (value, -2, dm, resFinder);
+                LOG.error("Added layout_width", params.width);
                 break;
             case "alpha" :
                 view.setAlpha(parseFloat(value));
@@ -221,39 +226,45 @@ public class BaseViewAttrAdapter implements IAttributeAdapter {
                 break;
         }
         
-        // In case these attributes are related to margins
-        // We need to apply them by casting the params to ViewGroup.MarginLayoutParams
-        if (!handled && params instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) params;
-            switch (name) {
-                case "layout_margin" :
-                    final int margin = parseDimension(value, 0, dm, resFinder);
-                    marginParams.setMargins(margin, margin, margin, margin);
-                    break;
-                case "layout_marginLeft" :
-                    marginParams.leftMargin = parseDimension(value, 0, dm, resFinder);
-                    break;
-                case "layout_marginTop" :
-                    marginParams.topMargin = parseDimension(value, 0, dm, resFinder);
-                    break;
-                case "layout_marginRight" :
-                    marginParams.rightMargin = parseDimension(value, 0, dm, resFinder);
-                    break;
-                case "layout_marginBottom" :
-                    marginParams.bottomMargin = parseDimension(value, 0, dm, resFinder);
-                    break;
-                case "layout_marginStart" :
-                    marginParams.setMarginStart(parseDimension(value, 0, dm, resFinder));
-                    break;
-                case "layout_marginEnd" :
-                    marginParams.setMarginEnd(parseDimension(value, 0, dm, resFinder));
-                    break;
+        // ----- Handle attributes related to parent ------
+        if (!handled) {
+            
+            // Layout Margins
+            if (params instanceof ViewGroup.MarginLayoutParams) {
+                handleMarginParams((ViewGroup.MarginLayoutParams) params, name, value, dm, resFinder);
             }
         }
         
         view.setLayoutParams(params);
         
         return handled;
+    }
+
+    private void handleMarginParams(ViewGroup.MarginLayoutParams params, String name, String value, DisplayMetrics dm, IResourceFinder resFinder) {
+        switch (name) {
+            case "layout_margin" :
+                final int margin = parseDimension(value, 0, dm, resFinder);
+                params.setMargins(margin, margin, margin, margin);
+                break;
+            case "layout_marginLeft" :
+                params.leftMargin = parseDimension(value, 0, dm, resFinder);
+                break;
+            case "layout_marginTop" :
+                params.topMargin = parseDimension(value, 0, dm, resFinder);
+                break;
+            case "layout_marginRight" :
+                params.rightMargin = parseDimension(value, 0, dm, resFinder);
+                break;
+            case "layout_marginBottom" :
+                params.bottomMargin = parseDimension(value, 0, dm, resFinder);
+                break;
+            case "layout_marginStart" :
+                params.setMarginStart(parseDimension(value, 0, dm, resFinder));
+                break;
+            case "layout_marginEnd" :
+                params.setMarginEnd(parseDimension(value, 0, dm, resFinder));
+                break;
+        }
     }
     
     protected boolean canHandleNamespace(String namespace) {
@@ -428,7 +439,7 @@ public class BaseViewAttrAdapter implements IAttributeAdapter {
                         case "drawable" :
                             return ContextCompat.getDrawable(ctx, id);
                         default :
-                        return newTransparentDrawable();
+                            return newTransparentDrawable();
                     }
                 }
                 
@@ -462,7 +473,9 @@ public class BaseViewAttrAdapter implements IAttributeAdapter {
         if (HEX_COLOR.matcher(color).matches()) {
             try {
                 return Color.parseColor(color);
-            } catch (Throwable th) {}
+            } catch (Throwable th) {
+                // Ignored
+            }
         } else if (color.startsWith("@color/")) {
             return parseColor(resFinder.findColor(color.substring("@color/".length())), resFinder, ctx);
         } else if (color.startsWith("@android:color/")) {
