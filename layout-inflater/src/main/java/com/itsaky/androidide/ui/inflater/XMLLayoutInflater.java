@@ -254,8 +254,8 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         // TODO Try to load classes directly from .class files
         try {
             final Class<? extends View> loaded = Class.forName(name).asSubclass(View.class);
-            final Constructor<? extends View> constructor = loaded.getConstructor(Context.class, AttributeSet.class, int.class);
-            final View created = constructor.newInstance(contextProvider.getContext(), null, style);
+            final Constructor<? extends View> constructor = loaded.getConstructor(Context.class /*, AttributeSet.class, int.class*/);
+            final View created = constructor.newInstance(contextProvider.getContext()/*, null, style*/);
             final BaseView view =
                 created instanceof ViewGroup
                 ? new UiViewGroup (name, (ViewGroup) created)

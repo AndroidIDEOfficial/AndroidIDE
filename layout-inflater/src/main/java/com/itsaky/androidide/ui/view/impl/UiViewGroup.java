@@ -19,7 +19,6 @@ package com.itsaky.androidide.ui.view.impl;
 
 import android.view.ViewGroup;
 import com.itsaky.androidide.ui.view.IView;
-import com.itsaky.androidide.ui.view.IViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
