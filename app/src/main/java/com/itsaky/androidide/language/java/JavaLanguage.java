@@ -17,12 +17,12 @@
 **************************************************************************************/
 package com.itsaky.androidide.language.java;
 
+import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
-import com.itsaky.androidide.language.BaseLanguage;
-import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.syntax.lexer.impls.java.JavaLexerImpl;
+import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;

@@ -92,7 +92,6 @@ dependencies {
 	annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 	
 	implementation 'com.blankj:utilcodex:1.30.6'
-	implementation 'com.elvishew:xlog:1.8.0'
 	implementation 'com.github.abhishekti7:UnicornFilePicker:1.0.2'
 	implementation 'com.github.bumptech.glide:glide:4.12.0'
 	implementation 'com.github.megatronking.stringfog:xor:1.1.0'
@@ -112,7 +111,6 @@ dependencies {
 	implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
 	implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
-	implementation 'androidx.multidex:multidex:2.0.1'
 	implementation 'androidx.preference:preference:1.1.1'
 	implementation 'androidx.recyclerview:recyclerview:1.2.1'
 	implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
@@ -132,7 +130,7 @@ dependencies {
     implementation project(':lsp')
     implementation project(':layout-inflater')
     implementation project(':lexers')
-    implementation project(':shell')
+    implementation project(':common')
     
     // LSP4J
     implementation 'org.eclipse.lsp4j:org.eclipse.lsp4j:0.12.0'

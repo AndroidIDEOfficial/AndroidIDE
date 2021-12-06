@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,19 +15,16 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.language.xml;
 
 import com.itsaky.androidide.language.BaseLanguage;
-import com.itsaky.androidide.language.java.manager.JavaCharacter;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.lsp.LSPProvider;
+import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
-import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.File;
 import java.io.StringReader;

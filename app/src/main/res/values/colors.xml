@@ -11,7 +11,6 @@
 	<color name="secondaryTextColor">#70ffffff</color>
 	<color name="secondaryTextColor_light">#50ffffff</color>
     <color name="secondaryTextColor_lighter">#f0ffffff</color>
-	<color name="color_toast_background">#90424242</color>
 	<color name="primaryIconColor">#ffffff</color>
     <color name="completionList_background">#373737</color>
     <color name="completionList_backgroundSelected">#505050</color>

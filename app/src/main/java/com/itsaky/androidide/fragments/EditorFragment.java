@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
- *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.fragments;
 
 import android.os.Bundle;
@@ -69,8 +65,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     private FileOpenListener mOpenListener;
 	private static AndroidProject mProject;
     
-	public static final String KEY_FILE_PATH = "file_path";
-	public static final String KEY_PROJECT = "project";
+    public static final String KEY_FILE_PATH = "file_path";
+    public static final String KEY_PROJECT = "project";
     public static final String KEY_LINE_START = "line_start";
     public static final String KEY_LINE_END = "line_end";
     public static final String KEY_COLUMN_START = "col_start";
@@ -226,7 +222,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
 		boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED;
 		final PreferenceManager prefs = getStudioActivity().getApp().getPrefManager();
 		if(sizeChanged) {
-			float textSize = prefs.getFloat(EditorPreferences.KEY_EDITOR_FONT_SIZE);
+			float textSize = prefs.getFloat(PreferenceManager.KEY_EDITOR_FONT_SIZE);
 			if(textSize < 6 || textSize > 32)
 				textSize = 14;
 			mBinding.editor.setTextSize(textSize);

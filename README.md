@@ -93,3 +93,5 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
 ```
+
+Any violations to the license can be reported either by opening an issue or writing a mail to us directly.

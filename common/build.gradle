@@ -1,0 +1,41 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdk
+    buildToolsVersion rootProject.ext.buildTools
+	
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+    }
+    
+    buildFeatures.viewBinding true
+    
+    compileOptions {
+        sourceCompatibility rootProject.ext.javaSourceVersion
+        targetCompatibility rootProject.ext.javaTargetVersion
+	}
+    
+    buildTypes {
+        release {
+            minifyEnabled true
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.blankj:utilcodex:1.30.6'
+    implementation 'com.elvishew:xlog:1.8.0'
+    
+    implementation 'com.google.android.material:material:1.4.0'
+    
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
+	implementation 'androidx.vectordrawable:vectordrawable-animated:1.1.0'
+    
+    api 'androidx.multidex:multidex:2.0.1'
+}

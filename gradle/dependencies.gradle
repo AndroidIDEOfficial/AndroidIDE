@@ -1,0 +1,9 @@
+ext {
+    
+    // Common dependencies across all subprojects
+    common {
+        utilcode = 'com.blankj:utilcodex:1.30.6'
+        
+    }
+    
+}

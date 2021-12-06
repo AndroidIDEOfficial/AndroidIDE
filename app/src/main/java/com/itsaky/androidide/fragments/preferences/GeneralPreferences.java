@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
- *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.fragments.preferences;
 
 import android.os.Bundle;
@@ -27,10 +23,9 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 import com.itsaky.androidide.R;
 
+import static com.itsaky.androidide.managers.PreferenceManager.*;
+
 public class GeneralPreferences extends BasePreferenceFragment implements Preference.OnPreferenceChangeListener {
-    
-    public static final String KEY_OPEN_PROJECTS = "idepref_general_autoOpenProjects";
-    public static final String KEY_CONFIRM_PROJECT_OPEN = "idepref_general_confirmProjectOpen";
     
     @Override
     public void onCreatePreferences(Bundle p1, String p2) {

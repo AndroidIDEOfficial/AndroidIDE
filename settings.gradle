@@ -6,6 +6,6 @@ include ':lsp'
 include ':sdk-info'
 include ':layout-inflater'
 include ':lexers'
-include ':shell'
+include ':common'
 
 rootProject.name = "AndroidIDE"

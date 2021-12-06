@@ -1,8 +1,6 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- *
- *  
- *
+ * 
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.fragments.preferences;
 
 import android.content.DialogInterface;
@@ -35,12 +31,6 @@ import com.itsaky.androidide.models.ConstantsBridge;
 import static com.itsaky.androidide.managers.PreferenceManager.*;
 
 public class EditorPreferences extends BasePreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
-    
-	public static final String KEY_EDITOR_FONT_SIZE = "idepref_editor_fontSize";
-	public static final String KEY_EDITOR_PRINTABLE_CHARS = "idepref_editor_nonPrintableFlags";
-	public static final String KEY_EDITOR_DRAW_HEX = "idepref_editor_drawHexColors";
-	public static final String KEY_EDITOR_TAB_SIZE = "idepref_editor_tabSize";
-    public static final String KEY_EDITOR_JAVADOC_ENABLED = "idepref_editor_javadocEnabled";
     
     @Override
 	public void onCreatePreferences(Bundle p1, String p2) {

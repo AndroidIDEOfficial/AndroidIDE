@@ -27,19 +27,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 import com.itsaky.androidide.databinding.LayoutCompletionWindowBinding;
-import com.itsaky.androidide.language.java.manager.JavaCharacter;
+import com.itsaky.androidide.utils.JavaCharacter;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.lsp4j.Command;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.TextEdit;
-import org.eclipse.lsp4j.Command;
-import io.github.rosemoe.editor.text.ContentLine;
 
 public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
     

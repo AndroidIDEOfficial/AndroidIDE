@@ -1,0 +1,4 @@
+<resources>
+    <string name="cms_channel_id_devs">Notifications from Developers</string>
+	<string name="cms_channel_id_update">App Update Notifications</string>
+</resources>

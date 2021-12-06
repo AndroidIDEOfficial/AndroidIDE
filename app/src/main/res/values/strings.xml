@@ -230,10 +230,6 @@
 	<string name="msg_storage_denied">Can\'t proceed without storage permissions</string>
 	<string name="msg_storage_granted">Storage permissions granted!</string>
     
-    <!-- Notifications -->
-    <string name="cms_channel_id_devs">Notifications from Developers</string>
-	<string name="cms_channel_id_update">App Update Notifications</string>
-    
     <!-- Code Editor -->
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
