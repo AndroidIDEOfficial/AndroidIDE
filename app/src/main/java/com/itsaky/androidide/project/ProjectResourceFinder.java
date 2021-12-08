@@ -13,24 +13,38 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- *
+ * 
 **************************************************************************************/
 package com.itsaky.androidide.project;
 
-import com.itsaky.androidide.ui.inflater.IResourceFinder;
+import com.itsaky.layoutinflater.IResourceFinder;
 import java.io.File;
+import java.io.FileFilter;
 
-// TODO Implement finder
 public class ProjectResourceFinder implements IResourceFinder {
     
+    private File resDir;
+    private File color;
+    private File layout;
+    private File values;
+    
+    private File[] drawables;
+    private File[] mipmaps;
+    
     @Override
-    public File findDrawable(String name) {
+    public File inflateDrawable(String name) {
+        for (File drawable : drawables) {
+            final File file = findFileWithName(drawable.listFiles(), name);
+            if (file != null) {
+                return file;
+            }
+        }
         return null;
     }
 
     @Override
-    public File findLayout(String name) {
-        return null;
+    public File inflateLayout(String name) {
+        return findFileWithName(this.layout.listFiles(), name);
     }
 
     @Override
@@ -52,4 +66,51 @@ public class ProjectResourceFinder implements IResourceFinder {
     public String findDimension(String name) {
         return null;
     }
+
+    @Override
+    public void setInflatingFile(File file) {
+        setupDirectories(file.getParentFile().getParentFile());
+    }
+    
+    private void setupDirectories (File resDir) {
+        this.resDir = resDir;
+        this.color = new File (resDir, "color");
+        this.layout = new File (resDir, "layout");
+        this.values = new File (resDir, "values");
+        
+        final File[] drawables = resDir.listFiles(new NameStartsWith ("drawable"));
+        this.drawables = drawables == null ? new File [0] : drawables;
+        
+        final File[] mipmaps = resDir.listFiles(new NameStartsWith ("mipmap"));
+        this.mipmaps = mipmaps == null ? new File [0] : mipmaps;
+    }
+    
+    private File findFileWithName (File[] files, String name) {
+        for (File file : files) {
+            String simpleName = file.getName();
+            if (simpleName.contains(".")) {
+                simpleName = simpleName.substring(simpleName.lastIndexOf(".") + 1);
+            }
+
+            if (simpleName.equals(name)) {
+                return file;
+            }
+        }
+        
+        return null;
+    }
+    
+    private class NameStartsWith implements FileFilter {
+        
+        private final String name;
+        
+        public NameStartsWith(String name) {
+            this.name = name;
+        }
+        
+        @Override
+        public boolean accept(File file) {
+            return file.getName().startsWith(name);
+        }
+    };
 }

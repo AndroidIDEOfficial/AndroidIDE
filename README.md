@@ -33,7 +33,7 @@ More features will be implemented as we continue to develop this app.
 - [ ] Git
 
 ### Limitations
-- Gradlew is supported. But, it requires that the project's application module is named 'app'. 
+- Gradle Wrapper is supported. But, it requires that the project's application module is named 'app'. 
 - SDK Manager is already included in Android SDK and is accessible in AndroidIDE via its Terminal. But, you cannot use it to install some tools (like NDK) because those tools are not built for Android.
 - No official NDK support because we haven't built the NDK for Android.
 - No Android Gradle Plugin versions other than v7.0.2 are supported (due to AAPT2).
@@ -68,12 +68,26 @@ The app is still being developed actively. It's in beta stage and may not be sta
 ### Developers
 This project was initially developed by [Akash Yadav](https://github.com/itsaky) and [Marvin Stelter](https://github.com/MarvinStelter). We appreciate the efforts of anyone who contributes to this project.
 
-### Special Thanks
+### Contributing
+You can contribute to AndroidIDE in one of the following ways :
+- Fix bugs
+- Implement new features
+- Report bugs
+- Suggest a change
+- Request a feature
+- Improve the documentation
+
+You can also write blog posts or create YouTube videos to help newbies get started.
+If you do and want us to feature it here, open an issue.
+
+### Thanks to
 - [Rosemoe](https://github.com/Rosemoe) for the awesome [CodeEditor](https://github.com/Rosemoe/sora-editor)
 - [Termux](https://github.com/termux) for [Terminal Emulator](https://github.com/termux/termux-app)
 - [Bogdan Melnychuk](https://github.com/bmelnychuk) for [AndroidTreeView](https://github.com/bmelnychuk/AndroidTreeView)
 - [George Fraser](https://github.com/georgewfraser) for the [Java Language Server](https://github.com/georgewfraser/java-language-server)
 - [Eclipse Foundation](https://github.com/eclipse) for [LSP4J](https://github.com/eclipse/lsp4j)
+
+And all the developers who have contributed to this project.
 
 ### Contact Us
 - [Website](https://androidide.com)

@@ -26,10 +26,9 @@ import androidx.core.content.ContextCompat;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityDesignerBinding;
-import com.itsaky.androidide.ui.inflater.ILayoutInflater;
-import com.itsaky.androidide.ui.view.IView;
 import com.itsaky.androidide.utils.Logger;
-import java.lang.reflect.Field;
+import com.itsaky.layoutinflater.ILayoutInflater;
+import com.itsaky.layoutinflater.IView;
 
 public class DesignerActivity extends StudioActivity {
     
@@ -58,7 +57,6 @@ public class DesignerActivity extends StudioActivity {
         try {
             final ILayoutInflater inflater = getApp().getLayoutInflater();
             inflater.resetContextProvider(newContextProvider());
-            
             final IView view = inflater.inflatePath(path, mBinding.realContainer);
             mBinding.realContainer.addView(view.asView());
         } catch (Throwable th) {
