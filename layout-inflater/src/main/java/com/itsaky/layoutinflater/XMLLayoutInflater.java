@@ -205,7 +205,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
                 .asSubclass(IAttributeAdapter.class);
            return adapterClass.newInstance();
         } catch (Throwable th) {
-            LOG.error (BaseApplication.getBaseInstance().getString(com.itsaky.androidide.common.R.string.err_no_attr_adapter, view.getClass().getName()), th);
+            LOG.error (BaseApplication.getBaseInstance().getString(com.itsaky.layoutinflater.R.string.err_no_attr_adapter, view.getClass().getName()), th);
         }
         
         // If we cannot find a suitable adapter, fall back to using common adapters

@@ -15,7 +15,7 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  * 
  **************************************************************************************/
-package com.itsaky.androidide.ui.util;
+package com.itsaky.layoutinflater.util;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
@@ -69,7 +69,7 @@ public class ValuesTable {
         
         read.whenComplete((__, th) -> {
             if (th != null) {
-                LOG.error(BaseApplication.getBaseInstance().getString(com.itsaky.androidide.common.R.string.err_cannot_read_values), th);
+                LOG.error(BaseApplication.getBaseInstance().getString(com.itsaky.layoutinflater.R.string.err_cannot_read_values), th);
             } else {
                 initialized = true;
             }

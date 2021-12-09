@@ -1,5 +1,5 @@
 /************************************************************************************
- * This file is part of AndroidIDE
+ * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -238,7 +238,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
         
         if (!handled && params instanceof RelativeLayout.LayoutParams) {
-            handled = handleRelativeLayoutParams ((RelativeLayout.LayoutParams) params, view, name, value);
+            handled = handleRelativeLayoutParams ((RelativeLayout.LayoutParams) params, view, name, value, resFinder);
         }
         
         if (!handled && params instanceof ViewGroup.MarginLayoutParams) {
