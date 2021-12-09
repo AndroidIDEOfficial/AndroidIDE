@@ -76,6 +76,9 @@ You can contribute to AndroidIDE in one of the following ways :
 - Request a feature
 - Improve the documentation
 
+If you create new source files, please make sure you include the license header in every file.
+
+### Any other ways to contribute?
 You can also write blog posts or create YouTube videos to help newbies get started.
 If you do and want us to feature it here, open an issue.
 
