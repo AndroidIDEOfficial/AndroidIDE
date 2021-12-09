@@ -78,6 +78,12 @@ You can contribute to AndroidIDE in one of the following ways :
 
 If you create new source files, please make sure you include the license header in every file.
 
+### Things to take care of
+There are some things that you should take care of while writing related code.
+
+#### Layout Inflater adapters
+[Read the docs](./layout-inflater/src/main/java/com/itsaky/layoutinflater/adapters/README.md) about layout inflater adapters.
+
 ### Any other ways to contribute?
 You can also write blog posts or create YouTube videos to help newbies get started.
 If you do and want us to feature it here, open an issue.
