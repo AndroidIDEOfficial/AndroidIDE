@@ -33,3 +33,16 @@ We use reflection to automatically create an adapter when inflating a view.
 For example, if ```android.widget.Button``` instance is being created, we could simply create an adapter instance using reflection by getting the package name and simple name of the widget.
 
 See ```XMLLayoutInflater#onCreateAttributeAdapter(View)```.
+
+### Precautions
+- Make sure you correctly spell the file names. As you might already know, file names are case sensitive.
+- Some methods (or even classes) are not available for earlier versions of Android. The classes or methods you're using must be compatible with API 24.
+
+You could also check if you can use a method. Some methods are already implemented in ViewAttrAdapter so you won't have to rewrite them.
+For example:
+```java
+isApi26() // Android 8 (Oreo)
+isApi28() // Android 9 (Pie)
+isApi29() // Android 10 (Q)
+isApi30() // Android 11 (R)
+```
