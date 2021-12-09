@@ -204,7 +204,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 view.setTextDirection(parseTextDirection(value));
                 break;
             case "tooltipText" :
-                if (isAndroid8()) {
+                if (isApi26()) {
                     view.setTooltipText(parseString(value, resFinder));
                 }
                 break;
@@ -702,19 +702,19 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         return TypedValue.COMPLEX_UNIT_DIP;
     }
     
-    protected boolean isAndroid8() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    protected boolean isApi26() {
+        return Build.VERSION.SDK_INT >= 26;
     }
     
-    protected boolean isAndroid9() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+    protected boolean isApi28() {
+        return Build.VERSION.SDK_INT >= 28;
     }
     
-    protected boolean isAndroid10() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+    protected boolean isApi29() {
+        return Build.VERSION.SDK_INT >= 29;
     }
     
-    protected boolean isAndroid11() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
+    protected boolean isApi30() {
+        return Build.VERSION.SDK_INT >= 30;
     }
 }
