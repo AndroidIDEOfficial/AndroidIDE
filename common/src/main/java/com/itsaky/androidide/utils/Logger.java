@@ -1,68 +1,47 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- * 
+ *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
 package com.itsaky.androidide.utils;
 
-import com.elvishew.xlog.LogConfiguration;
-import com.elvishew.xlog.LogLevel;
-import com.elvishew.xlog.XLog;
-import com.elvishew.xlog.printer.Printer;
-import com.elvishew.xlog.printer.file.FilePrinter;
-import com.elvishew.xlog.printer.file.naming.LevelFileNameGenerator;
+import android.util.Log;
+
 import com.blankj.utilcode.util.ThrowableUtils;
 
 public class Logger {
     
     private static Logger instance;
-    private static com.elvishew.xlog.Logger xLogger;
     private static String TAG = "AndroidIDE";
     
     public static Logger instance() {
-        return instance == null ? createInstance(TAG) : instance;
+        return instance == null ? instance = createInstance(TAG) : instance;
     }
-    
+
+    private static Logger createInstance(String tag) {
+        return new Logger(tag);
+    }
+
     public static Logger instance(String tag) {
         return createInstance(tag);
     }
     
     private Logger(String tag) {
-        this.TAG = tag;
+        TAG = tag;
     }
-    
-    private static Logger createInstance(String tag) {
-        LogConfiguration config = new LogConfiguration.Builder()
-            .disableStackTrace()
-            .disableThreadInfo()
-            .logLevel(LogLevel.ALL)
-            .tag("AndroidIDE") 
-            .disableBorder()                                       
-            .build();
-        Printer filePrinter = new FilePrinter                      
-            .Builder(FileUtil.getExternalStorageDir() + "/ide_xlog")                         
-            .fileNameGenerator(new LevelFileNameGenerator())
-            .cleanStrategy(f -> false)
-            .build();
-        XLog.init(config, filePrinter);
-        xLogger = XLog.tag("AndroidIDE").build();
-        
-        instance = new Logger(tag);
-        return instance;
-    }
-    
+
     public Logger warn(Object... messages) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -70,14 +49,14 @@ public class Logger {
         sb.append("]");
         sb.append("\n");
         if(messages == null) {
-            xLogger.w("null");
+            Log.w(TAG, "null");
             return this;
         }
         for(Object msg : messages) {
             sb.append(msg);
             sb.append("\n");
         }
-        xLogger.w(sb.toString());
+        Log.w(TAG, sb.toString());
         return this;
     }
     
@@ -88,14 +67,14 @@ public class Logger {
         sb.append("]");
         sb.append("\n");
         if(messages == null) {
-            xLogger.d("null");
+            Log.d(TAG, "null");
             return this;
         }
         for(Object msg : messages) {
             sb.append(msg);
             sb.append("\n");
         }
-        xLogger.d(sb.toString());
+        Log.d(TAG, sb.toString());
         return this;
     }
     
@@ -106,16 +85,16 @@ public class Logger {
         sb.append("]");
         sb.append("\n");
         if(messages == null) {
-            xLogger.e("null");
+            Log.e(TAG, "null");
             return this;
         }
         for(Object msg : messages) {
-            if(msg != null && msg instanceof Throwable) {
+            if(msg instanceof Throwable) {
                 sb.append(ThrowableUtils.getFullStackTrace((Throwable) msg));
             } else sb.append(msg);
             sb.append("\n");
         }
-        xLogger.e(sb.toString());
+        Log.e(TAG, sb.toString());
         return this;
     }
     
@@ -126,14 +105,14 @@ public class Logger {
         sb.append("]");
         sb.append("\n");
         if(messages == null) {
-            xLogger.v("null");
+            Log.v(TAG, "null");
             return this;
         }
         for(Object msg : messages) {
             sb.append(msg);
             sb.append("\n");
         }
-        xLogger.v(sb.toString());
+        Log.v(TAG, sb.toString());
         return this;
     }
     
@@ -144,14 +123,14 @@ public class Logger {
         sb.append("]");
         sb.append("\n");
         if(messages == null) {
-            xLogger.i("null");
+            Log.i(TAG, "null");
             return this;
         }
         for(Object msg : messages) {
             sb.append(msg);
             sb.append("\n");
         }
-        xLogger.i(sb.toString());
+        Log.i(TAG, sb.toString());
         return this;
     }
 }

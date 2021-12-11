@@ -40,7 +40,7 @@ See ```XMLLayoutInflater#onCreateAttributeAdapter(View)```.
 
 You could also check if you can use a method. Some methods are already implemented in ViewAttrAdapter so you won't have to rewrite them.
 For example:
-```java
+```
 isApi26() // Android 8 (Oreo)
 isApi28() // Android 9 (Pie)
 isApi29() // Android 10 (Q)

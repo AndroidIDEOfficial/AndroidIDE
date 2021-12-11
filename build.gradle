@@ -8,8 +8,8 @@ buildscript {
         versionName = "2.0-beta"
 		packageName = "com.itsaky.androidide"
         
-        javaSourceVersion = JavaVersion.VERSION_1_8
-        javaTargetVersion = JavaVersion.VERSION_1_8
+        javaSourceVersion = JavaVersion.VERSION_11
+        javaTargetVersion = JavaVersion.VERSION_11
     }
 
     repositories {
@@ -20,10 +20,14 @@ buildscript {
     }
     
     dependencies {
-        classpath "com.android.tools.build:gradle:7.0.2"
+        classpath "com.android.tools.build:gradle:7.0.4"
 		classpath 'com.google.gms:google-services:4.3.8'
 		classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
     }
+}
+
+subprojects {
+    apply from: "${rootDir}/gradle/dependencies.gradle"
 }
 
 allprojects {

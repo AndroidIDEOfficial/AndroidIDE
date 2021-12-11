@@ -26,5 +26,5 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     
-    api 'org.antlr:antlr4-runtime:4.9.2'
+    api common.antlr4
 }

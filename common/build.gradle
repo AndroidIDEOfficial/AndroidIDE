@@ -27,15 +27,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.blankj:utilcodex:1.30.6'
-    implementation 'com.elvishew:xlog:1.8.0'
+    implementation common.utilcode
+
+    implementation google.material
     
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation androidx.appcompat
+    implementation androidx.preference
+    implementation androidx.vectors
+	implementation androidx.animated_vectors
     
-    implementation 'androidx.appcompat:appcompat:1.4.0'
-    implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.vectordrawable:vectordrawable:1.1.0'
-	implementation 'androidx.vectordrawable:vectordrawable-animated:1.1.0'
-    
-    api 'androidx.multidex:multidex:2.0.1'
+    api androidx.multidex
 }

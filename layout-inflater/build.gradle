@@ -25,12 +25,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.annotation:annotation:1.2.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation androidx.annotation
+    implementation androidx.appcompat
     
-    implementation 'com.google.guava:guava:31.0.1-android'
-    implementation 'com.blankj:utilcodex:1.30.6'
-    implementation 'org.jsoup:jsoup:1.14.2'
+    implementation google.guava
+    implementation common.utilcode
+    implementation common.jsoup
     
     implementation project (":common")
     api project (':sdk-info')

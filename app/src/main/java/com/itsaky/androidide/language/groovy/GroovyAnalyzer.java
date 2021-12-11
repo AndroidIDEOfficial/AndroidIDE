@@ -20,6 +20,8 @@
 
 package com.itsaky.androidide.language.groovy;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.syntax.lexer.impls.groovy.GroovyLexerImpl;
 import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageServer;
@@ -41,7 +43,7 @@ public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeA
     }
     
 	@Override
-	public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws IOException {
+	public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate) throws IOException {
 		GroovyLexerImpl lexer = new GroovyLexerImpl(this.language, (Content) content, colors);
         lexer.init();
         
