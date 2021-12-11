@@ -12,8 +12,9 @@ android {
     }
     
     compileOptions {
-        sourceCompatibility rootProject.ext.javaSourceVersion
-        targetCompatibility rootProject.ext.javaTargetVersion
+        // Java 11 will not work here
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
 	}
     
     buildTypes {
