@@ -64,7 +64,7 @@ public interface IResourceFinder {
      * @param name The name of the resource
      * @return Value of the resource
      */
-    Object[] findArray (String name);
+    String[] findArray (String name);
     
     /**
      * Find the dimension value with the given name.

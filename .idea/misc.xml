@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_create_project.xml" value="0.20854700854700856" />
+        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_create_project_content.xml" value="0.33" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

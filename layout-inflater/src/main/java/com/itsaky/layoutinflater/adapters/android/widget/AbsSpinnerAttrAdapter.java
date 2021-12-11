@@ -14,56 +14,50 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.layoutinflater.adapters.android.widget;
 
 import android.view.View;
-import android.widget.CheckedTextView;
-import com.itsaky.layoutinflater.IResourceFinder;
-import com.itsaky.layoutinflater.IAttribute;
+import android.widget.AbsSpinner;
+import android.widget.ArrayAdapter;
+import android.widget.SimpleAdapter;
 
-/**
- * Attribute handler for handling attributes related to
- * CheckedTextView.
- *
- * @author Akash Yadav
- */
-public class CheckedTextViewAttrAdapter extends TextViewAttrAdapter {
+import com.itsaky.layoutinflater.IAttribute;
+import com.itsaky.layoutinflater.IResourceFinder;
+
+public class AbsSpinnerAttrAdapter extends AdapterViewAttrAdapter {
 
     @Override
     public boolean isApplicableTo(View view) {
-        return view instanceof CheckedTextView;
+        return view instanceof AbsSpinner;
     }
 
     @Override
     public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
-        
-        final CheckedTextView text = (CheckedTextView) view;
-        final String namespace = attribute.getNamespace();
-        final String name = attribute.getAttributeName();
-        final String value = attribute.getValue();
-        
+        final var spinner = (AbsSpinner) view;
+        final var context = spinner.getContext();
+        final var namespace = attribute.getNamespace();
+        final var name = attribute.getAttributeName();
+        final var value = attribute.getValue();
+
+        boolean handled = true;
+
         if (!canHandleNamespace(namespace)) {
             return false;
         }
-        
-        boolean handled = true;
-        
+
         switch (name) {
-            case "checkMarkTintMode" :
-                text.setCheckMarkTintMode(parsePorterDuffMode(value));
+            case "entries" :
+                final var adapter = newSimpleAdapter(context, resFinder.findArray(value));
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(adapter);
                 break;
-            case "checkMarkTint" :
-                // TODO Parse color state list
-                break;
-            case "checkMark" :
-                // Ignored...
-                break;
-            default :
+            default:
                 handled = false;
                 break;
         }
-        
-        if (!handled) {
+
+        if (!handled){
             handled = super.apply(attribute, view, resFinder);
         }
 

@@ -17,28 +17,47 @@
 
 package com.itsaky.layoutinflater.adapters.android.widget;
 
+import android.content.Context;
 import android.view.View;
-import android.widget.RadioButton;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IResourceFinder;
+import com.itsaky.layoutinflater.adapters.android.view.ViewGroupAttrAdapter;
 
 /**
- * Attribute adapter for handling attributes related to
- * RadioButton.
+ * Adapter for handling attributes related to
+ * AdapterView.
  *
  * @author Akash Yadav
  */
-public class RadioButtonAttrAdapter extends CompondButtonAttrAdapter {
+public abstract class AdapterViewAttrAdapter extends ViewGroupAttrAdapter {
 
     @Override
     public boolean isApplicableTo(View view) {
-        return view instanceof RadioButton;
+        return view instanceof AdapterView;
     }
 
     @Override
     public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
-        // No special attributes for RadioButton
+        // No special attributes for AdapterView
         return super.apply(attribute, view, resFinder);
+    }
+
+    protected ArrayAdapter <String> newSimpleAdapter (Context ctx) {
+        return newSimpleAdapter(ctx, newAdapterItems(4));
+    }
+
+    protected ArrayAdapter <String> newSimpleAdapter (Context ctx, String[] items) {
+        return new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, items);
+    }
+
+    protected String[] newAdapterItems (int size) {
+        final var items = new String [size];
+        for (var i = 0;i<size;i++) {
+            items[i] = "Item " + i;
+        }
+        return items;
     }
 }

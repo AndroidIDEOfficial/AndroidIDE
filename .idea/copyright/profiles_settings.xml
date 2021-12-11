@@ -1,0 +1,13 @@
+<component name="CopyrightManager">
+  <settings>
+    <module2copyright>
+      <element module="Project Files" copyright="Akash Yadav" />
+    </module2copyright>
+    <LanguageOptions name="JAVA">
+      <option name="fileTypeOverride" value="3" />
+    </LanguageOptions>
+    <LanguageOptions name="XML">
+      <option name="fileTypeOverride" value="3" />
+    </LanguageOptions>
+  </settings>
+</component>

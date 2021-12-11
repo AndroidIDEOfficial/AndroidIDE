@@ -14,55 +14,64 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.layoutinflater.adapters.android.widget;
 
 import android.view.View;
-import android.widget.CheckedTextView;
-import com.itsaky.layoutinflater.IResourceFinder;
+import android.widget.Spinner;
+
 import com.itsaky.layoutinflater.IAttribute;
+import com.itsaky.layoutinflater.IResourceFinder;
 
 /**
- * Attribute handler for handling attributes related to
- * CheckedTextView.
+ * Attribute adapter for handling attributes related to
+ * Spinner.
  *
  * @author Akash Yadav
  */
-public class CheckedTextViewAttrAdapter extends TextViewAttrAdapter {
+public class SpinnerAttrAdapter extends AbsSpinnerAttrAdapter {
 
     @Override
     public boolean isApplicableTo(View view) {
-        return view instanceof CheckedTextView;
+        return view instanceof Spinner;
     }
 
     @Override
     public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
-        
-        final CheckedTextView text = (CheckedTextView) view;
-        final String namespace = attribute.getNamespace();
-        final String name = attribute.getAttributeName();
-        final String value = attribute.getValue();
-        
+        final var spinner = (Spinner) view;
+        final var context = spinner.getContext();
+        final var dm = context.getResources().getDisplayMetrics();
+        final var namespace = attribute.getNamespace();
+        final var name = attribute.getAttributeName();
+        final var value = attribute.getValue();
+
         if (!canHandleNamespace(namespace)) {
             return false;
         }
-        
+
         boolean handled = true;
-        
+
         switch (name) {
-            case "checkMarkTintMode" :
-                text.setCheckMarkTintMode(parsePorterDuffMode(value));
+            case "dropDownHorizontalOffset":
+                spinner.setDropDownHorizontalOffset(parseDimension(value, 0, dm, resFinder));
                 break;
-            case "checkMarkTint" :
-                // TODO Parse color state list
+            case "dropDownVerticalOffset":
+                spinner.setDropDownVerticalOffset(parseDimension(value, 0, dm, resFinder));
                 break;
-            case "checkMark" :
-                // Ignored...
+            case "dropDownWidth":
+                spinner.setDropDownWidth(parseDimension(value, 0, dm, resFinder));
                 break;
-            default :
+            case "gravity" :
+                spinner.setGravity(parseGravity(value));
+                break;
+            case "popupBackground" :
+                spinner.setPopupBackgroundDrawable(parseDrawable(value, resFinder, context));
+                break;
+            default:
                 handled = false;
                 break;
         }
-        
+
         if (!handled) {
             handled = super.apply(attribute, view, resFinder);
         }

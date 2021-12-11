@@ -58,7 +58,7 @@ public class ProjectResourceFinder implements IResourceFinder {
     }
 
     @Override
-    public Object[] findArray(String name) {
+    public String[] findArray(String name) {
         return null;
     }
 

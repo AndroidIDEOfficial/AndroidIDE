@@ -41,7 +41,7 @@ public interface IAttribute {
     @NonNull
     String getAttributeName ();
     
-    @Nullable
+    @NonNull
     String getValue ();
     
     @NonNull
