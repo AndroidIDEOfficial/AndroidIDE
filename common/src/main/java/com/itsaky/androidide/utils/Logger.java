@@ -18,7 +18,6 @@
 package com.itsaky.androidide.utils;
 
 import android.util.Log;
-
 import com.blankj.utilcode.util.ThrowableUtils;
 
 public class Logger {

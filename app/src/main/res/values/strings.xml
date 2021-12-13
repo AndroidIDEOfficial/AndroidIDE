@@ -290,4 +290,17 @@
     <string name="err_cannot_start_server">Unable to start Language Server for: %s</string>
     <string name="err_cannot_write_socket">Failed to write to Socket stream</string>
     <string name="err_server_disconnected">Language server process unexpectedly exited.</string>
+    <string name="label_ui_designer_content">Main UI designer content</string>
+    <string name="widget_textview">TextView</string>
+    <string name="widget_button">Button</string>
+    <string name="widget_group_android">Android</string>
+    <string name="widget_checkbox">CheckBox</string>
+    <string name="widget_checked_textview">CheckedTextView</string>
+    <string name="widget_edittext">EditText</string>
+    <string name="widget_image_button">ImageButton</string>
+    <string name="widget_image_view">ImageView</string>
+    <string name="widget_progressbar">ProgressBar</string>
+    <string name="widget_radio_button">RadioButton</string>
+    <string name="widget_seekbar">SeekBar</string>
+    <string name="widget_spinner">Spinner</string>
 </resources>

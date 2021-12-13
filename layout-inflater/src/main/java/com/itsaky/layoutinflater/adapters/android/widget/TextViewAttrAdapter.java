@@ -52,7 +52,7 @@ public class TextViewAttrAdapter extends ViewAttrAdapter {
         final String namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
-        final ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        final ViewGroup.LayoutParams params = view.getLayoutParams();
         final Resources res = view.getResources();
         final DisplayMetrics dm = res.getDisplayMetrics();
         final Context ctx = view.getContext();

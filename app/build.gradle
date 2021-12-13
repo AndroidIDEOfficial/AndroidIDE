@@ -31,7 +31,9 @@ android {
                 "SmallSp"
     }
 	
-	buildFeatures.viewBinding true
+	buildFeatures {
+        viewBinding true
+    }
     
     signingConfigs {
         

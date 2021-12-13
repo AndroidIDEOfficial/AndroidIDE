@@ -3,9 +3,26 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/drawable/bg_ripple.xml" value="0.3105485232067511" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/drawable/bg_ripple_pressed.xml" value="0.3105485232067511" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/drawable/bg_widget_group_selected.xml" value="0.33" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/drawable/ic_replace.xml" value="0.3105485232067511" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/drawable/ic_widget_edittext.xml" value="0.3105485232067511" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/drawable/ic_widget_seekbar.xml" value="0.3105485232067511" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/layout/activity_designer.xml" value="0.33" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/layout/activity_download.xml" value="0.30128205128205127" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/layout/activity_editor.xml" value="0.30128205128205127" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_simple_icon_text.xml" value="0.30128205128205127" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_widget_group_item.xml" value="0.33" />
+        <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_widget_item.xml" value="0.33" />
+        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/drawable/ic_website.xml" value="0.2189873417721519" />
+        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/drawable/ic_widget_button.xml" value="0.22179487179487178" />
+        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/activity_designer.xml" value="0.264" />
+        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_create_project.xml" value="0.20854700854700856" />
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_create_project_content.xml" value="0.33" />
+        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_widget_item.xml" value="0.264" />
+        <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/menu/menu_designer_widgets.xml" value="0.20854700854700856" />
       </map>
     </option>
   </component>

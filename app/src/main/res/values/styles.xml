@@ -10,12 +10,19 @@
         <item name="fontFamily">@font/josefin_sans</item>
         <item name="hintTextColor">@color/secondaryColor</item>
         <item name="shapeAppearanceLargeComponent">@style/AppTheme.ShapeOverlay.Large</item>
+        <item name="chipStyle">@style/AppTheme.UIDesigner.WidgetGroupChip</item>
 		<item name="windowActionModeOverlay">true</item>
 		<item name="windowActionBarOverlay">true</item>
         <item name="android:colorButtonNormal">@color/secondaryColor</item>
 		<item name="android:textColorSecondary">@color/secondaryTextColor</item>
         <item name="android:windowBackground">@color/content_background</item>
         <item name="android:fontFamily">@font/josefin_sans</item>
+    </style>
+    <style name="AppTheme.UIDesigner.WidgetGroupChip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipIconTint">@color/primaryIconColor</item>
+        <item name="chipBackgroundColor">@color/primaryColor</item>
+        <item name="chipStrokeColor">@color/secondaryColor</item>
+        <item name="chipStrokeWidth">1dp</item>
     </style>
     <style name="AppTheme.Toolbar.OverflowButton" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:tint">@color/secondaryColor</item>
