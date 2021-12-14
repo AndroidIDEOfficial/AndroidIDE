@@ -17,6 +17,10 @@
 
 package com.itsaky.androidide.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.view.View;
+
 import androidx.annotation.DrawableRes;
 
 import java.util.Objects;
@@ -27,18 +31,36 @@ import java.util.Objects;
  *
  * @author Akash Yadav
  */
-public class UIWidget implements IconTextListItem {
+public class UIWidget implements IconTextListItem, Parcelable {
 
     private final String name;
     private final int icon;
 
     private final String clazz;
 
+    private UIWidget (Parcel in) {
+        this.name = in.readString();
+        this.icon = in.readInt();
+        this.clazz = in.readString();
+    }
+
     public UIWidget(String name, @DrawableRes int icon, Class<?> clazz) {
         this.name = name;
         this.icon = icon;
         this.clazz = clazz.getName();
     }
+
+    public static final Creator<UIWidget> CREATOR = new Creator<UIWidget>() {
+        @Override
+        public UIWidget createFromParcel(Parcel in) {
+            return new UIWidget(in);
+        }
+
+        @Override
+        public UIWidget[] newArray(int size) {
+            return new UIWidget[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -67,8 +89,8 @@ public class UIWidget implements IconTextListItem {
      * @throws ClassNotFoundException If there is no class with this widget's class name.
      *          However, this will never be thrown.
      */
-    public Class<?> asClass () throws ClassNotFoundException {
-        return getClass().getClassLoader().loadClass(this.clazz);
+    public Class<? extends View> asClass () throws ClassNotFoundException {
+        return getClass().getClassLoader().loadClass(this.clazz).asSubclass(View.class);
     }
 
     public String getWidgetClassName () {
@@ -83,5 +105,17 @@ public class UIWidget implements IconTextListItem {
     @Override
     public int getIconResource() {
         return getIcon();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeInt(icon);
+        dest.writeString(clazz);
     }
 }

@@ -17,8 +17,13 @@
 
 package com.itsaky.androidide.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +37,7 @@ import java.util.Objects;
  *
  * @author Akash Yadav
  */
-public class UIWidgetGroup implements IconTextListItem {
+public class UIWidgetGroup implements IconTextListItem, Parcelable {
 
     /**
      * Name of this group.
@@ -54,6 +59,29 @@ public class UIWidgetGroup implements IconTextListItem {
         this.selected = false;
         this.children = new ArrayList<>();
     }
+
+    protected UIWidgetGroup(@NonNull Parcel in) {
+        this.name = in.readString();
+        this.children = in.createTypedArrayList(UIWidget.CREATOR);
+        this.selected = in.readByte() != 0;
+    }
+
+    public static final Creator<UIWidgetGroup> CREATOR = new Creator<UIWidgetGroup>() {
+
+        @NonNull
+        @Contract("_ -> new")
+        @Override
+        public UIWidgetGroup createFromParcel(Parcel in) {
+            return new UIWidgetGroup(in);
+        }
+
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
+        @Override
+        public UIWidgetGroup[] newArray(int size) {
+            return new UIWidgetGroup[size];
+        }
+    };
 
     /**
      * Get the name of this group.
@@ -124,5 +152,17 @@ public class UIWidgetGroup implements IconTextListItem {
     @Override
     public int getIconResource() {
         return -1;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeTypedList(children);
+        dest.writeByte((byte) (selected ? 1 : 0));
     }
 }

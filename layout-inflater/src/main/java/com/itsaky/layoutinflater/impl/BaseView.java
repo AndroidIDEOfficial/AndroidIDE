@@ -18,6 +18,9 @@
 package com.itsaky.layoutinflater.impl;
 
 import android.view.View;
+
+import androidx.annotation.Nullable;
+
 import com.itsaky.layoutinflater.IResourceFinder;
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IAttributeAdapter;
@@ -37,6 +40,8 @@ public abstract class BaseView implements IView {
     protected final String qualifiedName;
     protected final View view;
     protected IViewGroup parent;
+
+    protected Object stored;
 
     private boolean isPlaceholder = false;
 
@@ -110,6 +115,17 @@ public abstract class BaseView implements IView {
     
     protected Set<IAttributeAdapter> getAttributeAdapters () {
         return attrAdapters;
+    }
+
+    @Override
+    public void setExtraData(Object data) {
+        this.stored = data;
+    }
+
+    @Nullable
+    @Override
+    public Object getExtraData() {
+        return this.stored;
     }
 
     @Override

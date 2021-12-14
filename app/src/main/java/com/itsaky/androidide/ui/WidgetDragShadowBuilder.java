@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.layoutinflater;
+package com.itsaky.androidide.ui;
 
 import android.graphics.Point;
 import android.view.View;

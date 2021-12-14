@@ -23,7 +23,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.DesignerActivity;
-import com.itsaky.androidide.layoutinflater.WidgetDragShadowBuilder;
+import com.itsaky.androidide.ui.WidgetDragData;
+import com.itsaky.androidide.ui.WidgetDragShadowBuilder;
 import com.itsaky.androidide.models.IconTextListItem;
 import com.itsaky.androidide.models.UIWidget;
 
@@ -52,12 +53,13 @@ public class WidgetItemAdapter extends SimpleIconTextAdapter implements SimpleIc
         final var widget = (UIWidget) getItemAt(position);
 
         root.setOnLongClickListener(v -> {
+            final var dragData = new WidgetDragData(false, null, widget);
             final var shadow = new WidgetDragShadowBuilder(binding.icon);
             final var dataItem = new ClipData.Item(DesignerActivity.DRAGGING_WIDGET_TAG);
             final var data = new ClipData(DesignerActivity.DRAGGING_WIDGET_TAG,
                     new String[]{DesignerActivity.DRAGGING_WIDGET_MIME},
                     dataItem);
-            binding.icon.startDragAndDrop(data, shadow, widget, 0);
+            binding.icon.startDragAndDrop(data, shadow, dragData, 0);
 
             if (this.dragStartListener != null) {
                 this.dragStartListener.onDragStarted(v);

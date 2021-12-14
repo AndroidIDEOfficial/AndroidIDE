@@ -16,6 +16,9 @@
  *
 **************************************************************************************/
 package com.itsaky.layoutinflater;
+
+import android.view.View;
+
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -88,4 +91,20 @@ public interface IViewGroup extends IView {
      * @throws IndexOutOfBoundsException If there is no child at the given index
      */
     IView getChildAt (int index);
+
+    /**
+     * Find the index of the given children in this group.
+     *
+     * @param view The view to find index of.
+     * @return The index of the child or -1 if this group does not contain the given child.
+     */
+    int indexOfChild (IView view);
+
+    /**
+     * Find the index of the given children in this group.
+     *
+     * @param view The view to find index of.
+     * @return The index of the child or -1 if this group does not contain the given child.
+     */
+    int indexOfChild (View view);
 }

@@ -50,7 +50,7 @@ import org.jsoup.parser.Parser;
 
 import static com.itsaky.androidide.ui.util.Preconditions.*;
 
-public class XMLLayoutInflater extends BaseLayoutInflater {
+class XMLLayoutInflater extends BaseLayoutInflater {
     
     private final Set<File> resDirs;
     private final AttrInfo attrInfo;
@@ -66,7 +66,7 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
         throw new UnsupportedOperationException();
     }
     
-    public XMLLayoutInflater(LayoutInflaterConfiguration config) {
+    XMLLayoutInflater(@NonNull LayoutInflaterConfiguration config) {
         this.resDirs = config.resDirs;
         this.attrInfo = config.attrInfo;
         this.widgetInfo = config.widgetInfo;
@@ -141,7 +141,7 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
         
         registerAttributeAdaptersTo (root);
 
-        if (tag.attributes() != null && !tag.attributes().isEmpty()) {
+        if (!tag.attributes().isEmpty()) {
             addAtrributesTo (root, tag.attributes());
         }
 
@@ -154,7 +154,7 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
         return root;
     }
 
-    protected void addChildren(Element tag, IViewGroup root, ViewGroup parent) {
+    protected void addChildren(@NonNull Element tag, IViewGroup root, ViewGroup parent) {
         if (tag.childrenSize() > 0 && !root.isPlaceholder()) {
             for (Element child : tag.children()) {
                 final BaseView created = (BaseView) onCreateView(child, (ViewGroup) root.asView());
@@ -183,11 +183,12 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
         return 0;
     }
 
-    private String underscorize(String substring) {
+    @NonNull
+    private String underscorize(@NonNull String substring) {
         return substring.replace(".", "_");
     }
 
-    protected void registerAttributeAdaptersTo(IView root) {
+    protected void registerAttributeAdaptersTo(@NonNull IView root) {
         root.registerAttributeAdapter(onCreateAttributeAdapter (root.asView()));
     }
     
@@ -226,6 +227,8 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
 
             final IAttribute iAttr = asAttribute (namespace, name, value);
             view.addAttribute(iAttr, resFinder);
+
+            postApplyAttribute(iAttr, view);
         }
     }
 
@@ -233,7 +236,7 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
         return new UiAttribute (namespace, name, value);
     }
 
-    protected IView create (String name, ViewGroup parent, int style) throws InflateException {
+    protected IView create (@NonNull String name, ViewGroup parent, int style) throws InflateException {
         if (!name.contains(".")) {
             return createFromSimpleName (name, parent, style);
         } else {
@@ -248,6 +251,7 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
     protected IView createFromSimpleName(String name, ViewGroup parent, int style) throws InflateException {
         final Widget widget = widgetInfo.getWidgetBySimpleName(name);
         if (widget == null) {
+            LOG.error("Unable to inflate view. widget == null");
             return onCreateErrorView(name, getString(com.itsaky.layoutinflater.R.string.msg_cannot_create_view, name));
         }
 
@@ -257,7 +261,7 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
     protected IView createFromQualifiedName(String name, ViewGroup parent, int style) throws InflateException {
         assertNotBlank(name, "Invalid tag name: " + name);
         
-        // TODO Try to load classes directly from .class files
+        // TODO Try to load classes directly from .class files if possible
         try {
             final View created = createAndroidViewForName(name);
             final BaseView view =
@@ -266,7 +270,9 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
                 : new UiView (name, created);
             return applyLayoutParams(view, parent);
         } catch (Throwable th) {
-            return onCreateErrorView(name, "Cannot create view for: " + name);
+            final var msg = getString(R.string.msg_cannot_create_view, name);
+            LOG.error(msg, th);
+            return onCreateErrorView(name, msg);
         }
     }
 
@@ -278,7 +284,7 @@ public class XMLLayoutInflater extends BaseLayoutInflater {
         return created;
     }
 
-    protected IView applyLayoutParams(IView view, ViewGroup parent) {
+    protected IView applyLayoutParams(@NonNull IView view, ViewGroup parent) {
         final ViewGroup.LayoutParams params = generateLayoutParams(parent);
         view.asView().setLayoutParams(params);
         return view;

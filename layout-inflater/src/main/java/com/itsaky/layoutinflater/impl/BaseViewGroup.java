@@ -19,6 +19,9 @@ package com.itsaky.layoutinflater.impl;
 
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+
 import com.itsaky.layoutinflater.IAttributeAdapter;
 import com.itsaky.layoutinflater.IView;
 import com.itsaky.layoutinflater.IViewGroup;
@@ -44,7 +47,23 @@ public abstract class BaseViewGroup extends BaseView implements IViewGroup {
             view.registerAttributeAdapter(adapter);
         }
     }
-    
+
+    @Override
+    public int indexOfChild(@NonNull IView view) {
+        return indexOfChild(view.asView());
+    }
+
+    @Override
+    public int indexOfChild(View view) {
+        for (var i = 0; i < getChildCount(); i++) {
+            final var child = getChildAt(i);
+            if (child != null && child == view) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     /**
      * Called when a new view has been added to this group
      *

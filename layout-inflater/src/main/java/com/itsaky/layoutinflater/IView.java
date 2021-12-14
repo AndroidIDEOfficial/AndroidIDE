@@ -18,6 +18,9 @@
 package com.itsaky.layoutinflater;
 
 import android.view.View;
+
+import androidx.annotation.Nullable;
+
 import com.itsaky.layoutinflater.IResourceFinder;
 
 /**
@@ -72,6 +75,23 @@ public interface IView {
     
     /**
      * Is this view a placeholder for another view?
+     *
+     * @return {@code true} if this view is a placeholder, {@code false} otherwise.
      */
     boolean isPlaceholder ();
+
+    /**
+     * Store an object that is associated with this view.
+     *
+     * @param data The data to store.
+     */
+    void setExtraData (Object data);
+
+    /**
+     * Get the stored data.
+     * @return The stored data.
+     * @see #setExtraData(Object)
+     */
+    @Nullable
+    Object getExtraData ();
 }

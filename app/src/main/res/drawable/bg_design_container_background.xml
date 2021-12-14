@@ -16,12 +16,30 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <stroke android:width="1dp"
-        android:color="@android:color/darker_gray"
-        android:dashGap="3dp"
-        android:dashWidth="6dp"/>
+    <!-- Pressed -->
+    <item android:state_pressed="true">
+        <shape
+            android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/>
+            <stroke android:color="@android:color/white"
+                android:width="1dp"
+                android:dashWidth="0dp"
+                android:dashGap="0dp"/>
+        </shape>
+    </item>
 
-</shape>
+    <!-- Normal -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/>
+            <stroke android:color="@color/primaryLightColor"
+                android:width="1dp"
+                android:dashGap="5dp"
+                android:dashWidth="5dp"/>
+        </shape>
+    </item>
+
+</selector>

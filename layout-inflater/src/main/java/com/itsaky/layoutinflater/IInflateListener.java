@@ -51,7 +51,7 @@ public interface IInflateListener {
     /**
      * Called when the inflation process finished successfully
      *
-     * @param The root view of the inflated layout
+     * @param The root rootView of the inflated layout
      */
-    void onFinishInflate (IView view);
+    void onFinishInflate (IView rootView);
 }

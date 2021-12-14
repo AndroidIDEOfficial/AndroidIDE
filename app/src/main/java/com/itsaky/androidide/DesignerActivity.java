@@ -50,12 +50,17 @@ import com.itsaky.androidide.adapters.WidgetGroupItemAdapter;
 import com.itsaky.androidide.adapters.WidgetItemAdapter;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityDesignerBinding;
-import com.itsaky.androidide.layoutinflater.WidgetDragListener;
+import com.itsaky.androidide.ui.WidgetDragData;
+import com.itsaky.androidide.ui.WidgetDragListener;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.models.UIWidgetGroup;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.layoutinflater.IAttribute;
+import com.itsaky.layoutinflater.IInflateListener;
 import com.itsaky.layoutinflater.ILayoutInflater;
 import com.itsaky.layoutinflater.IView;
+import com.itsaky.layoutinflater.IViewGroup;
+import com.itsaky.layoutinflater.impl.UiViewGroup;
 
 import org.jetbrains.annotations.Contract;
 
@@ -75,6 +80,35 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     private static final Logger LOG = Logger.instance("DesignerActivity");
 
     private final List<UIWidgetGroup> widgetGroups = new ArrayList<>();
+
+    // This will make sure to apply listeners, background and data to view that are inflated from XML.
+    private final IInflateListener mInflateListener = new IInflateListener() {
+
+        @Override
+        public void onBeginInflate() {
+        }
+
+        @Override
+        public void onInflateView(IView view, IViewGroup parent) {
+            if (view instanceof IViewGroup) {
+                View v = view.asView();
+                v.setBackgroundResource(R.drawable.bg_design_container_background);
+                v.setOnDragListener(getOnDragListener((IViewGroup) view));
+            }
+
+            setDragDataToInflatedView (view);
+        }
+
+        @Override
+        public void onApplyAttribute(IAttribute attr, IView view) {
+
+        }
+
+        @Override
+        public void onFinishInflate(IView rootView) {
+
+        }
+    };
 
     @Override
     protected View bindLayout() {
@@ -102,18 +136,36 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         try {
             final ILayoutInflater inflater = getApp().getLayoutInflater();
             inflater.resetContextProvider(newContextProvider());
+            inflater.registerInflateListener(this.mInflateListener);
             final IView view = inflater.inflatePath(path, mBinding.layoutContainer);
-            mBinding.layoutContainer.addView(view.asView());
 
-            mBinding.layoutContainer.setOnDragListener(new WidgetDragListener(this));
+            final var layoutContainerGroup = new UiViewGroup(mBinding.layoutContainer.getClass().getName(), mBinding.layoutContainer);
+            layoutContainerGroup.addView(view);
+
+            mBinding.layoutContainer.setOnDragListener(getOnDragListener(layoutContainerGroup));
         } catch (Throwable th) {
             mBinding.layoutContainer.removeAllViews();
             mBinding.layoutContainer.addView(createErrorText(th));
             
-            LOG.error (getString(R.string.err_cannot_inflate_layout));
+            LOG.error (getString(R.string.err_cannot_inflate_layout), th);
         }
 
         setupWidgets();
+    }
+
+    private void onDropWidget(@NonNull IView view ) {
+        view.asView().setOnClickListener(v -> onLayoutViewClick (view));
+        view.asView().setOnLongClickListener(v -> onLayoutViewLongClick (view));
+
+        setDragDataToInflatedView(view);
+    }
+
+    private boolean onLayoutViewLongClick(IView view) {
+        return false;
+    }
+
+    private void onLayoutViewClick(IView view) {
+
     }
 
     private void setupWidgets() {
@@ -184,5 +236,20 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     @Override
     public void onDragStarted(View view) {
         mBinding.getRoot().closeDrawer(GravityCompat.START);
+    }
+
+    @NonNull
+    @Contract("_ -> new")
+    private View.OnDragListener getOnDragListener (IViewGroup group) {
+        // WidgetDragListener cannot be reused
+        // This is because they keep a reference to the view group in which dragged view will be added
+        return new WidgetDragListener(
+                        this,
+                        group,
+                        this::onDropWidget);
+    }
+
+    private void setDragDataToInflatedView (@NonNull IView view) {
+        view.setExtraData(new WidgetDragData(true, view, null));
     }
 }

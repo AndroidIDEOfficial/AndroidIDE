@@ -1080,26 +1080,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
          try {
              saveAll(false);
              if (getApp().getLayoutInflater() == null) {
-                 getApp().createInflater(createInflaterConfig());
+                 getApp().createInflater(getApp().createInflaterConfig(getContextProvider(), getResourceDirectories()));
              }
-             
-             final Intent intent = new Intent (this, DesignerActivity.class);
+
+             final Intent intent = new Intent(this, DesignerActivity.class);
              intent.putExtra(DesignerActivity.KEY_LAYOUT_PATH, mCurrentFile.getAbsolutePath());
              startActivity(intent);
          } catch (Throwable th) {
              LOG.error(getString(R.string.err_cannot_preview_layout), th);
              getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
          }
-     }
-
-     private LayoutInflaterConfiguration createInflaterConfig() {
-         return new LayoutInflaterConfiguration.Builder ()
-             .setAttrInfo(getApp().attrInfo())
-             .setWidgetInfo(getApp().widgetInfo())
-             .setResourceFinder(new ProjectResourceFinder())
-             .setResourceDirectories(getResourceDirectories())
-             .setContextProvider(getContextProvider())
-             .create();
      }
 
      @NonNull

@@ -18,11 +18,11 @@
 package com.itsaky.androidide.app;
 
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
-import com.itsaky.androidide.layoutinflater.IDELayoutInflater;
+import com.itsaky.androidide.project.ProjectResourceFinder;
 import com.itsaky.androidide.services.MessagingService;
 import com.itsaky.layoutinflater.ILayoutInflater;
+import com.itsaky.layoutinflater.IResourceFinder;
 import com.itsaky.layoutinflater.LayoutInflaterConfiguration;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.Logger;
@@ -32,6 +32,7 @@ import com.itsaky.widgets.WidgetInfo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Set;
 
 public class StudioApp extends BaseApplication {
     
@@ -40,9 +41,11 @@ public class StudioApp extends BaseApplication {
     private static ApiInfo mApiInfo;
     private static AttrInfo mAttrInfo;
     private static WidgetInfo mWidgetInfo;
+
+    private IResourceFinder mResFinder;
     
     private XMLCompletionService mXmlCompletionService;
-    private static ILayoutInflater mLayoutInflater;
+    private ILayoutInflater mLayoutInflater;
     
 	public static final boolean DEBUG = com.itsaky.androidide.BuildConfig.DEBUG;
     
@@ -70,15 +73,31 @@ public class StudioApp extends BaseApplication {
 			FileOutputStream os = new FileOutputStream(log, true);
 			os.write(line.getBytes());
 			os.close();
-		} catch (IOException e) {}
+		} catch (IOException e) {
+		    // ignored
+        }
 	}
     
     public void createInflater (LayoutInflaterConfiguration config) {
-        this.mLayoutInflater = new IDELayoutInflater(config);
+        this.mLayoutInflater = ILayoutInflater.newInstance(config);
+    }
+
+    public LayoutInflaterConfiguration createInflaterConfig(ILayoutInflater.ContextProvider contextProvider, Set<File> resDirs) {
+        return new LayoutInflaterConfiguration.Builder ()
+                .setAttrInfo(this.attrInfo())
+                .setWidgetInfo(this.widgetInfo())
+                .setResourceFinder(mResFinder == null ? mResFinder = new ProjectResourceFinder() : mResFinder)
+                .setResourceDirectories(resDirs)
+                .setContextProvider(contextProvider)
+                .create();
     }
     
     public ILayoutInflater getLayoutInflater () {
         return mLayoutInflater;
+    }
+
+    public IResourceFinder getResFinder () {
+	    return this.mResFinder;
     }
     
     /**
