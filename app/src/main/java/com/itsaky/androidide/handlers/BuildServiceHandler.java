@@ -40,7 +40,8 @@ import java.util.stream.Collectors;
 public class BuildServiceHandler extends IDEHandler implements BuildListener {
     
     private IDEService service;
-    
+    private boolean shouldInstallApk = false;
+
     public BuildServiceHandler(Provider provider) {
         super(provider);
     }
@@ -51,15 +52,18 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     
     @Override
     public void start() {
-        if(this.activity() == null)
+        if(this.activity() == null) {
             throwNPE();
+        }
             
         AndroidProject project = provider.provideAndroidProject();
-        if(project == null)
+        if(project == null) {
             throwNPE();
+        }
             
-        if(project.getProjectPath() == null)
+        if(project.getProjectPath() == null) {
             throwNPE();
+        }
         
         this.service = new IDEService(new File(project.getProjectPath()));
         this.service.setListener(this);
@@ -116,11 +120,12 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     public void onBuildSuccessful(GradleTask task, String msg) {
         appendOutput(task, msg);
         if(task == null || activity() == null) return;
-        if(task.canOutput())
+        if(task.canOutput()) {
             activity().setStatus(msg);
+        }
             
         // If this task generates APK, ask user if he/she wants to install them
-        if (task instanceof ApkGeneratingTask) {
+        if (shouldInstallApk && task instanceof ApkGeneratingTask) {
             final IDEProject project = activity().provideIDEProject();
             final Optional<IDEModule> app = project.getModuleByPath(":app"); // TODO Handle multiple application modules
             if(app.isPresent()) {
@@ -174,6 +179,15 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
             activity().showFirstBuildNotice();
         }
         activity().getBinding().buildProgressIndicator.setVisibility(View.VISIBLE);
+    }
+
+    public void setShouldInstallApk (boolean install) {
+        this.shouldInstallApk = install;
+    }
+
+    public void assembleDebug (boolean shouldInstallApk) {
+        setShouldInstallApk(shouldInstallApk);
+        getService().assembleDebug(shouldInstallApk);
     }
     
     private boolean isClasspathValid(String path) {

@@ -20,7 +20,7 @@
     android:shape="rectangle">
 
     <solid
-        android:color="@android:color/black"
+        android:color="@color/bg_widget_selected"
         />
 
     <corners

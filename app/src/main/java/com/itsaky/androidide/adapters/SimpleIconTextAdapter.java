@@ -70,6 +70,7 @@ public class SimpleIconTextAdapter extends RecyclerView.Adapter<SimpleIconTextAd
         } else {
             binding.icon.setImageResource(icon);
         }
+
         binding.text.setText(item.getText());
 
         if (this.bindListener != null) {

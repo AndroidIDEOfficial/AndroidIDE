@@ -19,13 +19,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_ripple"
     android:clickable="true"
     android:descendantFocusability="blocksDescendants"
     android:focusable="true"
     android:orientation="horizontal"
     android:paddingTop="2dp"
     android:paddingBottom="2dp"
+    android:paddingStart="4dp"
     android:minHeight="35dp">
 
     <ImageView

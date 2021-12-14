@@ -20,6 +20,7 @@ package com.itsaky.androidide.app;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
+import com.itsaky.androidide.layoutinflater.IDELayoutInflater;
 import com.itsaky.androidide.services.MessagingService;
 import com.itsaky.layoutinflater.ILayoutInflater;
 import com.itsaky.layoutinflater.LayoutInflaterConfiguration;
@@ -73,7 +74,7 @@ public class StudioApp extends BaseApplication {
 	}
     
     public void createInflater (LayoutInflaterConfiguration config) {
-        this.mLayoutInflater = ILayoutInflater.newInstance(config);
+        this.mLayoutInflater = new IDELayoutInflater(config);
     }
     
     public ILayoutInflater getLayoutInflater () {

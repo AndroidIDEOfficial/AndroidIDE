@@ -50,6 +50,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
+// TODO Request Language server for syntax highlighting instead of waiting for it to send highlight ranges
 public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
     private final EditorLanguage language;

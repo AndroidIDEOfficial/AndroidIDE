@@ -34,6 +34,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.MenuBuilder;
@@ -118,6 +121,8 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Position;
+import org.jetbrains.annotations.Contract;
+
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
@@ -392,7 +397,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		if (getBuildService() == null) return false;
 		int id = item.getItemId();
 		if (id == R.id.menuEditor_runDebug || id == R.id.menuEditor_quickRun) {
-			getBuildService().assembleDebug(true);
+			getmBuildServiceHandler().assembleDebug(true);
 		} else if (id == R.id.menuEditor_runRelease) {
 			getBuildService().assembleRelease();
 		} else if (id == R.id.menuEditor_runClean) {
@@ -661,7 +666,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     @Override
-    public void onDiagnosticClick(File file, Diagnostic diagnostic) {
+    public void onDiagnosticClick(File file, @NonNull Diagnostic diagnostic) {
         openFileAndSelect(file, diagnostic.getRange());
         hideDiagnostics();
         hideViewOptions();
@@ -686,7 +691,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
      * @param initialX Initial X coordinate of view
      * @param initialY Initial Y coordinate of view
      */
-    public void positionViewWithinScreen(final View view, final float initialX, final float initialY) {
+    public void positionViewWithinScreen(@NonNull final View view, final float initialX, final float initialY) {
         view.setX(initialX);
         view.setY(initialY);
 
@@ -727,7 +732,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     @Override
-    public void onTabSelected(TabLayout.Tab tab) {
+    public void
+    onTabSelected(@NonNull TabLayout.Tab tab) {
         EditorFragment current = mPagerAdapter.getFrag(tab.getPosition());
         if(current != null && current.getFile() != null) {
             this.mCurrentFragment = current;
@@ -739,7 +745,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     @Override
-    public void onTabUnselected(TabLayout.Tab tab) {
+    public void onTabUnselected(@NonNull TabLayout.Tab tab) {
         EditorFragment frag = mPagerAdapter.getFrag(tab.getPosition());
         if(frag == null) return;
         boolean isGradle = frag.isModified() && frag.getFile().getName().endsWith(EditorFragment.EXT_GRADLE);
@@ -755,7 +761,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 	}
     
     @Override
-    public boolean onNavigationItemSelected(MenuItem p1) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem p1) {
         final int id = p1.getItemId();
         if(id == R.id.editornav_discuss) {
             getApp().openTelegramGroup();
@@ -980,7 +986,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return result.gradleSaved;
 	}
     
-    public void install(File apk) {
+    public void install(@NonNull File apk) {
         if(apk.exists()) {
             Intent i = IntentUtils.getInstallAppIntent(apk);
             if(i != null) {
@@ -1096,6 +1102,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
              .create();
      }
 
+     @NonNull
+     @Contract(" -> new")
      private ILayoutInflater.ContextProvider getContextProvider() {
          return new ILayoutInflater.ContextProvider() {
              @Override
@@ -1105,6 +1113,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
          };
      }
 
+     @NonNull
      private Set<File> getResourceDirectories() {
          final Set<File> dirs = new HashSet<>();
          if (mProject != null && mProject.getModulePaths() != null && !mProject.getModulePaths().isEmpty()) {
@@ -1211,10 +1220,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         handleSearchResultVisibility(true);
 	}
     
+    @NonNull
     private MaterialContainerTransform createContainerTransformFor(View start, View end) {
         return createContainerTransformFor(start, end, mBinding.realContainer);
     }
 
+    @NonNull
     private MaterialContainerTransform createContainerTransformFor(View start, View end, View drawingView) {
         return TransformUtils.createContainerTransformFor(start, end, drawingView);
     }
@@ -1231,10 +1242,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mFileOptionsHandler.start();
         
         mBuildServiceHandler.start();
-        getBuildService().assembleDebug(false);
+        getmBuildServiceHandler().assembleDebug(false);
     }
 
-    private void removeFromParent(View v) {
+    private void removeFromParent(@NonNull View v) {
         if(v.getParent() != null && v.getParent() instanceof ViewGroup) {
             ((ViewGroup) v.getParent()).removeView(v);
         }
@@ -1253,7 +1264,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
     }
 
-    private void refreshSymbolInput(EditorFragment frag) {
+    private void refreshSymbolInput(@NonNull EditorFragment frag) {
         symbolInput.bindEditor(frag.getEditor());
         symbolInput.setSymbols(Symbols.forFile(frag.getFile()));
     }
@@ -1263,7 +1274,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             getSyncBanner()
                 .setNegative(android.R.string.cancel, null)
                 .setPositive(android.R.string.ok, v -> {
-                getBuildService().assembleDebug(false);
+                getmBuildServiceHandler().assembleDebug(false);
             })
             .show();
         }
@@ -1305,6 +1316,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
     }
     
+    @Nullable
     private AlertDialog createFindInProjectDialog() {
         if(mProject == null 
         || mProject.getModulePaths() == null
@@ -1384,6 +1396,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     private IDEService getBuildService() {
         return mBuildServiceHandler.getService();
+    }
+
+    public BuildServiceHandler getmBuildServiceHandler () {
+        return  mBuildServiceHandler;
     }
     
 	private void showNeedHelpDialog() {

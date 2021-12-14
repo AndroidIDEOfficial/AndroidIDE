@@ -17,11 +17,13 @@
 
 package com.itsaky.androidide.adapters;
 
-import android.view.DragEvent;
+import android.content.ClipData;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.DesignerActivity;
+import com.itsaky.androidide.layoutinflater.WidgetDragShadowBuilder;
 import com.itsaky.androidide.models.IconTextListItem;
 import com.itsaky.androidide.models.UIWidget;
 
@@ -29,30 +31,43 @@ import java.util.List;
 
 public class WidgetItemAdapter extends SimpleIconTextAdapter implements SimpleIconTextAdapter.OnBindListener {
 
-    private final OnWidgetDragListener dragListener;
+    private final OnDragStartListener dragStartListener;
 
-    public WidgetItemAdapter(List<UIWidget> widgets, OnWidgetDragListener dragListener) {
+    public WidgetItemAdapter(List<UIWidget> widgets, OnDragStartListener dragStartListener) {
         super(widgets);
-        this.dragListener = dragListener;
+        this.dragStartListener = dragStartListener;
 
         setOnBindListener(this);
     }
 
     @Override
     public boolean onBind(IconTextListItem item, @NonNull VH holder, int position) {
-        final var binding = holder.binding;
-        final var widget = (UIWidget) getItemAt(position);
-
-        if (this.dragListener != null) {
-            binding.getRoot().setOnDragListener((v, event) -> {
-                return this.dragListener.onDrag(widget, v, event);
-            });
-        }
-
         return false; // Returning true will not set the text and icon
     }
 
-    public static interface OnWidgetDragListener {
-        boolean onDrag(UIWidget widget, View v, DragEvent event);
+    @Override
+    public void postBind(IconTextListItem item, VH holder, int position) {
+        final var binding = holder.binding;
+        final var root = binding.getRoot();
+        final var widget = (UIWidget) getItemAt(position);
+
+        root.setOnLongClickListener(v -> {
+            final var shadow = new WidgetDragShadowBuilder(binding.icon);
+            final var dataItem = new ClipData.Item(DesignerActivity.DRAGGING_WIDGET_TAG);
+            final var data = new ClipData(DesignerActivity.DRAGGING_WIDGET_TAG,
+                    new String[]{DesignerActivity.DRAGGING_WIDGET_MIME},
+                    dataItem);
+            binding.icon.startDragAndDrop(data, shadow, widget, 0);
+
+            if (this.dragStartListener != null) {
+                this.dragStartListener.onDragStarted(v);
+            }
+
+            return true;
+        });
+    }
+
+    public interface OnDragStartListener {
+        void onDragStarted (View view);
     }
 }

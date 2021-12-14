@@ -17,7 +17,9 @@
 **************************************************************************************/
 package com.itsaky.androidide;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -37,37 +39,42 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.transition.Fade;
+import androidx.transition.Slide;
+import androidx.transition.TransitionManager;
+import androidx.transition.TransitionSet;
 
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.adapters.WidgetGroupItemAdapter;
 import com.itsaky.androidide.adapters.WidgetItemAdapter;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityDesignerBinding;
+import com.itsaky.androidide.layoutinflater.WidgetDragListener;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.models.UIWidgetGroup;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.layoutinflater.ILayoutInflater;
 import com.itsaky.layoutinflater.IView;
-import com.itsaky.toaster.Toaster;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DesignerActivity extends StudioActivity {
+public class DesignerActivity extends StudioActivity implements WidgetItemAdapter.OnDragStartListener {
     
     private ActivityDesignerBinding mBinding;
-    
+    private UIWidgetGroup selectedGroup;
+
     public static final String KEY_LAYOUT_PATH = "designer_layoutPath";
+    public static final String DRAGGING_WIDGET_TAG = "DRAGGING_WIDGET";
+    public static final String DRAGGING_WIDGET_MIME = "application/ide_widget";
+
     private static final Logger LOG = Logger.instance("DesignerActivity");
 
     private final List<UIWidgetGroup> widgetGroups = new ArrayList<>();
-
-    private final WidgetItemAdapter.OnWidgetDragListener dragListener = (widget, v, event) -> {
-        getApp().toast("Dragging: " + widget.getName(), Toaster.Type.INFO);
-        return true;
-    };
 
     @Override
     protected View bindLayout() {
@@ -79,21 +86,26 @@ public class DesignerActivity extends StudioActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setSupportActionBar(mBinding.toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         final var toggle = new ActionBarDrawerToggle(this, mBinding.getRoot(), mBinding.toolbar, R.string.app_name, R.string.app_name);
         mBinding.getRoot().addDrawerListener(toggle);
         toggle.syncState();
+        
+        final var extras = getIntent().getExtras();
+        final var path = extras.getString(KEY_LAYOUT_PATH, null);
+        final var name = path.substring(path.lastIndexOf(File.separator) + 1);
 
-        setSupportActionBar(mBinding.toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        
-        final Bundle extras = getIntent().getExtras();
-        final String path = extras.getString(KEY_LAYOUT_PATH, null);
-        
+        getSupportActionBar().setTitle(name);
+
         try {
             final ILayoutInflater inflater = getApp().getLayoutInflater();
             inflater.resetContextProvider(newContextProvider());
             final IView view = inflater.inflatePath(path, mBinding.layoutContainer);
             mBinding.layoutContainer.addView(view.asView());
+
+            mBinding.layoutContainer.setOnDragListener(new WidgetDragListener(this));
         } catch (Throwable th) {
             mBinding.layoutContainer.removeAllViews();
             mBinding.layoutContainer.addView(createErrorText(th));
@@ -120,11 +132,12 @@ public class DesignerActivity extends StudioActivity {
 
         // IMPORTANT: Do not select any other groups here
         common.setSelected(true);
+        this.selectedGroup = common;
         widgetGroups.add(common);
 
-        final var layouts = new UIWidgetGroup("Layouts");
-        layouts.addChild(new UIWidget("LinearLayout", R.drawable.ic_widget_linear, LinearLayout.class));
-        layouts.addChild(new UIWidget("RelativeLayout", R.drawable.ic_widget_relative, RelativeLayout.class));
+        final var layouts = new UIWidgetGroup(getString(R.string.widget_group_layouts));
+        layouts.addChild(new UIWidget(getString(R.string.layout_linear), R.drawable.ic_widget_linear, LinearLayout.class));
+        layouts.addChild(new UIWidget(getString(R.string.layout_relative), R.drawable.ic_widget_relative, RelativeLayout.class));
 
         widgetGroups.add(layouts);
 
@@ -134,9 +147,22 @@ public class DesignerActivity extends StudioActivity {
         showWidgetGroup(common);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void showWidgetGroup (@NonNull UIWidgetGroup group) {
         final var children = group.getChildren();
-        mBinding.widgetItems.setAdapter(new WidgetItemAdapter(children, dragListener));
+        this.mBinding.widgetItems.setAdapter(new WidgetItemAdapter(children, this));
+        this.selectedGroup.setSelected(false);
+        this.selectedGroup = group;
+        this.selectedGroup.setSelected(true);
+
+        TransitionManager.beginDelayedTransition(mBinding.navigation,
+                new TransitionSet()
+                        .addTransition(new Slide(Gravity.END))
+                        .addTransition(new Fade())
+        );
+
+        //noinspection ConstantConditions
+        this.mBinding.groupItems.getAdapter().notifyDataSetChanged();
     }
 
     @NonNull
@@ -153,5 +179,10 @@ public class DesignerActivity extends StudioActivity {
         error.setTextColor(ContextCompat.getColor(this, android.R.color.black));
         error.setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
         return error;
+    }
+
+    @Override
+    public void onDragStarted(View view) {
+        mBinding.getRoot().closeDrawer(GravityCompat.START);
     }
 }

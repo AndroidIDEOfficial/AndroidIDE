@@ -303,4 +303,7 @@
     <string name="widget_radio_button">RadioButton</string>
     <string name="widget_seekbar">SeekBar</string>
     <string name="widget_spinner">Spinner</string>
+    <string name="widget_group_layouts">Layouts</string>
+    <string name="layout_linear">LinearLayout</string>
+    <string name="layout_relative">RelativeLayout</string>
 </resources>

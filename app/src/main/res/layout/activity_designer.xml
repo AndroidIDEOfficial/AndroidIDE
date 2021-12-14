@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:context=".DesignerActivity"
-    tools:openDrawer="start">
+    tools:context=".DesignerActivity">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main_container"
@@ -35,13 +34,18 @@
             android:layout_height="match_parent"
             android:fillViewport="true"
             android:contentDescription="@string/label_ui_designer_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="32dp"
+            android:paddingTop="32dp"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
             <LinearLayout
                 android:id="@+id/layout_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                android:background="@drawable/bg_design_container_background"/>
 
         </androidx.core.widget.NestedScrollView>
 
@@ -58,10 +62,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingTop="16dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="16dp"
             android:weightSum="2.0">
 
             <androidx.recyclerview.widget.RecyclerView
@@ -69,28 +69,27 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.7"
+                android:paddingStart="8dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="0dp"
+                android:paddingBottom="16dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/layout_simple_icon_text"
-                tools:itemCount="1"/>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="1dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/primaryLightColor" />
+                tools:itemCount="1"
+                tools:listitem="@layout/layout_simple_icon_text" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/widget_items"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1.3"
+                android:background="@color/bg_widget_selected"
+                android:paddingStart="0dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="16dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-
-                tools:listitem="@layout/layout_simple_icon_text"
-                tools:itemCount="3" />
+                tools:itemCount="3"
+                tools:listitem="@layout/layout_simple_icon_text" />
 
         </LinearLayout>
 

@@ -28,10 +28,6 @@ import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.ui.util.Preconditions;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.AttrInfo;
-import com.itsaky.layoutinflater.IAttribute;
-import com.itsaky.layoutinflater.IAttributeAdapter;
-import com.itsaky.layoutinflater.IView;
-import com.itsaky.layoutinflater.IViewGroup;
 import com.itsaky.layoutinflater.adapters.android.view.ViewAttrAdapter;
 import com.itsaky.layoutinflater.adapters.android.view.ViewGroupAttrAdapter;
 import com.itsaky.layoutinflater.impl.BaseView;
@@ -54,7 +50,7 @@ import org.jsoup.parser.Parser;
 
 import static com.itsaky.androidide.ui.util.Preconditions.*;
 
-class XMLLayoutInflater extends BaseLayoutInflater {
+public class XMLLayoutInflater extends BaseLayoutInflater {
     
     private final Set<File> resDirs;
     private final AttrInfo attrInfo;
@@ -67,10 +63,10 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     public static final String ATTR_ADAPTER_SUFFIX = "AttrAdapter";
     
     private XMLLayoutInflater () {
-        throw new UnsupportedOperationException("Cannot instantiate inflater");
+        throw new UnsupportedOperationException();
     }
     
-    XMLLayoutInflater(LayoutInflaterConfiguration config) {
+    public XMLLayoutInflater(LayoutInflaterConfiguration config) {
         this.resDirs = config.resDirs;
         this.attrInfo = config.attrInfo;
         this.widgetInfo = config.widgetInfo;
@@ -263,9 +259,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         
         // TODO Try to load classes directly from .class files
         try {
-            final Class<? extends View> loaded = Class.forName(name).asSubclass(View.class);
-            final Constructor<? extends View> constructor = loaded.getConstructor(Context.class /*, AttributeSet.class, int.class*/);
-            final View created = constructor.newInstance(contextProvider.getContext()/*, null, style*/);
+            final View created = createAndroidViewForName(name);
             final BaseView view =
                 created instanceof ViewGroup
                 ? new UiViewGroup (name, (ViewGroup) created)
@@ -274,6 +268,14 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         } catch (Throwable th) {
             return onCreateErrorView(name, "Cannot create view for: " + name);
         }
+    }
+
+    @NonNull
+    protected View createAndroidViewForName(String name) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, java.lang.reflect.InvocationTargetException {
+        final Class<? extends View> loaded = Class.forName(name).asSubclass(View.class);
+        final Constructor<? extends View> constructor = loaded.getConstructor(Context.class /*, AttributeSet.class, int.class*/);
+        final View created = constructor.newInstance(contextProvider.getContext()/*, null, style*/);
+        return created;
     }
 
     protected IView applyLayoutParams(IView view, ViewGroup parent) {
