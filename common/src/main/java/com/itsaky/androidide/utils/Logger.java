@@ -18,21 +18,36 @@
 package com.itsaky.androidide.utils;
 
 import android.util.Log;
+import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ThrowableUtils;
+import org.jetbrains.annotations.Contract;
 
+/**
+ * Logger for the IDE.
+ *
+ * If a {@link Throwable} is passed to any of the logging methods, whole stack trace of the throwable
+ * is printed. Any modifications to this class will affect every log message in the IDE.
+ *
+ * @author Akash Yadav
+ */
 public class Logger {
     
     private static Logger instance;
     private static String TAG = "AndroidIDE";
+    private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
     
     public static Logger instance() {
         return instance == null ? instance = createInstance(TAG) : instance;
     }
 
+    @NonNull
+    @Contract("_ -> new")
     private static Logger createInstance(String tag) {
         return new Logger(tag);
     }
 
+    @NonNull
+    @Contract("_ -> new")
     public static Logger instance(String tag) {
         return createInstance(tag);
     }
@@ -42,94 +57,45 @@ public class Logger {
     }
 
     public Logger warn(Object... messages) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append(TAG);
-        sb.append("]");
-        sb.append("\n");
-        if(messages == null) {
-            Log.w(TAG, "null");
-            return this;
-        }
-        for(Object msg : messages) {
-            sb.append(msg);
-            sb.append("\n");
-        }
-        Log.w(TAG, sb.toString());
+        Log.w(TAG, generateMessage(messages));
         return this;
     }
     
     public Logger debug(Object... messages) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append(TAG);
-        sb.append("]");
-        sb.append("\n");
-        if(messages == null) {
-            Log.d(TAG, "null");
-            return this;
-        }
-        for(Object msg : messages) {
-            sb.append(msg);
-            sb.append("\n");
-        }
-        Log.d(TAG, sb.toString());
+        Log.d(TAG, generateMessage(messages));
         return this;
     }
     
     public Logger error(Object... messages) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append(TAG);
-        sb.append("]");
-        sb.append("\n");
-        if(messages == null) {
-            Log.e(TAG, "null");
-            return this;
-        }
-        for(Object msg : messages) {
-            if(msg instanceof Throwable) {
-                sb.append(ThrowableUtils.getFullStackTrace((Throwable) msg));
-            } else sb.append(msg);
-            sb.append("\n");
-        }
-        Log.e(TAG, sb.toString());
+        Log.e(TAG, generateMessage(messages));
         return this;
     }
     
     public Logger verbose(Object... messages) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append(TAG);
-        sb.append("]");
-        sb.append("\n");
-        if(messages == null) {
-            Log.v(TAG, "null");
-            return this;
-        }
-        for(Object msg : messages) {
-            sb.append(msg);
-            sb.append("\n");
-        }
-        Log.v(TAG, sb.toString());
+        Log.v(TAG, generateMessage(messages));
         return this;
     }
     
     public Logger info(Object... messages) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        sb.append(TAG);
-        sb.append("]");
-        sb.append("\n");
-        if(messages == null) {
-            Log.i(TAG, "null");
-            return this;
-        }
-        for(Object msg : messages) {
-            sb.append(msg);
-            sb.append("\n");
-        }
-        Log.i(TAG, sb.toString());
+        Log.i(TAG, generateMessage(messages));
         return this;
+    }
+
+    @NonNull
+    protected String generateMessage (Object... messages) {
+        StringBuilder sb = new StringBuilder();
+
+        if(messages == null) {
+            return "null";
+        }
+
+        for(Object msg : messages) {
+            sb.append(msg instanceof Throwable ?
+                    ThrowableUtils.getFullStackTrace(((Throwable) msg)) :
+                    msg);
+            sb.append(MSG_SEPARATOR);
+        }
+
+        return sb.toString();
     }
 }

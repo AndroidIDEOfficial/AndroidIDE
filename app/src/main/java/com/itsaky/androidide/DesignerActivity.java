@@ -18,6 +18,7 @@
 package com.itsaky.androidide;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -54,6 +55,7 @@ import com.itsaky.androidide.ui.WidgetDragData;
 import com.itsaky.androidide.ui.WidgetDragListener;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.models.UIWidgetGroup;
+import com.itsaky.androidide.ui.WidgetDragShadowBuilder;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IInflateListener;
@@ -161,7 +163,14 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     }
 
     private boolean onLayoutViewLongClick(IView view) {
-        return false;
+        final var shadow = new WidgetDragShadowBuilder(view.asView());
+        final var item = new ClipData.Item(DesignerActivity.DRAGGING_WIDGET_TAG);
+        final var clip = new ClipData(DesignerActivity.DRAGGING_WIDGET_TAG, new String[] {DesignerActivity.DRAGGING_WIDGET_MIME}, item);
+        final var data = view.getExtraData();
+
+        view.asView().startDragAndDrop(clip, shadow, data, 0);
+
+        return true;
     }
 
     private void onLayoutViewClick(IView view) {
@@ -169,23 +178,23 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     }
 
     private void setupWidgets() {
-        final var common = new UIWidgetGroup(getString(R.string.widget_group_android));
-        common.addChild(new UIWidget(getString(R.string.widget_button), R.drawable.ic_widget_button, Button.class));
-        common.addChild(new UIWidget(getString(R.string.widget_checkbox), R.drawable.ic_widget_checkbox, CheckBox.class));
-        common.addChild(new UIWidget(getString(R.string.widget_checked_textview), R.drawable.ic_widget_checked_textview, CheckedTextView.class));
-        common.addChild(new UIWidget(getString(R.string.widget_edittext), R.drawable.ic_widget_edittext, EditText.class));
-        common.addChild(new UIWidget(getString(R.string.widget_image_button), R.drawable.ic_widget_image, ImageButton.class));
-        common.addChild(new UIWidget(getString(R.string.widget_image_view), R.drawable.ic_widget_image, ImageView.class));
-        common.addChild(new UIWidget(getString(R.string.widget_progressbar), R.drawable.ic_widget_progress, ProgressBar.class));
-        common.addChild(new UIWidget(getString(R.string.widget_radio_button), R.drawable.ic_widget_radio_button, RadioButton.class));
-        common.addChild(new UIWidget(getString(R.string.widget_seekbar), R.drawable.ic_widget_seekbar, SeekBar.class));
-        common.addChild(new UIWidget(getString(R.string.widget_spinner), R.drawable.ic_widget_spinner, Spinner.class));
-        common.addChild(new UIWidget(getString(R.string.widget_textview), R.drawable.ic_widget_textview, TextView.class));
+        final var android = new UIWidgetGroup(getString(R.string.widget_group_android));
+        android.addChild(new UIWidget(getString(R.string.widget_button), R.drawable.ic_widget_button, Button.class));
+        android.addChild(new UIWidget(getString(R.string.widget_checkbox), R.drawable.ic_widget_checkbox, CheckBox.class));
+        android.addChild(new UIWidget(getString(R.string.widget_checked_textview), R.drawable.ic_widget_checked_textview, CheckedTextView.class));
+        android.addChild(new UIWidget(getString(R.string.widget_edittext), R.drawable.ic_widget_edittext, EditText.class));
+        android.addChild(new UIWidget(getString(R.string.widget_image_button), R.drawable.ic_widget_image, ImageButton.class));
+        android.addChild(new UIWidget(getString(R.string.widget_image_view), R.drawable.ic_widget_image, ImageView.class));
+        android.addChild(new UIWidget(getString(R.string.widget_progressbar), R.drawable.ic_widget_progress, ProgressBar.class));
+        android.addChild(new UIWidget(getString(R.string.widget_radio_button), R.drawable.ic_widget_radio_button, RadioButton.class));
+        android.addChild(new UIWidget(getString(R.string.widget_seekbar), R.drawable.ic_widget_seekbar, SeekBar.class));
+        android.addChild(new UIWidget(getString(R.string.widget_spinner), R.drawable.ic_widget_spinner, Spinner.class));
+        android.addChild(new UIWidget(getString(R.string.widget_textview), R.drawable.ic_widget_textview, TextView.class));
 
         // IMPORTANT: Do not select any other groups here
-        common.setSelected(true);
-        this.selectedGroup = common;
-        widgetGroups.add(common);
+        android.setSelected(true);
+        this.selectedGroup = android;
+        widgetGroups.add(android);
 
         final var layouts = new UIWidgetGroup(getString(R.string.widget_group_layouts));
         layouts.addChild(new UIWidget(getString(R.string.layout_linear), R.drawable.ic_widget_linear, LinearLayout.class));
@@ -196,7 +205,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         final var adapter = new WidgetGroupItemAdapter(widgetGroups, this::showWidgetGroup);
         mBinding.groupItems.setAdapter(adapter);
 
-        showWidgetGroup(common);
+        showWidgetGroup(android);
     }
 
     @SuppressLint("NotifyDataSetChanged")

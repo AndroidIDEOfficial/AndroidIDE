@@ -28,13 +28,15 @@ import com.itsaky.androidide.shell.IProcessExitListener;
 import com.itsaky.androidide.shell.ProcessExecutorFactory;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.FileUtil;
-import com.itsaky.androidide.utils.InputStreamWriter;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.services.IDELanguageServer;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -141,13 +143,29 @@ public class JLSHandler implements LSPHandler {
     }
     
     private void startReader(InputStream in) throws FileNotFoundException {
-        final InputStreamWriter writer = new InputStreamWriter (in, getOutputFile());
-        final Thread readerThread = new Thread (writer, "JavaLanguageServerOutputReader");
+        final Thread readerThread = new Thread (new ErrReader(in), "JavaLanguageServerOutputReader");
         readerThread.setDaemon(true);
         readerThread.start();
     }
-    
-    private File getOutputFile () {
-        return new File (FileUtil.getExternalStorageDir(), "ide_xlog/jls_output.txt");
+
+    private static class ErrReader implements Runnable {
+
+        private final InputStream err;
+
+        ErrReader(InputStream err) {
+            this.err = err;
+        }
+
+        @Override
+        public void run() {
+            try (final var reader = new BufferedReader(new InputStreamReader(this.err))) {
+                var line = "";
+                while ((line = reader.readLine()) != null) {
+                    LOG.error(line);
+                }
+            } catch (IOException e) {
+                LOG.error("Error reading error stream from Java language server.", e);
+            }
+        }
     }
 }

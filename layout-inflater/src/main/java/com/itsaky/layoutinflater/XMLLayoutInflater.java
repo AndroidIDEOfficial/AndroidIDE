@@ -142,7 +142,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         registerAttributeAdaptersTo (root);
 
         if (!tag.attributes().isEmpty()) {
-            addAtrributesTo (root, tag.attributes());
+            addAttributesTo(root, tag.attributes());
         }
 
         if (root instanceof IViewGroup) {
@@ -215,7 +215,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         return adapter;
     }
 
-    protected void addAtrributesTo(IView view, Attributes attributes) {
+    protected void addAttributesTo(IView view, Attributes attributes) {
         assertNotnull(attributes, "Cannot apply null attributes!");
 
         for (Attribute attr : attributes) {

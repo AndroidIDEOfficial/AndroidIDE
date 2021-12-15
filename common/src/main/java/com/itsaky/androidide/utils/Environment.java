@@ -89,7 +89,7 @@ public final class Environment {
         PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
         JLS_JAR = new File(JLS_HOME, "jls.jar");
         
-        INIT_SCRIPT = new File(mkdirIfNotExits(new File(app.getIDEDataDir(), "init")), "androidide.init.gradle");
+        INIT_SCRIPT = new File(mkdirIfNotExits(new File(app.getIDEDataDir(), "init")), "data/common/androidide.init.gradle");
         BOOTCLASSPATH = new File("");
         GRADLE_USER_HOME = new File(HOME, ".gradle");
         GRADLE_PROPS = new File(GRADLE_USER_HOME, "gradle.properties");
@@ -246,7 +246,7 @@ public final class Environment {
 	}
 
 	public static File mkdirIfNotExits(File in) {
-		if (!in.exists())
+		if (in != null && !in.exists())
 			FileUtils.createOrExistsDir(in);
 			
 		return in;

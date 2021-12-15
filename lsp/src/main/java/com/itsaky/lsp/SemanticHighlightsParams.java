@@ -23,7 +23,15 @@ package com.itsaky.lsp;
 import org.eclipse.lsp4j.TextDocumentIdentifier;
 
 public class SemanticHighlightsParams {
-  
+
+  public SemanticHighlightsParams () {
+    this (null);
+  }
+
+  public SemanticHighlightsParams(TextDocumentIdentifier _textDocument) {
+    this._textDocument = _textDocument;
+  }
+
   private TextDocumentIdentifier _textDocument;
   
   public TextDocumentIdentifier getTextDocument() {

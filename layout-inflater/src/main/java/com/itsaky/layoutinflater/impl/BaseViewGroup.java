@@ -57,7 +57,7 @@ public abstract class BaseViewGroup extends BaseView implements IViewGroup {
     public int indexOfChild(View view) {
         for (var i = 0; i < getChildCount(); i++) {
             final var child = getChildAt(i);
-            if (child != null && child == view) {
+            if (child != null && child.asView() != null && child.asView() == view) { // Comparison is same in ViewGroup implementation
                 return i;
             }
         }

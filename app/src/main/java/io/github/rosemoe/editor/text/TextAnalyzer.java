@@ -37,11 +37,13 @@ public class TextAnalyzer {
     private Callback mCallback;
     private AnalyzeThread mThread;
     private EditorLanguage mLanguage;
+
+    private static final Logger LOG = Logger.instance("TextAnalyzer");
     
     /**
      * Create a new manager for the given codeAnalyzer
      *
-     * @param codeAnalyzer0 Target codeAnalyzer
+     * @param language The language set to editor.
      */
     public TextAnalyzer(EditorLanguage language) {
         if (language == null || language.getAnalyzer() == null) {
@@ -216,7 +218,7 @@ public class TextAnalyzer {
                     }
                 } while (true);
             } catch (Exception ex) {
-                // ignored
+                LOG.error("An error occurred while analyzing", ex);
             }
         }
 

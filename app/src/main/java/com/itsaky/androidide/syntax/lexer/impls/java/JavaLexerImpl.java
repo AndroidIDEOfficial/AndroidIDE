@@ -26,7 +26,26 @@ import com.itsaky.androidide.syntax.lexer.tokens.TokenType;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.SemanticHighlight;
+import com.itsaky.lsp.SemanticHighlightsParams;
 import com.itsaky.lsp.services.IDELanguageServer;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.struct.BlockLine;
@@ -37,18 +56,6 @@ import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.antlr.v4.runtime.CharStreams;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 
 // TODO Request Language server for syntax highlighting instead of waiting for it to send highlight ranges
 public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
@@ -59,6 +66,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
     private final Map<Integer, List<Range>> stringMap = new HashMap<>();
     
     public final MultilineStringHandler stringHandler = new MultilineStringHandler();
+    private CompletableFuture<List<SemanticHighlight>> lastRequest;
 
     public JavaLexerImpl(EditorLanguage language) {
         this.language = language;
@@ -72,7 +80,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
     
     @Override
     public void analyze(IDELanguageServer languageServer, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception {
-        
         final JavaLexerAnalyzer lexer = new JavaLexerAnalyzer((Content) content, colors, this.helper);
         
         try {
@@ -82,7 +89,38 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
         }
         
         stringMap.clear();
-        
+
+        if (languageServer != null && file != null) {
+
+            if (lastRequest != null && !lastRequest.isDone()) {
+                lastRequest.cancel(true);
+            }
+
+            this.lastRequest = languageServer.getTextDocumentService()
+                    .semanticHighlights(
+                            new SemanticHighlightsParams(
+                                    new TextDocumentIdentifier(
+                                            file.toURI().toString()
+                                    )
+                            )
+                    );
+
+            try {
+                var result = Objects.requireNonNull(this.lastRequest).get();
+                result = Objects.requireNonNull(result).stream()
+                        .filter(semanticHighlight -> file.toURI().toString().equals(semanticHighlight.uri))
+                        .collect(Collectors.toList());
+
+                if (result.size() > 0) {
+                    setSemanticHighlights(result.get(0));
+                }
+
+            } catch (Throwable throwable) {
+                LOG.error("An error occurred while retrieving semantic highlight for Java file.", throwable);
+            }
+        }
+
+
         while (delegate.shouldAnalyze()) {
             // null = EOF
             if(lexer.nextToken() == null)
@@ -133,7 +171,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
         }
         return diags.entrySet().stream()
             .filter(d -> d != null && d.getValue() != null)
-            .map(d -> d.getValue())
+            .map(Map.Entry::getValue)
             .collect(Collectors.toList());
     }
 
@@ -146,7 +184,7 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
         
         @Override
         public boolean matchesRequirement(String beforeText, String afterText, CharPosition cursor) {
-            if(language == null || stringMap == null || stringMap.isEmpty()) {
+            if(language == null || stringMap.isEmpty()) {
                 return false;
             }
             
@@ -556,10 +594,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
                 default:
                     type = TokenType.TEXT;
                     wasClassName = false;
-                    if (tokenType == JavaLexer.LBRACK || (tokenType == JavaLexer.RBRACK && previous == JavaLexer.LBRACK)) {
-                        span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
-                        break;
-                    }
                     span = colors.addIfNeeded(line, column, EditorColorScheme.OPERATOR);
                     break;
             }

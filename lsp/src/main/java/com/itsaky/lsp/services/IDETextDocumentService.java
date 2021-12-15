@@ -20,7 +20,18 @@
 
 package com.itsaky.lsp.services;
 
+import com.itsaky.lsp.SemanticHighlight;
+import com.itsaky.lsp.SemanticHighlightsParams;
+
+import org.eclipse.lsp4j.jsonrpc.services.JsonNotification;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
-public interface IDETextDocumentService extends TextDocumentService{
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+public interface IDETextDocumentService extends TextDocumentService {
+
+    @JsonNotification("textDocument/semanticHighlights")
+    CompletableFuture<List<SemanticHighlight>> semanticHighlights (SemanticHighlightsParams params);
+
 }
