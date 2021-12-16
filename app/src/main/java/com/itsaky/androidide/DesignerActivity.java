@@ -162,7 +162,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         setDragDataToInflatedView(view);
     }
 
-    private boolean onLayoutViewLongClick(IView view) {
+    private boolean onLayoutViewLongClick(@NonNull IView view) {
         final var shadow = new WidgetDragShadowBuilder(view.asView());
         final var item = new ClipData.Item(DesignerActivity.DRAGGING_WIDGET_TAG);
         final var clip = new ClipData(DesignerActivity.DRAGGING_WIDGET_TAG, new String[] {DesignerActivity.DRAGGING_WIDGET_MIME}, item);

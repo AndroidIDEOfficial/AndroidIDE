@@ -182,7 +182,7 @@ public class GroovyLexerImpl extends BaseJavaLexer implements Lexer {
 				type = TokenType.STRING_LITERAL;
 				span = colors.addIfNeeded(line, column, EditorColorScheme.LITERAL);
 				wasClassName = false;
-				addHexColorIfPresent(currentToken, span);
+				addHexColorIfPresent(currentToken, span, colors, line, column + currentToken.getText().length());
 				break;
 			case GroovyLexer.LPAREN :
 			case GroovyLexer.RPAREN :
