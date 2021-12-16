@@ -29,6 +29,13 @@ import com.itsaky.layoutinflater.IResourceFinder;
  * @author Akash Yadav
  */
 public interface IView {
+
+    /**
+     * The indentation length that will be used while generating layout code.
+     * You can modify this to change the number of spaces used for
+     * indentation.
+     */
+    public static int DEFAULT_INDENTATION_LENGTH = 4;
     
     /**
      * Get this view as android {@link View}. This will be used to display this view in the designer
@@ -94,4 +101,28 @@ public interface IView {
      */
     @Nullable
     Object getExtraData ();
+
+    /**
+     * Get the layout resource code for this file.
+     *
+     * @param indentationLength The number of spaces to indent.
+     */
+    String generateCode (int indentationLength);
+
+    /**
+     * @see #generateCode(int)
+     */
+    default String generateCode () {
+        return generateCode(0);
+    }
+
+    /**
+     * Get the tag name which will be used for generating XML Code
+     * for this view.
+     *
+     * Default implementation simply returns the simple name of this view's class.
+     *
+     * @return The tag name of this view.
+     */
+    String getXmlTag ();
 }

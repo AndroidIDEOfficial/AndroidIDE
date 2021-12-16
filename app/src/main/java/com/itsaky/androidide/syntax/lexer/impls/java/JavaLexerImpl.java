@@ -58,6 +58,7 @@ import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 
 // TODO Request Language server for syntax highlighting instead of waiting for it to send highlight ranges
+// FIXME Current implementation does not work.
 public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
     private final EditorLanguage language;

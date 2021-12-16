@@ -145,6 +145,8 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
             layoutContainerGroup.addView(view);
 
             mBinding.layoutContainer.setOnDragListener(getOnDragListener(layoutContainerGroup));
+
+            LOG.debug("Generated code: ", view.generateCode());
         } catch (Throwable th) {
             mBinding.layoutContainer.removeAllViews();
             mBinding.layoutContainer.addView(createErrorText(th));

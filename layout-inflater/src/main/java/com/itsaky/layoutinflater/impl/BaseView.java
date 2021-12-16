@@ -18,7 +18,9 @@
 package com.itsaky.layoutinflater.impl;
 
 import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.itsaky.layoutinflater.IResourceFinder;
@@ -129,24 +131,105 @@ public abstract class BaseView implements IView {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        
-        if (obj == null) {
-            return false;
+    public String getXmlTag() {
+        return Objects.requireNonNull(asView()).getClass().getSimpleName();
+    }
+
+    /**
+     * Generate the XML layout code for this view.
+     * <p>
+     *     NOTE: To avoid writing same logic in multiple files,
+     *     this implementation tries to handle logic for both
+     *     {@link IView} and {@link IViewGroup}.
+     *
+     *     For example, if this view is an {@link IViewGroup}, then
+     *     the layout code for its children will also be printed.
+     * </p>
+     *
+     * @param indentCount The number of tabs to indent. To define custom tab size,
+     *                    see {@link IView#DEFAULT_INDENTATION_LENGTH}.
+     * @return The generated XML code. Never null.
+     */
+    @NonNull
+    @Override
+    public String generateCode(int indentCount) {
+        final var sb = new StringBuilder();
+        sb.append("<");
+        sb.append(getXmlTag());
+
+        if (!attributes.isEmpty()) {
+            for (var attr : attributes) {
+                newLine(sb, indentCount + 1); // Attributes must be indented by one tab (4 spaces by default)
+                attr.getNamespace();
+                if (attr.getNamespace().trim().length() > 0) {
+                    sb.append(attr.getNamespace());
+                    sb.append(":");
+                }
+                sb.append(attr.getAttributeName());
+                sb.append("=");
+                sb.append("\"");
+                sb.append(attr.getValue());
+                sb.append("\"");
+            }
         }
-        
-        return this.hashCode() == obj.hashCode();
+
+        var hasChildren = false;
+        if (this instanceof IViewGroup) {
+            final var group = (IViewGroup) this;
+            hasChildren = group.getChildCount() > 0;
+
+            if (hasChildren) {
+                sb.append(">");
+                newLine(sb, indentCount + 1);
+                for (var child : group.getChildren()) {
+                    newLine(sb, indentCount + 1);
+                    sb.append(child.generateCode(indentCount + 1));
+                }
+            }
+        }
+
+        if (hasChildren) {
+            // Closing '>' is already printed, no need to print it here.
+            // Leave one line and append the closing tag.
+            newLine(sb, indentCount);
+            newLine(sb, indentCount - 1);
+            sb.append("</");
+            sb.append(getXmlTag());
+            sb.append(">");
+        } else {
+            sb.append("/>");
+        }
+
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BaseView baseView = (BaseView) o;
+        return isPlaceholder() == baseView.isPlaceholder()
+                && Objects.equals(attributes, baseView.attributes)
+                && Objects.equals(attrAdapters, baseView.attrAdapters)
+                && Objects.equals(qualifiedName, baseView.qualifiedName)
+                && Objects.equals(view, baseView.view)
+                && Objects.equals(getParent(), baseView.getParent())
+                && Objects.equals(stored, baseView.stored);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-            attributes,
-            attrAdapters,
-            qualifiedName,
-            view,
-            parent,
-            isPlaceholder
-        );
+        return Objects.hash(attributes, attrAdapters, qualifiedName, view, getParent(), stored, isPlaceholder());
+    }
+
+    private void newLine (@NonNull StringBuilder stringBuilder, int indentCount) {
+        stringBuilder.append("\n");
+        indent(stringBuilder, indentCount);
+    }
+
+    private void indent (StringBuilder sb, int count) {
+        for (var i = 0; i < DEFAULT_INDENTATION_LENGTH * count; i++) {
+            sb.append(" ");
+        }
     }
 }
