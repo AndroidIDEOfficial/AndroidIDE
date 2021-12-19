@@ -94,6 +94,9 @@ public class WidgetDragListener implements View.OnDragListener {
                 var view = dragData.isAlreadyInflated ? dragData.alreadyInflatedView : createView(dragData.newDragData);
                 applyBasicAttributes(view);
 
+                // Remove from parent if it has a parent
+                view.removeFromParent();
+
                 this.viewGroup.addView(view);
 
                 if (this.addedListener != null) {

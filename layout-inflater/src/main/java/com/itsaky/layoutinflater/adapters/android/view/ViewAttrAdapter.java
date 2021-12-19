@@ -31,13 +31,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IAttributeAdapter;
 import com.itsaky.layoutinflater.IDTable;
 import com.itsaky.layoutinflater.IResourceFinder;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.regex.Pattern;
@@ -51,7 +55,7 @@ import java.util.regex.Pattern;
  */
 public class ViewAttrAdapter implements IAttributeAdapter {
     
-    private final Pattern HEX_COLOR = Pattern.compile("#[a-fA-F0-9]{6,8}");
+    private static final Pattern HEX_COLOR = Pattern.compile("#[a-fA-F0-9]{6,8}");
     
     protected static final Logger LOG = Logger.instance ("BaseViewAttrAdapter");
     public static final int ENUM_NOT_FOUND = -4116;
@@ -192,7 +196,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 view.setScaleY(parseFloat(value));
                 break;
             case "scrollX" :
-                view.setScrollY((int) parseFloat(value));
+                view.setScrollX((int) parseFloat(value));
                 break;
             case "scrollY" :
                 view.setScrollY((int) parseFloat(value));
@@ -234,11 +238,11 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         // ----- Handle attributes related to parent ------
         
         if (!handled && params instanceof LinearLayout.LayoutParams) {
-            handled = handleLinearLayoutParams ((LinearLayout.LayoutParams) params, view, name, value, dm, resFinder);
+            handled = handleLinearLayoutParams ((LinearLayout.LayoutParams) params, name, value, dm, resFinder);
         }
         
         if (!handled && params instanceof RelativeLayout.LayoutParams) {
-            handled = handleRelativeLayoutParams ((RelativeLayout.LayoutParams) params, view, name, value, resFinder);
+            handled = handleRelativeLayoutParams ((RelativeLayout.LayoutParams) params, name, value, resFinder);
         }
         
         if (!handled && params instanceof ViewGroup.MarginLayoutParams) {
@@ -249,8 +253,8 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         
         return handled;
     }
-
-    protected int parseId(String value) {
+    
+    protected int parseId(@NonNull String value) {
         if (value.startsWith("@id/")) {
             final String name = value.substring("@id/".length());
             return IDTable.getId(name);
@@ -260,8 +264,8 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
         return View.NO_ID;
     }
-
-    protected boolean handleRelativeLayoutParams(RelativeLayout.LayoutParams params, View view, String name, String value, IResourceFinder resFinder) {
+    
+    protected boolean handleRelativeLayoutParams (RelativeLayout.LayoutParams params, @NonNull String name, String value, IResourceFinder resFinder) {
         boolean handled = true;
         switch (name) {
             case "layout_above" :
@@ -347,7 +351,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
     
-    protected boolean handleLinearLayoutParams(LinearLayout.LayoutParams params, View view, String name, String value, DisplayMetrics dm, IResourceFinder resFinder) {
+    protected boolean handleLinearLayoutParams (LinearLayout.LayoutParams params, @NonNull String name, String value, DisplayMetrics dm, IResourceFinder resFinder) {
         boolean handled = true;
         switch (name) {
             case "layout_gravity" :
@@ -362,8 +366,8 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
         return handled;
     }
-
-    protected boolean handleMarginParams(ViewGroup.MarginLayoutParams params, String name, String value, DisplayMetrics dm, IResourceFinder resFinder) {
+    
+    protected boolean handleMarginParams(ViewGroup.MarginLayoutParams params, @NonNull String name, String value, DisplayMetrics dm, IResourceFinder resFinder) {
         boolean handled = true;
         switch (name) {
             case "layout_margin" :
@@ -408,8 +412,8 @@ public class ViewAttrAdapter implements IAttributeAdapter {
             return defaultVal;
         }
     }
-
-    protected int parseDrawingCacheQuality(String value) {
+    
+    protected int parseDrawingCacheQuality(@NonNull String value) {
         switch (value) {
             case "high" :
                 return View.DRAWING_CACHE_QUALITY_HIGH;
@@ -420,8 +424,8 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 return View.DRAWING_CACHE_QUALITY_AUTO;
         }
     }
-
-    protected int parseVisibility(String value) {
+    
+    protected int parseVisibility(@NonNull String value) {
         switch (value) {
             case "gone" :
                 return View.GONE;
@@ -433,7 +437,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
     
-    protected int parseGravity (String value) {
+    protected int parseGravity (@NonNull String value) {
         final String[] splits = value.split(Pattern.quote("|"));
         int result = -1;
         for (String split : splits) {
@@ -446,8 +450,8 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
         return result;
     }
-
-    protected int gravityFor(String gravity) {
+    
+    protected int gravityFor(@NonNull String gravity) {
         switch (gravity) {
             case "center" :
                 return Gravity.CENTER;
@@ -472,7 +476,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
     
-    protected int parseTextAlignment (String value) {
+    protected int parseTextAlignment (@NonNull String value) {
         switch (value) {
             case "center" :
                 return View.TEXT_ALIGNMENT_CENTER;
@@ -492,7 +496,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
     
-    protected int parseTextDirection (String value) {
+    protected int parseTextDirection (@NonNull String value) {
         switch (value) {
             case "anyRtl" :
                 return View.TEXT_DIRECTION_ANY_RTL;
@@ -514,14 +518,14 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
 
-    protected String parseString(String value, IResourceFinder resFinder) {
+    protected String parseString(@NonNull String value, IResourceFinder resFinder) {
         if (value.startsWith("@")) {
             return parseString(resFinder.findString(value.substring("@string/".length())), resFinder);
         }
         return value;
     }
 
-    protected boolean parseBoolean(String value, IResourceFinder resFinder) {
+    protected boolean parseBoolean(@NonNull String value, IResourceFinder resFinder) {
         if (!value.startsWith("@")) {
             if ("true".equals(value)) {
                 return true;
@@ -534,7 +538,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         return false;
     }
 
-    protected PorterDuff.Mode parsePorterDuffMode(String mode) {
+    protected PorterDuff.Mode parsePorterDuffMode(@NonNull String mode) {
         switch (mode) {
             case "add" :
                 return PorterDuff.Mode.ADD;

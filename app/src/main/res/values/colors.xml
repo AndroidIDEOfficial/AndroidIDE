@@ -31,6 +31,7 @@
 	<color name="bg_green">#4CAF50</color>
 	<color name="bg_widget_selected">#212121</color>
 	<color name="transform_scrim">#70000000</color>
+	<color name="fg_selected_ui_view">#9003A9F4</color>
     
     <color name="textActionNameColor">@android:color/tertiary_text_light</color>
     <color name="completionWindow_tipBackground">#eeeeee</color>

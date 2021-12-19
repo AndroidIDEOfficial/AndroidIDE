@@ -27,4 +27,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation common.utilcode
     implementation common.jsoup
+
+    implementation androidx.annotation
+
+    compileOnly project(":common")
 }

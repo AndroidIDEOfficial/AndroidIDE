@@ -18,6 +18,9 @@
 package com.itsaky.layoutinflater.impl;
 
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+
 import com.itsaky.layoutinflater.IView;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +52,8 @@ public class UiViewGroup extends BaseViewGroup {
         super.addView(view, index);
         this.viewGroup.addView(view.asView(), index);
         this.children.add(index, view);
-        
+
+        view.setParent(this);
         onViewAdded(view);
     }
     
@@ -65,7 +69,7 @@ public class UiViewGroup extends BaseViewGroup {
     }
     
     @Override
-    public void removeView(IView view) {
+    public void removeView(@NonNull IView view) {
         this.viewGroup.removeView(view.asView());
         this.children.remove(view);
         

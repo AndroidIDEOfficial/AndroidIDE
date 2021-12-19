@@ -3118,6 +3118,7 @@
             <flag name="left" value="0x03" />
             <!-- Push object to the right of its container, not changing its size. -->
             <flag name="right" value="0x05" />
+            <flag name="right" value="0x05" />
             <!-- Place object in the vertical center of its container, not changing its size. -->
             <flag name="center_vertical" value="0x10" />
             <!-- Grow the vertical size of the object if needed so it completely fills its container. -->

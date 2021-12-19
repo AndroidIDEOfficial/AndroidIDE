@@ -21,7 +21,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import com.itsaky.layoutinflater.IResourceFinder;
+import java.util.Set;
 
 /**
  * Represents a view in the UI Designer
@@ -65,13 +65,34 @@ public interface IView {
      * @param index Index of the attribute to remove
      */
     void removeAttributeAt (int index);
-    
+
+    /**
+     * Get the attributes of this view.
+     * @return The attributes.
+     */
+    Set<IAttribute> getAttributes ();
+
+    /**
+     * Get the attributes of this view as an array.
+     * @return The attributes.
+     * @see #getAttributes()
+     */
+    IAttribute[] getAttrArray ();
+
     /**
      * Register this attribute adapter
      *
      * @param adapter The adapter to register
      */
     void registerAttributeAdapter (IAttributeAdapter adapter);
+
+    /**
+     * Set the parent of this view.
+     * This is set by {@link IViewGroup} when {@link IViewGroup#addView(IView, int)}
+     * is called.
+     * @param newParent The new parent of this view.
+     */
+    void setParent (IViewGroup newParent);
     
     /**
      * Get the parent of this view
@@ -79,6 +100,14 @@ public interface IView {
      * @return The parent of this view or {@code null} if this is the root view.
      */
     IViewGroup getParent();
+
+    /**
+     * Remove this view from its parent. This should take care of removing
+     * the actual {@link View} from its parent.
+     *
+     * @return {@code true} if the view was successfully removed, {@code false} otherwise.
+     */
+    boolean removeFromParent ();
     
     /**
      * Is this view a placeholder for another view?

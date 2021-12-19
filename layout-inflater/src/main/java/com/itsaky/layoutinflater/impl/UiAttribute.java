@@ -17,11 +17,8 @@
 **************************************************************************************/
 package com.itsaky.layoutinflater.impl;
 
-import com.itsaky.layoutinflater.AttrType;
 import com.itsaky.layoutinflater.IAttribute;
-import com.itsaky.layoutinflater.IFixedValue;
-import java.util.HashSet;
-import java.util.Set;
+
 import java.util.Objects;
 
 public class UiAttribute implements IAttribute {
@@ -29,17 +26,11 @@ public class UiAttribute implements IAttribute {
     private final String namespace;
     private final String name;
     private final String value;
-    private final Set<IFixedValue> fixedValues;
     
-    public UiAttribute(String namespace, String name, String value, Set<IFixedValue> fixedValues) {
+    public UiAttribute(String namespace, String name, String value) {
         this.namespace = namespace;
         this.name = name;
         this.value = value;
-        this.fixedValues = fixedValues;
-    }
-    
-    public UiAttribute(String namespace, String name, String value) {
-        this (namespace, name, value, new HashSet<IFixedValue>());
     }
     
     @Override
@@ -56,11 +47,6 @@ public class UiAttribute implements IAttribute {
     public String getValue() {
         return value;
     }
-    
-    @Override
-    public Set<IFixedValue> getFixedValues() {
-        return fixedValues;
-    }
 
     @Override
     public String toString() {
@@ -69,20 +55,21 @@ public class UiAttribute implements IAttribute {
         "    namespace = " + namespace + "\n" + 
         "    name = " + name + "\n" +
         "    value = " + value + "\n" +
-        "    fixedValue = " + fixedValues + "\n" +
         "]";
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        return this.hashCode() == obj.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UiAttribute that = (UiAttribute) o;
+        return Objects.equals(getNamespace(), that.getNamespace())
+                && Objects.equals(name, that.name)
+                && Objects.equals(getValue(), that.getValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(namespace, name, value, fixedValues);
+        return Objects.hash(getNamespace(), name, getValue());
     }
 }

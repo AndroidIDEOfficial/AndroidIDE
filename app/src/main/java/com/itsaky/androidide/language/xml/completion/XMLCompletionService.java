@@ -113,13 +113,13 @@ public class XMLCompletionService {
 
     private String createAttributeInsertText(Attr attr) {
         StringBuilder xml = new StringBuilder();
-        xml.append(attr.prefix);
+        xml.append(attr.namespace);
         xml.append(":");
         xml.append(attr.name);
         xml.append("=");
         xml.append("\"");
         
-        if(attr.prefix.equals("android")
+        if(attr.namespace.equals("android")
         && attr.name.equals("id")) {
             xml.append("@+id/");
         }

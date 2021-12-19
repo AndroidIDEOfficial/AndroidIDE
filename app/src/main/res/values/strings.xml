@@ -55,10 +55,6 @@
     <string name="menu_uncomment_line">Uncomment line</string>
     <string name="view_diags">Diagnostics</string>
     
-    <!-- Layout preview and designer -->
-    <string name="msg_cannot_preview_layout">Unable to preview layout!</string>
-    <string name="title_preview_layout">Preview Layout</string>
-    
     <!-- Build Tools Installation -->
     <string name="title_installation_failed">Installation failed</string>
     <string name="msg_installation_failed">Installation process terminated with exit code %1$d. Make sure you downloaded the build tools from original sources.\n\nYou could try to clear data of AndroidIDE and install again.</string>
@@ -290,6 +286,10 @@
     <string name="err_cannot_start_server">Unable to start Language Server for: %s</string>
     <string name="err_cannot_write_socket">Failed to write to Socket stream</string>
     <string name="err_server_disconnected">Language server process unexpectedly exited.</string>
+
+    <!-- Layout preview and designer -->
+    <string name="msg_cannot_preview_layout">Unable to preview layout!</string>
+    <string name="title_preview_layout">Preview Layout</string>
     <string name="label_ui_designer_content">Main UI designer content</string>
     <string name="widget_textview">TextView</string>
     <string name="widget_button">Button</string>
@@ -306,4 +306,17 @@
     <string name="widget_group_layouts">Layouts</string>
     <string name="layout_linear">LinearLayout</string>
     <string name="layout_relative">RelativeLayout</string>
+    <string name="msg_attr_edit_hint">Click on the attribute items to edit.</string>
+    <string name="sym_equal">=</string>
+    <string name="msg_attr_namespace">\'%s\' namespace</string>
+    <string name="msg_unknown_package">Unknown package name</string>
+    <string name="msg_attr_editor_select_view">Select a view to edit its attributes.</string>
+    <string name="msg_attr_editor_no_attrs">No attributes has been added for this view.\nClick on the \'+\' button to add.</string>
+    <string name="msg_enter_attr_value">Enter new value for attribute:</string>
+    <string name="hint_new_attr_value">New value</string>
+    <string name="attr_val_wrap_content">wrap_content</string>
+    <string name="attr_val_match_parent">match_parent</string>
+    <string name="attr_val_fixed">Fixed</string>
+    <string name="msg_enter_dimension_value">Enter dimension value</string>
+
 </resources>
