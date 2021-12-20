@@ -18,6 +18,7 @@
 package com.itsaky.androidide.utils;
 
 import android.content.Context;
+import android.content.DialogInterface;
 
 import androidx.annotation.NonNull;
 
@@ -33,10 +34,40 @@ import org.jetbrains.annotations.Contract;
  */
 public class DialogUtils {
     
+    /**
+     * Creates a new MaterialAlertDialogBuilder with the app's default style.
+     * @param context The context for the dialog builder.
+     * @return The new MaterialAlertDialogBuilder instance.
+     */
     @NonNull
     @Contract("_ -> new")
     public static MaterialAlertDialogBuilder newMaterialDialogBuilder (Context context) {
         return new MaterialAlertDialogBuilder (context, R.style.AppTheme_MaterialAlertDialog);
     }
     
+    @NonNull
+    public static MaterialAlertDialogBuilder newYesNoDialog (Context context,
+                                                             DialogInterface.OnClickListener positiveClickListener,
+                                                             DialogInterface.OnClickListener negativeClickListener) {
+        return newYesNoDialog (context,
+                context.getString(R.string.msg_yesno_def_title),
+                context.getString(R.string.msg_yesno_def_message),
+                positiveClickListener,
+                negativeClickListener);
+    }
+    
+    @NonNull
+    public static MaterialAlertDialogBuilder newYesNoDialog (Context context,
+                                                             String title,
+                                                             String message,
+                                                             DialogInterface.OnClickListener positiveClickListener,
+                                                             DialogInterface.OnClickListener negativeClickListener) {
+        final var builder = DialogUtils.newMaterialDialogBuilder (context);
+        builder.setTitle (title);
+        builder.setMessage (message);
+        builder.setPositiveButton (android.R.string.yes, positiveClickListener);
+        builder.setNegativeButton (android.R.string.no, negativeClickListener);
+        
+        return builder;
+    }
 }

@@ -42,6 +42,7 @@ import com.itsaky.androidide.databinding.LayoutAttrEditorSheetBinding;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetItemBinding;
 import com.itsaky.androidide.models.IconTextListItem;
 import com.itsaky.androidide.models.XMLAttribute;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.layoutinflater.IView;
 import com.itsaky.toaster.Toaster;
@@ -117,8 +118,12 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         }
         
         if (position == 0) { // Delete
-            this.selectedView.removeFromParent ();
-            dismiss ();
+            DialogUtils.newYesNoDialog (getContext (), (dialog, which) -> {
+                this.selectedView.removeFromParent ();
+                AttrEditorSheet.this.dismiss ();
+            }, (dialog, which) -> {
+                dialog.dismiss ();
+            }).show ();
         } else if (position == 1) {
             if (this.selectedView.getParent () == null) {
                 StudioApp.getInstance ().toast (getString(R.string.msg_no_view_parent), Toaster.Type.ERROR);

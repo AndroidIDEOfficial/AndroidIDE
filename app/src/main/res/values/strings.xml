@@ -323,5 +323,7 @@
     <string name="title_viewaction_delete">Delete</string>
     <string name="msg_viewaction_select_parent">Select parent</string>
     <string name="msg_no_view_parent">This view does not have a parent</string>
+    <string name="msg_yesno_def_title">Please confirm</string>
+    <string name="msg_yesno_def_message">Are you sure?</string>
 
 </resources>
