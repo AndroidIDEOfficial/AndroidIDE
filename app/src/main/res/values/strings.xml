@@ -318,5 +318,10 @@
     <string name="attr_val_match_parent">match_parent</string>
     <string name="attr_val_fixed">Fixed</string>
     <string name="msg_enter_dimension_value">Enter dimension value</string>
+    <string name="msg_applicable_attrs">Applicable attributes</string>
+    <string name="msg_attr_editor_actions">Actions</string>
+    <string name="title_viewaction_delete">Delete</string>
+    <string name="msg_viewaction_select_parent">Select parent</string>
+    <string name="msg_no_view_parent">This view does not have a parent</string>
 
 </resources>

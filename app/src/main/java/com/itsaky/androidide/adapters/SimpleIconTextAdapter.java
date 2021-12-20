@@ -99,8 +99,10 @@ public class SimpleIconTextAdapter extends RecyclerView.Adapter<SimpleIconTextAd
     }
 
     public static interface OnBindListener {
-        boolean onBind (IconTextListItem item, VH holder, int position);
-
+        default boolean onBind (IconTextListItem item, VH holder, int position) {
+            return false;
+        }
+        
         default void postBind (IconTextListItem item, VH holder, int position) {}
     }
 }

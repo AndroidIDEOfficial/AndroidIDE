@@ -57,10 +57,6 @@ public class WidgetTouchListener extends GestureDetector.SimpleOnGestureListener
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View view, @NonNull MotionEvent motionEvent) {
-        switch (motionEvent.getAction ()) {
-            case MotionEvent.ACTION_DOWN :
-                break;
-        }
         return mGestureDetector.onTouchEvent(motionEvent);
     }
 

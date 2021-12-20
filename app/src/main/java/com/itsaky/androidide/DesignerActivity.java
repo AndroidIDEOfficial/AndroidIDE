@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,14 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 package com.itsaky.androidide;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -39,6 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ThemedSpinnerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -51,12 +50,12 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 
 import com.blankj.utilcode.util.DeviceUtils;
-import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.adapters.WidgetGroupItemAdapter;
 import com.itsaky.androidide.adapters.WidgetItemAdapter;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityDesignerBinding;
+import com.itsaky.androidide.fragments.sheets.AttrEditorSheet;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.models.UIWidgetGroup;
 import com.itsaky.androidide.ui.WidgetDragData;
@@ -69,21 +68,21 @@ import com.itsaky.layoutinflater.IInflateListener;
 import com.itsaky.layoutinflater.ILayoutInflater;
 import com.itsaky.layoutinflater.IView;
 import com.itsaky.layoutinflater.IViewGroup;
-import com.itsaky.layoutinflater.impl.UiViewGroup;
 
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class DesignerActivity extends StudioActivity implements WidgetItemAdapter.OnDragStartListener {
     
     private ActivityDesignerBinding mBinding;
     private UIWidgetGroup checkedWidgetCategory;
-    private IView selectedView;
+    private IViewGroup inflatedRoot;
     
-    private Drawable selectedViewForeground;
+    private AttrEditorSheet mEditorSheet;
     
     public static final String KEY_LAYOUT_PATH = "designer_layoutPath";
     public static final String DRAGGING_WIDGET_TAG = "DRAGGING_WIDGET";
@@ -120,7 +119,9 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         
         @Override
         public void onFinishInflate (IView rootView) {
-        
+            if (rootView instanceof IViewGroup) {
+                inflatedRoot = (IViewGroup) rootView;
+            }
         }
     };
     
@@ -156,18 +157,17 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         final var name = path.substring (path.lastIndexOf (File.separator) + 1);
         getSupportActionBar ().setTitle (name);
         
-        this.selectedViewForeground = generateSelectedViewForeground ();
-        
         try {
             final ILayoutInflater inflater = getApp ().getLayoutInflater ();
             inflater.resetContextProvider (newContextProvider ());
             inflater.registerInflateListener (this.mInflateListener);
             final IView view = inflater.inflatePath (path, mBinding.layoutContainer);
             
-            final var layoutContainerGroup = new UiViewGroup (mBinding.layoutContainer.getClass ().getName (), mBinding.layoutContainer);
-            layoutContainerGroup.addView (view);
+            if (this.inflatedRoot != null) {
+                this.inflatedRoot.asView ().setOnDragListener (getOnDragListener (this.inflatedRoot));
+            }
             
-            mBinding.layoutContainer.setOnDragListener (getOnDragListener (layoutContainerGroup));
+            mBinding.layoutContainer.addView (view.asView ());
         } catch (Throwable th) {
             mBinding.layoutContainer.removeAllViews ();
             mBinding.layoutContainer.addView (createErrorText (th));
@@ -184,15 +184,40 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         }
     }
     
+    @Override
+    public void onBackPressed () {
+        finish ();
+    }
+    
+    @Override
+    protected void onDestroy () {
+        
+        if (isAttrEditorShowing ()) {
+            getAttrEditorSheet ().dismiss ();
+        }
+        
+        this.mEditorSheet = null;
+        
+        // Release the reference to inflate listener and context from the layout inflater
+        // Failing to do so will lead getSupportFragmentManager() to return a destroyed fragment manager
+        try {
+            final var layoutInflater = getApp ().getLayoutInflater ();
+            layoutInflater.unregisterListener (mInflateListener);
+            layoutInflater.resetContextProvider (null);
+        } catch (Throwable e) {
+            e.printStackTrace ();
+        }
+    
+        super.onDestroy ();
+    }
+    
     private void setupInflatedView (@NonNull IView view) {
-        view.asView ().setSelected (false);
-        view.asView ().setOnTouchListener (
-                new WidgetTouchListener (
-                        view,
-                        this::onLayoutViewClick,
-                        this::onLayoutViewLongClick
-                )
+        final var listener = new WidgetTouchListener (
+                view,
+                this::onLayoutViewClick,
+                this::onLayoutViewLongClick
         );
+        view.asView ().setOnTouchListener (listener);
         
         setDragDataToInflatedView (view);
     }
@@ -209,29 +234,19 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     }
     
     private void onLayoutViewClick (@NonNull IView view) {
-        view.asView ().setSelected (!view.asView ().isSelected ());
-        if (view.asView ().isSelected ()) {
-            selectView (view);
-        } else {
-            deselectView (view);
+        if (isAttrEditorShowing ()) {
+            getAttrEditorSheet ().dismiss ();
+        }
+        
+        getAttrEditorSheet ().setSelectedView (view);
+        
+        if (!getSupportFragmentManager ().isDestroyed ()) {
+            getAttrEditorSheet ().show (getSupportFragmentManager (), "attribute_editor_dialog");
         }
     }
     
-    private void selectView (@NonNull IView view) {
-        
-        deselectView (this.selectedView);
-        
-        final var v = view.asView ();
-        v.setForeground (this.selectedViewForeground);
-        this.selectedView = view;
-    }
-    
-    private void deselectView (IView view) {
-        if (view != null) {
-            view.asView ().setForeground (null);
-        }
-        
-        this.selectedView = null;
+    private boolean isAttrEditorShowing () {
+        return getAttrEditorSheet ().getDialog () != null && getAttrEditorSheet ().getDialog ().isShowing ();
     }
     
     private void setupWidgets () {
@@ -309,6 +324,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     private View.OnDragListener getOnDragListener (IViewGroup group) {
         // WidgetDragListener cannot be reused
         // This is because they keep a reference to the view group in which dragged view will be added
+    
         return new WidgetDragListener (
                 this,
                 group,
@@ -319,12 +335,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         view.setExtraData (new WidgetDragData (true, view, null));
     }
     
-    @NonNull
-    private Drawable generateSelectedViewForeground () {
-        final var drawable = new GradientDrawable ();
-        drawable.setShape (GradientDrawable.RECTANGLE);
-        drawable.setColor (ContextCompat.getColor (this, R.color.fg_selected_ui_view));
-        drawable.setCornerRadius (SizeUtils.dp2px (3));
-        return drawable;
+    private AttrEditorSheet getAttrEditorSheet () {
+        return this.mEditorSheet == null ? mEditorSheet = new AttrEditorSheet () : mEditorSheet;
     }
 }

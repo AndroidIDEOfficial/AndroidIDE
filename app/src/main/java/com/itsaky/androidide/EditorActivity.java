@@ -86,14 +86,12 @@ import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
 import com.itsaky.androidide.project.IDEProject;
-import com.itsaky.androidide.project.ProjectResourceFinder;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.layoutinflater.ILayoutInflater;
-import com.itsaky.layoutinflater.LayoutInflaterConfiguration;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
@@ -417,7 +415,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
 		} else if (id == R.id.menuEditor_lintRelease) {
 			getBuildService().lintRelease();
 		} else if (id == R.id.menuEditor_save) {
-            /**
+            /*
              * 1. Notify that all files are saved
              * 2. If there were any XML files modified, call ':app:processDebugResources' task
              *
@@ -478,7 +476,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         for(int i=0;i<mBinding.tabs.getTabCount();i++) {
             try {
                 mBinding.tabs.getTabAt(i).setText(mPagerAdapter.getPageTitle(i));
-            } catch (Throwable th) {}
+            } catch (Throwable th) {
+                th.printStackTrace ();
+            }
         }
     }
     
@@ -812,7 +812,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mFileOptionsFragment = new OptionsListFragment();
         mFileOptionsFragment.addOption(new SheetOption(0, R.drawable.ic_file_copy_path, R.string.copy_path, file));
         mFileOptionsFragment.addOption(new SheetOption(1, R.drawable.ic_file_rename, R.string.rename_file, file));
-        mFileOptionsFragment.addOption(new SheetOption(2, R.drawable.ic_file_delete, R.string.delete_file, file));
+        mFileOptionsFragment.addOption(new SheetOption(2, R.drawable.ic_delete, R.string.delete_file, file));
         if(file.isDirectory()) {
             mFileOptionsFragment.addOption(new SheetOption(3, R.drawable.ic_new_file, R.string.new_file, file));
             mFileOptionsFragment.addOption(new SheetOption(4, R.drawable.ic_new_folder, R.string.new_folder, file));

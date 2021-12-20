@@ -25,7 +25,7 @@ public class UiAttribute implements IAttribute {
     
     private final String namespace;
     private final String name;
-    private final String value;
+    protected String value;
     
     public UiAttribute(String namespace, String name, String value) {
         this.namespace = namespace;

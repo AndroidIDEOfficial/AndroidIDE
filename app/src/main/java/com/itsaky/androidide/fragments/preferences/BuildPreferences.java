@@ -33,8 +33,6 @@ import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.Environment;
 import java.io.File;
 
-import static com.itsaky.androidide.managers.PreferenceManager.*;
-
 public class BuildPreferences extends BasePreferenceFragment implements Preference.OnPreferenceClickListener {
 	
 	public static final String KEY_GRADLE_COMMAMDS = "idepref_build_gradleCommands";
@@ -59,7 +57,7 @@ public class BuildPreferences extends BasePreferenceFragment implements Preferen
 		customCommands.setSummary(R.string.idepref_build_customgradlecommands_summary);
 		
 		clearCache.setKey(KEY_GRADLE_CLEAR_CACHE);
-		clearCache.setIcon(R.drawable.ic_file_delete);
+		clearCache.setIcon(R.drawable.ic_delete);
 		clearCache.setTitle(R.string.idepref_build_clearCache_title);
 		clearCache.setSummary(R.string.idepref_build_clearCache_summary);
 		

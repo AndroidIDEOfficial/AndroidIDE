@@ -14,19 +14,21 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_ripple"
     android:clickable="true"
     android:descendantFocusability="blocksDescendants"
     android:focusable="true"
+    android:minHeight="35dp"
     android:orientation="horizontal"
-    android:paddingTop="2dp"
-    android:paddingBottom="2dp"
     android:paddingStart="4dp"
-    android:minHeight="35dp">
+    android:paddingTop="4dp"
+    android:paddingEnd="4dp"
+    android:paddingBottom="4dp">
 
     <ImageView
         android:id="@+id/icon"

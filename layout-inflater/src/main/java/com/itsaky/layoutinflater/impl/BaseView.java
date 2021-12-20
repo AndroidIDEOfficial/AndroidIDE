@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public abstract class BaseView implements IView {
 
@@ -127,7 +128,25 @@ public abstract class BaseView implements IView {
     public IAttribute[] getAttrArray() {
         return getAttributes().toArray(new IAttribute[0]);
     }
-
+    
+    @Override
+    public boolean hasAttribute (String namespace, String name) {
+        return this.attributes.stream ().anyMatch (attribute ->
+                attribute.getNamespace ().equals (namespace) && attribute.getAttributeName ().equals (name)
+        );
+    }
+    
+    @Nullable
+    @Override
+    public IAttribute getAttribute (String namespace, String name) {
+        for (var attr : this.attributes) {
+            if (attr.getNamespace ().equals (namespace) && attr.getAttributeName ().equals (name)) {
+                return attr;
+            }
+        }
+        return null;
+    }
+    
     @Override
     public void registerAttributeAdapter(IAttributeAdapter adapter) {
         if (adapter == null) {

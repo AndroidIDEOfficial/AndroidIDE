@@ -78,6 +78,24 @@ public interface IView {
      * @see #getAttributes()
      */
     IAttribute[] getAttrArray ();
+    
+    /**
+     * Does this view contains an attribute with the given namespace and name?
+     * @param namespace The namespace to check.
+     * @param name The name of the attribute to check.
+     * @return {@code true} if this view contains the attribute, {@code false} otherwise.
+     */
+    boolean hasAttribute (String namespace, String name);
+    
+    /**
+     * Get the attribute with the given namespace and attribute name.
+     * Or {@code null} if there is no attribute with the given namespace and name.s
+     * @param namespace The namespace of the attribute.
+     * @param name The name of the attribute.
+     * @return Found {@link IAttribute} or {@code null}.
+     */
+    @Nullable
+    IAttribute getAttribute (String namespace, String name);
 
     /**
      * Register this attribute adapter
