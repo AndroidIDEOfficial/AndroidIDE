@@ -49,6 +49,7 @@ import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.SemanticHighlight;
@@ -548,7 +549,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
     }
     
     private void showAvailableQuickfixes (CodeEditor editor, List<CodeAction> actions) {
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
         builder.setTitle(R.string.msg_code_actions);
         builder.setItems(asArray(actions), (d, w) -> {
             final DialogInterface dialog = d;

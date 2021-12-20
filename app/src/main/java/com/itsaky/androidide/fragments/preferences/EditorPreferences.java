@@ -27,6 +27,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
 import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.utils.DialogUtils;
 
 import static com.itsaky.androidide.managers.PreferenceManager.*;
 
@@ -101,7 +102,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 	}
 
     private void showTabSizeDialog() {
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ()s);
         final String[] sizes = new String[]{"2", "4", "6", "8"};
         
         // We apply simple maths,
@@ -128,7 +129,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 	
 	private void showTextSizeDialog() {
 		final LayoutTextSizeSliderBinding binding = LayoutTextSizeSliderBinding.inflate(LayoutInflater.from(getContext()));
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog);
+		final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ());
 		float size = getPrefManager().getFloat(KEY_EDITOR_FONT_SIZE, 14);
 		if(size < 6 || size > 32) {
 			size = 14;
@@ -171,7 +172,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 			getPrefManager().getBoolean(KEY_EDITORFLAG_WS_EMPTY_LINE, true),
 			getPrefManager().getBoolean(KEY_EDITORFLAG_LINE_BREAK, true)
 		};
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog);
+		final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ());
 		builder.setTitle(R.string.idepref_editor_paintingflags_title);
 		builder.setMultiChoiceItems(labels, checked, (p1, p2, p3) -> {
 			DialogInterface iface = p1;

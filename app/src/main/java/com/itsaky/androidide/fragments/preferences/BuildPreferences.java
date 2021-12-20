@@ -30,6 +30,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import java.io.File;
 
@@ -97,7 +98,7 @@ public class BuildPreferences extends BasePreferenceFragment implements Preferen
 			getPrefManager().isGradleScanEnabled(),
 			getPrefManager().isGradleWarningEnabled()
 		};
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog);
+		final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ());
 		builder.setTitle(R.string.idepref_build_customgradlecommands_title);
 		builder.setMultiChoiceItems(labels, checked, (p1, p2, p3) -> {
 			boolean isChecked = p3;
@@ -120,7 +121,7 @@ public class BuildPreferences extends BasePreferenceFragment implements Preferen
 	}
 
 	private void showClearCacheDialog() {
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog);
+		final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ());
 		builder.setTitle(R.string.idepref_build_clearCache_title);
 		builder.setMessage(R.string.msg_clear_cache);
 		builder.setCancelable(false);

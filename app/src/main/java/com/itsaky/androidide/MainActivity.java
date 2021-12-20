@@ -42,6 +42,7 @@ import com.itsaky.androidide.models.ProjectTemplate;
 import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ProjectCreatorCallable;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.ProjectFinder;
 import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.toaster.Toaster;
@@ -114,7 +115,7 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
     }
 
     private void askProjectOpenPermission(File root) {
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (this);
         builder.setTitle(R.string.title_confirm_open_project);
         builder.setMessage(getString(R.string.msg_confirm_open_project, root.getAbsolutePath()));
         builder.setCancelable(false);

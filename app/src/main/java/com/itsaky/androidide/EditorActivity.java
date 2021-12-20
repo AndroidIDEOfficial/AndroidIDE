@@ -91,6 +91,7 @@ import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.layoutinflater.ILayoutInflater;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
@@ -645,7 +646,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     public void showFirstBuildNotice() {
-        new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog)
+        DialogUtils.newMaterialDialogBuilder (this)
             .setPositiveButton(android.R.string.ok, null)
             .setTitle(R.string.title_first_build)
             .setMessage(R.string.msg_first_build)
@@ -1291,7 +1292,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
 
     private void confirmProjectClose() {
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (this);
         builder.setTitle(R.string.title_confirm_project_close);
         builder.setMessage(R.string.msg_confirm_project_close);
         builder.setNegativeButton(android.R.string.no, null);
@@ -1333,7 +1334,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             
             srcDirs.add(src);
         }
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (this);
         builder.setTitle(R.string.menu_find_project);
         builder.setView(binding.getRoot());
         builder.setCancelable(false);
@@ -1393,7 +1394,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
 	private void showNeedHelpDialog() {
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+		MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (this);
 		builder.setTitle(R.string.need_help);
 		builder.setMessage(R.string.msg_need_help);
 		builder.setPositiveButton(android.R.string.ok, null);

@@ -68,6 +68,7 @@ import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.lsp.providers.CodeActionProvider;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.Symbols;
@@ -3119,7 +3120,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                         binding.name.setHint(R.string.replacement);
                         binding.name.setStartIconDrawable(R.drawable.ic_replace);
                         binding.name.setCounterEnabled(false);
-                        new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog)
+                        DialogUtils.newMaterialDialogBuilder (getContext ())
                                 .setTitle(R.string.replace)
                                 .setView(binding.getRoot())
                                 .setNegativeButton(R.string.cancel, null)

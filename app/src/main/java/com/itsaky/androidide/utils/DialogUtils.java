@@ -19,8 +19,12 @@ package com.itsaky.androidide.utils;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
+
+import org.jetbrains.annotations.Contract;
 
 /**
  * Utility class for creating dialogs.
@@ -29,6 +33,8 @@ import com.itsaky.androidide.R;
  */
 public class DialogUtils {
     
+    @NonNull
+    @Contract("_ -> new")
     public static MaterialAlertDialogBuilder newMaterialDialogBuilder (Context context) {
         return new MaterialAlertDialogBuilder (context, R.style.AppTheme_MaterialAlertDialog);
     }

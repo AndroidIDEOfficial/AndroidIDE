@@ -44,6 +44,7 @@ import com.itsaky.androidide.shell.ProcessExecutorFactory;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ListDirectoryCallable;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.InputStreamLineReader;
@@ -169,7 +170,7 @@ public class DownloadActivity extends StudioActivity {
             getProgressSheet().dismiss();
         }
         
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder (this, R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (this);
         builder.setTitle(R.string.title_installation_failed);
         builder.setMessage(getString(R.string.msg_installation_failed, code));
         builder.setPositiveButton(android.R.string.ok, (d, w) -> {
@@ -280,7 +281,7 @@ public class DownloadActivity extends StudioActivity {
 
 	private void showRestartNeeded() {
 		setDone(binding.install);
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+		final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (this);
 		builder.setTitle(R.string.title_restart);
 		builder.setMessage(R.string.msg_restart);
 		builder.setCancelable(false);

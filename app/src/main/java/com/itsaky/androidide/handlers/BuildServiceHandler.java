@@ -28,6 +28,7 @@ import com.itsaky.androidide.services.builder.BuildListener;
 import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.build.ApkGeneratingTask;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import java.io.File;
 import java.util.ArrayList;
@@ -210,7 +211,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
             activity().install(apks.iterator().next());
         } else {
             final List<File> files = new ArrayList<File> (apks);
-            final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+            final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
             builder.setTitle(activity().getString(R.string.title_install_apks));
             builder.setItems(getNames(files), (d, w) -> {
                 d.dismiss();

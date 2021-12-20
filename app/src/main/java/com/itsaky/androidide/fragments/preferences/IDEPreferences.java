@@ -41,6 +41,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.AboutActivity;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.utils.DialogUtils;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -155,7 +157,7 @@ public class IDEPreferences extends BasePreferenceFragment {
 		scroll.addView(text, new ViewGroup.LayoutParams(-1, -1));
 		vScroll.addView(scroll);
         
-		final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext(), R.style.AppTheme_MaterialAlertDialog);
+		final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ());
 		builder.setTitle(R.string.pref_changelog);
 		builder.setView(vScroll);
 		builder.setPositiveButton(android.R.string.ok, null);

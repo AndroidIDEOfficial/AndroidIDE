@@ -22,6 +22,7 @@ import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding;
@@ -30,6 +31,7 @@ import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.models.SheetOption;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ProjectWriter;
 import com.itsaky.toaster.Toaster;
@@ -114,7 +116,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
     }
 
     private void createJavaClass(final File f) {
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
         final LayoutCreateFileJavaBinding binding = LayoutCreateFileJavaBinding.inflate(activity().getLayoutInflater());
         builder.setView(binding.getRoot());
         builder.setTitle(R.string.new_java_class);
@@ -165,7 +167,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
             activity(). getString(R.string.restype_menu),
             activity(). getString(R.string.restype_other)
         };
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
         builder.setTitle(R.string.new_xml_resource);
         builder.setItems(labels, (p1, p2) -> {
             final int pos = p2;
@@ -192,7 +194,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
 
     private void createNewFileWithContent(File folder, String content, String extension) {
         final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(activity(). getLayoutInflater());
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
 
         binding.name.getEditText().setHint(R.string.file_name);
 
@@ -240,7 +242,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
 
     private void createNewFolder(File f) {
         final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(activity(). getLayoutInflater());
-        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
 
         binding.name.getEditText().setHint(R.string.folder_name);
 
@@ -279,7 +281,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
     }
 
     private void delete(final File f) {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+        MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
         builder
             .setNegativeButton(android.R.string.no, null)
             .setPositiveButton(android.R.string.yes, (p1, p2) -> {
@@ -309,7 +311,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
 
     private void renameFile(File f) {
         final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(LayoutInflater.from(activity()));
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(activity(), R.style.AppTheme_MaterialAlertDialog);
+        MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
 
         binding.name.getEditText().setHint(activity(). getString(R.string.new_name));
         binding.name.getEditText().setText(f.getName());

@@ -27,8 +27,11 @@ import android.os.Handler;
 import android.view.View;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivitySplashBinding;
 import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.utils.DialogUtils;
+
 import android.text.TextUtils;
 import org.eclipse.jdt.core.Signature;                               
 
@@ -75,8 +78,8 @@ public class SplashActivity extends StudioActivity
 
 	private void proceed()
 	{
-		if(!getApp().isAbiSupported()) {
-			final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_MaterialAlertDialog);
+		if(!StudioApp.isAbiSupported()) {
+			final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (this);
 			builder.setTitle(R.string.title_device_not_supported);
 			builder.setMessage(R.string.msg_device_not_supported);
 			builder.setCancelable(false);

@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import com.blankj.utilcode.util.SizeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.toaster.Toaster;
 import io.github.rosemoe.editor.util.IntPair;
 import java.util.List;
@@ -216,7 +217,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                 }
 
                 void showFixes() {
-                    final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(mEditor.getContext(), com.itsaky.androidide.R.style.AppTheme_MaterialAlertDialog);
+                    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (mEditor.getContext ());
                     builder.setTitle(com.itsaky.androidide.R.string.msg_code_actions);
                     builder.setView(createFixesListView());
                     builder.show();
