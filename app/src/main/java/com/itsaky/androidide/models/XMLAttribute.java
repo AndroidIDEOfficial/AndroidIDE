@@ -17,6 +17,9 @@
 
 package com.itsaky.androidide.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import com.itsaky.layoutinflater.IAttribute;
@@ -29,7 +32,7 @@ import org.jetbrains.annotations.Contract;
  *
  * @author Akash Yadav
  */
-public class XMLAttribute extends UiAttribute {
+public class XMLAttribute extends UiAttribute implements Parcelable {
     
     /**
      * Is this attribute applied to any view?
@@ -48,6 +51,26 @@ public class XMLAttribute extends UiAttribute {
         super (namespace, name, value);
         this.isApplied = isApplied;
     }
+    
+    private XMLAttribute (@NonNull Parcel in) {
+        this (in.readString (), in.readString (), in.readString (), in.readByte () != 0);
+    }
+    
+    public static final Creator<XMLAttribute> CREATOR = new Creator<XMLAttribute> () {
+        @NonNull
+        @Contract("_ -> new")
+        @Override
+        public XMLAttribute createFromParcel (Parcel in) {
+            return new XMLAttribute (in);
+        }
+        
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
+        @Override
+        public XMLAttribute[] newArray (int size) {
+            return new XMLAttribute[size];
+        }
+    };
     
     /**
      * Set the given string as a value to this attribute.
@@ -87,5 +110,18 @@ public class XMLAttribute extends UiAttribute {
     @Contract("_ -> new")
     public static XMLAttribute newAndroidAttribute (String name) {
         return new XMLAttribute ("android", name, "", false);
+    }
+    
+    @Override
+    public int describeContents () {
+        return 0;
+    }
+    
+    @Override
+    public void writeToParcel (@NonNull Parcel dest, int flags) {
+        dest.writeString (getNamespace ());
+        dest.writeString (getAttributeName ());
+        dest.writeString (getValue ());
+        dest.writeByte ((byte) (isApplied ? 1 : 0));
     }
 }

@@ -52,9 +52,10 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     
     private IView selectedView;
     private LayoutAttrEditorSheetBinding binding;
-    private final Logger LOG = Logger.instance ("AttrSheetEditor");
     
     private OnViewDeletionFailedListener mDeletionFailedListener;
+    
+    private static final Logger LOG = Logger.instance ("AttrBottomSheet");
     
     @Nullable
     @Override
@@ -104,6 +105,11 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     }
     
     private void onAttrClick (LayoutAttrEditorSheetItemBinding binding, XMLAttribute attribute) {
+        final var inflated = inflateAppropriateEditor (attribute);
+    }
+    
+    private View inflateAppropriateEditor (XMLAttribute attribute) {
+        return null;
     }
     
     @Override

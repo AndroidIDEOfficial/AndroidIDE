@@ -20,13 +20,16 @@ package com.itsaky.androidide.adapters;
 import android.graphics.Typeface;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetItemBinding;
 import com.itsaky.androidide.models.XMLAttribute;
 
@@ -57,6 +60,10 @@ public class AttributeListAdapter extends RecyclerView.Adapter <AttributeListAda
         if (attr.isApplied ()) {
             sb.append (" = ");
             sb.append (attr.getValue (), new StyleSpan (Typeface.BOLD), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            
+            final var length = attr.getValue ().length ();
+            sb.setSpan (new ForegroundColorSpan (ContextCompat.getColor (binding.text.getContext (), R.color.primaryTextColor),
+                ));
         }
         
         binding.text.setText (sb);
