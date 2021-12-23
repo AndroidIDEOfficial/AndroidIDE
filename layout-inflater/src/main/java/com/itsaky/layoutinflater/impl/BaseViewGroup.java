@@ -26,7 +26,12 @@ import com.itsaky.layoutinflater.IAttributeAdapter;
 import com.itsaky.layoutinflater.IView;
 import com.itsaky.layoutinflater.IViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class BaseViewGroup extends BaseView implements IViewGroup {
+    
+    protected final List<OnHierarchyChangeListener> mHierarchyChangeListeners = new ArrayList<> ();
     
     public BaseViewGroup(String qualifiedName, ViewGroup view) {
         this(qualifiedName, view, false);
@@ -63,18 +68,43 @@ public abstract class BaseViewGroup extends BaseView implements IViewGroup {
         }
         return -1;
     }
-
+    
+    @Override
+    public void registerHierarchyChangeListener (OnHierarchyChangeListener listener) {
+        if (listener == null) {
+            return;
+        }
+        this.mHierarchyChangeListeners.add (listener);
+    }
+    
+    @Override
+    public void unregisterHierarchyChangeListener (OnHierarchyChangeListener listener) {
+        if (listener == null) {
+            return;
+        }
+        
+        this.mHierarchyChangeListeners.remove (listener);
+    }
+    
     /**
      * Called when a new view has been added to this group
      *
      * @param view The view that was added
      */
-    protected void onViewAdded (IView view) {}
+    protected void onViewAdded (IView view) {
+        for (OnHierarchyChangeListener listener : this.mHierarchyChangeListeners) {
+            listener.onViewAdded (view);
+        }
+    }
     
     /**
      * Called when a new view has been removed from this group
      *
      * @param view The view that was removed
      */
-    protected void onViewRemoved (IView view) {}
+    protected void onViewRemoved (IView view) {
+        for (OnHierarchyChangeListener listener : this.mHierarchyChangeListeners) {
+            listener.onViewRemoved (view);
+        }
+    }
 }

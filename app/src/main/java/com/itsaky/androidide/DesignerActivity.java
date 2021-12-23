@@ -168,10 +168,10 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
             }
             
             mBinding.layoutContainer.addView (view.asView ());
+            mBinding.layoutContainer.setOnClickListener (v -> mBinding.getRoot ().openDrawer (GravityCompat.START));
         } catch (Throwable th) {
             mBinding.layoutContainer.removeAllViews ();
             mBinding.layoutContainer.addView (createErrorText (th));
-            
             LOG.error (getString (R.string.err_cannot_inflate_layout), th);
         }
         
@@ -336,6 +336,18 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     }
     
     private AttrEditorSheet getAttrEditorSheet () {
-        return this.mEditorSheet == null ? mEditorSheet = new AttrEditorSheet () : mEditorSheet;
+        return this.mEditorSheet == null
+                ? mEditorSheet = new AttrEditorSheet ()
+                    .setDeletionFailedListener (this::onViewDeletionFailed)
+                : mEditorSheet;
+    }
+    
+    private boolean onViewDeletionFailed (@NonNull IView view) {
+        final var v = view.asView ();
+        if (mBinding.layoutContainer.indexOfChild (v) >= 0) {
+            mBinding.layoutContainer.removeView (v);
+            return true;
+        }
+        return false;
     }
 }

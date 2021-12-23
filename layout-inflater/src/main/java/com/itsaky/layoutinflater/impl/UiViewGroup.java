@@ -65,6 +65,7 @@ public class UiViewGroup extends BaseViewGroup {
         this.viewGroup.removeViewAt(index);
         this.children.remove(index);
         
+        view.setParent (null);
         onViewRemoved(view);
     }
     

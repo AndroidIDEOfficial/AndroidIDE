@@ -61,6 +61,8 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     private LayoutAttrEditorSheetBinding binding;
     private final Logger LOG = Logger.instance ("AttrSheetEditor");
     
+    private OnViewDeletionFailedListener mDeletionFailedListener;
+    
     @Nullable
     @Override
     public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,6 +82,11 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         }
         
         setupViewData ();
+    }
+    
+    public AttrEditorSheet setDeletionFailedListener (OnViewDeletionFailedListener listener) {
+        this.mDeletionFailedListener = listener;
+        return this;
     }
     
     private void setupViewData () {
@@ -119,14 +126,21 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         
         if (position == 0) { // Delete
             DialogUtils.newYesNoDialog (getContext (), (dialog, which) -> {
-                this.selectedView.removeFromParent ();
-                AttrEditorSheet.this.dismiss ();
+                var handled = selectedView.removeFromParent ();
+                if (!handled) {
+                    handled = mDeletionFailedListener != null && mDeletionFailedListener.onDeletionFailed (this.selectedView);
+                }
+                if (!handled) {
+                    StudioApp.getInstance ().toast (getString(R.string.msg_view_deletion_failed), Toaster.Type.ERROR);
+                } else {
+                    dismiss ();
+                }
             }, (dialog, which) -> {
                 dialog.dismiss ();
             }).show ();
-        } else if (position == 1) {
+        } else if (position == 1) { // Select parent
             if (this.selectedView.getParent () == null) {
-                StudioApp.getInstance ().toast (getString(R.string.msg_no_view_parent), Toaster.Type.ERROR);
+                StudioApp.getInstance ().toast (getString (R.string.msg_no_view_parent), Toaster.Type.ERROR);
                 return;
             }
             
@@ -135,5 +149,25 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             TransitionManager.beginDelayedTransition (binding.getRoot (), new ChangeBounds ());
             setupViewData ();
         }
+    }
+    
+    /**
+     * A listener can be used to get notified when we fail to remove
+     * a view from its parent. This is used in {@link com.itsaky.androidide.DesignerActivity}.
+     *
+     * When the user tries to remove the outermost view of the inflated layout,
+     * AttrEditorSheet fails to remove the view from its parent ({@link IView#getParent()} is null for root XML layout).
+     * In this case, DesignerActivity check if the view that we were trying to delete is the root layout or not.
+     * If it is the root layout, then it deletes the layout from the layout container.
+     *
+     * @author Akash Yadav
+     */
+    public interface OnViewDeletionFailedListener {
+    
+        /**
+         * @param view The view that was not removed from its parent.
+         * @return {@code true} if the listener handled the error. {@code false} otherwise.
+         */
+        boolean onDeletionFailed (IView view);
     }
 }

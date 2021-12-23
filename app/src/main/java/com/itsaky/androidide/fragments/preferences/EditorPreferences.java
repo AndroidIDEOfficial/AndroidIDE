@@ -102,7 +102,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 	}
 
     private void showTabSizeDialog() {
-        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ()s);
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ());
         final String[] sizes = new String[]{"2", "4", "6", "8"};
         
         // We apply simple maths,

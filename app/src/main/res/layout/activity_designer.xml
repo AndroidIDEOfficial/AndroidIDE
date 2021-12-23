@@ -42,7 +42,7 @@
             android:paddingTop="32dp"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-            <LinearLayout
+            <com.itsaky.androidide.views.DesignerLayoutContainer
                 android:id="@+id/layout_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
