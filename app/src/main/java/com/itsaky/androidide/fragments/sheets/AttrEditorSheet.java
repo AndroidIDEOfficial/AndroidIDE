@@ -18,18 +18,12 @@
 package com.itsaky.androidide.fragments.sheets;
 
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
 
@@ -47,7 +41,6 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.layoutinflater.IView;
 import com.itsaky.toaster.Toaster;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

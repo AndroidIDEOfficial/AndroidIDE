@@ -137,8 +137,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         
         setSupportActionBar (mBinding.toolbar);
         getSupportActionBar ().setDisplayHomeAsUpEnabled (true);
-    
-        mBinding.getRoot ().setScrimColor (Color.TRANSPARENT);
+        
         final var toggle = new ActionBarDrawerToggle (this, mBinding.getRoot (), mBinding.toolbar, R.string.app_name, R.string.app_name) {
             
             @Override
@@ -179,6 +178,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         
         // Always open the drawer if this device is a tablet.
         if (isTablet) {
+            mBinding.getRoot ().setScrimColor (Color.TRANSPARENT);
             mBinding.getRoot ().openDrawer (GravityCompat.START);
             mBinding.getRoot ().setDrawerLockMode (DrawerLayout.LOCK_MODE_LOCKED_OPEN);
         }
