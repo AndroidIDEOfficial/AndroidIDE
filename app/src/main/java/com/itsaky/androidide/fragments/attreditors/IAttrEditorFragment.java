@@ -90,7 +90,7 @@ public abstract class IAttrEditorFragment extends Fragment {
      * @param attribute The attribute to validate.
      * @return {@code true} if the attribute is valid, {@code false} otherwise.
      */
-    protected boolean validate (XMLAttribute attribute) {
+    protected void validate (@NonNull XMLAttribute attribute) {
         final var attrs = StudioApp.getInstance ().attrInfo ();
         final var attr = attrs.getAttribute (attribute.getAttributeName ());
         
