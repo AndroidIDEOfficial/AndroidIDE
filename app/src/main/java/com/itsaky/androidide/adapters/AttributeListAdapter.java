@@ -51,6 +51,9 @@ public class AttributeListAdapter extends RecyclerView.Adapter <AttributeListAda
         return new VH (LayoutAttrEditorSheetItemBinding.inflate (LayoutInflater.from (parent.getContext ()), parent, false));
     }
     
+    // hello th
+    //
+    
     @Override
     public void onBindViewHolder (@NonNull VH holder, int position) {
         final var binding = holder.binding;
@@ -62,8 +65,10 @@ public class AttributeListAdapter extends RecyclerView.Adapter <AttributeListAda
             sb.append (attr.getValue (), new StyleSpan (Typeface.BOLD), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             
             final var length = attr.getValue ().length ();
-            sb.setSpan (new ForegroundColorSpan (ContextCompat.getColor (binding.text.getContext (), R.color.primaryTextColor),
-                ));
+            sb.setSpan (new ForegroundColorSpan (ContextCompat.getColor (binding.text.getContext (), R.color.primaryTextColor)),
+                    sb.length () - length,
+                    sb.length () - 1,
+                    SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         
         binding.text.setText (sb);
