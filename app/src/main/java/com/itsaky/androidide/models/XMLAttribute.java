@@ -39,6 +39,13 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
      */
     private boolean isApplied = false;
     
+    /**
+     * Format of this attribute. May be stored here so we don't
+     * have to look in {@link com.itsaky.attrinfo.AttrInfo AttrInfo}
+     * again and again.
+     */
+    private int format = -1;
+    
     public XMLAttribute (IAttribute attribute) {
         this (attribute, true);
     }
@@ -54,6 +61,14 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     
     private XMLAttribute (@NonNull Parcel in) {
         this (in.readString (), in.readString (), in.readString (), in.readByte () != 0);
+    }
+    
+    public void setFormat (int format) {
+        this.format = format;
+    }
+    
+    public int getFormat () {
+        return format;
     }
     
     public static final Creator<XMLAttribute> CREATOR = new Creator<XMLAttribute> () {

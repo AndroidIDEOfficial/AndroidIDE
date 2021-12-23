@@ -88,19 +88,25 @@ public abstract class IAttrEditorFragment extends Fragment {
      * If not, an {@link ValidationException} will be thrown.
      *
      * @param attribute The attribute to validate.
-     * @return {@code true} if the attribute is valid, {@code false} otherwise.
      */
     protected void validate (@NonNull XMLAttribute attribute) {
-        final var attrs = StudioApp.getInstance ().attrInfo ();
-        final var attr = attrs.getAttribute (attribute.getAttributeName ());
-        
-        if (attr == null) {
-            throw new ValidationException ("Cannot find attribute with the given name: " + attribute.getAttributeName ());
+        var attrFormat = attribute.getFormat ();
+        if (attrFormat == -1) {
+            // Look for attr format only if it is unknown
+            final var attrs = StudioApp.getInstance ().attrInfo ();
+            final var attr = attrs.getAttribute (attribute.getAttributeName ());
+    
+            if (attr == null) {
+                throw new ValidationException ("Cannot find attribute with the given name: " + attribute.getAttributeName ());
+            }
+            
+            attrFormat = attr.format;
+            attribute.setFormat (attrFormat);
         }
         
         for (var format : getSupportedFormats ()) {
-            if ((attr.format & format) != 0) {
-                LOG.error ("Error validating given attribute", "attr: " + attr, "attribute: " + attribute);
+            if ((attrFormat & format) != 0) {
+                LOG.error ("Error validating given attribute", "attribute: " + attribute);
                 throw new ValidationException ();
             }
         }
