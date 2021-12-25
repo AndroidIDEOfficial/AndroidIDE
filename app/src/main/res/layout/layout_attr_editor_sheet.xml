@@ -23,7 +23,7 @@
     android:paddingTop="16dp"
     android:paddingEnd="16dp"
     android:paddingBottom="8dp">
-    
+
     <TextView
         android:id="@+id/widget_name"
         android:layout_width="0dp"

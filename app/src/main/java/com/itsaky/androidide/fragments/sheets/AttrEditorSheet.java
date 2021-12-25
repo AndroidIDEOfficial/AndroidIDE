@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.fragments.sheets;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
 
@@ -36,6 +38,7 @@ import com.itsaky.androidide.databinding.LayoutAttrEditorSheetBinding;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetItemBinding;
 import com.itsaky.androidide.models.IconTextListItem;
 import com.itsaky.androidide.models.XMLAttribute;
+import com.itsaky.androidide.utils.AttributeDialogs;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.layoutinflater.IView;
@@ -44,7 +47,10 @@ import com.itsaky.toaster.Toaster;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.itsaky.attrinfo.models.Attr.*;
 
 public class AttrEditorSheet extends BottomSheetDialogFragment implements SimpleIconTextAdapter.OnBindListener {
     
@@ -76,6 +82,14 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         }
     
         setupViewData ();
+    
+        AttributeDialogs.init (getActivity ());
+    }
+    
+    @Override
+    public void onDismiss (@NonNull DialogInterface dialog) {
+        AttributeDialogs.release ();
+        super.onDismiss (dialog);
     }
     
     public AttrEditorSheet setDeletionFailedListener (OnViewDeletionFailedListener listener) {
@@ -111,6 +125,31 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             LOG.error (getString (R.string.msg_no_attr_format), attribute);
             return;
         }
+        
+        showEditorDialog (attribute);
+    }
+    
+    private void showEditorDialog (@NonNull XMLAttribute attribute) {
+        final var format = attribute.getFormat ();
+        final var attr = attribute.getAttr ();
+        
+        AlertDialog dialog = null;
+        if (hasFormat (format, DIMENSION)) {
+            if (attr == null) {
+                throw new IllegalStateException ("The provided attribute has not been resoleved.");
+            }
+    
+            final var possibleValues = attr.possibleValues;
+            dialog = AttributeDialogs.dimensionEditor (possibleValues.toArray(new String[0]), attribute.getValue (), (dialog1, which) -> {
+                LOG.debug ("Dimension value changed to : " + attribute.getValue ());
+            });
+        }
+        
+        // TODO Once the user has selected another value, update it for the view too.
+    }
+    
+    private boolean hasFormat (int format, int check) {
+        return (format &check ) != 0;
     }
     
     @Override

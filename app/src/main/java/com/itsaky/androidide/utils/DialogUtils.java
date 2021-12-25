@@ -45,6 +45,16 @@ public class DialogUtils {
         return new MaterialAlertDialogBuilder (context, R.style.AppTheme_MaterialAlertDialog);
     }
     
+    /**
+     * Create a new alert dialog with two buttons: <span>Yes</span> and <span>No</span>.
+     * This method simply calls {@link #newYesNoDialog(Context, String, String, DialogInterface.OnClickListener, DialogInterface.OnClickListener)}
+     * with default values for title and message.
+     *
+     * @param context The context for the dialog.
+     * @param positiveClickListener A listener that will be invoked on the <span>Yes</span> button click.
+     * @param negativeClickListener A listener that will be invoked on the <span>No</span> button click.
+     * @return The newly created dialog.
+     */
     @NonNull
     public static MaterialAlertDialogBuilder newYesNoDialog (Context context,
                                                              DialogInterface.OnClickListener positiveClickListener,
@@ -56,6 +66,16 @@ public class DialogUtils {
                 negativeClickListener);
     }
     
+    /**
+     * Create a new alert dialog with two buttons: <span>Yes</span> and <span>No</span>.
+     *
+     * @param context The context for the dialog.
+     * @param title The title of the dialog.
+     * @param message The message of the dialog.
+     * @param positiveClickListener A listener that will be invoked on the <span>Yes</span> button click.
+     * @param negativeClickListener A listener that will be invoked on the <span>No</span> button click.
+     * @return The newly created dialog instance.
+     */
     @NonNull
     public static MaterialAlertDialogBuilder newYesNoDialog (Context context,
                                                              String title,

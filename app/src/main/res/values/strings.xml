@@ -316,7 +316,7 @@
     <string name="hint_new_attr_value">New value</string>
     <string name="attr_val_wrap_content">wrap_content</string>
     <string name="attr_val_match_parent">match_parent</string>
-    <string name="attr_val_fixed">Fixed</string>
+    <string name="attr_val_other">Other value</string>
     <string name="msg_enter_dimension_value">Enter dimension value</string>
     <string name="msg_applicable_attrs">Applicable attributes</string>
     <string name="msg_attr_editor_actions">Actions</string>
