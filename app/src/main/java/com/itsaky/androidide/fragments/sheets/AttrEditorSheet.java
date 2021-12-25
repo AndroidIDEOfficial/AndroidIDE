@@ -67,14 +67,14 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     @Override
     public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
-        
+    
         if (VIEW_ACTIONS.isEmpty ()) {
             Collections.addAll (VIEW_ACTIONS,
                     IconTextListItem.create (getString (R.string.title_viewaction_delete), R.drawable.ic_delete),
                     IconTextListItem.create (getString (R.string.msg_viewaction_select_parent), R.drawable.ic_view_select_parent)
             );
         }
-        
+    
         setupViewData ();
     }
     
@@ -104,12 +104,13 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         this.selectedView = view;
     }
     
-    private void onAttrClick (LayoutAttrEditorSheetItemBinding binding, XMLAttribute attribute) {
-        final var inflated = inflateAppropriateEditor (attribute);
-    }
-    
-    private View inflateAppropriateEditor (XMLAttribute attribute) {
-        return null;
+    private void onAttrClick (LayoutAttrEditorSheetItemBinding binding, @NonNull XMLAttribute attribute) {
+        final var format = attribute.findFormat ();
+        if (format == -1) {
+            StudioApp.getInstance ().toast (getString (R.string.msg_no_attr_format), Toaster.Type.ERROR);
+            LOG.error (getString (R.string.msg_no_attr_format), attribute);
+            return;
+        }
     }
     
     @Override

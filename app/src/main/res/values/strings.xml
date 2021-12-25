@@ -327,5 +327,7 @@
     <string name="msg_yesno_def_message">Are you sure?</string>
     <string name="msg_view_deletion_failed">Unable to delete the view.</string>
     <string name="msg_empty_ui_layout">No views have been added. Click to add.</string>
+    <string name="msg_no_attr_format">No attribute format is available for this attribute.</string>
+    <string name="msg_attr_editor_null">Unable to create attribute editor for this attribute</string>
 
 </resources>

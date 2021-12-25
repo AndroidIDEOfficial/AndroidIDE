@@ -22,6 +22,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.impl.UiAttribute;
 
@@ -69,6 +70,21 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     
     public int getFormat () {
         return format;
+    }
+    
+    public int findFormat () {
+        
+        if (getFormat () > 0) {
+            return getFormat ();
+        }
+        
+        final var attrs = StudioApp.getInstance ().attrInfo ();
+        final var attr = attrs.getAttribute (getAttributeName ());
+        if (attr != null) {
+            this.format = attr.format;
+        }
+        
+        return getFormat ();
     }
     
     public static final Creator<XMLAttribute> CREATOR = new Creator<XMLAttribute> () {

@@ -14,61 +14,59 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="16dp"
-    android:paddingEnd="16dp"
     android:paddingTop="16dp"
+    android:paddingEnd="16dp"
     android:paddingBottom="8dp">
-
+    
     <TextView
         android:id="@+id/widget_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:maxLines="1"
         android:ellipsize="middle"
+        android:maxLines="1"
         android:textColor="@color/primaryTextColor"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Button"/>
+        tools:text="Button" />
 
     <TextView
         android:id="@+id/actions_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:text="@string/msg_attr_editor_actions"
         android:textColor="@color/secondaryTextColor"
         app:layout_constraintStart_toStartOf="@id/widget_name"
-        app:layout_constraintTop_toBottomOf="@id/widget_name"
-        android:layout_marginTop="12dp"/>
+        app:layout_constraintTop_toBottomOf="@id/widget_name" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/actions_list"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/actions_header"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/actions_header" />
 
     <TextView
         android:id="@+id/attrs_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:text="@string/msg_applicable_attrs"
         android:textColor="@color/secondaryTextColor"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/actions_list"
-        android:layout_marginTop="12dp"/>
+        app:layout_constraintTop_toBottomOf="@id/actions_list" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/attr_list"
