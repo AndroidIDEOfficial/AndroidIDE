@@ -77,6 +77,12 @@ public class WidgetTouchListener extends GestureDetector.SimpleOnGestureListener
 
     @Override
     public void onLongPress(MotionEvent e) {
+        
+        if (this.mView.getParent () == null) {
+            // This is the root layout so this should not be draggable
+            return;
+        }
+        
         if (this.longClickListener != null &&
                 this.longClickListener.onLongClick(this.mView)) {
             this.mView.asView().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
