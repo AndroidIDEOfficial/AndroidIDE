@@ -17,10 +17,15 @@ More features will be implemented as we continue to develop this app.
 - [x] API information for classes and their members (since, removed, deprecated).
 - [ ] Implement language server for XML and Kotlin
 - [ ] UI Designer
-- [ ] Layout Inspector
+  - [x] Layout inflater
+  - [ ] Drag & Drop (*)
+  - [ ] Visual attribute editor (*)
+  - [ ] Android Widgets (*)
 - [ ] String Translator
 - [ ] Asset Studio (Drawable & Icon Maker)
 - [ ] Git
+
+Items marked with ```(*)``` are partially implemented.
 
 ## Limitations
 - Gradle Wrapper is supported. But, it requires that the project's application module is named 'app'. 
