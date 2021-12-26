@@ -18,6 +18,7 @@ More features will be implemented as we continue to develop this app.
 - [ ] Implement language server for XML and Kotlin
 - [ ] UI Designer
   - [x] Layout inflater
+  - [ ] Resolve resource references
   - [ ] Drag & Drop (*)
   - [ ] Visual attribute editor (*)
   - [ ] Android Widgets (*)
