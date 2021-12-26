@@ -35,7 +35,7 @@ public class ToolsManager {
     
     private static PreferenceManager prefs;
     
-    public static final int JLS_VERSION = 26;
+    public static final int JLS_VERSION = 27;
     public static final int LOGSENDER_VERSION = 2;
     
     public static final String KEY_JLS_VERSION = "tools_jlsVersion";

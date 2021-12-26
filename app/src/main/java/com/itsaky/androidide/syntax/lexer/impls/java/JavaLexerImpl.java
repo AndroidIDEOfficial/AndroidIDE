@@ -91,37 +91,6 @@ public class JavaLexerImpl extends io.github.rosemoe.editor.langs.AbstractCodeAn
 
         stringMap.clear();
 
-        if (languageServer != null && file != null) {
-
-            if (lastRequest != null && !lastRequest.isDone()) {
-                lastRequest.cancel(true);
-            }
-
-            this.lastRequest = languageServer.getTextDocumentService()
-                    .semanticHighlights(
-                            new SemanticHighlightsParams(
-                                    new TextDocumentIdentifier(
-                                            file.toURI().toString()
-                                    )
-                            )
-                    );
-
-            try {
-                var result = Objects.requireNonNull(this.lastRequest).get();
-                result = Objects.requireNonNull(result).stream()
-                        .filter(semanticHighlight -> file.toURI().toString().equals(semanticHighlight.uri))
-                        .collect(Collectors.toList());
-
-                if (result.size() > 0) {
-                    setSemanticHighlights(result.get(0));
-                }
-
-            } catch (Throwable throwable) {
-                LOG.error("An error occurred while retrieving semantic highlight for Java file.", throwable);
-            }
-        }
-
-
         while (delegate.shouldAnalyze()) {
             // null = EOF
             if (lexer.nextToken() == null)
