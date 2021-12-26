@@ -122,6 +122,9 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
             if (rootView instanceof IViewGroup) {
                 inflatedRoot = (IViewGroup) rootView;
             }
+            
+            // We don't want the root layout to be dragged
+            rootView.asView ().setOnTouchListener (null);
         }
     };
     

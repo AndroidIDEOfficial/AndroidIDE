@@ -17,20 +17,20 @@
 
 package com.itsaky.androidide.utils;
 
+import static com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-
-import static com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutDimensionEditorBinding;
+import com.itsaky.toaster.Toaster;
 
 /**
  * Helper class for creating dialogs for editing view attributes.
@@ -68,7 +68,8 @@ public class AttributeDialogs {
         mContext = null;
     }
     
-    public static AlertDialog dimensionEditor (CharSequence[] values, CharSequence value, DialogInterface.OnClickListener onSubmit) {
+    @NonNull
+    public static AlertDialog dimensionEditor (CharSequence value, OnClickListener onSubmit) {
         final var binding = LayoutDimensionEditorBinding.inflate(LayoutInflater.from (mContext));
         binding.choices.setOnCheckedChangeListener ((group, checkedId) -> {
             binding.otherValue.setVisibility (binding.other.isChecked () ? View.VISIBLE : View.GONE);
@@ -85,13 +86,32 @@ public class AttributeDialogs {
         final var builder = newMaterialDialogBuilder (mContext);
         builder.setView (binding.getRoot ());
         builder.setPositiveButton (android.R.string.ok, ((dialog, which) -> {
+            var val = "";
+            if (binding.choices.getCheckedRadioButtonId () == R.id.match) {
+                val = DIMENSION_MATCH;
+            } else if (binding.choices.getCheckedRadioButtonId () == R.id.wrap) {
+                val = DIMENSION_WRAP;
+            } else {
+                if (binding.otherValue.getEditText () != null) {
+                    val = binding.otherValue.getEditText ().getText ().toString ().trim ();
+                } else {
+                    val = "";
+                }
+            }
+            
+            if (val.length () <= 0) {
+                StudioApp.getInstance ().toast (mContext.getString(R.string.msg_invalid_attr_value), Toaster.Type.ERROR);
+                return;
+            }
+    
             dialog.dismiss ();
+            
             if (onSubmit != null) {
-                onSubmit.onClick (dialog, which);
+                onSubmit.onClick (dialog, which, val);
             }
         }));
         builder.setNegativeButton (android.R.string.cancel, (dialog, which) -> dialog.dismiss ());
-        return builder.show ();
+        return builder.create ();
     }
     
     /**
@@ -129,5 +149,7 @@ public class AttributeDialogs {
         return builder.show ();
     }
     
-    
+    public static interface OnClickListener {
+        void onClick (DialogInterface dialog, int which, String newValue);
+    }
 }

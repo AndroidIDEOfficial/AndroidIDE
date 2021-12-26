@@ -60,13 +60,20 @@ public class ViewAttrAdapter implements IAttributeAdapter {
     protected static final Logger LOG = Logger.instance ("BaseViewAttrAdapter");
     public static final int ENUM_NOT_FOUND = -4116;
     
+    protected IResourceFinder resFinder;
+    
+    @Override
+    public void setResourceFinder (IResourceFinder resourceFinder) {
+        this.resFinder = resourceFinder;
+    }
+    
     @Override
     public boolean isApplicableTo(View view) {
         return true; // Can be applied to any view
     }
     
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         final String namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
@@ -82,16 +89,16 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         boolean handled = true;
         switch (name) {
             case "layout_height" :
-                params.height = parseDimension (value, -2, dm, resFinder);
+                params.height = parseDimension (value, -2, dm);
                 break;
             case "layout_width"  :
-                params.width  = parseDimension (value, -2, dm, resFinder);
+                params.width  = parseDimension (value, -2, dm);
                 break;
             case "alpha" :
                 view.setAlpha(parseFloat(value));
                 break;
             case "background" :
-                view.setBackground(parseDrawable(value, resFinder, ctx));
+                view.setBackground(parseDrawable(value, ctx));
                 break;
             case "backgroundTint" :
                 // TODO Parse color state list (<selector>) and apply to this view
@@ -100,39 +107,39 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 view.setBackgroundTintMode(parsePorterDuffMode(value));
                 break;
             case "clipToOutline" :
-                view.setClipToOutline(parseBoolean(value, resFinder));
+                view.setClipToOutline(parseBoolean(value));
                 break;
             case "contentDescription" :
-                view.setContentDescription(parseString (value, resFinder));
+                view.setContentDescription(parseString (value));
                 break;
             case "contextClickable" :
-                view.setContextClickable(parseBoolean(value, resFinder));
+                view.setContextClickable(parseBoolean(value));
                 break;
             case "defaultFocusHighlightEnabled" :
                 if(Build.VERSION.SDK_INT >= 26) {
-                    view.setDefaultFocusHighlightEnabled(parseBoolean(value, resFinder));
+                    view.setDefaultFocusHighlightEnabled(parseBoolean(value));
                 }
                 break;
             case "drawingCacheQuality" :
                 view.setDrawingCacheQuality(parseDrawingCacheQuality(value));
                 break;
             case "duplicateParentState" :
-                view.setDuplicateParentStateEnabled(parseBoolean(value, resFinder));
+                view.setDuplicateParentStateEnabled(parseBoolean(value));
                 break;
             case "elevation" :
-                view.setElevation(parseDimension(value, 0, dm, resFinder));
+                view.setElevation(parseDimension(value, 0, dm));
                 break;
             case "fadeScrollbars" :
-                view.setScrollbarFadingEnabled(parseBoolean(value, resFinder));
+                view.setScrollbarFadingEnabled(parseBoolean(value));
                 break;
             case "fadingEdgeLength" :
-                view.setFadingEdgeLength(parseDimension(value, 0, dm, resFinder));
+                view.setFadingEdgeLength(parseDimension(value, 0, dm));
                 break;
             case "filterTouchesWhenObscured" :
-                view.setFilterTouchesWhenObscured(parseBoolean(value, resFinder));
+                view.setFilterTouchesWhenObscured(parseBoolean(value));
                 break;
             case "foreground" :
-                view.setForeground(parseDrawable(value, resFinder, ctx));
+                view.setForeground(parseDrawable(value, ctx));
                 break;
             case "foregroundGravity" :
                 view.setForegroundGravity(parseGravity(value));
@@ -147,37 +154,37 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 view.setId(parseId (value));
                 break;
             case "minHeight" :
-                view.setMinimumHeight(parseDimension(value, 0, dm, resFinder));
+                view.setMinimumHeight(parseDimension(value, 0, dm));
                 break;
             case "minWidth" :
-                view.setMinimumWidth(parseDimension(value, 0, dm, resFinder));
+                view.setMinimumWidth(parseDimension(value, 0, dm));
                 break;
             case "padding" :
-                final int padding = parseDimension(value, 0, dm, resFinder);
+                final int padding = parseDimension(value, 0, dm);
                 view.setPaddingRelative(padding, padding, padding, padding);
                 break;
             case "paddingLeft" :
-                final int paddingLeft = parseDimension(value, 0, dm, resFinder);
+                final int paddingLeft = parseDimension(value, 0, dm);
                 view.setPadding(paddingLeft, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
                 break;
             case "paddingTop" :
-                final int paddingTop = parseDimension(value, 0, dm, resFinder);
+                final int paddingTop = parseDimension(value, 0, dm);
                 view.setPadding(view.getPaddingLeft(), paddingTop, view.getPaddingRight(), view.getPaddingBottom());
                 break;
             case "paddingRight" :
-                final int paddingRight = parseDimension(value, 0, dm, resFinder);
+                final int paddingRight = parseDimension(value, 0, dm);
                 view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), paddingRight, view.getPaddingBottom());
                 break;
             case "paddingBottom" :
-                final int paddingBottom = parseDimension(value, 0, dm, resFinder);
+                final int paddingBottom = parseDimension(value, 0, dm);
                 view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), paddingBottom);
                 break;
             case "paddingStart" :
-                final int paddingStart = parseDimension(value, 0, dm, resFinder);
+                final int paddingStart = parseDimension(value, 0, dm);
                 view.setPaddingRelative(paddingStart, view.getPaddingTop(), view.getPaddingEnd(), view.getPaddingBottom());
                 break;
             case "paddingEnd" :
-                final int paddingEnd = parseDimension(value, 0, dm, resFinder);
+                final int paddingEnd = parseDimension(value, 0, dm);
                 view.setPaddingRelative(view.getPaddingStart(), view.getPaddingTop(), paddingEnd, view.getPaddingBottom());
                 break;
             case "rotation" :
@@ -209,7 +216,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 break;
             case "tooltipText" :
                 if (isApi26()) {
-                    view.setTooltipText(parseString(value, resFinder));
+                    view.setTooltipText(parseString(value));
                 }
                 break;
             case "transformPivotX" :
@@ -238,15 +245,15 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         // ----- Handle attributes related to parent ------
         
         if (!handled && params instanceof LinearLayout.LayoutParams) {
-            handled = handleLinearLayoutParams ((LinearLayout.LayoutParams) params, name, value, dm, resFinder);
+            handled = handleLinearLayoutParams ((LinearLayout.LayoutParams) params, name, value, dm);
         }
         
         if (!handled && params instanceof RelativeLayout.LayoutParams) {
-            handled = handleRelativeLayoutParams ((RelativeLayout.LayoutParams) params, name, value, resFinder);
+            handled = handleRelativeLayoutParams ((RelativeLayout.LayoutParams) params, name, value);
         }
         
         if (!handled && params instanceof ViewGroup.MarginLayoutParams) {
-            handled = handleMarginParams((ViewGroup.MarginLayoutParams) params, name, value, dm, resFinder);
+            handled = handleMarginParams((ViewGroup.MarginLayoutParams) params, name, value, dm);
         }
         
         view.setLayoutParams(params);
@@ -265,7 +272,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         return View.NO_ID;
     }
     
-    protected boolean handleRelativeLayoutParams (RelativeLayout.LayoutParams params, @NonNull String name, String value, IResourceFinder resFinder) {
+    protected boolean handleRelativeLayoutParams (RelativeLayout.LayoutParams params, @NonNull String name, String value) {
         boolean handled = true;
         switch (name) {
             case "layout_above" :
@@ -284,22 +291,22 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 params.addRule(RelativeLayout.ALIGN_LEFT, parseId(value));
                 break;
             case "layout_alignParentTop" :
-                setRelativeRuleIfTrue(parseBoolean(value, resFinder), RelativeLayout.ALIGN_PARENT_TOP, params);
+                setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_TOP, params);
                 break;
             case "layout_alignParentBottom" :
-                setRelativeRuleIfTrue(parseBoolean(value, resFinder), RelativeLayout.ALIGN_PARENT_BOTTOM, params);
+                setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_BOTTOM, params);
                 break;
             case "layout_alignParentStart" :
-                setRelativeRuleIfTrue(parseBoolean(value, resFinder), RelativeLayout.ALIGN_PARENT_START, params);
+                setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_START, params);
                 break;
             case "layout_alignParentEnd" :
-                setRelativeRuleIfTrue(parseBoolean(value, resFinder), RelativeLayout.ALIGN_PARENT_END, params);
+                setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_END, params);
                 break;
             case "layout_alignParentLeft" :
-                setRelativeRuleIfTrue(parseBoolean(value, resFinder), RelativeLayout.ALIGN_PARENT_LEFT, params);
+                setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_LEFT, params);
                 break;
             case "layout_alignParentRight" :
-                setRelativeRuleIfTrue(parseBoolean(value, resFinder), RelativeLayout.ALIGN_PARENT_RIGHT, params);
+                setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.ALIGN_PARENT_RIGHT, params);
                 break;
             case "layout_alignRight" :
                 params.addRule(RelativeLayout.ALIGN_RIGHT, parseId(value));
@@ -311,19 +318,19 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 params.addRule(RelativeLayout.ALIGN_TOP, parseId(value));
                 break;
             case "layout_alignWithParentIfMissing" :
-                params.alignWithParent = parseBoolean(value, resFinder);
+                params.alignWithParent = parseBoolean(value);
                 break;
             case "layout_below" :
                 params.addRule(RelativeLayout.BELOW, parseId(value));
                 break;
             case "layout_centerHorizontal" :
-                setRelativeRuleIfTrue(parseBoolean(value, resFinder), RelativeLayout.CENTER_HORIZONTAL, params);
+                setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.CENTER_HORIZONTAL, params);
                 break;
             case "layout_centerInParent" :
-                setRelativeRuleIfTrue(parseBoolean(value, resFinder), RelativeLayout.CENTER_IN_PARENT, params);
+                setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.CENTER_IN_PARENT, params);
                 break;
             case "layout_centerVertical" :
-                setRelativeRuleIfTrue(parseBoolean(value, resFinder), RelativeLayout.CENTER_VERTICAL, params);
+                setRelativeRuleIfTrue(parseBoolean(value), RelativeLayout.CENTER_VERTICAL, params);
                 break;
             case "layout_toEndOf" :
                 params.addRule(RelativeLayout.END_OF, parseId(value));
@@ -351,14 +358,14 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
     
-    protected boolean handleLinearLayoutParams (LinearLayout.LayoutParams params, @NonNull String name, String value, DisplayMetrics dm, IResourceFinder resFinder) {
+    protected boolean handleLinearLayoutParams (LinearLayout.LayoutParams params, @NonNull String name, String value, DisplayMetrics dm) {
         boolean handled = true;
         switch (name) {
             case "layout_gravity" :
                 params.gravity = parseGravity(value);
                 break;
             case "layout_weight" :
-                params.weight = parseDimension(value, 1, dm, resFinder);
+                params.weight = parseDimension(value, 1, dm);
                 break;
             default :
                 handled = false;
@@ -367,30 +374,30 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         return handled;
     }
     
-    protected boolean handleMarginParams(ViewGroup.MarginLayoutParams params, @NonNull String name, String value, DisplayMetrics dm, IResourceFinder resFinder) {
+    protected boolean handleMarginParams(ViewGroup.MarginLayoutParams params, @NonNull String name, String value, DisplayMetrics dm) {
         boolean handled = true;
         switch (name) {
             case "layout_margin" :
-                final int margin = parseDimension(value, 0, dm, resFinder);
+                final int margin = parseDimension(value, 0, dm);
                 params.setMargins(margin, margin, margin, margin);
                 break;
             case "layout_marginLeft" :
-                params.leftMargin = parseDimension(value, 0, dm, resFinder);
+                params.leftMargin = parseDimension(value, 0, dm);
                 break;
             case "layout_marginTop" :
-                params.topMargin = parseDimension(value, 0, dm, resFinder);
+                params.topMargin = parseDimension(value, 0, dm);
                 break;
             case "layout_marginRight" :
-                params.rightMargin = parseDimension(value, 0, dm, resFinder);
+                params.rightMargin = parseDimension(value, 0, dm);
                 break;
             case "layout_marginBottom" :
-                params.bottomMargin = parseDimension(value, 0, dm, resFinder);
+                params.bottomMargin = parseDimension(value, 0, dm);
                 break;
             case "layout_marginStart" :
-                params.setMarginStart(parseDimension(value, 0, dm, resFinder));
+                params.setMarginStart(parseDimension(value, 0, dm));
                 break;
             case "layout_marginEnd" :
-                params.setMarginEnd(parseDimension(value, 0, dm, resFinder));
+                params.setMarginEnd(parseDimension(value, 0, dm));
                 break;
             default :
                 handled = false;
@@ -518,14 +525,14 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
 
-    protected String parseString(@NonNull String value, IResourceFinder resFinder) {
+    protected String parseString(@NonNull String value) {
         if (value.startsWith("@")) {
-            return parseString(resFinder.findString(value.substring("@string/".length())), resFinder);
+            return parseString(resFinder.findString(value.substring("@string/".length())));
         }
         return value;
     }
 
-    protected boolean parseBoolean(@NonNull String value, IResourceFinder resFinder) {
+    protected boolean parseBoolean(@NonNull String value) {
         if (!value.startsWith("@")) {
             if ("true".equals(value)) {
                 return true;
@@ -557,7 +564,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
     
-    protected Drawable parseDrawable (String value, IResourceFinder resFinder, final Context ctx) {
+    protected Drawable parseDrawable (String value, final Context ctx) {
         if (HEX_COLOR.matcher(value).matches()) {
             return drawableForColor(value);
         } else if (value.startsWith("@")) {
@@ -589,7 +596,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 } else if (value.startsWith("@color/")) {
                     final String color = resFinder.findColor(value.substring("@color/".length()));
                     // TODO Check if this color resource is a selector
-                    return parseDrawable(color, resFinder, ctx);
+                    return parseDrawable(color, ctx);
                 }
             }
         }
@@ -607,7 +614,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
     
-    protected int parseColor (String color, IResourceFinder resFinder, final Context ctx) {
+    protected int parseColor (String color, final Context ctx) {
         if (HEX_COLOR.matcher(color).matches()) {
             try {
                 return Color.parseColor(color);
@@ -615,7 +622,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 // Ignored
             }
         } else if (color.startsWith("@color/")) {
-            return parseColor(resFinder.findColor(color.substring("@color/".length())), resFinder, ctx);
+            return parseColor(resFinder.findColor(color.substring("@color/".length())), ctx);
         } else if (color.startsWith("@android:color/")) {
             final int id = findAndroidResId("color", color.substring("@android:color/".length()));
             return ContextCompat.getColor(ctx, id);
@@ -648,7 +655,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
     }
 
-    protected int parseDimension(final String value, int defaultValue, final DisplayMetrics dm, IResourceFinder resFinder) {
+    protected int parseDimension(final String value, int defaultValue, final DisplayMetrics dm) {
         
         if (value == null) {
             return defaultValue;
@@ -669,7 +676,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
             return (int) TypedValue.applyDimension(getUnitForDimensionType(dimensionType), dimen, dm);
         } else if (c == '@') {
             String name = value.substring("@dimen/".length());
-            return parseDimension(resFinder.findDimension(name), defaultValue, dm, resFinder);
+            return parseDimension(resFinder.findDimension(name), defaultValue, dm);
         } else if (Character.isLetter(c)) {
             // This could be one of the following :
             // 1. match_parent

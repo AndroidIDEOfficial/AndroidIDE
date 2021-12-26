@@ -119,6 +119,12 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     }
     
     private void onAttrClick (LayoutAttrEditorSheetItemBinding binding, @NonNull XMLAttribute attribute) {
+    
+        if (this.selectedView == null) {
+            LOG.error ("Cannot edit attributes of a null view.");
+            return;
+        }
+        
         final var format = attribute.findFormat ();
         if (format == -1) {
             StudioApp.getInstance ().toast (getString (R.string.msg_no_attr_format), Toaster.Type.ERROR);
@@ -130,26 +136,30 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     }
     
     private void showEditorDialog (@NonNull XMLAttribute attribute) {
-        final var format = attribute.getFormat ();
         final var attr = attribute.getAttr ();
         
-        AlertDialog dialog = null;
-        if (hasFormat (format, DIMENSION)) {
-            if (attr == null) {
-                throw new IllegalStateException ("The provided attribute has not been resoleved.");
+        final AttributeDialogs.OnClickListener onDone = (dialog, which, newValue) -> {
+            if (!this.selectedView.updateAttribute (attribute.getNamespace (), attribute.getAttributeName (), newValue)) {
+                StudioApp.getInstance ().toast ("Unable to update this attribute", Toaster.Type.ERROR);
+            } else {
+                // Update the view data
+                // This will make sure that the attributes list has been updated
+                setupViewData ();
             }
-    
-            final var possibleValues = attr.possibleValues;
-            dialog = AttributeDialogs.dimensionEditor (possibleValues.toArray(new String[0]), attribute.getValue (), (dialog1, which) -> {
-                LOG.debug ("Dimension value changed to : " + attribute.getValue ());
-            });
-        }
+        };
         
-        // TODO Once the user has selected another value, update it for the view too.
-    }
+        AlertDialog dialog = null;
+        if (attribute.hasFormat (DIMENSION)) {
+            if (attr == null) {
+                throw new IllegalStateException ("The provided attribute has not been resolved.");
+            }
+
+            dialog = AttributeDialogs.dimensionEditor (attribute.getValue (), onDone);
+        }
     
-    private boolean hasFormat (int format, int check) {
-        return (format &check ) != 0;
+        if (dialog != null) {
+            dialog.show ();
+        }
     }
     
     @Override

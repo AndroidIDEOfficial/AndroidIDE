@@ -35,7 +35,7 @@ public class CheckedTextViewAttrAdapter extends TextViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         
         final CheckedTextView text = (CheckedTextView) view;
         final String namespace = attribute.getNamespace();
@@ -64,7 +64,7 @@ public class CheckedTextViewAttrAdapter extends TextViewAttrAdapter {
         }
         
         if (!handled) {
-            handled = super.apply(attribute, view, resFinder);
+            handled = super.apply(attribute, view);
         }
 
         return handled;

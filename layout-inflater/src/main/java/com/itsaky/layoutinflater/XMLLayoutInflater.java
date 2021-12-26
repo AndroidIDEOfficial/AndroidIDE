@@ -200,7 +200,9 @@ class XMLLayoutInflater extends BaseLayoutInflater {
                 .getClassLoader()
                 .loadClass(name)
                 .asSubclass(IAttributeAdapter.class);
-           return adapterClass.newInstance();
+           final var adapter = adapterClass.newInstance();
+           adapter.setResourceFinder (resFinder);
+           return adapter;
         } catch (Throwable th) {
             LOG.error (BaseApplication.getBaseInstance().getString(com.itsaky.layoutinflater.R.string.err_no_attr_adapter, view.getClass().getName()), th);
         }
@@ -226,7 +228,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
             final String value = attr.getValue();
 
             final IAttribute iAttr = asAttribute (namespace, name, value);
-            view.addAttribute(iAttr, resFinder);
+            view.addAttribute(iAttr);
 
             postApplyAttribute(iAttr, view);
         }

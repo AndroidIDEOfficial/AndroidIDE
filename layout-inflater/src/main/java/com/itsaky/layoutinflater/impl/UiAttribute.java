@@ -45,7 +45,12 @@ public class UiAttribute implements IAttribute {
     
     @Override
     public String getValue() {
-        return value;
+        return this.value;
+    }
+    
+    @Override
+    public void apply (String value) {
+        this.value = value;
     }
 
     @Override

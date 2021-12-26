@@ -19,7 +19,7 @@ public class CompondButtonAttrAdapter extends ButtonAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         final CompoundButton button = (CompoundButton) view;
         final Context context = button.getContext();
         final String namespace = attribute.getNamespace();
@@ -37,7 +37,7 @@ public class CompondButtonAttrAdapter extends ButtonAttrAdapter {
                 // TODO Parse color state list
                 break;
             case "button" :
-                button.setButtonDrawable(parseDrawable(value, resFinder, context));
+                button.setButtonDrawable(parseDrawable(value, context));
                 break;
             case "buttonTintMode" :
                 button.setButtonTintMode(parsePorterDuffMode(value));
@@ -48,7 +48,7 @@ public class CompondButtonAttrAdapter extends ButtonAttrAdapter {
         }
         
         if (!handled) {
-            handled = super.apply(attribute, view, resFinder);
+            handled = super.apply(attribute, view);
         }
 
         return handled;

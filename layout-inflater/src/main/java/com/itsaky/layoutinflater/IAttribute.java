@@ -45,6 +45,14 @@ public interface IAttribute {
     
     @NonNull
     String getValue ();
+    
+    /**
+     * Set the given string as a value to this attribute.
+     * This will set {@link #isApplied()} to return {@code true}.
+     *
+     * @param value The value to set.
+     */
+    void apply (String value);
 
     public static final Comparator <IAttribute> COMPARATOR = (first, second) -> {
         var result = compareNull(first, second);

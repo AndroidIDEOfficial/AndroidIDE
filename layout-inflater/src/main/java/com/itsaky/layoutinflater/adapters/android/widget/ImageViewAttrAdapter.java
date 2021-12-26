@@ -41,7 +41,7 @@ public class ImageViewAttrAdapter extends ViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         final ImageView image = (ImageView) view;
         final Context context = image.getContext();
         final DisplayMetrics dm = context.getResources().getDisplayMetrics();
@@ -57,28 +57,28 @@ public class ImageViewAttrAdapter extends ViewAttrAdapter {
 
         switch (name) {
             case "adjustViewBounds" :
-                image.setAdjustViewBounds(parseBoolean(value, resFinder));
+                image.setAdjustViewBounds(parseBoolean(value));
                 break;
             case "baseline" :
-                image.setBaseline(parseDimension(value, 0, dm, resFinder));
+                image.setBaseline(parseDimension(value, 0, dm));
                 break;
             case "baselineAlignBottom" :
-                image.setBaselineAlignBottom(parseBoolean(value, resFinder));
+                image.setBaselineAlignBottom(parseBoolean(value));
                 break;
             case "cropToPadding" :
-                image.setCropToPadding(parseBoolean(value, resFinder));
+                image.setCropToPadding(parseBoolean(value));
                 break;
             case "maxHeight" :
-                image.setMaxHeight(parseDimension(value, 0, dm, resFinder));
+                image.setMaxHeight(parseDimension(value, 0, dm));
                 break;
             case "maxWidth" :
-                image.setMaxWidth(parseDimension(value, 0, dm, resFinder));
+                image.setMaxWidth(parseDimension(value, 0, dm));
                 break;
             case "scaleType" :
                 image.setScaleType(parseScaleType(value));
                 break;
             case "src" :
-                image.setImageDrawable(parseImageResource(value, resFinder, context));
+                image.setImageDrawable(parseImageResource(value, context));
                 break;
             case "tint" :
                 // TODO Parse color state list
@@ -92,15 +92,15 @@ public class ImageViewAttrAdapter extends ViewAttrAdapter {
         }
 
         if (!handled) {
-            handled = super.apply(attribute, view, resFinder);
+            handled = super.apply(attribute, view);
         }
 
         return handled;
     }
 
-    private Drawable parseImageResource(String value, IResourceFinder resFinder, Context context) {
+    private Drawable parseImageResource(String value, Context context) {
         if (value.startsWith("@drawable/") || value.startsWith("@mipmap/")) {
-            return parseDrawable(value, resFinder, context);
+            return parseDrawable(value, context);
         }
         return ContextCompat.getDrawable(context, android.R.drawable.ic_delete);
     }

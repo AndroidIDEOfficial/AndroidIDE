@@ -33,7 +33,7 @@ public class AbsSpinnerAttrAdapter extends AdapterViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         final var spinner = (AbsSpinner) view;
         final var context = spinner.getContext();
         final var namespace = attribute.getNamespace();
@@ -58,7 +58,7 @@ public class AbsSpinnerAttrAdapter extends AdapterViewAttrAdapter {
         }
 
         if (!handled){
-            handled = super.apply(attribute, view, resFinder);
+            handled = super.apply(attribute, view);
         }
 
         return handled;

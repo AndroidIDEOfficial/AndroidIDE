@@ -39,7 +39,7 @@ public class SeekBarAttrAdapter extends AbsSeekBarAttrAdapter {
     }
 
     @Override
-    public boolean apply(@NonNull IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(@NonNull IAttribute attribute, View view) {
         final var seek = (SeekBar) view;
         final var context = seek.getContext();
         final var namespace = attribute.getNamespace();
@@ -53,7 +53,7 @@ public class SeekBarAttrAdapter extends AbsSeekBarAttrAdapter {
 
         switch (name) {
             case "thumb":
-                seek.setThumb(parseDrawable(value, resFinder, context));
+                seek.setThumb(parseDrawable(value, context));
                 break;
             default:
                 handled = false;

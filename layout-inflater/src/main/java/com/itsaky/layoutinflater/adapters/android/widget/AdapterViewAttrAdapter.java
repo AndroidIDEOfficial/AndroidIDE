@@ -40,9 +40,9 @@ public abstract class AdapterViewAttrAdapter extends ViewGroupAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         // No special attributes for AdapterView
-        return super.apply(attribute, view, resFinder);
+        return super.apply(attribute, view);
     }
 
     protected ArrayAdapter <String> newSimpleAdapter (Context ctx) {

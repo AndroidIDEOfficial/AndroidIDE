@@ -91,6 +91,10 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
         return getFormat ();
     }
     
+    public boolean hasFormat (int format) {
+        return (this.format & format) != 0;
+    }
+    
     public Attr getAttr () {
         return attr;
     }
@@ -111,14 +115,9 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
         }
     };
     
-    /**
-     * Set the given string as a value to this attribute.
-     * This will set {@link #isApplied()} to return {@code true}.
-     *
-     * @param value The value to set.
-     */
+    @Override
     public void apply (String value) {
-        this.value = value;
+        super.apply (value);
         isApplied = true;
     }
     

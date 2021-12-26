@@ -20,6 +20,8 @@ package com.itsaky.layoutinflater.adapters.android.widget;
 import android.view.View;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IResourceFinder;
 
@@ -37,7 +39,7 @@ public class SpinnerAttrAdapter extends AbsSpinnerAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(@NonNull IAttribute attribute, View view) {
         final var spinner = (Spinner) view;
         final var context = spinner.getContext();
         final var dm = context.getResources().getDisplayMetrics();
@@ -53,19 +55,19 @@ public class SpinnerAttrAdapter extends AbsSpinnerAttrAdapter {
 
         switch (name) {
             case "dropDownHorizontalOffset":
-                spinner.setDropDownHorizontalOffset(parseDimension(value, 0, dm, resFinder));
+                spinner.setDropDownHorizontalOffset(parseDimension(value, 0, dm));
                 break;
             case "dropDownVerticalOffset":
-                spinner.setDropDownVerticalOffset(parseDimension(value, 0, dm, resFinder));
+                spinner.setDropDownVerticalOffset(parseDimension(value, 0, dm));
                 break;
             case "dropDownWidth":
-                spinner.setDropDownWidth(parseDimension(value, 0, dm, resFinder));
+                spinner.setDropDownWidth(parseDimension(value, 0, dm));
                 break;
             case "gravity" :
                 spinner.setGravity(parseGravity(value));
                 break;
             case "popupBackground" :
-                spinner.setPopupBackgroundDrawable(parseDrawable(value, resFinder, context));
+                spinner.setPopupBackgroundDrawable(parseDrawable(value, context));
                 break;
             default:
                 handled = false;
@@ -73,7 +75,7 @@ public class SpinnerAttrAdapter extends AbsSpinnerAttrAdapter {
         }
 
         if (!handled) {
-            handled = super.apply(attribute, view, resFinder);
+            handled = super.apply(attribute, view);
         }
 
         return handled;

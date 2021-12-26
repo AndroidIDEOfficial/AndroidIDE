@@ -20,8 +20,12 @@ package com.itsaky.layoutinflater.adapters.android.view;
 import android.animation.LayoutTransition;
 import android.view.View;
 import android.view.ViewGroup;
-import com.itsaky.layoutinflater.IResourceFinder;
+
+import androidx.annotation.NonNull;
+
 import com.itsaky.layoutinflater.IAttribute;
+
+import org.jetbrains.annotations.Contract;
 
 /**
  * An attribute adapter implementation for ViewGroups.
@@ -36,7 +40,7 @@ public class ViewGroupAttrAdapter extends ViewAttrAdapter {
     }
     
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         
         final ViewGroup group = (ViewGroup) view;
         final String namespace = attribute.getNamespace();
@@ -53,13 +57,13 @@ public class ViewGroupAttrAdapter extends ViewAttrAdapter {
                 group.setLayoutTransition(new LayoutTransition());
                 break;
             case "clipChildren" :
-                group.setClipChildren(parseBoolean(value, resFinder));
+                group.setClipChildren(parseBoolean(value));
                 break;
             case "clipToPadding" :
-                group.setClipToPadding(parseBoolean(value, resFinder));
+                group.setClipToPadding(parseBoolean(value));
                 break;
             case "descendantFocusability" :
-                group.setDescendantFocusability(parseDescendantsFocusablility(value));
+                group.setDescendantFocusability(parseDescendantsFocusability (value));
                 break;
             case "layoutMode" :
                 group.setLayoutMode(parseLayoutMode(value));
@@ -70,12 +74,13 @@ public class ViewGroupAttrAdapter extends ViewAttrAdapter {
         }
         
         if (!handled) {
-            handled = super.apply(attribute, view, resFinder);
+            handled = super.apply(attribute, view);
         }
         
         return handled;
     }
 
+    @Contract(pure = true)
     private int parseLayoutMode(String value) {
         switch (value) {
             case "opticalBounds" :
@@ -86,7 +91,7 @@ public class ViewGroupAttrAdapter extends ViewAttrAdapter {
         }
     }
 
-    protected int parseDescendantsFocusablility(String value) {
+    protected int parseDescendantsFocusability (@NonNull String value) {
         switch (value) {
             case "beforeDescendants" :
                 return ViewGroup.FOCUS_BEFORE_DESCENDANTS;

@@ -36,7 +36,7 @@ public class RelativeLayoutAttrAdapter extends ViewGroupAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         
         final RelativeLayout relative = (RelativeLayout) view;
         final String namespace = attribute.getNamespace();
@@ -62,7 +62,7 @@ public class RelativeLayoutAttrAdapter extends ViewGroupAttrAdapter {
         }
         
         if (!handled) {
-            handled = super.apply(attribute, view, resFinder);
+            handled = super.apply(attribute, view);
         }
         
         return handled;

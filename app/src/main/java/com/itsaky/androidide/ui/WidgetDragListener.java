@@ -110,9 +110,8 @@ public class WidgetDragListener implements View.OnDragListener {
     }
 
     private void applyBasicAttributes (@NonNull IView view) {
-        final var resFinder = StudioApp.getInstance().getResFinder();
-        view.addAttribute(layoutWidthAttr(), resFinder);
-        view.addAttribute(layoutHeightAttr(), resFinder);
+        view.addAttribute(layoutWidthAttr());
+        view.addAttribute(layoutHeightAttr());
     }
 
     @NonNull

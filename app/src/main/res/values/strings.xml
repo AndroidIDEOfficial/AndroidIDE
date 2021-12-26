@@ -329,5 +329,6 @@
     <string name="msg_empty_ui_layout">No views have been added. Click to add.</string>
     <string name="msg_no_attr_format">No attribute format is available for this attribute.</string>
     <string name="msg_attr_editor_null">Unable to create attribute editor for this attribute</string>
+    <string name="msg_invalid_attr_value">Invalid value</string>
 
 </resources>

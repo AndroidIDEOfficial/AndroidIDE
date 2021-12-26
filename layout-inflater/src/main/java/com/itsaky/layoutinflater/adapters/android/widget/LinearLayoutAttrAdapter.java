@@ -18,6 +18,9 @@ package com.itsaky.layoutinflater.adapters.android.widget;
 
 import android.view.View;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IResourceFinder;
 import com.itsaky.layoutinflater.adapters.android.view.ViewGroupAttrAdapter;
@@ -35,7 +38,7 @@ public class LinearLayoutAttrAdapter extends ViewGroupAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         final LinearLayout linear = (LinearLayout) view;
         final String namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
@@ -49,7 +52,7 @@ public class LinearLayoutAttrAdapter extends ViewGroupAttrAdapter {
         
         switch (name) {
             case "baselineAligned" :
-                linear.setBaselineAligned(parseBoolean(value, resFinder));
+                linear.setBaselineAligned(parseBoolean(value));
                 break;
             case "baselineAlignedChildIndex" :
                 linear.setBaselineAlignedChildIndex(parseInteger(value, linear.getChildCount()));
@@ -58,7 +61,7 @@ public class LinearLayoutAttrAdapter extends ViewGroupAttrAdapter {
                 linear.setGravity(parseGravity(value));
                 break;
             case "measureWithLargestChild" :
-                linear.setMeasureWithLargestChildEnabled(parseBoolean(value, resFinder));
+                linear.setMeasureWithLargestChildEnabled(parseBoolean(value));
                 break;
             case "orientation" :
                 linear.setOrientation(parseOrientation(value));
@@ -72,13 +75,13 @@ public class LinearLayoutAttrAdapter extends ViewGroupAttrAdapter {
         }
         
         if (!handled) {
-            handled = super.apply(attribute, view, resFinder);
+            handled = super.apply(attribute, view);
         }
 
         return handled;
     }
 
-    protected int parseOrientation(String value) {
+    protected int parseOrientation(@NonNull String value) {
         switch (value) {
             case "vertical" :
                 return LinearLayout.VERTICAL;

@@ -39,7 +39,7 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view, IResourceFinder resFinder) {
+    public boolean apply(IAttribute attribute, View view) {
         final ProgressBar pb = (ProgressBar) view;
         final Context context = pb.getContext();
         final DisplayMetrics dm = context.getResources().getDisplayMetrics();
@@ -55,10 +55,10 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
         
         switch (name) {
             case "indeterminate" :
-                pb.setIndeterminate(parseBoolean(value, resFinder));
+                pb.setIndeterminate(parseBoolean(value));
                 break;
             case "indeterminateDrawable" :
-                pb.setIndeterminateDrawable(parseDrawable(value, resFinder, context));
+                pb.setIndeterminateDrawable(parseDrawable(value, context));
                 break;
             case "indeterminateTint" :
                 // TODO Parse color state list
@@ -70,10 +70,14 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
                 pb.setMax(parseInteger(value, 100));
                 break;
             case "maxHeight" :
-                pb.setMaxHeight(parseDimension(value, Integer.MAX_VALUE, dm, resFinder));
+                if (isApi29 ()) {
+                    pb.setMaxHeight(parseDimension(value, Integer.MAX_VALUE, dm));
+                }
                 break;
             case "maxWidth" :
-                pb.setMaxWidth(parseDimension(value, Integer.MAX_VALUE, dm, resFinder));
+                if (isApi29 ()) {
+                    pb.setMaxWidth(parseDimension(value, Integer.MAX_VALUE, dm));
+                }
                 break;
             case "min" :
                 if (isApi26()) {
@@ -82,12 +86,12 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
                 break;
             case "minHeight" :
                 if (isApi29()) {
-                    pb.setMinHeight(parseDimension(value, 0, dm, resFinder));
+                    pb.setMinHeight(parseDimension(value, 0, dm));
                 }
                 break;
             case "minWidth" :
                 if (isApi29()) {
-                    pb.setMinWidth(parseDimension(value, 0, dm, resFinder));
+                    pb.setMinWidth(parseDimension(value, 0, dm));
                 }
                 break;
             case "progress" :
@@ -100,7 +104,7 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
                 pb.setProgressBackgroundTintMode(parsePorterDuffMode(value));
                 break;
             case "progressDrawable" :
-                pb.setProgressDrawable(parseDrawable(value, resFinder, context));
+                pb.setProgressDrawable(parseDrawable(value, context));
                 break;
             case "progressTint" :
                 // TODO Parse color state list
@@ -123,7 +127,7 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
         }
         
         if (!handled) {
-            handled = super.apply(attribute, view, resFinder);
+            handled = super.apply(attribute, view);
         }
         
         return handled;

@@ -25,19 +25,18 @@ import androidx.annotation.Nullable;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IAttributeAdapter;
-import com.itsaky.layoutinflater.IResourceFinder;
 import com.itsaky.layoutinflater.IView;
 import com.itsaky.layoutinflater.IViewGroup;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 public abstract class BaseView implements IView {
 
-    protected final Set<IAttribute> attributes = new TreeSet<IAttribute>(IAttribute.COMPARATOR);
+    protected final List<IAttribute> attributes = new ArrayList<> ();
     protected final Set<IAttributeAdapter> attrAdapters = new HashSet<>();
 
     protected final String qualifiedName;
@@ -94,21 +93,27 @@ public abstract class BaseView implements IView {
     }
 
     @Override
-    public void addAttribute(IAttribute attr, IResourceFinder resFinder) {
+    public void addAttribute(IAttribute attr) {
         if (attr == null || this.attributes.contains(attr)) {
             return;
         }
 
         this.attributes.add(attr);
-
+    
+        applyAttributeValue (attr);
+    
+        this.attributes.sort (IAttribute.COMPARATOR);
+    }
+    
+    private void applyAttributeValue (final IAttribute attr) {
         for (IAttributeAdapter adapter : attrAdapters) {
             if (adapter.isApplicableTo(asView())
-                && adapter.apply(attr, asView(), resFinder)) {
+                && adapter.apply(attr, asView())) {
                     break;
             }
         }
     }
-
+    
     @Override
     public void removeAttribute(IAttribute attr) {
         this.attributes.remove(attr);
@@ -120,7 +125,7 @@ public abstract class BaseView implements IView {
     }
 
     @Override
-    public Set<IAttribute> getAttributes() {
+    public List<IAttribute> getAttributes() {
         return attributes;
     }
 
@@ -145,6 +150,32 @@ public abstract class BaseView implements IView {
             }
         }
         return null;
+    }
+    
+    @Override
+    public boolean updateAttribute (String namespace, String name, String value) {
+        IAttribute found = null;
+        int index = -1;
+        for (int i=0;i<attributes.size ();i++) {
+            final var attr = attributes.get (i);
+            if (attr.getNamespace ().equals (namespace)
+            && attr.getAttributeName ().equals (name)) {
+                found = attr;
+                index = i;
+                break;
+            }
+        }
+    
+        if (found != null && index < this.attributes.size ()) {
+            found.apply (value);
+            this.attributes.set (index, found);
+            // Let the attribute adapters handle the update
+            applyAttributeValue (found);
+            
+            return true;
+        }
+        
+        return false;
     }
     
     @Override
@@ -267,7 +298,7 @@ public abstract class BaseView implements IView {
         stringBuilder.append("\n");
         indent(stringBuilder, indentCount);
     }
-
+    
     private void indent (StringBuilder sb, int count) {
         for (var i = 0; i < DEFAULT_INDENTATION_LENGTH * count; i++) {
             sb.append(" ");

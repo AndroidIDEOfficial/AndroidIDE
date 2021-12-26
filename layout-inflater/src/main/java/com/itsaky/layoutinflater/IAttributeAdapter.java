@@ -26,6 +26,12 @@ import com.itsaky.layoutinflater.IResourceFinder;
  * An adapter that handles attributes of a specific type of view
  */
 public interface IAttributeAdapter {
+    
+    /**
+     * Set the resource finder used by this class.
+     * @param resourceFinder The resource finder.
+     */
+    void setResourceFinder (IResourceFinder resourceFinder);
 
     /**
      * Can this adapter handle attributes of the provided view?
@@ -42,8 +48,7 @@ public interface IAttributeAdapter {
      *
      * @param attribute The attribute to apply
      * @param view The view to apply attribute to
-     * @param resFinder The resource finder that can be used to find resource values
      * @return {@code true} if the attribute was applied successfully {@code false} otherwise.
      */
-    boolean apply (IAttribute attribute, View view, IResourceFinder resFinder);
+    boolean apply (IAttribute attribute, View view);
 }

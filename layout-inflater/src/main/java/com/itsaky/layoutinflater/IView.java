@@ -19,8 +19,10 @@ package com.itsaky.layoutinflater;
 
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,9 +50,8 @@ public interface IView {
      * Add this attribute to this view
      *
      * @param attr The Attribute to add
-     * @param resFinder The resource finder
      */
-    void addAttribute (IAttribute attr, IResourceFinder resFinder);
+    void addAttribute (IAttribute attr);
     
     /**
      * Remove this attribute
@@ -70,7 +71,7 @@ public interface IView {
      * Get the attributes of this view.
      * @return The attributes.
      */
-    Set<IAttribute> getAttributes ();
+    List<IAttribute> getAttributes ();
 
     /**
      * Get the attributes of this view as an array.
@@ -96,6 +97,25 @@ public interface IView {
      */
     @Nullable
     IAttribute getAttribute (String namespace, String name);
+    
+    /**
+     * Update the value of the given attribute.
+     *
+     * @param attribute The attribute that should be updated.
+     * @return {@code true} if the attribute was successfully updated, {@code false} otherwise.
+     */
+    default boolean updateAttribute (@NonNull IAttribute attribute) {
+        return updateAttribute (attribute.getNamespace (), attribute.getAttributeName (), attribute.getValue ());
+    }
+    
+    /**
+     * Find and update the given attribute with the given value.
+     * @param namespace The namespace of the attribute.
+     * @param name The name of the attribute.
+     * @param value The new value of the attribute.
+     * @return {@code true} if the attribute was successfully updated, {@code false} otherwise.
+     */
+    boolean updateAttribute (String namespace, String name, String value);
 
     /**
      * Register this attribute adapter
