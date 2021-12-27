@@ -28,17 +28,13 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
-import com.google.common.primitives.Chars;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutDimensionAttrEditorBinding;
-import com.itsaky.androidide.databinding.LayoutStringAttrEditorBinding;
+import com.itsaky.androidide.databinding.LayoutTextAttrEditorBinding;
 import com.itsaky.toaster.Toaster;
 
-import java.lang.reflect.Array;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -102,7 +98,7 @@ public class AttributeDialogs {
      */
     @NonNull
     public static AlertDialog stringEditor (OnClickListener listener) {
-        final var binding = LayoutStringAttrEditorBinding.inflate (LayoutInflater.from (mContext));
+        final var binding = LayoutTextAttrEditorBinding.inflate (LayoutInflater.from (mContext));
         final var builder = newMaterialDialogBuilder (mContext);
         builder.setTitle (mContext.getString(R.string.msg_new_str_value));
         builder.setView (binding.getRoot ());
@@ -172,7 +168,7 @@ public class AttributeDialogs {
     }
     
     /**
-     * @see #enumEditor(CharSequence[], int, DialogInterface.OnClickListener)
+     * @see #enumEditor(CharSequence[], int, OnClickListener)
      */
     public static AlertDialog enumEditor (CharSequence[] values, CharSequence value, OnClickListener listener) {
         return enumEditor (values, findIndexOf (values, value), listener);
