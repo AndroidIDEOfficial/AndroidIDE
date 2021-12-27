@@ -21,22 +21,32 @@ import static com.itsaky.androidide.utils.DialogUtils.newMaterialDialogBuilder;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.common.primitives.Chars;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutDimensionAttrEditorBinding;
 import com.itsaky.androidide.databinding.LayoutStringAttrEditorBinding;
 import com.itsaky.toaster.Toaster;
 
+import java.lang.reflect.Array;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
 /**
  * Helper class for creating dialogs for editing view attributes.
  * <br>
  * TODO Should we merge this into {@link DialogUtils}?
+ * TODO An attribute can accept multiple types of values (dimension, enum, reference, etc)
+ *     Can we somehow combine the editors according to attribute format?
  * @author Akash Yadav
  */
 public class AttributeDialogs {
@@ -69,14 +79,29 @@ public class AttributeDialogs {
         mContext = null;
     }
     
+    @NonNull
+    public static AlertDialog booleanEditor (OnClickListener listener) {
+        final var items = new String [] {"true", "false"};
+        final var builder = newMaterialDialogBuilder (mContext);
+        builder.setTitle (mContext.getString(R.string.msg_choose_new_val));
+        builder.setItems (items, (dialog, which) -> {
+            dialog.dismiss ();
+            final var val = items [which];
+            if (listener != null) {
+                listener.onClick (dialog, which, val);
+            }
+        });
+        return builder.create ();
+    }
+    
     /**
-     * Create a new value for editing an attribute with format STRING.
-     * @param onSubmit The listener that will be invoked when the user clicks the
+     * Create a new dialog for editing an attribute with format STRING.
+     * @param listener The listener that will be invoked when the user clicks the
      *                 positive button.
      * @return The newly created dialog instance.
      */
     @NonNull
-    public static AlertDialog stringEditor (OnClickListener onSubmit) {
+    public static AlertDialog stringEditor (OnClickListener listener) {
         final var binding = LayoutStringAttrEditorBinding.inflate (LayoutInflater.from (mContext));
         final var builder = newMaterialDialogBuilder (mContext);
         builder.setTitle (mContext.getString(R.string.msg_new_str_value));
@@ -87,32 +112,29 @@ public class AttributeDialogs {
                 StudioApp.getInstance ().toast (mContext.getString (R.string.msg_invalid_attr_value), Toaster.Type.ERROR);
                 return;
             }
-            if (onSubmit != null) {
-                onSubmit.onClick (dialog, which, newValue);
+            if (listener != null) {
+                listener.onClick (dialog, which, newValue);
             }
         });
         builder.setNegativeButton (android.R.string.cancel, (dialog, which) -> dialog.dismiss ());
-        
         return builder.create ();
     }
     
     /**
      * Create a new dialog for editing an attribute which accepts dimension values.
      * @param value The current value of the attribute. Used for determining which item must be selected by default.
-     * @param onSubmit A listener that will be invoked when the user presses the positive button of the dialog.
+     * @param listener A listener that will be invoked when the user presses the positive button of the dialog.
      *                 This listener is invoked only when the user passes a valid dimension value.
      * @return The newly created dialog instance. Note that this dialog is not shown by default.
      */
     @NonNull
-    public static AlertDialog dimensionEditor (CharSequence value, OnClickListener onSubmit) {
+    public static AlertDialog dimensionEditor (CharSequence value, OnClickListener listener) {
         final var binding = LayoutDimensionAttrEditorBinding.inflate(LayoutInflater.from (mContext));
-        binding.choices.setOnCheckedChangeListener ((group, checkedId) -> {
-            binding.otherValue.setVisibility (binding.other.isChecked () ? View.VISIBLE : View.GONE);
-        });
+        binding.choices.setOnCheckedChangeListener ((group, checkedId) -> binding.otherValue.setVisibility (binding.other.isChecked () ? View.VISIBLE : View.GONE));
         
-        if (DIMENSION_MATCH.equals (value)) {
+        if (DIMENSION_MATCH.contentEquals (value)) {
             binding.choices.check (R.id.match);
-        } else if (DIMENSION_WRAP.equals (value)) {
+        } else if (DIMENSION_WRAP.contentEquals (value)) {
             binding.choices.check (R.id.wrap);
         } else {
             binding.choices.check (R.id.other);
@@ -141,8 +163,8 @@ public class AttributeDialogs {
     
             dialog.dismiss ();
             
-            if (onSubmit != null) {
-                onSubmit.onClick (dialog, which, val);
+            if (listener != null) {
+                listener.onClick (dialog, which, val);
             }
         }));
         builder.setNegativeButton (android.R.string.cancel, (dialog, which) -> dialog.dismiss ());
@@ -150,10 +172,10 @@ public class AttributeDialogs {
     }
     
     /**
-     * @see #enumSelector(CharSequence[], int, DialogInterface.OnClickListener)
+     * @see #enumEditor(CharSequence[], int, DialogInterface.OnClickListener)
      */
-    public static AlertDialog enumSelector (CharSequence[] values, CharSequence value, DialogInterface.OnClickListener onSelected) {
-        return enumSelector (values, findIndexOf (values, value), onSelected);
+    public static AlertDialog enumEditor (CharSequence[] values, CharSequence value, OnClickListener listener) {
+        return enumEditor (values, findIndexOf (values, value), listener);
     }
     
     private static int findIndexOf (@NonNull CharSequence[] values, CharSequence value) {
@@ -170,21 +192,69 @@ public class AttributeDialogs {
      * Create a new single choice dialog for selecting enum values.
      * @param values The value entries in the enum declaration.
      * @param selected The item that will be selected when the dialog is shown.
-     * @param onSelected The click listener that will be invoked when an item is selected from the list.
+     * @param listener The click listener that will be invoked when an item is selected from the list.
      * @return The newly created dialog instance.
      */
-    public static AlertDialog enumSelector (CharSequence[] values, int selected, DialogInterface.OnClickListener onSelected) {
+    public static AlertDialog enumEditor (CharSequence[] values, int selected, OnClickListener listener) {
         final var builder = newMaterialDialogBuilder (mContext);
         builder.setSingleChoiceItems (values, selected, (dialog, which) -> {
             dialog.dismiss ();
-            if (onSelected != null) {
-                onSelected.onClick (dialog, which);
+            final var val = values [which].toString ();
+            if (listener != null) {
+                listener.onClick (dialog, which, val);
             }
         });
         return builder.show ();
     }
     
-    public static interface OnClickListener {
+    @NonNull
+    public static AlertDialog flagEditor (@NonNull CharSequence[] values, @NonNull CharSequence value, OnClickListener listener) {
+        final var checked = new boolean [values.length];
+        final var vals = value.toString ().split (Pattern.quote ("|"));
+        for (var i=0;i<values.length;i++) {
+            for (var val : vals) {
+                if (val.contentEquals (values[i])) {
+                    checked [i] = true;
+                }
+            }
+        }
+        
+        return flagEditor (values, checked, listener);
+    }
+    
+    @NonNull
+    public static AlertDialog flagEditor (@NonNull CharSequence[] values, boolean[] selected, OnClickListener listener) {
+        final var checked = new ArrayList<CharSequence> ();
+        for (var i=0;i<values.length;i++) {
+            if (selected[i]) {
+                checked.add (values[i]);
+            }
+        }
+        final var builder = newMaterialDialogBuilder (mContext);
+        builder.setMultiChoiceItems (values, selected, (dialog, which, isChecked) -> {
+            if (isChecked) {
+                checked.add (values[which]);
+            } else {
+                checked.remove (values[which]);
+            }
+        });
+        builder.setPositiveButton (android.R.string.ok, (dialog, which) -> {
+            if (checked.size () <= 0) {
+                StudioApp.getInstance ().toast (mContext.getString(R.string.msg_select_one_flag), Toaster.Type.ERROR);
+                return;
+            }
+            
+            final var val = TextUtils.join ("|", checked);
+    
+            if (listener != null) {
+                listener.onClick (dialog, which, val);
+            }
+        });
+        builder.setNegativeButton (android.R.string.cancel, (dialog, which) -> dialog.dismiss ());
+        return builder.create ();
+    }
+    
+    public interface OnClickListener {
         void onClick (DialogInterface dialog, int which, String newValue);
     }
 }

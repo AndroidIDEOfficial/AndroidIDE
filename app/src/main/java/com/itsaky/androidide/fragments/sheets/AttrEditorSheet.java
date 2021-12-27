@@ -17,6 +17,14 @@
 
 package com.itsaky.androidide.fragments.sheets;
 
+import static com.itsaky.attrinfo.models.Attr.BOOLEAN;
+import static com.itsaky.attrinfo.models.Attr.DIMENSION;
+import static com.itsaky.attrinfo.models.Attr.ENUM;
+import static com.itsaky.attrinfo.models.Attr.FLAG;
+import static com.itsaky.attrinfo.models.Attr.STRING;
+
+import static com.itsaky.androidide.utils.AttributeDialogs.*;
+
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -47,10 +55,7 @@ import com.itsaky.toaster.Toaster;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.itsaky.attrinfo.models.Attr.*;
 
 public class AttrEditorSheet extends BottomSheetDialogFragment implements SimpleIconTextAdapter.OnBindListener {
     
@@ -136,6 +141,8 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     }
     
     private void showEditorDialog (@NonNull XMLAttribute attribute) {
+        final var attr = attribute.getAttr ();
+        final var values = attr.possibleValues.toArray (new String[0]);
         final AttributeDialogs.OnClickListener onDone = (dialog, which, newValue) -> {
             if (!this.selectedView.updateAttribute (attribute.getNamespace (), attribute.getAttributeName (), newValue)) {
                 StudioApp.getInstance ().toast ("Unable to update this attribute", Toaster.Type.ERROR);
@@ -151,8 +158,14 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             dialog = AttributeDialogs.dimensionEditor (attribute.getValue (), onDone);
         } else if (attribute.hasFormat (STRING)) {
             dialog = AttributeDialogs.stringEditor (onDone);
+        } else if (attribute.hasFormat (BOOLEAN)) {
+            dialog = booleanEditor (onDone);
+        } else if (attribute.hasFormat (ENUM)) {
+            dialog = enumEditor (values, attribute.getValue (), onDone);
+        } else if (attribute.hasFormat (FLAG)) {
+            dialog = flagEditor (values, attribute.getValue (), onDone);
         }
-    
+        
         if (dialog != null) {
             dialog.show ();
         }

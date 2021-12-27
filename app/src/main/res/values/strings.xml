@@ -332,5 +332,7 @@
     <string name="msg_invalid_attr_value">Invalid value</string>
     <string name="msg_new_str_value">New string value</string>
     <string name="msg_add_namespace_decl">Add \'%1$s\' namespace declaration</string>
+    <string name="msg_choose_new_val">Choose new value</string>
+    <string name="msg_select_one_flag">Please check at least one flag.</string>
 
 </resources>
