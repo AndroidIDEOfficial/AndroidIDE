@@ -27,9 +27,9 @@ import com.itsaky.androidide.utils.Logger;
 
 import org.jetbrains.annotations.Contract;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 /**
@@ -63,7 +63,7 @@ public class Attr {
     public Attr (String name, boolean isAndroid) {
         this.name = name;
         this.namespace = isAndroid ? "android" : "app";
-        this.possibleValues = new HashSet<> ();
+        this.possibleValues = new TreeSet<> ();
     }
     
     public boolean hasPossibleValues () {
