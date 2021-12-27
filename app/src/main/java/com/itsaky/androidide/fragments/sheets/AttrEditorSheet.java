@@ -174,10 +174,10 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     @Override
     public void postBind (IconTextListItem item, @NonNull SimpleIconTextAdapter.VH holder, int position) {
         final var binding = holder.binding;
-        binding.getRoot ().setOnClickListener (v -> onViewActionClick (item, holder, position));
+        binding.getRoot ().setOnClickListener (v -> onViewActionClick (position));
     }
     
-    private void onViewActionClick (@NonNull IconTextListItem item, SimpleIconTextAdapter.VH holder, int position) {
+    private void onViewActionClick (int position) {
         if (this.selectedView == null) {
             return;
         }
@@ -193,9 +193,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
                 } else {
                     dismiss ();
                 }
-            }, (dialog, which) -> {
-                dialog.dismiss ();
-            }).show ();
+            }, (dialog, which) -> dialog.dismiss ()).show ();
         } else if (position == 1) { // Select parent
             if (this.selectedView.getParent () == null) {
                 StudioApp.getInstance ().toast (getString (R.string.msg_no_view_parent), Toaster.Type.ERROR);
@@ -211,7 +209,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     
     /**
      * A listener can be used to get notified when we fail to remove
-     * a view from its parent. This is used in {@link com.itsaky.androidide.DesignerActivity}.
+     * a view from its parent. This is used in {@link com.itsaky.androidide.DesignerActivity DesignerActivity}.
      *
      * When the user tries to remove the outermost view of the inflated layout,
      * AttrEditorSheet fails to remove the view from its parent ({@link IView#getParent()} is null for root XML layout).
