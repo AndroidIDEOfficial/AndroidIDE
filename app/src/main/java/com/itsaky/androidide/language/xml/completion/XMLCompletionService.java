@@ -17,7 +17,11 @@
 **************************************************************************************/
 package com.itsaky.androidide.language.xml.completion;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.JsonObject;
+import com.itsaky.androidide.R;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.attrinfo.models.Attr;
@@ -34,11 +38,16 @@ import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.InsertTextFormat;
+import org.jetbrains.annotations.Contract;
 
 public class XMLCompletionService {
-    
-    private AttrInfo attrs;
-    private WidgetInfo widgets;
+	
+	private static final String APP_NS = "http://schemas.android.com/apk/res/auto";
+	private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
+	private static final String TOOLS_NS = "http://schemas.android.com/tools";
+	
+	private final AttrInfo attrs;
+    private final WidgetInfo widgets;
     
     private static final String INITIAL_TAG_ATTRIBUTES =
     "android:layout_width=\"wrap_content\"\n" + 
@@ -49,7 +58,7 @@ public class XMLCompletionService {
         this.widgets = widgets;
 	}
     
-	public List<CompletionItem> complete(CharSequence content, int index, int line, int column, String prefix) {
+	public List<CompletionItem> complete(CharSequence content, int index, int line, int column, @NonNull String prefix) {
 		final List<CompletionItem> result = new ArrayList<>();
         
 		if(prefix.startsWith("<") || prefix.startsWith("</")) {
@@ -84,11 +93,27 @@ public class XMLCompletionService {
 					if(attr.name.toLowerCase(Locale.US).startsWith(prefix))
 						result.add(attrAsCompletion(attr));
 				}
+				
+				// Shortcuts for automatically declaring namespaces
+				// These completions are proposed if you type 'androidNs', 'appNs' or 'toolsNs'
+				// Idea is shamelessly copied from Android Studio 😂
+				if ("android".startsWith (prefix)) {
+					result.add (createNamespaceCompletion ("android", ANDROID_NS));
+				}
+				
+				if ("app".startsWith (prefix)) {
+					result.add (createNamespaceCompletion ("app", APP_NS));
+				}
+				
+				if ("tools".startsWith (prefix)) {
+					result.add (createNamespaceCompletion ("tools", TOOLS_NS));
+				}
 			}
 		}
 		return handleCompletionResults(result);
 	}
 
+	@NonNull
 	private CompletionItem valueAsCompletion(String value) {
 		CompletionItem item = new CompletionItem();
 		item.setLabel(value);
@@ -100,7 +125,8 @@ public class XMLCompletionService {
 		return item;
 	}
 
-	private CompletionItem attrAsCompletion(Attr attr) {
+	@NonNull
+	private CompletionItem attrAsCompletion(@NonNull Attr attr) {
 		CompletionItem item = new CompletionItem();
         item.setLabel(attr.name);
         item.setDetail("Attribute");
@@ -111,7 +137,8 @@ public class XMLCompletionService {
 		return item;
 	}
 
-    private String createAttributeInsertText(Attr attr) {
+    @NonNull
+	private String createAttributeInsertText(@NonNull Attr attr) {
         StringBuilder xml = new StringBuilder();
         xml.append(attr.namespace);
         xml.append(":");
@@ -130,7 +157,8 @@ public class XMLCompletionService {
         return xml.toString();
     }
 
-	private CompletionItem widgetNameAsCompletion(Widget view, boolean slash) {
+	@NonNull
+	private CompletionItem widgetNameAsCompletion(@NonNull Widget view, boolean slash) {
 		CompletionItem item = new CompletionItem();
         item.setLabel(view.simpleName);
         item.setDetail(view.name);
@@ -148,7 +176,8 @@ public class XMLCompletionService {
 		return item;
 	}
 
-    private String createTagInsertText(Widget view, boolean closing) {
+    @NonNull
+	private String createTagInsertText(@NonNull Widget view, boolean closing) {
         StringBuilder sb = new StringBuilder();
         
         // Don't append leading '<' and trailing '>'
@@ -166,6 +195,18 @@ public class XMLCompletionService {
         
         return sb.toString();
     }
+    
+    @NonNull
+	@Contract(pure = true)
+	private static CompletionItem createNamespaceCompletion (String name, String value) {
+		final var item = new CompletionItem ();
+		item.setLabel (name + "Ns");
+		item.setDetail (StudioApp.getInstance ().getString(R.string.msg_add_namespace_decl, name));
+		item.setInsertText (value);
+		item.setKind (CompletionItemKind.Snippet);
+		item.setSortText ("1000" + item.getLabel ()); // This item is expected to be at the last of the completion list
+		return item;
+	}
 	
 	private List<CompletionItem> handleCompletionResults(List<CompletionItem> result) {
 		return result;
@@ -179,7 +220,7 @@ public class XMLCompletionService {
 			this.cursorIndex = cursorIndex;
         }
 		
-		private boolean containsCursor(Token token) {
+		private boolean containsCursor(@NonNull Token token) {
 			int start = token.getStartIndex();
 			int end = token.getStopIndex();
 			return start <= cursorIndex && cursorIndex <= end;

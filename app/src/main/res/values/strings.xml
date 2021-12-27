@@ -331,5 +331,6 @@
     <string name="msg_attr_editor_null">Unable to create attribute editor for this attribute</string>
     <string name="msg_invalid_attr_value">Invalid value</string>
     <string name="msg_new_str_value">New string value</string>
+    <string name="msg_add_namespace_decl">Add \'%1$s\' namespace declaration</string>
 
 </resources>

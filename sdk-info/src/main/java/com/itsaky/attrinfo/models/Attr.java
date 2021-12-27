@@ -19,7 +19,6 @@
  **************************************************************************************/
 package com.itsaky.attrinfo.models;
 
-import android.graphics.Color;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -28,7 +27,6 @@ import com.itsaky.androidide.utils.Logger;
 
 import org.jetbrains.annotations.Contract;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
