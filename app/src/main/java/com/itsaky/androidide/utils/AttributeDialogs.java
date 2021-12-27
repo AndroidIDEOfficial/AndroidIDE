@@ -29,13 +29,14 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.databinding.LayoutDimensionEditorBinding;
+import com.itsaky.androidide.databinding.LayoutDimensionAttrEditorBinding;
+import com.itsaky.androidide.databinding.LayoutStringAttrEditorBinding;
 import com.itsaky.toaster.Toaster;
 
 /**
  * Helper class for creating dialogs for editing view attributes.
- *
- * TODO Should we merge this into {@link DialogUtils}
+ * <br>
+ * TODO Should we merge this into {@link DialogUtils}?
  * @author Akash Yadav
  */
 public class AttributeDialogs {
@@ -61,16 +62,50 @@ public class AttributeDialogs {
     
     /**
      * Release the context instance stored in this class.
-     * 
+     *
      * @see #init(Context)
      */
     public static void release () {
         mContext = null;
     }
     
+    /**
+     * Create a new value for editing an attribute with format STRING.
+     * @param onSubmit The listener that will be invoked when the user clicks the
+     *                 positive button.
+     * @return The newly created dialog instance.
+     */
+    @NonNull
+    public static AlertDialog stringEditor (OnClickListener onSubmit) {
+        final var binding = LayoutStringAttrEditorBinding.inflate (LayoutInflater.from (mContext));
+        final var builder = newMaterialDialogBuilder (mContext);
+        builder.setTitle (mContext.getString(R.string.msg_new_str_value));
+        builder.setView (binding.getRoot ());
+        builder.setPositiveButton (android.R.string.ok, (dialog, which) -> {
+            final var newValue = binding.valueField.getEditText ().getText ().toString ().trim ();
+            if (newValue.length () <= 0) {
+                StudioApp.getInstance ().toast (mContext.getString (R.string.msg_invalid_attr_value), Toaster.Type.ERROR);
+                return;
+            }
+            if (onSubmit != null) {
+                onSubmit.onClick (dialog, which, newValue);
+            }
+        });
+        builder.setNegativeButton (android.R.string.cancel, (dialog, which) -> dialog.dismiss ());
+        
+        return builder.create ();
+    }
+    
+    /**
+     * Create a new dialog for editing an attribute which accepts dimension values.
+     * @param value The current value of the attribute. Used for determining which item must be selected by default.
+     * @param onSubmit A listener that will be invoked when the user presses the positive button of the dialog.
+     *                 This listener is invoked only when the user passes a valid dimension value.
+     * @return The newly created dialog instance. Note that this dialog is not shown by default.
+     */
     @NonNull
     public static AlertDialog dimensionEditor (CharSequence value, OnClickListener onSubmit) {
-        final var binding = LayoutDimensionEditorBinding.inflate(LayoutInflater.from (mContext));
+        final var binding = LayoutDimensionAttrEditorBinding.inflate(LayoutInflater.from (mContext));
         binding.choices.setOnCheckedChangeListener ((group, checkedId) -> {
             binding.otherValue.setVisibility (binding.other.isChecked () ? View.VISIBLE : View.GONE);
         });

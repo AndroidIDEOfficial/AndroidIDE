@@ -136,8 +136,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     }
     
     private void showEditorDialog (@NonNull XMLAttribute attribute) {
-        final var attr = attribute.getAttr ();
-        
         final AttributeDialogs.OnClickListener onDone = (dialog, which, newValue) -> {
             if (!this.selectedView.updateAttribute (attribute.getNamespace (), attribute.getAttributeName (), newValue)) {
                 StudioApp.getInstance ().toast ("Unable to update this attribute", Toaster.Type.ERROR);
@@ -150,11 +148,9 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         
         AlertDialog dialog = null;
         if (attribute.hasFormat (DIMENSION)) {
-            if (attr == null) {
-                throw new IllegalStateException ("The provided attribute has not been resolved.");
-            }
-
             dialog = AttributeDialogs.dimensionEditor (attribute.getValue (), onDone);
+        } else if (attribute.hasFormat (STRING)) {
+            dialog = AttributeDialogs.stringEditor (onDone);
         }
     
         if (dialog != null) {
