@@ -207,6 +207,13 @@ public class AttributeDialogs {
         return builder.show ();
     }
     
+    /**
+     * Creates a new attribute editor dialog to edit flag attributes.
+     * @param values The possible values.
+     * @param value The current value of the attribute.
+     * @param listener The listener that will be invoked when the user presses the positive button.
+     * @return The newly created dialog instance.
+     */
     @NonNull
     public static AlertDialog flagEditor (@NonNull CharSequence[] values, @NonNull CharSequence value, OnClickListener listener) {
         final var checked = new boolean [values.length];
@@ -222,6 +229,13 @@ public class AttributeDialogs {
         return flagEditor (values, checked, listener);
     }
     
+    /**
+     * Creates a new attribute editor dialog to edit flag attributes.
+     * @param values The possible values.
+     * @param selected The values that must be selected by default.
+     * @param listener The listener that will be invoked when the user presses the positive button.
+     * @return The newly created dialog instance.
+     */
     @NonNull
     public static AlertDialog flagEditor (@NonNull CharSequence[] values, boolean[] selected, OnClickListener listener) {
         final var checked = new ArrayList<CharSequence> ();
