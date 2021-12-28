@@ -1,4 +1,6 @@
 <resources>
     <string name="cms_channel_id_devs">Notifications from Developers</string>
 	<string name="cms_channel_id_update">App Update Notifications</string>
+    <string name="msg_hex_color_code">Hex color code</string>
+    <string name="msg_color_picker_pick">Pick</string>
 </resources>
