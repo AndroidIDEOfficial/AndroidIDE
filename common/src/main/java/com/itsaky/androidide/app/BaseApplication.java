@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
 import com.blankj.utilcode.util.EncodeUtils;
@@ -37,6 +39,9 @@ import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.StudioUtils;
 import com.itsaky.toaster.Toaster;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.util.Arrays;
 
@@ -54,7 +59,7 @@ public abstract class BaseApplication extends MultiDexApplication {
     public static final String NOTIFICATION_ID_UPDATE = "17571";
     public static final String NOTIFICATION_ID_DEVS = "17572";
     public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
-    public static final String SUGGESTIONS_URL = "https://github.com/itsaky/AndroidIDE";
+    public static final String GITHUB_URL = "https://github.com/itsaky/AndroidIDE";
     public static final String WEBSITE = "https://androidide.com";
     public static final String EMAIL = "contact@androidide.com";
     
@@ -154,10 +159,14 @@ public abstract class BaseApplication extends MultiDexApplication {
         return Environment.mkdirIfNotExits(new File("/data/data/com.itsaky.androidide/files"));
     }
 
+    @NonNull
+    @Contract(" -> new")
     public final File getLogSenderDir() {
         return new File(getRootDir(), "logsender");
     }
 
+    @NonNull
+    @Contract(" -> new")
     public final File getToolsDownloadDirectory() {
         return new File(getRootDir(), "downloads");
     }
@@ -170,6 +179,8 @@ public abstract class BaseApplication extends MultiDexApplication {
         return Environment.mkdirIfNotExits(new File(FileUtil.getExternalStorageDir() /*getTempProjectDir() */, "classes"));
     }
 
+    @NonNull
+    @Contract(" -> new")
     public final String getDownloadRequestUrl() {
         return new String(EncodeUtils.base64Decode("aHR0cHM6Ly9hbmRyb2lkaWRlLmNvbS9idWlsZC90b29scy9kb3dubG9hZC8="));
 	}
@@ -214,6 +225,7 @@ public abstract class BaseApplication extends MultiDexApplication {
         return Arrays.stream(android.os.Build.SUPPORTED_ABIS).anyMatch("armeabi-v7a"::equals);
     }
 
+    @NonNull
     public static String getArch() {
         if (BaseApplication.isAarch64()) {
             return "arm64-v8a";
@@ -287,11 +299,11 @@ public abstract class BaseApplication extends MultiDexApplication {
         }
     }
 
-    public void openIssueTracker() {
+    public void openGitHub () {
         try {
             Intent open = new Intent();
             open.setAction(Intent.ACTION_VIEW);
-            open.setData(Uri.parse(BaseApplication.SUGGESTIONS_URL));
+            open.setData(Uri.parse(BaseApplication.GITHUB_URL));
             open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(open); 
         } catch (Throwable th) {

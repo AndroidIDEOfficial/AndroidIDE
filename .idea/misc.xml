@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_github.xml" value="0.21837606837606838" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/activity_about.xml" value="0.2" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_about_items.xml" value="0.20512820512820512" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/common/src/main/res/layout/layout_color_picker.xml" value="0.20512820512820512" />
         <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/drawable-mdpi/bg_widgets_list.xml" value="0.3105485232067511" />
         <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/drawable-mdpi/ic_widget_progress.xml" value="0.3071729957805907" />
         <entry key="..\:/Projects/AndroidStudioProjects/android-ide/app/src/main/res/drawable/bg_design_container_background.xml" value="0.3105485232067511" />

@@ -18,7 +18,7 @@
     <string name="msg_share_app">AndroidIDE is an Integrated Development Environment for building Android apps on your Android Smartphone. It supports :\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support and much more.\n\nDownload AndroidIDE at https://androidide.com</string>
 	<string name="msg_need_help">If you\'re facing issues while using AndroidIDE or with building Android Apps, you can join the Telegram Group ask for help there.\n\nYou can also send suggesstions on our email.</string>
     <string name="discuss_amp_help">Discuss &amp; help</string>
-    <string name="user_suggestions">Issue tracker</string>
+    <string name="title_github">GitHub</string>
     <string name="need_help">Need Help?</string>
     <string name="other">Other</string>
     <string name="share_with_friends">Share with Friends</string>

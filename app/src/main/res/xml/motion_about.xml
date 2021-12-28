@@ -28,8 +28,7 @@
 
     
     
-    <ConstraintSet
-        android:id="@+id/start">
+    <ConstraintSet>
         
         <Constraint
             app:layout_constraintStart_toStartOf="parent"

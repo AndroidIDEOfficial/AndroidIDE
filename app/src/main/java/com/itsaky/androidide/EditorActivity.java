@@ -767,7 +767,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         if(id == R.id.editornav_discuss) {
             getApp().openTelegramGroup();
         } else if(id == R.id.editornav_suggest) {
-            getApp().openIssueTracker();
+            getApp().openGitHub ();
         } else if(id == R.id.editornav_needHelp) {
             showNeedHelpDialog();
         } else if(id == R.id.editornav_settings) {

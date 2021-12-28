@@ -22,11 +22,11 @@
 			android:gravity="center">
 
 			<ImageView
-				android:id="@+id/issue_tracker"
+				android:id="@+id/github"
 				android:layout_height="30dp"
 				android:layout_width="30dp"
 				android:scaleType="fitCenter"
-				app:srcCompat="@drawable/ic_bug"
+				app:srcCompat="@drawable/ic_github"
 				android:layout_marginStart="16dp"
 				android:layout_marginEnd="16dp"
 				android:layout_marginTop="8dp"

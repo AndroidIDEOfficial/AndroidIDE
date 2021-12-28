@@ -24,6 +24,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -67,6 +68,9 @@ public class ColorPickerView extends LinearLayout {
         this.DEFAULT_COLOR = ContextCompat.getColor (context, R.color.color_picker_default_color);
         
         this.binding = LayoutColorPickerBinding.inflate (LayoutInflater.from (context));
+        
+        removeAllViews ();
+        addView (binding.getRoot (), new LayoutParams (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         
         init ();
     }

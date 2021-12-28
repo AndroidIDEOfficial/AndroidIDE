@@ -56,11 +56,11 @@ public class AboutActivity extends StudioActivity {
         
         LayoutAboutItemsBinding items = binding.items;
         TooltipCompat.setTooltipText(items.discuss, getString(R.string.discussions_on_telegram));
-        TooltipCompat.setTooltipText(items.issueTracker, getString(R.string.user_suggestions));
+        TooltipCompat.setTooltipText(items.github, getString(R.string.title_github));
         TooltipCompat.setTooltipText(items.email, getString(R.string.about_option_email));
         TooltipCompat.setTooltipText(items.website, getString(R.string.about_option_website));
-        items.issueTracker.setOnClickListener(v -> {
-            getApp().openIssueTracker();
+        items.github.setOnClickListener(v -> {
+            getApp().openGitHub ();
         });
         items.discuss.setOnClickListener(v -> {
             getApp().openTelegramGroup();
@@ -74,7 +74,7 @@ public class AboutActivity extends StudioActivity {
     }
     
     private void setupLicenses() {
-        final List<License> licenses = new ArrayList<>();
+        final var licenses = new ArrayList<License>();
         licenses.add(new License("AndroidX Libraries", "Apache License 2.0", "https://github.com/androidx/androidx"));
         licenses.add(new License("Gradle Build Tool", "Apache License 2.0", "https://github.com/gradle/gradle"));
         licenses.add(new License("Gson", "Apache License 2.0", "https://github.com/google/gson"));
@@ -90,7 +90,7 @@ public class AboutActivity extends StudioActivity {
         licenses.add(new License("Guava-Android", "Apache License 2.0", "https://github.com/google/guava"));
         licenses.add(new License("LSP4J", "Eclipse Public License 2.0", "https://github.com/eclipse/lsp4j"));
         licenses.add(new License("Jsoup", "MIT License", "https://github.com/jhy/jsoup"));
-        licenses.add(new License("Android-Terminal-Emulator", "Apache License 2.0", "https://github.com/jackpal/Android-Terminal-Emulator"));
+        licenses.add(new License("Termux [Terminal Emulator]", "GPL 3", "https://github.com/termux/termux-app"));
         licenses.add(new License("JavaPoet", "Apache License 2.0", "https://github.com/square/JavaPoet"));
         licenses.add(new License("Zip4j", "Apache License 2.0", "https://github.com/srikanth-lingala/zip4j"));
         

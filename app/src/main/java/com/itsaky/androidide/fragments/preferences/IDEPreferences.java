@@ -195,7 +195,7 @@ public class IDEPreferences extends BasePreferenceFragment {
 				} else if(key.equals(KEY_TELEGRAM)) {
 					StudioApp.getInstance().openTelegramGroup();
 				} else if(key.equals(KEY_ISSUES)) {
-					StudioApp.getInstance().openIssueTracker();
+					StudioApp.getInstance().openGitHub ();
 				} else if(key.equals(KEY_ABOUT)) {
                     startActivity(new Intent(getContext(), AboutActivity.class));
                 }
