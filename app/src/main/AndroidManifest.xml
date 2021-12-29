@@ -36,7 +36,8 @@
 		</activity>
         <activity 
             android:name=".DesignerActivity"
-            android:configChanges="orientation|screenSize|uiMode">
+            android:configChanges="orientation|screenSize|uiMode"
+			android:windowSoftInputMode="adjustResize">
 		</activity>
 		<activity 
 			android:name=".DownloadActivity"

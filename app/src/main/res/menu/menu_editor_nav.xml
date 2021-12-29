@@ -24,8 +24,8 @@
 			android:title="@string/discussions_on_telegram"/>
 		<item
 			android:id="@+id/editornav_suggest"
-			android:icon="@drawable/ic_bug"
-			android:title="@string/user_suggestions"/>
+			android:icon="@drawable/ic_github"
+			android:title="@string/title_github"/>
 		<item
 			android:id="@+id/editornav_needHelp"
 			android:icon="@drawable/ic_help"

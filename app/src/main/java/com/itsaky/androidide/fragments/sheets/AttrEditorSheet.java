@@ -18,6 +18,7 @@
 package com.itsaky.androidide.fragments.sheets;
 
 import static com.itsaky.attrinfo.models.Attr.BOOLEAN;
+import static com.itsaky.attrinfo.models.Attr.COLOR;
 import static com.itsaky.attrinfo.models.Attr.DIMENSION;
 import static com.itsaky.attrinfo.models.Attr.ENUM;
 import static com.itsaky.attrinfo.models.Attr.FLAG;
@@ -164,6 +165,10 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             dialog = enumEditor (values, attribute.getValue (), onDone);
         } else if (attribute.hasFormat (FLAG)) {
             dialog = flagEditor (values, attribute.getValue (), onDone);
+        } else if (attribute.hasFormat (COLOR)) {
+            // TODO Implement something to allow values from colors.xml or ColorStateLists
+            //    Make this color picker optional
+            dialog = colorPicker ();
         }
         
         if (dialog != null) {

@@ -73,7 +73,7 @@ public class IDEPreferences extends BasePreferenceFragment {
 		final Preference editor = new Preference(getContext());
 		final Preference build = new Preference(getContext());
 		final Preference telegram = new Preference(getContext());
-		final Preference issueTracker = new Preference(getContext());
+		final Preference github = new Preference(getContext());
 		final Preference changelog = new Preference(getContext());
 		final Preference about = new Preference(getContext());
         
@@ -92,9 +92,9 @@ public class IDEPreferences extends BasePreferenceFragment {
 		build.setFragment(getBuildFrag().getClass().getName());
 		build.setTitle(R.string.idepref_build_title);
 		
-		issueTracker.setKey(KEY_ISSUES);
-		issueTracker.setIconSpaceReserved(false);
-		issueTracker.setTitle(R.string.user_suggestions);
+		github.setKey(KEY_ISSUES);
+		github.setIconSpaceReserved(false);
+		github.setTitle(R.string.title_github);
 		
 		telegram.setKey(KEY_TELEGRAM);
 		telegram.setIconSpaceReserved(false);
@@ -111,13 +111,13 @@ public class IDEPreferences extends BasePreferenceFragment {
         screen.addPreference(general);
 		screen.addPreference(editor);
 		screen.addPreference(build);
-		screen.addPreference(issueTracker);
+		screen.addPreference(github);
 		screen.addPreference(telegram);
 		screen.addPreference(changelog);
         screen.addPreference(about);
 		
 		final Preference.OnPreferenceClickListener listener = getListener();
-		issueTracker.setOnPreferenceClickListener(listener);
+		github.setOnPreferenceClickListener(listener);
 		telegram.setOnPreferenceClickListener(listener);
 		changelog.setOnPreferenceClickListener(listener);
         about.setOnPreferenceClickListener(listener);

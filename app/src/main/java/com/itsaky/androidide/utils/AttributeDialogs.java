@@ -24,12 +24,14 @@ import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.colorpicker.ColorPickerView;
 import com.itsaky.androidide.databinding.LayoutDimensionAttrEditorBinding;
 import com.itsaky.androidide.databinding.LayoutTextAttrEditorBinding;
 import com.itsaky.toaster.Toaster;
@@ -49,6 +51,8 @@ public class AttributeDialogs {
     
     private static final String DIMENSION_MATCH = "match_parent";
     private static final String DIMENSION_WRAP = "wrap_content";
+    
+    private static final Logger LOG = Logger.instance ("AttributeDialogs");
     
     /**
      * Context that will be used for creating dialogs.
@@ -262,6 +266,19 @@ public class AttributeDialogs {
         });
         builder.setNegativeButton (android.R.string.cancel, (dialog, which) -> dialog.dismiss ());
         return builder.create ();
+    }
+    
+    @NonNull
+    public static AlertDialog colorPicker () {
+        final var view = new ColorPickerView (mContext);
+        view.setOnPickListener ((color, hexCode) -> LOG.debug ("Picked color:", color, hexCode));
+        
+        final var builder = newMaterialDialogBuilder (mContext);
+        builder.setView (view);
+        
+        final var dialog = builder.create ();
+        dialog.getWindow ().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        return dialog;
     }
     
     public interface OnClickListener {

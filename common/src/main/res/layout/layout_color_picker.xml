@@ -17,7 +17,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp">
 
     <View
         android:id="@+id/color_preview"
@@ -34,9 +35,13 @@
         android:layout_height="wrap_content"
         android:valueFrom="0"
         android:valueTo="255"
+        android:stepSize="1"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
+        app:thumbColor="@android:color/white"
+        app:trackColorActive="@android:color/white"
+        app:tickVisible="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/color_preview"/>
@@ -47,9 +52,13 @@
         android:layout_height="wrap_content"
         android:valueFrom="0"
         android:valueTo="255"
+        android:stepSize="1"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        app:thumbColor="@android:color/holo_red_light"
+        app:trackColorActive="@android:color/holo_red_light"
+        app:tickVisible="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/alpha_slider"/>
@@ -60,9 +69,13 @@
         android:layout_height="wrap_content"
         android:valueFrom="0"
         android:valueTo="255"
+        android:stepSize="1"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        app:thumbColor="@android:color/holo_green_light"
+        app:trackColorActive="@android:color/holo_green_light"
+        app:tickVisible="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/red_slider"/>
@@ -74,9 +87,13 @@
         android:layout_height="wrap_content"
         android:valueFrom="0"
         android:valueTo="255"
+        android:stepSize="1"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        app:thumbColor="@android:color/holo_blue_dark"
+        app:trackColorActive="@android:color/holo_blue_dark"
+        app:tickVisible="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/green_slider"/>
@@ -86,9 +103,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/msg_color_picker_pick"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/blue_slider"/>
 
@@ -99,17 +117,17 @@
         android:hint="@string/msg_hex_color_code"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:minWidth="100dp"
         app:startIconDrawable="@drawable/ic_hex_icon"
-        app:counterMaxLength="8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/pick"
         app:layout_constraintTop_toBottomOf="@id/blue_slider">
 
         <com.google.android.material.textfield.TextInputEditText
             android:digits="abcdef0123456789"
-            android:layout_width="wrap_content"
+            android:maxLength="8"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
     </com.google.android.material.textfield.TextInputLayout>
