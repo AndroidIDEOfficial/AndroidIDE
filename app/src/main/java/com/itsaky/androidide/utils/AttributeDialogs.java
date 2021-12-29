@@ -269,15 +269,21 @@ public class AttributeDialogs {
     }
     
     @NonNull
-    public static AlertDialog colorPicker () {
+    public static AlertDialog colorPicker (final ColorPickerView.OnPickListener listener) {
         final var view = new ColorPickerView (mContext);
-        view.setOnPickListener ((color, hexCode) -> LOG.debug ("Picked color:", color, hexCode));
-        
         final var builder = newMaterialDialogBuilder (mContext);
         builder.setView (view);
         
         final var dialog = builder.create ();
         dialog.getWindow ().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    
+        view.setOnPickListener ((color, hexCode) -> {
+            dialog.dismiss ();
+            if (listener != null) {
+                listener.onPick (color, hexCode);
+            }
+        });
+        
         return dialog;
     }
     

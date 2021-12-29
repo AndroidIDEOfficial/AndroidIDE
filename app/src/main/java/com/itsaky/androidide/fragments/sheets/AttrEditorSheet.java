@@ -43,6 +43,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.AttributeListAdapter;
 import com.itsaky.androidide.adapters.SimpleIconTextAdapter;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.colorpicker.ColorPickerView;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetBinding;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetItemBinding;
 import com.itsaky.androidide.models.IconTextListItem;
@@ -144,15 +145,9 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     private void showEditorDialog (@NonNull XMLAttribute attribute) {
         final var attr = attribute.getAttr ();
         final var values = attr.possibleValues.toArray (new String[0]);
-        final AttributeDialogs.OnClickListener onDone = (dialog, which, newValue) -> {
-            if (!this.selectedView.updateAttribute (attribute.getNamespace (), attribute.getAttributeName (), newValue)) {
-                StudioApp.getInstance ().toast ("Unable to update this attribute", Toaster.Type.ERROR);
-            } else {
-                // Update the view data
-                // This will make sure that the attributes list has been updated
-                setupViewData ();
-            }
-        };
+        final AttributeDialogs.OnClickListener onDone = (dialog, which, newValue) -> applyNewValue (attribute, newValue);
+        
+        final ColorPickerView.OnPickListener mPickListener = (color, hexCode) -> applyNewValue (attribute, hexCode);
         
         AlertDialog dialog = null;
         if (attribute.hasFormat (DIMENSION)) {
@@ -168,11 +163,21 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         } else if (attribute.hasFormat (COLOR)) {
             // TODO Implement something to allow values from colors.xml or ColorStateLists
             //    Make this color picker optional
-            dialog = colorPicker ();
+            dialog = colorPicker (mPickListener);
         }
         
         if (dialog != null) {
             dialog.show ();
+        }
+    }
+    
+    private void applyNewValue (@NonNull XMLAttribute attribute, String newValue) {
+        if (!this.selectedView.updateAttribute (attribute.getNamespace (), attribute.getAttributeName (), newValue)) {
+            StudioApp.getInstance ().toast ("Unable to update this attribute", Toaster.Type.ERROR);
+        } else {
+            // Update the view data
+            // This will make sure that the attributes list has been updated
+            setupViewData ();
         }
     }
     

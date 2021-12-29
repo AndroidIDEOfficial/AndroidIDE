@@ -136,7 +136,7 @@ public class ColorPickerView extends LinearLayout {
      */
     @NonNull
     public String getHexColor () {
-        return Integer.toHexString (getColor ());
+        return "#" + Integer.toHexString (getColor ());
     }
     
     /**

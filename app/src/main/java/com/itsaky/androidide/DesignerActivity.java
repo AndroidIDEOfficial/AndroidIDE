@@ -76,6 +76,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+// TODO Generate and save the source code once the user leaves this activity
 public class DesignerActivity extends StudioActivity implements WidgetItemAdapter.OnDragStartListener {
     
     private ActivityDesignerBinding mBinding;
