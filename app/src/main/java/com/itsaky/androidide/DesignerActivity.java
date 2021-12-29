@@ -19,6 +19,7 @@ package com.itsaky.androidide;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -50,33 +51,40 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 
 import com.blankj.utilcode.util.DeviceUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.adapters.WidgetGroupItemAdapter;
 import com.itsaky.androidide.adapters.WidgetItemAdapter;
 import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivityDesignerBinding;
 import com.itsaky.androidide.fragments.sheets.AttrEditorSheet;
+import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.models.UIWidgetGroup;
 import com.itsaky.androidide.ui.WidgetDragData;
 import com.itsaky.androidide.ui.WidgetDragListener;
 import com.itsaky.androidide.ui.WidgetDragShadowBuilder;
 import com.itsaky.androidide.ui.WidgetTouchListener;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IInflateListener;
 import com.itsaky.layoutinflater.ILayoutInflater;
 import com.itsaky.layoutinflater.IView;
 import com.itsaky.layoutinflater.IViewGroup;
+import com.itsaky.toaster.Toaster;
 
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
-// TODO Generate and save the source code once the user leaves this activity
 public class DesignerActivity extends StudioActivity implements WidgetItemAdapter.OnDragStartListener {
     
     private ActivityDesignerBinding mBinding;
@@ -86,6 +94,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     private AttrEditorSheet mEditorSheet;
     
     public static final String KEY_LAYOUT_PATH = "designer_layoutPath";
+    public static final String KEY_GENERATED_CODE = "designer_xmlCode";
     public static final String DRAGGING_WIDGET_TAG = "DRAGGING_WIDGET";
     public static final String DRAGGING_WIDGET_MIME = "application/ide_widget";
     
@@ -187,6 +196,56 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     
     @Override
     public void onBackPressed () {
+        // When the user presses the back button, set the activity result and finish this activity
+        
+        final var progress = new ProgressSheet ();
+        progress.setSubMessageEnabled (true);
+        progress.setShowTitle (false);
+        progress.setMessage (getString (R.string.title_generating_xml));
+        progress.setSubMessage (getString (R.string.please_wait));
+        progress.show (getSupportFragmentManager (), "generate_code_progress");
+        
+        final var future = CompletableFutures.computeAsync (cancelChecker -> inflatedRoot.generateCode ());
+        future.whenComplete ((s, throwable) -> {
+            
+            progress.dismiss ();
+            
+            if (future.isCompletedExceptionally () && throwable != null) {
+                notifyXmlGenerationFailed (throwable);
+                return;
+            }
+            
+            try {
+                finishWithResult (future.get ());
+            } catch (ExecutionException | InterruptedException e) {
+                notifyXmlGenerationFailed (e);
+            }
+        });
+    }
+    
+    private void notifyXmlGenerationFailed (Throwable error) {
+        final var errorMessage = getString (R.string.msg_generate_xml_failed);
+        LOG.error (errorMessage, error);
+        
+        final var dialog = DialogUtils.newYesNoDialog (this,
+                getString(R.string.title_code_generation_failed),
+                getString(R.string.msg_code_generation_failed),
+                (dialog1, which) -> finishWithError (),
+                (dialog1, which) -> dialog1.dismiss ())
+                
+                .show ();
+    }
+    
+    private void finishWithResult (String result) {
+        final var intent = new Intent ();
+        intent.putExtra (KEY_GENERATED_CODE, result);
+        setResult (RESULT_OK, intent);
+        finish ();
+    }
+    
+    private void finishWithError () {
+        final var intent = new Intent ();
+        setResult (-123, intent);
         finish ();
     }
     
@@ -208,7 +267,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         } catch (Throwable e) {
             e.printStackTrace ();
         }
-    
+        
         super.onDestroy ();
     }
     
@@ -325,7 +384,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     private View.OnDragListener getOnDragListener (IViewGroup group) {
         // WidgetDragListener cannot be reused
         // This is because they keep a reference to the view group in which dragged view will be added
-    
+        
         return new WidgetDragListener (
                 this,
                 group,
@@ -339,7 +398,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     private AttrEditorSheet getAttrEditorSheet () {
         return this.mEditorSheet == null
                 ? mEditorSheet = new AttrEditorSheet ()
-                    .setDeletionFailedListener (this::onViewDeletionFailed)
+                .setDeletionFailedListener (this::onViewDeletionFailed)
                 : mEditorSheet;
     }
     

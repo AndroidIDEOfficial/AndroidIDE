@@ -334,5 +334,10 @@
     <string name="msg_add_namespace_decl">Add \'%1$s\' namespace declaration</string>
     <string name="msg_choose_new_val">Choose new value</string>
     <string name="msg_select_one_flag">Please check at least one flag.</string>
+    <string name="msg_generate_xml_failed">Failed to generate XML code</string>
+    <string name="title_generating_xml">Generating XML code</string>
+    <string name="title_code_generation_failed">Code generation failed</string>
+    <string name="msg_code_generation_failed">Failed to generate XML code. Would you like to exit anyway?</string>
+    <string name="msg_invalid_designer_result">UI Designer returned invalid result</string>
 
 </resources>
