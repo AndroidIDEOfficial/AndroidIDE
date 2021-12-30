@@ -26,8 +26,6 @@ import java.util.Map;
  * be called before inflating a layout from the XML. This will
  * make sure that we cleanup the existing IDs.
  *
- * TODO Can we somehow reuse IDs? Would that make any difference?
- *
  * @author Akash Yadav
  */
 public class IDTable {
@@ -65,15 +63,15 @@ public class IDTable {
             // In some cases, @+id is might be used as a reference
             // to another ID. So we check if an ID with the same
             // name is already present or not.
-            final Integer id = getId(idName);
+            final int id = getId(idName);
             if (id != View.NO_ID) {
                 return id;
             }
         }
         
-        final Integer id = Integer.valueOf(View.generateViewId());
+        final int id = View.generateViewId ();
         ids.put(idName, id);
-        return id.intValue();
+        return id;
     }
     
     /**
@@ -87,6 +85,6 @@ public class IDTable {
         if (id == null) {
             return View.NO_ID;
         }
-        return id.intValue();
+        return id;
     }
 }
