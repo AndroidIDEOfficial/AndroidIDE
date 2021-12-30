@@ -33,7 +33,7 @@ import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.databinding.LayoutSearchResultGroupBinding;
 import com.itsaky.androidide.databinding.LayoutSearchResultItemBinding;
 import com.itsaky.androidide.models.SearchResult;
-import com.itsaky.androidide.syntax.lexer.highlighters.JavaHighlighter;
+import com.itsaky.androidide.syntax.highlighters.JavaHighlighter;
 import com.itsaky.androidide.utils.Logger;
 import java.io.File;
 import java.util.ArrayList;

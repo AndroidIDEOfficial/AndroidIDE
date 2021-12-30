@@ -17,8 +17,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.syntax.colorschemes;
 
 import io.github.rosemoe.editor.widget.EditorColorScheme;
@@ -89,24 +87,5 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         
         setColor(STDERR, 0xfff44336);
         setColor(STDOUT, 0xff4CAF50);
-        
-        // Common colors for all block and inline tags
-        setJavadocInlineTagColor(0xff92d7ff);
-        setJavadocBlockTagColor(0xffffa9a9);
-        
-        // JavaDoc colors for tag members, like, param name and description
-        setColor(JD_PARAM_NAME, 0xffa9b7ff);
-        setColor(JD_PARAM_DESCRIPTION, 0xffbbffc0);
-        setColor(JD_RETURN_DESCRIPTION, 0xffbbffc0);
-        setColor(JD_LITERAL_TEXT, 0xffffef83);
-        setColor(JD_LINK_LABEL, 0xffa9b7ff);
-        setColor(JD_LINK_REFERENCE, 0xff2196f3);
-        setColor(JD_THROWS_TAG, 0xffff2532);
-        setColor(JD_THROWS_NAME, 0xffa9b7ff);
-        setColor(JD_THROWS_DESCRIPTION, 0xffbbffc0);
-        setColor(JD_SEE_REFERENCE, 0xff2196f3);
-        setColor(JD_SUMMARY_MESSAGE, 0xffbbffc0);
-        setColor(JD_HIDDEN_MESSAGE, 0xffbbffc0);
-        setColor(JD_AUTHOR_NAME, 0xfffaff00);
     }
 }

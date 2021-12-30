@@ -27,6 +27,7 @@ import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
@@ -109,7 +110,7 @@ public class LogLanguageImpl extends BaseLanguage {
 		}
 		
 		@Override
-		public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
+		public void analyze(IDELanguageServer server, File file, Content content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
 			int lastLine = 0;
 			for(int i=0;i<lines.size() && delegate.shouldAnalyze();i++) {
 				if(i==0) colors.addNormalIfNull();

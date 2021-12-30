@@ -35,8 +35,8 @@ import org.antlr.v4.runtime.Token;
 
 public class GroovyLanguage extends BaseLanguage {
 	
-	private GroovyAnalyzer analyzer;
-	private GroovyAutoComplete completor;
+	private final GroovyAnalyzer analyzer;
+	private final GroovyAutoComplete completor;
 	
     public GroovyLanguage() {
         this(null);

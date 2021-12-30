@@ -16,6 +16,9 @@
 package io.github.rosemoe.editor.struct;
 
 import android.graphics.Typeface;
+
+import androidx.annotation.NonNull;
+
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -27,12 +30,24 @@ import java.util.concurrent.BlockingQueue;
  */
 public class Span {
     
-    private static final BlockingQueue<Span> cacheQueue = new ArrayBlockingQueue<>(8192 * 2);
+    private static final BlockingQueue<Span> cacheQueue = new ArrayBlockingQueue<> (8192 * 2);
     public int line;
     public int column;
     public int colorId;
     public int underlineColor = 0;
     public float underlineHeight;
+    
+    @NonNull
+    @Override
+    public String toString () {
+        return "Span{" +
+                "line=" + line +
+                ", column=" + column +
+                ", colorId=" + colorId +
+                ", underlineColor=" + underlineColor +
+                ", underlineHeight=" + underlineHeight +
+                '}';
+    }
     
     public static final float DEFAULT_UNDERLINE_HEIGHT = 0.1f;
     public static final float HEX_COLOR_UNDERLINE_HEIGHT = 0.27f;
@@ -45,18 +60,18 @@ public class Span {
      * @param colorId Type of span
      * @see Span#obtain(int, int)
      */
-    private Span(int line, int column, int colorId) {
+    private Span (int line, int column, int colorId) {
         this.line = line;
         this.column = column;
         this.colorId = colorId;
         this.underlineColor = 0;
         this.underlineHeight = DEFAULT_UNDERLINE_HEIGHT;
     }
-
-    public static Span obtain(int line, int column, int colorId) {
-        Span span = cacheQueue.poll();
+    
+    public static Span obtain (int line, int column, int colorId) {
+        Span span = cacheQueue.poll ();
         if (span == null) {
-            return new Span(line, column, colorId);
+            return new Span (line, column, colorId);
         } else {
             span.line = line;
             span.column = column;
@@ -64,15 +79,15 @@ public class Span {
             return span;
         }
     }
-
-    public static void recycleAll(Collection<Span> spans) {
+    
+    public static void recycleAll (Collection<Span> spans) {
         for (Span span : spans) {
-            if (!span.recycle()) {
+            if (!span.recycle ()) {
                 return;
             }
         }
     }
-
+    
     /**
      * Set a underline for this region
      * Zero for no underline
@@ -80,7 +95,7 @@ public class Span {
      * @param color Color for this underline (not color id of {@link EditorColorScheme})
      * @return Self
      */
-    public Span setUnderlineColor(int color) {
+    public Span setUnderlineColor (int color) {
         underlineColor = color;
         return this;
     }
@@ -99,29 +114,29 @@ public class Span {
      *
      * @return Start column
      */
-    public int getColumn() {
+    public int getColumn () {
         return column;
     }
-
+    
     /**
      * Set column of this span
      */
-    public Span setColumn(int column) {
+    public Span setColumn (int column) {
         this.column = column;
         return this;
     }
-
+    
     /**
      * Make a copy of this span
      */
-    public Span copy() {
-        Span copy = obtain(line, column, colorId);
-        copy.setUnderlineColor(underlineColor);
+    public Span copy () {
+        Span copy = obtain (line, column, colorId);
+        copy.setUnderlineColor (underlineColor);
         return copy;
     }
-
-    public boolean recycle() {
+    
+    public boolean recycle () {
         colorId = column = underlineColor = 0;
-        return cacheQueue.offer(this);
+        return cacheQueue.offer (this);
     }
 }

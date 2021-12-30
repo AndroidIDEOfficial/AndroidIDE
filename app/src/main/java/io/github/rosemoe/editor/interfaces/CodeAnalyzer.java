@@ -17,6 +17,8 @@ package io.github.rosemoe.editor.interfaces;
 
 import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageServer;
+
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
 import java.io.File;
@@ -87,6 +89,6 @@ public interface CodeAnalyzer {
      * @see TextAnalyzer#analyze(Content)
      * @see TextAnalyzer.AnalyzeThread.Delegate#shouldAnalyze()
      */
-    void analyze(IDELanguageServer languageServer, File file, CharSequence content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception;
+    void analyze(IDELanguageServer languageServer, File file, Content content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception;
 
 }

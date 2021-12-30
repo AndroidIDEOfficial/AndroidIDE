@@ -24,13 +24,15 @@ import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
+import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.services.LanguageServer;
+
 import com.itsaky.lsp.SemanticHighlight;
 import java.util.Map;
 import org.eclipse.lsp4j.Diagnostic;
@@ -100,7 +102,7 @@ public class EmptyLanguage extends AbstractEditorLanguage {
     private static class EmptyCodeAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
 
         @Override
-        public void analyze(IDELanguageServer server, File file, CharSequence content, TextAnalyzeResult colors, io.github.rosemoe.editor.text.TextAnalyzer.AnalyzeThread.Delegate delegate) {
+        public void analyze(IDELanguageServer server, File file, Content content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
             colors.addNormalIfNull();
         }
 

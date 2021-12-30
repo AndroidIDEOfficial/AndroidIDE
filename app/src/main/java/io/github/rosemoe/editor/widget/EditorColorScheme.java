@@ -16,6 +16,7 @@
 package io.github.rosemoe.editor.widget;
 
 import android.util.SparseIntArray;
+
 import io.github.rosemoe.editor.util.Objects;
 
 /**
@@ -50,71 +51,22 @@ import io.github.rosemoe.editor.util.Objects;
  * @author Rose
  */
 public class EditorColorScheme {
-	
-    //------------------- -< JavaDoc >- -----------------------
-    public static final int JD_UNKNOWN_INLINETAG_CONTENT = 102;
-    public static final int JD_UNKNOWN_INLINETAG = 101;
-    public static final int JD_UNKNOWN_BLOCKTAG_CONTENT= 100;
-    public static final int JD_UNKNOWN_BLOCKTAG = 99;
-    public static final int JD_VERSION_BODY = 98;
-    public static final int JD_VERSION_TAG = 97;
-    public static final int JD_VALUE_REFERENCE = 96;
-    public static final int JD_VALUE_TAG = 95;
-    public static final int JD_USES_SERVICETYPE = 94;
-    public static final int JD_USES_DESCRIPTION = 93;
-    public static final int JD_USES_TAG = 92;
-    public static final int JD_THROWS_NAME = 91;
-    public static final int JD_THROWS_DESCRIPTION = 90;
-    public static final int JD_THROWS_TAG = 89;
-    public static final int JD_SUMMARY_MESSAGE = 88;
-    public static final int JD_SUMMARY_TAG = 87;
-    public static final int JD_SINCE_TAG = 86;
-    public static final int JD_SINCE_BODY = 85;
-    public static final int JD_SERIAL_TAG = 84;
-    public static final int JD_SERIALDATA_DESCRIPTION = 83;
-    public static final int JD_SERIALDATA_TAG = 82;
-    public static final int JD_SEE_REFERENCE = 81;
-    public static final int JD_SEE_TAG = 80;
-    public static final int JD_RETURN_DESCRIPTION = 79;
-    public static final int JD_RETURN_TAG = 78;
-    public static final int JD_PROVIDES_SERVICETYPE = 77;
-    public static final int JD_PROVIDES_DESCRIPTION = 76;
-    public static final int JD_PROVIDES_TAG = 75;
-    public static final int JD_PARAM_DESCRIPTION = 74;
-    public static final int JD_PARAM_NAME = 73;
-    public static final int JD_PARAM_TAG = 72;
-    public static final int JD_LITERAL_TEXT = 71;
-    public static final int JD_LITERAL_TAG = 70;
-    public static final int JD_LINK_REFERENCE = 69;
-    public static final int JD_LINK_LABEL = 68;
-    public static final int JD_LINK_TAG = 67;
-    public static final int JD_INHERITDOC_TAG = 66;
-    public static final int JD_INDEX_SEARCH_TERM = 65;
-    public static final int JD_INDEX_DESCRIPTION = 64;
-    public static final int JD_INDEX_TAG = 63;
-    public static final int JD_HIDDEN_TAG = 62;
-    public static final int JD_HIDDEN_MESSAGE = 61;
-    public static final int JD_DOCROOT_TAG = 60;
-    public static final int JD_DEPRECATED_MESSAGE= 59;
-    public static final int JD_DEPRECATED_TAG = 58;
-    public static final int JD_AUTHOR_NAME = 57;
-    public static final int JD_AUTHOR_TAG = 56;
     
     public static final int DIAGNOSTIC_ERROR = 38;
     public static final int DIAGNOSTIC_WARNING = 39;
     public static final int DIAGNOSTIC_HINT = 40;
     public static final int DIAGNOSTIC_INFO = 41;
     
-	public static final int LOG_DEBUG = 5; // Text Normal
-	public static final int LOG_INFO = 32;
-	public static final int LOG_ERROR = 33;
-	public static final int LOG_WARNING = 34;
+    public static final int LOG_DEBUG = 5; // Text Normal
+    public static final int LOG_INFO = 32;
+    public static final int LOG_ERROR = 33;
+    public static final int LOG_WARNING = 34;
     
     public static final int STDERR = 53;
     public static final int STDOUT = 54;
-	
+    
     //-----------------Highlight colors-----------
-	
+    
     public static final int XML_TAG = 52;
     public static final int FIELD = 35;
     public static final int STATIC_FIELD = 36;
@@ -138,20 +90,20 @@ public class EditorColorScheme {
     public static final int OPERATOR = 23;
     public static final int COMMENT = 22;
     public static final int KEYWORD = 21;
-
+    
     //-------------View colors---------------------
-
+    
     public static final int NON_PRINTABLE_CHAR = 31;
     public static final int TEXT_SELECTED = 30;
     public static final int MATCHED_TEXT_BACKGROUND = 29;
     public static final int AUTO_COMP_PANEL_CORNER = 20;
     public static final int AUTO_COMP_PANEL_BG = 19;
-
+    
     /**
      * No longer supported
      */
     public static final int LINE_BLOCK_LABEL = 18;
-
+    
     public static final int LINE_NUMBER_PANEL_TEXT = 17;
     public static final int LINE_NUMBER_PANEL = 16;
     public static final int BLOCK_LINE_CURRENT = 15;
@@ -184,12 +136,12 @@ public class EditorColorScheme {
      * End index of Javadoc related color IDs
      */
     public static final int JD_SCHEME_END = 102;
-
+    
     /**
      * Min pre-defined color id
      */
     protected static final int START_COLOR_ID = 1;
-
+    
     /**
      * Max pre-defined color id
      */
@@ -208,49 +160,49 @@ public class EditorColorScheme {
      *
      * @param editor Host editor
      */
-    EditorColorScheme(CodeEditor editor) {
+    EditorColorScheme (CodeEditor editor) {
         mEditor = editor;
-        mColors = new SparseIntArray();
-        applyDefault();
+        mColors = new SparseIntArray ();
+        applyDefault ();
     }
-
+    
     /**
      * For sub classes
      */
-    public EditorColorScheme() {
-        mColors = new SparseIntArray();
-        applyDefault();
+    public EditorColorScheme () {
+        mColors = new SparseIntArray ();
+        applyDefault ();
     }
-
+    
     /**
      * Called by editor
      */
-    void attachEditor(CodeEditor editor) {
+    void attachEditor (CodeEditor editor) {
         if (mEditor != null) {
-            throw new IllegalStateException("A editor is already attached to this ColorScheme object");
+            throw new IllegalStateException ("A editor is already attached to this ColorScheme object");
         }
-        mEditor = Objects.requireNonNull(editor);
+        mEditor = Objects.requireNonNull (editor);
     }
-
+    
     /**
      * Apply default colors
      */
-    public void applyDefault() {
+    public void applyDefault () {
         for (int i = START_COLOR_ID; i <= END_COLOR_ID; i++) {
-            applyDefault(i);
+            applyDefault (i);
         }
     }
-
+    
     /**
      * Apply default color for the given type
      *
      * @param type The type
      */
-    private void applyDefault(int type) {
+    private void applyDefault (int type) {
         
         // By default, all javadoc syntax will be treated as comments
-        if(type >= JD_SCHEME_START && type <= JD_SCHEME_END) {
-            setColor(type, COMMENT_DEFAULT); // Comment
+        if (type >= JD_SCHEME_START && type <= JD_SCHEME_END) {
+            setColor (type, COMMENT_DEFAULT); // Comment
         }
         
         int color;
@@ -274,8 +226,8 @@ public class EditorColorScheme {
             case OPERATOR:
                 color = 0xFF0066D6;
                 break;
-            case STDOUT :
-            case STDERR :
+            case STDOUT:
+            case STDERR:
             case TEXT_NORMAL:
                 color = 0xFF333333;
                 break;
@@ -327,14 +279,14 @@ public class EditorColorScheme {
                 break;
             case LOCAL_VARIABLE:
             case TYPE_NAME:
-            case TYPE_PARAM :
-            case PARAMETER :
+            case TYPE_PARAM:
+            case PARAMETER:
             case METHOD_DECLARATION:
-            case ENUM_TYPE :
-            case INTERFACE :
-            case CONSTRUCTOR :
-            case EXCEPTION_PARAM :
-            case METHOD_INVOCATION :
+            case ENUM_TYPE:
+            case INTERFACE:
+            case CONSTRUCTOR:
+            case EXCEPTION_PARAM:
+            case METHOD_INVOCATION:
                 color = 0xff333333;
                 break;
             case MATCHED_TEXT_BACKGROUND:
@@ -343,113 +295,72 @@ public class EditorColorScheme {
             case NON_PRINTABLE_CHAR:
                 color = 0xff505050;
                 break;
-			case LOG_ERROR :
-				color = 0xffc50e29;
-				break;
-			case LOG_WARNING :
-				color = 0xffff7043;
-				break;
-			case LOG_INFO :
-				color = 0xff4caf50;
-				break;
-            case FIELD :
-            case STATIC_FIELD :
-            case ENUM :
+            case LOG_ERROR:
+                color = 0xffc50e29;
+                break;
+            case LOG_WARNING:
+                color = 0xffff7043;
+                break;
+            case LOG_INFO:
+                color = 0xff4caf50;
+                break;
+            case FIELD:
+            case STATIC_FIELD:
+            case ENUM:
                 color = 0xFFF0BE4B;
                 break;
-            case PACKAGE_NAME :
+            case PACKAGE_NAME:
                 color = 0xffF0BE4B;
                 break;
-            case DIAGNOSTIC_ERROR :
+            case DIAGNOSTIC_ERROR:
                 color = 0xfff44336;
                 break;
-            case DIAGNOSTIC_WARNING :
+            case DIAGNOSTIC_WARNING:
                 color = 0xffFF9800;
                 break;
-            case DIAGNOSTIC_INFO :
+            case DIAGNOSTIC_INFO:
                 color = 0xff4CAF50;
                 break;
-            case DIAGNOSTIC_HINT :
+            case DIAGNOSTIC_HINT:
                 color = 0xffffffff;
                 break;
             default:
                 color = 0xffffffff;
         }
         
-        setColor(type, color);
+        setColor (type, color);
     }
     
-    public void setJavadocBlockTagColor(final int color) {
-        for (int i=JD_SCHEME_START;i<=JD_SCHEME_END;i++) {
-            if(isJavadocBlockTag(i)) {
-                setColor(i, color);
-            }
-        }
-    }
-    
-    public void setJavadocInlineTagColor(final int color) {
-        for (int i=JD_SCHEME_START;i<=JD_SCHEME_END;i++) {
-            if(isJavadocInlineTag(i)) {
-                setColor(i, color);
-            }
-        }
-    }
-    
-    public boolean isJavadocBlockTag (int type) {
-        return type == JD_AUTHOR_TAG
-        || type == JD_DEPRECATED_TAG
-        || type == JD_PARAM_TAG
-        || type == JD_RETURN_TAG
-        || type == JD_SERIALDATA_TAG
-        || type == JD_SERIAL_TAG
-        || type == JD_SINCE_TAG
-        || type == JD_THROWS_TAG
-        || type == JD_UNKNOWN_BLOCKTAG
-        || type == JD_VERSION_TAG
-        
-        // In AndroidIDE, @hidden is considered as a block tag
-        || type == JD_HIDDEN_TAG;
-    }
-    
-    public boolean isJavadocInlineTag (int type) {
-        return type == JD_DOCROOT_TAG
-        || type == JD_INHERITDOC_TAG
-        || type == JD_LINK_TAG
-        || type == JD_LITERAL_TAG
-        || type == JD_UNKNOWN_INLINETAG
-        || type == JD_VALUE_TAG;
-    }
-
     /**
      * Apply a new color for the given type
      *
      * @param type  The type
      * @param color New color
      */
-    public void setColor(int type, int color) {
+    public void setColor (int type, int color) {
         //Do not change if the old value is the same as new value
         //due to avoid unnecessary invalidate() calls
-        int old = getColor(type);
+        int old = getColor (type);
         if (old == color) {
             return;
         }
-
-        mColors.put(type, color);
-
+        
+        mColors.put (type, color);
+        
         //Notify the editor
         if (mEditor != null) {
-            mEditor.onColorUpdated(type);
+            mEditor.onColorUpdated (type);
         }
     }
-
+    
     /**
      * Get color by type
      *
      * @param type The type
      * @return The color for type
      */
-    public int getColor(int type) {
-        return mColors.get(type);
+    public int getColor (int type) {
+        return mColors.get (type);
     }
-
+    
 }

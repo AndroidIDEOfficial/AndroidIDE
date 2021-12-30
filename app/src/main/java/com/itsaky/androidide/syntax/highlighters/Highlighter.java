@@ -17,9 +17,7 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
-package com.itsaky.androidide.syntax.lexer.highlighters;
+package com.itsaky.androidide.syntax.highlighters;
 
 import android.text.SpannableStringBuilder;
 

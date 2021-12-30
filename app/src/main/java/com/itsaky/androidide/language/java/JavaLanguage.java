@@ -17,12 +17,14 @@
 **************************************************************************************/
 package com.itsaky.androidide.language.java;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
 import com.itsaky.androidide.lsp.LSPProvider;
-import com.itsaky.androidide.syntax.lexer.impls.java.JavaLexerImpl;
 import com.itsaky.androidide.utils.JavaCharacter;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.services.IDELanguageServer;
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
@@ -37,10 +39,12 @@ import org.antlr.v4.runtime.Token;
 
 public class JavaLanguage extends BaseLanguage {
     
-    private final JavaLexerImpl lexer;
+    private final JavaAnalyzer analyzer;
 	private final JavaAutoComplete complete;
     
     private final NewlineHandler[] newlineHandlers;
+    
+    private static final Logger LOG = Logger.instance("JavaLanguage");
     
     public JavaLanguage() {
         this(null);
@@ -48,12 +52,11 @@ public class JavaLanguage extends BaseLanguage {
     
 	public JavaLanguage(File file) {
         super(file);
-		this.lexer = new JavaLexerImpl(this);
+		this.analyzer = new JavaAnalyzer ();
 		this.complete = new JavaAutoComplete();
         
-        this.newlineHandlers = new NewlineHandler[2];
+        this.newlineHandlers = new NewlineHandler[1];
         this.newlineHandlers[0] = new BraceHandler();
-        this.newlineHandlers[1] = this.lexer.stringHandler;
 	}
 
     @Override
@@ -68,7 +71,7 @@ public class JavaLanguage extends BaseLanguage {
 
 	@Override
 	public CodeAnalyzer getAnalyzer() {
-		return lexer;
+		return analyzer;
 	}
 
 	@Override
@@ -99,13 +102,15 @@ public class JavaLanguage extends BaseLanguage {
 			}
 			advance = Math.max(0, advance);
 			return advance * getTabSize();
-		} catch (Throwable e) {}
+		} catch (Throwable e) {
+			LOG.error ("Error calculating indent advance", e);
+		}
 		return 0;
 	}
 
 	@Override
 	public SymbolPairMatch getSymbolPairs() {
-		return new JavaSymbolPairs();
+		return new JavaSymbolPairs ();
 	}
 
 	@Override
@@ -126,7 +131,7 @@ public class JavaLanguage extends BaseLanguage {
     class BraceHandler implements NewlineHandler {
 
         @Override
-        public boolean matchesRequirement(String beforeText, String afterText, CharPosition cursor) {
+        public boolean matchesRequirement(@NonNull String beforeText, String afterText, CharPosition cursor) {
             return beforeText.endsWith("{") && afterText.startsWith("}");
         }
 
@@ -145,7 +150,7 @@ public class JavaLanguage extends BaseLanguage {
         }
     }
     
-    private class JavaSymbolPairs extends SymbolPairMatch {
+    private static class JavaSymbolPairs extends SymbolPairMatch {
         public JavaSymbolPairs() {
             super.putPair('{', new Replacement("{}", 1));
             super.putPair('(', new Replacement("()", 1));
