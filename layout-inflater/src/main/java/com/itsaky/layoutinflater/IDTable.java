@@ -60,7 +60,7 @@ public class IDTable {
     public static int newId (String idName) {
         
         {
-            // In some cases, @+id is might be used as a reference
+            // In some cases, @+id might be used as a reference
             // to another ID. So we check if an ID with the same
             // name is already present or not.
             final int id = getId(idName);

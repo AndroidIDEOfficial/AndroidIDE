@@ -34,6 +34,8 @@ import org.jsoup.select.Elements;
 
 import static com.itsaky.androidide.ui.util.Preconditions.*;
 
+import androidx.annotation.NonNull;
+
 /**
  * Reads and manages values (colors, strings, integers, etc.)
  *
@@ -59,12 +61,12 @@ public class ValuesTable {
     public ValuesTable(File... dirs) {
         assertNotnull(dirs, "Values directory cannot be null!");
         final CompletableFuture<Void> read = CompletableFuture.runAsync(
-            new ReadData (
-                dirs,
-                strings,
-                colors,
-                dimens
-            )
+                new ReadData (
+                        dirs,
+                        strings,
+                        colors,
+                        dimens
+                )
         );
         
         read.whenComplete((__, th) -> {
@@ -88,7 +90,7 @@ public class ValuesTable {
     /**
      * Used to read values data async.
      */
-    class ReadData implements Runnable {
+    static class ReadData implements Runnable {
         
         private final File[] dirs;
         private final Map <String, String> strings, colors, dimens;
@@ -113,9 +115,12 @@ public class ValuesTable {
          *
          * @param dir The 'values' directory.
          */
-        private void readFrom(File dir) {
-            for (File file : dir.listFiles(this::isXml)) {
-                readValues(file);
+        private void readFrom(@NonNull File dir) {
+            final var files = dir.listFiles (this::isXml);
+            if (files != null) {
+                for (File file : files) {
+                    readValues(file);
+                }
             }
         }
 
@@ -141,11 +146,14 @@ public class ValuesTable {
             final Document doc = Jsoup.parse(content, "", Parser.xmlParser());
             final Elements els = doc.getElementsByTag("resources");
 
-            if (els == null || els.size() <= 0) {
+            if (els.size() <= 0) {
                 return;
             }
 
             final Element res = els.first();
+            if (res == null) {
+                return;
+            }
 
             for (Element child : res.children()) {
                 final String tag = child.tagName().trim();
@@ -190,18 +198,18 @@ public class ValuesTable {
          * @param element The element to get data from.
          * @param putTo The map to which the read data will be added (or updated).
          */
-        private void genericRead(Element element, Map<String, String> putTo) {
+        private void genericRead(@NonNull Element element, Map<String, String> putTo) {
             final String name = element.attr("name");
-            if (name == null || name.trim().length() <= 0) {
+            if (name.trim().length() <= 0) {
                 return;
             }
-
-            final String value = element.text() == null ? "" : element.text();
+            
+            final String value = element.text();
 
             putTo.put(name, value);
         }
         
-        private boolean isXml (File file) {
+        private boolean isXml (@NonNull File file) {
             return file.isFile() && file.getName().endsWith(".xml");
         }
     }
