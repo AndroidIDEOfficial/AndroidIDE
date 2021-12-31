@@ -236,6 +236,8 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
                 .show ();
     }
     
+    // FIXME Generated XML does not leave a space between
+    //    codes of two adjacent views (in same parent)
     private void finishWithResult (String result) {
         final var intent = new Intent ();
         intent.putExtra (KEY_GENERATED_CODE, result);
@@ -289,6 +291,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         final var data = view.getExtraData ();
         
         view.asView ().startDragAndDrop (clip, shadow, data, 0);
+        view.removeFromParent ();
         
         return true;
     }

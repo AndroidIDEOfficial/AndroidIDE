@@ -20,6 +20,7 @@ package com.itsaky.layoutinflater.impl;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.itsaky.layoutinflater.IView;
 import java.util.ArrayList;
@@ -59,28 +60,32 @@ public class UiViewGroup extends BaseViewGroup {
     
     @Override
     public void removeView(int index) {
-        
         final IView view = children.get(index);
+        removeView (view);
+    }
+    
+    @Override
+    public void removeView(@Nullable IView view) {
+        if (view == null) {
+            LOG.warn ("Null view passed to IViewGroup.removeView(IView). Ignoring.");
+            return;
+        }
         
-        this.viewGroup.removeViewAt(index);
-        this.children.remove(index);
+        this.viewGroup.removeView(view.asView());
+        this.children.remove(view);
         
         view.setParent (null);
         onViewRemoved(view);
     }
     
     @Override
-    public void removeView(@NonNull IView view) {
-        this.viewGroup.removeView(view.asView());
-        this.children.remove(view);
-        
-        onViewRemoved(view);
-    }
-    
-    @Override
     public void removeAll() {
-        this.viewGroup.removeAllViews();
-        this.children.clear();
+        for (var child : this.children) {
+            // Remove each view individually
+            // This will make sure that we set the parent of the children to null
+            // and call #onViewRemoved (IView)
+            removeView (child);
+        }
     }
 
     @Override
