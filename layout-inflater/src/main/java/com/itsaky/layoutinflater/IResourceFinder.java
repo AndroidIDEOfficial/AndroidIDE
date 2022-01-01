@@ -17,6 +17,8 @@
 **************************************************************************************/
 package com.itsaky.layoutinflater;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 
 /**
@@ -32,7 +34,7 @@ public interface IResourceFinder {
      * @param name The name of the drawable
      * @return The drawable resource.
      */
-    File inflateDrawable (String name);
+    File inflateDrawable (@NonNull String name);
     
     /**
      * Find the layout file with the specified name.
@@ -40,7 +42,7 @@ public interface IResourceFinder {
      * @param name The name of the layout file
      * @return The found layout resource file
      */
-    File inflateLayout (String name);
+    File inflateLayout (@NonNull String name);
     
     /**
      * Find a string resource. Must be a valid string or {@code null}
@@ -48,7 +50,7 @@ public interface IResourceFinder {
      * @param name The name of the resource
      * @return Value of the resource
      */
-    String findString (String name);
+    String findString (@NonNull String name);
     
     /**
      * Find a color resource. The returned value must be a valid color value or {@code -1}
@@ -56,7 +58,7 @@ public interface IResourceFinder {
      * @param name The name of the resource
      * @return Value of the resource
      */
-    String findColor (String name);
+    String findColor (@NonNull String name);
     
     /**
      * Find an array resource. Must be a valid array or {@code null}
@@ -64,7 +66,7 @@ public interface IResourceFinder {
      * @param name The name of the resource
      * @return Value of the resource
      */
-    String[] findArray (String name);
+    String[] findArray (@NonNull String name);
     
     /**
      * Find the dimension value with the given name.
@@ -73,12 +75,12 @@ public interface IResourceFinder {
      * @return The String representation of the dimension. It could one of the following format :
      *   1dp, 12sp, 123px, etc.
      */
-    String findDimension (String name);
+    String findDimension (@NonNull String name);
     
     /**
      * Set the file which is currently being inflated.
      *
      * @param file The file.
      */
-    void setInflatingFile (File file);
+    void setInflatingFile (@NonNull File file);
 }

@@ -19,12 +19,14 @@ package com.itsaky.layoutinflater;
 
 import android.content.Context;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.ui.util.Preconditions;
-import com.itsaky.layoutinflater.IView;
+
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,6 +80,14 @@ public abstract class ILayoutInflater {
     public abstract void unregisterListener (IInflateListener listener);
     
     /**
+     * Get the resource finder attached to this layout inflater.
+     *
+     * @return The attached resource finder.
+     */
+    @NonNull
+    protected abstract IResourceFinder requireResourceFinder ();
+    
+    /**
      * Inflate the layout from the given file path
      *
      * @param path The file path to inflate layout from
@@ -87,7 +97,6 @@ public abstract class ILayoutInflater {
     @NonNull
     public IView inflatePath (String path, ViewGroup parent) throws InflateException {
         Preconditions.assertNotBlank(path, "Layout file path is blank!");
-        
         return inflate(new File(path), parent);
     }
     
@@ -117,6 +126,7 @@ public abstract class ILayoutInflater {
             throw new InflateException ("File is not UTF-8 or is empty!");
         }
         
+        requireResourceFinder ().setInflatingFile (file);
         this.currentlyInflatingFile = file;
         return inflate(FileIOUtils.readFile2String(file), parent);
     }

@@ -116,6 +116,12 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         this.contextProvider = provider;
     }
     
+    @NonNull
+    @Override
+    protected IResourceFinder requireResourceFinder () {
+        return this.resFinder;
+    }
+    
     protected IView onCreateView (Element tag, ViewGroup parent) throws InflateException {
         if (tag == null) {
             return null;

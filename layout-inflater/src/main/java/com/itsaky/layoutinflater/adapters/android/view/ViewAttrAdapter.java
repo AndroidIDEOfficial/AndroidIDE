@@ -41,6 +41,9 @@ import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IAttributeAdapter;
 import com.itsaky.layoutinflater.IDTable;
 import com.itsaky.layoutinflater.IResourceFinder;
+import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
+
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -591,8 +594,22 @@ public class ViewAttrAdapter implements IAttributeAdapter {
             } else {
                 // We found a reference to another resource
                 if (value.startsWith("@drawable/")) {
-                    final File drawable = resFinder.inflateDrawable(value.substring("@drawable/".length()));
-                    // TODO Parse drawables
+                     final File drawable = resFinder.inflateDrawable(value.substring("@drawable/".length()));
+                     
+                    if (drawable == null) {
+                        return null;
+                    }
+    
+                    if (drawable.getName ().endsWith (".xml")) {
+                        try {
+                            return VectorMasterDrawable.fromXMLFile (drawable);
+                        } catch (XmlPullParserException e) {
+                            LOG.error ("Failed to parse XML Drawable", e);
+                            return null;
+                        }
+                    } else {
+                    
+                    }
                 } else if (value.startsWith("@color/")) {
                     final String color = resFinder.findColor(value.substring("@color/".length()));
                     // TODO Check if this color resource is a selector
