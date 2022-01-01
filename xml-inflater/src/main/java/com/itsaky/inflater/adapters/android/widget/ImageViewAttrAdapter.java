@@ -22,8 +22,11 @@ import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IResourceFinder;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
 
 /**
@@ -33,7 +36,11 @@ import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
  * @author Akash Yadav
  */
 public class ImageViewAttrAdapter extends ViewAttrAdapter {
-
+    
+    public ImageViewAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+        super (resourceFinder, displayMetrics);
+    }
+    
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof ImageView;

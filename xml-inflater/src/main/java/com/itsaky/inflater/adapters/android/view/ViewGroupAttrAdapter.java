@@ -18,12 +18,14 @@
 package com.itsaky.inflater.adapters.android.view;
 
 import android.animation.LayoutTransition;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IResourceFinder;
 
 import org.jetbrains.annotations.Contract;
 
@@ -33,6 +35,10 @@ import org.jetbrains.annotations.Contract;
  * @author Akash Yadav
  */
 public class ViewGroupAttrAdapter extends ViewAttrAdapter {
+    
+    public ViewGroupAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+        super (resourceFinder, displayMetrics);
+    }
     
     @Override
     public boolean isApplicableTo(View view) {

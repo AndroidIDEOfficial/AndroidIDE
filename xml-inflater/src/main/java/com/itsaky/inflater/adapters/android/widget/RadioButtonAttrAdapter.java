@@ -17,10 +17,14 @@
 
 package com.itsaky.inflater.adapters.android.widget;
 
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.RadioButton;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IResourceFinder;
 
 /**
  * Attribute adapter for handling attributes related to
@@ -29,7 +33,11 @@ import com.itsaky.inflater.IAttribute;
  * @author Akash Yadav
  */
 public class RadioButtonAttrAdapter extends CompondButtonAttrAdapter {
-
+    
+    public RadioButtonAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+        super (resourceFinder, displayMetrics);
+    }
+    
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof RadioButton;

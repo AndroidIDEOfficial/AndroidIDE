@@ -17,12 +17,14 @@
 
 package com.itsaky.inflater.adapters.android.widget;
 
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IResourceFinder;
 
 /**
  * Attribute adapter for handling attributes related to
@@ -31,7 +33,11 @@ import com.itsaky.inflater.IAttribute;
  * @author Akash Yadav
  */
 public class SpinnerAttrAdapter extends AbsSpinnerAttrAdapter {
-
+    
+    public SpinnerAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+        super (resourceFinder, displayMetrics);
+    }
+    
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof Spinner;

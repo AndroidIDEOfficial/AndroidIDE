@@ -18,11 +18,15 @@
 package com.itsaky.inflater.adapters.android.widget;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IResourceFinder;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
 
 /**
@@ -32,7 +36,11 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  * @author Akash Yadav
  */
 public abstract class AdapterViewAttrAdapter extends ViewGroupAttrAdapter {
-
+    
+    public AdapterViewAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+        super (resourceFinder, displayMetrics);
+    }
+    
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof AdapterView;

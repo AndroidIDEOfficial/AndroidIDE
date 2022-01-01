@@ -19,13 +19,7 @@ package com.itsaky.inflater.adapters.android.view;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.NinePatch;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.NinePatchDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -36,22 +30,15 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 
-import com.blankj.utilcode.util.ImageUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IAttributeAdapter;
 import com.itsaky.inflater.IDTable;
 import com.itsaky.inflater.IResourceFinder;
-import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
+import com.itsaky.inflater.util.CommonParseUtils;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.File;
-import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 
 /**
@@ -61,18 +48,17 @@ import java.util.regex.Pattern;
  *
  * @author Akash Yadav
  */
-public class ViewAttrAdapter implements IAttributeAdapter {
-    
-    private static final Pattern HEX_COLOR = Pattern.compile("#[a-fA-F0-9]{6,8}");
+public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapter {
     
     protected static final Logger LOG = Logger.instance ("BaseViewAttrAdapter");
-    public static final int ENUM_NOT_FOUND = -4116;
     
-    protected IResourceFinder resFinder;
+    public ViewAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+        super (resourceFinder, displayMetrics);
+    }
     
     @Override
     public void setResourceFinder (IResourceFinder resourceFinder) {
-        this.resFinder = resourceFinder;
+        this.resourceFinder = resourceFinder;
     }
     
     @Override
@@ -87,7 +73,6 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         final String value = attribute.getValue();
         final ViewGroup.LayoutParams params = view.getLayoutParams();
         final Resources res = view.getResources();
-        final DisplayMetrics dm = res.getDisplayMetrics();
         final Context ctx = view.getContext();
         
         if (!canHandleNamespace(namespace)) {
@@ -97,10 +82,10 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         boolean handled = true;
         switch (name) {
             case "layout_height" :
-                params.height = parseDimension (value, -2, dm);
+                params.height = parseDimension (value, -2, displayMetrics);
                 break;
             case "layout_width"  :
-                params.width  = parseDimension (value, -2, dm);
+                params.width  = parseDimension (value, -2, displayMetrics);
                 break;
             case "alpha" :
                 view.setAlpha(parseFloat(value));
@@ -135,13 +120,13 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 view.setDuplicateParentStateEnabled(parseBoolean(value));
                 break;
             case "elevation" :
-                view.setElevation(parseDimension(value, 0, dm));
+                view.setElevation(parseDimension(value, 0, displayMetrics));
                 break;
             case "fadeScrollbars" :
                 view.setScrollbarFadingEnabled(parseBoolean(value));
                 break;
             case "fadingEdgeLength" :
-                view.setFadingEdgeLength(parseDimension(value, 0, dm));
+                view.setFadingEdgeLength(parseDimension(value, 0, displayMetrics));
                 break;
             case "filterTouchesWhenObscured" :
                 view.setFilterTouchesWhenObscured(parseBoolean(value));
@@ -162,37 +147,37 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                 view.setId(parseId (value));
                 break;
             case "minHeight" :
-                view.setMinimumHeight(parseDimension(value, 0, dm));
+                view.setMinimumHeight(parseDimension(value, 0, displayMetrics));
                 break;
             case "minWidth" :
-                view.setMinimumWidth(parseDimension(value, 0, dm));
+                view.setMinimumWidth(parseDimension(value, 0, displayMetrics));
                 break;
             case "padding" :
-                final int padding = parseDimension(value, 0, dm);
+                final int padding = parseDimension(value, 0, displayMetrics);
                 view.setPaddingRelative(padding, padding, padding, padding);
                 break;
             case "paddingLeft" :
-                final int paddingLeft = parseDimension(value, 0, dm);
+                final int paddingLeft = parseDimension(value, 0, displayMetrics);
                 view.setPadding(paddingLeft, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
                 break;
             case "paddingTop" :
-                final int paddingTop = parseDimension(value, 0, dm);
+                final int paddingTop = parseDimension(value, 0, displayMetrics);
                 view.setPadding(view.getPaddingLeft(), paddingTop, view.getPaddingRight(), view.getPaddingBottom());
                 break;
             case "paddingRight" :
-                final int paddingRight = parseDimension(value, 0, dm);
+                final int paddingRight = parseDimension(value, 0, displayMetrics);
                 view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), paddingRight, view.getPaddingBottom());
                 break;
             case "paddingBottom" :
-                final int paddingBottom = parseDimension(value, 0, dm);
+                final int paddingBottom = parseDimension(value, 0, displayMetrics);
                 view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), paddingBottom);
                 break;
             case "paddingStart" :
-                final int paddingStart = parseDimension(value, 0, dm);
+                final int paddingStart = parseDimension(value, 0, displayMetrics);
                 view.setPaddingRelative(paddingStart, view.getPaddingTop(), view.getPaddingEnd(), view.getPaddingBottom());
                 break;
             case "paddingEnd" :
-                final int paddingEnd = parseDimension(value, 0, dm);
+                final int paddingEnd = parseDimension(value, 0, displayMetrics);
                 view.setPaddingRelative(view.getPaddingStart(), view.getPaddingTop(), paddingEnd, view.getPaddingBottom());
                 break;
             case "rotation" :
@@ -253,7 +238,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         // ----- Handle attributes related to parent ------
         
         if (!handled && params instanceof LinearLayout.LayoutParams) {
-            handled = handleLinearLayoutParams ((LinearLayout.LayoutParams) params, name, value, dm);
+            handled = handleLinearLayoutParams ((LinearLayout.LayoutParams) params, name, value, displayMetrics);
         }
         
         if (!handled && params instanceof RelativeLayout.LayoutParams) {
@@ -261,7 +246,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
         }
         
         if (!handled && params instanceof ViewGroup.MarginLayoutParams) {
-            handled = handleMarginParams((ViewGroup.MarginLayoutParams) params, name, value, dm);
+            handled = handleMarginParams((ViewGroup.MarginLayoutParams) params, name, value, displayMetrics);
         }
         
         view.setLayoutParams(params);
@@ -535,22 +520,9 @@ public class ViewAttrAdapter implements IAttributeAdapter {
 
     protected String parseString(@NonNull String value) {
         if (value.startsWith("@")) {
-            return parseString(resFinder.findString(value.substring("@string/".length())));
+            return parseString(resourceFinder.findString(value.substring("@string/".length())));
         }
         return value;
-    }
-
-    protected boolean parseBoolean(@NonNull String value) {
-        if (!value.startsWith("@")) {
-            if ("true".equals(value)) {
-                return true;
-            } else if ("false".equals(value)) {
-                return false;
-            }
-        } else {
-            // TODO Find resource value in booleans.xml
-        }
-        return false;
     }
 
     protected PorterDuff.Mode parsePorterDuffMode(@NonNull String mode) {
@@ -570,121 +542,6 @@ public class ViewAttrAdapter implements IAttributeAdapter {
             default :
                 return PorterDuff.Mode.SRC;
         }
-    }
-    
-    protected Drawable parseDrawable (String value, final Context ctx) {
-        if (HEX_COLOR.matcher(value).matches()) {
-            return drawableForColor(value);
-        } else if (value.startsWith("@")) {
-            
-            // First check if this is a reference to an android resource
-            if (value.startsWith("@android:")) {
-                final String typeAndValue = value.substring("@android:".length());
-                final String[] split = typeAndValue.split(Pattern.quote("/")); // For @android:color/white, it will be ["color", "white"]
-                final String type = split[0];
-                final String typeVal = split[1];
-                final int id = findAndroidResId (type, typeVal);
-                
-                if (id != -1) {
-                    switch (type) {
-                        case "color" :
-                            return drawableForColor(ContextCompat.getColor(ctx, id));
-                        case "drawable" :
-                            return ContextCompat.getDrawable(ctx, id);
-                        default :
-                            return newTransparentDrawable();
-                    }
-                }
-                
-            } else {
-                // We found a reference to another resource
-                if (value.startsWith("@drawable/")) {
-                    final File drawable = resFinder.findDrawable (value.substring("@drawable/".length()));
-                     
-                    if (drawable == null) {
-                        return null;
-                    }
-    
-                    if (drawable.getName ().endsWith (".xml")) {
-                        // TODO This might not always be a vector drawable
-                        //     Implement a drawable parser that can parse everything listed here: https://developer.android.com/guide/topics/resources/drawable-resource
-                        try {
-                            return VectorMasterDrawable.fromXMLFile (drawable);
-                        } catch (XmlPullParserException e) {
-                            LOG.error ("Failed to parse XML Drawable", e);
-                            return null;
-                        }
-                    } else {
-                        return parseImageDrawable (ctx, drawable);
-                    }
-                } else if (value.startsWith("@color/")) {
-                    final String color = resFinder.findColor(value.substring("@color/".length()));
-                    // TODO Check if this color resource is a selector
-                    return parseDrawable(color, ctx);
-                }
-            }
-        }
-        return newTransparentDrawable();
-    }
-    
-    // NinePatch has not been tested
-    @Nullable
-    private Drawable parseImageDrawable (final Context context, final File file) {
-        final var bitmap = ImageUtils.getBitmap (file);
-        if (bitmap == null) {
-            return null;
-        }
-        
-        final var chunk = bitmap.getNinePatchChunk ();
-        if (NinePatch.isNinePatchChunk (chunk)) {
-            return new NinePatchDrawable (context.getResources (), new NinePatch (bitmap, chunk));
-        }
-        
-        return new BitmapDrawable (context.getResources (), bitmap);
-    }
-
-    private int findAndroidResId(String type, String name) {
-        try {
-            final Class<?> typeClass = android.R.class.getClassLoader().loadClass("android.R$" + type);
-            final Field typeField = typeClass.getDeclaredField(name);
-            typeField.setAccessible(true);
-            return (int) typeField.get(null);
-        } catch (Throwable th) {
-            return -1;
-        }
-    }
-    
-    protected int parseColor (String color, final Context ctx) {
-        if (HEX_COLOR.matcher(color).matches()) {
-            try {
-                return Color.parseColor(color);
-            } catch (Throwable th) {
-                // Ignored
-            }
-        } else if (color.startsWith("@color/")) {
-            return parseColor(resFinder.findColor(color.substring("@color/".length())), ctx);
-        } else if (color.startsWith("@android:color/")) {
-            final int id = findAndroidResId("color", color.substring("@android:color/".length()));
-            return ContextCompat.getColor(ctx, id);
-        }
-        
-        return Color.parseColor("#00ffffff");
-    }
-    
-    protected Drawable drawableForColor (String color) {
-        try {
-            return drawableForColor(Color.parseColor(color));
-        } catch (Throwable th) {
-            return newTransparentDrawable();
-        }
-    }
-    
-    protected Drawable drawableForColor (int color) {
-        return new ColorDrawable (color);
-    }
-    
-    protected Drawable newTransparentDrawable () {
-        return new ColorDrawable (Color.TRANSPARENT);
     }
     
     protected float parseFloat (String value) {
@@ -716,7 +573,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
             return (int) TypedValue.applyDimension(getUnitForDimensionType(dimensionType), dimen, dm);
         } else if (c == '@') {
             String name = value.substring("@dimen/".length());
-            return parseDimension(resFinder.findDimension(name), defaultValue, dm);
+            return parseDimension(resourceFinder.findDimension(name), defaultValue, dm);
         } else if (Character.isLetter(c)) {
             // This could be one of the following :
             // 1. match_parent

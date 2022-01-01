@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IResourceFinder;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
 import java.util.regex.Pattern;
 
@@ -42,7 +43,11 @@ import java.util.regex.Pattern;
  * @author Akash Yadav
  */
 public class TextViewAttrAdapter extends ViewAttrAdapter {
-
+    
+    public TextViewAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+        super (resourceFinder, displayMetrics);
+    }
+    
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof TextView;

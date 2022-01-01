@@ -17,13 +17,21 @@
 
 package com.itsaky.inflater.adapters.android.widget;
 
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AbsSpinner;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IResourceFinder;
 
 public class AbsSpinnerAttrAdapter extends AdapterViewAttrAdapter {
-
+    
+    public AbsSpinnerAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+        super (resourceFinder, displayMetrics);
+    }
+    
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof AbsSpinner;
@@ -45,7 +53,7 @@ public class AbsSpinnerAttrAdapter extends AdapterViewAttrAdapter {
 
         switch (name) {
             case "entries" :
-                final var adapter = newSimpleAdapter(context, resFinder.findArray(value));
+                final var adapter = newSimpleAdapter(context, resourceFinder.findArray(value));
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(adapter);
                 break;

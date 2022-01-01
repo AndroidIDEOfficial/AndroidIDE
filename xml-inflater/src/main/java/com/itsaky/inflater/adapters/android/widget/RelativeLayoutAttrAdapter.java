@@ -16,9 +16,14 @@
  */
 package com.itsaky.inflater.adapters.android.widget;
 
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.RelativeLayout;
+
+import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IResourceFinder;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
 
 /**
@@ -28,7 +33,11 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  * @author Akash Yadav
  */
 public class RelativeLayoutAttrAdapter extends ViewGroupAttrAdapter {
-
+    
+    public RelativeLayoutAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+        super (resourceFinder, displayMetrics);
+    }
+    
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof RelativeLayout;
