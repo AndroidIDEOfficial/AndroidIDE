@@ -37,7 +37,7 @@ public class ProjectResourceFinder implements IResourceFinder {
     private static final Logger LOG = Logger.instance ("ProjectResourceFinder");
     
     @Override
-    public File inflateDrawable(@NonNull String name) {
+    public File findDrawable (@NonNull String name) {
         for (File drawable : drawables) {
             final File file = findFileWithName(drawable.listFiles(), name);
             if (file != null) {

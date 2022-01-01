@@ -20,9 +20,12 @@ package com.itsaky.layoutinflater.adapters.android.view;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.NinePatch;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -33,9 +36,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 
+import com.blankj.utilcode.util.ImageUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.layoutinflater.IAttribute;
 import com.itsaky.layoutinflater.IAttributeAdapter;
@@ -594,7 +599,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
             } else {
                 // We found a reference to another resource
                 if (value.startsWith("@drawable/")) {
-                     final File drawable = resFinder.inflateDrawable(value.substring("@drawable/".length()));
+                    final File drawable = resFinder.findDrawable (value.substring("@drawable/".length()));
                      
                     if (drawable == null) {
                         return null;
@@ -608,7 +613,7 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                             return null;
                         }
                     } else {
-                    
+                        return parseImageDrawable (ctx, drawable);
                     }
                 } else if (value.startsWith("@color/")) {
                     final String color = resFinder.findColor(value.substring("@color/".length()));
@@ -618,6 +623,22 @@ public class ViewAttrAdapter implements IAttributeAdapter {
             }
         }
         return newTransparentDrawable();
+    }
+    
+    // NinePatch has not been tested
+    @Nullable
+    private Drawable parseImageDrawable (final Context context, final File file) {
+        final var bitmap = ImageUtils.getBitmap (file);
+        if (bitmap == null) {
+            return null;
+        }
+        
+        final var chunk = bitmap.getNinePatchChunk ();
+        if (NinePatch.isNinePatchChunk (chunk)) {
+            return new NinePatchDrawable (context.getResources (), new NinePatch (bitmap, chunk));
+        }
+        
+        return new BitmapDrawable (context.getResources (), bitmap);
     }
 
     private int findAndroidResId(String type, String name) {

@@ -34,7 +34,7 @@ public interface IResourceFinder {
      * @param name The name of the drawable
      * @return The drawable resource.
      */
-    File inflateDrawable (@NonNull String name);
+    File findDrawable (@NonNull String name);
     
     /**
      * Find the layout file with the specified name.
