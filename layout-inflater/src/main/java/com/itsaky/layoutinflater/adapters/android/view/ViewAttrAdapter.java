@@ -606,6 +606,9 @@ public class ViewAttrAdapter implements IAttributeAdapter {
                     }
     
                     if (drawable.getName ().endsWith (".xml")) {
+                        // TODO This might not always be a vector drawable
+                        //     Implement a drawable parser that can parse shape drawables, layer lists
+                        //     or even a color state list
                         try {
                             return VectorMasterDrawable.fromXMLFile (drawable);
                         } catch (XmlPullParserException e) {
