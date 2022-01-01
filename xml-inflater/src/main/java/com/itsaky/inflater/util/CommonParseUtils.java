@@ -26,11 +26,13 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 
 import com.blankj.utilcode.util.ImageUtils;
 import com.itsaky.androidide.utils.Logger;
@@ -231,5 +233,44 @@ public class CommonParseUtils {
     
     protected Drawable newTransparentDrawable () {
         return new ColorDrawable (Color.TRANSPARENT);
+    }
+    
+    protected int parseGravity (@NonNull String value) {
+        final String[] splits = value.split(Pattern.quote("|"));
+        int result = -1;
+        for (String split : splits) {
+            final int gravity = gravityFor(split);
+            if (result == -1) {
+                result = gravity;
+            } else {
+                result |= gravity;
+            }
+        }
+        return result;
+    }
+    
+    protected int gravityFor(@NonNull String gravity) {
+        switch (gravity) {
+            case "center" :
+                return Gravity.CENTER;
+            case "center_vertical" :
+                return Gravity.CENTER_VERTICAL;
+            case "center_horizontal" :
+                return Gravity.CENTER_HORIZONTAL;
+            case "left" :
+                return Gravity.LEFT;
+            case "right" :
+                return Gravity.RIGHT;
+            case "top" :
+                return Gravity.TOP;
+            case "bottom" :
+                return Gravity.BOTTOM;
+            case "start" :
+                return GravityCompat.START;
+            case "end" :
+                return GravityCompat.END;
+            default :
+                return Gravity.TOP|Gravity.START;
+        }
     }
 }

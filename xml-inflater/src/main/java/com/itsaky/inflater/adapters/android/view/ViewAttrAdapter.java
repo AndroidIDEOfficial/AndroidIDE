@@ -437,45 +437,6 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
         }
     }
     
-    protected int parseGravity (@NonNull String value) {
-        final String[] splits = value.split(Pattern.quote("|"));
-        int result = -1;
-        for (String split : splits) {
-            final int gravity = gravityFor(split);
-            if (result == -1) {
-                result = gravity;
-            } else {
-                result |= gravity;
-            }
-        }
-        return result;
-    }
-    
-    protected int gravityFor(@NonNull String gravity) {
-        switch (gravity) {
-            case "center" :
-                return Gravity.CENTER;
-            case "center_vertical" :
-                return Gravity.CENTER_VERTICAL;
-            case "center_horizontal" :
-                return Gravity.CENTER_HORIZONTAL;
-            case "left" :
-                return Gravity.LEFT;
-            case "right" :
-                return Gravity.RIGHT;
-            case "top" :
-                return Gravity.TOP;
-            case "bottom" :
-                return Gravity.BOTTOM;
-            case "start" :
-                return GravityCompat.START;
-            case "end" :
-                return GravityCompat.END;
-            default :
-                return Gravity.TOP|Gravity.START;
-        }
-    }
-    
     protected int parseTextAlignment (@NonNull String value) {
         switch (value) {
             case "center" :
