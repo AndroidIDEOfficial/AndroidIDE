@@ -51,7 +51,7 @@ import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.androidide.utils.AttributeDialogs;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.layoutinflater.IView;
+import com.itsaky.inflater.IView;
 import com.itsaky.toaster.Toaster;
 
 import java.util.ArrayList;

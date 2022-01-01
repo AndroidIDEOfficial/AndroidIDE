@@ -18,7 +18,7 @@
 package com.itsaky.androidide.ui;
 
 import com.itsaky.androidide.models.UIWidget;
-import com.itsaky.layoutinflater.IView;
+import com.itsaky.inflater.IView;
 
 /**
  * Store data about a draggable widget. Used in UI Designer.

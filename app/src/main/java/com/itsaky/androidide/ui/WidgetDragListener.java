@@ -30,12 +30,12 @@ import com.itsaky.androidide.DesignerActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.layoutinflater.IAttribute;
-import com.itsaky.layoutinflater.IView;
-import com.itsaky.layoutinflater.IViewGroup;
-import com.itsaky.layoutinflater.impl.UiAttribute;
-import com.itsaky.layoutinflater.impl.UiView;
-import com.itsaky.layoutinflater.impl.UiViewGroup;
+import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IView;
+import com.itsaky.inflater.IViewGroup;
+import com.itsaky.inflater.impl.UiAttribute;
+import com.itsaky.inflater.impl.UiView;
+import com.itsaky.inflater.impl.UiViewGroup;
 
 import org.jetbrains.annotations.Contract;
 

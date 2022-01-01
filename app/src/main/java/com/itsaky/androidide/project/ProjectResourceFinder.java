@@ -20,7 +20,7 @@ package com.itsaky.androidide.project;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.layoutinflater.IResourceFinder;
+import com.itsaky.inflater.IResourceFinder;
 import java.io.File;
 import java.io.FileFilter;
 

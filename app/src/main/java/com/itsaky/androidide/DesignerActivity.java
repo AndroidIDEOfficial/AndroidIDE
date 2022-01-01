@@ -38,7 +38,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.ThemedSpinnerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -51,12 +50,10 @@ import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
 
 import com.blankj.utilcode.util.DeviceUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.adapters.WidgetGroupItemAdapter;
 import com.itsaky.androidide.adapters.WidgetItemAdapter;
 import com.itsaky.androidide.app.StudioActivity;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivityDesignerBinding;
 import com.itsaky.androidide.fragments.sheets.AttrEditorSheet;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
@@ -68,12 +65,11 @@ import com.itsaky.androidide.ui.WidgetDragShadowBuilder;
 import com.itsaky.androidide.ui.WidgetTouchListener;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.layoutinflater.IAttribute;
-import com.itsaky.layoutinflater.IInflateListener;
-import com.itsaky.layoutinflater.ILayoutInflater;
-import com.itsaky.layoutinflater.IView;
-import com.itsaky.layoutinflater.IViewGroup;
-import com.itsaky.toaster.Toaster;
+import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.IInflateListener;
+import com.itsaky.inflater.ILayoutInflater;
+import com.itsaky.inflater.IView;
+import com.itsaky.inflater.IViewGroup;
 
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.jetbrains.annotations.Contract;
@@ -81,8 +77,6 @@ import org.jetbrains.annotations.Contract;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class DesignerActivity extends StudioActivity implements WidgetItemAdapter.OnDragStartListener {

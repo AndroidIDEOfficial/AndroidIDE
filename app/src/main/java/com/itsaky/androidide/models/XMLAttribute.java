@@ -21,12 +21,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.attrinfo.models.Attr;
-import com.itsaky.layoutinflater.IAttribute;
-import com.itsaky.layoutinflater.impl.UiAttribute;
+import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.impl.UiAttribute;
 
 import org.jetbrains.annotations.Contract;
 

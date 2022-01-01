@@ -26,7 +26,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.layoutinflater.IView;
+import com.itsaky.inflater.IView;
 
 /**
  * A touch listener for handling touch events of a view in the

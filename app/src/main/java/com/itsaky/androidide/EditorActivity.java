@@ -37,7 +37,6 @@ import android.widget.LinearLayout;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -97,7 +96,7 @@ import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
-import com.itsaky.layoutinflater.ILayoutInflater;
+import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;

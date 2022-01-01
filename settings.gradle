@@ -4,7 +4,7 @@ include ':emulatorview'
 include ':javapoet'
 include ':lsp'
 include ':sdk-info'
-include ':layout-inflater'
+include ':xml-inflater'
 include ':lexers'
 include ':common'
 

@@ -118,7 +118,7 @@ dependencies {
     implementation project(':emulatorview')
     implementation project(':javapoet')
     implementation project(':lsp')
-    implementation project(':layout-inflater')
+    implementation project(':xml-inflater')
     implementation project(':lexers')
     implementation project(':common')
     
