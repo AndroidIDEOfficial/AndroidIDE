@@ -118,6 +118,17 @@ public abstract class DrawableParserFactory {
             event = parser.next ();
         }
         
+        // TODO Implement parsers for these root tags if possible
+        //    1. <bitmap>
+        //    2. <nine-patch>
+        //    3. <layer-list>
+        //    4. <selector>
+        //    5. <level-list>
+        //    6. <transition>
+        //    7. <inset>
+        //    8. <clip>
+        //    9. <scale>
+        
         // We don't support parsing of this type of drawable
         return null;
     }

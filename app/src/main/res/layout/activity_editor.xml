@@ -6,8 +6,7 @@
 	android:layout_height="match_parent"
 	android:layout_width="match_parent"
 	android:id="@+id/editor_drawerLayout"
-	android:animateLayoutChanges="true"
-	tools:openDrawer="start">
+	android:animateLayoutChanges="true">
 	
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:layout_width="match_parent"
@@ -385,19 +384,19 @@
 
 		<com.google.android.material.floatingactionbutton.FloatingActionButton
 			android:id="@+id/fab_view"
-			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:layout_marginTop="16dp"
-			android:layout_marginBottom="24dp"
+			android:layout_height="wrap_content"
 			android:layout_marginStart="16dp"
+			android:layout_marginTop="16dp"
 			android:layout_marginEnd="16dp"
-			app:fabSize="normal"
-			app:srcCompat="@drawable/ic_view"
-			app:tint="@color/primaryTextColor"
+			android:layout_marginBottom="24dp"
+			android:visibility="visible"
 			app:backgroundTint="@color/secondaryColor"
+			app:fabSize="normal"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toEndOf="parent"
-			android:visibility="visible"/>
+			app:srcCompat="@drawable/ic_view"
+			app:tint="@color/primaryTextColor"/>
 
 	</androidx.constraintlayout.widget.ConstraintLayout>
 	

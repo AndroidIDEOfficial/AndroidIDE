@@ -572,17 +572,18 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     public void showViewOptions () {
         try {
-            EditorFragment frag = mPagerAdapter.getFrag (mBinding.tabs.getSelectedTabPosition ());
-            if (frag != null && frag.getEditor () != null) {
-                frag.getEditor ().hideAutoCompleteWindow ();
-                frag.getEditor ().hideDiagnosticWindow ();
+            if (mCurrentFragment != null && mCurrentFragment.getEditor () != null) {
+                mCurrentFragment.getEditor ().hideAutoCompleteWindow ();
+                mCurrentFragment.getEditor ().hideDiagnosticWindow ();
             }
+    
+            TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.fabView, mBinding.viewOptionsCard));
+            mBinding.viewOptionsCard.setVisibility (View.VISIBLE);
+            mBinding.transformScrim.setVisibility (View.VISIBLE);
+            mBinding.fabView.setVisibility (View.GONE);
         } catch (Throwable e) {
+            LOG.error ("Failed to show view options", e);
         }
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.fabView, mBinding.viewOptionsCard));
-        mBinding.viewOptionsCard.setVisibility (View.VISIBLE);
-        mBinding.transformScrim.setVisibility (View.VISIBLE);
-        mBinding.fabView.setVisibility (View.GONE);
     }
     
     public void hideViewOptions () {
