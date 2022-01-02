@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.widgets.WidgetInfo;
@@ -53,12 +54,14 @@ public class XMLCompletionService {
     "android:layout_width=\"wrap_content\"\n" + 
     "android:layout_height=\"wrap_content\"";
     
+    private static final Logger LOG = Logger.instance ("XMLCompletionService");
+    
 	public XMLCompletionService(final AttrInfo attrs, final WidgetInfo widgets) {
 		this.attrs = attrs;
         this.widgets = widgets;
 	}
     
-	public List<CompletionItem> complete(CharSequence content, int index, int line, int column, @NonNull String prefix) {
+	public List<CompletionItem> complete (CharSequence content, int index, @NonNull String prefix) {
 		final List<CompletionItem> result = new ArrayList<>();
         
 		if(prefix.startsWith("<") || prefix.startsWith("</")) {
@@ -74,13 +77,13 @@ public class XMLCompletionService {
 			}
 			return handleCompletionResults(result);
 		} else {
-			final IsInValueScanner scanner = new IsInValueScanner(index);
+			final IsInValueScanner scanner = new IsInValueScanner (index);
 			final String name = scanner.scan(content);
 			if(name != null) {
 				final String attrName = name.contains(":") ? name.substring(name.indexOf(":") + 1) : name;
                 if (attrs.getAttrs().containsKey(attrName)) {
                     Attr attr = attrs.getAttrs().get(attrName);
-                    if(attr.hasPossibleValues()) {
+                    if(attr != null && attr.hasPossibleValues()) {
                         Set<String> values = attr.possibleValues;
                         for(String value : values) 
                             if(value.toLowerCase(Locale.US).startsWith(prefix))
@@ -202,7 +205,7 @@ public class XMLCompletionService {
 		final var item = new CompletionItem ();
 		item.setLabel (name + "Ns");
 		item.setDetail (StudioApp.getInstance ().getString(R.string.msg_add_namespace_decl, name));
-		item.setInsertText (value);
+		item.setInsertText (String.format ("xmlns:%1$s=\"%2$s\"", name, value));
 		item.setKind (CompletionItemKind.Snippet);
 		item.setSortText ("1000" + item.getLabel ()); // This item is expected to be at the last of the completion list
 		return item;
@@ -212,9 +215,9 @@ public class XMLCompletionService {
 		return result;
 	}
     
-	private class IsInValueScanner {
+	private static class IsInValueScanner {
 		
-		private int cursorIndex;
+		private final int cursorIndex;
         
 		public IsInValueScanner(int cursorIndex) {
 			this.cursorIndex = cursorIndex;
@@ -240,7 +243,9 @@ public class XMLCompletionService {
 						attrName = token.getText();
 					}
 				}
-			} catch (Throwable e) {}
+			} catch (Throwable e) {
+				LOG.error ("An error occurred on checking if cursor is in string", e);
+			}
 			return null;
 		}
 		

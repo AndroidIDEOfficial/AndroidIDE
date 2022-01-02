@@ -425,13 +425,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         } else if (id == R.id.menuEditor_lintRelease) {
             getBuildService ().lintRelease ();
         } else if (id == R.id.menuEditor_save) {
-            /*
-             * 1. Notify that all files are saved
-             * 2. If there were any XML files modified, call ':app:processDebugResources' task
-             *
-             * This will make sure that we generate view bindings and R.jar at proper time
-             * This will further result in updated code completion
-             */
+            // * 1. Notify that all files are saved
+            // * 2. If there were any XML files modified, call ':app:processDebugResources' task
+            // *
+            // * This will make sure that we generate view bindings and R.jar at proper time
+            // * This will further result in updated code completion
             saveAll (true, true);
         } else if (id == R.id.menuEditor_undo && this.mCurrentFragment != null && this.mCurrentFragment.isVisible ()) {
             this.mCurrentFragment.undo ();
