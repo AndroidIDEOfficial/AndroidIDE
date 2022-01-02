@@ -1,89 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.itsaky.androidide">
-    
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-	<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-		
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
-        tools:ignore="UnusedAttribute,MediaCapabilities"
         android:name=".app.StudioApp"
+        android:allowBackup="false"
+        android:allowNativeHeapPointerTagging="false"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-		android:allowBackup="false"
-		android:largeHeap="true"
-		android:allowNativeHeapPointerTagging="false"
-		android:hardwareAccelerated="true">
+        tools:ignore="UnusedAttribute,MediaCapabilities">
+        <service
+            android:name=".services.IDELogService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity 
+        <activity
             android:name=".MainActivity"
-			android:configChanges="orientation|screenSize|uiMode">
-		</activity>
-        <activity 
+            android:configChanges="orientation|screenSize|uiMode"></activity>
+        <activity
             android:name=".DesignerActivity"
             android:configChanges="orientation|screenSize|uiMode"
-			android:windowSoftInputMode="adjustResize">
-		</activity>
-		<activity 
-			android:name=".DownloadActivity"
-			android:configChanges="orientation|screenSize|uiMode">
-        </activity>
-		<activity 
+            android:windowSoftInputMode="adjustResize"></activity>
+        <activity
+            android:name=".DownloadActivity"
+            android:configChanges="orientation|screenSize|uiMode"></activity>
+        <activity
             android:name=".EditorActivity"
-			android:configChanges="orientation|screenSize|uiMode"
-			android:windowSoftInputMode="adjustResize">
-        </activity>
-		<activity
-			android:name=".PreferencesActivity"
-			android:configChanges="orientation|screenSize">
-		</activity>
-        <activity 
+            android:configChanges="orientation|screenSize|uiMode"
+            android:windowSoftInputMode="adjustResize"></activity>
+        <activity
+            android:name=".PreferencesActivity"
+            android:configChanges="orientation|screenSize"></activity>
+        <activity
             android:name=".AboutActivity"
-            android:configChanges="orientation|screenSize|uiMode">
-		</activity>
-        <activity 
+            android:configChanges="orientation|screenSize|uiMode"></activity>
+        <activity
             android:name=".TerminalActivity"
             android:configChanges="orientation|screenSize|uiMode"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
-		<service
-			android:name=".services.MessagingService"
-			android:exported="false">
-			<intent-filter>
-				<action android:name="com.google.firebase.MESSAGING_EVENT" />
-			</intent-filter>
-		</service>
-		<receiver
-			android:name="com.itsaky.androidide.services.LogReceiver"
-			android:enabled="true"
-			android:exported="true">
-			<intent-filter>
-				<action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
-			</intent-filter>
-		</receiver>
-		<meta-data
-			android:name="com.google.firebase.messaging.default_notification_icon"
-			android:resource="@mipmap/ic_launcher" />
-		<meta-data
-			android:name="com.google.firebase.messaging.default_notification_color"
-			android:resource="@color/secondaryColor" />
-		<meta-data
-			android:name="com.google.firebase.messaging.default_notification_channel_id"
-			android:value="@string/cms_channel_id_devs" />
+            android:windowSoftInputMode="adjustResize"></activity>
+
+        <service
+            android:name=".services.MessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name=".services.LogReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/secondaryColor" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/cms_channel_id_devs" />
     </application>
+
 </manifest>

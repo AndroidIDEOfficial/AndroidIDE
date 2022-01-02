@@ -359,7 +359,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         if(!file.exists() || !file.isFile()) return;
         
         diagnostics.put(file, params.getDiagnostics());
-        activity().getDiagnosticsList().setAdapter(newDiagnosticsAdapter());
+        activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
         
         EditorFragment editor = null;
         if(activity().getPagerAdapter() != null && (editor = activity().getPagerAdapter().findEditorByFile(file)) != null) {
@@ -382,7 +382,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
 
 
         if(error) {
-            activity().getSearchResultList().setAdapter(new SearchListAdapter(null, null, null));
+            activity().setSearchResultAdapter (new SearchListAdapter(null, null, null));
             return;
         }
 

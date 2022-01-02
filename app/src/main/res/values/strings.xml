@@ -26,9 +26,9 @@
     <string name="discussions_on_telegram">Discussions on Telegram</string>
     <string name="msg_empty_view">I have nothing to show you&#8230;</string>
     <string name="btn_terminal">Terminal</string>
-    <string name="androidstringok">@android:string/ok</string>
 	<string name="reset">Reset</string>
-    <string name="logs">Logs</string>
+    <string name="app_logs">App Logs</string>
+    <string name="ide_logs">IDE Logs</string>
 	<string name="label_splash_image">Splash image</string>
     <string name="cancel">Cancel</string>
     <string name="get_started">Get started</string>
@@ -339,5 +339,6 @@
     <string name="title_code_generation_failed">Code generation failed</string>
     <string name="msg_code_generation_failed">Failed to generate XML code. Would you like to exit anyway?</string>
     <string name="msg_invalid_designer_result">UI Designer returned invalid result</string>
+    <string name="msg_swipe_up">Swipe up for build output, logs and more.</string>
 
 </resources>

@@ -44,8 +44,6 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
 
@@ -54,20 +52,24 @@ import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.transition.MaterialContainerTransform;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
+import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter;
 import com.itsaky.androidide.adapters.EditorPagerAdapter;
+import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
 import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.FileTreeFragment;
+import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
@@ -76,38 +78,39 @@ import com.itsaky.androidide.handlers.FileOptionsHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
-import com.itsaky.androidide.language.logs.LogLanguageImpl;
+import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
+import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
-import com.itsaky.inflater.ILayoutInflater;
+import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
-import com.itsaky.androidide.utils.TransformUtils;
-import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
+import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.lsp.services.IDELanguageServer;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 
-import io.github.rosemoe.editor.langs.EmptyLanguage;
-import io.github.rosemoe.editor.widget.CodeEditor;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.DidChangeConfigurationParams;
+import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.Position;
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -119,16 +122,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import io.github.rosemoe.editor.widget.CodeEditor;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
-
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DidChangeConfigurationParams;
-import org.eclipse.lsp4j.InitializeResult;
-import org.eclipse.lsp4j.Position;
-import org.jetbrains.annotations.Contract;
-
-import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 
 public class EditorActivity extends StudioActivity implements FileTreeFragment.FileActionListener,
         TabLayout.OnTabSelectedListener,
@@ -142,14 +138,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private ActivityEditorBinding mBinding;
     private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
     private EditorPagerAdapter mPagerAdapter;
+    private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
     private FileTreeFragment mFileTreeFragment;
     private EditorFragment mCurrentFragment;
     public static File mCurrentFile;
     private TreeNode mLastHeld;
-    private CodeEditor buildView;
-    private CodeEditor logView;
-    private RecyclerView diagnosticList;
-    private RecyclerView searchResultList;
     private SymbolInputView symbolInput;
     
     private AndroidProject mProject;
@@ -158,13 +151,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private BuildServiceHandler mBuildServiceHandler;
     private FileOptionsHandler mFileOptionsHandler;
     
-    private LogLanguageImpl mLogLanguageImpl;
-    
     private QuickAction mTabCloseAction;
     private TextSheetFragment mDaemonStatusFragment;
     private OptionsListFragment mFileOptionsFragment;
     private ProgressSheet mSearchingProgress;
     private AlertDialog mFindInProjectDialog;
+    
+    @SuppressWarnings("rawtypes")
+    private EditorBottomSheetBehavior mEditorBottomSheet;
     
     private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
     
@@ -198,7 +192,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             R.id.menuEditor_lintRelease
     };
     
-    
     @Override
     protected View bindLayout () {
         mBinding = ActivityEditorBinding.inflate (getLayoutInflater ());
@@ -222,13 +215,38 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         loadFragment (mFileTreeFragment);
         
         symbolInput = new SymbolInputView (this);
-        mBinding.inputContainer.addView (symbolInput, 0, new ViewGroup.LayoutParams (-1, -2));
+        mBinding.bottomSheet.textContainer.addView (symbolInput, 0, new ViewGroup.LayoutParams (-1, -2));
         
         mBinding.editorViewPager.setOffscreenPageLimit (9);
         mBinding.editorViewPager.setAdapter (mPagerAdapter);
         mBinding.tabs.setupWithViewPager (mBinding.editorViewPager);
         mBinding.tabs.addOnTabSelectedListener (this);
-        mBinding.fabView.setOnClickListener (v -> showViewOptions ());
+    
+        bottomSheetTabAdapter = new EditorBottomSheetTabAdapter (this);
+        mBinding.bottomSheet.pager.setAdapter (bottomSheetTabAdapter);
+        
+        final var mediator = new TabLayoutMediator (mBinding.bottomSheet.tabs,
+                mBinding.bottomSheet.pager,
+                true,
+                true,
+                (tab, position) -> tab.setText (bottomSheetTabAdapter.getTitle (position)));
+        mediator.attach ();
+        mBinding.bottomSheet.pager.setUserInputEnabled (false);
+        
+        //noinspection rawtypes
+        mEditorBottomSheet = (EditorBottomSheetBehavior) EditorBottomSheetBehavior.from (mBinding.bottomSheet.getRoot ());
+        mEditorBottomSheet.setBinding (mBinding.bottomSheet);
+        mEditorBottomSheet.addBottomSheetCallback (new BottomSheetBehavior.BottomSheetCallback () {
+            @Override
+            public void onStateChanged (@NonNull View bottomSheet, int newState) {
+                mBinding.bottomSheet.textContainer.setVisibility (newState == BottomSheetBehavior.STATE_EXPANDED ? View.INVISIBLE : View.VISIBLE);
+            }
+    
+            @Override
+            public void onSlide (@NonNull View bottomSheet, float slideOffset) {
+                mBinding.bottomSheet.textContainer.setAlpha (1f - slideOffset);
+            }
+        });
         
         createQuickActions ();
         
@@ -256,18 +274,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             mBinding.getRoot ().closeDrawer (GravityCompat.START);
         } else if (getDaemonStatusFragment ().isShowing ()) {
             getDaemonStatusFragment ().dismiss ();
-        } else if (mBinding.buildContainer.getVisibility () == View.VISIBLE) {
-            hideBuildResult ();
-        } else if (mBinding.logContainer.getVisibility () == View.VISIBLE) {
-            hideLogResult ();
-        } else if (mBinding.viewOptionsCard.getVisibility () == View.VISIBLE) {
-            hideViewOptions ();
-        } else if (mBinding.diagContainer.getVisibility () == View.VISIBLE) {
-            hideDiagnostics ();
-        } else if (mBinding.searchResultsContainer.getVisibility () == View.VISIBLE) {
-            hideSearchResults ();
         } else if (mFileOptionsFragment != null && mFileOptionsFragment.isShowing ()) {
             mFileOptionsFragment.dismiss ();
+        } else if (mEditorBottomSheet.getState () == BottomSheetBehavior.STATE_EXPANDED) {
+            mEditorBottomSheet.setState (BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             confirmProjectClose ();
         }
@@ -492,17 +502,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public void handleSearchResults (Map<File, List<SearchResult>> results) {
-        getSearchResultList ().setAdapter (new com.itsaky.androidide.adapters.SearchListAdapter (results, file -> {
+        setSearchResultAdapter (new com.itsaky.androidide.adapters.SearchListAdapter (results, file -> {
             openFile (file);
-            hideSearchResults ();
             hideViewOptions ();
         }, match -> {
             openFileAndSelect (match.file, match);
-            hideSearchResults ();
             hideViewOptions ();
         }));
-        mBinding.transformScrim.setVisibility (View.VISIBLE);
-        mBinding.fabView.setVisibility (View.GONE);
+        
         showSearchResults ();
     
         if (mSearchingProgress != null && mSearchingProgress.isShowing ()) {
@@ -511,8 +518,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public void appendApkLog (LogLine line) {
-        getLogLanguage ().addLine (line);
-        appendLogOut (line.toString ());
+        bottomSheetTabAdapter.getLogFragment ().appendLog (line);
     }
     
     public void setIDEProject (IDEProject project) {
@@ -520,31 +526,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public void appendBuildOut (final String str) {
-        runOnUiThread (() -> {
-            String strFinal = str.endsWith ("\n") ? str : str.concat ("\n");
-            getBuildView (true).getText ().append (strFinal);
-        });
-    }
-    
-    public void appendLogOut (final String str) {
-        runOnUiThread (() -> {
-            String strFinal = str.endsWith ("\n") ? str : str.concat ("\n");
-            getLogView (true).getText ().append (strFinal);
-        });
-    }
-    
-    public void showFiles () {
-        if (mBinding.viewOptionsCard.getVisibility () == View.VISIBLE) {
-            hideViewOptions ();
-        }
-        
-        mBinding.getRoot ().openDrawer (GravityCompat.END, true);
+        bottomSheetTabAdapter.getBuildOutputFragment ().appendOutput (str);
     }
     
     public void showDaemonStatus () {
-        if (mBinding.viewOptionsCard.getVisibility () == View.VISIBLE) {
-            hideViewOptions ();
-        }
         ShellServer shell = getApp ().newShell (t -> getDaemonStatusFragment ().append (t.toString ()));
         shell.bgAppend (String.format ("echo '%s'", getString (R.string.msg_getting_daemom_status)));
         shell.bgAppend (String.format ("cd '%s' && sh gradlew --status", mProject.getProjectPath ()));
@@ -553,107 +538,37 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
     }
     
-    public void hideToolbarAndTabs () {
-        mBinding.editorAppBarLayout.setVisibility (View.INVISIBLE);
-    }
-    
-    public void showToolbarAndTabs () {
-        mBinding.editorAppBarLayout.setVisibility (View.VISIBLE);
-    }
-    
-    public void showViewOptions () {
-        try {
-            if (mCurrentFragment != null && mCurrentFragment.getEditor () != null) {
-                mCurrentFragment.getEditor ().hideAutoCompleteWindow ();
-                mCurrentFragment.getEditor ().hideDiagnosticWindow ();
-            }
-    
-            TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.fabView, mBinding.viewOptionsCard));
-            mBinding.viewOptionsCard.setVisibility (View.VISIBLE);
-            mBinding.transformScrim.setVisibility (View.VISIBLE);
-            mBinding.fabView.setVisibility (View.GONE);
-        } catch (Throwable e) {
-            LOG.error ("Failed to show view options", e);
+    public void hideViewOptions () {
+        if (mEditorBottomSheet.getState () != BottomSheetBehavior.STATE_COLLAPSED) {
+            mEditorBottomSheet.setState (BottomSheetBehavior.STATE_COLLAPSED);
         }
     }
     
-    public void hideViewOptions () {
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.viewOptionsCard, mBinding.fabView));
-        mBinding.viewOptionsCard.setVisibility (View.GONE);
-        mBinding.transformScrim.setVisibility (View.GONE);
-        mBinding.fabView.setVisibility (View.VISIBLE);
-    }
-    
-    public void showBuildResult () {
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.viewBuildOut, mBinding.buildContainer));
-        mBinding.buildContainer.setVisibility (View.VISIBLE);
-        mBinding.viewOptionsCard.setVisibility (View.GONE);
-        hideToolbarAndTabs ();
-    }
-    
-    public void hideBuildResult () {
-        showToolbarAndTabs ();
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.buildContainer, mBinding.viewBuildOut));
-        mBinding.buildContainer.setVisibility (View.GONE);
-        mBinding.viewOptionsCard.setVisibility (View.VISIBLE);
-    }
-    
-    public void showLogResult () {
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.viewLogs, mBinding.logContainer));
-        mBinding.logContainer.setVisibility (View.VISIBLE);
-        mBinding.viewOptionsCard.setVisibility (View.GONE);
-        hideToolbarAndTabs ();
-    }
-    
-    public void hideLogResult () {
-        showToolbarAndTabs ();
-        
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.logContainer, mBinding.viewLogs));
-        mBinding.logContainer.setVisibility (View.GONE);
-        mBinding.viewOptionsCard.setVisibility (View.VISIBLE);
-    }
-    
-    public void showDiagnostics () {
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.viewDiags, mBinding.diagContainer));
-        mBinding.diagContainer.setVisibility (View.VISIBLE);
-        mBinding.viewOptionsCard.setVisibility (View.GONE);
-        hideToolbarAndTabs ();
-    }
-    
-    public void hideDiagnostics () {
-        showToolbarAndTabs ();
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.diagContainer, mBinding.viewDiags));
-        mBinding.diagContainer.setVisibility (View.GONE);
-        mBinding.viewOptionsCard.setVisibility (View.VISIBLE);
-    }
-    
     public void showSearchResults () {
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.viewSearchResults, mBinding.searchResultsContainer));
-        mBinding.searchResultsContainer.setVisibility (View.VISIBLE);
-        mBinding.viewOptionsCard.setVisibility (View.GONE);
-        hideToolbarAndTabs ();
-    }
-    
-    public void hideSearchResults () {
-        showToolbarAndTabs ();
-        TransitionManager.beginDelayedTransition (mBinding.getRoot (), createContainerTransformFor (mBinding.searchResultsContainer, mBinding.viewSearchResults));
-        mBinding.searchResultsContainer.setVisibility (View.GONE);
-        mBinding.viewOptionsCard.setVisibility (View.VISIBLE);
+        if (mEditorBottomSheet.getState () != BottomSheetBehavior.STATE_EXPANDED) {
+            mEditorBottomSheet.setState (BottomSheetBehavior.STATE_EXPANDED);
+        }
+        
+        final int index = bottomSheetTabAdapter.findIndexOfFragmentByClass (SearchResultFragment.class);
+        if (index >= 0 && index < mBinding.bottomSheet.tabs.getTabCount ()) {
+            final var tab = mBinding.bottomSheet.tabs.getTabAt (index);
+            if (tab != null) {
+                tab.select ();
+            }
+        }
     }
     
     public void handleDiagnosticsResultVisibility (boolean errorVisible) {
-        mBinding.diagEmptyView.setVisibility (errorVisible ? View.VISIBLE : View.GONE);
-        getDiagnosticsList ().setVisibility (errorVisible ? View.GONE : View.VISIBLE);
+        bottomSheetTabAdapter.getDiagnosticsFragment ().handleResultVisibility (errorVisible);
     }
     
     public void handleSearchResultVisibility (boolean errorVisible) {
-        mBinding.searchEmptyView.setVisibility (errorVisible ? View.VISIBLE : View.GONE);
-        getSearchResultList ().setVisibility (errorVisible ? View.GONE : View.VISIBLE);
+        bottomSheetTabAdapter.getSearchResultFragment ().handleResultVisibility (errorVisible);
     }
     
     public void setStatus (final CharSequence text) {
         try {
-            runOnUiThread (() -> mBinding.editorStatusText.setText (text));
+            runOnUiThread (() -> mBinding.bottomSheet.statusText.setText (text));
         } catch (Throwable th) {
             LOG.error ("Failed to update status text", th);
         }
@@ -682,7 +597,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     @Override
     public void onDiagnosticClick (File file, @NonNull Diagnostic diagnostic) {
         openFileAndSelect (file, diagnostic.getRange ());
-        hideDiagnostics ();
         hideViewOptions ();
     }
     
@@ -843,85 +757,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return mDaemonStatusFragment == null ? mDaemonStatusFragment = new TextSheetFragment ().setTextSelectable (true).setTitleText (R.string.gradle_daemon_status) : mDaemonStatusFragment;
     }
     
-    public CodeEditor getBuildView () {
-        return getBuildView (false);
+    public void setDiagnosticsAdapter (@NonNull final DiagnosticsAdapter adapter) {
+        bottomSheetTabAdapter.getDiagnosticsFragment ().setAdapter (adapter);
     }
     
-    public CodeEditor getBuildView (boolean setup) {
-        CodeEditor edit = buildView == null ? createBuildView () : buildView;
-        if (setup && edit.getParent () == null) {
-            setupContainers ();
-        }
-        return edit;
-    }
-    
-    public CodeEditor createBuildView () {
-        buildView = new CodeEditor (this);
-        buildView.setEditable (false);
-        buildView.setDividerWidth (0);
-        buildView.setEditorLanguage (new EmptyLanguage ());
-        buildView.setOverScrollEnabled (false);
-        buildView.setTextActionMode (CodeEditor.TextActionMode.ACTION_MODE);
-        buildView.setWordwrap (false);
-        buildView.setUndoEnabled (false);
-        buildView.setTypefaceLineNumber (TypefaceUtils.jetbrainsMono ());
-        buildView.setTypefaceText (TypefaceUtils.jetbrainsMono ());
-        buildView.setTextSize (12);
-        buildView.setColorScheme (new SchemeAndroidIDE ());
-        return buildView;
-    }
-    
-    public CodeEditor getLogView () {
-        return getLogView (false);
-    }
-    
-    public CodeEditor getLogView (boolean setup) {
-        CodeEditor edit = logView == null ? createLogView () : logView;
-        if (setup && edit.getParent () == null) {
-            setupContainers ();
-        }
-        return edit;
-    }
-    
-    public CodeEditor createLogView () {
-        logView = new CodeEditor (this);
-        logView.setEditable (false);
-        logView.setDividerWidth (0);
-        logView.setEditorLanguage (getLogLanguage ());
-        logView.setOverScrollEnabled (false);
-        logView.setTextActionMode (CodeEditor.TextActionMode.ACTION_MODE);
-        logView.setWordwrap (false);
-        logView.setUndoEnabled (false);
-        logView.setTypefaceLineNumber (TypefaceUtils.jetbrainsMono ());
-        logView.setTypefaceText (TypefaceUtils.jetbrainsMono ());
-        logView.setTextSize (12);
-        buildView.setColorScheme (new SchemeAndroidIDE ());
-        return logView;
-    }
-    
-    public RecyclerView getDiagnosticsList () {
-        return diagnosticList == null ? createDiagnosticsList () : diagnosticList;
-    }
-    
-    public RecyclerView createDiagnosticsList () {
-        diagnosticList = new RecyclerView (this);
-        diagnosticList.setLayoutManager (new LinearLayoutManager (this));
-        diagnosticList.setAdapter (new DiagnosticsAdapter (new ArrayList<> (), this));
-        return diagnosticList;
-    }
-    
-    public RecyclerView getSearchResultList () {
-        return searchResultList == null ? createSearchResultList () : searchResultList;
-    }
-    
-    public RecyclerView createSearchResultList () {
-        searchResultList = new RecyclerView (this);
-        searchResultList.setLayoutManager (new LinearLayoutManager (this));
-        return searchResultList;
-    }
-    
-    public LogLanguageImpl getLogLanguage () {
-        return mLogLanguageImpl == null ? mLogLanguageImpl = new LogLanguageImpl () : mLogLanguageImpl;
+    public void setSearchResultAdapter (@NonNull final SearchListAdapter adapter) {
+        bottomSheetTabAdapter.getSearchResultFragment ().setAdapter (adapter);
     }
     
     @Override
@@ -1173,65 +1014,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void setupContainers () {
-        removeFromParent (getBuildView ());
-        removeFromParent (getLogView ());
-        removeFromParent (getDiagnosticsList ());
-        removeFromParent (getSearchResultList ());
-        
-        mBinding.buildOutcontainer.addView (getBuildView (), new ViewGroup.LayoutParams (-1, -1));
-        mBinding.buildContainer.setVisibility (View.GONE);
-        mBinding.buildOutToolbar.setNavigationOnClickListener (v -> hideBuildResult ());
-        mBinding.buildOutToolbar.setOnClickListener (v -> hideBuildResult ());
-        
-        mBinding.buildOutToolbar.getMenu ().clear ();
-        getMenuInflater ().inflate (R.menu.menu_build_output, mBinding.buildOutToolbar.getMenu ());
-        mBinding.buildOutToolbar.setOnMenuItemClickListener (item -> {
-            if (item.getItemId () == R.id.buildOut_clear) {
-                getBuildView ().setText ("");
-                setStatus ("");
-                return true;
-            }
-            return false;
-        });
-        
-        mBinding.logOutcontainer.addView (getLogView (), new ViewGroup.LayoutParams (-1, -1));
-        mBinding.logContainer.setVisibility (View.GONE);
-        mBinding.logOutToolbar.setNavigationOnClickListener (v -> hideLogResult ());
-        mBinding.logOutToolbar.setOnClickListener (v -> hideLogResult ());
-        
-        mBinding.diagListContainer.addView (getDiagnosticsList (), new ViewGroup.LayoutParams (-1, -1));
-        mBinding.diagContainer.setVisibility (View.GONE);
-        mBinding.diagToolbar.setNavigationOnClickListener (v -> hideDiagnostics ());
-        mBinding.diagToolbar.setOnClickListener (v -> hideDiagnostics ());
-        
-        mBinding.searchResultsListContainer.addView (getSearchResultList (), new ViewGroup.LayoutParams (-1, -1));
-        mBinding.searchResultsContainer.setVisibility (View.GONE);
-        mBinding.searchResultsToolbar.setNavigationOnClickListener (v -> hideSearchResults ());
-        mBinding.searchResultsToolbar.setOnClickListener (v -> hideSearchResults ());
-        
-        mBinding.viewOptionsCard.setVisibility (View.GONE);
-        mBinding.transformScrim.setVisibility (View.GONE);
-        
-        mBinding.transformScrim.setOnClickListener (v -> hideViewOptions ());
-        mBinding.viewBuildOut.setOnClickListener (v -> showBuildResult ());
-        mBinding.viewDiags.setOnClickListener (v -> showDiagnostics ());
-        mBinding.viewSearchResults.setOnClickListener (v -> showSearchResults ());
-        mBinding.viewLogs.setOnClickListener (v -> showLogResult ());
-        mBinding.viewFiles.setOnClickListener (v -> showFiles ());
-        mBinding.viewDaemonStatus.setOnClickListener (v -> showDaemonStatus ());
-        
         handleDiagnosticsResultVisibility (true);
         handleSearchResultVisibility (true);
-    }
-    
-    @NonNull
-    private MaterialContainerTransform createContainerTransformFor (View start, View end) {
-        return createContainerTransformFor (start, end, mBinding.realContainer);
-    }
-    
-    @NonNull
-    private MaterialContainerTransform createContainerTransformFor (View start, View end, View drawingView) {
-        return TransformUtils.createContainerTransformFor (start, end, drawingView);
     }
     
     private void startServices () {
@@ -1249,22 +1033,18 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         getBuildServiceHandler ().assembleDebug (false);
     }
     
-    private void removeFromParent (@NonNull View v) {
-        if (v.getParent () != null && v.getParent () instanceof ViewGroup) {
-            ((ViewGroup) v.getParent ()).removeView (v);
-        }
-    }
-    
     private void onSoftInputChanged () {
         invalidateOptionsMenu ();
         if (KeyboardUtils.isSoftInputVisible (this)) {
             TransitionManager.beginDelayedTransition (mBinding.getRoot (), new Slide (Gravity.TOP));
             symbolInput.setVisibility (View.VISIBLE);
-            mBinding.fabView.hide ();
+            mBinding.bottomSheet.statusText.setVisibility (View.GONE);
+            mBinding.bottomSheet.swipeHint.setVisibility (View.GONE);
         } else {
             TransitionManager.beginDelayedTransition (mBinding.getRoot (), new Slide (Gravity.BOTTOM));
             symbolInput.setVisibility (View.GONE);
-            mBinding.fabView.show ();
+            mBinding.bottomSheet.statusText.setVisibility (View.VISIBLE);
+            mBinding.bottomSheet.swipeHint.setVisibility (View.VISIBLE);
         }
     }
     

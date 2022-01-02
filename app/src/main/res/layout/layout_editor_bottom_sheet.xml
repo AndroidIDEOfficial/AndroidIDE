@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:elevation="8dp"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="40dp"
+    app:layout_behavior="com.itsaky.androidide.utils.EditorBottomSheetBehavior">
+
+    <LinearLayout
+        android:id="@+id/text_container"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="vertical"
+        android:background="@android:color/black">
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_height="20dp"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="@color/primaryTextColor"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/swipe_hint"
+            android:layout_width="match_parent"
+            android:layout_height="18dp"
+            android:text="@string/msg_swipe_up"
+            android:gravity="center"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="11sp"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:background="@android:color/black"
+        app:tabIndicatorColor="@color/secondaryColor"
+        app:tabIndicatorGravity="stretch"
+        app:tabIndicatorHeight="36dp"
+        app:tabTextAppearance="@style/AppTheme.TabLayout.Title"
+        app:tabSelectedTextColor="@color/primaryTextColor"
+        app:tabMode="scrollable"
+        app:tabGravity="fill"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/content_background" />
+
+</LinearLayout>

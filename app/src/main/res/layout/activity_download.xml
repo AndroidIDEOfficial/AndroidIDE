@@ -57,7 +57,7 @@
 			<com.google.android.material.button.MaterialButton
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@string/androidstringok"
+				android:text="@android:string/ok"
 				android:id="@+id/dismiss"
 				android:textColor="@color/primaryTextColor"
 				app:backgroundTint="@color/secondaryColor"/>
