@@ -72,7 +72,6 @@ import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
-import com.itsaky.androidide.fragments.sheets.ProjectInfoSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.BuildServiceHandler;
 import com.itsaky.androidide.handlers.FileOptionsHandler;
@@ -147,7 +146,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private FileTreeFragment mFileTreeFragment;
     private EditorFragment mCurrentFragment;
     public static File mCurrentFile;
-    private TreeNode mLastHolded;
+    private TreeNode mLastHeld;
     private CodeEditor buildView;
     private CodeEditor logView;
     private RecyclerView diagnosticList;
@@ -166,7 +165,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private TextSheetFragment mDaemonStatusFragment;
     private OptionsListFragment mFileOptionsFragment;
     private ProgressSheet mSearchingProgress;
-    private ProjectInfoSheet mProjectInfoSheet;
     private AlertDialog mFindInProjectDialog;
     
     private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
@@ -174,15 +172,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     private static final org.eclipse.lsp4j.Range Range_ofZero = new org.eclipse.lsp4j.Range (new Position (0, 0), new Position (0, 0));
     
-    private static final int ACTIONID_CLOSE = 100;
-    private static final int ACTIONID_OTHERS = 101;
-    private static final int ACTIONID_ALL = 102;
+    private static final int ACTION_ID_CLOSE = 100;
+    private static final int ACTION_ID_OTHERS = 101;
+    private static final int ACTION_ID_ALL = 102;
     
     public static final String EXTRA_PROJECT = "project";
     
     private ActivityResultLauncher<Intent> mUIDesignerLauncher;
     
-    private LogReceiver mLogReceiver = new LogReceiver ().setLogListener (line -> appendApkLog (line));
+    private final LogReceiver mLogReceiver = new LogReceiver ().setLogListener (this::appendApkLog);
     
     /**
      * MenuItem(s) that are related to the build process
@@ -457,10 +455,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             AlertDialog d = getFindInProjectDialog ();
             if (d != null) {
                 d.show ();
-            }
-        } else if (id == R.id.menuEditor_projectInfo) {
-            if (!getProjectInfoSheet ().isShowing ()) {
-                getProjectInfoSheet ().show (getSupportFragmentManager (), "project_info_sheet");
             }
         } else if (id == R.id.menuEditor_viewLayout && mCurrentFile != null) {
             previewLayout ();
@@ -810,22 +804,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         super.loadFragment (fragment, mBinding.editorFrameLayout.getId ());
     }
     
-    public ProjectInfoSheet getProjectInfoSheet () {
-        return mProjectInfoSheet == null ? createProjectInfoSheet () : mProjectInfoSheet;
-    }
-    
-    public ProjectInfoSheet createProjectInfoSheet () {
-        mProjectInfoSheet = new ProjectInfoSheet ();
-        mProjectInfoSheet.setProject (mIDEProject);
-        return mProjectInfoSheet;
-    }
-    
     public FileTreeFragment getFileTreeFragment () {
         return mFileTreeFragment;
     }
     
     public TreeNode getLastHoldTreeNode () {
-        return mLastHolded;
+        return mLastHeld;
     }
     
     public OptionsListFragment getFileOptionsFragment () {
@@ -987,7 +971,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     @Override
     public void showFileOptions (File thisFile, TreeNode node) {
-        mLastHolded = node;
+        mLastHeld = node;
         getFileOptionsFragment (thisFile).show (getSupportFragmentManager (), TAG_FILE_OPTIONS_FRAGMENT);
     }
     
@@ -1457,9 +1441,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void createQuickActions () {
-        ActionItem closeThis = new ActionItem (ACTIONID_CLOSE, getString (R.string.action_closeThis), R.drawable.ic_close_this);
-        ActionItem closeOthers = new ActionItem (ACTIONID_OTHERS, getString (R.string.action_closeOthers), R.drawable.ic_close_others);
-        ActionItem closeAll = new ActionItem (ACTIONID_ALL, getString (R.string.action_closeAll), R.drawable.ic_close_all);
+        ActionItem closeThis = new ActionItem (ACTION_ID_CLOSE, getString (R.string.action_closeThis), R.drawable.ic_close_this);
+        ActionItem closeOthers = new ActionItem (ACTION_ID_OTHERS, getString (R.string.action_closeOthers), R.drawable.ic_close_others);
+        ActionItem closeAll = new ActionItem (ACTION_ID_ALL, getString (R.string.action_closeAll), R.drawable.ic_close_all);
         mTabCloseAction = new QuickAction (this, QuickAction.HORIZONTAL);
         mTabCloseAction.addActionItem (closeThis, closeOthers, closeAll);
         mTabCloseAction.setColorRes (R.color.tabAction_background);
@@ -1469,16 +1453,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             ActionItem item = __;
             final int id = item.getActionId ();
             saveAll ();
-            if (id == ACTIONID_CLOSE) {
+            if (id == ACTION_ID_CLOSE) {
                 closeFile (mBinding.tabs.getSelectedTabPosition ());
             }
             
-            if (id == ACTIONID_OTHERS) {
+            if (id == ACTION_ID_OTHERS) {
                 closeOthers ();
                 closeOthers ();
             }
             
-            if (id == ACTIONID_ALL) {
+            if (id == ACTION_ID_ALL) {
                 closeAll ();
             }
         });

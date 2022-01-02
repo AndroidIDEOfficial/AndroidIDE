@@ -153,9 +153,4 @@
                 app:showAsAction="never"/>
         </menu>
     </item>
-    <item
-        android:icon="@drawable/ic_info"
-        android:id="@+id/menuEditor_projectInfo"
-        android:title="@string/menu_project_info"
-        app:showAsAction="ifRoom"/>
 </menu>

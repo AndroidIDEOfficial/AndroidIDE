@@ -85,7 +85,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     public void onProjectLoaded(IDEProject project, Optional<IDEModule> appModule) {
         project.iconPath = provider.provideAndroidProject().getIconPath();
         activity().setIDEProject(project);
-        activity().createProjectInfoSheet(); // Recreate sheet, even if already created. Just to update its contents
+        
         if(appModule.isPresent()) {
             IDEModule app = appModule.get();
             activity().setStatus(activity().getString(R.string.msg_starting_completion));
