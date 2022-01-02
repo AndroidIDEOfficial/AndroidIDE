@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  *
@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
-
+ */
 package com.itsaky.androidide;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
@@ -116,6 +114,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -153,7 +152,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private RecyclerView searchResultList;
     private SymbolInputView symbolInput;
     
-    private static AndroidProject mProject;
+    private AndroidProject mProject;
     private IDEProject mIDEProject;
     
     private BuildServiceHandler mBuildServiceHandler;
@@ -168,7 +167,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private AlertDialog mFindInProjectDialog;
     
     private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
-    public static final String TAG = "EditorActivity";
     
     private static final org.eclipse.lsp4j.Range Range_ofZero = new org.eclipse.lsp4j.Range (new Position (0, 0), new Position (0, 0));
     
@@ -279,7 +277,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     protected void onPause () {
         new Thread (() -> {
             
-            boolean saved = false;
+            boolean saved;
             try {
                 saveAll (false /* No notification */);
                 saved = true;
@@ -289,9 +287,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             }
             
             if (!saved) {
-                ThreadUtils.runOnUiThread (() -> {
-                    getApp ().toast (R.string.msg_failed_save, Toaster.Type.ERROR);
-                });
+                ThreadUtils.runOnUiThread (() -> getApp ().toast (R.string.msg_failed_save, Toaster.Type.ERROR));
             }
         }, "AndroidIDE FileSaver").start ();
         super.onPause ();
@@ -313,6 +309,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         try {
             unregisterReceiver (mLogReceiver);
         } catch (Throwable th) {
+            LOG.error ("Failed to unregister LogReceiver", th);
         }
         super.onDestroy ();
     }
@@ -360,10 +357,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final boolean notNull = mCurrentFile != null;
         final boolean isJava = notNull && mCurrentFile.getName ().endsWith (".java");
         final boolean isXml = notNull && mCurrentFile.getName ().endsWith (".xml");
-        final boolean isLayout = isXml && Pattern.compile (FileOptionsHandler.LAYOUTRES_PATH_REGEX).matcher (mCurrentFile.getParentFile ().getAbsolutePath ()).matches ();
+        final boolean isLayout = isXml && mCurrentFile.getParentFile () != null && Pattern.compile (FileOptionsHandler.LAYOUTRES_PATH_REGEX).matcher (mCurrentFile.getParentFile ().getAbsolutePath ()).matches ();
         final int nullableAlpha = notNull ? 255 : 76;
         final int javaFileAlpha = isJava ? 255 : 76;
-        final int xmlFileAlpha = isXml ? 255 : 76;
         final int layoutFileAlpha = isLayout ? 255 : 76;
         
         undo.setEnabled (notNull);
@@ -409,7 +405,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
         int id = item.getItemId ();
         if (id == R.id.menuEditor_runDebug || id == R.id.menuEditor_quickRun) {
-            getmBuildServiceHandler ().assembleDebug (true);
+            getBuildServiceHandler ().assembleDebug (true);
         } else if (id == R.id.menuEditor_runRelease) {
             getBuildService ().assembleRelease ();
         } else if (id == R.id.menuEditor_runClean) {
@@ -487,7 +483,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public void editorStateChanged () {
         for (int i = 0; i < mBinding.tabs.getTabCount (); i++) {
             try {
-                mBinding.tabs.getTabAt (i).setText (mPagerAdapter.getPageTitle (i));
+                final var tab = mBinding.tabs.getTabAt (i);
+                if (tab != null) {
+                    tab.setText (mPagerAdapter.getPageTitle (i));
+                }
             } catch (Throwable th) {
                 th.printStackTrace ();
             }
@@ -658,6 +657,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         try {
             runOnUiThread (() -> mBinding.editorStatusText.setText (text));
         } catch (Throwable th) {
+            LOG.error ("Failed to update status text", th);
         }
     }
     
@@ -715,17 +715,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final int width = view.getWidth ();
         view.getWindowVisibleDisplayFrame (r);
         if (r.width () != width) {
-            
-            /**
-             * Will be true when the view is going out of screen to left 
-             */
+    
+            // Will be true when the view is going out of screen to left
             if (initialX < r.left) {
                 view.setX (SizeUtils.dp2px (8)); // an offset of 8dp from the left edge of screen
             }
-            
-            /**
-             * Will be true when the view is going out of screen to right
-             */
+    
+            // Will be true when the view is going out of screen to right
             if (initialX + width > r.right) {
                 view.setX (r.right - SizeUtils.dp2px (8) - width);  // position to the right but leaving 8dp space from the right edge of screen
             }
@@ -752,8 +748,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     onTabSelected (@NonNull TabLayout.Tab tab) {
         EditorFragment current = mPagerAdapter.getFrag (tab.getPosition ());
         if (current != null && current.getFile () != null) {
-            this.mCurrentFragment = current;
-            this.mCurrentFile = current.getFile ();
+            mCurrentFragment = current;
+            mCurrentFile = current.getFile ();
             refreshSymbolInput (current);
         }
         
@@ -812,10 +808,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return mLastHeld;
     }
     
-    public OptionsListFragment getFileOptionsFragment () {
-        return mFileOptionsFragment;
-    }
-    
     public OptionsListFragment getFileOptionsFragment (File file) {
         mFileOptionsFragment = new OptionsListFragment ();
         mFileOptionsFragment.addOption (new SheetOption (0, R.drawable.ic_file_copy_path, R.string.copy_path, file));
@@ -827,10 +819,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
         mFileOptionsFragment.setOnOptionsClickListener (mFileOptionsHandler);
         return mFileOptionsFragment;
-    }
-    
-    public ProgressSheet getProgressSheet () {
-        return mSearchingProgress;
     }
     
     public ProgressSheet getProgressSheet (int msg) {
@@ -920,7 +908,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public RecyclerView createDiagnosticsList () {
         diagnosticList = new RecyclerView (this);
         diagnosticList.setLayoutManager (new LinearLayoutManager (this));
-        diagnosticList.setAdapter (new DiagnosticsAdapter (new ArrayList<DiagnosticGroup> (), this));
+        diagnosticList.setAdapter (new DiagnosticsAdapter (new ArrayList<> (), this));
         return diagnosticList;
     }
     
@@ -948,8 +936,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             selection = Range_ofZero;
         }
         int i = mPagerAdapter.openFile (file, selection, this);
-        if (i >= 0 && !mBinding.tabs.getTabAt (i).isSelected ()) {
-            mBinding.tabs.getTabAt (i).select ();
+        final var tab = mBinding.tabs.getTabAt (i);
+        if (tab != null && i >= 0 && !tab.isSelected ()) {
+            tab.select ();
         }
         
         if (mBinding.editorDrawerLayout.isDrawerOpen (GravityCompat.END)) {
@@ -1031,9 +1020,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             javaServer.getWorkspaceService ().didChangeConfiguration (params);
             
             return null;
-        }, __ -> {
-            setStatus (getString (getApp ().isXmlServiceStarted () ? R.string.msg_service_started : R.string.msg_starting_completion_failed));
-        });
+        }, __ -> setStatus (getString (getApp ().isXmlServiceStarted () ? R.string.msg_service_started : R.string.msg_starting_completion_failed)));
     }
     
     public void closeFile (int index) {
@@ -1062,9 +1049,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBinding.tabs.addOnTabSelectedListener (this);
         
         if (selectOther) {
-            if (pos >= 0 && pos < frags.size ()) {
-                mBinding.editorViewPager.setCurrentItem (pos, false);
-            } else {
+            if (pos < 0 || pos >= frags.size ()) {
                 int i = pos - 1;
                 if (i >= 0 && i < frags.size ()) {
                     pos = i;
@@ -1074,8 +1059,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                         pos = i;
                     }
                 }
-                mBinding.editorViewPager.setCurrentItem (pos, false);
             }
+            mBinding.editorViewPager.setCurrentItem (pos, false);
         }
         
         if (mPagerAdapter.getCount () <= 0) {
@@ -1101,7 +1086,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             } else {
                 final var msg = getString (R.string.msg_invalid_designer_result);
                 getApp ().toast (msg, Toaster.Type.ERROR);
-                LOG.error (msg, "data: " + data);
+                LOG.error (msg, "Data returned by UI Designer is null");
             }
         } else {
             LOG.error ("UI Designer returned an invalid result code.", "Result code: " + result.getResultCode ());
@@ -1129,12 +1114,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     @NonNull
     @Contract(" -> new")
     private ILayoutInflater.ContextProvider getContextProvider () {
-        return new ILayoutInflater.ContextProvider () {
-            @Override
-            public Context getContext () {
-                return provide ();
-            }
-        };
+        return this::provide;
     }
     
     @NonNull
@@ -1163,7 +1143,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         LSP.setActivityProvider (this);
         LSP.Java.start (() -> {
             Optional<InitializeResult> result = LSP.Java.init (mProject.getProjectPath ());
-            LSP.Java.initialized ();
+            if (result.isPresent ()) {
+                LSP.Java.initialized ();
+            }
         });
     }
     
@@ -1178,7 +1160,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         gd.setColor (0xff212121);
         gd.setStroke (1, 0xffffffff);
         gd.setCornerRadius (8);
-        mBinding.symbolText.setBackgroundDrawable (gd);
+        mBinding.symbolText.setBackground (gd);
         mBinding.symbolText.setVisibility (View.GONE);
     }
     
@@ -1266,7 +1248,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mFileOptionsHandler.start ();
         
         mBuildServiceHandler.start ();
-        getmBuildServiceHandler ().assembleDebug (false);
+        getBuildServiceHandler ().assembleDebug (false);
     }
     
     private void removeFromParent (@NonNull View v) {
@@ -1297,9 +1279,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         if (getBuildService () != null && !getBuildService ().isBuilding ()) {
             getSyncBanner ()
                     .setNegative (android.R.string.cancel, null)
-                    .setPositive (android.R.string.ok, v -> {
-                        getmBuildServiceHandler ().assembleDebug (false);
-                    })
+                    .setPositive (android.R.string.ok, v -> getBuildServiceHandler ().assembleDebug (false))
                     .show ();
         }
     }
@@ -1375,8 +1355,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         builder.setView (binding.getRoot ());
         builder.setCancelable (false);
         builder.setPositiveButton (R.string.menu_find, (dialog, which) -> {
-            final String text = binding.input.getEditText ().getText ().toString ().trim ();
-            if (text == null || text.isEmpty ()) {
+            final String text = Objects.requireNonNull (binding.input.getEditText ()).getText ().toString ().trim ();
+            if (text.isEmpty ()) {
                 getApp ().toast (R.string.msg_empty_search_query, Toaster.Type.ERROR);
                 return;
             }
@@ -1389,28 +1369,28 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 }
             }
             
-            final String extensions = binding.filter.getEditText ().getText ().toString ().trim ();
-            final List<String> exts = new ArrayList<> ();
-            if (extensions != null && !extensions.isEmpty ()) {
+            final String extensions = Objects.requireNonNull (binding.filter.getEditText ()).getText ().toString ().trim ();
+            final List<String> extensionList = new ArrayList<> ();
+            if (!extensions.isEmpty ()) {
                 if (extensions.contains ("|")) {
                     for (String str : extensions.split (Pattern.quote ("|"))) {
                         if (str == null || str.trim ().isEmpty ()) {
                             continue;
                         }
     
-                        exts.add (str);
+                        extensionList.add (str);
                     }
                 } else {
-                    exts.add (extensions);
+                    extensionList.add (extensions);
                 }
             }
             
-            if (searchDirs == null || searchDirs.isEmpty ()) {
+            if (searchDirs.isEmpty ()) {
                 getApp ().toast (R.string.msg_select_search_modules, Toaster.Type.ERROR);
             } else {
                 dialog.dismiss ();
                 getProgressSheet (R.string.msg_searching_project).show (getSupportFragmentManager (), "search_in_project_progress");
-                RecursiveFileSearcher.searchRecursiveAsync (text, exts, searchDirs, result -> handleSearchResults (result));
+                RecursiveFileSearcher.searchRecursiveAsync (text, extensionList, searchDirs, this::handleSearchResults);
             }
         });
         builder.setNegativeButton (android.R.string.cancel, (__, ___) -> __.dismiss ());
@@ -1428,7 +1408,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return mBuildServiceHandler.getService ();
     }
     
-    public BuildServiceHandler getmBuildServiceHandler () {
+    public BuildServiceHandler getBuildServiceHandler () {
         return mBuildServiceHandler;
     }
     
@@ -1449,8 +1429,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mTabCloseAction.setColorRes (R.color.tabAction_background);
         mTabCloseAction.setTextColorRes (R.color.tabAction_text);
         
-        mTabCloseAction.setOnActionItemClickListener ((__) -> {
-            ActionItem item = __;
+        mTabCloseAction.setOnActionItemClickListener ((item) -> {
             final int id = item.getActionId ();
             saveAll ();
             if (id == ACTION_ID_CLOSE) {
@@ -1483,6 +1462,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         try {
             frag.save ();
         } catch (Throwable th) {
+            LOG.error ("Failed to save file: " + file, th);
         }
         mPagerAdapter = new EditorPagerAdapter (getSupportFragmentManager (), mProject);
         mBinding.editorViewPager.setAdapter (mPagerAdapter);

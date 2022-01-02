@@ -90,8 +90,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
             IDEModule app = appModule.get();
             activity().setStatus(activity().getString(R.string.msg_starting_completion));
 
-            final List<String> paths = new ArrayList<String>(app.dependencies);
-            paths.stream().filter(path -> isClasspathValid(path)).collect(Collectors.toList());
+            final List<String> paths = app.dependencies.stream().filter(this::isClasspathValid).collect(Collectors.toList());
 
             provider.provideAndroidProject().setClassPaths(paths);
 
