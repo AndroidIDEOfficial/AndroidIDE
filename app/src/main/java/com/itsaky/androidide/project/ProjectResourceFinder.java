@@ -54,22 +54,22 @@ public class ProjectResourceFinder implements IResourceFinder {
 
     @Override
     public String findString(@NonNull String name) {
-        return null;
+        return name;
     }
 
     @Override
     public String findColor(@NonNull String name) {
-        return null;
+        return name;
     }
 
     @Override
     public String[] findArray(@NonNull String name) {
-        return null;
+        return new String[] {name};
     }
 
     @Override
     public String findDimension(@NonNull String name) {
-        return null;
+        return name;
     }
 
     @Override
