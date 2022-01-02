@@ -92,7 +92,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 	public void onClick(TreeNode node, Object p2) {
 		final File f = (File) p2;
 		if(f.isFile()) {
-			if (mFileActionListener != null && FileUtils.isUtf8(f)) {
+			if (mFileActionListener != null && (FileUtils.isUtf8 (f) || f.length () == 0)) {
 				mFileActionListener.openFile(f);
 			}
 		} else if(f.isDirectory() && f.exists()) {

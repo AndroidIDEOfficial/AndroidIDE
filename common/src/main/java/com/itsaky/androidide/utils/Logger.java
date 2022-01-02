@@ -22,6 +22,14 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ThrowableUtils;
 import org.jetbrains.annotations.Contract;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Locale;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+
 /**
  * Logger for the IDE.
  *
@@ -54,6 +62,7 @@ public class Logger {
     
     private Logger(String tag) {
         TAG = tag;
+        
     }
 
     public Logger warn(Object... messages) {
@@ -95,7 +104,7 @@ public class Logger {
                     msg);
             sb.append(MSG_SEPARATOR);
         }
-
+        
         return sb.toString();
     }
 }
