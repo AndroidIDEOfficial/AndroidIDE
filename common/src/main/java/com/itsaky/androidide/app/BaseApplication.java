@@ -122,7 +122,11 @@ public abstract class BaseApplication extends MultiDexApplication {
     }
 
     public ShellServer newShell(ShellServer.Callback callback, boolean redirectErrors) {
-        ShellServer shellServer = new ShellServer(callback, "sh", Environment.mkdirIfNotExits(getRootDir()).getAbsolutePath(), Environment.getEnvironment(true), redirectErrors);
+        ShellServer shellServer = new ShellServer(callback,
+                "sh",
+                Environment.mkdirIfNotExits(getRootDir()).getAbsolutePath(),
+                Environment.getEnvironment(true),
+                redirectErrors);
         shellServer.start();
         return shellServer;
     }

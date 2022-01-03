@@ -20,6 +20,7 @@ package com.itsaky.androidide.app;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
 import com.itsaky.androidide.project.ProjectResourceFinder;
+import com.itsaky.androidide.services.IDELogService;
 import com.itsaky.androidide.services.MessagingService;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IResourceFinder;
@@ -41,7 +42,8 @@ public class StudioApp extends BaseApplication {
     private static ApiInfo mApiInfo;
     private static AttrInfo mAttrInfo;
     private static WidgetInfo mWidgetInfo;
-
+    
+    private IDELogService ideLogService;
     private IResourceFinder mResFinder;
     
     private XMLCompletionService mXmlCompletionService;
@@ -53,29 +55,15 @@ public class StudioApp extends BaseApplication {
 	
 	@Override
 	public void onCreate() {
-		this.instance = this;
+		instance = this;
 		super.onCreate();
-        
+  
+		this.ideLogService = new IDELogService ();
+		
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_UPDATE);
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_DEV_MSGS);
-        
-        initializeApiInformation();
-	}
-    
-	private void handleLog(CharSequence seq) {
-		if(seq == null)
-			return;
-		String line = seq.toString();
-		line = line.endsWith("\n") ? line : line + "\n";
 		
-		File log = new File(FileUtil.getExternalStorageDir(), "ide_xlog/idelog.txt");
-		try {
-			FileOutputStream os = new FileOutputStream(log, true);
-			os.write(line.getBytes());
-			os.close();
-		} catch (IOException e) {
-		    // ignored
-        }
+        initializeApiInformation();
 	}
     
     public void createInflater (LayoutInflaterConfiguration config) {
@@ -98,6 +86,10 @@ public class StudioApp extends BaseApplication {
 
     public IResourceFinder getResFinder () {
 	    return this.mResFinder;
+    }
+    
+    public IDELogService getIdeLogService () {
+	    return ideLogService;
     }
     
     /**
@@ -126,15 +118,15 @@ public class StudioApp extends BaseApplication {
 	}
     
     public ApiInfo apiInfo() {
-        return this.mApiInfo;
+        return mApiInfo;
     }
     
     public AttrInfo attrInfo () {
-        return this.mAttrInfo;
+        return mAttrInfo;
     }
 
     public WidgetInfo widgetInfo () {
-        return this.mWidgetInfo;
+        return mWidgetInfo;
     }
 	
 	public boolean isXmlServiceStarted() {
@@ -144,12 +136,8 @@ public class StudioApp extends BaseApplication {
     public void setStopGradleDaemon(boolean startGradleDaemon) {
         this.stopGradleDaemon = startGradleDaemon;
     }
-
-    public boolean isStopGradleDaemon() {
-        return stopGradleDaemon;
-    }
-	
-	public static StudioApp getInstance() {
+    
+    public static StudioApp getInstance() {
 		return instance;
 	}
 }

@@ -1,23 +1,27 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
  *
- *  
+ *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ **************************************************************************************/
 package com.itsaky.androidide.shell;
+
+import androidx.annotation.NonNull;
+
+import com.itsaky.androidide.utils.Logger;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -28,14 +32,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ShellServer extends Thread {
     
@@ -43,119 +40,115 @@ public class ShellServer extends Thread {
     private BufferedReader output;
     private Process process;
     
-    public ShellServer(Callback callback, String command, String dirPath, Map<String, String> env, boolean redirectErrors) {
+    private static final Logger LOG = Logger.instance ("ShellServer");
+    
+    public ShellServer (Callback callback, String command, String dirPath, Map<String, String> env, boolean redirectErrors) {
         this.callback = callback;
         
-        ProcessBuilder processBuilder = new ProcessBuilder(new String[]{command});
-        processBuilder.directory(new File(dirPath));
-        processBuilder.redirectErrorStream(redirectErrors);
-        processBuilder.environment().putAll(env);
+        ProcessBuilder processBuilder = new ProcessBuilder (command);
+        processBuilder.directory (new File (dirPath));
+        processBuilder.redirectErrorStream (redirectErrors);
+        processBuilder.environment ().putAll (env);
         
         try {
-            this.process = processBuilder.start();
-            this.output = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            this.process = processBuilder.start ();
+            this.output = new BufferedReader (new InputStreamReader (process.getInputStream ()));
         } catch (Throwable th) {
             if (callback != null) {
-                String out = getFullStackTrace(th).concat("\n");
-                callback.output(out);
+                String out = getFullStackTrace (th).concat ("\n");
+                callback.output (out);
             }
         }
     }
     
-    public InputStream getProcessInputStream() {
-        return process.getInputStream();
+    public InputStream getProcessInputStream () {
+        return process.getInputStream ();
     }
     
-    public OutputStream getProcessOutputStream() {
-        return process.getOutputStream();
+    public OutputStream getProcessOutputStream () {
+        return process.getOutputStream ();
     }
-
-    public void append(String str) {
-        append(str, true);
+    
+    public void append (String str) {
+        append (str, true);
     }
-
-	public ShellServer bgAppend(String str) {
-		append(str, false);
-		return this;
-	}
-
-	public ShellServer bgAppend(String... arr) {
-		for (String s : arr)
-			bgAppend(s);
-		return this;
-	}
-
-    public void append(String str, boolean z) {
+    
+    public void bgAppend (String str) {
+        append (str, false);
+    }
+    
+    public void append (String str, boolean z) {
         if (z) {
             try {
-                if (str.endsWith("\n")) {
-                    output(str);
+                if (str.endsWith ("\n")) {
+                    output (str);
                 } else {
-                    output(str.concat("\n"));
+                    output (str.concat ("\n"));
                 }
             } catch (Throwable th) {
-                output(th.toString().concat("\n"));
+                output (th.toString ().concat ("\n"));
                 return;
             }
         }
         try {
-			this.process.getOutputStream().write(str.concat("\n").getBytes());
-			this.process.getOutputStream().flush();
-		} catch (Throwable e) {
-            // Ignored
-		}
+            this.process.getOutputStream ().write (str.concat ("\n").getBytes ());
+            this.process.getOutputStream ().flush ();
+        } catch (Throwable e) {
+            LOG.error ("Unable to write to shell server", e);
+        }
     }
-
-    public void append(String... strArr) {
+    
+    public void append (@NonNull String... strArr) {
         for (String append : strArr) {
-            append(append);
+            append (append);
         }
     }
-
-    public void exit() {
-        append("exit");
+    
+    public void exit () {
+        append ("exit");
     }
-
-    public void output(String str) {
+    
+    public void output (String str) {
         if (this.callback != null) {
-            this.callback.output(str);
+            this.callback.output (str);
         }
     }
-
+    
     @Override
-    public void run() {
+    public void run () {
         while (true) {
             try {
-                String readLine = this.output.readLine();
+                String readLine = this.output.readLine ();
                 if (readLine == null) {
                     break;
                 }
-                output(readLine.concat("\n"));
+                output (readLine.concat ("\n"));
             } catch (Throwable th) {
-                output(th.toString().concat("\n"));
+                output (th.toString ().concat ("\n"));
             }
         }
-        closeIOQuietly(new Closeable[]{this.output, this.process.getInputStream(), this.process.getErrorStream(), this.process.getOutputStream()});
-        this.process.destroy();
+        closeIOQuietly (this.output, this.process.getInputStream (), this.process.getErrorStream (), this.process.getOutputStream ());
+        this.process.destroy ();
     }
     
-    private String getFullStackTrace (Throwable th) {
+    @NonNull
+    private String getFullStackTrace (@NonNull Throwable th) {
         StringWriter sw = new StringWriter ();
-        th.printStackTrace( new PrintWriter (sw));
-        return sw.toString();
+        th.printStackTrace (new PrintWriter (sw));
+        return sw.toString ();
     }
     
-    private void closeIOQuietly (Closeable ... toClose) {
+    private void closeIOQuietly (@NonNull Closeable... toClose) {
         for (Closeable c : toClose) {
             try {
-                c.close();
+                c.close ();
             } catch (IOException e) {
                 // ignored
             }
         }
     }
-	
-	public interface Callback {
-		public void output(CharSequence charSequence);
-	}
+    
+    public interface Callback {
+        void output (String charSequence);
+    }
 }

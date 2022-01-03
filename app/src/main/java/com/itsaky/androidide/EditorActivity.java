@@ -205,6 +205,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mPagerAdapter = new EditorPagerAdapter (getSupportFragmentManager (), this.mProject);
         mFileTreeFragment = FileTreeFragment.newInstance (this.mProject).setFileActionListener (this);
         mDaemonStatusFragment = new TextSheetFragment ().setTextSelectable (true);
+        
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle (this, mBinding.editorDrawerLayout, mBinding.editorToolbar, R.string.app_name, R.string.app_name);
         mBinding.editorDrawerLayout.addDrawerListener (toggle);
         mBinding.startNav.setNavigationItemSelectedListener (this);

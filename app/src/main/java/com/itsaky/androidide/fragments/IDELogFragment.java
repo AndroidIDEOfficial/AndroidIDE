@@ -17,8 +17,15 @@
 
 package com.itsaky.androidide.fragments;
 
+import com.itsaky.androidide.app.StudioApp;
+
 public class IDELogFragment extends LogViewFragment {
     
     public IDELogFragment () {
+        final var logService = StudioApp.getInstance ().getIdeLogService ();
+        if (!logService.isStarted ()) {
+            logService.start ();
+        }
+        logService.addLogListener (this::appendLog);
     }
 }
