@@ -18,4 +18,7 @@
 package com.itsaky.androidide.fragments;
 
 public class IDELogFragment extends LogViewFragment {
+    
+    public IDELogFragment () {
+    }
 }

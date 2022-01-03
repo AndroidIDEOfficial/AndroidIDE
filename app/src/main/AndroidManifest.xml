@@ -21,11 +21,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute,MediaCapabilities">
-        <service
-            android:name=".services.IDELogService"
-            android:enabled="true"
-            android:exported="true"></service>
-
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -37,29 +32,28 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|screenSize|uiMode"></activity>
+            android:configChanges="orientation|screenSize|uiMode" />
         <activity
             android:name=".DesignerActivity"
             android:configChanges="orientation|screenSize|uiMode"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".DownloadActivity"
-            android:configChanges="orientation|screenSize|uiMode"></activity>
+            android:configChanges="orientation|screenSize|uiMode" />
         <activity
             android:name=".EditorActivity"
             android:configChanges="orientation|screenSize|uiMode"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".PreferencesActivity"
-            android:configChanges="orientation|screenSize"></activity>
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".AboutActivity"
-            android:configChanges="orientation|screenSize|uiMode"></activity>
+            android:configChanges="orientation|screenSize|uiMode" />
         <activity
             android:name=".TerminalActivity"
             android:configChanges="orientation|screenSize|uiMode"
-            android:windowSoftInputMode="adjustResize"></activity>
-
+            android:windowSoftInputMode="adjustResize" />
         <service
             android:name=".services.MessagingService"
             android:exported="false">
@@ -67,7 +61,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
         <receiver
             android:name=".services.LogReceiver"
             android:enabled="true"
@@ -76,7 +69,6 @@
                 <action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
             </intent-filter>
         </receiver>
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
@@ -87,5 +79,4 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/cms_channel_id_devs" />
     </application>
-
 </manifest>

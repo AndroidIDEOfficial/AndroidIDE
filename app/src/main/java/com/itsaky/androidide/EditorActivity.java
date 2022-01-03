@@ -25,6 +25,8 @@ import android.content.IntentFilter;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -110,6 +112,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
@@ -141,36 +144,30 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
     private FileTreeFragment mFileTreeFragment;
     private EditorFragment mCurrentFragment;
-    public static File mCurrentFile;
     private TreeNode mLastHeld;
     private SymbolInputView symbolInput;
-    
     private AndroidProject mProject;
     private IDEProject mIDEProject;
-    
     private BuildServiceHandler mBuildServiceHandler;
     private FileOptionsHandler mFileOptionsHandler;
-    
     private QuickAction mTabCloseAction;
     private TextSheetFragment mDaemonStatusFragment;
     private OptionsListFragment mFileOptionsFragment;
     private ProgressSheet mSearchingProgress;
     private AlertDialog mFindInProjectDialog;
-    
+    private ActivityResultLauncher<Intent> mUIDesignerLauncher;
+    public static File mCurrentFile;
     @SuppressWarnings("rawtypes")
     private EditorBottomSheetBehavior mEditorBottomSheet;
     
     private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
-    
-    private static final org.eclipse.lsp4j.Range Range_ofZero = new org.eclipse.lsp4j.Range (new Position (0, 0), new Position (0, 0));
-    
+    private static final Range Range_ofZero = new Range (new Position (0, 0), new Position (0, 0));
     private static final int ACTION_ID_CLOSE = 100;
     private static final int ACTION_ID_OTHERS = 101;
     private static final int ACTION_ID_ALL = 102;
     
     public static final String EXTRA_PROJECT = "project";
-    
-    private ActivityResultLauncher<Intent> mUIDesignerLauncher;
+    public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
     
     private final LogReceiver mLogReceiver = new LogReceiver ().setLogListener (this::appendApkLog);
     
@@ -232,6 +229,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 (tab, position) -> tab.setText (bottomSheetTabAdapter.getTitle (position)));
         mediator.attach ();
         mBinding.bottomSheet.pager.setUserInputEnabled (false);
+        mBinding.bottomSheet.pager.setOffscreenPageLimit (bottomSheetTabAdapter.getItemCount () - 1);  // DO not remove any views
         
         //noinspection rawtypes
         mEditorBottomSheet = (EditorBottomSheetBehavior) EditorBottomSheetBehavior.from (mBinding.bottomSheet.getRoot ());
@@ -247,6 +245,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 mBinding.bottomSheet.textContainer.setAlpha (1f - slideOffset);
             }
         });
+        
+        if (!getApp ().getPrefManager ().getBoolean (KEY_BOTTOM_SHEET_SHOWN) && mEditorBottomSheet.getState ()!= BottomSheetBehavior.STATE_EXPANDED) {
+            mEditorBottomSheet.setState (BottomSheetBehavior.STATE_EXPANDED);
+            
+            new Handler (Looper.getMainLooper ()).postDelayed (() -> {
+                mEditorBottomSheet.setState (BottomSheetBehavior.STATE_COLLAPSED);
+                getApp ().getPrefManager ().putBoolean (KEY_BOTTOM_SHEET_SHOWN, true);
+            }, 1500);
+        }
         
         createQuickActions ();
         
