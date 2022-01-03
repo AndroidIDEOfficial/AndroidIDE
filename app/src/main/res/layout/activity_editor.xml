@@ -59,8 +59,9 @@
 			android:id="@+id/editor_viewPager"
 			android:layout_height="match_parent"
 			android:layout_width="match_parent"
-			android:layout_weight="1.0"
 			android:background="@color/content_background"
+			android:layout_gravity="top"
+			android:layout_marginBottom="@dimen/editor_sheet_peek_height"
 			app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
 
 		<include

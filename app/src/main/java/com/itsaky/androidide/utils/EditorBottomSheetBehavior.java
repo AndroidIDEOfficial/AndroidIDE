@@ -33,11 +33,10 @@ import com.itsaky.androidide.databinding.LayoutEditorBottomSheetBinding;
 public class EditorBottomSheetBehavior<V extends View> extends BottomSheetBehavior<V> {
     
     private LayoutEditorBottomSheetBinding binding;
+    private static final Logger LOG = Logger.instance ("EditorBottomSheetBehavior");
     
     public EditorBottomSheetBehavior (Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        
-        setSaveFlags (SAVE_ALL);
     }
     
     public void setBinding (LayoutEditorBottomSheetBinding binding) {
@@ -52,7 +51,6 @@ public class EditorBottomSheetBehavior<V extends View> extends BottomSheetBehavi
                 return false;
             }
         }
-        
         return super.onInterceptTouchEvent (parent, child, event);
     }
     
