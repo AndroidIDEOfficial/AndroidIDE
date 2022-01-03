@@ -79,7 +79,7 @@ public class LogLine {
 	@NonNull
 	public static LogLine forLogString (@NonNull final String log) {
 		try {
-			final var split = log.split ("\\s");
+			final var split = log.split ("\\s", 7);
 			return new LogLine(
 					split[0], // date
 					split[1], // time

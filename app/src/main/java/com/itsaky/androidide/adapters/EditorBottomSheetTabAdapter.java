@@ -24,7 +24,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.fragments.BuildOutputFragment;
+import com.itsaky.androidide.fragments.SimpleOutputFragment;
 import com.itsaky.androidide.fragments.DiagnosticsListFragment;
 import com.itsaky.androidide.fragments.IDELogFragment;
 import com.itsaky.androidide.fragments.LogViewFragment;
@@ -42,7 +42,7 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
         super (fragmentActivity);
         
         this.fragments = new ArrayList<> ();
-        this.fragments.add (new Tab (fragmentActivity.getString (R.string.build_output), new BuildOutputFragment ()));
+        this.fragments.add (new Tab (fragmentActivity.getString (R.string.build_output), new SimpleOutputFragment ()));
         this.fragments.add (new Tab (fragmentActivity.getString (R.string.app_logs), new LogViewFragment ()));
         this.fragments.add (new Tab (fragmentActivity.getString (R.string.ide_logs), new IDELogFragment ()));
         this.fragments.add (new Tab (fragmentActivity.getString (R.string.view_diags), new DiagnosticsListFragment ()));
@@ -65,8 +65,8 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
     }
     
     @NonNull
-    public BuildOutputFragment getBuildOutputFragment () {
-        return Objects.requireNonNull (findFragmentByClass (BuildOutputFragment.class));
+    public SimpleOutputFragment getBuildOutputFragment () {
+        return Objects.requireNonNull (findFragmentByClass (SimpleOutputFragment.class));
     }
     
     @NonNull

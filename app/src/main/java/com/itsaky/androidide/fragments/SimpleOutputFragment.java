@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class BuildOutputFragment extends NonEditableEditorFragment {
+public class SimpleOutputFragment extends NonEditableEditorFragment {
     
     private final List<String> unsavedLines = new ArrayList<> ();
     

@@ -52,17 +52,7 @@ public class LogReceiver extends BroadcastReceiver {
 	}
 
 	private void sendLogLine(String line) {
-		final String[] split = line.split("\\s", 7);
-        final LogLine log = new LogLine(
-            split[0], // date
-            split[1], // time
-            split[2], // process id
-            split[3], // thread id
-            split[4], // priority
-            split[5], // tag
-            split[6]  // message
-        );
-        
+		final var log = LogLine.forLogString (line);
         if(listener != null) {
             listener.appendLogLine(log);
         }

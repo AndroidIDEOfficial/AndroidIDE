@@ -15,9 +15,11 @@
  */
 package io.github.rosemoe.editor.text;
 
+import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.utils.Logger;
 
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
+import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.Span;
 
@@ -200,8 +202,6 @@ public class TextAnalyzer {
                         }
                     } while (waiting);
                     
-                    LOG.debug ("Text analyzed, spans: " + colors.mSpanMap);
-                    
                     mObjContainer.blockLines = mResult.mBlocks;
                     mObjContainer.spanMap = mResult.mSpanMap;
                     mResult = colors;
@@ -223,7 +223,9 @@ public class TextAnalyzer {
                     }
                 } while (true);
             } catch (Exception ex) {
-                LOG.error ("An error occurred while analyzing", ex);
+                if (!(language instanceof EmptyLanguage || language instanceof LogLanguageImpl)) {
+                    LOG.error ("An error occurred while analyzing", ex);
+                }
             }
         }
         

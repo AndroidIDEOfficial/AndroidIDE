@@ -106,9 +106,6 @@ public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnal
             if (token.getType () != XMLLexer.SEA_WS) {
                 previous = token;
             }
-            
-            
-            LOG.debug ("XML token: " + token);
         }
         colors.determine (lastLine);
     }

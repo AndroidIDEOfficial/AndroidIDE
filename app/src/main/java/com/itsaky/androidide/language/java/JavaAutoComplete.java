@@ -77,7 +77,6 @@ public class JavaAutoComplete implements AutoCompleteProvider {
     
     private List<CompletionItem> finalizeResults(List<CompletionItem> items) {
         Collections.sort(items, RESULT_SORTER);
-        LOG.debug ("CompletionResults", items);
         return items;
     }
     

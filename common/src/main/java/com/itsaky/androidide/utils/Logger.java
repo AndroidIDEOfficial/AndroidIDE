@@ -18,17 +18,16 @@
 package com.itsaky.androidide.utils;
 
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ThrowableUtils;
+
 import org.jetbrains.annotations.Contract;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Locale;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.BlockingQueue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Logger for the IDE.
@@ -40,12 +39,28 @@ import java.util.concurrent.BlockingQueue;
  */
 public class Logger {
     
+    private String TAG;
+    
     private static Logger instance;
-    private static String TAG = "AndroidIDE";
     private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
+    private static final List<LogListener> logListeners = new ArrayList<> ();
+    
+    public static final int DEBUG = 0;
+    public static final int WARNING = 0;
+    public static final int ERROR = 0;
+    public static final int INFO = 0;
+    public static final int VERBOSE = 0;
     
     public static Logger instance() {
-        return instance == null ? instance = createInstance(TAG) : instance;
+        return instance == null ? instance = createInstance("AndroidIDE") : instance;
+    }
+    
+    public static void addLogListener (LogListener listener) {
+        logListeners.add (Objects.requireNonNull (listener));
+    }
+    
+    public static void removeLogListener (LogListener listener) {
+        logListeners.remove (Objects.requireNonNull (listener));
     }
 
     @NonNull
@@ -62,38 +77,46 @@ public class Logger {
     
     private Logger(String tag) {
         TAG = tag;
-        
     }
 
     public Logger warn(Object... messages) {
-        Log.w(TAG, generateMessage(messages));
+        final var msg = generateMessage (messages);
+        Log.w(TAG, msg);
+        notifyListener (WARNING,msg);
         return this;
     }
     
     public Logger debug(Object... messages) {
-        Log.d(TAG, generateMessage(messages));
+        final var msg = generateMessage (messages);
+        Log.d(TAG, msg);
+        notifyListener (DEBUG,msg);
         return this;
     }
     
     public Logger error(Object... messages) {
-        Log.e(TAG, generateMessage(messages));
+        final var msg = generateMessage (messages);
+        Log.e(TAG, msg);
+        notifyListener (ERROR,msg);
         return this;
     }
     
     public Logger verbose(Object... messages) {
-        Log.v(TAG, generateMessage(messages));
+        final var msg = generateMessage (messages);
+        Log.v(TAG, msg);
+        notifyListener (VERBOSE,msg);
         return this;
     }
     
     public Logger info(Object... messages) {
-        Log.i(TAG, generateMessage(messages));
+        final var msg = generateMessage (messages);
+        Log.i(TAG, msg);
+        notifyListener (INFO,msg);
         return this;
     }
 
     @NonNull
     protected String generateMessage (Object... messages) {
         StringBuilder sb = new StringBuilder();
-
         if(messages == null) {
             return "null";
         }
@@ -106,5 +129,18 @@ public class Logger {
         }
         
         return sb.toString();
+    }
+    
+    private void notifyListener (int priority, String msg) {
+        for (final var listener : logListeners) {
+            listener.log (priority, TAG, msg);
+        }
+    }
+    
+    /**
+     * A listener which can be used to listen to log events.
+     */
+    public interface LogListener {
+        void log (int priority, String tag, String message);
     }
 }

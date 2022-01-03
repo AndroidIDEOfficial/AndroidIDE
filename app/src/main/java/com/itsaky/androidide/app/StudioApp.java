@@ -43,7 +43,6 @@ public class StudioApp extends BaseApplication {
     private static AttrInfo mAttrInfo;
     private static WidgetInfo mWidgetInfo;
     
-    private IDELogService ideLogService;
     private IResourceFinder mResFinder;
     
     private XMLCompletionService mXmlCompletionService;
@@ -57,8 +56,6 @@ public class StudioApp extends BaseApplication {
 	public void onCreate() {
 		instance = this;
 		super.onCreate();
-  
-		this.ideLogService = new IDELogService ();
 		
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_UPDATE);
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_DEV_MSGS);
@@ -86,10 +83,6 @@ public class StudioApp extends BaseApplication {
 
     public IResourceFinder getResFinder () {
 	    return this.mResFinder;
-    }
-    
-    public IDELogService getIdeLogService () {
-	    return ideLogService;
     }
     
     /**

@@ -17,15 +17,17 @@
 
 package com.itsaky.androidide.fragments;
 
-import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.utils.Logger;
 
-public class IDELogFragment extends LogViewFragment {
+public class IDELogFragment extends SimpleOutputFragment {
+    
+    private final Logger.LogListener listener = this::log;
     
     public IDELogFragment () {
-        final var logService = StudioApp.getInstance ().getIdeLogService ();
-        if (!logService.isStarted ()) {
-            logService.start ();
-        }
-        logService.addLogListener (this::appendLog);
+        Logger.addLogListener (listener);
+    }
+    
+    private void log (int priority, String tag, String message) {
+        appendOutput (String.format ("%s: %s", tag, message));
     }
 }

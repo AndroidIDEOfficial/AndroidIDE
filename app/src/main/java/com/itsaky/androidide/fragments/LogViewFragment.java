@@ -31,9 +31,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import io.github.rosemoe.editor.interfaces.EditorLanguage;
+
 public class LogViewFragment extends NonEditableEditorFragment {
     
-    private final LogLanguageImpl language = new LogLanguageImpl ();
+    private final EditorLanguage language = getLanguage ();
     private final List<LogLine> unsavedLines = new ArrayList<> ();
     
     @Override
@@ -43,7 +45,7 @@ public class LogViewFragment extends NonEditableEditorFragment {
         
         if (!unsavedLines.isEmpty ()) {
             for (var line : unsavedLines) {
-                language.addLine (line);
+                applyToLanguage (line);
                 getEditor ().getText ().append (line.toString ().trim () + "\n");
             }
             unsavedLines.clear ();
@@ -55,10 +57,21 @@ public class LogViewFragment extends NonEditableEditorFragment {
             unsavedLines.add (line);
             return;
         }
-        
-        this.language.addLine (line);
+    
+        applyToLanguage (line);
+    
         final var lineString = line.toString ();
         final var msg = lineString.endsWith ("\n") ? lineString : lineString + "\n";
         ThreadUtils.runOnUiThread (() -> getEditor ().getText ().append (msg));
+    }
+    
+    private void applyToLanguage (LogLine line) {
+        if (language instanceof LogLanguageImpl) {
+            ((LogLanguageImpl)this.language).addLine (line);
+        }
+    }
+    
+    protected EditorLanguage getLanguage () {
+        return new LogLanguageImpl ();
     }
 }
