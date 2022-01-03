@@ -17,7 +17,11 @@
 **************************************************************************************/
 package com.itsaky.androidide.app;
 
+import android.content.Intent;
+
+import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
 import com.itsaky.androidide.project.ProjectResourceFinder;
 import com.itsaky.androidide.services.IDELogService;
@@ -38,15 +42,14 @@ import java.util.Set;
 public class StudioApp extends BaseApplication {
     
 	private static StudioApp instance;
-    private boolean stopGradleDaemon = true;
     private static ApiInfo mApiInfo;
     private static AttrInfo mAttrInfo;
     private static WidgetInfo mWidgetInfo;
     
     private IResourceFinder mResFinder;
-    
     private XMLCompletionService mXmlCompletionService;
     private ILayoutInflater mLayoutInflater;
+    private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
     
 	public static final boolean DEBUG = com.itsaky.androidide.BuildConfig.DEBUG;
     
@@ -55,6 +58,8 @@ public class StudioApp extends BaseApplication {
 	@Override
 	public void onCreate() {
 		instance = this;
+        this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(this::handleCrash);
 		super.onCreate();
 		
 		FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_UPDATE);
@@ -62,6 +67,24 @@ public class StudioApp extends BaseApplication {
 		
         initializeApiInformation();
 	}
+    
+    private void handleCrash(Thread thread, Throwable th) {
+        writeException(th);
+        
+        try {
+            final var intent = new Intent ();
+            intent.setAction (CrashHandlerActivity.REPORT_ACTION);
+            intent.putExtra (CrashHandlerActivity.TRACE_KEY, ThrowableUtils.getFullStackTrace (th));
+            intent.addFlags (Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity (intent);
+    
+            if(this.uncaughtExceptionHandler != null) {
+                this.uncaughtExceptionHandler.uncaughtException(thread, th);
+            }
+        } catch (Throwable error) {
+            LOG.error ("Unable to show crash handler activity", error);
+        }
+    }
     
     public void createInflater (LayoutInflaterConfiguration config) {
         this.mLayoutInflater = ILayoutInflater.newInstance(config);
@@ -127,7 +150,6 @@ public class StudioApp extends BaseApplication {
 	}
     
     public void setStopGradleDaemon(boolean startGradleDaemon) {
-        this.stopGradleDaemon = startGradleDaemon;
     }
     
     public static StudioApp getInstance() {

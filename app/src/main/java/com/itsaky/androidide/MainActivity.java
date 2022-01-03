@@ -140,11 +140,11 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
 
     @Override
     public void onClick(View p1) {
-        if (p1.getId() == binding.createProject.getId())
+        if (p1.getId() == binding.createProject.getId()) {
             showCreateProject();
-        else if (p1.getId() == createBinding.createprojectClose.getId())
+        } else if (p1.getId() == createBinding.createprojectClose.getId()) {
             hideCreateProject();
-        else if (p1.getId() == createLayoutBinding.nextCard.getId()) {
+        } else if (p1.getId() == createLayoutBinding.nextCard.getId()) {
             currentTemplateIndex++;
             if (currentTemplateIndex >= mTemplates.size()) currentTemplateIndex = 0;
             showTemplate(currentTemplateIndex);
@@ -152,13 +152,16 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
             currentTemplateIndex--;
             if (currentTemplateIndex < 0) currentTemplateIndex = mTemplates.size() - 1;
             showTemplate(currentTemplateIndex);
-        } else if (p1.getId() == createLayoutBinding.createprojectCreate.getId())
+        } else if (p1.getId() == createLayoutBinding.createprojectCreate.getId()) {
             createNewProject();
-        else if (p1.getId() == binding.gotoPreferences.getId()) {
+        } else if (p1.getId() == binding.gotoPreferences.getId()) {
             gotoSettings();
         } else if (p1.getId() == binding.openProject.getId()) {
             pickProject();
         } else if(p1.getId() == binding.openTerminal.getId()) {
+            if (true) {
+                throw  new RuntimeException ("hello. this is a crash handler test");
+            }
             startActivity(new Intent(this, TerminalActivity.class));
         }
 	}

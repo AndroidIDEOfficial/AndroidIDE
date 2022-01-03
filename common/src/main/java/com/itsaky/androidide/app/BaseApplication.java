@@ -51,7 +51,6 @@ public abstract class BaseApplication extends MultiDexApplication {
     private StudioUtils mUtils;
 	private PreferenceManager mPrefsManager;
     private NotificationManager mNotificationManager;
-    private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
     
     public static final long BUSYBOX_VERSION = 1;
     public static final String TAG = "StudioApp";
@@ -65,9 +64,7 @@ public abstract class BaseApplication extends MultiDexApplication {
     
     @Override
     public void onCreate() {
-        this.instance = this;
-        this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> handleCrash(thread, ex));
+        instance = this;
         super.onCreate();
         
         mPrefsManager = new PreferenceManager(this);
@@ -237,21 +234,6 @@ public abstract class BaseApplication extends MultiDexApplication {
             return "armeabi-v7a";
         }
         throw new UnsupportedOperationException ("Device not supported");
-    }
-
-    private void handleCrash(Thread thread, Throwable th) {
-        writeException(th);
-
-        if(this.uncaughtExceptionHandler != null) {
-            this.uncaughtExceptionHandler.uncaughtException(thread, th);
-        }
-
-        // TODO Show exception in another activity
-        try {
-            android.os.Process.killProcess(android.os.Process.myPid());
-        } catch (Throwable ignored) {
-            // ignored
-        }
     }
 
     public String getAssetsDataFile() {

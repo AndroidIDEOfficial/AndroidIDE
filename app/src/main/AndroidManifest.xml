@@ -22,11 +22,19 @@
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute,MediaCapabilities">
         <activity
+            android:name=".CrashHandlerActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.itsaky.androidide.REPORT_CRASH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -54,6 +62,7 @@
             android:name=".TerminalActivity"
             android:configChanges="orientation|screenSize|uiMode"
             android:windowSoftInputMode="adjustResize" />
+
         <service
             android:name=".services.MessagingService"
             android:exported="false">
@@ -61,6 +70,7 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <receiver
             android:name=".services.LogReceiver"
             android:enabled="true"
@@ -69,6 +79,7 @@
                 <action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
             </intent-filter>
         </receiver>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
@@ -79,4 +90,5 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/cms_channel_id_devs" />
     </application>
+
 </manifest>
