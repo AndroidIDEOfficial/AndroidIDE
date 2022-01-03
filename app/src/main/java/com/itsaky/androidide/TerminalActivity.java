@@ -30,7 +30,6 @@ import android.widget.LinearLayout;
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityTerminalBinding;
 import com.itsaky.androidide.models.ConstantsBridge;
@@ -151,7 +150,7 @@ public class TerminalActivity extends StudioActivity {
         }
         
         session = new TerminalSession (
-                Environment.SHELL.getAbsolutePath (), // Shell command
+                getShellPath(), // Shell command
                 workingDirectory, // Working directory
                 new String[]{}, // Arguments
                 env, // Environment variables
@@ -162,8 +161,18 @@ public class TerminalActivity extends StudioActivity {
         return session;
     }
     
+    @NonNull
+    private String getShellPath () {
+        if (Environment.SHELL.exists () && Environment.SHELL.isFile ()) {
+            return Environment.SHELL.getAbsolutePath ();
+        }
+        
+        LOG.error ("Default shell does not exist. Falling back to '/system/bin/sh'.", "This should not happen in normal circumstances.");
+        return "/system/bin/sh";
+    }
     
-    private final class KeyListener implements VirtualKeysView.IVirtualKeysView {
+    
+    private static final class KeyListener implements VirtualKeysView.IVirtualKeysView {
         
         private final TerminalView terminal;
         
@@ -192,7 +201,7 @@ public class TerminalActivity extends StudioActivity {
                     } else if (SpecialButton.FN.getKey ().equals (key)) {
                         fnDown = true;
                     } else {
-                        onTerminalExtraKeyButtonClick (view, key, ctrlDown, altDown, shiftDown, fnDown);
+                        onTerminalExtraKeyButtonClick (key, ctrlDown, altDown, shiftDown, fnDown);
                         ctrlDown = false;
                         altDown = false;
                         shiftDown = false;
@@ -200,11 +209,11 @@ public class TerminalActivity extends StudioActivity {
                     }
                 }
             } else {
-                onTerminalExtraKeyButtonClick (view, buttonInfo.getKey (), false, false, false, false);
+                onTerminalExtraKeyButtonClick (buttonInfo.getKey (), false, false, false, false);
             }
         }
         
-        protected void onTerminalExtraKeyButtonClick (View view, String key, boolean ctrlDown, boolean altDown, boolean shiftDown, boolean fnDown) {
+        protected void onTerminalExtraKeyButtonClick (String key, boolean ctrlDown, boolean altDown, boolean shiftDown, boolean fnDown) {
             if (VirtualKeysConstants.PRIMARY_KEY_CODES_FOR_STRINGS.containsKey (key)) {
                 Integer keyCode = VirtualKeysConstants.PRIMARY_KEY_CODES_FOR_STRINGS.get (key);
                 if (keyCode == null) {
@@ -287,10 +296,8 @@ public class TerminalActivity extends StudioActivity {
         @Override
         public void onPasteTextFromClipboard (TerminalSession session) {
             String clip = ClipboardUtils.getText ().toString ();
-            if (clip != null && clip.trim ().length () >= 0) {
-                if (terminal != null && terminal.mEmulator != null) {
-                    terminal.mEmulator.paste (ClipboardUtils.getText ().toString ());
-                }
+            if (terminal != null && terminal.mEmulator != null) {
+                terminal.mEmulator.paste (clip);
             }
         }
         
@@ -353,13 +360,13 @@ public class TerminalActivity extends StudioActivity {
         @Override
         public boolean readControlKey () {
             Boolean state = binding.virtualKeyTable.readSpecialButton (SpecialButton.CTRL, true);
-            return state != null && state.booleanValue ();
+            return state != null && state;
         }
         
         @Override
         public boolean readAltKey () {
             Boolean state = binding.virtualKeyTable.readSpecialButton (SpecialButton.ALT, true);
-            return state != null && state.booleanValue ();
+            return state != null && state;
         }
         
         @Override
