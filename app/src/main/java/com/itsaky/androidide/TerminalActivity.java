@@ -32,6 +32,7 @@ import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityTerminalBinding;
+import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
@@ -163,11 +164,17 @@ public class TerminalActivity extends StudioActivity {
     
     @NonNull
     private String getShellPath () {
-        if (Environment.SHELL.exists () && Environment.SHELL.isFile ()) {
+        final var useSystemShell = getApp ().getPrefManager ().getBoolean (PreferenceManager.KEY_TERMINAL_SHELL);
+        if (!useSystemShell &&
+                Environment.SHELL.exists () &&
+                Environment.SHELL.isFile ()) {
             return Environment.SHELL.getAbsolutePath ();
         }
         
-        LOG.error ("Default shell does not exist. Falling back to '/system/bin/sh'.", "This should not happen in normal circumstances.");
+        if (!useSystemShell) {
+            LOG.error ("Default shell does not exist. Falling back to '/system/bin/sh'.", "This should not happen in normal circumstances.");
+        }
+        
         return "/system/bin/sh";
     }
     

@@ -18,10 +18,13 @@
 package com.itsaky.androidide.fragments.preferences;
 
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.utils.DialogUtils;
 
 import static com.itsaky.androidide.managers.PreferenceManager.*;
 
@@ -35,6 +38,7 @@ public class GeneralPreferences extends BasePreferenceFragment implements Prefer
         final PreferenceScreen screen = getPreferenceScreen();
 		final SwitchPreference openProjects = new SwitchPreference(getContext());
         final SwitchPreference confirmProjectOpen = new SwitchPreference(getContext());
+        final SwitchPreference shell = new SwitchPreference (getContext ());
         
         openProjects.setKey(KEY_OPEN_PROJECTS);
         openProjects.setTitle(R.string.title_open_projects);
@@ -46,25 +50,40 @@ public class GeneralPreferences extends BasePreferenceFragment implements Prefer
         confirmProjectOpen.setSummary(R.string.msg_confirm_project_open);
         confirmProjectOpen.setIcon(R.drawable.ic_open_project);
         
+        shell.setKey (KEY_TERMINAL_SHELL);
+        shell.setTitle (getString (R.string.title_default_shell));
+        shell.setSummary (getString (R.string.msg_default_shell));
+        shell.setIcon (R.drawable.ic_bash_commands);
+        
         openProjects.setChecked(getPrefManager().autoOpenProject());
         confirmProjectOpen.setChecked(getPrefManager().confirmProjectOpen());
+        shell.setChecked (getPrefManager ().getBoolean (KEY_TERMINAL_SHELL));
         
         screen.addPreference(openProjects);
         screen.addPreference(confirmProjectOpen);
+        screen.addPreference (shell);
         
         setPreferenceScreen(screen);
         
         openProjects.setOnPreferenceChangeListener(this);
         confirmProjectOpen.setOnPreferenceChangeListener(this);
+        shell.setOnPreferenceChangeListener (this);
     }
-
+    
     @Override
-    public boolean onPreferenceChange(Preference p1, Object p2) {
+    public boolean onPreferenceChange(@NonNull Preference p1, Object p2) {
         boolean checked = (Boolean) p2;
-        if(p1.getKey().equals(KEY_OPEN_PROJECTS)) {
-            getPrefManager().putBoolean(KEY_OPEN_PROJECTS, checked);
-        } else if(p1.getKey().equals(KEY_CONFIRM_PROJECT_OPEN)) {
-            getPrefManager().putBoolean(KEY_CONFIRM_PROJECT_OPEN, checked);
+        final var key = p1.getKey ();
+        switch (key) {
+            case KEY_OPEN_PROJECTS:
+                getPrefManager ().putBoolean (KEY_OPEN_PROJECTS, checked);
+                break;
+            case KEY_CONFIRM_PROJECT_OPEN:
+                getPrefManager ().putBoolean (KEY_CONFIRM_PROJECT_OPEN, checked);
+                break;
+            case KEY_TERMINAL_SHELL:
+                getPrefManager ().putBoolean (KEY_TERMINAL_SHELL, checked);
+                break;
         }
         return true;
     }

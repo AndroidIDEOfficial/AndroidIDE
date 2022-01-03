@@ -259,9 +259,11 @@
     <string name="idepref_editor_title">Editor</string>
     <string name="idepref_build_title">Build &amp; Run</string>
     <string name="title_open_projects">Open last project</string>
-    <string name="msg_open_projects">Do you want me to automatically open last opened project?</string>
+    <string name="msg_open_projects">If checked, the IDE will remember the last opened project and it will be reopened on next startup.</string>
     <string name="title_confirm_project_open">Confirm project opening</string>
-    <string name="msg_confirm_project_open">Should I ask before automatically opening project?</string>
+    <string name="msg_confirm_project_open">Ask before opening last opened project.</string>
+    <string name="title_default_shell">Use system shell in terminal</string>
+    <string name="msg_default_shell">If checked, \'/system/bin/sh\' will be used in terminal.</string>
     <string name="title_general">General</string>
     <string name="title_tab_size">Tab size</string>
     <string name="msg_tab_size">Specify number of spaces for TAB</string>
