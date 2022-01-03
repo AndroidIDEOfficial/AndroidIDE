@@ -159,9 +159,6 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
         } else if (p1.getId() == binding.openProject.getId()) {
             pickProject();
         } else if(p1.getId() == binding.openTerminal.getId()) {
-            if (true) {
-                throw  new RuntimeException ("hello. this is a crash handler test");
-            }
             startActivity(new Intent(this, TerminalActivity.class));
         }
 	}
