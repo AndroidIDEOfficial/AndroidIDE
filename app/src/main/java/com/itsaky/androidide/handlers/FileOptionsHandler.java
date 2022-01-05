@@ -22,7 +22,6 @@ import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding;
@@ -299,7 +298,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
                 }
                 EditorFragment frag = activity().getPagerAdapter().findEditorByFile(f);
                 if(frag != null) {
-                    activity().closeFile(activity().getPagerAdapter().getFragments().indexOf(frag));
+                    activity().closeFile(activity().getPagerAdapter().getFiles ().indexOf(frag));
                 }
             }
         })

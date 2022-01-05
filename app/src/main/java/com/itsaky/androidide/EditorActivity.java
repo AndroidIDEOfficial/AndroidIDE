@@ -134,7 +134,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         NavigationView.OnNavigationItemSelectedListener,
         DiagnosticClickListener,
         EditorFragment.FileOpenListener,
-        EditorPagerAdapter.EditorStateListener,
         IDEHandler.Provider,
         EditorActivityProvider {
     
@@ -202,59 +201,29 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         setSupportActionBar (mBinding.editorToolbar);
         
         getProjectFromIntent ();
-        mPagerAdapter = new EditorPagerAdapter (getSupportFragmentManager (), this.mProject);
+        
+        mPagerAdapter = new EditorPagerAdapter (this, this.mProject);
         mFileTreeFragment = FileTreeFragment.newInstance (this.mProject).setFileActionListener (this);
         mDaemonStatusFragment = new TextSheetFragment ().setTextSelectable (true);
         
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle (this, mBinding.editorDrawerLayout, mBinding.editorToolbar, R.string.app_name, R.string.app_name);
-        mBinding.editorDrawerLayout.addDrawerListener (toggle);
-        mBinding.startNav.setNavigationItemSelectedListener (this);
-        toggle.syncState ();
+        setupDrawerToggle ();
         loadFragment (mFileTreeFragment);
         
         symbolInput = new SymbolInputView (this);
         mBinding.bottomSheet.textContainer.addView (symbolInput, 0, new ViewGroup.LayoutParams (-1, -2));
         
+        final var mediator = new TabLayoutMediator (mBinding.tabs,
+                mBinding.editorViewPager,
+                true,
+                false, // Do NOT enable smooth scrolls. Doing so results in error. Any workaround or fix will be appreciated.
+                (tab, position) -> tab.setText (mPagerAdapter.getEditorTitle (position)));
+        mBinding.editorViewPager.setUserInputEnabled (false);
         mBinding.editorViewPager.setOffscreenPageLimit (9);
         mBinding.editorViewPager.setAdapter (mPagerAdapter);
-        mBinding.tabs.setupWithViewPager (mBinding.editorViewPager);
         mBinding.tabs.addOnTabSelectedListener (this);
-    
-        bottomSheetTabAdapter = new EditorBottomSheetTabAdapter (this);
-        mBinding.bottomSheet.pager.setAdapter (bottomSheetTabAdapter);
-        
-        final var mediator = new TabLayoutMediator (mBinding.bottomSheet.tabs,
-                mBinding.bottomSheet.pager,
-                true,
-                true,
-                (tab, position) -> tab.setText (bottomSheetTabAdapter.getTitle (position)));
         mediator.attach ();
-        mBinding.bottomSheet.pager.setUserInputEnabled (false);
-        mBinding.bottomSheet.pager.setOffscreenPageLimit (bottomSheetTabAdapter.getItemCount () - 1);  // DO not remove any views
         
-        //noinspection rawtypes
-        mEditorBottomSheet = (EditorBottomSheetBehavior) EditorBottomSheetBehavior.from (mBinding.bottomSheet.getRoot ());
-        mEditorBottomSheet.setBinding (mBinding.bottomSheet);
-        mEditorBottomSheet.addBottomSheetCallback (new BottomSheetBehavior.BottomSheetCallback () {
-            @Override
-            public void onStateChanged (@NonNull View bottomSheet, int newState) {
-                mBinding.bottomSheet.textContainer.setVisibility (newState == BottomSheetBehavior.STATE_EXPANDED ? View.INVISIBLE : View.VISIBLE);
-            }
-    
-            @Override
-            public void onSlide (@NonNull View bottomSheet, float slideOffset) {
-                mBinding.bottomSheet.textContainer.setAlpha (1f - slideOffset);
-            }
-        });
-        
-        if (!getApp ().getPrefManager ().getBoolean (KEY_BOTTOM_SHEET_SHOWN) && mEditorBottomSheet.getState ()!= BottomSheetBehavior.STATE_EXPANDED) {
-            mEditorBottomSheet.setState (BottomSheetBehavior.STATE_EXPANDED);
-            
-            new Handler (Looper.getMainLooper ()).postDelayed (() -> {
-                mEditorBottomSheet.setState (BottomSheetBehavior.STATE_COLLAPSED);
-                getApp ().getPrefManager ().putBoolean (KEY_BOTTOM_SHEET_SHOWN, true);
-            }, 1500);
-        }
+        setupEditorBottomSheet ();
         
         createQuickActions ();
         
@@ -272,6 +241,52 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         startLanguageServers ();
         
         mUIDesignerLauncher = registerForActivityResult (new ActivityResultContracts.StartActivityForResult (), this::onGetUIDesignerResult);
+    }
+    
+    private void setupDrawerToggle () {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle (this, mBinding.editorDrawerLayout, mBinding.editorToolbar, R.string.app_name, R.string.app_name);
+        mBinding.editorDrawerLayout.addDrawerListener (toggle);
+        mBinding.startNav.setNavigationItemSelectedListener (this);
+        toggle.syncState ();
+    }
+    
+    private void setupEditorBottomSheet () {
+        bottomSheetTabAdapter = new EditorBottomSheetTabAdapter (this);
+        mBinding.bottomSheet.pager.setAdapter (bottomSheetTabAdapter);
+        
+        final var mediator = new TabLayoutMediator (mBinding.bottomSheet.tabs,
+                mBinding.bottomSheet.pager,
+                true,
+                true,
+                (tab, position) -> tab.setText (bottomSheetTabAdapter.getTitle (position)));
+        
+        mediator.attach ();
+        mBinding.bottomSheet.pager.setUserInputEnabled (false);
+        mBinding.bottomSheet.pager.setOffscreenPageLimit (bottomSheetTabAdapter.getItemCount () - 1);  // DO not remove any views
+        
+        //noinspection rawtypes
+        mEditorBottomSheet = (EditorBottomSheetBehavior) EditorBottomSheetBehavior.from (mBinding.bottomSheet.getRoot ());
+        mEditorBottomSheet.setBinding (mBinding.bottomSheet);
+        mEditorBottomSheet.addBottomSheetCallback (new BottomSheetBehavior.BottomSheetCallback () {
+            @Override
+            public void onStateChanged (@NonNull View bottomSheet, int newState) {
+                mBinding.bottomSheet.textContainer.setVisibility (newState == BottomSheetBehavior.STATE_EXPANDED ? View.INVISIBLE : View.VISIBLE);
+            }
+            
+            @Override
+            public void onSlide (@NonNull View bottomSheet, float slideOffset) {
+                mBinding.bottomSheet.textContainer.setAlpha (1f - slideOffset);
+            }
+        });
+        
+        if (!getApp ().getPrefManager ().getBoolean (KEY_BOTTOM_SHEET_SHOWN) && mEditorBottomSheet.getState () != BottomSheetBehavior.STATE_EXPANDED) {
+            mEditorBottomSheet.setState (BottomSheetBehavior.STATE_EXPANDED);
+            
+            new Handler (Looper.getMainLooper ()).postDelayed (() -> {
+                mEditorBottomSheet.setState (BottomSheetBehavior.STATE_COLLAPSED);
+                getApp ().getPrefManager ().putBoolean (KEY_BOTTOM_SHEET_SHOWN, true);
+            }, 1500);
+        }
     }
     
     @Override
@@ -495,20 +510,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return mIDEProject;
     }
     
-    @Override
-    public void editorStateChanged () {
-        for (int i = 0; i < mBinding.tabs.getTabCount (); i++) {
-            try {
-                final var tab = mBinding.tabs.getTabAt (i);
-                if (tab != null) {
-                    tab.setText (mPagerAdapter.getPageTitle (i));
-                }
-            } catch (Throwable th) {
-                th.printStackTrace ();
-            }
-        }
-    }
-    
     public void handleSearchResults (Map<File, List<SearchResult>> results) {
         setSearchResultAdapter (new com.itsaky.androidide.adapters.SearchListAdapter (results, file -> {
             openFile (file);
@@ -519,7 +520,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }));
         
         showSearchResults ();
-    
+        
         if (mSearchingProgress != null && mSearchingProgress.isShowing ()) {
             mSearchingProgress.dismiss ();
         }
@@ -538,7 +539,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public void showDaemonStatus () {
-        ShellServer shell = getApp ().newShell (t -> getDaemonStatusFragment ().append (t.toString ()));
+        ShellServer shell = getApp ().newShell (t -> getDaemonStatusFragment ().append (t));
         shell.bgAppend (String.format ("echo '%s'", getString (R.string.msg_getting_daemom_status)));
         shell.bgAppend (String.format ("cd '%s' && sh gradlew --status", mProject.getProjectPath ()));
         if (!getDaemonStatusFragment ().isShowing ()) {
@@ -635,12 +636,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final int width = view.getWidth ();
         view.getWindowVisibleDisplayFrame (r);
         if (r.width () != width) {
-    
+            
             // Will be true when the view is going out of screen to left
             if (initialX < r.left) {
                 view.setX (SizeUtils.dp2px (8)); // an offset of 8dp from the left edge of screen
             }
-    
+            
             // Will be true when the view is going out of screen to right
             if (initialX + width > r.right) {
                 view.setX (r.right - SizeUtils.dp2px (8) - width);  // position to the right but leaving 8dp space from the right edge of screen
@@ -666,11 +667,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     @Override
     public void
     onTabSelected (@NonNull TabLayout.Tab tab) {
-        EditorFragment current = mPagerAdapter.getFrag (tab.getPosition ());
-        if (current != null && current.getFile () != null) {
-            mCurrentFragment = current;
-            mCurrentFile = current.getFile ();
-            refreshSymbolInput (current);
+        final var opened = mPagerAdapter.getOpenedFile (tab.getPosition ());
+        if (opened != null && opened.file != null && opened.fragment != null) {
+            mCurrentFragment = opened.fragment;
+            mCurrentFile = opened.file;
+            refreshSymbolInput (mCurrentFragment);
         }
         
         invalidateOptionsMenu ();
@@ -678,11 +679,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     @Override
     public void onTabUnselected (@NonNull TabLayout.Tab tab) {
-        EditorFragment frag = mPagerAdapter.getFrag (tab.getPosition ());
-        if (frag == null) {
+        final var opened = mPagerAdapter.getOpenedFile (tab.getPosition ());
+        if (opened == null) {
             return;
         }
-        boolean isGradle = frag.isModified () && frag.getFile ().getName ().endsWith (EditorFragment.EXT_GRADLE);
+        
+        final var frag = opened.fragment;
+        boolean isGradle = frag.isModified () && opened.file.getName ().endsWith (EditorFragment.EXT_GRADLE);
         frag.save ();
         if (isGradle) {
             notifySyncNeeded ();
@@ -875,47 +878,34 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public void closeFile (int index, boolean selectOther) {
-        mBinding.tabs.removeOnTabSelectedListener (this);
+//        mBinding.tabs.removeOnTabSelectedListener (this);
+        mPagerAdapter.closeFileAt (index);
+//        mBinding.tabs.addOnTabSelectedListener (this);
         
-        int pos = index;
-        final List<Fragment> frags = mPagerAdapter.getFragments ();
-        final List<File> files = mPagerAdapter.getOpenedFiles ();
-        
-        final EditorFragment editorFragment = mPagerAdapter.getFrag (index);
-        
-        frags.remove (index);
-        files.remove (index);
-        
-        if (editorFragment != null && editorFragment.getEditor () != null) {
-            editorFragment.getEditor ().close ();
-        }
-        
-        mPagerAdapter = new EditorPagerAdapter (getSupportFragmentManager (), mProject, frags, files);
-        mBinding.editorViewPager.setAdapter (mPagerAdapter);
-        mBinding.tabs.setupWithViewPager (mBinding.editorViewPager);
-        mBinding.tabs.addOnTabSelectedListener (this);
-        
-        if (selectOther) {
-            if (pos < 0 || pos >= frags.size ()) {
-                int i = pos - 1;
-                if (i >= 0 && i < frags.size ()) {
-                    pos = i;
-                } else {
-                    i = pos + 1;
-                    if (i >= 0 && i < frags.size ()) {
-                        pos = i;
-                    }
-                }
-            }
-            mBinding.editorViewPager.setCurrentItem (pos, false);
-        }
-        
-        if (mPagerAdapter.getCount () <= 0) {
+        if (mPagerAdapter.getItemCount () <= 0) {
             mCurrentFragment = null;
             mCurrentFile = null;
         }
         
         invalidateOptionsMenu ();
+        
+        if (mPagerAdapter.getItemCount () == 0 &&
+                (mBinding.editorViewPager.getChildCount () != 0 || mBinding.tabs.getChildCount () != 0)) {
+            // TODO Find out why this happens
+            //    Mostly for java files...
+            mBinding.editorViewPager.removeAllViews ();
+            mBinding.tabs.removeAllViews ();
+        }
+    }
+    
+    public void closeAll () {
+        mBinding.tabs.removeOnTabSelectedListener (this);
+        mPagerAdapter.closeAllFiles ();
+        mBinding.tabs.addOnTabSelectedListener (this);
+    }
+    
+    public void closeOthers () {
+        mPagerAdapter.closeOthers (mBinding.tabs.getSelectedTabPosition ());
     }
     
     /////////////////////////////////////////////////
@@ -926,14 +916,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private void onGetUIDesignerResult (@NonNull ActivityResult result) {
         if (mCurrentFragment != null && mCurrentFragment.getEditor () != null && result.getResultCode () == RESULT_OK) {
             final var data = result.getData ();
-            if (data != null) {
+            if (data != null && data.hasExtra (DesignerActivity.KEY_GENERATED_CODE)) {
                 final var code = data.getStringExtra (DesignerActivity.KEY_GENERATED_CODE);
                 mCurrentFragment.getEditor ().setText (code);
                 saveAll ();
             } else {
                 final var msg = getString (R.string.msg_invalid_designer_result);
                 getApp ().toast (msg, Toaster.Type.ERROR);
-                LOG.error (msg, "Data returned by UI Designer is null");
+                LOG.error (msg, "Data returned by UI Designer is null or is invalid.");
             }
         } else {
             LOG.error ("UI Designer returned an invalid result code.", "Result code: " + result.getResultCode ());
@@ -1057,6 +1047,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void refreshSymbolInput (@NonNull EditorFragment frag) {
+        if (frag.getEditor () == null || frag.getFile () == null) {
+            return;
+        }
+        
         symbolInput.bindEditor (frag.getEditor ());
         symbolInput.setSymbols (Symbols.forFile (frag.getFile ()));
     }
@@ -1085,7 +1079,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         LSP.shutdownAll ();
         
         getApp ().stopAllDaemons ();
-    
+        
         if (manualFinish) {
             finish ();
         }
@@ -1163,7 +1157,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                         if (str == null || str.trim ().isEmpty ()) {
                             continue;
                         }
-    
+                        
                         extensionList.add (str);
                     }
                 } else {
@@ -1231,30 +1225,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 closeAll ();
             }
         });
-    }
-    
-    private void closeAll () {
-        mBinding.tabs.removeOnTabSelectedListener (this);
-        
-        mPagerAdapter = new EditorPagerAdapter (getSupportFragmentManager (), mProject);
-        mBinding.editorViewPager.setAdapter (mPagerAdapter);
-        mBinding.tabs.setupWithViewPager (mBinding.editorViewPager);
-        mBinding.tabs.addOnTabSelectedListener (this);
-    }
-    
-    private void closeOthers () {
-        final EditorFragment frag = mPagerAdapter.getFrag (mBinding.tabs.getSelectedTabPosition ());
-        final File file = mPagerAdapter.getOpenedFiles ().get (mBinding.tabs.getSelectedTabPosition ());
-        try {
-            frag.save ();
-        } catch (Throwable th) {
-            LOG.error ("Failed to save file: " + file, th);
-        }
-        mPagerAdapter = new EditorPagerAdapter (getSupportFragmentManager (), mProject);
-        mBinding.editorViewPager.setAdapter (mPagerAdapter);
-        mBinding.tabs.setupWithViewPager (mBinding.editorViewPager);
-        mBinding.tabs.addOnTabSelectedListener (this);
-        openFile (file);
     }
     
     private static final Logger LOG = Logger.instance ("EditorActivity");

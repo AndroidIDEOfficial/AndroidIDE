@@ -81,6 +81,7 @@ public class StudioApp extends BaseApplication {
             if(this.uncaughtExceptionHandler != null) {
                 this.uncaughtExceptionHandler.uncaughtException(thread, th);
             }
+            System.exit (1);
         } catch (Throwable error) {
             LOG.error ("Unable to show crash handler activity", error);
         }

@@ -50,12 +50,11 @@
 				app:tabIndicatorHeight="@dimen/file_tab_height"
                 app:tabTextAppearance="@style/AppTheme.TabLayout.Title"
                 app:tabSelectedTextColor="@color/primaryTextColor"
-				app:tabMode="scrollable"
-				app:tabGravity="fill"/>
+				app:tabMode="scrollable" />
 
 		</com.google.android.material.appbar.AppBarLayout>
 
-		<com.itsaky.androidide.views.NonSwipableViewPager
+		<androidx.viewpager2.widget.ViewPager2
 			android:id="@+id/editor_viewPager"
 			android:layout_height="match_parent"
 			android:layout_width="match_parent"
