@@ -22,27 +22,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
 import com.itsaky.androidide.databinding.FragmentEditorBinding;
-import com.itsaky.androidide.fragments.preferences.EditorPreferences;
 import com.itsaky.androidide.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.language.java.JavaLanguage;
 import com.itsaky.androidide.language.xml.XMLLanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ReadFileTask;
 import com.itsaky.androidide.utils.LSPUtils;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 
-import io.github.rosemoe.editor.interfaces.EditorEventListener;
-import io.github.rosemoe.editor.langs.EmptyLanguage;
-import io.github.rosemoe.editor.widget.CodeEditor;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 
 import java.io.File;
 import java.io.StringReader;
@@ -51,26 +54,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
+import io.github.rosemoe.editor.interfaces.EditorEventListener;
+import io.github.rosemoe.editor.langs.EmptyLanguage;
+import io.github.rosemoe.editor.widget.CodeEditor;
 
 public class EditorFragment extends BaseFragment implements EditorEventListener {
     
     public FragmentEditorBinding mBinding;
     private File mFile;
-    private boolean isRead = false;
     private boolean isModified = false;
     private boolean isFirstCreate = false;
     
     private ModificationStateListener mModificationStateListener;
     private FileOpenListener mOpenListener;
-    private static AndroidProject mProject;
+    
+    private static final Logger LOG = Logger.instance ("EditorFragment");
     
     public static final String KEY_FILE_PATH = "file_path";
-    public static final String KEY_PROJECT = "project";
     public static final String KEY_LINE_START = "line_start";
     public static final String KEY_LINE_END = "line_end";
     public static final String KEY_COLUMN_START = "col_start";
@@ -89,30 +89,19 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         return this;
     }
     
-    public String getTabTitle () {
-        if (getFile () != null) {
-            String title = getFile ().getName ();
-            if (isModified ()) {
-                title += "*";
-            }
-            
-            return title;
-        }
-        return "";
-    }
-    
     public FragmentEditorBinding getBinding () {
         return mBinding;
     }
     
-    public static EditorFragment newInstance (File file, AndroidProject project, Range selection) {
+    @NonNull
+    public static EditorFragment newInstance (@NonNull File file, @NonNull Range selection) {
         Bundle bundle = new Bundle ();
         bundle.putString (KEY_FILE_PATH, file.getAbsolutePath ());
         bundle.putInt (KEY_LINE_START, selection.getStart ().getLine ());
         bundle.putInt (KEY_LINE_END, selection.getEnd ().getLine ());
         bundle.putInt (KEY_COLUMN_START, selection.getStart ().getCharacter ());
         bundle.putInt (KEY_COLUMN_END, selection.getEnd ().getCharacter ());
-        bundle.putParcelable (KEY_PROJECT, project);
+        
         EditorFragment frag = new EditorFragment ();
         frag.setArguments (bundle);
         return frag;
@@ -137,25 +126,23 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     }
     
     @Override
-    public void onSaveInstanceState (Bundle outState) {
+    public void onSaveInstanceState (@NonNull Bundle outState) {
         save ();
         super.onSaveInstanceState (outState);
     }
     
     @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView (@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = FragmentEditorBinding.inflate (inflater, container, false);
         return mBinding.getRoot ();
     }
     
     @Override
-    public void onViewCreated (View view, Bundle savedInstanceState) {
+    public void onViewCreated (@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
-        if (getActivity () == null || getArguments () == null || !getArguments ().containsKey (KEY_FILE_PATH) || !getArguments ().containsKey (KEY_PROJECT)) {
-            return;
-        }
-        mFile = new File (getArguments ().getString (KEY_FILE_PATH));
-        mProject = getArguments ().getParcelable (KEY_PROJECT);
+        
+        LOG.debug ("onViewCreated() called");
+        mFile = new File (requireArguments ().getString (KEY_FILE_PATH));
         
         mBinding.editor.setOverScrollEnabled (false);
         mBinding.editor.setTypefaceText (TypefaceUtils.jetbrainsMono ());
@@ -169,9 +156,11 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         
         mBinding.diagnosticTextContainer.setVisibility (View.GONE);
         
+        LOG.debug ("Configuring editor from preferences...");
         configureEditorIfNeeded ();
         
-        final Range range = fromArgs (getArguments ());
+        LOG.debug ("Reading initial selection range");
+        final Range range = fromArgs (requireArguments ());
         new TaskExecutor ().executeAsync (new ReadFileTask (mFile), result -> {
             mBinding.editor.setText (result);
             postRead ();
@@ -185,7 +174,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         });
     }
     
-    private Range fromArgs (Bundle args) {
+    private Range fromArgs (@NonNull Bundle args) {
         if (!(args.containsKey (KEY_LINE_START)
                 && args.containsKey (KEY_COLUMN_START)
                 && args.containsKey (KEY_LINE_END)
@@ -204,29 +193,27 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     }
     
     public void setDiagnostics (List<Diagnostic> diags) {
-        if (diags == null && mBinding.editor != null) {
-            mBinding.editor.getEditorLanguage ().getAnalyzer ().updateDiagnostics (new HashMap<Integer, Map<Integer, Diagnostic>> ());
+        if (diags == null) {
+            mBinding.editor.getEditorLanguage ().getAnalyzer ().updateDiagnostics (new HashMap<> ());
             return;
         }
-        if (mBinding.editor != null) {
-            Map<Integer, Map<Integer, Diagnostic>> map = new HashMap<> ();
-            for (int i = 0; i < diags.size (); i++) {
-                final Diagnostic d = diags.get (i);
-                if (d == null) {
-                    continue;
-                }
-                final Range range = d.getRange ();
-                final int line = range.getStart ().getLine ();
-                final int column = range.getStart ().getCharacter ();
-                Map<Integer, Diagnostic> mappedByColumn = map.get (line);
-                if (mappedByColumn == null) {
-                    mappedByColumn = new HashMap<> ();
-                }
-                mappedByColumn.put (column, d);
-                map.put (line, mappedByColumn);
+        Map<Integer, Map<Integer, Diagnostic>> map = new HashMap<> ();
+        for (int i = 0; i < diags.size (); i++) {
+            final Diagnostic d = diags.get (i);
+            if (d == null) {
+                continue;
             }
-            mBinding.editor.getEditorLanguage ().getAnalyzer ().updateDiagnostics (map);
+            final Range range = d.getRange ();
+            final int line = range.getStart ().getLine ();
+            final int column = range.getStart ().getCharacter ();
+            Map<Integer, Diagnostic> mappedByColumn = map.get (line);
+            if (mappedByColumn == null) {
+                mappedByColumn = new HashMap<> ();
+            }
+            mappedByColumn.put (column, d);
+            map.put (line, mappedByColumn);
         }
+        mBinding.editor.getEditorLanguage ().getAnalyzer ().updateDiagnostics (map);
     }
     
     private void configureEditorIfNeeded () {
@@ -319,8 +306,8 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         }
         
         final String text = mBinding.editor.getText ().toString ();
-        final boolean wrote = FileIOUtils.writeFileFromString (mFile, text);
-        notifySaved (wrote, text);
+        FileIOUtils.writeFileFromString (mFile, text);
+        notifySaved ();
         isModified = false;
     }
     
@@ -350,7 +337,6 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
         mBinding.editor.setFile (getFile ());
         
         mBinding.editor.setColorScheme (new SchemeAndroidIDE ());
-        isRead = true;
         if (mOpenListener != null) {
             mOpenListener.onOpenSuccessful (getFile (), getText ());
         }
@@ -396,6 +382,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
                 mBinding.editor.getText ().insert (line, col + 2, currentNames.get (0));
             }
         } catch (Throwable th) {
+            LOG.error ("Unable to close current tag", th);
         }
     }
     
@@ -450,7 +437,7 @@ public class EditorFragment extends BaseFragment implements EditorEventListener 
     public void beforeReplace (CodeEditor editor, CharSequence content) {
     }
     
-    private void notifySaved (boolean wrote, String text) {
+    private void notifySaved () {
         mBinding.editor.didSave ();
         
         if (mModificationStateListener != null) {

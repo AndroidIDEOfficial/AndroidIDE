@@ -26,10 +26,8 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import androidx.core.content.ContextCompat;
-import androidx.transition.ChangeBounds;
-import androidx.transition.Fade;
 import androidx.transition.TransitionManager;
-import androidx.transition.TransitionSet;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
@@ -54,7 +52,6 @@ import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageClient;
-import com.itsaky.lsp.services.IDELanguageServer;
 import com.itsaky.toaster.Toaster;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.widget.CodeEditor;
@@ -151,11 +148,15 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         if (activityProvider == null) return null;
         return activityProvider.provide();
     }
+    
+    private EditorFragment findEditorByFile (File file) {
+        return activity ().getEditorForFile (file);
+    }
 
     @Override
     public void semanticHighlights(SemanticHighlight highlights) {
         final File file = new File(URI.create(highlights.uri));
-        final EditorFragment editor = activity().getPagerAdapter().findEditorByFile(file);
+        final EditorFragment editor = findEditorByFile(file);
         
         if(editor != null) {
             editor.getEditor().setSemanticHighlights(highlights);
@@ -199,7 +200,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
             return;
         }
         
-        final EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+        final EditorFragment frag = findEditorByFile(file);
         if(frag == null || frag.getBinding() == null) {
             hideBottomDiagnosticView(file);
             return;
@@ -255,7 +256,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
             return;
         }
         
-        final EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+        final EditorFragment frag = findEditorByFile(file);
         if(frag == null || frag.getBinding() == null) {
             return;
         }
@@ -276,7 +277,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         SignatureInformation info = signatureWithMostParams(signature);
         if(info == null) return;
         activity().getBinding().symbolText.setText(formatSignature(info, signature.getActiveParameter()));
-        final EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+        final EditorFragment frag = findEditorByFile(file);
         if(frag != null) {
             final CodeEditor editor = frag.getEditor();
             final float[] cursor = editor.getCursorPosition();
@@ -362,7 +363,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
         
         EditorFragment editor = null;
-        if(activity().getPagerAdapter() != null && (editor = activity().getPagerAdapter().findEditorByFile(file)) != null) {
+        if(activity().getPagerAdapter() != null && (editor = findEditorByFile(file)) != null) {
             editor.setDiagnostics(params.getDiagnostics());
         }
     }
@@ -393,7 +394,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
                 if(loc == null || loc.getUri() == null || loc.getRange() == null) continue;
                 final File file = new File(URI.create(loc.getUri()));
                 if(!file.exists() || !file.isFile()) continue;
-                EditorFragment frag = activity().getPagerAdapter().findEditorByFile(file);
+                EditorFragment frag = findEditorByFile(file);
                 Content content;
                 if(frag != null && frag.getEditor() != null)
                     content = frag.getEditor().getText();
@@ -490,7 +491,8 @@ public class IDELanguageClientImpl implements IDELanguageClient {
             File file = new File(URI.create(params.getUri()));
             if(file.exists() && file.isFile() && FileUtils.isUtf8(file)) {
                 final Range range = params.getSelection();
-                EditorFragment frag = activity().getPagerAdapter().getFrag(activity().getBinding().tabs.getSelectedTabPosition());
+                EditorFragment frag = activity().getEditorAtIndex (
+                        activity().getBinding ().tabs.getSelectedTabPosition ());
                 if(frag != null
                    && frag.getFile() != null
                    && frag.getEditor() != null
@@ -587,7 +589,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
                     // Edit is in the same editor which requested the code action
                     editInEditor(editor, edit);
                 } else {
-                    EditorFragment openedFrag = activity().getPagerAdapter().findEditorByFile(file);
+                    EditorFragment openedFrag = findEditorByFile(file);
 
                     if(openedFrag != null && openedFrag.getEditor() != null) {
                         // Edit is in another 'opened' file

@@ -36,6 +36,7 @@ import com.itsaky.androidide.utils.ProjectWriter;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 import java.io.File;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class FileOptionsHandler extends IDEHandler implements OptionsListFragment.OnOptionsClickListener {
@@ -62,7 +63,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
 
     @Override
     public void onOptionsClick(SheetOption option) {
-        if(option.extra != null && option.extra instanceof File) {
+        if(option.extra instanceof File) {
             final File f = (File) option.extra;
             switch(option.id) {
                 case 0 :
@@ -121,21 +122,22 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
         builder.setTitle(R.string.new_java_class);
         builder.setPositiveButton(R.string.text_create, (p1, p2) -> {
             p1.dismiss();
-            final String name = binding.name.getEditText().getText().toString().trim();
+            final String name = Objects.requireNonNull (binding.name.getEditText ()).getText().toString().trim();
             final String pkgName = ProjectWriter.getPackageName(f);
             if(pkgName == null || pkgName.trim().length() <= 0) {
                 activity().getApp().toast(R.string.msg_get_package_failed, Toaster.Type.ERROR);
-                return;
             } else {
                 final int id = binding.typeGroup.getCheckedButtonId();
+                final var javaName = name.endsWith (".java") ? name : name.concat (".java");
+                final var className = !name.contains (".") ? name : name.substring (0, name.lastIndexOf ("."));
                 if(id == binding.typeClass.getId()) {
-                    createFile(f, name.endsWith(".java") ? name : name.concat(".java"), ProjectWriter.createJavaClass(pkgName, !name.contains(".") ? name : name.substring(0, name.lastIndexOf("."))));
+                    createFile(f, javaName, ProjectWriter.createJavaClass(pkgName, className));
                 } else if(id == binding.typeInterface.getId()) {
-                    createFile(f, name.endsWith(".java") ? name : name.concat(".java"), ProjectWriter.createJavaInterface(pkgName, !name.contains(".") ? name : name.substring(0, name.lastIndexOf("."))));
+                    createFile(f, javaName, ProjectWriter.createJavaInterface(pkgName, className));
                 } else if(id == binding.typeEnum.getId()) {
-                    createFile(f, name.endsWith(".java") ? name : name.concat(".java"), ProjectWriter.createJavaEnum(pkgName, !name.contains(".") ? name : name.substring(0, name.lastIndexOf("."))));
+                    createFile(f, javaName, ProjectWriter.createJavaEnum(pkgName, className));
                 } else if(id == binding.typeActivity.getId()) {
-                    createFile(f, name.endsWith(".java") ? name : name.concat(".java"), ProjectWriter.createActivity(pkgName, !name.contains(".") ? name : name.substring(0, name.lastIndexOf("."))));
+                    createFile(f, javaName, ProjectWriter.createActivity(pkgName, className));
                 } else {
                     createFile(f, name, "");
                 }
@@ -168,15 +170,14 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
         };
         final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
         builder.setTitle(R.string.new_xml_resource);
-        builder.setItems(labels, (p1, p2) -> {
-            final int pos = p2;
-            if(pos == 0) {
+        builder.setItems(labels, (dialogInterface, position) -> {
+            if(position == 0) {
                 createDrawableRes(new File(f, "drawable"));
-            } else if(pos == 1) {
+            } else if(position == 1) {
                 createLayoutRes(new File(f, "layout"));
-            } else if(pos == 2) {
+            } else if(position == 2) {
                 createMenuRes(new File(f, "menu"));
-            } else if(pos == 3) {
+            } else if(position == 3) {
                 createNewFile(f, true);
             }
         });
@@ -195,7 +196,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
         final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(activity(). getLayoutInflater());
         final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
 
-        binding.name.getEditText().setHint(R.string.file_name);
+        Objects.requireNonNull (binding.name.getEditText ()).setHint(R.string.file_name);
 
         builder.setTitle(R.string.new_file);
         builder.setMessage(activity(). getString(R.string.msg_can_contain_slashes).concat("\n\n").concat(activity(). getString(R.string.msg_newfile_dest, folder.getAbsolutePath())));
@@ -243,7 +244,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
         final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(activity(). getLayoutInflater());
         final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
 
-        binding.name.getEditText().setHint(R.string.folder_name);
+        Objects.requireNonNull (binding.name.getEditText ()).setHint(R.string.folder_name);
 
         builder.setTitle(R.string.new_folder);
         builder.setMessage(R.string.msg_can_contain_slashes);
@@ -296,9 +297,10 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
                 } else {
                     activity().getFileTreeFragment().listProjectFiles();
                 }
-                EditorFragment frag = activity().getPagerAdapter().findEditorByFile(f);
+                
+                EditorFragment frag = activity().getEditorForFile (f);
                 if(frag != null) {
-                    activity().closeFile(activity().getPagerAdapter().getFiles ().indexOf(frag));
+                    activity().closeFile(activity().findIndexOfEditorByFile (frag.getFile ()));
                 }
             }
         })
@@ -312,7 +314,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
         final LayoutDialogTextInputBinding binding = LayoutDialogTextInputBinding.inflate(LayoutInflater.from(activity()));
         MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
 
-        binding.name.getEditText().setHint(activity(). getString(R.string.new_name));
+        Objects.requireNonNull (binding.name.getEditText ()).setHint(activity(). getString(R.string.new_name));
         binding.name.getEditText().setText(f.getName());
 
         builder.setTitle(R.string.rename_file);
@@ -322,7 +324,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
         builder.setPositiveButton(R.string.rename_file, (p1, p2) -> {
             p1.dismiss();
             String name = binding.name.getEditText().getText().toString().trim();
-            boolean renamed = name != null && name.length() > 0 && name.length() <= 40 && FileUtils.rename(f, name);
+            boolean renamed = name.length () > 0 && name.length () <= 40 && FileUtils.rename (f, name);
             activity(). getApp().toast(renamed ? R.string.renamed : R.string.rename_failed, renamed ? Toaster.Type.SUCCESS : Toaster.Type.ERROR);
             if(renamed) {
                 LSP.notifyFileRenamed(f, name);

@@ -4781,6 +4781,9 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     public void close () {
         if (mLanguageServer != null && getFile () != null) {
             mLanguageServer.getTextDocumentService ().didClose (new DidCloseTextDocumentParams (new org.eclipse.lsp4j.TextDocumentIdentifier (getFile ().toURI ().toString ())));
+            LOG.info ("'textDocument/didClose' was sent to the language server.");
+        } else {
+            LOG.info ("No language server is available for this file");
         }
     }
     

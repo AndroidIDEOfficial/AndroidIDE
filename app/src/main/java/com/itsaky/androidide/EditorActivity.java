@@ -46,6 +46,7 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
 
@@ -86,6 +87,7 @@ import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.models.OpenedFile;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
@@ -101,6 +103,7 @@ import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
+import com.itsaky.androidide.viewmodel.EditorViewModel;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.inflater.ILayoutInflater;
@@ -142,11 +145,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private EditorPagerAdapter mPagerAdapter;
     private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
     private FileTreeFragment mFileTreeFragment;
-    private EditorFragment mCurrentFragment;
     private TreeNode mLastHeld;
     private SymbolInputView symbolInput;
-    private AndroidProject mProject;
-    private IDEProject mIDEProject;
     private BuildServiceHandler mBuildServiceHandler;
     private FileOptionsHandler mFileOptionsHandler;
     private QuickAction mTabCloseAction;
@@ -155,9 +155,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private ProgressSheet mSearchingProgress;
     private AlertDialog mFindInProjectDialog;
     private ActivityResultLauncher<Intent> mUIDesignerLauncher;
+    private EditorFragment mCurrentFragment;
     public static File mCurrentFile;
     @SuppressWarnings("rawtypes")
     private EditorBottomSheetBehavior mEditorBottomSheet;
+    
+    private EditorViewModel mViewModel;
     
     private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
     private static final Range Range_ofZero = new Range (new Position (0, 0), new Position (0, 0));
@@ -199,15 +202,20 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
         setSupportActionBar (mBinding.editorToolbar);
-        
+    
+        mViewModel = new ViewModelProvider (this).get (EditorViewModel.class);
         getProjectFromIntent ();
         
-        mPagerAdapter = new EditorPagerAdapter (this, this.mProject);
-        mFileTreeFragment = FileTreeFragment.newInstance (this.mProject).setFileActionListener (this);
+        mPagerAdapter = new EditorPagerAdapter (this, this);
+        mFileTreeFragment = FileTreeFragment.newInstance (this.getAndroidProject ()).setFileActionListener (this);
         mDaemonStatusFragment = new TextSheetFragment ().setTextSelectable (true);
         
         setupDrawerToggle ();
         loadFragment (mFileTreeFragment);
+        
+        mViewModel.observeFiles (this, files -> {
+            mPagerAdapter.setFiles (files);
+        });
         
         symbolInput = new SymbolInputView (this);
         mBinding.bottomSheet.textContainer.addView (symbolInput, 0, new ViewGroup.LayoutParams (-1, -2));
@@ -502,12 +510,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     @Override
     public AndroidProject provideAndroidProject () {
-        return mProject;
+        return getAndroidProject ();
     }
     
     @Override
     public IDEProject provideIDEProject () {
-        return mIDEProject;
+        return getIDEProject ();
     }
     
     public void handleSearchResults (Map<File, List<SearchResult>> results) {
@@ -531,7 +539,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public void setIDEProject (IDEProject project) {
-        this.mIDEProject = project;
+        if (mViewModel != null) {
+            mViewModel.setIDEProject (project);
+        }
     }
     
     public void appendBuildOut (final String str) {
@@ -541,7 +551,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public void showDaemonStatus () {
         ShellServer shell = getApp ().newShell (t -> getDaemonStatusFragment ().append (t));
         shell.bgAppend (String.format ("echo '%s'", getString (R.string.msg_getting_daemom_status)));
-        shell.bgAppend (String.format ("cd '%s' && sh gradlew --status", mProject.getProjectPath ()));
+        shell.bgAppend (String.format ("cd '%s' && sh gradlew --status", Objects.requireNonNull (getAndroidProject ()).getProjectPath ()));
         if (!getDaemonStatusFragment ().isShowing ()) {
             getDaemonStatusFragment ().show (getSupportFragmentManager (), "daemon_status");
         }
@@ -651,7 +661,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     public void openFileAndSelect (File file, org.eclipse.lsp4j.Range range) {
         openFile (file, range);
-        EditorFragment opened = mPagerAdapter.findEditorByFile (file);
+        EditorFragment opened = getEditorForFile (file);
         if (opened != null && opened.getEditor () != null) {
             CodeEditor editor = opened.getEditor ();
             editor.post (() -> {
@@ -665,12 +675,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     @Override
-    public void
-    onTabSelected (@NonNull TabLayout.Tab tab) {
+    public void onTabSelected (@NonNull TabLayout.Tab tab) {
         final var opened = mPagerAdapter.getOpenedFile (tab.getPosition ());
-        if (opened != null && opened.file != null && opened.fragment != null) {
-            mCurrentFragment = opened.fragment;
-            mCurrentFile = opened.file;
+        final var fragment = getEditorAtIndex (tab.getPosition ());
+        if (opened != null && opened.getFile () != null && fragment != null) {
+            mCurrentFragment = fragment;
+            mCurrentFile = opened.getFile ();
             refreshSymbolInput (mCurrentFragment);
         }
         
@@ -684,8 +694,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             return;
         }
         
-        final var frag = opened.fragment;
-        boolean isGradle = frag.isModified () && opened.file.getName ().endsWith (EditorFragment.EXT_GRADLE);
+        final var frag = getEditorForFile (opened.getFile ());
+        if (frag == null) {
+            return;
+        }
+        
+        boolean isGradle = frag.isModified () && opened.getFile ().getName ().endsWith (EditorFragment.EXT_GRADLE);
         frag.save ();
         if (isGradle) {
             notifySyncNeeded ();
@@ -777,33 +791,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     @Override
-    public EditorFragment openFile (File file) {
-        return openFile (file, null);
-    }
-    
-    public EditorFragment openFile (File file, org.eclipse.lsp4j.Range selection) {
-        if (selection == null) {
-            selection = Range_ofZero;
-        }
-        int i = mPagerAdapter.openFile (file, selection, this);
-        final var tab = mBinding.tabs.getTabAt (i);
-        if (tab != null && i >= 0 && !tab.isSelected ()) {
-            tab.select ();
-        }
-        
-        if (mBinding.editorDrawerLayout.isDrawerOpen (GravityCompat.END)) {
-            mBinding.editorDrawerLayout.closeDrawer (GravityCompat.END);
-        }
-        
-        invalidateOptionsMenu ();
-        try {
-            return mPagerAdapter.getFrag (i);
-        } catch (Throwable th) {
-            return null;
-        }
-    }
-    
-    @Override
     public void onOpenSuccessful (File file, String text) {
         // textDocument/didOpen is now handled by CodeEditor
     }
@@ -823,17 +810,56 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public boolean saveAll (boolean notify, boolean canProcessResources) {
-        SaveResult result = mPagerAdapter.saveAll ();
+        SaveResult result = saveAllResult ();
+        
         if (notify) {
             getApp ().toast (R.string.all_saved, Toaster.Type.SUCCESS);
         }
+        
         if (result.gradleSaved) {
             notifySyncNeeded ();
         }
+        
         if (result.xmlSaved && canProcessResources && getBuildService () != null) {
             getBuildService ().updateResourceClasses ();
         }
+        
         return result.gradleSaved;
+    }
+    
+    public SaveResult saveAllResult () {
+        SaveResult result = new SaveResult ();
+        for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
+            saveResult (i, result);
+        }
+        
+        return result;
+    }
+    
+    public void saveResult (int index, SaveResult result) {
+        if (index >= 0 && index < mViewModel.getOpenedFileCount ()) {
+            EditorFragment frag = getEditorAtIndex (index);
+            if (frag == null || frag.getFile () == null) {
+                return;
+            }
+            
+            // Must be called before frag.save()
+            // Otherwise, it'll always return false
+            final boolean modified = frag.isModified ();
+            
+            frag.save ();
+            
+            final boolean isGradle = frag.getFile ().getName ().endsWith (EditorFragment.EXT_GRADLE);
+            final boolean isXml = frag.getFile ().getName ().endsWith (EditorFragment.EXT_XML);
+            
+            if (!result.gradleSaved) {
+                result.gradleSaved = modified && isGradle;
+            }
+            
+            if (!result.xmlSaved) {
+                result.xmlSaved = modified && isXml;
+            }
+        }
     }
     
     public void install (@NonNull File apk) {
@@ -852,7 +878,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 return null;
             }
             
-            List<String> cps = mProject.getClassPaths ();
+            List<String> cps = Objects.requireNonNull (getAndroidProject ()).getClassPaths ();
             JsonObject settings = new JsonObject ();
             JsonObject java = new JsonObject ();
             JsonArray classPath = new JsonArray ();
@@ -873,14 +899,76 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }, __ -> setStatus (getString (getApp ().isXmlServiceStarted () ? R.string.msg_service_started : R.string.msg_starting_completion_failed)));
     }
     
-    public void closeFile (int index) {
-        closeFile (index, true);
+    @Override
+    public EditorFragment openFile (File file) {
+        return openFile (file, null);
     }
     
-    public void closeFile (int index, boolean selectOther) {
-//        mBinding.tabs.removeOnTabSelectedListener (this);
-        mPagerAdapter.closeFileAt (index);
-//        mBinding.tabs.addOnTabSelectedListener (this);
+    public EditorFragment openFile (File file, Range selection) {
+        if (selection == null) {
+            selection = Range_ofZero;
+        }
+        
+        int index = openFileAndGetIndex (file, selection);
+        final var tab = mBinding.tabs.getTabAt (index);
+        if (tab != null && index >= 0 && !tab.isSelected ()) {
+            tab.select ();
+        }
+        
+        if (mBinding.editorDrawerLayout.isDrawerOpen (GravityCompat.END)) {
+            mBinding.editorDrawerLayout.closeDrawer (GravityCompat.END);
+        }
+        
+        mBinding.editorViewPager.setCurrentItem (index);
+        
+        invalidateOptionsMenu ();
+        try {
+            return getEditorAtIndex (index);
+        } catch (Throwable th) {
+            LOG.error ("Unable to get editor fragment at opened file index (" + index + ").", th);
+            return null;
+        }
+    }
+    
+    @SuppressLint("NotifyDataSetChanged")
+    public int openFileAndGetIndex (File file, Range selection) {
+        final var openedFileIndex = findIndexOfEditorByFile (file);
+        
+        if (openedFileIndex != -1) {
+            LOG.error ("File is already opened. File: " + file);
+            return openedFileIndex;
+        }
+        
+        final var position = mViewModel.getOpenedFileCount ();
+        
+        LOG.info ("Opening file at index:", position, "file: ", file);
+        mViewModel.addFile (new OpenedFile (file, selection));
+        return position;
+    }
+    
+    public void closeFile (int index) {
+        mBinding.tabs.removeOnTabSelectedListener (this);
+        if (index >= 0 && index < mPagerAdapter.getItemCount ()) {// Save the file before closing
+            var opened = mViewModel.getOpenedFile (index);
+            LOG.info ("Saving file before close. File: " + opened.getFile ());
+            final var fragment = getEditorAtIndex (index);
+            if (fragment != null) {
+                fragment.save ();
+                LOG.info ("Language server will be notified if available");
+                fragment.getEditor ().close (); // Send 'textDocument/didClose' to language servers.
+            }
+        
+            opened = null;
+            
+            LOG.debug ("Removing file from file list...");
+            mViewModel.removeFile (index);
+        } else {
+            LOG.error ("Invalid file index. Cannot close any files");
+            mBinding.tabs.addOnTabSelectedListener (this);
+            return;
+        }
+        
+        mBinding.tabs.addOnTabSelectedListener (this);
         
         if (mPagerAdapter.getItemCount () <= 0) {
             mCurrentFragment = null;
@@ -900,12 +988,56 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     public void closeAll () {
         mBinding.tabs.removeOnTabSelectedListener (this);
-        mPagerAdapter.closeAllFiles ();
+        // Close all files one by one
+        // This will make sure that we save all the files and send 'textDocument/didClose' to language servers.
+        for (int i = 0; i < mPagerAdapter. getItemCount (); i++) {
+            closeFile (i);
+        }
         mBinding.tabs.addOnTabSelectedListener (this);
     }
     
     public void closeOthers () {
-        mPagerAdapter.closeOthers (mBinding.tabs.getSelectedTabPosition ());
+        final var index = mBinding.tabs.getSelectedTabPosition ();
+        for (int i = 0; i < mPagerAdapter. getItemCount (); i++) {
+            if (i != index) {
+                closeFile (i);
+            }
+        }
+    }
+    
+    public EditorFragment getEditorAtIndex (final int index) {
+        return getEditorForFile (mViewModel.getOpenedFile (index).getFile ());
+    }
+    
+    @Nullable
+    public EditorFragment getEditorForFile (@NonNull final File file) {
+        final var manager = getSupportFragmentManager ();
+        
+        final var tag = "f" + file.getAbsolutePath ().hashCode ();
+        final var fragment = manager.findFragmentByTag (tag);
+        
+        if (fragment == null) {
+            LOG.error ("No editor found for file: " + file);
+            return null;
+        }
+        
+        return (EditorFragment) fragment;
+    }
+    
+    public int findIndexOfEditorByFile (File file) {
+        if (file == null) {
+            LOG.error ("Cannot find index of a null file.");
+            return -1;
+        }
+        
+        for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
+            final var opened = mViewModel.getOpenedFile (i);
+            if (opened.getFile ().equals (file)) {
+                return i;
+            }
+        }
+        
+        return -1;
     }
     
     /////////////////////////////////////////////////
@@ -935,13 +1067,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         try {
             saveAll (false);
             if (getApp ().getLayoutInflater () == null) {
+                LOG.info ("Creating layout inflater instance...");
                 getApp ().createInflater (getApp ().createInflaterConfig (getContextProvider (), getResourceDirectories ()));
             }
             
             final Intent intent = new Intent (this, DesignerActivity.class);
             intent.putExtra (DesignerActivity.KEY_LAYOUT_PATH, mCurrentFile.getAbsolutePath ());
-            mUIDesignerLauncher.launch (intent);
             
+            LOG.info ("Launching UI Designer...");
+            mUIDesignerLauncher.launch (intent);
         } catch (Throwable th) {
             LOG.error (getString (R.string.err_cannot_preview_layout), th);
             getApp ().toast (R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
@@ -957,8 +1091,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     @NonNull
     private Set<File> getResourceDirectories () {
         final Set<File> dirs = new HashSet<> ();
-        if (mProject != null && mProject.getModulePaths () != null && !mProject.getModulePaths ().isEmpty ()) {
-            for (String path : mProject.getModulePaths ()) {
+        if (getAndroidProject () != null && getAndroidProject ().getModulePaths () != null && !getAndroidProject ().getModulePaths ().isEmpty ()) {
+            for (String path : getAndroidProject ().getModulePaths ()) {
                 if (path != null && new File (path).exists ()) {
                     File res = new File (path, "src/main/res");
                     if (res.exists ()) {
@@ -972,14 +1106,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     private void openTerminal () {
         final Intent intent = new Intent (this, TerminalActivity.class);
-        intent.putExtra (TerminalActivity.KEY_WORKING_DIRECTORY, mProject.getProjectPath ());
+        intent.putExtra (TerminalActivity.KEY_WORKING_DIRECTORY, Objects.requireNonNull (getAndroidProject ()).getProjectPath ());
         startActivity (intent);
     }
     
     private void startLanguageServers () {
         LSP.setActivityProvider (this);
         LSP.Java.start (() -> {
-            Optional<InitializeResult> result = LSP.Java.init (mProject.getProjectPath ());
+            Optional<InitializeResult> result = LSP.Java.init (Objects.requireNonNull (getAndroidProject ()).getProjectPath ());
             if (result.isPresent ()) {
                 LSP.Java.initialized ();
             }
@@ -987,8 +1121,32 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void getProjectFromIntent () {
-        this.mProject = getIntent ().getParcelableExtra (EXTRA_PROJECT);
-        getApp ().getPrefManager ().setOpenedProject (this.mProject.getProjectPath ());
+        final var project = (AndroidProject) getIntent ().getParcelableExtra (EXTRA_PROJECT);
+        if (mViewModel != null) {
+            mViewModel.setAndroidProject (project);
+        } else {
+            LOG.error ("ViewModel is null. Cannot set project.");
+        }
+        
+        getApp ().getPrefManager ().setOpenedProject (Objects.requireNonNull (this.getAndroidProject ()).getProjectPath ());
+    }
+    
+    @Nullable
+    private AndroidProject getAndroidProject () {
+        if (mViewModel == null) {
+            return null;
+        }
+        
+        return mViewModel.getAndroidProject ();
+    }
+    
+    @Nullable
+    private IDEProject getIDEProject () {
+        if (mViewModel == null) {
+            return null;
+        }
+        
+        return mViewModel.getIDEProject ();
     }
     
     private void setupSignatureText () {
@@ -1103,13 +1261,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     @Nullable
     private AlertDialog createFindInProjectDialog () {
-        if (mProject == null
-                || mProject.getModulePaths () == null
-                || mProject.getModulePaths ().size () <= 0) {
+        if (getAndroidProject () == null
+                || getAndroidProject ().getModulePaths () == null
+                || getAndroidProject ().getModulePaths ().size () <= 0) {
             getApp ().toast (R.string.msg_no_modules, Toaster.Type.ERROR);
             return null;
         }
-        final List<String> modules = mProject.getModulePaths ();
+        final List<String> modules = getAndroidProject ().getModulePaths ();
         final List<File> srcDirs = new ArrayList<> ();
         final LayoutSearchProjectBinding binding = LayoutSearchProjectBinding.inflate (getLayoutInflater ());
         binding.modulesContainer.removeAllViews ();
