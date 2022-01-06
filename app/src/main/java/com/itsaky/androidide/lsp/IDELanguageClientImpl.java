@@ -195,7 +195,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
      * @param editor The CodeEditor that requested
      */
     public void showDiagnosticAtBottom(final File file, final Diagnostic diagnostic, final CodeEditor editor) {
-        if(activity() == null || activity().getPagerAdapter() == null || file == null || diagnostic == null) {
+        if(activity() == null || file == null || diagnostic == null) {
             hideBottomDiagnosticView(file);
             return;
         }
@@ -252,7 +252,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
     }
 
     private void hideBottomDiagnosticView(final File file) {
-        if(activity() == null || activity().getPagerAdapter() == null || file == null) {
+        if(activity() == null || file == null) {
             return;
         }
         
@@ -362,8 +362,8 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         diagnostics.put(file, params.getDiagnostics());
         activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
         
-        EditorFragment editor = null;
-        if(activity().getPagerAdapter() != null && (editor = findEditorByFile(file)) != null) {
+        EditorFragment editor;
+        if((editor = findEditorByFile(file)) != null) {
             editor.setDiagnostics(params.getDiagnostics());
         }
     }
