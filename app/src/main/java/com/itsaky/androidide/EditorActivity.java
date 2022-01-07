@@ -64,13 +64,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter;
-import com.itsaky.androidide.adapters.EditorPagerAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
-import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.FileTreeFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
@@ -87,7 +85,6 @@ import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.androidide.models.OpenedFile;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
@@ -104,6 +101,7 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.viewmodel.EditorViewModel;
+import com.itsaky.androidide.views.CodeEditorView;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.inflater.ILayoutInflater;
@@ -126,6 +124,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
 import io.github.rosemoe.editor.widget.CodeEditor;
@@ -136,13 +135,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         TabLayout.OnTabSelectedListener,
         NavigationView.OnNavigationItemSelectedListener,
         DiagnosticClickListener,
-        EditorFragment.FileOpenListener,
         IDEHandler.Provider,
         EditorActivityProvider {
     
     private ActivityEditorBinding mBinding;
     private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
-    private EditorPagerAdapter mPagerAdapter;
     private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
     private FileTreeFragment mFileTreeFragment;
     private TreeNode mLastHeld;
@@ -155,10 +152,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private ProgressSheet mSearchingProgress;
     private AlertDialog mFindInProjectDialog;
     private ActivityResultLauncher<Intent> mUIDesignerLauncher;
-    private EditorFragment mCurrentFragment;
-    public static File mCurrentFile;
-    @SuppressWarnings("rawtypes")
-    private EditorBottomSheetBehavior mEditorBottomSheet;
+    private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
     
     private EditorViewModel mViewModel;
     
@@ -202,37 +196,21 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
         setSupportActionBar (mBinding.editorToolbar);
-    
+        
         mViewModel = new ViewModelProvider (this).get (EditorViewModel.class);
         getProjectFromIntent ();
         
-        mPagerAdapter = new EditorPagerAdapter (this, this);
         mFileTreeFragment = FileTreeFragment.newInstance (this.getAndroidProject ()).setFileActionListener (this);
         mDaemonStatusFragment = new TextSheetFragment ().setTextSelectable (true);
         
         setupDrawerToggle ();
         loadFragment (mFileTreeFragment);
         
-        mViewModel.observeFiles (this, files -> {
-            mPagerAdapter.setFiles (files);
-        });
-        
         symbolInput = new SymbolInputView (this);
         mBinding.bottomSheet.textContainer.addView (symbolInput, 0, new ViewGroup.LayoutParams (-1, -2));
-        
-        final var mediator = new TabLayoutMediator (mBinding.tabs,
-                mBinding.editorViewPager,
-                true,
-                false, // Do NOT enable smooth scrolls. Doing so results in error. Any workaround or fix will be appreciated.
-                (tab, position) -> tab.setText (mPagerAdapter.getEditorTitle (position)));
-        mBinding.editorViewPager.setUserInputEnabled (false);
-        mBinding.editorViewPager.setOffscreenPageLimit (9);
-        mBinding.editorViewPager.setAdapter (mPagerAdapter);
         mBinding.tabs.addOnTabSelectedListener (this);
-        mediator.attach ();
         
         setupEditorBottomSheet ();
-        
         createQuickActions ();
         
         mBuildServiceHandler = new BuildServiceHandler (this);
@@ -245,7 +223,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         setupContainers ();
         setupSignatureText ();
         setupDiagnosticInfo ();
-        
         startLanguageServers ();
         
         mUIDesignerLauncher = registerForActivityResult (new ActivityResultContracts.StartActivityForResult (), this::onGetUIDesignerResult);
@@ -272,8 +249,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         mBinding.bottomSheet.pager.setUserInputEnabled (false);
         mBinding.bottomSheet.pager.setOffscreenPageLimit (bottomSheetTabAdapter.getItemCount () - 1);  // DO not remove any views
         
-        //noinspection rawtypes
-        mEditorBottomSheet = (EditorBottomSheetBehavior) EditorBottomSheetBehavior.from (mBinding.bottomSheet.getRoot ());
+        mEditorBottomSheet = (EditorBottomSheetBehavior<? extends View>) EditorBottomSheetBehavior.from (mBinding.bottomSheet.getRoot ());
         mEditorBottomSheet.setBinding (mBinding.bottomSheet);
         mEditorBottomSheet.addBottomSheetCallback (new BottomSheetBehavior.BottomSheetCallback () {
             @Override
@@ -316,30 +292,19 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     @Override
     protected void onPause () {
-        new Thread (() -> {
-            
-            boolean saved;
-            try {
-                saveAll (false /* No notification */);
-                saved = true;
-            } catch (Throwable th) {
-                LOG.error (getString (R.string.err_cannot_save_files), th);
-                saved = false;
-            }
-            
-            if (!saved) {
-                ThreadUtils.runOnUiThread (() -> getApp ().toast (R.string.msg_failed_save, Toaster.Type.ERROR));
-            }
-        }, "AndroidIDE FileSaver").start ();
+        dispatchOnPauseToEditors ();
         super.onPause ();
     }
     
     @Override
     protected void onResume () {
         super.onResume ();
+        
         try {
+            dispatchOnResumeToEditors ();
             mFileTreeFragment.listProjectFiles ();
         } catch (Throwable th) {
+            LOG.error ("Failed to update files list", th);
             getApp ().toast (R.string.msg_failed_list_files, Toaster.Type.ERROR);
         }
     }
@@ -395,10 +360,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             viewLayout.setShowAsAction (MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
         
-        final boolean notNull = mCurrentFile != null;
-        final boolean isJava = notNull && mCurrentFile.getName ().endsWith (".java");
-        final boolean isXml = notNull && mCurrentFile.getName ().endsWith (".xml");
-        final boolean isLayout = isXml && mCurrentFile.getParentFile () != null && Pattern.compile (FileOptionsHandler.LAYOUTRES_PATH_REGEX).matcher (mCurrentFile.getParentFile ().getAbsolutePath ()).matches ();
+        final var editor = getCurrentEditor ();
+        final var file = editor != null ? editor.getFile () : null;
+        final var notNull = editor != null && file != null;
+        final boolean isJava = notNull && file.getName ().endsWith (".java");
+        final boolean isXml = notNull && file.getName ().endsWith (".xml");
+        final boolean isLayout = isXml && file.getParentFile () != null &&
+                Pattern.compile (FileOptionsHandler.LAYOUTRES_PATH_REGEX)
+                        .matcher (file.getParentFile ().getAbsolutePath ())
+                        .matches ();
         final int nullableAlpha = notNull ? 255 : 76;
         final int javaFileAlpha = isJava ? 255 : 76;
         final int layoutFileAlpha = isLayout ? 255 : 76;
@@ -435,6 +405,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             MenuBuilder builder = (MenuBuilder) menu;
             builder.setOptionalIconsVisible (true);
         }
+        
         getMenuInflater ().inflate (R.menu.menu_editor, menu);
         return true;
     }
@@ -442,8 +413,10 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     @Override
     public boolean onOptionsItemSelected (MenuItem item) {
         if (getBuildService () == null) {
+            LOG.error ("Build service is null. Cannot perform option menu actions.");
             return false;
         }
+        
         int id = item.getItemId ();
         if (id == R.id.menuEditor_runDebug || id == R.id.menuEditor_quickRun) {
             getBuildServiceHandler ().assembleDebug (true);
@@ -466,34 +439,32 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         } else if (id == R.id.menuEditor_lintRelease) {
             getBuildService ().lintRelease ();
         } else if (id == R.id.menuEditor_save) {
-            // * 1. Notify that all files are saved
-            // * 2. If there were any XML files modified, call ':app:processDebugResources' task
-            // *
-            // * This will make sure that we generate view bindings and R.jar at proper time
-            // * This will further result in updated code completion
             saveAll (true, true);
-        } else if (id == R.id.menuEditor_undo && this.mCurrentFragment != null && this.mCurrentFragment.isVisible ()) {
-            this.mCurrentFragment.undo ();
-        } else if (id == R.id.menuEditor_redo && this.mCurrentFragment != null && this.mCurrentFragment.isVisible ()) {
-            this.mCurrentFragment.redo ();
-        } else if (id == R.id.menuEditor_gotoDefinition && mCurrentFragment != null && this.mCurrentFragment.isVisible ()) {
-            this.mCurrentFragment.findDefinition ();
-        } else if (id == R.id.menuEditor_findReferences && mCurrentFragment != null && this.mCurrentFragment.isVisible ()) {
-            this.mCurrentFragment.findReferences ();
-        } else if (id == R.id.menuEditor_commentLine && mCurrentFragment != null && this.mCurrentFragment.isVisible ()) {
-            this.mCurrentFragment.commentLine ();
-        } else if (id == R.id.menuEditor_uncommentLine && mCurrentFragment != null && this.mCurrentFragment.isVisible ()) {
-            this.mCurrentFragment.uncommentLine ();
-        } else if (id == R.id.menuEditor_findFile && mCurrentFragment != null && this.mCurrentFragment.isVisible ()) {
-            this.mCurrentFragment.beginSearch ();
         } else if (id == R.id.menuEditor_findProject) {
             AlertDialog d = getFindInProjectDialog ();
             if (d != null) {
                 d.show ();
             }
-        } else if (id == R.id.menuEditor_viewLayout && mCurrentFile != null) {
+        } else if (id == R.id.menuEditor_viewLayout) {
             previewLayout ();
+        } else if (getCurrentEditor () != null) { // Should be checked at last
+            if (id == R.id.menuEditor_undo) {
+                this.getCurrentEditor ().undo ();
+            } else if (id == R.id.menuEditor_redo) {
+                this.getCurrentEditor ().redo ();
+            } else if (id == R.id.menuEditor_gotoDefinition) {
+                this.getCurrentEditor ().findDefinition ();
+            } else if (id == R.id.menuEditor_findReferences) {
+                this.getCurrentEditor ().findReferences ();
+            } else if (id == R.id.menuEditor_commentLine) {
+                this.getCurrentEditor ().commentLine ();
+            } else if (id == R.id.menuEditor_uncommentLine) {
+                this.getCurrentEditor ().uncommentLine ();
+            } else if (id == R.id.menuEditor_findFile) {
+                this.getCurrentEditor ().beginSearch ();
+            }
         }
+        
         invalidateOptionsMenu ();
         return true;
     }
@@ -578,11 +549,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public void handleDiagnosticsResultVisibility (boolean errorVisible) {
-        bottomSheetTabAdapter.getDiagnosticsFragment ().handleResultVisibility (errorVisible);
+        runOnUiThread (() -> bottomSheetTabAdapter.getDiagnosticsFragment ().handleResultVisibility (errorVisible));
     }
     
     public void handleSearchResultVisibility (boolean errorVisible) {
-        bottomSheetTabAdapter.getSearchResultFragment ().handleResultVisibility (errorVisible);
+        runOnUiThread (() -> bottomSheetTabAdapter.getSearchResultFragment ().handleResultVisibility (errorVisible));
     }
     
     public void setStatus (final CharSequence text) {
@@ -617,10 +588,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public void onDiagnosticClick (File file, @NonNull Diagnostic diagnostic) {
         openFileAndSelect (file, diagnostic.getRange ());
         hideViewOptions ();
-    }
-    
-    public EditorPagerAdapter getPagerAdapter () {
-        return mPagerAdapter;
     }
     
     public ActivityEditorBinding getBinding () {
@@ -661,7 +628,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     public void openFileAndSelect (File file, org.eclipse.lsp4j.Range range) {
         openFile (file, range);
-        EditorFragment opened = getEditorForFile (file);
+        final var opened = getEditorForFile (file);
         if (opened != null && opened.getEditor () != null) {
             CodeEditor editor = opened.getEditor ();
             editor.post (() -> {
@@ -676,39 +643,49 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     @Override
     public void onTabSelected (@NonNull TabLayout.Tab tab) {
-        final var opened = mPagerAdapter.getOpenedFile (tab.getPosition ());
-        final var fragment = getEditorAtIndex (tab.getPosition ());
-        if (opened != null && opened.getFile () != null && fragment != null) {
-            mCurrentFragment = fragment;
-            mCurrentFile = opened.getFile ();
-            refreshSymbolInput (mCurrentFragment);
-        }
+        final var position = tab.getPosition ();
+        mBinding.editorContainer.setDisplayedChild (position);
         
+        final var editorView = getEditorAtIndex (position);
+        mViewModel.setCurrentFile (position, Objects.requireNonNull (editorView).getFile ());
+        refreshSymbolInput (editorView);
         invalidateOptionsMenu ();
     }
     
     @Override
     public void onTabUnselected (@NonNull TabLayout.Tab tab) {
-        final var opened = mPagerAdapter.getOpenedFile (tab.getPosition ());
+        final var position = mViewModel.getCurrentFileIndex ();
+        if (position < 0 || position >= mViewModel.getOpenedFileCount ()) {
+            // This might happen when the file is being closed.
+            // In this case, the file has already been saved, so we don't need to save it again.
+            // see #close(int)
+            return;
+        }
+        
+        final var opened = mViewModel.getOpenedFile (position);
         if (opened == null) {
+            LOG.error ("No opened file at index", position);
             return;
         }
         
-        final var frag = getEditorForFile (opened.getFile ());
+        final var frag = getEditorAtIndex (position);
         if (frag == null) {
+            LOG.error ("Cannot save unselected editor. Editor is null.");
             return;
         }
         
-        boolean isGradle = frag.isModified () && opened.getFile ().getName ().endsWith (EditorFragment.EXT_GRADLE);
+        boolean isGradle = frag.isModified () && opened.getName ().endsWith (".gradle");
         frag.save ();
+        
         if (isGradle) {
+            LOG.info ("Gradle files have been modified. Sync needed.");
             notifySyncNeeded ();
         }
     }
     
     @Override
-    public void onTabReselected (TabLayout.Tab p1) {
-        mTabCloseAction.show (mBinding.tabs);
+    public void onTabReselected (@NonNull TabLayout.Tab tab) {
+        mTabCloseAction.show (tab.view);
     }
     
     @Override
@@ -783,16 +760,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public void setDiagnosticsAdapter (@NonNull final DiagnosticsAdapter adapter) {
-        bottomSheetTabAdapter.getDiagnosticsFragment ().setAdapter (adapter);
+        runOnUiThread (() -> bottomSheetTabAdapter.getDiagnosticsFragment ().setAdapter (adapter));
     }
     
     public void setSearchResultAdapter (@NonNull final SearchListAdapter adapter) {
-        bottomSheetTabAdapter.getSearchResultFragment ().setAdapter (adapter);
-    }
-    
-    @Override
-    public void onOpenSuccessful (File file, String text) {
-        // textDocument/didOpen is now handled by CodeEditor
+        runOnUiThread (() -> bottomSheetTabAdapter.getSearchResultFragment ().setAdapter (adapter));
     }
     
     @Override
@@ -838,8 +810,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     public void saveResult (int index, SaveResult result) {
         if (index >= 0 && index < mViewModel.getOpenedFileCount ()) {
-            EditorFragment frag = getEditorAtIndex (index);
-            if (frag == null || frag.getFile () == null) {
+            var frag = getEditorAtIndex (index);
+            if (frag == null) {
                 return;
             }
             
@@ -849,8 +821,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             
             frag.save ();
             
-            final boolean isGradle = frag.getFile ().getName ().endsWith (EditorFragment.EXT_GRADLE);
-            final boolean isXml = frag.getFile ().getName ().endsWith (EditorFragment.EXT_XML);
+            final boolean isGradle = frag.getFile ().getName ().endsWith (".gradle");
+            final boolean isXml = frag.getFile ().getName ().endsWith (".xml");
             
             if (!result.gradleSaved) {
                 result.gradleSaved = modified && isGradle;
@@ -875,6 +847,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         new TaskExecutor ().executeAsync (() -> {
             IDELanguageServer javaServer = LSPProvider.getServerForLanguage (LSPProvider.LANGUAGE_JAVA);
             if (javaServer == null) {
+                LOG.error ("Cannot create services as java language server instance is null");
                 return null;
             }
             
@@ -900,11 +873,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     @Override
-    public EditorFragment openFile (File file) {
+    public CodeEditorView openFile (File file) {
         return openFile (file, null);
     }
     
-    public EditorFragment openFile (File file, Range selection) {
+    public CodeEditorView openFile (File file, Range selection) {
         if (selection == null) {
             selection = Range_ofZero;
         }
@@ -919,13 +892,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             mBinding.editorDrawerLayout.closeDrawer (GravityCompat.END);
         }
         
-        mBinding.editorViewPager.setCurrentItem (index);
+        mBinding.editorContainer.setDisplayedChild (index);
         
         invalidateOptionsMenu ();
         try {
             return getEditorAtIndex (index);
         } catch (Throwable th) {
-            LOG.error ("Unable to get editor fragment at opened file index (" + index + ").", th);
+            LOG.error ("Unable to get editor fragment at opened file index", index);
+            LOG.error (th);
             return null;
         }
     }
@@ -942,86 +916,112 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final var position = mViewModel.getOpenedFileCount ();
         
         LOG.info ("Opening file at index:", position, "file: ", file);
-        mViewModel.addFile (new OpenedFile (file, selection));
+        
+        final var editor = new CodeEditorView (this, file, selection);
+        editor.setLayoutParams (new ViewGroup.LayoutParams (
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        ));
+    
+        mBinding.editorContainer.addView (editor);
+        mBinding.editorContainer.setDisplayedChild (position);
+        mBinding.tabs.addTab (mBinding.tabs.newTab ().setText (file.getName ()));
+        
+        mViewModel.addFile (file);
+        mViewModel.setCurrentFile (position, file);
+        
         return position;
     }
     
     public void closeFile (int index) {
-        mBinding.tabs.removeOnTabSelectedListener (this);
-        if (index >= 0 && index < mPagerAdapter.getItemCount ()) {// Save the file before closing
+        if (index >= 0 && index < mViewModel.getOpenedFileCount ()) {
             var opened = mViewModel.getOpenedFile (index);
-            LOG.info ("Saving file before close. File: " + opened.getFile ());
-            final var fragment = getEditorAtIndex (index);
-            if (fragment != null) {
-                fragment.save ();
-                LOG.info ("Language server will be notified if available");
-                fragment.getEditor ().close (); // Send 'textDocument/didClose' to language servers.
+            LOG.info ("Closing file:", opened);
+            final var editor = getEditorAtIndex (index);
+            if (editor != null) {
+                editor.save ();
+                editor.getEditor ().close ();
+            } else {
+                LOG.error ("Cannot save file before close. Editor instance is null");
             }
-        
+            
             opened = null;
             
-            LOG.debug ("Removing file from file list...");
             mViewModel.removeFile (index);
+            mBinding.tabs.removeTabAt (index);
+            mBinding.editorContainer.removeViewAt (index);
         } else {
-            LOG.error ("Invalid file index. Cannot close any files");
-            mBinding.tabs.addOnTabSelectedListener (this);
+            LOG.error ("Invalid file index. Cannot close.");
             return;
         }
         
-        mBinding.tabs.addOnTabSelectedListener (this);
-        
-        if (mPagerAdapter.getItemCount () <= 0) {
-            mCurrentFragment = null;
-            mCurrentFile = null;
-        }
-        
+        mBinding.tabs.requestLayout ();
         invalidateOptionsMenu ();
-        
-        if (mPagerAdapter.getItemCount () == 0 &&
-                (mBinding.editorViewPager.getChildCount () != 0 || mBinding.tabs.getChildCount () != 0)) {
-            // TODO Find out why this happens
-            //    Mostly for java files...
-            mBinding.editorViewPager.removeAllViews ();
-            mBinding.tabs.removeAllViews ();
-        }
     }
     
     public void closeAll () {
-        mBinding.tabs.removeOnTabSelectedListener (this);
-        // Close all files one by one
-        // This will make sure that we save all the files and send 'textDocument/didClose' to language servers.
-        for (int i = 0; i < mPagerAdapter. getItemCount (); i++) {
-            closeFile (i);
+        final var count = mViewModel.getOpenedFileCount ();
+        
+        // Save and close all files one by one
+        for (int i = 0; i < count; i++) {
+            final var editor = getEditorAtIndex (i);
+            if (editor != null) {
+                editor.save ();
+                editor.getEditor ().close ();
+            } else {
+                LOG.error ("Unable to save file at index:", i);
+            }
         }
-        mBinding.tabs.addOnTabSelectedListener (this);
+        
+        mViewModel.removeAllFiles ();
+        mBinding.tabs.removeAllTabs ();
+        mBinding.tabs.requestLayout ();
+        mBinding.editorContainer.removeAllViews ();
+        
+        invalidateOptionsMenu ();
     }
     
     public void closeOthers () {
-        final var index = mBinding.tabs.getSelectedTabPosition ();
-        for (int i = 0; i < mPagerAdapter. getItemCount (); i++) {
-            if (i != index) {
-                closeFile (i);
+        final var file = mViewModel.getCurrentFile ();
+        for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
+            final var editor = getEditorAtIndex (i);
+            
+            // Index of files changes as we keep close files
+            // So we compare the files instead of index
+            if (editor != null) {
+                if (!file.equals (editor.getFile ())) {
+                    closeFile (i);
+                }
+            } else {
+                LOG.error ("Unable to save file at index:", i);
             }
         }
     }
     
-    public EditorFragment getEditorAtIndex (final int index) {
-        return getEditorForFile (mViewModel.getOpenedFile (index).getFile ());
+    @Nullable
+    public CodeEditorView getCurrentEditor () {
+        if (mViewModel.getCurrentFileIndex () != -1) {
+            return getEditorAtIndex (mViewModel.getCurrentFileIndex ());
+        }
+        
+        return null;
     }
     
     @Nullable
-    public EditorFragment getEditorForFile (@NonNull final File file) {
-        final var manager = getSupportFragmentManager ();
-        
-        final var tag = "f" + file.getAbsolutePath ().hashCode ();
-        final var fragment = manager.findFragmentByTag (tag);
-        
-        if (fragment == null) {
-            LOG.error ("No editor found for file: " + file);
-            return null;
+    public CodeEditorView getEditorAtIndex (final int index) {
+        return (CodeEditorView) mBinding.editorContainer.getChildAt (index);
+    }
+    
+    @Nullable
+    public CodeEditorView getEditorForFile (@NonNull final File file) {
+        for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
+            final CodeEditorView editor = (CodeEditorView) mBinding.editorContainer.getChildAt (i);
+            if (editor.getFile ().equals (file)) {
+                return editor;
+            }
         }
         
-        return (EditorFragment) fragment;
+        return null;
     }
     
     public int findIndexOfEditorByFile (File file) {
@@ -1032,7 +1032,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         
         for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
             final var opened = mViewModel.getOpenedFile (i);
-            if (opened.getFile ().equals (file)) {
+            if (opened.equals (file)) {
                 return i;
             }
         }
@@ -1044,13 +1044,37 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     ////////////// PRIVATE APIS /////////////////////
     /////////////////////////////////////////////////
     
+    private void dispatchOnPauseToEditors () {
+        CompletableFuture.runAsync (() -> {
+            for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
+                final var editor = getEditorAtIndex (i);
+                if (editor != null) {
+                    editor.onPause ();
+                }
+            }
+        });
+    }
+    
+    private void dispatchOnResumeToEditors () {
+        CompletableFuture.runAsync (() -> {
+            for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
+                final var editor = getEditorAtIndex (i);
+                if (editor != null) {
+                    editor.onResume ();
+                }
+            }
+        });
+    }
+    
     @Contract(pure = true)
     private void onGetUIDesignerResult (@NonNull ActivityResult result) {
-        if (mCurrentFragment != null && mCurrentFragment.getEditor () != null && result.getResultCode () == RESULT_OK) {
+        final var index = mBinding.editorContainer.getDisplayedChild ();
+        final var editor = getEditorAtIndex (index);
+        if (editor != null && result.getResultCode () == RESULT_OK) {
             final var data = result.getData ();
             if (data != null && data.hasExtra (DesignerActivity.KEY_GENERATED_CODE)) {
                 final var code = data.getStringExtra (DesignerActivity.KEY_GENERATED_CODE);
-                mCurrentFragment.getEditor ().setText (code);
+                editor.getEditor ().setText (code);
                 saveAll ();
             } else {
                 final var msg = getString (R.string.msg_invalid_designer_result);
@@ -1065,6 +1089,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     private void previewLayout () {
         try {
+            
+            if (getCurrentEditor () == null) {
+                LOG.error ("No file is opened. Cannot preview layout.");
+                return;
+            }
+            
             saveAll (false);
             if (getApp ().getLayoutInflater () == null) {
                 LOG.info ("Creating layout inflater instance...");
@@ -1072,7 +1102,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             }
             
             final Intent intent = new Intent (this, DesignerActivity.class);
-            intent.putExtra (DesignerActivity.KEY_LAYOUT_PATH, mCurrentFile.getAbsolutePath ());
+            intent.putExtra (DesignerActivity.KEY_LAYOUT_PATH, getCurrentEditor ().getFile ().getAbsolutePath ());
             
             LOG.info ("Launching UI Designer...");
             mUIDesignerLauncher.launch (intent);
@@ -1204,11 +1234,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
     }
     
-    private void refreshSymbolInput (@NonNull EditorFragment frag) {
-        if (frag.getEditor () == null || frag.getFile () == null) {
-            return;
-        }
-        
+    private void refreshSymbolInput (@NonNull CodeEditorView frag) {
         symbolInput.bindEditor (frag.getEditor ());
         symbolInput.setSymbols (Symbols.forFile (frag.getFile ()));
     }
@@ -1225,7 +1251,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private void closeProject (boolean manualFinish) {
         if (getBuildService () != null) {
             getBuildService ().setListener (null);
-            getBuildService ().exit ();
+            if (mBuildServiceHandler != null) {
+                mBuildServiceHandler.stop ();
+            } else {
+                getBuildService ().exit ();
+            }
         }
         
         // Make sure we close files
@@ -1300,7 +1330,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             }
             
             final List<File> searchDirs = new ArrayList<> ();
-            for (int i = 0; i < binding.modulesContainer.getChildCount (); i++) {
+            for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
                 CheckBox check = (CheckBox) binding.modulesContainer.getChildAt (i);
                 if (check.isChecked ()) {
                     searchDirs.add (srcDirs.get (i));

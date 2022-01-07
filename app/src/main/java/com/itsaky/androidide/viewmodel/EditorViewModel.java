@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.viewmodel;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.lifecycle.LifecycleOwner;
@@ -24,7 +25,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.itsaky.androidide.models.OpenedFile;
 import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.project.IDEProject;
 
@@ -38,7 +38,7 @@ import java.util.Objects;
  */
 public class EditorViewModel extends ViewModel {
     
-    private final MutableLiveData <List<OpenedFile>> mFiles = new MutableLiveData<> (new ArrayList<> ());
+    private final MutableLiveData <List<File>> mFiles = new MutableLiveData<> (new ArrayList<> ());
     private final MutableLiveData <AndroidProject> mProject = new MutableLiveData<> (null);
     private final MutableLiveData <IDEProject> mIDEProject = new MutableLiveData<> (null);
     
@@ -87,7 +87,7 @@ public class EditorViewModel extends ViewModel {
      * Add the given file to the list of opened files.
      * @param file The file that has been opened.
      */
-    public void addFile (final OpenedFile file) {
+    public void addFile (final File file) {
         final var files = mFiles.getValue ();
         Objects.requireNonNull (files).add (file);
         mFiles.setValue (files);
@@ -103,12 +103,17 @@ public class EditorViewModel extends ViewModel {
         mFiles.setValue (files);
     }
     
+    public void removeAllFiles () {
+        mFiles.setValue (new ArrayList<> ());
+        setCurrentFile (-1, null);
+    }
+    
     /**
      * Get the opened file at the given index.
      * @param index The index of the file.
      * @return The file at the given index.
      */
-    public OpenedFile getOpenedFile (final int index) {
+    public File getOpenedFile (final int index) {
         return Objects.requireNonNull (mFiles.getValue ()).get (index);
     }
     
@@ -125,7 +130,27 @@ public class EditorViewModel extends ViewModel {
      * @param lifecycleOwner The lifecycle owner.
      * @param observer The observer.
      */
-    public void observeFiles (LifecycleOwner lifecycleOwner, Observer<List<OpenedFile>> observer) {
+    public void observeFiles (LifecycleOwner lifecycleOwner, Observer<List<File>> observer) {
         this.mFiles.observe (lifecycleOwner, observer);
+    }
+    
+    public int getCurrentFileIndex () {
+        if (mCurrentFile.getValue () == null) {
+            return -1;
+        }
+        
+        return mCurrentFile.getValue ().first;
+    }
+    
+    public File getCurrentFile () {
+        if (mCurrentFile.getValue () == null) {
+            return null;
+        }
+        
+        return mCurrentFile.getValue ().second;
+    }
+    
+    public void setCurrentFile (final int index, @Nullable final File file) {
+        mCurrentFile.setValue (Pair.create (index, file));
     }
 }

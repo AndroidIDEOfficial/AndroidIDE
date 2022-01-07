@@ -28,6 +28,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import com.itsaky.androidide.databinding.LayoutProgressSheetBinding;
 import com.blankj.utilcode.util.SizeUtils;
+import com.itsaky.androidide.utils.Logger;
+
 import android.widget.RelativeLayout;
 
 public class ProgressSheet extends BaseBottomSheetFragment {
@@ -38,6 +40,8 @@ public class ProgressSheet extends BaseBottomSheetFragment {
 	private String subMessage = "";
 	private boolean subMessageEnabled = false;
 	private boolean welcomTextEnabled = false;
+	
+	private final Logger LOG = Logger.instance ("ProgressSheet");
 	
 	@Override
 	protected void bind(LinearLayout container) {
@@ -56,14 +60,18 @@ public class ProgressSheet extends BaseBottomSheetFragment {
 			RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
 			try {
 				p.removeRule(RelativeLayout.CENTER_VERTICAL);
-			} catch (Throwable th) {}
+			} catch (Throwable th) {
+				LOG.error ("Unable to remove center_vertical rule.", th);
+			}
 			binding.message.setLayoutParams(p);
 		} else {
 			binding.subMessage.setVisibility(View.GONE);
 			RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
 			try {
 				p.addRule(RelativeLayout.CENTER_VERTICAL);
-			} catch (Throwable th) {}
+			} catch (Throwable th) {
+				LOG.error ("Unable to remove center_vertical rule.", th);
+			}
 			binding.message.setLayoutParams(p);
 		}
 		

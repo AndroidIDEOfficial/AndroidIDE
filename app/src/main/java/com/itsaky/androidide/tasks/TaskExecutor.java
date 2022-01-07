@@ -33,6 +33,8 @@ public class TaskExecutor {
     
     private final Executor executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
+    
+    private final Logger LOG = Logger.instance ("TaskExecutor");
 
     public interface Callback<R> {
         void complete(R result);
@@ -49,7 +51,9 @@ public class TaskExecutor {
 				handler.post(() -> {
 					callback.complete(result);
 				});
-			} catch (Throwable th) {}
+			} catch (Throwable th) {
+                LOG.error ("Callable task was not able to finish", th);
+            }
         });
     }
     
@@ -61,6 +65,7 @@ public class TaskExecutor {
             try {
                 result = callable.call();
             } catch (Throwable th) {
+                LOG.error ("Callable task was not able to finish", th);
                 error = th;
             }
             final R resultCopied = result;

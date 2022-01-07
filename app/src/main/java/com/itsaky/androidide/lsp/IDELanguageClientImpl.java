@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  *  
@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
-
-
+ */
 package com.itsaky.androidide.lsp;
 
-import android.content.DialogInterface;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.transition.TransitionManager;
 
@@ -39,9 +38,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.databinding.FragmentEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
-import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.models.DiagnosticGroup;
@@ -50,11 +47,39 @@ import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.views.CodeEditorView;
 import com.itsaky.lsp.SemanticHighlight;
 import com.itsaky.lsp.services.IDELanguageClient;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.editor.text.Content;
-import io.github.rosemoe.editor.widget.CodeEditor;
+
+import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
+import org.eclipse.lsp4j.ApplyWorkspaceEditResponse;
+import org.eclipse.lsp4j.CodeAction;
+import org.eclipse.lsp4j.Command;
+import org.eclipse.lsp4j.ConfigurationParams;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.LocationLink;
+import org.eclipse.lsp4j.LogTraceParams;
+import org.eclipse.lsp4j.MessageActionItem;
+import org.eclipse.lsp4j.MessageParams;
+import org.eclipse.lsp4j.ParameterInformation;
+import org.eclipse.lsp4j.ProgressParams;
+import org.eclipse.lsp4j.PublishDiagnosticsParams;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.RegistrationParams;
+import org.eclipse.lsp4j.SetTraceParams;
+import org.eclipse.lsp4j.ShowDocumentParams;
+import org.eclipse.lsp4j.ShowDocumentResult;
+import org.eclipse.lsp4j.ShowMessageRequestParams;
+import org.eclipse.lsp4j.SignatureHelp;
+import org.eclipse.lsp4j.SignatureInformation;
+import org.eclipse.lsp4j.TextEdit;
+import org.eclipse.lsp4j.UnregistrationParams;
+import org.eclipse.lsp4j.WorkDoneProgressCreateParams;
+import org.eclipse.lsp4j.WorkspaceFolder;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
@@ -62,35 +87,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.Command;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Location;
-import org.eclipse.lsp4j.LocationLink;
-import org.eclipse.lsp4j.LogTraceParams;
-import org.eclipse.lsp4j.MessageParams;
-import org.eclipse.lsp4j.ParameterInformation;
-import org.eclipse.lsp4j.PublishDiagnosticsParams;
-import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4j.ShowDocumentParams;
-import org.eclipse.lsp4j.ShowDocumentResult;
-import org.eclipse.lsp4j.SignatureHelp;
-import org.eclipse.lsp4j.SignatureInformation;
-import org.eclipse.lsp4j.TextEdit;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import org.eclipse.lsp4j.SetTraceParams;
-import org.eclipse.lsp4j.ApplyWorkspaceEditResponse;
-import org.eclipse.lsp4j.WorkDoneProgressCreateParams;
-import org.eclipse.lsp4j.ProgressParams;
-import org.eclipse.lsp4j.ConfigurationParams;
-import org.eclipse.lsp4j.RegistrationParams;
-import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
-import org.eclipse.lsp4j.MessageActionItem;
-import org.eclipse.lsp4j.WorkspaceFolder;
-import org.eclipse.lsp4j.ShowMessageRequestParams;
-import org.eclipse.lsp4j.UnregistrationParams;
+
+import io.github.rosemoe.editor.text.Content;
+import io.github.rosemoe.editor.widget.CodeEditor;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
@@ -99,13 +101,11 @@ public class IDELanguageClientImpl implements IDELanguageClient {
     
     protected static final Gson gson = new Gson();
     protected static final Logger LOG = Logger.instance("AbstractLanguageClient");
-    public static final int DIAGNOSTIC_TRANSITION_DURATION = 80;
     
     private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
     private static IDELanguageClientImpl mInstance;
     
     protected EditorActivityProvider activityProvider;
-    private boolean isConnected;
     
     private IDELanguageClientImpl (EditorActivityProvider provider) {
         setActivityProvider(provider);
@@ -136,27 +136,20 @@ public class IDELanguageClientImpl implements IDELanguageClient {
     public void setActivityProvider(EditorActivityProvider provider) {
         this.activityProvider = provider;
     }
-
-    /**
-     * Are we connected to the server?
-     */
-    public boolean isConnected() {
-        return isConnected;
-    }
     
     protected EditorActivity activity() {
         if (activityProvider == null) return null;
         return activityProvider.provide();
     }
     
-    private EditorFragment findEditorByFile (File file) {
+    private CodeEditorView findEditorByFile (File file) {
         return activity ().getEditorForFile (file);
     }
 
     @Override
     public void semanticHighlights(SemanticHighlight highlights) {
         final File file = new File(URI.create(highlights.uri));
-        final EditorFragment editor = findEditorByFile(file);
+        final var editor = findEditorByFile(file);
         
         if(editor != null) {
             editor.getEditor().setSemanticHighlights(highlights);
@@ -200,13 +193,13 @@ public class IDELanguageClientImpl implements IDELanguageClient {
             return;
         }
         
-        final EditorFragment frag = findEditorByFile(file);
-        if(frag == null || frag.getBinding() == null) {
+        final var frag = findEditorByFile(file);
+        if(frag == null) {
             hideBottomDiagnosticView(file);
             return;
         }
         
-        final FragmentEditorBinding binding = frag.getBinding();
+        final var binding = frag.getBinding();
         binding.diagnosticTextContainer.setVisibility(View.VISIBLE);
         binding.diagnosticText.setVisibility(View.VISIBLE);
         binding.diagnosticText.setClickable(false);
@@ -219,13 +212,12 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         }
         
         future.whenComplete((a, b) -> {
-            final Throwable error = b;
             if(a == null || a.isEmpty()) {
                 hideBottomDiagnosticView(file);
                 return;
             }
-            final List<CodeAction> actions = a.stream().filter(e -> e.isRight()).map (e -> e.getRight()).collect(Collectors.toList());
-            if(actions == null || actions.isEmpty()) {
+            final List<CodeAction> actions = a.stream().filter(Either::isRight).map (Either::getRight).collect(Collectors.toList());
+            if(actions.isEmpty()) {
                 hideBottomDiagnosticView(file);
                 return;
             }
@@ -236,9 +228,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
                 sb.append(diagnostic.getMessage());
                 binding.diagnosticText.setText(sb);
                 binding.diagnosticText.setClickable(true);
-                binding.diagnosticText.setOnClickListener(v -> {
-                    showAvailableQuickfixes(editor, actions);
-                });
+                binding.diagnosticText.setOnClickListener(v -> showAvailableQuickfixes(editor, actions));
             });
         });
     }
@@ -256,7 +246,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
             return;
         }
         
-        final EditorFragment frag = findEditorByFile(file);
+        final var frag = findEditorByFile(file);
         if(frag == null || frag.getBinding() == null) {
             return;
         }
@@ -277,7 +267,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         SignatureInformation info = signatureWithMostParams(signature);
         if(info == null) return;
         activity().getBinding().symbolText.setText(formatSignature(info, signature.getActiveParameter()));
-        final EditorFragment frag = findEditorByFile(file);
+        final var frag = findEditorByFile(file);
         if(frag != null) {
             final CodeEditor editor = frag.getEditor();
             final float[] cursor = editor.getCursorPosition();
@@ -325,7 +315,8 @@ public class IDELanguageClientImpl implements IDELanguageClient {
      * @param signature Signature information
      * @param paramIndex Currently active parameter index
      */
-    private CharSequence formatSignature(SignatureInformation signature, int paramIndex) {
+    @NonNull
+    private CharSequence formatSignature(@NonNull SignatureInformation signature, int paramIndex) {
         String name = signature.getLabel();
         name = name.substring(0, name.indexOf("("));
 
@@ -362,7 +353,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         diagnostics.put(file, params.getDiagnostics());
         activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
         
-        EditorFragment editor;
+        CodeEditorView editor;
         if((editor = findEditorByFile(file)) != null) {
             editor.setDiagnostics(params.getDiagnostics());
         }
@@ -394,13 +385,13 @@ public class IDELanguageClientImpl implements IDELanguageClient {
                 if(loc == null || loc.getUri() == null || loc.getRange() == null) continue;
                 final File file = new File(URI.create(loc.getUri()));
                 if(!file.exists() || !file.isFile()) continue;
-                EditorFragment frag = findEditorByFile(file);
+                var frag = findEditorByFile(file);
                 Content content;
                 if(frag != null && frag.getEditor() != null)
                     content = frag.getEditor().getText();
                 else content = new Content(null, FileIOUtils.readFile2String(file));
                 final List<SearchResult> matches = results.containsKey(file) ? results.get(file) : new ArrayList<>();
-                matches.add(
+                Objects.requireNonNull (matches).add(
                     new SearchResult(
                         loc.getRange(),
                         file,
@@ -415,7 +406,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
                 );
                 results.put(file, matches);
             } catch (Throwable th) {
-                
+                LOG.error ("Failed to show file location", th);
             }
         }
 
@@ -434,9 +425,9 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         
         showLocations(locations
             .stream()
-                .filter(l -> l != null)
-                .map(l -> asLocation(l))
-                .filter(l -> l != null)
+                .filter(Objects::nonNull)
+                .map(this::asLocation)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList())
             );
     }
@@ -462,14 +453,9 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         progress.show(activity().getSupportFragmentManager(), "quick_fix_progress");
         
         new TaskExecutor().executeAsyncProvideError(() -> performCodeActionAsync(editor, action), (a, b) -> {
-            final Boolean complete = a;
-            final Throwable error = b;
-            
             progress.dismiss();
-            
-            if(complete == null || error != null || !complete.booleanValue()) {
+            if(a == null || b != null || !a) {
                 StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
-                return;
             }
         });
     }
@@ -491,7 +477,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
             File file = new File(URI.create(params.getUri()));
             if(file.exists() && file.isFile() && FileUtils.isUtf8(file)) {
                 final Range range = params.getSelection();
-                EditorFragment frag = activity().getEditorAtIndex (
+                var frag = activity().getEditorAtIndex (
                         activity().getBinding ().tabs.getSelectedTabPosition ());
                 if(frag != null
                    && frag.getFile() != null
@@ -554,13 +540,10 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
         builder.setTitle(R.string.msg_code_actions);
         builder.setItems(asArray(actions), (d, w) -> {
-            final DialogInterface dialog = d;
-            final int which = w;
-            
-            dialog.dismiss();
+            d.dismiss();
             hideDiagnostics();
             hideBottomDiagnosticView(editor.getFile());
-            performCodeAction(editor, actions.get(which));
+            performCodeAction(editor, actions.get(w));
         });
         builder.show();
     }
@@ -589,7 +572,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
                     // Edit is in the same editor which requested the code action
                     editInEditor(editor, edit);
                 } else {
-                    EditorFragment openedFrag = findEditorByFile(file);
+                    var openedFrag = findEditorByFile(file);
 
                     if(openedFrag != null && openedFrag.getEditor() != null) {
                         // Edit is in another 'opened' file

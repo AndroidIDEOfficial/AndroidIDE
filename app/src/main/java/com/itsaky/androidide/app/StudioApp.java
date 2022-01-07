@@ -24,19 +24,16 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
 import com.itsaky.androidide.project.ProjectResourceFinder;
-import com.itsaky.androidide.services.IDELogService;
 import com.itsaky.androidide.services.MessagingService;
-import com.itsaky.inflater.ILayoutInflater;
-import com.itsaky.inflater.IResourceFinder;
-import com.itsaky.inflater.LayoutInflaterConfiguration;
-import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.attrinfo.AttrInfo;
+import com.itsaky.inflater.ILayoutInflater;
+import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.LayoutInflaterConfiguration;
 import com.itsaky.widgets.WidgetInfo;
+
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Set;
 
 public class StudioApp extends BaseApplication {

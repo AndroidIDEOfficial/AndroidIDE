@@ -66,13 +66,6 @@ public abstract class LSPClientLauncher extends Thread {
     public IDELanguageServer getServer() {
         return this.server;
     }
-
-    /**
-     * Are we connected to the server?
-     */
-    public boolean isConnected() {
-        return languageClient != null && languageClient.isConnected();
-    }
     
     /**
      * Actual logic to start the server

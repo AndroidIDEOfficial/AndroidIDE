@@ -4618,16 +4618,15 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             params.setPosition (getCursorAsLSPPosition ());
             final CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> future = mLanguageServer.getTextDocumentService ().definition (params);
             future.whenComplete ((e, t) -> {
-                final Either<List<? extends Location>, List<? extends LocationLink>> either = e;
-                final Throwable th = t;
-                
-                if (either == null || mLanguageClient == null || future.isCancelled () || future.isCompletedExceptionally ()) {
+    
+                if (e == null || mLanguageClient == null || future.isCancelled () || future.isCompletedExceptionally ()) {
+                    LOG.error ("An error occurred while finding definition", t);
                     showDefinitionNotFound (pd);
                     return;
                 }
                 
-                if (either.isLeft ()) {
-                    final List<? extends Location> locations = either.getLeft ();
+                if (e.isLeft ()) {
+                    final List<? extends Location> locations = e.getLeft ();
                     if (locations == null || locations.size () <= 0) {
                         showDefinitionNotFound (pd);
                         return;
@@ -4643,8 +4642,8 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                     });
                     
                     dismissOnUiThread (pd);
-                } else if (either.isRight ()) {
-                    final List<? extends LocationLink> locations = either.getRight ();
+                } else if (e.isRight ()) {
+                    final List<? extends LocationLink> locations = e.getRight ();
                     if (mLanguageClient == null || locations == null || locations.size () <= 0) {
                         showDefinitionNotFound (pd);
                         return;
@@ -4663,6 +4662,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 }
             });
         } catch (Throwable th) {
+            LOG.error ("An error occurred while finding definition", th);
             showDefinitionNotFound (pd);
         }
     }
@@ -4690,26 +4690,26 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             final CompletableFuture<List<? extends Location>> future = mLanguageServer.getTextDocumentService ().references (params);
             
             future.whenComplete ((l, t) -> {
-                final List<? extends Location> locations = l;
-                final Throwable th = t;
-                
-                if (locations == null || mLanguageClient == null || future.isCancelled () || future.isCompletedExceptionally ()) {
+    
+                if (l == null || mLanguageClient == null || future.isCancelled () || future.isCompletedExceptionally ()) {
+                    LOG.error ("An error occurred while finding references", t);
                     showReferencesNotFound (pd);
                     return;
                 }
                 
-                if (locations.isEmpty ()) {
+                if (l.isEmpty ()) {
                     showReferencesNotFound (pd);
                     return;
                 } else {
                     ThreadUtils.runOnUiThread (() -> {
-                        mLanguageClient.showLocations (locations);
+                        mLanguageClient.showLocations (l);
                     });
                 }
                 
                 dismissOnUiThread (pd);
             });
         } catch (Throwable th) {
+            LOG.error ("An error occurred while finding references", th);
             showReferencesNotFound (pd);
         }
     }
@@ -4741,24 +4741,20 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             CompletableFuture<SignatureHelp> future = mLanguageServer.getTextDocumentService ().signatureHelp (params);
             
             future.whenComplete ((h, t) -> {
-                final SignatureHelp help = h;
-                final Throwable th = t;
-                
-                if (help == null || mLanguageClient == null || future.isCancelled () || future.isCompletedExceptionally ()) {
+                if (h == null || mLanguageClient == null || future.isCancelled () || future.isCompletedExceptionally ()) {
+                    LOG.error ("An error occurred while finding signature help", t);
                     return;
                 }
                 
                 ThreadUtils.runOnUiThread (() -> {
-                    mLanguageClient.showSignatureHelp (help, getFile ());
+                    mLanguageClient.showSignatureHelp (h, getFile ());
                 });
             });
         }
     }
     
     private void dismissOnUiThread (final Dialog dialog) {
-        ThreadUtils.runOnUiThread (() -> {
-            dialog.dismiss ();
-        });
+        ThreadUtils.runOnUiThread (dialog::dismiss);
     }
     
     /**

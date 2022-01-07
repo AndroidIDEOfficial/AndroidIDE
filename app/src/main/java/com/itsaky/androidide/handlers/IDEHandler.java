@@ -58,7 +58,7 @@ public abstract class IDEHandler {
     /**
      * An interface to communicate between a handler and its client
      */
-    public static interface Provider {
+    public interface Provider {
         
         /**
          * Called by handler to get a reference to {@link EditorActivity}

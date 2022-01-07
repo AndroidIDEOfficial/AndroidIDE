@@ -22,7 +22,6 @@
 package com.itsaky.androidide.utils;
 
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.views.SymbolInputView.Symbol;
 import java.io.File;
 
@@ -30,11 +29,11 @@ public class Symbols {
     
 	public static Symbol[] forFile(File file) {
 		if (file.isFile()) {
-			if (file.getName().endsWith(EditorFragment.EXT_JAVA)
-                || file.getName().endsWith(EditorFragment.EXT_GRADLE))
+			if (file.getName().endsWith(".java")
+                || file.getName().endsWith(".gradle"))
 				return javaSymbols();
 
-			if (file.getName().endsWith(EditorFragment.EXT_XML))
+			if (file.getName().endsWith(".xml"))
 				return xmlSymbols();
 		}
 

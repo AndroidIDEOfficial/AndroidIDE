@@ -28,10 +28,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ProgressBar;
+
+import androidx.annotation.NonNull;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
 import com.blankj.utilcode.util.FileIOUtils;
-import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
@@ -41,11 +42,10 @@ import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.FileTreeCallable;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.toaster.Toaster;
+import com.itsaky.androidide.views.CodeEditorView;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import com.blankj.utilcode.util.FileUtils;
 
@@ -65,6 +65,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 		return this;
 	}
 
+	@NonNull
 	public static FileTreeFragment newInstance(AndroidProject project) {
 		Bundle bundle = new Bundle();
 		bundle.putParcelable("project", project);
@@ -82,8 +83,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		if (getActivity() == null || getArguments() == null || !getArguments().containsKey("project")) return;
-		mProject = getArguments().getParcelable("project");
+		mProject = requireArguments ().getParcelable("project");
         
 		listProjectFiles();
 	}
@@ -102,12 +102,12 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 				expandNode(node);
 			} else {
 				setLoading(node);
-				listNode(node, true);
+				listNode(node);
 			}
 		}
 	}
 	
-	private void listNode(TreeNode node, boolean wasClicked) {
+	private void listNode (@NonNull TreeNode node) {
 		node.getChildren().clear();
 		node.setExpanded(false);
 		new TaskExecutor().executeAsync(() -> {
@@ -136,13 +136,13 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 		}
 	}
 	
-	private void setLoading(TreeNode node) {
+	private void setLoading(@NonNull TreeNode node) {
 		if (node.getViewHolder() instanceof FileTreeViewHolder) {
 			((FileTreeViewHolder) node.getViewHolder()).setLoading();
 		}
 	}
 	
-	private void updateChevron(TreeNode node) {
+	private void updateChevron(@NonNull TreeNode node) {
 		if (node.getViewHolder() instanceof FileTreeViewHolder) {
 			((FileTreeViewHolder) node.getViewHolder()).updateChevron(!node.isExpanded());
 		}
@@ -180,9 +180,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 		
 		final File gradleProps = Environment.GRADLE_PROPS;
 		final File gradleHome = Environment.GRADLE_USER_HOME;
-        final File root = StudioApp.getInstance().getRootDir().getParentFile();
         File projectDir = new File(mProject.getProjectPath());
-//        projectDir = root;
 		mRoot = TreeNode.root(projectDir);
 		if(gradleHome.exists() && gradleHome.isDirectory()) {
 			if(!gradleProps.exists())
@@ -235,7 +233,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment implements TreeN
 	}
 
 	public interface FileActionListener {
-		public EditorFragment openFile(File file);
-		public void showFileOptions(File file, TreeNode node);
+		CodeEditorView openFile(File file);
+		void showFileOptions(File file, TreeNode node);
 	}
 }

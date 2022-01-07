@@ -25,6 +25,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.utils.Logger;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +36,8 @@ public class LogReceiver extends BroadcastReceiver {
 	
 	public static final String APPEND_LOG = "com.itsaky.androidide.logs.APPEND_LOG";
 	public static final String EXTRA_LINE = "log_line";
+	
+	private final Logger LOG = Logger.instance ("LogReceiver");
     
 	public LogReceiver setLogListener(LogListener listener) {
 		this.listener = listener;
@@ -47,7 +51,9 @@ public class LogReceiver extends BroadcastReceiver {
 			if(line == null) return;
 			try {
 				sendLogLine(line);
-			} catch (Throwable th) {}
+			} catch (Throwable th) {
+				LOG.error ("Unable to parse log line from app.", th);
+			}
 		}
 	}
 
@@ -58,7 +64,7 @@ public class LogReceiver extends BroadcastReceiver {
         }
 	}
 	
-	public static interface LogListener {
-		public void appendLogLine(LogLine line);
+	public interface LogListener {
+		void appendLogLine (LogLine line);
 	}
 }

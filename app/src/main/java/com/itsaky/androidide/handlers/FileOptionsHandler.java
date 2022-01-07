@@ -26,7 +26,6 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
 import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding;
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
-import com.itsaky.androidide.fragments.EditorFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.models.SheetOption;
@@ -298,7 +297,7 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
                     activity().getFileTreeFragment().listProjectFiles();
                 }
                 
-                EditorFragment frag = activity().getEditorForFile (f);
+                final var frag = activity().getEditorForFile (f);
                 if(frag != null) {
                     activity().closeFile(activity().findIndexOfEditorByFile (frag.getFile ()));
                 }

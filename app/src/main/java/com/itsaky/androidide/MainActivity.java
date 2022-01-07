@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  *
@@ -16,19 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 
 package com.itsaky.androidide;
-
-import abhishekti7.unicorn.filepicker.UnicornFilePicker;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -55,6 +51,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+
+import abhishekti7.unicorn.filepicker.UnicornFilePicker;
 
 public class MainActivity extends StudioActivity implements View.OnClickListener, ProjectWriterCallback {
     

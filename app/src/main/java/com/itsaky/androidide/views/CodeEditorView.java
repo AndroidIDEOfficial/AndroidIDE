@@ -1,0 +1,378 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.androidide.views;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+
+import com.blankj.utilcode.util.FileIOUtils;
+import com.blankj.utilcode.util.SizeUtils;
+import com.itsaky.androidide.adapters.CompletionListAdapter;
+import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.databinding.LayoutCodeEditorBinding;
+import com.itsaky.androidide.language.groovy.GroovyLanguage;
+import com.itsaky.androidide.language.java.JavaLanguage;
+import com.itsaky.androidide.language.xml.XMLLanguage;
+import com.itsaky.androidide.lexers.xml.XMLLexer;
+import com.itsaky.androidide.managers.PreferenceManager;
+import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.LSPUtils;
+import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.TypefaceUtils;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+import org.eclipse.lsp4j.Diagnostic;
+import org.eclipse.lsp4j.Range;
+
+import java.io.File;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+import io.github.rosemoe.editor.interfaces.EditorEventListener;
+import io.github.rosemoe.editor.langs.EmptyLanguage;
+import io.github.rosemoe.editor.widget.CodeEditor;
+
+/**
+ * A view that handles opened code editors.
+ *
+ * @author Akash Yadav
+ */
+@SuppressLint("ViewConstructor") // This view is always dynamically created.
+public class CodeEditorView extends FrameLayout {
+    
+    private final File file;
+    private final LayoutCodeEditorBinding binding;
+    
+    private boolean isModified;
+    private boolean isFirstCreate;
+    
+    private static final Logger LOG = Logger.instance ("CodeEditorView");
+    
+    private final EditorEventListener mEventListener = new EditorEventListener () {
+        @Override
+        public boolean onRequestFormat (CodeEditor editor, boolean async) {
+            return false;
+        }
+        
+        @Override
+        public boolean onFormatFail (CodeEditor editor, Throwable cause) {
+            return false;
+        }
+        
+        @Override
+        public void onFormatSucceed (CodeEditor editor) {
+        }
+        
+        @Override
+        public void onNewTextSet (CodeEditor editor) {
+        }
+        
+        @Override
+        public void beforeReplace (CodeEditor editor, CharSequence content) {
+        }
+        
+        @Override
+        public void onSetSelection (int startLine, int startCol, int endLine, int endCol) {
+        }
+        
+        @Override
+        public void afterDelete (CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
+            isModified = true;
+        }
+        
+        @Override
+        public void afterInsert (CodeEditor editor, CharSequence content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
+            isModified = true;
+            if (file.getName ().endsWith (".xml")) {
+                boolean isOpen = false;
+                try {
+                    isOpen = editor.getText ().charAt (editor.getCursor ().getLeft () - 2) == '<';
+                } catch (Throwable th) {
+                    LOG.error (th);
+                }
+                
+                if (isOpen && insertedContent.toString ().equals ("/")) {
+                    closeCurrentTag (editor.getText ().toString (), endLine, endColumn);
+                }
+            }
+        }
+    };
+    
+    public CodeEditorView (@NonNull Context context, @NonNull File file, final @NonNull Range selection) {
+        super (context);
+        this.file = file;
+        this.isModified = false;
+        this.isFirstCreate = true;
+        
+        this.binding = LayoutCodeEditorBinding.inflate (LayoutInflater.from (context));
+        this.binding.editor.setOverScrollEnabled (false);
+        this.binding.editor.setTypefaceText (TypefaceUtils.jetbrainsMono ());
+        this.binding.editor.setTextActionMode (CodeEditor.TextActionMode.ACTION_MODE);
+        this.binding.editor.setHighlightCurrentBlock (true);
+        this.binding.editor.setEventListener (mEventListener);
+        this.binding.editor.setAutoCompletionOnComposing (true);
+        this.binding.editor.setAutoCompletionItemAdapter (new CompletionListAdapter ());
+        this.binding.editor.setLineColorsEnabled (true);
+        this.binding.editor.setDividerWidth (SizeUtils.dp2px (1));
+        this.binding.editor.setColorScheme (new SchemeAndroidIDE ());
+        
+        this.binding.diagnosticTextContainer.setVisibility (GONE);
+        
+        removeAllViews ();
+        addView (this.binding.getRoot ());
+        
+        CompletableFuture.runAsync (() -> {
+            final var contents = FileIOUtils.readFile2String (file);
+            binding.editor.post (() -> {
+                binding.editor.setText (contents);
+                postRead ();
+                if (LSPUtils.isEqual (selection.getStart (), selection.getEnd ())) {
+                    getEditor ().setSelection (selection.getStart ().getLine (), selection.getStart ().getCharacter ());
+                } else {
+                    getEditor ().setSelectionRegion (
+                            selection.getStart ().getLine (),
+                            selection.getStart ().getCharacter (),
+                            selection.getEnd ().getLine (),
+                            selection.getEnd ().getCharacter ()
+                    );
+                }
+            });
+        });
+    }
+    
+    public boolean save () {
+        final var text = getText ();
+        final var saved = FileIOUtils.writeFileFromString (getFile (), text);
+        notifySaved ();
+        isModified = false;
+        return saved;
+    }
+    
+    public Editor getEditor () {
+        return binding.editor;
+    }
+    
+    public LayoutCodeEditorBinding getBinding () {
+        return binding;
+    }
+    
+    public File getFile () {
+        return file;
+    }
+    
+    public String getText () {
+        return binding.editor.getText ().toString ();
+    }
+    
+    public boolean isModified () {
+        return isModified;
+    }
+    
+    public void onPause () {
+        CompletableFuture.runAsync (this::save);
+    }
+    
+    public void onResume () {
+        configureEditorIfNeeded ();
+    }
+    
+    public void undo () {
+        if (binding.editor.canUndo ()) {
+            binding.editor.undo ();
+        }
+    }
+    
+    public void redo () {
+        if (binding.editor.canRedo ()) {
+            binding.editor.redo ();
+        }
+    }
+    
+    public void findDefinition () {
+        binding.editor.findDefinition ();
+    }
+    
+    public void findReferences () {
+        binding.editor.findReferences ();
+    }
+    
+    public void commentLine () {
+        binding.editor.commentLine ();
+    }
+    
+    public void uncommentLine () {
+        binding.editor.uncommentLine ();
+    }
+    
+    public void beginSearch () {
+        binding.editor.beginSearchMode ();
+    }
+    
+    public void setDiagnostics (List<Diagnostic> diagnostics) {
+        if (diagnostics == null) {
+            LOG.info ("Clearing diagnostics of code editor", "file:", file);
+            binding.editor.getEditorLanguage ().getAnalyzer ().updateDiagnostics (new HashMap<> ());
+            return;
+        }
+        
+        Map<Integer, Map<Integer, Diagnostic>> map = new HashMap<> ();
+        for (int i = 0; i < diagnostics.size (); i++) {
+            final Diagnostic d = diagnostics.get (i);
+            if (d == null) {
+                continue;
+            }
+            final Range range = d.getRange ();
+            final int line = range.getStart ().getLine ();
+            final int column = range.getStart ().getCharacter ();
+            Map<Integer, Diagnostic> mappedByColumn = map.get (line);
+            if (mappedByColumn == null) {
+                mappedByColumn = new HashMap<> ();
+            }
+            mappedByColumn.put (column, d);
+            map.put (line, mappedByColumn);
+        }
+        
+        binding.editor.getEditorLanguage ().getAnalyzer ().updateDiagnostics (map);
+    }
+    
+    protected void postRead () {
+        if (file.isFile () && file.getName ().endsWith (".java")) {
+            binding.editor.setEditorLanguage (new JavaLanguage (getFile ()));
+        } else if (file.isFile () && file.getName ().endsWith (".xml")) {
+            binding.editor.setEditorLanguage (new XMLLanguage (getFile ()));
+        } else if (file.isFile () && file.getName ().endsWith (".gradle")) {
+            binding.editor.setEditorLanguage (new GroovyLanguage (getFile ()));
+        } else {
+            binding.editor.setEditorLanguage (new EmptyLanguage ());
+        }
+        
+        // File must be set only after setting the language
+        // This will make sure that textDocument/didOpen is sent
+        binding.editor.setFile (getFile ());
+    }
+    
+    private void configureEditorIfNeeded () {
+        boolean sizeChanged = isFirstCreate || ConstantsBridge.EDITORPREF_SIZE_CHANGED;
+        boolean flagsChanged = isFirstCreate || ConstantsBridge.EDITORPREF_FLAGS_CHANGED;
+        boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED;
+        final PreferenceManager prefs = StudioApp.getInstance ().getPrefManager ();
+        
+        if (sizeChanged) {
+            float textSize = prefs.getFloat (PreferenceManager.KEY_EDITOR_FONT_SIZE);
+            if (textSize < 6 || textSize > 32) {
+                textSize = 14;
+            }
+            
+            binding.editor.setTextSize (textSize);
+            ConstantsBridge.EDITORPREF_SIZE_CHANGED = false;
+        }
+        
+        if (flagsChanged) {
+            int flags = 0;
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_WS_LEADING, true)) {
+                flags |= CodeEditor.FLAG_DRAW_WHITESPACE_LEADING;
+            }
+            
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_WS_TRAILING, false)) {
+                flags |= CodeEditor.FLAG_DRAW_WHITESPACE_TRAILING;
+            }
+            
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_WS_INNER, true)) {
+                flags |= CodeEditor.FLAG_DRAW_WHITESPACE_INNER;
+            }
+            
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_WS_EMPTY_LINE, true)) {
+                flags |= CodeEditor.FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE;
+            }
+            
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_LINE_BREAK, true)) {
+                flags |= CodeEditor.FLAG_DRAW_LINE_SEPARATOR;
+            }
+            
+            binding.editor.setNonPrintablePaintingFlags (flags);
+            ConstantsBridge.EDITORPREF_FLAGS_CHANGED = false;
+        }
+        
+        if (drawHexChanged) {
+            binding.editor.setLineColorsEnabled (prefs.getBoolean (PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
+            ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED = false;
+        }
+        
+        isFirstCreate = false;
+    }
+    
+    private void closeCurrentTag (String text, int line, int col) {
+        try {
+            XMLLexer lexer = new XMLLexer (CharStreams.fromReader (new StringReader (text)));
+            Token token;
+            boolean wasSlash = false, wasOpen = false;
+            ArrayList<String> currentNames = new ArrayList<> ();
+            while (((token = lexer.nextToken ()) != null && token.getType () != token.EOF)) {
+                final int type = token.getType ();
+                if (type == XMLLexer.OPEN) {
+                    wasOpen = true;
+                } else if (type == XMLLexer.Name) {
+                    if (wasOpen && wasSlash && currentNames.size () > 0) {
+                        currentNames.remove (0);
+                    } else if (wasOpen) {
+                        currentNames.add (0, token.getText ());
+                        wasOpen = false;
+                    }
+                } else if (type == XMLLexer.OPEN_SLASH) {
+                    int l = token.getLine () - 1;
+                    int c = token.getCharPositionInLine ();
+                    if (l == line && c == col) {
+                        break;
+                    } else if (currentNames.size () > 0) {
+                        currentNames.remove (0);
+                    }
+                } else if (type == XMLLexer.SLASH_CLOSE
+                        || type == XMLLexer.SPECIAL_CLOSE) {
+                    if (currentNames.size () > 0 && token.getText ().trim ().endsWith ("/>")) {
+                        currentNames.remove (0);
+                    }
+                } else if (type == XMLLexer.SLASH) {
+                    wasSlash = true;
+                } else {
+                    wasOpen = wasSlash = false;
+                }
+            }
+            
+            if (currentNames.size () > 0) {
+                binding.editor.getText ().insert (line, col + 2, currentNames.get (0));
+            }
+        } catch (Throwable th) {
+            LOG.error ("Unable to close current tag", th);
+        }
+    }
+    
+    private void notifySaved () {
+        binding.editor.didSave ();
+    }
+}
