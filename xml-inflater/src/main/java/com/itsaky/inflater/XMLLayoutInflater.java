@@ -284,7 +284,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
             final var androidView = this.widgetInfo.getWidget (name);
             if (androidView == null) {
                 // If this is not an Android view, do not bother to create one
-                throw new InflateException (String.format ("%s is not supported yet.", name));
+                throw new NotSupportedException ();
             }
             
             final View created = createAndroidViewForName (name);
@@ -294,6 +294,11 @@ class XMLLayoutInflater extends BaseLayoutInflater {
                             : new UiView (name, created);
             return applyLayoutParams (view, parent);
         } catch (Throwable th) {
+            
+            if (th instanceof NotSupportedException) {
+                return onCreateErrorView (name, getString (R.string.msg_view_not_supported, name), parent);
+            }
+            
             final var msg = getString (R.string.msg_cannot_create_view, name);
             LOG.error (msg, th);
             return onCreateErrorView (name, msg, parent);
