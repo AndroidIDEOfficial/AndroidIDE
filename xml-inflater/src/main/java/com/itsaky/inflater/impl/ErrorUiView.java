@@ -32,8 +32,10 @@ import org.jetbrains.annotations.Contract;
 
 /**
  * A view which is used to show views that cannot be inflated.
- * This view will preserver the attributes and the children
+ * This view will preserve the attributes and the children
  * if the view is a view group;
+ *
+ * @author Akash Yadav
  */
 public class ErrorUiView extends UiViewGroup {
     
