@@ -19,24 +19,26 @@
 **************************************************************************************/
 package com.itsaky.widgets.models;
 
-public class Widget implements Comparable {
+import androidx.annotation.NonNull;
+
+public class Widget implements Comparable <Widget> {
     
     public String name;
     public String simpleName;
     public boolean isViewGroup;
 
-    public Widget(String name, String simpleName, boolean isViewGroup) {
+    public Widget(@NonNull String name, boolean isViewGroup) {
         this.name = name;
-        this.simpleName = simpleName;
+        this.simpleName = name.substring (name.lastIndexOf (".") + 1);
         this.isViewGroup = isViewGroup;
     }
 
     @Override
-    public int compareTo(Object p1) {
-        if(p1 instanceof Widget) {
-            Widget that = (Widget) p1;
+    public int compareTo(Widget that) {
+        if(that != null) {
             return this.simpleName.compareTo(that.simpleName);
         }
+        
         return -1;
     }
     

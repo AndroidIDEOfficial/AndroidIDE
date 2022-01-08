@@ -72,7 +72,6 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
         final ViewGroup.LayoutParams params = view.getLayoutParams();
-        final Resources res = view.getResources();
         final Context ctx = view.getContext();
         
         if (!canHandleNamespace(namespace)) {

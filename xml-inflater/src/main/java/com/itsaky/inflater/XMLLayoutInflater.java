@@ -34,6 +34,7 @@ import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
 import com.itsaky.inflater.impl.BaseView;
+import com.itsaky.inflater.impl.ErrorUiView;
 import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.inflater.impl.UiView;
 import com.itsaky.inflater.impl.UiViewGroup;
@@ -43,6 +44,7 @@ import com.itsaky.widgets.models.Widget;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -104,7 +106,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
             IView root = onCreateView (doc.child (0), parent);
             
             if (root == null) {
-                root = onCreateErrorView (TextView.class.getName (), "No views added");
+                root = onCreateErrorView (TextView.class.getName (), "No views added", parent);
             }
             
             // Notify
@@ -267,7 +269,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         final Widget widget = widgetInfo.getWidgetBySimpleName (name);
         if (widget == null) {
             LOG.error ("Unable to inflate view. widget == null");
-            return onCreateErrorView (name, getString (com.itsaky.inflater.R.string.msg_cannot_create_view, name));
+            return onCreateErrorView (name, getString (com.itsaky.inflater.R.string.msg_cannot_create_view, name), parent);
         }
         
         return createFromQualifiedName (widget.name, parent, style);
@@ -278,6 +280,13 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         
         // TODO Try to load classes directly from .class files if possible
         try {
+    
+            final var androidView = this.widgetInfo.getWidget (name);
+            if (androidView == null) {
+                // If this is not an Android view, do not bother to create one
+                throw new InflateException (String.format ("%s is not supported yet.", name));
+            }
+            
             final View created = createAndroidViewForName (name);
             final BaseView view =
                     created instanceof ViewGroup
@@ -287,7 +296,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         } catch (Throwable th) {
             final var msg = getString (R.string.msg_cannot_create_view, name);
             LOG.error (msg, th);
-            return onCreateErrorView (name, msg);
+            return onCreateErrorView (name, msg, parent);
         }
     }
     
@@ -295,8 +304,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     protected View createAndroidViewForName (String name) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, java.lang.reflect.InvocationTargetException {
         final Class<? extends View> loaded = Class.forName (name).asSubclass (View.class);
         final Constructor<? extends View> constructor = loaded.getConstructor (Context.class /*, AttributeSet.class, int.class*/);
-        final View created = constructor.newInstance (contextProvider.getContext ()/*, null, style*/);
-        return created;
+        return constructor.newInstance (contextProvider.getContext ()/*, null, style*/);
     }
     
     protected IView applyLayoutParams (@NonNull IView view, ViewGroup parent) {
@@ -305,18 +313,9 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         return view;
     }
     
-    protected IView onCreateErrorView (String name, String msg) throws InflateException {
-        
-        final Context ctx = contextProvider.getContext ();
-        assertNotnull (ctx, "Context is null!");
-        
-        final TextView error = new TextView (ctx);
-        error.setText (msg);
-        error.setLayoutParams (new ViewGroup.LayoutParams (-2, -2));
-        error.setTextColor (ContextCompat.getColor (ctx, android.R.color.black));
-        error.setBackgroundColor (ContextCompat.getColor (ctx, android.R.color.white));
-        
-        return new UiView (name, error, true);
+    protected IView onCreateErrorView (String name, String msg, final ViewGroup parent) throws InflateException {
+        final var view = ErrorUiView.create (Objects.requireNonNull (contextProvider.getContext (), "Context is null."), name, msg);
+        return applyLayoutParams (view, parent);
     }
     
     private String getString (@StringRes int id, Object... format) throws InflateException {
@@ -329,6 +328,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         try {
             final Class<?> clazz = parent.getClass ();
             Method method = null;
+            
             try {
                 method = clazz.getDeclaredMethod ("generateDefaultLayoutParams");
             } catch (NoSuchMethodException | SecurityException e) {
