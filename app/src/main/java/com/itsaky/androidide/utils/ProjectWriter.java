@@ -21,6 +21,8 @@
 
 package com.itsaky.androidide.utils;
 
+import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
@@ -39,6 +41,8 @@ public class ProjectWriter {
 	
 	private static ProjectWriterCallback callback;
 	
+	private static final String XML_TEMPLATE_PATH = "templates/xml";
+	
 	private static final String[] FILE_TO_CHANGE = {
 		"build.gradle",
         "settings.gradle",
@@ -48,63 +52,24 @@ public class ProjectWriter {
 	};
 	
 	private static final String JAVA_PATH_REGEX = "/.*/src/.*/java";
-	private static final String ANAME = "$app_name",
-								PNAME = "$package_name",
-								MSDK = "$min_sdk",
-								TSDK = "$target_sdk",
-								ANDROIDIDE_PLUGIN = "$androidide_gradle_plugin_version";
+	private static final String APP_NAME = "$app_name",
+								PACKAGE_NAME = "$package_name",
+								MIN_SDK = "$min_sdk",
+								TARGET_SDK = "$target_sdk";
     
+	@NonNull
 	public static String createMenu() {
-		return "<menu"
-			+ "\n\txmlns:android=\"http://schemas.android.com/apk/res/android\""
-			+ "\n\txmlns:app=\"http://schemas.android.com/apk/res-auto\""
-			+ "\n\txmlns:tools=\"http://schemas.android.com/tools\">"
-			+ "\n\t"
-			+ "\n</menu>";
+		return ResourceUtils.readAssets2String (XML_TEMPLATE_PATH + "/menu.xml");
 	}
-
+	
+	@NonNull
 	public static String createDrawable() {
-		return "<shape"
-			+ "\n\txmlns:android=\"http://schemas.android.com/apk/res/android\""
-			+ "\n\tandroid:shape=\"rectangle\">"
-			+ "\n\t\t<solid"
-			+ "\n\t\t\tandroid:color=\"@color/colorPrimary\"/>"
-			+ "\n\t\t<corners"
-			+ "\n\t\t\tandroid:topLeftRadius=\"8dp\""
-			+ "\n\t\t\tandroid:topRightRadius=\"8dp\"/>"
-			+ "\n</shape>";
+		return ResourceUtils.readAssets2String (XML_TEMPLATE_PATH + "/drawable.xml");
 	}
-
+	
+	@NonNull
 	public static String createLayout() {
-		return "<androidx.coordinatorlayout.widget.CoordinatorLayout"
-			+ "\n	xmlns:android=\"http://schemas.android.com/apk/res/android\""
-			+ "\n	xmlns:app=\"http://schemas.android.com/apk/res-auto\""
-			+ "\n	android:layout_width=\"match_parent\""
-			+ "\n	android:layout_height=\"match_parent\""
-			+ "\n	android:animateLayoutChanges=\"true\">"
-			+ "\n	"
-			+ "\n	<com.google.android.material.appbar.AppBarLayout"
-			+ "\n		android:layout_width=\"match_parent\""
-			+ "\n		android:layout_height=\"wrap_content\""
-			+ "\n		android:elevation=\"8dp\""
-			+ "\n		android:id=\"@+id/appbar\""
-			+ "\n		app:layout_behavior=\"com.google.android.material.appbar.AppBarLayout$Behavior\">"
-			+ "\n"
-			+ "\n		<com.google.android.material.appbar.MaterialToolbar"
-			+ "\n			android:layout_height=\"wrap_content\""
-			+ "\n			android:layout_width=\"match_parent\""
-			+ "\n			android:id=\"@+id/toolbar\"/>"
-			+ "\n"
-			+ "\n	</com.google.android.material.appbar.AppBarLayout>"
-			+ "\n	"
-			+ "\n	<LinearLayout"
-			+ "\n		android:layout_height=\"match_parent\""
-			+ "\n		android:layout_width=\"match_parent\""
-			+ "\n		app:layout_behavior=\"com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior\">"
-			+ "\n		"
-			+ "\n	</LinearLayout>"
-			+ "\n    "
-			+ "\n</androidx.coordinatorlayout.widget.CoordinatorLayout>";
+		return ResourceUtils.readAssets2String (XML_TEMPLATE_PATH + "/layout.xml");
 	}
 	
 	public static String getPackageName(File parentPath) {
@@ -161,29 +126,30 @@ public class ProjectWriter {
 			notifyTask(instance.getString(R.string.writing_files));
 			for(String s : FILE_TO_CHANGE) {
 				File file = new File(temp, s);
-				if(file.exists() && s.contains(PNAME)) {
-					s = s.replace(PNAME, details.packageName.replace(".", "/"));
+				if(file.exists() && s.contains(PACKAGE_NAME)) {
+					s = s.replace(PACKAGE_NAME, details.packageName.replace(".", "/"));
 					File f = new File(temp, s);
 					FileUtils.move(file, f);
 					
 					try {
 						File f2 = file.getParentFile();
-						while(!f2.getName().contains(PNAME))
+						while(f2 != null && !f2.getName().contains(PACKAGE_NAME)) {
 							f2 = f2.getParentFile();
+						}
+						
 						FileUtils.delete(f2);
-					} catch (Throwable t) {}
+					} catch (Throwable t) {
+						// ignored
+					}
 					file = f;
 				}
 				if(file.exists()) {
 					String read = FileIOUtils.readFile2String(file);
-					read = read.replace(ANAME, details.name)
-							.replace(PNAME, details.packageName)
-							.replace(MSDK, String.valueOf(details.minSdk))
-							.replace(TSDK, String.valueOf(details.targetSdk))
-							.replace(ANDROIDIDE_PLUGIN, "1.0.6");
-					if(FileIOUtils.writeFileFromString(file, read, false)) {
-						continue;
-					} else {
+					read = read.replace(APP_NAME, details.name)
+							.replace(PACKAGE_NAME, details.packageName)
+							.replace(MIN_SDK, String.valueOf(details.minSdk))
+							.replace(TARGET_SDK, String.valueOf(details.targetSdk));
+					if (!FileIOUtils.writeFileFromString (file, read, false)) {
 						notifyFailed(instance.getString(R.string.failed_write_file, file.getName()));
 					}
 				}
@@ -191,16 +157,21 @@ public class ProjectWriter {
 			notifyTask(instance.getString(R.string.copying_files));
 			if(FileUtils.createOrExistsDir(projectDir)) {
 				boolean success = true;
-				for(File f : temp.listFiles()) {
-					if(success &= FileUtils.copy(f, new File(projectDir, f.getName())))
-						continue;
-					else {
-						notifyFailed(instance.getString(R.string.failed_write_file, f.getName()));
-						break;
+				final var files = temp == null ? null : temp.listFiles ();
+				if (files == null) {
+					success = false;
+				} else {
+					for(File f : files) {
+						if (!(success &= FileUtils.copy (f, new File (projectDir, f.getName ())))) {
+							notifyFailed(instance.getString(R.string.failed_write_file, f.getName()));
+							break;
+						}
 					}
 				}
-				if(success)
+				
+				if(success) {
 					notifySuccess(projectDir);
+				}
 			} else {
 				notifyFailed(instance.getString(R.string.failed_create_project_dir));
 			}

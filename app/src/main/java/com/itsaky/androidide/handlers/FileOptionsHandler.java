@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.ResourceUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.viewholders.FileTreeViewHolder;
@@ -41,9 +42,9 @@ import java.util.regex.Pattern;
 public class FileOptionsHandler extends IDEHandler implements OptionsListFragment.OnOptionsClickListener {
     
     public static final String RES_PATH_REGEX = "/.*/src/.*/res";
-    public static final String LAYOUTRES_PATH_REGEX = "/.*/src/.*/res/layout";
-    public static final String MENURES_PATH_REGEX = "/.*/src/.*/res/menu";
-    public static final String DRAWABLERES_PATH_REGEX = "/.*/src/.*/res/drawable";
+    public static final String LAYOUT_RES_PATH_REGEX = "/.*/src/.*/res/layout";
+    public static final String MENU_RES_PATH_REGEX = "/.*/src/.*/res/menu";
+    public static final String DRAWABLE_RES_PATH_REGEX = "/.*/src/.*/res/drawable";
     public static final String JAVA_PATH_REGEX = "/.*/src/.*/java";
     
     public FileOptionsHandler(Provider provider) {
@@ -52,8 +53,9 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
 
     @Override
     public void start() {
-        if(activity() == null)
+        if(activity() == null) {
             throwNPE();
+        }
     }
 
     @Override
@@ -95,9 +97,9 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
         } else {
             final boolean isJava = Pattern.compile(Pattern.quote(androidProject().getProjectPath()) + JAVA_PATH_REGEX).matcher(f.getAbsolutePath()).find();
             final boolean isRes = Pattern.compile(Pattern.quote(androidProject().getProjectPath()) + RES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
-            final boolean isLayoutRes = Pattern.compile(Pattern.quote(androidProject().getProjectPath()) + LAYOUTRES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
-            final boolean isMenuRes = Pattern.compile(Pattern.quote(androidProject().getProjectPath()) + MENURES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
-            final boolean isDrawableRes = Pattern.compile(Pattern.quote(androidProject().getProjectPath()) + DRAWABLERES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
+            final boolean isLayoutRes = Pattern.compile(Pattern.quote(androidProject().getProjectPath()) + LAYOUT_RES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
+            final boolean isMenuRes = Pattern.compile(Pattern.quote(androidProject().getProjectPath()) + MENU_RES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
+            final boolean isDrawableRes = Pattern.compile(Pattern.quote(androidProject().getProjectPath()) + DRAWABLE_RES_PATH_REGEX).matcher(f.getAbsolutePath()).find();
             if(isJava) {
                 createJavaClass(f);
             } else if(isLayoutRes && f.getName().equals("layout")) {

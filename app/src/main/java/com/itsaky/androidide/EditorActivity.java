@@ -54,7 +54,6 @@ import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
@@ -366,7 +365,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final boolean isJava = notNull && file.getName ().endsWith (".java");
         final boolean isXml = notNull && file.getName ().endsWith (".xml");
         final boolean isLayout = isXml && file.getParentFile () != null &&
-                Pattern.compile (FileOptionsHandler.LAYOUTRES_PATH_REGEX)
+                Pattern.compile (FileOptionsHandler.LAYOUT_RES_PATH_REGEX)
                         .matcher (file.getParentFile ().getAbsolutePath ())
                         .matches ();
         final int nullableAlpha = notNull ? 255 : 76;
