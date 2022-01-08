@@ -33,6 +33,7 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.IViewGroup;
+import com.itsaky.inflater.impl.ErrorUiView;
 import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.inflater.impl.UiView;
 import com.itsaky.inflater.impl.UiViewGroup;
@@ -67,6 +68,11 @@ public class WidgetDragListener implements View.OnDragListener {
     
     @Override
     public boolean onDrag (View v, @NonNull DragEvent event) {
+        
+        if (this.viewGroup instanceof ErrorUiView) {
+            return false;
+        }
+        
         final var action = event.getAction ();
         final var clipDesc = event.getClipDescription ();
         final var dragData = (WidgetDragData) event.getLocalState ();
