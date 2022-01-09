@@ -17,9 +17,9 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
  **************************************************************************************/
-
-
 package com.itsaky.androidide;
+
+import static com.itsaky.androidide.utils.Environment.*;
 
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -29,13 +29,14 @@ import android.widget.LinearLayout;
 
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
-import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityTerminalBinding;
+import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
-import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.BootstrapInstaller;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.virtualkeys.SpecialButton;
@@ -50,8 +51,8 @@ import com.itsaky.terminal.TextStyle;
 import com.itsaky.terminal.view.TerminalView;
 import com.itsaky.terminal.view.TerminalViewClient;
 
+import java.io.File;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import org.json.JSONException;
 
@@ -83,19 +84,63 @@ public class TerminalActivity extends StudioActivity {
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
         
-        final var future = CompletableFuture.runAsync (() -> {
-            final var in = ResourceUtils.
-        });
+        final var bash = new File (BIN_DIR, "bash");
+        if (SYSROOT.exists () && SYSROOT.isDirectory () && bash.exists () && bash.isFile () && bash.canExecute ()) {
+            setupTerminalView ();
+        } else {
+            // Sysroot is not installed
+            // Or bash might be not executable
+            LOG.debug ("Bootstrap is not installed.");
+            
+            // Show the progress sheet
+            final var progress = new ProgressSheet ();
+            progress.setShowShadow (false);
+            progress.setSubMessageEnabled (true);
+            progress.setShowTitle (false);
+            progress.setMessage (getString (R.string.please_wait));
+            progress.setSubMessage (getString (R.string.msg_reading_bootstrap));
+            progress.setCancelable (false);
+            progress.show (getSupportFragmentManager (), "extract_bootstrap_progress");
+            
+            LOG.debug ("Starting installation...");
+            // Install bootstrap asynchronously
+            final var future = BootstrapInstaller.doInstall (this, message -> runOnUiThread (() -> progress.setSubMessage (message)));
+            
+            future.whenComplete ((voidResult, throwable) -> {
+                LOG.debug ("Completable future has been complete.", throwable);
+                
+                runOnUiThread (() -> {
+                    progress.dismissAllowingStateLoss ();
+    
+                    if (future.isCompletedExceptionally () || throwable != null) {
+                        LOG.error ("Future has been completed exceptionally.");
+                        
+                        final var builder = DialogUtils.newMaterialDialogBuilder (TerminalActivity.this);
+                        builder.setTitle (getString (R.string.title_installation_failed));
+                        builder.setMessage (getString (R.string.msg_installation_error, throwable.getMessage ()));
+                        builder.setPositiveButton (android.R.string.ok, null);
+                        builder.setCancelable (false);
+                        builder.show ();
+                        return;
+                    }
+                    
+                    setupTerminalView ();
+                });
+            });
+        }
+    }
+    
+    private void setupTerminalView () {
         terminal = new TerminalView (this, null);
         terminal.setTerminalViewClient (client);
         terminal.attachSession (createSession (getWorkingDirectory ()));
         terminal.setKeepScreenOn (true);
         terminal.setTextSize (SizeUtils.dp2px (10));
         terminal.setTypeface (TypefaceUtils.jetbrainsMono ());
-    
+        
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams (-1, 0);
         params.weight = 1f;
-    
+        
         binding.getRoot ().addView (terminal, 0, params);
         try {
             binding.virtualKeyTable.setVirtualKeysViewClient (getKeyListener ());
@@ -111,11 +156,11 @@ public class TerminalActivity extends StudioActivity {
         if (extras != null && extras.containsKey (KEY_WORKING_DIRECTORY)) {
             String directory = extras.getString (KEY_WORKING_DIRECTORY, null);
             if (directory == null || directory.trim ().length () <= 0) {
-                directory = Environment.HOME.getAbsolutePath ();
+                directory = HOME.getAbsolutePath ();
             }
             return directory;
         }
-        return Environment.HOME.getAbsolutePath ();
+        return HOME.getAbsolutePath ();
     }
     
     private KeyListener getKeyListener () {
@@ -152,7 +197,7 @@ public class TerminalActivity extends StudioActivity {
     }
     
     private TerminalSession createSession (final String workingDirectory) {
-        final Map<String, String> envs = Environment.getEnvironment (true);
+        final Map<String, String> envs = getEnvironment (true);
         final String[] env = new String[envs.size ()];
         int i = 0;
         for (Map.Entry<String, String> entry : envs.entrySet ()) {
@@ -161,7 +206,7 @@ public class TerminalActivity extends StudioActivity {
         }
         
         session = new TerminalSession (
-                getShellPath(), // Shell command
+                getShellPath (), // Shell command
                 workingDirectory, // Working directory
                 new String[]{}, // Arguments
                 env, // Environment variables
@@ -176,9 +221,9 @@ public class TerminalActivity extends StudioActivity {
     private String getShellPath () {
         final var useSystemShell = getApp ().getPrefManager ().getBoolean (PreferenceManager.KEY_TERMINAL_SHELL);
         if (!useSystemShell &&
-                Environment.SHELL.exists () &&
-                Environment.SHELL.isFile ()) {
-            return Environment.SHELL.getAbsolutePath ();
+                LOGIN_SHELL.exists () &&
+                LOGIN_SHELL.isFile ()) {
+            return LOGIN_SHELL.getAbsolutePath ();
         }
         
         if (!useSystemShell) {

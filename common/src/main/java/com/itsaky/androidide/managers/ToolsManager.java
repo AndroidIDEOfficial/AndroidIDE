@@ -46,13 +46,12 @@ public class ToolsManager {
     
     public static void init(@NonNull BaseApplication app, Runnable onFinish) {
         prefs = app.getPrefManager();
+        
         copyBusyboxIfNeeded();
         extractJlsIfNeeded();
         extractLogsenderIfNeeded();
         extractLibHooks();
-        
         writeInitScript();
-        
         rewriteProjectData();
         
         if(onFinish != null) {
@@ -60,7 +59,7 @@ public class ToolsManager {
         }
     }
 
-    private static void extractLibHooks() {
+    public static void extractLibHooks() {
         if(!Environment.LIB_HOOK.exists()) {
             ResourceUtils.copyFileFromAssets(getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
         }

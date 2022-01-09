@@ -18,9 +18,12 @@
 package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Build;
+import android.os.UserManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
@@ -60,7 +63,7 @@ public final class Environment {
     public static final File JAVA;
     public static final File BUSYBOX;
     public static final File SHELL;
-    public static final File BUSYBOX_SH;
+    public static final File LOGIN_SHELL;
     
     public static File BOOTCLASSPATH;
     
@@ -103,8 +106,8 @@ public final class Environment {
         
         JAVA = new File(JAVA_HOME, "bin/java");
         BUSYBOX = new File(BIN_DIR, "busybox");
-        SHELL = new File(BIN_DIR, "sh.sh");
-        BUSYBOX_SH = new File (BIN_DIR, "sh");
+        SHELL = new File(BIN_DIR, "bash");
+        LOGIN_SHELL = new File (BIN_DIR, "login");
         
         setExecutable (JAVA);
         setExecutable (BUSYBOX);
@@ -177,7 +180,7 @@ public final class Environment {
         }
         ld += LIB_DIR.getAbsolutePath();
         ENV_VARS.put("LD_LIBRARY_PATH", ld);
-        
+    
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BaseApplication.isAarch64()) {
             ENV_VARS.put("LD_PRELOAD", LIB_HOOK.getAbsolutePath());
         }

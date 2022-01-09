@@ -346,5 +346,7 @@
     <string name="msg_report_crash">Please open an issue on github with the following stacktrace :</string>
     <string name="msg_crash_report_hint">Click on the button below to copy log and open issues page.</string>
     <string name="msg_copy_report_action">Copy and report</string>
+    <string name="msg_reading_bootstrap">Reading bootstrap archive…</string>
+    <string name="msg_installation_error">Installation error was: %s</string>
 
 </resources>

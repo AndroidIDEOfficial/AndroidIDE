@@ -17,6 +17,7 @@
 **************************************************************************************/
 package com.itsaky.androidide.services.builder;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
@@ -260,11 +261,13 @@ public class IDEService {
         return events;
     }
 
+    @NonNull
     private String[] getArguments(List<String> tasks) {
         final PreferenceManager prefs = app.getPrefManager();
         final List<String> args = new ArrayList<>();
         
-        args.add(Environment.BUSYBOX_SH.getAbsolutePath());
+        args.add(Environment.BUSYBOX.getAbsolutePath());
+        args.add ("sh");
         args.add(new File (projectRoot, "gradlew").getAbsolutePath());
         args.addAll(asAppTasks(tasks));
         args.add("--init-script");
@@ -287,7 +290,7 @@ public class IDEService {
             args.add("all");
         }
 
-        return args.toArray(new String[args.size()]);
+        return args.toArray(new String[0]);
     }
 
     private Collection<? extends String> asAppTasks(List<String> tasks) {

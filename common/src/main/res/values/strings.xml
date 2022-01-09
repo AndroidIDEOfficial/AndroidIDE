@@ -3,4 +3,12 @@
 	<string name="cms_channel_id_update">App Update Notifications</string>
     <string name="msg_hex_color_code">Hex color code</string>
     <string name="msg_color_picker_pick">Pick</string>
+    <string name="msg_delete_sysroot_staging">Unable to delete sysroot staging directory</string>
+    <string name="msg_delete_sysroot">Unable to delete sysroot directory</string>
+    <string name="msg_create_sysroot_staging">Unable to create sysroot staging directory</string>
+    <string name="msg_create_sysroot">Unable to create sysroot directory</string>
+    <string name="msg_mkdir_failed">Unable to create directory: %s</string>
+    <string name="msg_chmod_exec">Setting executable permissions…</string>
+    <string name="msg_linking">Linking %1$s to %2$s</string>
+    <string name="msg_extracting_hooks">Extracting hook libraries…</string>
 </resources>
