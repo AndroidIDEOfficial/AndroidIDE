@@ -19,6 +19,9 @@ package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import java.io.File;
@@ -40,12 +43,12 @@ public final class Environment {
 	public static final File ANDROID_HOME;
     public static final File JLS_HOME;
 	public static final File TMP_DIR;
-    public static final File BINDIR;
-    public static final File LIBDIR;
+    public static final File BIN_DIR;
+    public static final File LIB_DIR;
     public static final File PROJECTS_DIR;
-    public static final File IDEPROPS;
-    public static final File LIBHOOK;
-    public static final File LIBHOOK2;
+    public static final File IDE_PROPS_FILE;
+    public static final File LIB_HOOK;
+    public static final File LIB_HOOK2;
     
     public static final File INIT_SCRIPT;
     public static final File PROJECT_DATA_FILE;
@@ -79,13 +82,13 @@ public final class Environment {
         HOME = mkdirIfNotExits(app.getRootDir());
         JLS_HOME = mkdirIfNotExits(new File(app.getIDEDataDir(), "jls"));
         TMP_DIR = mkdirIfNotExits(new File(SYSROOT, "tmp"));
-        BINDIR = mkdirIfNotExits(new File(SYSROOT, "bin"));
-        LIBDIR = mkdirIfNotExits(new File(SYSROOT, "lib"));
+        BIN_DIR = mkdirIfNotExits(new File(SYSROOT, "bin"));
+        LIB_DIR = mkdirIfNotExits(new File(SYSROOT, "lib"));
         PROJECTS_DIR = mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
         
-        IDEPROPS = new File(SYSROOT, "etc/ide-environment.properties");
-        LIBHOOK = new File(LIBDIR, "libhook.so");
-        LIBHOOK2 = new File(LIBDIR, "libhook2.so");
+        IDE_PROPS_FILE = new File(SYSROOT, "etc/ide-environment.properties");
+        LIB_HOOK = new File(LIB_DIR, "libhook.so");
+        LIB_HOOK2 = new File(LIB_DIR, "libhook2.so");
         PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
         JLS_JAR = new File(JLS_HOME, "jls.jar");
         
@@ -99,9 +102,9 @@ public final class Environment {
         JAVA_HOME = new File(readProp("JAVA_HOME", DEFAULT_JAVA_HOME));
         
         JAVA = new File(JAVA_HOME, "bin/java");
-        BUSYBOX = new File(BINDIR, "busybox");
-        SHELL = new File(BINDIR, "sh.sh");
-        BUSYBOX_SH = new File (BINDIR, "sh");
+        BUSYBOX = new File(BIN_DIR, "busybox");
+        SHELL = new File(BIN_DIR, "sh.sh");
+        BUSYBOX_SH = new File (BIN_DIR, "sh");
         
         if(!JAVA.canExecute()) {
             JAVA.setExecutable(true);
@@ -119,12 +122,13 @@ public final class Environment {
         System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
 	}
     
+    @NonNull
     private static Map<String, String> readProperties() {
         final Map<String, String> props = new HashMap<>();
-        if(IDEPROPS == null || !IDEPROPS.exists()) return props;
+        if(IDE_PROPS_FILE == null || !IDE_PROPS_FILE.exists()) return props;
         try {
             Properties p = new Properties();
-            p.load(new StringReader(FileIOUtils.readFile2String(IDEPROPS)));
+            p.load(new StringReader(FileIOUtils.readFile2String(IDE_PROPS_FILE)));
             for(Map.Entry entry : p.entrySet()) {
                 props.put(entry.getKey() + "", entry.getValue() + "");
             }
@@ -134,7 +138,7 @@ public final class Environment {
         return props;
     }
     
-	public static void setBootClasspath(File file) {
+	public static void setBootClasspath(@NonNull File file) {
         BOOTCLASSPATH = new File(file.getAbsolutePath());
     }
     
@@ -164,20 +168,20 @@ public final class Environment {
         ENV_VARS.put("SHELL", SHELL.getAbsolutePath());
         ENV_VARS.put("CONFIG_SHELL", SHELL.getAbsolutePath());
         ENV_VARS.put("TERM", "screen");
-        
-        /**
-         * If LD_LIBRARY_PATH is set, append $SYSROOT/lib to it,
-         * else set it to $SYSROOT/lib
-         */
+    
+        // If LD_LIBRARY_PATH is set, append $SYSROOT/lib to it,
+        // else set it to $SYSROOT/lib
         String ld = System.getenv("LD_LIBRARY_PATH");
-        if(ld == null || ld.trim().length() <= 0)
+        if(ld == null || ld.trim().length() <= 0) {
             ld = "";
-        else ld += File.pathSeparator;
-        ld += LIBDIR.getAbsolutePath();
+        } else {
+            ld += File.pathSeparator;
+        }
+        ld += LIB_DIR.getAbsolutePath();
         ENV_VARS.put("LD_LIBRARY_PATH", ld);
         
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BaseApplication.isAarch64()) {
-            ENV_VARS.put("LD_PRELOAD", LIBHOOK.getAbsolutePath());
+            ENV_VARS.put("LD_PRELOAD", LIB_HOOK.getAbsolutePath());
         }
         
         addToEnvIfPresent(ENV_VARS, "ANDROID_ART_ROOT");
@@ -193,9 +197,7 @@ public final class Environment {
         ENV_VARS.put("PATH", path);
         
         for (String key : IDE_PROPS.keySet()) {
-            if (blacklistedVariables().contains(key.trim())) {
-                continue;
-            } else {
+            if (!blacklistedVariables ().contains (key.trim ())) {
                 ENV_VARS.put(key, readProp(key, ""));
             }
         }
@@ -203,6 +205,7 @@ public final class Environment {
         return ENV_VARS;
     }
 
+    @NonNull
     private static String createPath() {
         String path = "";
         path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
@@ -241,7 +244,8 @@ public final class Environment {
         return value;
     }
     
-	public static String path(File file) {
+	@NonNull
+    public static String path(@NonNull File file) {
 		return file.getAbsolutePath();
 	}
 

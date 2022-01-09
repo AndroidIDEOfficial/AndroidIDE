@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.managers;
 
 import androidx.annotation.NonNull;
@@ -36,10 +36,10 @@ public class ToolsManager {
     private static PreferenceManager prefs;
     
     public static final int JLS_VERSION = 27;
-    public static final int LOGSENDER_VERSION = 2;
+    public static final int LOG_SENDER_VERSION = 2;
     
     public static final String KEY_JLS_VERSION = "tools_jlsVersion";
-    public static final String KEY_LOGSENDER_VERSION = "tools_logsenderVersion";
+    public static final String KEY_LOG_SENDER_VERSION = "tools_logsenderVersion";
     
     public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
     public static String COMMON_ASSET_DATA_DIR = "data/common";
@@ -55,17 +55,18 @@ public class ToolsManager {
         
         rewriteProjectData();
         
-        if(onFinish != null)
+        if(onFinish != null) {
             onFinish.run();
+        }
     }
 
     private static void extractLibHooks() {
-        if(!Environment.LIBHOOK.exists()) {
-            ResourceUtils.copyFileFromAssets(getArchSpecificAsset("libhook.so"), Environment.LIBHOOK.getAbsolutePath());
+        if(!Environment.LIB_HOOK.exists()) {
+            ResourceUtils.copyFileFromAssets(getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
         }
         
-        if(!Environment.LIBHOOK2.exists()) {
-            ResourceUtils.copyFileFromAssets(getArchSpecificAsset("libhook2.so"), Environment.LIBHOOK2.getAbsolutePath());
+        if(!Environment.LIB_HOOK2.exists()) {
+            ResourceUtils.copyFileFromAssets(getArchSpecificAsset("libhook2.so"), Environment.LIB_HOOK2.getAbsolutePath());
         }
     }
 
@@ -79,7 +80,9 @@ public class ToolsManager {
         Environment.mkdirIfNotExits(exec.getParentFile());
         ResourceUtils.copyFileFromAssets(getArchSpecificAsset("busybox"), exec.getAbsolutePath());
         if(!exec.canExecute()) {
-            exec.setExecutable(true);
+            if (!exec.setExecutable(true)) {
+                LOG.error ("Cannot set busybox executable permissions.");
+            }
         }
     }
     
@@ -110,12 +113,12 @@ public class ToolsManager {
     
     private static void extractLogsenderIfNeeded() {
         try {
-            final boolean isOld = LOGSENDER_VERSION > prefs.getInt(KEY_LOGSENDER_VERSION, 0);
+            final boolean isOld = LOG_SENDER_VERSION > prefs.getInt(KEY_LOG_SENDER_VERSION, 0);
             if(isOld) {
                 final File logsenderZip = new File(Environment.JLS_HOME, "logsender.zip");
                 ResourceUtils.copyFileFromAssets(getCommonAsset("logsender.zip"), logsenderZip.getAbsolutePath());
                 ZipUtils.unzipFile(logsenderZip, Environment.HOME);
-                prefs.putInt(KEY_LOGSENDER_VERSION, LOGSENDER_VERSION);
+                prefs.putInt(KEY_LOG_SENDER_VERSION, LOG_SENDER_VERSION);
             }
         } catch (IOException e) {
             LOG.error("Error extracting log sender", e);
