@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityTerminalBinding;
@@ -50,6 +51,7 @@ import com.itsaky.terminal.view.TerminalView;
 import com.itsaky.terminal.view.TerminalViewClient;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.json.JSONException;
 
@@ -74,25 +76,33 @@ public class TerminalActivity extends StudioActivity {
     @Override
     protected View bindLayout () {
         binding = ActivityTerminalBinding.inflate (getLayoutInflater ());
+        return binding.getRoot ();
+    }
+    
+    @Override
+    protected void onCreate (Bundle savedInstanceState) {
+        super.onCreate (savedInstanceState);
+        
+        final var future = CompletableFuture.runAsync (() -> {
+            final var in = ResourceUtils.
+        });
         terminal = new TerminalView (this, null);
         terminal.setTerminalViewClient (client);
         terminal.attachSession (createSession (getWorkingDirectory ()));
         terminal.setKeepScreenOn (true);
         terminal.setTextSize (SizeUtils.dp2px (10));
         terminal.setTypeface (TypefaceUtils.jetbrainsMono ());
-        
+    
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams (-1, 0);
         params.weight = 1f;
-        
+    
         binding.getRoot ().addView (terminal, 0, params);
         try {
             binding.virtualKeyTable.setVirtualKeysViewClient (getKeyListener ());
             binding.virtualKeyTable.reload (new VirtualKeysInfo (ConstantsBridge.VIRTUAL_KEYS, "", VirtualKeysConstants.CONTROL_CHARS_ALIASES));
         } catch (JSONException e) {
-            // Won't happen
+            LOG.error ("Unable to parse terminal virtual keys json data", e);
         }
-        
-        return binding.getRoot ();
     }
     
     @NonNull

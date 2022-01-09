@@ -21,9 +21,9 @@ import java.util.List;
 
 public class ConstantsBridge {
     
-	public static boolean EDITORPREF_SIZE_CHANGED = false;
-	public static boolean EDITORPREF_FLAGS_CHANGED = false;
-    public static boolean EDITORPREF_DRAW_HEX_CHANGED = false;
+	public static boolean EDITOR_PREF_SIZE_CHANGED = false;
+	public static boolean EDITOR_PREF_FLAGS_CHANGED = false;
+    public static boolean EDITOR_PREF_DRAW_HEX_CHANGED = false;
     public static boolean CLASS_LOAD_SUCCESS = true;
 	
     public static boolean SPLASH_TO_MAIN = false;

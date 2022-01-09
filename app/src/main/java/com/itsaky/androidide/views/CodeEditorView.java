@@ -19,7 +19,6 @@ package com.itsaky.androidide.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 
@@ -278,9 +277,9 @@ public class CodeEditorView extends FrameLayout {
     }
     
     private void configureEditorIfNeeded () {
-        boolean sizeChanged = isFirstCreate || ConstantsBridge.EDITORPREF_SIZE_CHANGED;
-        boolean flagsChanged = isFirstCreate || ConstantsBridge.EDITORPREF_FLAGS_CHANGED;
-        boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED;
+        boolean sizeChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_SIZE_CHANGED;
+        boolean flagsChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED;
+        boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED;
         final PreferenceManager prefs = StudioApp.getInstance ().getPrefManager ();
         
         if (sizeChanged) {
@@ -290,7 +289,7 @@ public class CodeEditorView extends FrameLayout {
             }
             
             binding.editor.setTextSize (textSize);
-            ConstantsBridge.EDITORPREF_SIZE_CHANGED = false;
+            ConstantsBridge.EDITOR_PREF_SIZE_CHANGED = false;
         }
         
         if (flagsChanged) {
@@ -316,12 +315,12 @@ public class CodeEditorView extends FrameLayout {
             }
             
             binding.editor.setNonPrintablePaintingFlags (flags);
-            ConstantsBridge.EDITORPREF_FLAGS_CHANGED = false;
+            ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED = false;
         }
         
         if (drawHexChanged) {
             binding.editor.setLineColorsEnabled (prefs.getBoolean (PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
-            ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED = false;
+            ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = false;
         }
         
         isFirstCreate = false;

@@ -83,7 +83,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		if(p1.getKey().equals(KEY_EDITOR_DRAW_HEX)) {
 			boolean drawHex = (Boolean) p2;
 			getPrefManager().putBoolean(KEY_EDITOR_DRAW_HEX, drawHex);
-			ConstantsBridge.EDITORPREF_DRAW_HEX_CHANGED = true;
+			ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = true;
 		}
 		return true;
 	}
@@ -154,7 +154,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 	private void changeTextSize(LayoutTextSizeSliderBinding binding, float size) {
 		getPrefManager().putFloat(KEY_EDITOR_FONT_SIZE, size);
 		binding.slider.setValue(size);
-		ConstantsBridge.EDITORPREF_SIZE_CHANGED = true;
+		ConstantsBridge.EDITOR_PREF_SIZE_CHANGED = true;
 	}
 	
 	private void showPrintableCharsDialog() {
@@ -191,7 +191,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 				getPrefManager().putBoolean(KEY_EDITORFLAG_LINE_BREAK, isChecked);
 			}
 			
-			ConstantsBridge.EDITORPREF_FLAGS_CHANGED = true;
+			ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED = true;
 		});
 		builder.setPositiveButton(android.R.string.ok, null);
 		builder.setCancelable(false);

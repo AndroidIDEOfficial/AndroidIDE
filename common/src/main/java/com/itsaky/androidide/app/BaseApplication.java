@@ -28,9 +28,9 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
-import com.blankj.utilcode.util.EncodeUtils;
-import com.blankj.utilcode.util.ResourceUtils;
+
 import com.blankj.utilcode.util.ThrowableUtils;
+import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.shell.ShellServer;
@@ -50,11 +50,7 @@ public abstract class BaseApplication extends MultiDexApplication {
     private static BaseApplication instance;
     private StudioUtils mUtils;
 	private PreferenceManager mPrefsManager;
-    private NotificationManager mNotificationManager;
     
-    public static final long BUSYBOX_VERSION = 1;
-    public static final String TAG = "StudioApp";
-    public static final String ASSETS_DATA_DIR = "data/";
     public static final String NOTIFICATION_ID_UPDATE = "17571";
     public static final String NOTIFICATION_ID_DEVS = "17572";
     public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
@@ -68,7 +64,6 @@ public abstract class BaseApplication extends MultiDexApplication {
         super.onCreate();
         
         mPrefsManager = new PreferenceManager(this);
-        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         JavaCharacter.initMap();
         ToolsManager.init(this, null);
 
@@ -94,7 +89,7 @@ public abstract class BaseApplication extends MultiDexApplication {
         NotificationManagerCompat.from(this).createNotificationChannel(devsChannels);
     }
 
-    public String getNotificationChannelNameForId(String id) {
+    public String getNotificationChannelNameForId(@NonNull String id) {
         if(id.equals(NOTIFICATION_ID_UPDATE))
             return getUpdateNotificationChannelName();
         else if(id.equals(NOTIFICATION_ID_DEVS))
@@ -103,11 +98,11 @@ public abstract class BaseApplication extends MultiDexApplication {
     }
 
     private String getUpdateNotificationChannelName() {
-        return getString(com.itsaky.androidide.common.R.string.cms_channel_id_update);
+        return getString(R.string.cms_channel_id_update);
     }
 
     private String getDevNotificationChannelName() {
-        return getString(com.itsaky.androidide.common.R.string.cms_channel_id_devs);
+        return getString(R.string.cms_channel_id_devs);
 	}
     
     public static BaseApplication getBaseInstance () {
@@ -131,30 +126,11 @@ public abstract class BaseApplication extends MultiDexApplication {
     public void writeException(Throwable th) {
         FileUtil.writeFile(new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(), ThrowableUtils.getFullStackTrace(th));
     }
-
-    public File getIndexedDir() {
-        return Environment.mkdirIfNotExits(new File(getRootDir(), "indexed"));
-    }
-
-    public File getD8Jar() {
-        File f = new File(getRootDir(), "d8.jar");
-        if(f.exists() && f.isFile())
-            return f;
-        if(ResourceUtils.copyFileFromAssets(ToolsManager.getCommonAsset("d8.jar"), f.getAbsolutePath())) {
-            return f;
-        }
-
-        return null;
-    }
-
+    
     public File getRootDir() {
         return new File(getIDEDataDir(), "framework");
     }
-
-    public File getRootDirOld() {
-        return new File(getFilesDir(), "framework");
-    }
-
+    
     @SuppressLint("SdCardPath")
     public File getIDEDataDir() {
         return Environment.mkdirIfNotExits(new File("/data/data/com.itsaky.androidide/files"));
@@ -165,31 +141,11 @@ public abstract class BaseApplication extends MultiDexApplication {
     public final File getLogSenderDir() {
         return new File(getRootDir(), "logsender");
     }
-
-    @NonNull
-    @Contract(" -> new")
-    public final File getToolsDownloadDirectory() {
-        return new File(getRootDir(), "downloads");
-    }
-
+    
     public final File getTempProjectDir() {
         return Environment.mkdirIfNotExits(new File(Environment.TMP_DIR, "tempProject"));
     }
-
-    public final File getTempClassesDir() {
-        return Environment.mkdirIfNotExits(new File(FileUtil.getExternalStorageDir() /*getTempProjectDir() */, "classes"));
-    }
-
-    @NonNull
-    @Contract(" -> new")
-    public final String getDownloadRequestUrl() {
-        return new String(EncodeUtils.base64Decode("aHR0cHM6Ly9hbmRyb2lkaWRlLmNvbS9idWlsZC90b29scy9kb3dubG9hZC8="));
-	}
     
-    public boolean isFrameworkDownloaded() {
-        return getToolsDownloadDirectory().exists() && mPrefsManager.isFrameworkDownloaded();
-    }
-
     public boolean isFrameworkInstalled() {
         return getRootDir().exists() && mPrefsManager.isFrameworkInstalled();
     }
@@ -203,27 +159,19 @@ public abstract class BaseApplication extends MultiDexApplication {
     }
 
     public File[] listProjects() {
-        return getProjectsDir().listFiles(p1 -> p1.isDirectory());
+        return getProjectsDir().listFiles(File::isDirectory);
     }
-
-    public static boolean is64Bit() {
-        return isAarch64();
-    }
-
-    public static boolean is32Bit() {
-        return isArmv7a();
-    }
-
+    
     public static boolean isAbiSupported () {
         return isAarch64() || isArmv7a();
     }
 
     public static boolean isAarch64 () {
-        return Arrays.stream(android.os.Build.SUPPORTED_ABIS).anyMatch("arm64-v8a"::equals);
+        return Arrays.asList (Build.SUPPORTED_ABIS).contains ("arm64-v8a");
     }
 
     public static boolean isArmv7a () {
-        return Arrays.stream(android.os.Build.SUPPORTED_ABIS).anyMatch("armeabi-v7a"::equals);
+        return Arrays.asList (Build.SUPPORTED_ABIS).contains ("armeabi-v7a");
     }
 
     @NonNull
@@ -235,15 +183,7 @@ public abstract class BaseApplication extends MultiDexApplication {
         }
         throw new UnsupportedOperationException ("Device not supported");
     }
-
-    public String getAssetsDataFile() {
-        return ASSETS_DATA_DIR;
-    }
-
-    public String getAssetsDataFile(String str) {
-        return new StringBuffer().append(getAssetsDataFile()).append(str).toString();
-    }
-
+    
     public StudioUtils getUtils() {
         return mUtils == null ? mUtils = new StudioUtils(this) : mUtils;
     }

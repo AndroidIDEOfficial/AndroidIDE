@@ -106,21 +106,19 @@ public final class Environment {
         SHELL = new File(BIN_DIR, "sh.sh");
         BUSYBOX_SH = new File (BIN_DIR, "sh");
         
-        if(!JAVA.canExecute()) {
-            JAVA.setExecutable(true);
-        }
-        
-        if(!BUSYBOX.canExecute()) {
-            BUSYBOX.setExecutable(true);
-        }
-        
-        if(!SHELL.canExecute()) {
-            SHELL.setExecutable(true);
-        }
+        setExecutable (JAVA);
+        setExecutable (BUSYBOX);
+        setExecutable (SHELL);
         
         System.setProperty("user.home", HOME.getAbsolutePath());
         System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
 	}
+	
+	public static void setExecutable (@NonNull final File file) {
+	    if (!file.setExecutable (true)) {
+	        LOG.error ("Unable to set executable permissions to file", file);
+        }
+    }
     
     @NonNull
     private static Map<String, String> readProperties() {
@@ -129,11 +127,11 @@ public final class Environment {
         try {
             Properties p = new Properties();
             p.load(new StringReader(FileIOUtils.readFile2String(IDE_PROPS_FILE)));
-            for(Map.Entry entry : p.entrySet()) {
+            for(@SuppressWarnings("rawtypes") Map.Entry entry : p.entrySet()) {
                 props.put(entry.getKey() + "", entry.getValue() + "");
             }
         } catch (Throwable th) {
-            // ignored
+            LOG.error ("Unable to read properties file", th);
         }
         return props;
     }
