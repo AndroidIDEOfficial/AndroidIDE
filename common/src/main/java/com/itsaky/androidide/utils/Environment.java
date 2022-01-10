@@ -181,6 +181,7 @@ public final class Environment {
         ENV_VARS.put("LD_LIBRARY_PATH", ld);
     
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BaseApplication.isAarch64()) {
+            // Required for JDK 11
             ENV_VARS.put("LD_PRELOAD", LIB_HOOK.getAbsolutePath());
         }
         
@@ -223,7 +224,7 @@ public final class Environment {
         }
     }
     
-    public static String readProp (String key) {
+    public static String readPropOrNull (String key) {
         return readProp(key, null);
     }
     
@@ -244,14 +245,10 @@ public final class Environment {
         return value;
     }
     
-	@NonNull
-    public static String path(@NonNull File file) {
-		return file.getAbsolutePath();
-	}
-
 	public static File mkdirIfNotExits(File in) {
-		if (in != null && !in.exists())
-			FileUtils.createOrExistsDir(in);
+		if (in != null && !in.exists()) {
+            FileUtils.createOrExistsDir(in);
+        }
 			
 		return in;
 	}

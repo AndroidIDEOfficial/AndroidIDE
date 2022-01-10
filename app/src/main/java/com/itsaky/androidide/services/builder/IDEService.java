@@ -357,6 +357,9 @@ public class IDEService {
                 currentTask = task;
                 listener.appendOutput(task, getString(R.string.msg_task_begin, currentTime(), task.getName()));
                 try {
+                    
+                    Environment.mkdirIfNotExits (Environment.TMP_DIR);
+                    
                     processExecutor.execAsync(holder, mProcessExitListener, projectRoot.getAbsolutePath(), true, getArguments(task.getTasks()));
                     isBuilding = true;
                     

@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  * 
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.services.builder;
 
 import com.blankj.utilcode.util.ThreadUtils;
@@ -23,7 +23,7 @@ import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.tasks.GradleTask;
 import java.util.Optional;
 
-class MainThreadBuildListener implements BuildListener {
+class  MainThreadBuildListener implements BuildListener {
 
     private final BuildListener listener;
 
