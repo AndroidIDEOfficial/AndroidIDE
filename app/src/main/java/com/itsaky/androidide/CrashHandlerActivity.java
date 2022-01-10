@@ -33,6 +33,7 @@ import com.blankj.utilcode.util.ClipboardUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityCrashHandlerBinding;
+import com.itsaky.androidide.fragments.CrashReportFragment;
 
 public class CrashHandlerActivity extends StudioActivity {
     
@@ -50,43 +51,19 @@ public class CrashHandlerActivity extends StudioActivity {
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
-        binding.closeButton.setOnClickListener (v -> finishAffinity ());
         
         final var extra = getIntent ().getExtras ();
         if (extra == null) {
-            binding.closeButton.performClick ();
+            finishAffinity ();
             return;
         }
         
-        final var report = buildReportText (extra.getString (TRACE_KEY, "Unable to get logs."));
-        binding.logText.setText (report);
-        binding.reportButton.setOnClickListener (v -> reportTrace (report));
-    }
-    
-    private void reportTrace (String report) {
-        ClipboardUtils.copyText ("AndroidIDE CrashLog", report);
-        final var url = BaseApplication.GITHUB_URL.concat ("/issues");
-        final var intent = new Intent ();
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.setData (Uri.parse (url));
-        intent.addFlags (Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity (intent);
-    }
-    
-    @NonNull
-    private String buildReportText (String trace) {
-        return "AndroidIDE crash report\n" +
-                "Manufacturer: " +
-                getManufacturer () +
-                "\n" +
-                "Device: " +
-                getModel () +
-                "\n" +
-                "App version: " +
-                getAppVersionName () +
-                " (" +
-                getAppVersionCode () +
-                ")\n\n Stacktrace: \n" +
-                trace;
+        final var report = extra.getString (TRACE_KEY, "Unable to get logs.");
+        final var fragment = CrashReportFragment.newInstance (report);
+        
+        getSupportFragmentManager ().beginTransaction ()
+                .replace (binding.getRoot ().getId (), fragment, "crash_report_fragment")
+                .addToBackStack (null)
+                .commit ();
     }
 }

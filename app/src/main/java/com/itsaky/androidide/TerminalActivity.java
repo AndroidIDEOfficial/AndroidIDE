@@ -21,17 +21,22 @@ package com.itsaky.androidide;
 
 import static com.itsaky.androidide.utils.Environment.*;
 
+import android.graphics.Typeface;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityTerminalBinding;
+import com.itsaky.androidide.fragments.CrashReportFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
@@ -57,8 +62,10 @@ import java.util.Map;
 import org.json.JSONException;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 public class TerminalActivity extends StudioActivity {
     
@@ -113,13 +120,7 @@ public class TerminalActivity extends StudioActivity {
     
                     if (future.isCompletedExceptionally () || throwable != null) {
                         LOG.error ("Future has been completed exceptionally.");
-                        
-                        final var builder = DialogUtils.newMaterialDialogBuilder (TerminalActivity.this);
-                        builder.setTitle (getString (R.string.title_installation_failed));
-                        builder.setMessage (getString (R.string.msg_installation_error, throwable.getMessage ()));
-                        builder.setPositiveButton (android.R.string.ok, null);
-                        builder.setCancelable (false);
-                        builder.show ();
+                        showInstallationError (throwable);
                         return;
                     }
                     
@@ -127,6 +128,22 @@ public class TerminalActivity extends StudioActivity {
                 });
             });
         }
+    }
+    
+    private void showInstallationError (Throwable throwable) {
+        
+        binding.virtualKeyTable.setVisibility (View.GONE);
+        
+        final var frag = CrashReportFragment.newInstance (
+                    getString (R.string.title_installation_failed),
+                    getString (R.string.msg_bootstrap_installation_error),
+                    ThrowableUtils.getFullStackTrace (throwable))
+                .setCloseAppOnClick (false);
+        
+        getSupportFragmentManager ().beginTransaction ()
+                .replace (binding.root.getId (), frag, "bootstrap_install_error_fragment")
+                .addToBackStack (null)
+                .commit ();
     }
     
     private void setupTerminalView () {

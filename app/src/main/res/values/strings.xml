@@ -347,6 +347,6 @@
     <string name="msg_crash_report_hint">Click on the button below to copy log and open issues page.</string>
     <string name="msg_copy_report_action">Copy and report</string>
     <string name="msg_reading_bootstrap">Reading bootstrap archive…</string>
-    <string name="msg_installation_error">Installation error was: %s</string>
+    <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
 
 </resources>

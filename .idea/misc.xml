@@ -13,9 +13,11 @@
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/activity_designer.xml" value="0.264" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/activity_download.xml" value="0.1188034188034188" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/activity_editor.xml" value="0.264" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/activity_terminal.xml" value="0.21851851851851853" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/fragment_editor.xml" value="0.20512820512820512" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/fragment_non_editable_editor.xml" value="0.20512820512820512" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_about_items.xml" value="0.20512820512820512" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_crash_report.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_diagnostic_info.xml" value="0.20512820512820512" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_editor_bottom_sheet.xml" value="0.20512820512820512" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_symbol_item.xml" value="0.20512820512820512" />
