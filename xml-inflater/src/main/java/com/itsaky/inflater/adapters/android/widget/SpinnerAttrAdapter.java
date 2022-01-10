@@ -24,7 +24,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 /**
  * Attribute adapter for handling attributes related to
@@ -34,7 +34,7 @@ import com.itsaky.inflater.IResourceFinder;
  */
 public class SpinnerAttrAdapter extends AbsSpinnerAttrAdapter {
     
-    public SpinnerAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public SpinnerAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

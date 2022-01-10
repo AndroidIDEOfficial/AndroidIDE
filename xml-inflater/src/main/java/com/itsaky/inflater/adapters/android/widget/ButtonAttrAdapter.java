@@ -24,7 +24,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 /**
  * Adapter for handling attributes related to Button.
@@ -36,7 +36,7 @@ import com.itsaky.inflater.IResourceFinder;
  */
 public class ButtonAttrAdapter extends TextViewAttrAdapter {
     
-    public ButtonAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public ButtonAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

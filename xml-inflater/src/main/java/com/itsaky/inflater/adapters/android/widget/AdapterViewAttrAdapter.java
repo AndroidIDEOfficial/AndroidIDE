@@ -26,7 +26,7 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
 
 /**
@@ -37,7 +37,7 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  */
 public abstract class AdapterViewAttrAdapter extends ViewGroupAttrAdapter {
     
-    public AdapterViewAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public AdapterViewAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

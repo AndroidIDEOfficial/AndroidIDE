@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.ImageUtils;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -64,7 +64,7 @@ public abstract class DrawableParserFactory {
      * @throws IOException Thrown by {@link XmlPullParser#next()}
      */
     @Nullable
-    public static IDrawableParser newParser (@NonNull final Context context, @NonNull final File file, final IResourceFinder resourceFinder) throws XmlPullParserException, IOException {
+    public static IDrawableParser newParser (@NonNull final Context context, @NonNull final File file, final IResourceTable resourceFinder) throws XmlPullParserException, IOException {
         if (file.getName ().endsWith (".xml")) {
             final var code = FileIOUtils.readFile2String (file);
             return DrawableParserFactory.newXmlDrawableParser (code, resourceFinder, context.getResources ().getDisplayMetrics ());
@@ -95,7 +95,7 @@ public abstract class DrawableParserFactory {
      * @throws IOException Thrown by {@link XmlPullParser#next()}
      */
     @Nullable
-    public static IDrawableParser newXmlDrawableParser (String xmlDrawable, IResourceFinder resourceFinder, DisplayMetrics displayMetrics) throws XmlPullParserException, IOException {
+    public static IDrawableParser newXmlDrawableParser (String xmlDrawable, IResourceTable resourceFinder, DisplayMetrics displayMetrics) throws XmlPullParserException, IOException {
         final var factory = XmlPullParserFactory.newInstance ();
         factory.setNamespaceAware (true);
         

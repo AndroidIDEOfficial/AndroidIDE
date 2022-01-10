@@ -24,11 +24,11 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 public class EditTextAttrAdapter extends TextViewAttrAdapter {
     
-    public EditTextAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public EditTextAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

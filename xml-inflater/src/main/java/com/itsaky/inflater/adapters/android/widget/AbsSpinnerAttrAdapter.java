@@ -24,11 +24,11 @@ import android.widget.AbsSpinner;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 public class AbsSpinnerAttrAdapter extends AdapterViewAttrAdapter {
     
-    public AbsSpinnerAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public AbsSpinnerAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

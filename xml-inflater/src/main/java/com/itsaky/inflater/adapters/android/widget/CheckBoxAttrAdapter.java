@@ -23,14 +23,14 @@ import android.widget.CheckBox;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 /**
  * Attribute handler for handling attributes related to CheckBox
  */
 public class CheckBoxAttrAdapter extends CompondButtonAttrAdapter {
     
-    public CheckBoxAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public CheckBoxAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

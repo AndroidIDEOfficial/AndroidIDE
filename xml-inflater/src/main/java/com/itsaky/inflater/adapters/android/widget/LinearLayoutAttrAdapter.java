@@ -23,7 +23,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
 
 /**
@@ -33,7 +33,7 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  */
 public class LinearLayoutAttrAdapter extends ViewGroupAttrAdapter {
     
-    public LinearLayoutAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public LinearLayoutAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

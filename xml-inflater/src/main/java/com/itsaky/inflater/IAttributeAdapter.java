@@ -30,7 +30,7 @@ public interface IAttributeAdapter {
      * Set the resource finder used by this class.
      * @param resourceFinder The resource finder.
      */
-    void setResourceFinder (IResourceFinder resourceFinder);
+    void setResourceFinder (IResourceTable resourceFinder);
 
     /**
      * Can this adapter handle attributes of the provided view?

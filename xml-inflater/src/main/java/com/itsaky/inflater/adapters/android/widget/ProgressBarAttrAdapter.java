@@ -25,7 +25,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
 
 /**
@@ -36,7 +36,7 @@ import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
  */
 public class ProgressBarAttrAdapter extends ViewAttrAdapter {
     
-    public ProgressBarAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public ProgressBarAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

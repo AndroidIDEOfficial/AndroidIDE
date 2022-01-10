@@ -30,10 +30,10 @@ public class LayoutInflaterConfiguration {
     final Set<File> resDirs;
     final AttrInfo attrInfo;
     final WidgetInfo widgetInfo;
-    final IResourceFinder resFinder;
+    final IResourceTable resFinder;
     final ILayoutInflater.ContextProvider contextProvider;
 
-    public LayoutInflaterConfiguration(Set<File> resDirs, AttrInfo attrInfo, WidgetInfo widgetInfo, IResourceFinder resourceProvider, ILayoutInflater.ContextProvider contextProvider) {
+    public LayoutInflaterConfiguration(Set<File> resDirs, AttrInfo attrInfo, WidgetInfo widgetInfo, IResourceTable resourceProvider, ILayoutInflater.ContextProvider contextProvider) {
         this.resDirs = resDirs;
         this.attrInfo = attrInfo;
         this.widgetInfo = widgetInfo;
@@ -49,7 +49,7 @@ public class LayoutInflaterConfiguration {
         private Set<File> resDirs;
         private AttrInfo attrInfo;
         private WidgetInfo widgetInfo;
-        private IResourceFinder resourceProvider;
+        private IResourceTable resourceProvider;
         private ILayoutInflater.ContextProvider provider;
         
         public Builder setResourceDirectories (Set<File> dirs) {
@@ -67,7 +67,7 @@ public class LayoutInflaterConfiguration {
             return this;
         }
         
-        public Builder setResourceFinder (IResourceFinder provider) {
+        public Builder setResourceFinder (IResourceTable provider) {
             this.resourceProvider = provider;
             return this;
         }

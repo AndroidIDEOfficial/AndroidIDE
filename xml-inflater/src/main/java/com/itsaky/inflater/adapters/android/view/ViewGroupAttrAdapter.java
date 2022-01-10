@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 import org.jetbrains.annotations.Contract;
 
@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Contract;
  */
 public class ViewGroupAttrAdapter extends ViewAttrAdapter {
     
-    public ViewGroupAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public ViewGroupAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

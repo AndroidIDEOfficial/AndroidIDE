@@ -8,7 +8,7 @@ import android.widget.CompoundButton;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 /**
  * Attribute handler for handling attibutes to CompoundButton
@@ -17,7 +17,7 @@ import com.itsaky.inflater.IResourceFinder;
  */
 public class CompondButtonAttrAdapter extends ButtonAttrAdapter {
     
-    public CompondButtonAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public CompondButtonAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

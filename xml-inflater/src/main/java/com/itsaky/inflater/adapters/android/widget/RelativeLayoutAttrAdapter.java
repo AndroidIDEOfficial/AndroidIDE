@@ -23,7 +23,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
 
 /**
@@ -34,7 +34,7 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  */
 public class RelativeLayoutAttrAdapter extends ViewGroupAttrAdapter {
     
-    public RelativeLayoutAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public RelativeLayoutAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

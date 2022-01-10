@@ -22,7 +22,7 @@ import android.view.View;
 import android.widget.AbsSeekBar;
 import androidx.annotation.NonNull;
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 /**
  * Attribute adapter for handling attributes related to
@@ -32,7 +32,7 @@ import com.itsaky.inflater.IResourceFinder;
  */
 public abstract class AbsSeekBarAttrAdapter extends ProgressBarAttrAdapter {
     
-    public AbsSeekBarAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public AbsSeekBarAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

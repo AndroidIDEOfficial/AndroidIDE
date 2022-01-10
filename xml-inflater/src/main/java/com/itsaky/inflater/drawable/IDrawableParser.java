@@ -21,7 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.util.CommonParseUtils;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -35,7 +35,7 @@ public abstract class IDrawableParser extends CommonParseUtils {
     
     protected final XmlPullParser parser;
     
-    protected IDrawableParser (XmlPullParser parser, IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    protected IDrawableParser (XmlPullParser parser, IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super(resourceFinder, displayMetrics);
         this.parser = parser;
     }

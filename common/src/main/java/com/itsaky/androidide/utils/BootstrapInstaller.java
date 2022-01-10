@@ -182,7 +182,7 @@ public class BootstrapInstaller {
         }
     }
     
-    public static interface UpdateListener {
+    public interface UpdateListener {
         void onUpdate (String message);
     }
     

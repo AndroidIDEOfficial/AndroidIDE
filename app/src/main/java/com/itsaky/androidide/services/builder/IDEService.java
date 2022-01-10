@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.services.builder;
 
 import androidx.annotation.NonNull;
@@ -54,6 +54,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -61,6 +62,7 @@ import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
 import org.eclipse.lsp4j.FileChangeType;
 import org.eclipse.lsp4j.FileEvent;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
+import org.jetbrains.annotations.Contract;
 
 import static com.itsaky.androidide.managers.ToolsManager.*;
 
@@ -190,11 +192,9 @@ public class IDEService {
                     FileIOUtils.readFile2String(Environment.PROJECT_DATA_FILE),
                     IDEProject.class
                 );
-            if(local != null && mIDEProject != null) {
+            if(mIDEProject != null) {
                 Optional<IDEModule> appModule = mIDEProject.getModuleByPath(":app");
-                if(appModule.isPresent()) {
-                    mAppModule = appModule.get();
-                }
+                appModule.ifPresent (ideModule -> mAppModule = ideModule);
                 local.onProjectLoaded(mIDEProject, appModule);
             } else {
                 app.toast(com.itsaky.androidide.R.string.msg_init_project_failed, Toaster.Type.ERROR);
@@ -212,6 +212,7 @@ public class IDEService {
         isRunning = false;
     }
 
+    @NonNull
     private String currentTime() {
         String pattern = "HH:mm:ss";
         DateFormat df = new SimpleDateFormat(pattern, Locale.US);
@@ -240,6 +241,7 @@ public class IDEService {
      *
      * Takes care of adding changes from all modules
      */
+    @NonNull
     private List<FileEvent> createSourceChangeEvents() {
         final List<FileEvent> events = new ArrayList<>();
         for(int i=0;i<mIDEProject.modules.size();i++) {
@@ -293,14 +295,15 @@ public class IDEService {
         return args.toArray(new String[0]);
     }
 
-    private Collection<? extends String> asAppTasks(List<String> tasks) {
+    private Collection<? extends String> asAppTasks(@NonNull List<String> tasks) {
         return tasks.stream()
-            .filter(t -> t != null)
-            .map(t -> asAppModuleTask(t))
+            .filter(Objects::nonNull)
+            .map(this::asAppModuleTask)
             .collect(Collectors.toList());
     }
     
-    private String asAppModuleTask (String name) {
+    @Contract(pure = true)
+    private String asAppModuleTask (@NonNull String name) {
         return name.startsWith(":app:") ? name : ":app:" + name;
     }
     
@@ -408,12 +411,8 @@ public class IDEService {
         final File gradlew = new File(projectRoot, "gradlew");
         final File gradleWrapperJar = new File(projectRoot, "gradle/wrapper/gradle-wrapper.jar");
         final File gradleWrapperProps = new File(projectRoot, "gradle/wrapper/gradle-wrapper.properties");
-        
-        if(!gradlew.exists() || !gradleWrapperJar.exists() || !gradleWrapperProps.exists()) {
-            return false;
-        } else {
-            return true;
-        }
+    
+        return gradlew.exists () && gradleWrapperJar.exists () && gradleWrapperProps.exists ();
     }
     
     /**
@@ -427,10 +426,6 @@ public class IDEService {
         return new int[]{1, 1};
     }
     
-    public void initProject() {
-        execTask(BaseGradleTasks.INITIALIZE_IDE_PROJECT);
-	}
-
     public void assembleDebug(boolean installApk) {
         execTask(((AssembleDebug) BaseGradleTasks.ASSEMBLE_DEBUG).setInstallApk(installApk));
     }
@@ -494,7 +489,7 @@ public class IDEService {
     private static final FileFilter JAVA_FILTER = new FileFilter(){
 
         @Override
-        public boolean accept(File p1) {
+        public boolean accept(@NonNull File p1) {
             return p1.isFile()
                 && !p1.isHidden()
                 && p1.getName().endsWith(".java")
@@ -504,8 +499,6 @@ public class IDEService {
     
     public String typeString(int type) {
         switch (type) {
-            case TASK_SHOW_DEPENDENCIES:
-                return "";
             case TASK_ASSEMBLE_DEBUG:
                 return getString(R.string.build_debug);
             case TASK_ASSEMBLE_RELEASE:

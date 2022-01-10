@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 import org.jetbrains.annotations.Contract;
 import org.xmlpull.v1.XmlPullParser;
@@ -44,7 +44,7 @@ import java.util.Arrays;
  */
 public class ShapeDrawableParser extends IDrawableParser {
     
-    protected ShapeDrawableParser (XmlPullParser parser, IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    protected ShapeDrawableParser (XmlPullParser parser, IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (parser, resourceFinder, displayMetrics);
     }
     

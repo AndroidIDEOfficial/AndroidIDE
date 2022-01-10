@@ -19,31 +19,22 @@ package com.itsaky.inflater.util;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.NinePatch;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.NinePatchDrawable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 
-import com.blankj.utilcode.util.ImageUtils;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.drawable.DrawableParserFactory;
-import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
-
-import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.regex.Pattern;
 
@@ -57,12 +48,12 @@ public class CommonParseUtils {
     
     private static final Pattern HEX_COLOR = Pattern.compile("#[a-fA-F0-9]{6,8}");
     
-    protected IResourceFinder resourceFinder;
+    protected IResourceTable resourceFinder;
     protected final DisplayMetrics displayMetrics;
     
     private static final Logger LOG = Logger.instance ("CommonParseUtils");
     
-    public CommonParseUtils (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public CommonParseUtils (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         this.resourceFinder = resourceFinder;
         this.displayMetrics = displayMetrics;
     }

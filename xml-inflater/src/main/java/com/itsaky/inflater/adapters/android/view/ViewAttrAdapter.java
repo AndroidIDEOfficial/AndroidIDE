@@ -18,28 +18,23 @@
 package com.itsaky.inflater.adapters.android.view;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.GravityCompat;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IAttributeAdapter;
 import com.itsaky.inflater.IDTable;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.util.CommonParseUtils;
-
-import java.util.regex.Pattern;
 
 /**
  * Handles attributes common to all android views.
@@ -52,12 +47,12 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
     
     protected static final Logger LOG = Logger.instance ("BaseViewAttrAdapter");
     
-    public ViewAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public ViewAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     
     @Override
-    public void setResourceFinder (IResourceFinder resourceFinder) {
+    public void setResourceFinder (IResourceTable resourceFinder) {
         this.resourceFinder = resourceFinder;
     }
     

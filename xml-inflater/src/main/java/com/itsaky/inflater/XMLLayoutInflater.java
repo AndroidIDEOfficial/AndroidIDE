@@ -25,7 +25,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.ui.util.Preconditions;
@@ -62,7 +61,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     private final Set<File> resDirs;
     private final AttrInfo attrInfo;
     private final WidgetInfo widgetInfo;
-    private final IResourceFinder resFinder;
+    private final IResourceTable resFinder;
     
     private ContextProvider contextProvider;
     
@@ -125,7 +124,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     
     @NonNull
     @Override
-    protected IResourceFinder requireResourceFinder () {
+    protected IResourceTable requireResourceFinder () {
         return this.resFinder;
     }
     
@@ -214,7 +213,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
                     .getClassLoader ()
                     .loadClass (name)
                     .asSubclass (IAttributeAdapter.class);
-            final var constructor = adapterClass.getConstructor (IResourceFinder.class, DisplayMetrics.class);
+            final var constructor = adapterClass.getConstructor (IResourceTable.class, DisplayMetrics.class);
             final var adapter = constructor.newInstance (resFinder, displayMetrics);
             adapter.setResourceFinder (resFinder);
             return adapter;

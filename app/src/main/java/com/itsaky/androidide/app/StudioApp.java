@@ -23,13 +23,13 @@ import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
-import com.itsaky.androidide.project.ProjectResourceFinder;
+import com.itsaky.androidide.project.ProjectResourceTable;
 import com.itsaky.androidide.services.MessagingService;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.inflater.ILayoutInflater;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.LayoutInflaterConfiguration;
 import com.itsaky.widgets.WidgetInfo;
 
@@ -43,7 +43,7 @@ public class StudioApp extends BaseApplication {
     private static AttrInfo mAttrInfo;
     private static WidgetInfo mWidgetInfo;
     
-    private IResourceFinder mResFinder;
+    private IResourceTable mResFinder;
     private XMLCompletionService mXmlCompletionService;
     private ILayoutInflater mLayoutInflater;
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
@@ -92,7 +92,7 @@ public class StudioApp extends BaseApplication {
         return new LayoutInflaterConfiguration.Builder ()
                 .setAttrInfo(this.attrInfo())
                 .setWidgetInfo(this.widgetInfo())
-                .setResourceFinder(mResFinder == null ? mResFinder = new ProjectResourceFinder() : mResFinder)
+                .setResourceFinder(mResFinder == null ? mResFinder = new ProjectResourceTable () : mResFinder)
                 .setResourceDirectories(resDirs)
                 .setContextProvider(contextProvider)
                 .create();
@@ -102,7 +102,7 @@ public class StudioApp extends BaseApplication {
         return mLayoutInflater;
     }
 
-    public IResourceFinder getResFinder () {
+    public IResourceTable getResFinder () {
 	    return this.mResFinder;
     }
     

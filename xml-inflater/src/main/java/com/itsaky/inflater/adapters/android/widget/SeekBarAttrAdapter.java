@@ -24,7 +24,7 @@ import android.widget.SeekBar;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 /**
  * Attribute adapter for handling attributes related to
@@ -34,7 +34,7 @@ import com.itsaky.inflater.IResourceFinder;
  */
 public class SeekBarAttrAdapter extends AbsSeekBarAttrAdapter {
     
-    public SeekBarAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public SeekBarAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

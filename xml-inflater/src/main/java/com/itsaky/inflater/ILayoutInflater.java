@@ -85,7 +85,7 @@ public abstract class ILayoutInflater {
      * @return The attached resource finder.
      */
     @NonNull
-    protected abstract IResourceFinder requireResourceFinder ();
+    protected abstract IResourceTable requireResourceFinder ();
     
     /**
      * Inflate the layout from the given file path

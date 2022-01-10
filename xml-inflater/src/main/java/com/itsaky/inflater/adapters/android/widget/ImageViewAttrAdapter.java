@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
 
 /**
@@ -37,7 +37,7 @@ import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
  */
 public class ImageViewAttrAdapter extends ViewAttrAdapter {
     
-    public ImageViewAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public ImageViewAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     

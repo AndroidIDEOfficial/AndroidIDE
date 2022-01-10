@@ -23,7 +23,7 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IResourceFinder;
+import com.itsaky.inflater.IResourceTable;
 
 /**
  * Attribute handler for handling attributes related to
@@ -33,7 +33,7 @@ import com.itsaky.inflater.IResourceFinder;
  */
 public class ImageButtonAttrAdapter extends ImageViewAttrAdapter {
     
-    public ImageButtonAttrAdapter (@NonNull IResourceFinder resourceFinder, DisplayMetrics displayMetrics) {
+    public ImageButtonAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super (resourceFinder, displayMetrics);
     }
     
