@@ -17,15 +17,14 @@
 package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Build;
-import android.os.UserManager;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
+import com.itsaky.androidide.app.BaseApplication;
+
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import com.itsaky.androidide.app.BaseApplication;
 
 @SuppressLint("SdCardPath")
 public final class Environment {

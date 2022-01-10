@@ -85,12 +85,11 @@ public class TerminalActivity extends StudioActivity {
         super.onCreate (savedInstanceState);
         
         final var bash = new File (BIN_DIR, "bash");
-        if (SYSROOT.exists () && SYSROOT.isDirectory () && bash.exists () && bash.isFile () && bash.canExecute ()) {
+        final var useSystemShell = getApp ().getPrefManager ().getBoolean (PreferenceManager.KEY_TERMINAL_USE_SYSTEM_SHELL);
+        if ((SYSROOT.exists () && SYSROOT.isDirectory () && bash.exists () && bash.isFile () && bash.canExecute ()) || useSystemShell) {
             setupTerminalView ();
         } else {
-            // Sysroot is not installed
-            // Or bash might be not executable
-            LOG.debug ("Bootstrap is not installed.");
+            LOG.info ("Bootstrap is not installed.");
             
             // Show the progress sheet
             final var progress = new ProgressSheet ();
@@ -219,7 +218,7 @@ public class TerminalActivity extends StudioActivity {
     
     @NonNull
     private String getShellPath () {
-        final var useSystemShell = getApp ().getPrefManager ().getBoolean (PreferenceManager.KEY_TERMINAL_SHELL);
+        final var useSystemShell = getApp ().getPrefManager ().getBoolean (PreferenceManager.KEY_TERMINAL_USE_SYSTEM_SHELL);
         if (!useSystemShell &&
                 LOGIN_SHELL.exists () &&
                 LOGIN_SHELL.isFile ()) {

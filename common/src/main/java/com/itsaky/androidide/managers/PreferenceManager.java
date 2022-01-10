@@ -33,7 +33,7 @@ public class PreferenceManager {
     
     public static final String KEY_OPEN_PROJECTS = "idepref_general_autoOpenProjects";
     public static final String KEY_CONFIRM_PROJECT_OPEN = "idepref_general_confirmProjectOpen";
-    public static final String KEY_TERMINAL_SHELL = "idepref_general_terminalShell";
+    public static final String KEY_TERMINAL_USE_SYSTEM_SHELL = "idepref_general_terminalShell";
     
     public static final String KEY_EDITORFLAG_WS_LEADING = "idepref_editor_wsLeading";
     public static final String KEY_EDITORFLAG_WS_TRAILING = "idepref_editor_wsTrailing";

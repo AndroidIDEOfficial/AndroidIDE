@@ -24,7 +24,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.utils.DialogUtils;
 
 import static com.itsaky.androidide.managers.PreferenceManager.*;
 
@@ -50,14 +49,14 @@ public class GeneralPreferences extends BasePreferenceFragment implements Prefer
         confirmProjectOpen.setSummary(R.string.msg_confirm_project_open);
         confirmProjectOpen.setIcon(R.drawable.ic_open_project);
         
-        shell.setKey (KEY_TERMINAL_SHELL);
+        shell.setKey (KEY_TERMINAL_USE_SYSTEM_SHELL);
         shell.setTitle (getString (R.string.title_default_shell));
         shell.setSummary (getString (R.string.msg_default_shell));
         shell.setIcon (R.drawable.ic_bash_commands);
         
         openProjects.setChecked(getPrefManager().autoOpenProject());
         confirmProjectOpen.setChecked(getPrefManager().confirmProjectOpen());
-        shell.setChecked (getPrefManager ().getBoolean (KEY_TERMINAL_SHELL));
+        shell.setChecked (getPrefManager ().getBoolean (KEY_TERMINAL_USE_SYSTEM_SHELL));
         
         screen.addPreference(openProjects);
         screen.addPreference(confirmProjectOpen);
@@ -81,8 +80,8 @@ public class GeneralPreferences extends BasePreferenceFragment implements Prefer
             case KEY_CONFIRM_PROJECT_OPEN:
                 getPrefManager ().putBoolean (KEY_CONFIRM_PROJECT_OPEN, checked);
                 break;
-            case KEY_TERMINAL_SHELL:
-                getPrefManager ().putBoolean (KEY_TERMINAL_SHELL, checked);
+            case KEY_TERMINAL_USE_SYSTEM_SHELL:
+                getPrefManager ().putBoolean (KEY_TERMINAL_USE_SYSTEM_SHELL, checked);
                 break;
         }
         return true;
