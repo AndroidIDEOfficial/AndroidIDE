@@ -353,7 +353,7 @@ public class IDEService {
                 final ProcessStreamsHolder holder = new ProcessStreamsHolder();
                 
                 listener.saveFiles();
-                Environment.mkdirIfNotExits(Environment.TMP_DIR);
+                
                 currentTask = task;
                 listener.appendOutput(task, getString(R.string.msg_task_begin, currentTime(), task.getName()));
                 try {
