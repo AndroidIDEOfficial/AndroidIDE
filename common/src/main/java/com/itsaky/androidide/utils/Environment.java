@@ -178,7 +178,7 @@ public final class Environment {
         ld += LIB_DIR.getAbsolutePath();
         ENV_VARS.put("LD_LIBRARY_PATH", ld);
     
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BaseApplication.isAarch64()) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BaseApplication.isAarch64() && LIB_HOOK.exists ()) {
             // Required for JDK 11
             ENV_VARS.put("LD_PRELOAD", LIB_HOOK.getAbsolutePath());
         }
