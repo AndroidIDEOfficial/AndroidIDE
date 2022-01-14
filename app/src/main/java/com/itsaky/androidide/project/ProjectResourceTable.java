@@ -17,10 +17,14 @@
 **************************************************************************************/
 package com.itsaky.androidide.project;
 
+import android.os.FileObserver;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IResourceTable;
+
 import java.io.File;
 import java.io.FileFilter;
 
@@ -33,6 +37,17 @@ public class ProjectResourceTable implements IResourceTable {
     
     private File[] drawables;
     private File[] mipmaps;
+    
+    private final FileObserver mFileObserver;
+    
+    public ProjectResourceTable (@NonNull final Iterable<File> resourceDirectories) {
+        mFileObserver = new FileObserver (resDir) {
+            @Override
+            public void onEvent (int event, @Nullable String path) {
+        
+            }
+        };
+    }
     
     private static final Logger LOG = Logger.instance ("ProjectResourceFinder");
     
@@ -62,7 +77,7 @@ public class ProjectResourceTable implements IResourceTable {
     public String findColor(@NonNull String name) {
         return name;
     }
-
+    
     @Override
     public String[] findArray(@NonNull String name) {
         return new String[] {name};

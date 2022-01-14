@@ -79,9 +79,9 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.3.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
 
     // Annotation processors
 	annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
@@ -120,11 +120,13 @@ dependencies {
 	// Local projects here
 	implementation project(':treeview')
     implementation project(':emulatorview')
-    implementation project(':javapoet')
     implementation project(':lsp')
     implementation project(':xml-inflater')
     implementation project(':lexers')
     implementation project(':common')
+
+    implementation project(':lsp:api')
+    implementation project(':lsp:java')
     
     // LSP4J
     implementation common.lsp4j

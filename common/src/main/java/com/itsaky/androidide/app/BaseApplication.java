@@ -61,15 +61,14 @@ public abstract class BaseApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         instance = this;
+        Environment.init ();
         super.onCreate();
         
         mPrefsManager = new PreferenceManager(this);
         JavaCharacter.initMap();
         ToolsManager.init(this, null);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannels();
-        }
+    
+        createNotificationChannels();
     }
     
     @SuppressLint("NewApi")

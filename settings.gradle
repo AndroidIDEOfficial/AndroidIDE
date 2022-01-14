@@ -1,11 +1,11 @@
+rootProject.name = "AndroidIDE"
 include ':app'
 include ':treeview'
 include ':emulatorview'
-include ':javapoet'
 include ':lsp'
 include ':sdk-info'
 include ':xml-inflater'
 include ':lexers'
 include ':common'
-
-rootProject.name = "AndroidIDE"
+include ':lsp:api'
+include ':lsp:java'

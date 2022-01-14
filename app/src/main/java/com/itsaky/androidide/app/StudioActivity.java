@@ -18,9 +18,13 @@
 package com.itsaky.androidide.app;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.View;
 import androidx.annotation.AttrRes;
@@ -32,6 +36,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.toaster.Toaster;
 
 public abstract class StudioActivity extends AppCompatActivity {
 	private boolean toRequestStorage = true;
@@ -46,10 +51,16 @@ public abstract class StudioActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(bindLayout());
 		onSetContentView();
-		if (toRequestStorage && !isStoragePermissionGranted())
+	
+		if (toRequestStorage && !isStoragePermissionGranted()) {
 			requestStorage();
-		else if (isStoragePermissionGranted())
+		}
+		
+		if (isStoragePermissionGranted()) {
 			onStorageAlreadyGranted();
+		} else {
+			onStorageDenied ();
+		}
     }
 
 	public boolean isStoragePermissionGranted() {

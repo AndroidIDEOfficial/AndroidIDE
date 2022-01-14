@@ -31,36 +31,38 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
 @SuppressLint("SdCardPath")
 public final class Environment {
 	
-    public static final File ROOT;
-    public static final File SYSROOT;
-	public static final File HOME;
-	public static final File JAVA_HOME;
-	public static final File ANDROID_HOME;
-    public static final File JLS_HOME;
-	public static final File TMP_DIR;
-    public static final File BIN_DIR;
-    public static final File LIB_DIR;
-    public static final File PROJECTS_DIR;
-    public static final File IDE_PROPS_FILE;
-    public static final File LIB_HOOK;
-    public static final File LIB_HOOK2;
+    public static File ROOT;
+    public static File SYSROOT;
+	public static File HOME;
+	public static File JAVA_HOME;
+	public static File ANDROID_HOME;
+    public static File JLS_HOME;
+	public static File TMP_DIR;
+    public static File BIN_DIR;
+    public static File LIB_DIR;
+    public static File PROJECTS_DIR;
+    public static File IDE_PROPS_FILE;
+    public static File LIB_HOOK;
+    public static File LIB_HOOK2;
     
-    public static final File INIT_SCRIPT;
-    public static final File PROJECT_DATA_FILE;
-    public static final File JLS_JAR;
+    public static File INIT_SCRIPT;
+    public static File PROJECT_DATA_FILE;
+    public static File JLS_JAR;
     
-	public static final File GRADLE_PROPS;
-	public static final File GRADLE_USER_HOME;
+	public static File GRADLE_PROPS;
+	public static File GRADLE_USER_HOME;
     
-    public static final File JAVA;
-    public static final File BUSYBOX;
-    public static final File SHELL;
-    public static final File LOGIN_SHELL;
+    public static File JAVA;
+    public static File BUSYBOX;
+    public static File SHELL;
+    public static File LOGIN_SHELL;
     
     public static File BOOTCLASSPATH;
     
@@ -75,8 +77,8 @@ public final class Environment {
     
     private static final Logger LOG = Logger.instance("Environment");
     
-	static {
-		final BaseApplication app = BaseApplication.getBaseInstance();
+	public static void init () {
+        final BaseApplication app = BaseApplication.getBaseInstance();
         ROOT = app.getIDEDataDir();
         SYSROOT = mkdirIfNotExits(new File(app.getIDEDataDir(), "sysroot"));
         HOME = mkdirIfNotExits(app.getRootDir());
@@ -96,7 +98,7 @@ public final class Environment {
         BOOTCLASSPATH = new File("");
         GRADLE_USER_HOME = new File(HOME, ".gradle");
         GRADLE_PROPS = new File(GRADLE_USER_HOME, "gradle.properties");
-
+        
         IDE_PROPS.putAll(readProperties());
         ANDROID_HOME = new File(readProp("ANDROID_HOME", DEFAULT_ANDROID_HOME));
         JAVA_HOME = new File(readProp("JAVA_HOME", DEFAULT_JAVA_HOME));
@@ -112,7 +114,21 @@ public final class Environment {
         
         System.setProperty("user.home", HOME.getAbsolutePath());
         System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
-	}
+        
+        CompletableFuture.runAsync (() -> {
+            try {
+                final var tClass = Objects.requireNonNull (Environment.class.getClassLoader ())
+                        .loadClass ("com.itsaky.javac11.LocationsProvider");
+                final var method = tClass.getDeclaredMethod ("init");
+                if (!method.isAccessible ()) {
+                    method.setAccessible (true);
+                }
+                method.invoke (null);
+            } catch (Throwable th) {
+                LOG.error ("Error notifying LocationsProvider about Environment init", th);
+            }
+        });
+    }
 	
 	public static void setExecutable (@NonNull final File file) {
 	    if (!file.setExecutable (true)) {

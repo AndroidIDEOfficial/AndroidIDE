@@ -17,78 +17,79 @@
 **************************************************************************************/
 package com.itsaky.androidide.language.java;
 
-import com.itsaky.androidide.lsp.LSPProvider;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.services.IDELanguageServer;
-import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
-import io.github.rosemoe.editor.text.TextAnalyzeResult;
+import com.itsaky.lsp.models.CompletionResult;
+
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
+
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.CompletionList;
-import org.eclipse.lsp4j.CompletionParams;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.TextDocumentIdentifier;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
-import com.itsaky.androidide.app.StudioApp;
+
+import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
+import io.github.rosemoe.editor.text.TextAnalyzeResult;
 
 public class JavaAutoComplete implements AutoCompleteProvider {
     
-    private CompletableFuture<Either<List<CompletionItem>, CompletionList>> future;
+    private CompletableFuture<CompletionResult> future;
 
 	@Override
 	public List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
-        IDELanguageServer languageServer = LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
-        if(languageServer != null && fileUri != null) {
-            
-            if(future != null && !future.isDone()) future.cancel(true);
-            
-            CompletionParams params = new CompletionParams();
-            params.setPosition(new Position(line, column));
-            params.setTextDocument(new TextDocumentIdentifier(fileUri));
-            future = languageServer.getTextDocumentService().completion(params);
-            
-            if(future.isCancelled()) {
-                LOG.debug ("Completion request was cancelled");
-                return finalizeResults(new ArrayList<CompletionItem>());
+	    
+	    try {
+	    	
+	    	if (this.future != null && !this.future.isDone ()) {
+				try {
+					this.future.cancel (true);
+				} catch (CancellationException e) {
+					// Do not pollute logs with cancellation exceptions
+					return new ArrayList<> ();
+				}
+			}
+	    	
+	    	this.future = CompletableFuture.supplyAsync (() -> {
+				final var server = StudioApp.getInstance ().getJavaLanguageServer ();
+				final var completer = server.getCompletionProvider ();
+				final var params = new com.itsaky.lsp.models.CompletionParams (new com.itsaky.lsp.models.Position (line, column), Paths.get (URI.create (fileUri)));
+				return completer.complete (params);
+			});
+	     
+	    	final var result = future.get ();
+	        final var list = new ArrayList<CompletionItem> ();
+	        for (final var item : result.getItems ()) {
+	           final var i = new CompletionItem ();
+	           i.setLabel (item.getLabel ());
+	           i.setDetail (item.getDetail ());
+	           i.setKind (CompletionItemKind.Method);
+	           i.setSortText (item.getSortText ());
+	           i.setInsertText (item.getInsertText ());
+	           list.add (i);
             }
-            
-            try {
-                Either<List<CompletionItem>, CompletionList> either = future.get();
-                if(either.isLeft()) {
-                    return finalizeResults(either.getLeft());
-                }
-                
-                if(either.isRight()) {
-                    return finalizeResults(either.getRight().getItems());
-                }
-                
-            } catch (Throwable th) {
-                LOG.error(StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_completion), th);
-            }
-        } else {
-            LOG.error(StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_no_server_implementation));
+	        
+	        return finalizeResults (list);
+        } catch (Throwable th) {
+	        LOG.error ("Java completion error", th);
         }
-        return new ArrayList<CompletionItem>();
+	    
+        return new ArrayList<>();
 	}
     
     private List<CompletionItem> finalizeResults(List<CompletionItem> items) {
-        Collections.sort(items, RESULT_SORTER);
+        items.sort (RESULT_SORTER);
         return items;
     }
     
-    private static final Comparator<CompletionItem> RESULT_SORTER = new Comparator<CompletionItem>(){
-        
-        @Override
-        public int compare(CompletionItem p1, CompletionItem p2) {
-            String s1 = p1.getSortText() == null ? p1.getLabel() : p1.getSortText();
-            String s2 = p2.getSortText() == null ? p2.getLabel() : p2.getSortText();
-            return s1.compareTo(s2);
-        }
-    };
+    private static final Comparator<CompletionItem> RESULT_SORTER = (p1, p2) -> {
+		String s1 = p1.getSortText () == null ? p1.getLabel () : p1.getSortText ();
+		String s2 = p2.getSortText () == null ? p2.getLabel () : p2.getSortText ();
+		return s1.compareTo (s2);
+	};
     
     private static final Logger LOG = Logger.instance("JavaAutoComplete");
 }

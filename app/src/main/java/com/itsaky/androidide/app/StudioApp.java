@@ -19,6 +19,8 @@ package com.itsaky.androidide.app;
 
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.CrashHandlerActivity;
@@ -31,6 +33,8 @@ import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.LayoutInflaterConfiguration;
+import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.java.JavaLanguageServer;
 import com.itsaky.widgets.WidgetInfo;
 
 import java.io.File;
@@ -43,6 +47,7 @@ public class StudioApp extends BaseApplication {
     private static AttrInfo mAttrInfo;
     private static WidgetInfo mWidgetInfo;
     
+    private final ILanguageServer mJavaLanguageServer = new JavaLanguageServer ();
     private IResourceTable mResFinder;
     private XMLCompletionService mXmlCompletionService;
     private ILayoutInflater mLayoutInflater;
@@ -64,6 +69,11 @@ public class StudioApp extends BaseApplication {
 		
         initializeApiInformation();
 	}
+ 
+	@NonNull
+    public ILanguageServer getJavaLanguageServer () {
+        return mJavaLanguageServer;
+    }
     
     private void handleCrash(Thread thread, Throwable th) {
         writeException(th);
@@ -92,7 +102,7 @@ public class StudioApp extends BaseApplication {
         return new LayoutInflaterConfiguration.Builder ()
                 .setAttrInfo(this.attrInfo())
                 .setWidgetInfo(this.widgetInfo())
-                .setResourceFinder(mResFinder == null ? mResFinder = new ProjectResourceTable () : mResFinder)
+                .setResourceFinder(mResFinder == null ? mResFinder = new ProjectResourceTable (resDirs) : mResFinder)
                 .setResourceDirectories(resDirs)
                 .setContextProvider(contextProvider)
                 .create();

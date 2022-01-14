@@ -104,6 +104,8 @@ import com.itsaky.androidide.views.CodeEditorView;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.inflater.ILayoutInflater;
+import com.itsaky.lsp.java.models.JavaServerConfiguration;
+import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.services.IDELanguageServer;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
@@ -116,7 +118,10 @@ import org.eclipse.lsp4j.Range;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +130,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import io.github.rosemoe.editor.widget.CodeEditor;
 import me.piruin.quickaction.ActionItem;
@@ -844,13 +850,24 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     public void createServices () {
         new TaskExecutor ().executeAsync (() -> {
+    
+            List<String> cps = Objects.requireNonNull (getAndroidProject ()).getClassPaths ();
+            getApp ()
+                    .getJavaLanguageServer ()
+                    .configurationChanged (
+                            new JavaServerConfiguration (
+                                    cps.stream ()
+                                            .map (Paths::get)
+                                            .collect (Collectors.toSet ())
+                            )
+                    );
+            
             IDELanguageServer javaServer = LSPProvider.getServerForLanguage (LSPProvider.LANGUAGE_JAVA);
             if (javaServer == null) {
                 LOG.error ("Cannot create services as java language server instance is null");
                 return null;
             }
             
-            List<String> cps = Objects.requireNonNull (getAndroidProject ()).getClassPaths ();
             JsonObject settings = new JsonObject ();
             JsonObject java = new JsonObject ();
             JsonArray classPath = new JsonArray ();
@@ -921,7 +938,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
-    
+        
         mBinding.editorContainer.addView (editor);
         mBinding.editorContainer.setDisplayedChild (position);
         mBinding.tabs.addTab (mBinding.tabs.newTab ().setText (file.getName ()));
@@ -1142,6 +1159,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private void startLanguageServers () {
         LSP.setActivityProvider (this);
         LSP.Java.start (() -> {
+            getApp ().getJavaLanguageServer ().initialize (new InitializeParams (Collections.singleton (new File (Objects.requireNonNull (getAndroidProject ()).getProjectPath ()).toPath ())));
             Optional<InitializeResult> result = LSP.Java.init (Objects.requireNonNull (getAndroidProject ()).getProjectPath ());
             if (result.isPresent ()) {
                 LSP.Java.initialized ();

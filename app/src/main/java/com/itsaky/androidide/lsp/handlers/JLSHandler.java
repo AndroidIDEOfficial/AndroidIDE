@@ -55,33 +55,33 @@ public class JLSHandler implements LSPHandler {
     
     @Override
     public void start(Runnable onStarted) {
-        try {
-            final IProcessExecutor executor = ProcessExecutorFactory.commonExecutor();
-            final ProcessStreamsHolder holder = new ProcessStreamsHolder();
-            final IProcessExitListener listener = new IProcessExitListener() {
-                @Override
-                public void onExit(int code) {
-                    LOG.info("Java Language server terminated with exit code " + code);
-                    shutdown();
-                }
-            };
-            
-            executor.execAsync(holder, listener, false, Environment.JAVA.getAbsolutePath(), "-jar", Environment.JLS_JAR.getAbsolutePath(), QUIET ? "--quiet" : "");
-            startReader (holder.err); // holder.in is used by LSP4J
-            
-            if (!IDELanguageClientImpl.isInitialized()) {
-                IDELanguageClientImpl.initialize(LSP.PROVIDER);
-            }
-            
-            IDELanguageClientImpl client = IDELanguageClientImpl.getInstance();
-            
-            mLauncher = new StandardStreamsLauncher(client, holder.in, holder.out, LSPProvider.LANGUAGE_JAVA);
-            mLauncher.setLaunchListener(server -> onStarted.run());
-            mLauncher.start();
-            
-        } catch (Throwable th) {
-            LOG.error(StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_cannot_start_server, LSPProvider.LANGUAGE_JAVA), th);
-        }
+//        try {
+//            final IProcessExecutor executor = ProcessExecutorFactory.commonExecutor();
+//            final ProcessStreamsHolder holder = new ProcessStreamsHolder();
+//            final IProcessExitListener listener = new IProcessExitListener() {
+//                @Override
+//                public void onExit(int code) {
+//                    LOG.info("Java Language server terminated with exit code " + code);
+//                    shutdown();
+//                }
+//            };
+//
+//            executor.execAsync(holder, listener, false, Environment.JAVA.getAbsolutePath(), "-jar", Environment.JLS_JAR.getAbsolutePath(), QUIET ? "--quiet" : "");
+//            startReader (holder.err); // holder.in is used by LSP4J
+//
+//            if (!IDELanguageClientImpl.isInitialized()) {
+//                IDELanguageClientImpl.initialize(LSP.PROVIDER);
+//            }
+//
+//            IDELanguageClientImpl client = IDELanguageClientImpl.getInstance();
+//
+//            mLauncher = new StandardStreamsLauncher(client, holder.in, holder.out, LSPProvider.LANGUAGE_JAVA);
+//            mLauncher.setLaunchListener(server -> onStarted.run());
+//            mLauncher.start();
+//
+//        } catch (Throwable th) {
+//            LOG.error(StudioApp.getInstance().getString(com.itsaky.androidide.R.string.err_cannot_start_server, LSPProvider.LANGUAGE_JAVA), th);
+//        }
     }
     
     @Override

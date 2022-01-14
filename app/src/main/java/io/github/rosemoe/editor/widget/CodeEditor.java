@@ -76,6 +76,8 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.lsp.SemanticHighlight;
+import com.itsaky.lsp.models.DocumentChangeEvent;
+import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.services.IDELanguageServer;
 import com.itsaky.toaster.Toaster;
 
@@ -101,6 +103,9 @@ import io.github.rosemoe.editor.util.IntPair;
 import io.github.rosemoe.editor.util.LongArrayList;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -358,15 +363,19 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         if (mLanguage != null && mLanguage instanceof AbstractEditorLanguage) {
             ((AbstractEditorLanguage) mLanguage).setFile (file);
         }
-        
-        if (mLanguageServer != null) {
-            TextDocumentItem item = new TextDocumentItem ();
-            item.setLanguageId (getLanguageIdForFile ());
-            item.setText (getText ().toString ());
-            item.setUri (file.toURI ().toString ());
-            item.setVersion (mFileVersion = 0);
-            mLanguageServer.getTextDocumentService ().didOpen (new DidOpenTextDocumentParams (item));
-        }
+    
+        final var text = getText ().toString ();
+        final var javaLs = StudioApp.getInstance ().getJavaLanguageServer ();
+        javaLs.getDocumentHandler ().onFileOpened (new DocumentOpenEvent (file.toPath (), text, ++mFileVersion));
+    
+//        if (mLanguageServer != null) {
+//            TextDocumentItem item = new TextDocumentItem ();
+//            item.setLanguageId (getLanguageIdForFile ());
+//            item.setText (text);
+//            item.setUri (file.toURI ().toString ());
+//            item.setVersion (mFileVersion);
+//            mLanguageServer.getTextDocumentService ().didOpen (new DidOpenTextDocumentParams (item));
+//        }
     }
     
     private String getLanguageIdForFile () {
@@ -5026,13 +5035,21 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     private void notifyChanged () {
-        if (mLanguageServer != null) {
-            mLastEdited = System.currentTimeMillis ();
-            DidChangeTextDocumentParams p = didChangeParams ();
-            if (p != null) {
-                mLanguageServer.getTextDocumentService ().didChange (p);
-            }
+    
+        if (getFile () == null) {
+            return;
         }
+        
+        StudioApp.getInstance ()
+                .getJavaLanguageServer ()
+                .getDocumentHandler ()
+                .onContentChange (
+                        new DocumentChangeEvent (
+                                getFile ().toPath (),
+                                getText ().toString (),
+                                mFileVersion + 1
+                        )
+                );
     }
     
     protected DidChangeTextDocumentParams didChangeParams () {
