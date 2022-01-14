@@ -240,8 +240,8 @@ public class JavaCompletionProvider implements ICompletionProvider {
     private List<CompletionItem> completeUsingScope(
             @NonNull CompileTask task, TreePath path, String partial, boolean endsWithParen) {
         Trees trees = Trees.instance(task.task);
-        List<CompletionItem> list = new ArrayList<CompletionItem>();
-        Map<String, List<ExecutableElement>> methods = new HashMap<String, List<ExecutableElement>>();
+        List<CompletionItem> list = new ArrayList<> ();
+        Map<String, List<ExecutableElement>> methods = new HashMap<> ();
         Scope scope = trees.getScope(path);
         Predicate<CharSequence> filter = name -> StringSearch.matchesPartialName(name, partial);
         for (Element member : ScopeHelper.scopeMembers(task, scope, filter)) {
@@ -261,7 +261,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
     private void addStaticImports(
             @NonNull CompileTask task, CompilationUnitTree root, String partial, boolean endsWithParen, @NonNull CompletionResult list) {
         Trees trees = Trees.instance(task.task);
-        Map<String, List<ExecutableElement>> methods = new HashMap<String, List<ExecutableElement>>();
+        Map<String, List<ExecutableElement>> methods = new HashMap<> ();
         int previousSize = list.getItems ().size();
         outer:
         for (ImportTree i : root.getImports()) {
@@ -301,7 +301,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
 
     private void addClassNames(@NonNull CompilationUnitTree root, String partial, @NonNull CompletionResult list) {
         String packageName = Objects.toString(root.getPackageName(), "");
-        Set<String> uniques = new HashSet<String>();
+        Set<String> uniques = new HashSet<> ();
         int previousSize = list.getItems ().size();
         for (String className : compiler.packagePrivateTopLevelTypes(packageName)) {
             if (!StringSearch.matchesPartialName(className, partial)) continue;
@@ -369,8 +369,8 @@ public class JavaCompletionProvider implements ICompletionProvider {
             @NonNull CompileTask task, Scope scope, @NonNull DeclaredType type, boolean isStatic, String partial, boolean endsWithParen) {
         Trees trees = Trees.instance(task.task);
         TypeElement typeElement = (TypeElement) type.asElement();
-        List<CompletionItem> list = new ArrayList<CompletionItem>();
-        Map<String, List<ExecutableElement>> methods = new HashMap<String, List<ExecutableElement>>();
+        List<CompletionItem> list = new ArrayList<> ();
+        Map<String, List<ExecutableElement>> methods = new HashMap<> ();
         for (Element member : task.task.getElements().getAllMembers(typeElement)) {
             if (member.getKind() == ElementKind.CONSTRUCTOR) continue;
             if (!StringSearch.matchesPartialName(member.getSimpleName(), partial)) continue;
@@ -463,8 +463,8 @@ public class JavaCompletionProvider implements ICompletionProvider {
             @NonNull CompileTask task, Scope scope, @NonNull DeclaredType type, boolean isStatic, String partial) {
         Trees trees = Trees.instance(task.task);
         TypeElement typeElement = (TypeElement) type.asElement();
-        List<CompletionItem> list = new ArrayList<CompletionItem>();
-        Map<String, List<ExecutableElement>> methods = new HashMap<String, List<ExecutableElement>>();
+        List<CompletionItem> list = new ArrayList<> ();
+        Map<String, List<ExecutableElement>> methods = new HashMap<> ();
         for (Element member : task.task.getElements().getAllMembers(typeElement)) {
             if (!StringSearch.matchesPartialName(member.getSimpleName(), partial)) continue;
             if (member.getKind() != ElementKind.METHOD) continue;
@@ -507,7 +507,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
         }
         DeclaredType declared = (DeclaredType) type;
         TypeElement element = (TypeElement) declared.asElement();
-        List<CompletionItem> list = new ArrayList<CompletionItem>();
+        List<CompletionItem> list = new ArrayList<> ();
         for (Element member : task.task.getElements().getAllMembers(element)) {
             if (member.getKind() != ElementKind.ENUM_CONSTANT) continue;
             if (!StringSearch.matchesPartialName(member.getSimpleName(), partial)) continue;
@@ -518,7 +518,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
 
     private CompletionResult completeImport(String path) {
         LOG.info("...complete import");
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<> ();
         CompletionResult list = new CompletionResult();
         for (String className : compiler.publicTopLevelTypes()) {
             if (className.startsWith(path)) {
@@ -681,6 +681,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
         return i;
     }
     
+    @SuppressWarnings ("unused")
     private static class Priority {
         static int iota = 0;
         static final int SNIPPET = iota;
