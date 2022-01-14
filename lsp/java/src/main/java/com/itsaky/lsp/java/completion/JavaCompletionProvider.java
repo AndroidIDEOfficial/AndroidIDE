@@ -84,6 +84,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
         
         Instant started = Instant.now();
         ParseTask task = compiler.parse(file);
+        
         long cursor = task.root.getLineMap().getPosition(line, column);
         StringBuilder contents = new PruneMethodBodies(task.task).scan(task.root, cursor);
         int endOfLine = endOfLine(contents, (int) cursor);

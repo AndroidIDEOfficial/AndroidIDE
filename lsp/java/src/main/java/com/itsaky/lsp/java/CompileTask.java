@@ -8,6 +8,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 public class CompileTask implements AutoCloseable {
+    
     public final JavacTask task;
     public final List<CompilationUnitTree> roots;
     public final List<Diagnostic<? extends JavaFileObject>> diagnostics;
@@ -15,7 +16,7 @@ public class CompileTask implements AutoCloseable {
 
     public CompilationUnitTree root() {
         if (roots.size() != 1) {
-            throw new RuntimeException(Integer.toString(roots.size()));
+            throw new RuntimeException("No compilation units found. Roots: " + roots.size ());
         }
         return roots.get(0);
     }
@@ -26,7 +27,7 @@ public class CompileTask implements AutoCloseable {
                 return root;
             }
         }
-        throw new RuntimeException("not found");
+        throw new RuntimeException("Compilation unit not found");
     }
 
     public CompilationUnitTree root(JavaFileObject file) {
@@ -35,7 +36,7 @@ public class CompileTask implements AutoCloseable {
                 return root;
             }
         }
-        throw new RuntimeException("not found");
+        throw new RuntimeException("Compilation unit not found");
     }
 
     public CompileTask(

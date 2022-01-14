@@ -17,19 +17,21 @@
 **************************************************************************************/
 package com.itsaky.androidide.language.java;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.models.CompletionResult;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
+import org.jetbrains.annotations.Contract;
 
 import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
@@ -41,46 +43,40 @@ public class JavaAutoComplete implements AutoCompleteProvider {
 
 	@Override
 	public List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
-	    
-	    try {
-	    	
-	    	if (this.future != null && !this.future.isDone ()) {
-				try {
-					this.future.cancel (true);
-				} catch (CancellationException e) {
-					// Do not pollute logs with cancellation exceptions
-					return new ArrayList<> ();
-				}
+		if (this.future != null && !this.future.isDone ()) {
+			try {
+				this.future.cancel (true);
+			} catch (java.util.concurrent.CancellationException e) {
+				// Do not pollute logs with cancellation exceptions
+				return new ArrayList<> ();
 			}
-	    	
-	    	this.future = CompletableFuture.supplyAsync (() -> {
-				final var server = StudioApp.getInstance ().getJavaLanguageServer ();
-				final var completer = server.getCompletionProvider ();
-				final var params = new com.itsaky.lsp.models.CompletionParams (new com.itsaky.lsp.models.Position (line, column), Paths.get (URI.create (fileUri)));
-				return completer.complete (params);
-			});
-	     
-	    	final var result = future.get ();
-	        final var list = new ArrayList<CompletionItem> ();
-	        for (final var item : result.getItems ()) {
-	           final var i = new CompletionItem ();
-	           i.setLabel (item.getLabel ());
-	           i.setDetail (item.getDetail ());
-	           i.setKind (CompletionItemKind.Method);
-	           i.setSortText (item.getSortText ());
-	           i.setInsertText (item.getInsertText ());
-	           list.add (i);
-            }
-	        
-	        return finalizeResults (list);
-        } catch (Throwable th) {
-	        LOG.error ("Java completion error", th);
-        }
-	    
-        return new ArrayList<>();
+		}
+		
+		this.future = CompletableFuture.supplyAsync (() -> {
+			final var server = StudioApp.getInstance ().getJavaLanguageServer ();
+			final var completer = server.getCompletionProvider ();
+			final var params = new com.itsaky.lsp.models.CompletionParams (new com.itsaky.lsp.models.Position (line, column), Paths.get (URI.create (fileUri)));
+			return completer.complete (params);
+		});
+		
+		final var result = future.get ();
+		final var list = new ArrayList<CompletionItem> ();
+		for (final var item : result.getItems ()) {
+			final var i = new CompletionItem ();
+			i.setLabel (item.getLabel ());
+			i.setDetail (item.getDetail ());
+			i.setKind (CompletionItemKind.Method);
+			i.setSortText (item.getSortText ());
+			i.setInsertText (item.getInsertText ());
+			list.add (i);
+		}
+		
+		return finalizeResults (list);
 	}
     
-    private List<CompletionItem> finalizeResults(List<CompletionItem> items) {
+    @NonNull
+	@Contract("_ -> param1")
+	private List<CompletionItem> finalizeResults(@NonNull List<CompletionItem> items) {
         items.sort (RESULT_SORTER);
         return items;
     }
