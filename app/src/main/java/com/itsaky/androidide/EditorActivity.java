@@ -59,8 +59,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
@@ -79,8 +77,6 @@ import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
-import com.itsaky.androidide.lsp.LSP;
-import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
@@ -105,28 +101,22 @@ import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
+import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
-import com.itsaky.lsp.services.IDELanguageServer;
+import com.itsaky.lsp.models.Range;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DidChangeConfigurationParams;
-import org.eclipse.lsp4j.InitializeResult;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
@@ -162,7 +152,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private EditorViewModel mViewModel;
     
     private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
-    private static final Range Range_ofZero = new Range (new Position (0, 0), new Position (0, 0));
     private static final int ACTION_ID_CLOSE = 100;
     private static final int ACTION_ID_OTHERS = 101;
     private static final int ACTION_ID_ALL = 102;
@@ -590,7 +579,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     @Override
-    public void onDiagnosticClick (File file, @NonNull Diagnostic diagnostic) {
+    public void onDiagnosticClick (File file, @NonNull DiagnosticItem diagnostic) {
         openFileAndSelect (file, diagnostic.getRange ());
         hideViewOptions ();
     }
@@ -631,16 +620,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
     }
     
-    public void openFileAndSelect (File file, org.eclipse.lsp4j.Range range) {
+    public void openFileAndSelect (File file, Range range) {
         openFile (file, range);
         final var opened = getEditorForFile (file);
         if (opened != null && opened.getEditor () != null) {
             CodeEditor editor = opened.getEditor ();
             editor.post (() -> {
                 if (LSPUtils.isEqual (range.getStart (), range.getEnd ())) {
-                    editor.setSelection (range.getStart ().getLine (), range.getEnd ().getCharacter ());
+                    editor.setSelection (range.getStart ().getLine (), range.getEnd ().getColumn ());
                 } else {
-                    editor.setSelectionRegion (range.getStart ().getLine (), range.getStart ().getCharacter (), range.getEnd ().getLine (), range.getEnd ().getCharacter ());
+                    editor.setSelectionRegion (range.getStart ().getLine (), range.getStart ().getColumn (), range.getEnd ().getLine (), range.getEnd ().getColumn ());
                 }
             });
         }
@@ -850,7 +839,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     public void createServices () {
         new TaskExecutor ().executeAsync (() -> {
-    
             List<String> cps = Objects.requireNonNull (getAndroidProject ()).getClassPaths ();
             getApp ()
                     .getJavaLanguageServer ()
@@ -861,29 +849,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                                             .collect (Collectors.toSet ())
                             )
                     );
-            
-            IDELanguageServer javaServer = LSPProvider.getServerForLanguage (LSPProvider.LANGUAGE_JAVA);
-            if (javaServer == null) {
-                LOG.error ("Cannot create services as java language server instance is null");
-                return null;
-            }
-            
-            JsonObject settings = new JsonObject ();
-            JsonObject java = new JsonObject ();
-            JsonArray classPath = new JsonArray ();
-            
-            for (int i = 0; i < cps.size (); i++) {
-                classPath.add (cps.get (i));
-            }
-            
-            java.add ("classPath", classPath);
-            settings.add ("java", java);
-            
-            DidChangeConfigurationParams params = new DidChangeConfigurationParams ();
-            params.setSettings (settings);
-            
-            javaServer.getWorkspaceService ().didChangeConfiguration (params);
-            
             return null;
         }, __ -> setStatus (getString (getApp ().isXmlServiceStarted () ? R.string.msg_service_started : R.string.msg_starting_completion_failed)));
     }
@@ -893,9 +858,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return openFile (file, null);
     }
     
-    public CodeEditorView openFile (File file, Range selection) {
+    public CodeEditorView openFile (File file, com.itsaky.lsp.models.Range selection) {
         if (selection == null) {
-            selection = Range_ofZero;
+            selection = com.itsaky.lsp.models.Range.NONE;
         }
         
         int index = openFileAndGetIndex (file, selection);
@@ -921,7 +886,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     @SuppressLint("NotifyDataSetChanged")
-    public int openFileAndGetIndex (File file, Range selection) {
+    public int openFileAndGetIndex (File file, com.itsaky.lsp.models.Range selection) {
         final var openedFileIndex = findIndexOfEditorByFile (file);
         
         if (openedFileIndex != -1) {
@@ -1157,14 +1122,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void startLanguageServers () {
-        LSP.setActivityProvider (this);
-        LSP.Java.start (() -> {
-            getApp ().getJavaLanguageServer ().initialize (new InitializeParams (Collections.singleton (new File (Objects.requireNonNull (getAndroidProject ()).getProjectPath ()).toPath ())));
-            Optional<InitializeResult> result = LSP.Java.init (Objects.requireNonNull (getAndroidProject ()).getProjectPath ());
-            if (result.isPresent ()) {
-                LSP.Java.initialized ();
-            }
-        });
+        getApp ().getJavaLanguageServer ().initialize (new InitializeParams (Collections.singleton (new File (Objects.requireNonNull (getAndroidProject ()).getProjectPath ()).toPath ())));
     }
     
     private void getProjectFromIntent () {
@@ -1280,8 +1238,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         closeAll ();
         
         getApp ().getPrefManager ().setOpenedProject (PreferenceManager.NO_OPENED_PROJECT);
-        
-        LSP.shutdownAll ();
         
         getApp ().stopAllDaemons ();
         

@@ -19,8 +19,10 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
+import com.itsaky.lsp.models.CompletionItem;
+
 import java.util.List;
-import org.eclipse.lsp4j.CompletionItem;
 
 /**
  * A class to make custom adapter for auto-completion window

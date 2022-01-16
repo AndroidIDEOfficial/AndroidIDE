@@ -71,12 +71,12 @@ import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.IViewGroup;
 
-import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class DesignerActivity extends StudioActivity implements WidgetItemAdapter.OnDragStartListener {
@@ -199,7 +199,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         progress.setSubMessage (getString (R.string.please_wait));
         progress.show (getSupportFragmentManager (), "generate_code_progress");
         
-        final var future = CompletableFutures.computeAsync (cancelChecker -> inflatedRoot.generateCode ());
+        final var future = CompletableFuture.supplyAsync (() -> inflatedRoot.generateCode ());
         future.whenComplete ((s, throwable) -> {
             
             progress.dismiss ();
@@ -220,13 +220,13 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     private void notifyXmlGenerationFailed (Throwable error) {
         final var errorMessage = getString (R.string.msg_generate_xml_failed);
         LOG.error (errorMessage, error);
-        
-        final var dialog = DialogUtils.newYesNoDialog (this,
-                getString(R.string.title_code_generation_failed),
-                getString(R.string.msg_code_generation_failed),
+    
+        DialogUtils.newYesNoDialog (this,
+                getString (R.string.title_code_generation_failed),
+                getString (R.string.msg_code_generation_failed),
                 (dialog1, which) -> finishWithError (),
                 (dialog1, which) -> dialog1.dismiss ())
-                
+            
                 .show ();
     }
     

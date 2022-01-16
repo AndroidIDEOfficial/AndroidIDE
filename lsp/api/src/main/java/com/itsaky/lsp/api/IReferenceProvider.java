@@ -15,20 +15,27 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.models
+package com.itsaky.lsp.api;
 
-import java.nio.file.Path
+import androidx.annotation.NonNull;
 
-data class CodeActionParams(var cursor: Position, var diagnostics: List<DiagnosticItem>)
+import com.itsaky.lsp.models.ReferenceParams;
+import com.itsaky.lsp.models.ReferenceResult;
 
-data class CodeActionResult (var actions: List <CodeActionItem>) {
-    constructor() : this (ArrayList())
+/**
+ * A reference provider provider references to a token.
+ *
+ * @author Akash Yadav
+ */
+public interface IReferenceProvider {
+    
+    /**
+     * Find references to the token at position given in the params
+     * and return the reference results.
+     *
+     * @param params The params for finding references.
+     * @return The reference result.
+     */
+    @NonNull
+    ReferenceResult findReferences (ReferenceParams params);
 }
-
-data class CodeActionItem (
-    var title: String,
-    var changes: List<DocumentChange>)
-
-data class DocumentChange (var file: Path, var edits: List<TextEdit>)
-
-data class TextEdit (var range: Range, var newText: String)

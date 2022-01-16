@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.androidide.views;
 
 import android.annotation.SuppressLint;
@@ -39,11 +38,10 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.lsp.models.DiagnosticItem;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Range;
 
 import java.io.File;
 import java.io.StringReader;
@@ -123,7 +121,7 @@ public class CodeEditorView extends FrameLayout {
         }
     };
     
-    public CodeEditorView (@NonNull Context context, @NonNull File file, final @NonNull Range selection) {
+    public CodeEditorView (@NonNull Context context, @NonNull File file, final @NonNull com.itsaky.lsp.models.Range selection) {
         super (context);
         this.file = file;
         this.isModified = false;
@@ -152,13 +150,13 @@ public class CodeEditorView extends FrameLayout {
                 binding.editor.setText (contents);
                 postRead ();
                 if (LSPUtils.isEqual (selection.getStart (), selection.getEnd ())) {
-                    getEditor ().setSelection (selection.getStart ().getLine (), selection.getStart ().getCharacter ());
+                    getEditor ().setSelection (selection.getStart ().getLine (), selection.getStart ().getColumn ());
                 } else {
                     getEditor ().setSelectionRegion (
                             selection.getStart ().getLine (),
-                            selection.getStart ().getCharacter (),
+                            selection.getStart ().getColumn (),
                             selection.getEnd ().getLine (),
-                            selection.getEnd ().getCharacter ()
+                            selection.getEnd ().getColumn ()
                     );
                 }
             });
@@ -233,23 +231,23 @@ public class CodeEditorView extends FrameLayout {
         binding.editor.beginSearchMode ();
     }
     
-    public void setDiagnostics (List<Diagnostic> diagnostics) {
+    public void setDiagnostics (List<DiagnosticItem> diagnostics) {
         if (diagnostics == null) {
             LOG.info ("Clearing diagnostics of code editor", "file:", file);
             binding.editor.getEditorLanguage ().getAnalyzer ().updateDiagnostics (new HashMap<> ());
             return;
         }
         
-        Map<Integer, Map<Integer, Diagnostic>> map = new HashMap<> ();
+        Map<Integer, Map<Integer, DiagnosticItem>> map = new HashMap<> ();
         for (int i = 0; i < diagnostics.size (); i++) {
-            final Diagnostic d = diagnostics.get (i);
+            final var d = diagnostics.get (i);
             if (d == null) {
                 continue;
             }
-            final Range range = d.getRange ();
+            final var range = d.getRange ();
             final int line = range.getStart ().getLine ();
-            final int column = range.getStart ().getCharacter ();
-            Map<Integer, Diagnostic> mappedByColumn = map.get (line);
+            final int column = range.getStart ().getColumn ();
+            Map<Integer, DiagnosticItem> mappedByColumn = map.get (line);
             if (mappedByColumn == null) {
                 mappedByColumn = new HashMap<> ();
             }
@@ -262,13 +260,13 @@ public class CodeEditorView extends FrameLayout {
     
     protected void postRead () {
         if (file.isFile () && file.getName ().endsWith (".java")) {
-            binding.editor.setEditorLanguage (new JavaLanguage (getFile ()));
+            binding.editor.setEditorLanguage (new JavaLanguage (), StudioApp.getInstance ().getJavaLanguageServer ());
         } else if (file.isFile () && file.getName ().endsWith (".xml")) {
-            binding.editor.setEditorLanguage (new XMLLanguage (getFile ()));
+            binding.editor.setEditorLanguage (new XMLLanguage (), null);
         } else if (file.isFile () && file.getName ().endsWith (".gradle")) {
-            binding.editor.setEditorLanguage (new GroovyLanguage (getFile ()));
+            binding.editor.setEditorLanguage (new GroovyLanguage (), null);
         } else {
-            binding.editor.setEditorLanguage (new EmptyLanguage ());
+            binding.editor.setEditorLanguage (new EmptyLanguage (), null);
         }
         
         // File must be set only after setting the language

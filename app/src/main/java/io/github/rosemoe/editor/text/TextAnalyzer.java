@@ -17,12 +17,14 @@ package io.github.rosemoe.editor.text;
 
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.api.ILanguageServer;
 
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.Span;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -40,16 +42,21 @@ public class TextAnalyzer {
     private TextAnalyzeResult mResult;
     private Callback mCallback;
     private AnalyzeThread mThread;
-    private EditorLanguage mLanguage;
+    private final EditorLanguage mLanguage;
+    private final ILanguageServer mLanguageServer;
+    private final File file;
     
     private static final Logger LOG = Logger.instance ("TextAnalyzer");
     
     /**
      * Create a new manager for the given codeAnalyzer
-     *
-     * @param language The language set to editor.
+     *  @param language The language set to editor.
+     * @param mLanguageServer
+     * @param file
      */
-    public TextAnalyzer (EditorLanguage language) {
+    public TextAnalyzer (EditorLanguage language, ILanguageServer mLanguageServer, File file) {
+        this.mLanguageServer = mLanguageServer;
+        this.file = file;
         if (language == null || language.getAnalyzer () == null) {
             throw new IllegalArgumentException ();
         }
@@ -191,7 +198,7 @@ public class TextAnalyzer {
                     mOpStartTime = System.currentTimeMillis ();
                     do {
                         waiting = false;
-                        language.getAnalyzer ().analyze (language.getLanguageServer (), language.getFile (), content, colors, d);
+                        language.getAnalyzer ().analyze (mLanguageServer, file, content, colors, d);
                         if (waiting) {
                             colors.mSpanMap.clear ();
                             colors.mLast = null;

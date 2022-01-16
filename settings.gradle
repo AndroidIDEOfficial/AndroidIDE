@@ -2,7 +2,6 @@ rootProject.name = "AndroidIDE"
 include ':app'
 include ':treeview'
 include ':emulatorview'
-include ':lsp'
 include ':sdk-info'
 include ':xml-inflater'
 include ':lexers'

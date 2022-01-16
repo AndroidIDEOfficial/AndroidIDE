@@ -15,20 +15,25 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.models
+package com.itsaky.lsp.api;
 
-import java.nio.file.Path
+import androidx.annotation.NonNull;
 
-data class CodeActionParams(var cursor: Position, var diagnostics: List<DiagnosticItem>)
+import com.itsaky.lsp.models.DefinitionParams;
+import com.itsaky.lsp.models.DefinitionResult;
 
-data class CodeActionResult (var actions: List <CodeActionItem>) {
-    constructor() : this (ArrayList())
+/**
+ * Finds the definitions of a token in the project files.
+ *
+ * @author Akash Yadav
+ */
+public interface IDefinitionProvider {
+    
+    /**
+     * Find the definitions of the token at the given position.
+     * @param params The params for finding the definition
+     * @return The result of the definition search. Must not be null.
+     */
+    @NonNull
+    DefinitionResult findDefinitions (DefinitionParams params);
 }
-
-data class CodeActionItem (
-    var title: String,
-    var changes: List<DocumentChange>)
-
-data class DocumentChange (var file: Path, var edits: List<TextEdit>)
-
-data class TextEdit (var range: Range, var newText: String)

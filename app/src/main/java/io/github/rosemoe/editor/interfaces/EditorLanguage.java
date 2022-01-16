@@ -15,10 +15,9 @@
  */
 package io.github.rosemoe.editor.interfaces;
 
-import com.itsaky.lsp.SemanticHighlight;
-import com.itsaky.lsp.services.IDELanguageServer;
-import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.File;
+
+import io.github.rosemoe.editor.widget.SymbolPairMatch;
 
 /**
  * Language for editor
@@ -36,23 +35,6 @@ import java.io.File;
  */
 public interface EditorLanguage {
     
-    /**
-     * Get the language server for this available
-     * May return null.
-     */
-    IDELanguageServer getLanguageServer();
-    
-    /**
-     * Get the language code of this language.
-     * This must be the one specified in {@link com.itsaky.androidide.lsp.LSPProvider LSPProvider}
-     */
-    String getLanguageCode();
-    
-    /**
-     * File associated with this language
-     */
-    File getFile();
-     
     /**
      * Get CodeAnalyzer of this language object
      *
@@ -74,11 +56,6 @@ public interface EditorLanguage {
      * @return Whether is character for auto completion
      */
     boolean isAutoCompleteChar(char ch);
-
-    /**
-     * Return {@code true} if the language needs whole previous content for #getIndentAdvance(String)
-     */
-    boolean needsWholePreviousContentForIndent();
     
     /**
      * Get advance for indent
@@ -118,5 +95,4 @@ public interface EditorLanguage {
      * @return NewlineHandlers , maybe null
      */
     NewlineHandler[] getNewlineHandlers();
-
 }

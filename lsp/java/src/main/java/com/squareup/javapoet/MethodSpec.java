@@ -292,7 +292,7 @@ public final class MethodSpec {
   }
 
   public static final class Builder {
-    private String name;
+    public String name;
 
     private final CodeBlock.Builder javadoc = CodeBlock.builder();
     private TypeName returnType;

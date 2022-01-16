@@ -24,30 +24,30 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.SemanticHighlight;
-import com.itsaky.lsp.services.IDELanguageServer;
+import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.SemanticHighlight;
 
-import io.github.rosemoe.editor.text.Content;
-import io.github.rosemoe.editor.text.TextAnalyzeResult;
-import io.github.rosemoe.editor.text.TextAnalyzer;
-import io.github.rosemoe.editor.widget.EditorColorScheme;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.Token;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.Diagnostic;
+import io.github.rosemoe.editor.text.Content;
+import io.github.rosemoe.editor.text.TextAnalyzeResult;
+import io.github.rosemoe.editor.text.TextAnalyzer;
+import io.github.rosemoe.editor.widget.EditorColorScheme;
 
 public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
     
     private static final Logger LOG = Logger.instance ("XMLAnalyzer");
     
     @Override
-    public void analyze (IDELanguageServer server, File file, @NonNull Content content, TextAnalyzeResult colors, @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate) throws IOException {
+    public void analyze (ILanguageServer server, File file, @NonNull Content content, TextAnalyzeResult colors, @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate) throws IOException {
         CodePointCharStream stream = CharStreams.fromReader (new StringReader (content.toString ()));
         XMLLexer lexer = new XMLLexer (stream);
         Token token = null, previous = null;
@@ -115,6 +115,6 @@ public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnal
     }
     
     @Override
-    public void updateDiagnostics (Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
+    public void updateDiagnostics (Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
     }
 }

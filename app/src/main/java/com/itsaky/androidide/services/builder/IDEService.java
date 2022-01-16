@@ -17,8 +17,11 @@
  */
 package com.itsaky.androidide.services.builder;
 
+import static com.itsaky.androidide.managers.ToolsManager.getCommonAsset;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
@@ -26,7 +29,6 @@ import com.blankj.utilcode.util.ZipUtils;
 import com.google.gson.Gson;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.lsp.LSP;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.project.IDEModule;
 import com.itsaky.androidide.project.IDEProject;
@@ -42,8 +44,10 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.InputStreamLineReader;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.toaster.Toaster;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -58,19 +62,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
-import org.eclipse.lsp4j.FileChangeType;
-import org.eclipse.lsp4j.FileEvent;
-import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
-import org.jetbrains.annotations.Contract;
-
-import static com.itsaky.androidide.managers.ToolsManager.*;
 
 public class IDEService {
     
     private BuildListener listener;
     private GradleTask currentTask;
-    private StudioApp app;
 
     private IDEProject mIDEProject;
     private IDEModule mAppModule;
@@ -79,11 +75,6 @@ public class IDEService {
     private final IProcessExecutor processExecutor;
     
     private boolean isBuilding = false;
-    private boolean isRunning = false;
-	
-    private final String RUN_TASK = "> Task";
-    private final String STARTING_DAEMON = "Starting a ";
-    private final String PROJECT_INITIALIZED = ">>> PROJECT INITIALIZED <<<";
     
     public static final int TASK_SHOW_DEPENDENCIES       = GradleTask.TASK_SHOW_DEPENDENCIES;
     public static final int TASK_ASSEMBLE_DEBUG          = GradleTask.TASK_ASSEMBLE_DEBUG;
@@ -92,7 +83,6 @@ public class IDEService {
     public static final int TASK_BUNDLE                  = GradleTask.TASK_BUNDLE;
     public static final int TASK_CLEAN                   = GradleTask.TASK_CLEAN;
     public static final int TASK_CLEAN_BUILD             = GradleTask.TASK_CLEAN_BUILD;
-    public static final int TASK_COMPILE_JAVA            = GradleTask.TASK_COMPILE_JAVA;
     public static final int TASK_DEX                     = GradleTask.TASK_DEX;
     public static final int TASK_LINT                    = GradleTask.TASK_LINT;
     public static final int TASK_LINT_DEBUG              = GradleTask.TASK_LINT_DEBUG;
@@ -100,12 +90,7 @@ public class IDEService {
     
     public static final Logger LOG = Logger.instance("IDEService");
     
-    private final InputStreamLineReader.OnReadListener mOutputReadListener = new InputStreamLineReader.OnReadListener() {
-        @Override
-        public void onRead(String line) {
-            onBuildOutput(line);
-        }
-    };
+    private final InputStreamLineReader.OnReadListener mOutputReadListener = this::onBuildOutput;
     
     private final IProcessExitListener mProcessExitListener = new IProcessExitListener() {
         @Override
@@ -124,10 +109,8 @@ public class IDEService {
     
     public IDEService(File projectRoot) {
         this.projectRoot = projectRoot;
-        this.app = StudioApp.getInstance();
         this.processExecutor = ProcessExecutorFactory.commonExecutor();
-        
-        this.isRunning = true;
+    
     }
     
     public IDEService setListener(final BuildListener listener) {
@@ -138,7 +121,8 @@ public class IDEService {
     protected void onBuildOutput(String line) {
         if(listener == null || line == null) return;
         line = line.trim();
-            
+    
+        String PROJECT_INITIALIZED = ">>> PROJECT INITIALIZED <<<";
         if(line.contains(PROJECT_INITIALIZED)) {
             readIdeProject();
             return;
@@ -146,16 +130,19 @@ public class IDEService {
         
         String text = line;
         
+        final var app = StudioApp.getInstance ();
         // Try to shorten common file paths
         if (line.contains(app.getRootDir().getAbsolutePath())) {
             text = line.replace(app.getRootDir().getAbsolutePath(), "HOME");
         }
-        if (line.contains(app.getRootDir().getParentFile().getAbsolutePath())) {
+        if (line.contains(Objects.requireNonNull (app.getRootDir ().getParentFile ()).getAbsolutePath())) {
             text = line.replace(app.getRootDir().getParentFile().getAbsolutePath(), "ROOT");
         }
         
         listener.appendOutput(currentTask, text);
-        
+    
+        String RUN_TASK = "> Task";
+        String STARTING_DAEMON = "Starting a ";
         if(line.startsWith(RUN_TASK)) {
             listener.onRunTask(currentTask, line.trim());
         } else if(line.startsWith(STARTING_DAEMON)) {
@@ -165,7 +152,7 @@ public class IDEService {
     
     protected void onBuildSuccessful (GradleTask task, String msg) {
         if(currentTask != null && currentTask.getTaskID() != TASK_SHOW_DEPENDENCIES) {
-            listener.onBuildSuccessful(currentTask, msg.trim());
+            listener.onBuildSuccessful(task, msg.trim());
         }
         appendOutputSeparator();
 
@@ -174,16 +161,17 @@ public class IDEService {
         }
     }
     
-    protected void onBuildFailed (GradleTask task, String msg) {
+    protected void onBuildFailed (GradleTask task, @NonNull String msg) {
         isBuilding = false;
-        listener.onBuildFailed(currentTask, msg.trim());
+        listener.onBuildFailed(task, msg.trim());
         appendOutputSeparator();
     }
 
     private void readIdeProject() {
         // Parsing project data is meaningless if there is no one listening...
-        if(listener == null)
+        if(listener == null) {
             return;
+        }
         
         final BuildListener local = listener;
         new Thread(() -> {
@@ -197,7 +185,7 @@ public class IDEService {
                 appModule.ifPresent (ideModule -> mAppModule = ideModule);
                 local.onProjectLoaded(mIDEProject, appModule);
             } else {
-                app.toast(com.itsaky.androidide.R.string.msg_init_project_failed, Toaster.Type.ERROR);
+                StudioApp.getInstance ().toast(com.itsaky.androidide.R.string.msg_init_project_failed, Toaster.Type.ERROR);
             }
         }).start();
     }
@@ -209,7 +197,6 @@ public class IDEService {
     public void exit() {
         // Delete the tmp directory. It is not needed anymore...
         FileUtils.delete(Environment.TMP_DIR);
-        isRunning = false;
     }
 
     @NonNull
@@ -221,55 +208,27 @@ public class IDEService {
     }
 
     private String getString(@StringRes int id) {
-        return app.getString(id);
+        return StudioApp.getInstance ().getString(id);
     }
 
     private String getString(@StringRes int id, Object... format) {
-        return app.getString(id, format);
+        return StudioApp.getInstance ().getString(id, format);
     }
     
     private void notifyExternalSourceChange() {
-        LSP.notifyWatchedFilesChanged(new DidChangeWatchedFilesParams(createSourceChangeEvents()));
-        
+        // TODO Watch for file changes using a file observer
+        //    instead of depending on the build
         if(listener != null) {
             listener.onBuildModified();
         }
     }
     
-    /**
-     * Returns a list of FileEvent representing the change in generated sources
-     *
-     * Takes care of adding changes from all modules
-     */
-    @NonNull
-    private List<FileEvent> createSourceChangeEvents() {
-        final List<FileEvent> events = new ArrayList<>();
-        for(int i=0;i<mIDEProject.modules.size();i++) {
-            IDEModule module = mIDEProject.modules.get(i);
-            if(module == null
-            || module.projectDir == null
-            || module.projectDir.trim().length() <= 0)
-                continue;
-                
-            File generated = new File(module.projectDir, "build/generated");
-            if(!(generated.exists() && generated.isDirectory())) continue;
-            
-            final List<File> sources = FileUtils.listFilesInDirWithFilter(generated, JAVA_FILTER, true);
-            if(sources == null) continue;
-            for(File source : sources) {
-                events.add(new FileEvent(source.toURI().toString(), FileChangeType.Changed));
-            }
-        }
-        return events;
-    }
-
     @NonNull
     private String[] getArguments(List<String> tasks) {
-        final PreferenceManager prefs = app.getPrefManager();
+        final PreferenceManager prefs = StudioApp.getInstance ().getPrefManager();
         final List<String> args = new ArrayList<>();
         
-        args.add(Environment.BUSYBOX.getAbsolutePath());
-        args.add ("sh");
+        args.add(Environment.SHELL.getAbsolutePath());
         args.add(new File (projectRoot, "gradlew").getAbsolutePath());
         args.addAll(asAppTasks(tasks));
         args.add("--init-script");
@@ -307,10 +266,6 @@ public class IDEService {
         return name.startsWith(":app:") ? name : ":app:" + name;
     }
     
-    public IDEProject getIDEProject () {
-        return mIDEProject;
-    }
-    
     public void execTask(GradleTask task) {
         execTask(task, false);
     }
@@ -322,14 +277,14 @@ public class IDEService {
             return;
         }
         
-        execTask(task, stopIfRunning, isGradleWrapperAvailable() ? CompletableFuture.completedFuture(Boolean.TRUE) : installWrapper());
+        execTask(task, isGradleWrapperAvailable() ? CompletableFuture.completedFuture(Boolean.TRUE) : installWrapper());
     }
     
-    private void execTask (GradleTask task, boolean stopIfRunning, CompletableFuture<Boolean> installing) {
+    private void execTask (GradleTask task, CompletableFuture<Boolean> installing) {
         
         final Runnable taskRunner = () -> {
             if(installing != null) {
-                Boolean result = null;
+                Boolean result;
                 String failure = "";
                 try {
                     result = installing.get();
@@ -390,7 +345,7 @@ public class IDEService {
             listener.appendOutput(null, "----------------------------------------------");
         }
         
-        return CompletableFutures.computeAsync(checker -> {
+        return CompletableFuture.supplyAsync (() -> {
             final File extracted = new File(Environment.TMP_DIR, "gradle-wrapper.zip");
             if(ResourceUtils.copyFileFromAssets(getCommonAsset("gradle-wrapper.zip"), extracted.getAbsolutePath())) {
                 try {
@@ -418,17 +373,6 @@ public class IDEService {
         return gradlew.exists () && gradleWrapperJar.exists () && gradleWrapperProps.exists ();
     }
     
-    /**
-     * @return An int[] containing minimumSdk at index 0 and targetSdk at index 1 or {1, 1}
-     */
-    public int[] getSdkInfo() {
-        if(mAppModule != null) {
-            return new int[]{mAppModule.minSdk.apiLevel, mAppModule.targetSdk.apiLevel};
-        }
-        
-        return new int[]{1, 1};
-    }
-    
     public void assembleDebug(boolean installApk) {
         execTask(((AssembleDebug) BaseGradleTasks.ASSEMBLE_DEBUG).setInstallApk(installApk));
     }
@@ -454,7 +398,7 @@ public class IDEService {
     }
 
     public void stopAllDaemons() {
-        app.newShell(null).bgAppend(String.format(Locale.US, "cd '%s' && sh gradlew --stop", projectRoot.getAbsolutePath()));
+        StudioApp.getInstance ().newShell(null).bgAppend(String.format(Locale.US, "cd '%s' && sh gradlew --stop", projectRoot.getAbsolutePath()));
         if(isBuilding()) {
             if(listener != null)
                 listener.onBuildFailed(currentTask, getString(R.string.msg_daemons_stopped));
@@ -478,27 +422,9 @@ public class IDEService {
         execTask(new UpdateResourceClassesTask(mAppModule != null && mAppModule.viewBindingEnabled));
     }
     
-    public boolean isRunning() {
-        return isRunning;
-    }
-
     public boolean isBuilding() {
         return isBuilding;
     }
-    
-    /**
-     * This FileFilter is used to list java source files in 'generated' dir
-     */
-    private static final FileFilter JAVA_FILTER = new FileFilter(){
-
-        @Override
-        public boolean accept(@NonNull File p1) {
-            return p1.isFile()
-                && !p1.isHidden()
-                && p1.getName().endsWith(".java")
-                && !p1.getName().equals("package-info.java");
-        }
-    };
     
     public String typeString(int type) {
         switch (type) {

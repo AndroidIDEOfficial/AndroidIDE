@@ -40,4 +40,11 @@ public interface IServerSettings {
      * @return {@code true} if enabled, {@code false} otherwise.
      */
     boolean codeActionsEnabled ();
+    
+    /**
+     * Called by the language server to check if the signature
+     * help is enabled.
+     * @return {@code true} if enabled, {@code false} otherwise.
+     */
+    boolean signatureHelpEnabled ();
 }

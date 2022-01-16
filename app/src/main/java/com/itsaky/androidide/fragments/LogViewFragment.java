@@ -41,7 +41,7 @@ public class LogViewFragment extends NonEditableEditorFragment {
     @Override
     public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
-        Objects.requireNonNull (getEditor ()).setEditorLanguage (language);
+        Objects.requireNonNull (getEditor ()).setEditorLanguage (language, null);
         
         if (!unsavedLines.isEmpty ()) {
             for (var line : unsavedLines) {

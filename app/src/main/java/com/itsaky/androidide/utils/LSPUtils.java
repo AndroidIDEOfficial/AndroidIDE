@@ -17,17 +17,15 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.utils;
+
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.DiagnosticSeverity;
+import com.itsaky.lsp.models.Position;
+import com.itsaky.lsp.models.Range;
 
 import java.util.Comparator;
 import java.util.List;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
-import java.util.ArrayList;
 
 public class LSPUtils {
     
@@ -44,20 +42,20 @@ public class LSPUtils {
         if(p2 == null) return false;
         
         return p1.getLine() == p2.getLine()
-            && p1.getCharacter() == p2.getCharacter();
+            && p1.getColumn () == p2.getColumn ();
     }
     
     public static boolean isInRange (Range range, Position position) {
         final int line = position.getLine();
-        final int column = position.getCharacter();
+        final int column = position.getColumn ();
         return isInRange(range, line, column);
     }
     
     public static boolean isInRange (Range range, int line, int column) {
         final int startLine = range.getStart().getLine();
-        final int startCol = range.getStart().getCharacter();
+        final int startCol = range.getStart().getColumn ();
         final int endLine = range.getEnd().getLine();
-        final int endCol = range.getEnd().getCharacter();
+        final int endCol = range.getEnd().getColumn ();
         
         return startLine <= line && line <= endLine
         && startCol <= column && column <= endCol;
@@ -71,28 +69,28 @@ public class LSPUtils {
             && LSPUtils.isEqual(r1.getEnd(), r2.getEnd());
     }
     
-    public static Diagnostic newInfoDiagnostic(int line, int column, int length, String message, String text) {
-        final Diagnostic diag = new Diagnostic();
+    public static DiagnosticItem newInfoDiagnostic(int line, int column, int length, String message, String text) {
+        final var diag = new DiagnosticItem ();
         diag.setCode("todo");
         diag.setMessage(message);
         diag.setRange(getSingleLineRange(line, column, length));
-        diag.setSeverity(DiagnosticSeverity.Information);
+        diag.setSeverity(DiagnosticSeverity.INFO);
         diag.setSource(text);
         return diag;
     }
 
-    public static Diagnostic newWarningDiagnostic(int line, int column, int length, String message, String text) {
-        final Diagnostic diag = new Diagnostic();
+    public static DiagnosticItem newWarningDiagnostic(int line, int column, int length, String message, String text) {
+        final var diag = new DiagnosticItem ();
         diag.setCode("custom_warning");
         diag.setMessage(message);
         diag.setRange(getSingleLineRange(line, column, length));
-        diag.setSeverity(DiagnosticSeverity.Warning);
+        diag.setSeverity(DiagnosticSeverity.WARNING);
         diag.setSource(text);
         return diag;
     }
 
     public static Range getSingleLineRange(int line, int column, int length) {
-        final Range range = new Range();
+        final Range range = new Range ();
         range.setStart(new Position(line, column));
         range.setEnd(new Position(line, column + length));
         return range;
@@ -104,7 +102,7 @@ public class LSPUtils {
             int mid = (left + right) / 2;
             final Range range = ranges.get(mid);
             final int l = range.getStart().getLine();
-            final int c = range.getStart().getCharacter();
+            final int c = range.getStart().getColumn ();
             
             // Compare lines
             if(l < line) {
@@ -127,40 +125,36 @@ public class LSPUtils {
         return -1;
     }
     
-    public static final Comparator<Range> RANGE_START_COMPARATOR = new Comparator<Range>() {
-
-        @Override
-        public int compare(Range r1, Range r2) {
-            // Check if ranges are null
-            if(r1 == null && r2 != null) {
-                return 1;
-            } else if (r1 != null && r2 == null) {
+    public static final Comparator<Range> RANGE_START_COMPARATOR = (r1, r2) -> {
+        // Check if ranges are null
+        if(r1 == null && r2 != null) {
+            return 1;
+        } else if (r1 != null && r2 == null) {
+            return -1;
+        } else if (r1 == null) {
+            return 0;
+        } else {
+            final int r1StartLine = r1.getStart().getLine();
+            final int r1StartCol = r1.getStart().getColumn ();
+            final int r2StartLine = r2.getStart().getLine();
+            final int r2StartCol = r2.getStart().getColumn ();
+            
+            // Compare by lines
+            if(r1StartLine < r2StartLine) {
                 return -1;
-            } else if (r1 == null && r2 == null) {
-                return 0;
+            } else if (r1StartLine > r2StartLine) {
+                return 1;
             } else {
-                final int r1StartLine = r1.getStart().getLine();
-                final int r1StartCol = r1.getStart().getCharacter();
-                final int r2StartLine = r2.getStart().getLine();
-                final int r2StartCol = r2.getStart().getCharacter();
                 
-                // Compare by lines
-                if(r1StartLine < r2StartLine) {
+                // Lines are same
+                // Compare by columns
+                if(r1StartCol < r2StartCol) {
                     return -1;
-                } else if (r1StartLine > r2StartLine) {
+                } else if (r1StartCol > r2StartCol) {
                     return 1;
                 } else {
-                    
-                    // Lines are same
-                    // Compare by columns
-                    if(r1StartCol < r2StartCol) {
-                        return -1;
-                    } else if (r1StartCol > r2StartCol) {
-                        return 1;
-                    } else {
-                        // Both ranges have same start position
-                        return 0;
-                    }
+                    // Both ranges have same start position
+                    return 0;
                 }
             }
         }

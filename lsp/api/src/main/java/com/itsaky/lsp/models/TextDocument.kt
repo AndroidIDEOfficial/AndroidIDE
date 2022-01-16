@@ -40,3 +40,7 @@ data class DocumentChangeEvent (var changedFile: Path,
                                 var version: Int) : DocumentEvent (changedFile)
 
 data class DocumentSaveEvent (var savedFile: Path) : DocumentEvent (savedFile)
+
+data class ShowDocumentParams (var file: Path, var selection: Range)
+
+data class ShowDocumentResult (var success: Boolean)

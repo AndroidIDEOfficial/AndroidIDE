@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
-
-
+ */
 package com.itsaky.androidide.language.logs;
 
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.lsp.services.IDELanguageServer;
+import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.models.CompletionItem;
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.SemanticHighlight;
+
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
@@ -34,29 +34,16 @@ import io.github.rosemoe.editor.widget.SymbolPairMatch;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.lsp4j.CompletionItem;
-import com.itsaky.lsp.SemanticHighlight;
 import java.util.Map;
-import org.eclipse.lsp4j.Diagnostic;
 
 public class LogLanguageImpl extends BaseLanguage {
 	
 	private static final LogAnalyzer analyzer = new LogAnalyzer();
 	private static final LogCompletor completor = new LogCompletor();
 	
-	public LogAnalyzer addLine(LogLine line) {
-		return analyzer.addLine(line);
+	public void addLine(LogLine line) {
+		analyzer.addLine (line);
 	}
-
-    @Override
-    public IDELanguageServer getLanguageServer() {
-        return null;
-    }
-
-    @Override
-    public String getLanguageCode() {
-        return null;
-    }
 	
 	@Override
 	public CodeAnalyzer getAnalyzer() {
@@ -110,7 +97,7 @@ public class LogLanguageImpl extends BaseLanguage {
 		}
 		
 		@Override
-		public void analyze(IDELanguageServer server, File file, Content content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
+		public void analyze(ILanguageServer server, File file, Content content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
 			int lastLine = 0;
 			for(int i=0;i<lines.size() && delegate.shouldAnalyze();i++) {
 				if(i==0) colors.addNormalIfNull();
@@ -126,15 +113,15 @@ public class LogLanguageImpl extends BaseLanguage {
         }
 
         @Override
-        public void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
+        public void updateDiagnostics(Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
         }
 	}
 	
 	private static class LogCompletor implements AutoCompleteProvider {
 		
 		@Override
-		public List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
-			return new ArrayList<CompletionItem>();
+		public List<CompletionItem> getAutoCompleteItems(Content content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
+			return new ArrayList<> ();
 		}
 	}
 }

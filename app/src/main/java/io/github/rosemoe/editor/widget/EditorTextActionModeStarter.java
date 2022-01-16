@@ -28,22 +28,22 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.SizeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.utils.DialogUtils;
+import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.editor.util.IntPair;
+
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.concurrent.CompletableFuture;
-import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.Command;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
+
+import io.github.rosemoe.editor.util.IntPair;
 
 /**
  * Action Mode style text action panel for editor
@@ -67,7 +67,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
         }
         mActionMode = ((AppCompatActivity) mEditor.getContext()).startSupportActionMode(new ActionMode.Callback() {
 
-                private List<Either<Command, CodeAction>> fixes;
+                private List<CodeActionItem> fixes;
 
                 @Override
                 public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
@@ -130,7 +130,9 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
 
                 private Drawable createDrawable(int icon) {
                     final Drawable d = ContextCompat.getDrawable(mEditor.getContext(), icon);
-                    d.setColorFilter(ContextCompat.getColor(mEditor.getContext(), com.itsaky.androidide.R.color.secondaryColor), PorterDuff.Mode.SRC_ATOP);
+                    if (d != null) {
+                        d.setColorFilter(ContextCompat.getColor(mEditor.getContext(), com.itsaky.androidide.R.color.secondaryColor), PorterDuff.Mode.SRC_ATOP);
+                    }
                     return d;
                 }
 
@@ -148,12 +150,10 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                     
                     comment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
                     uncomment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
-
-                    /**
-                     * Thesw menu items may, or may not be added
-                     * So we need to check if its null or not
-                     * before we perform any further actions
-                     */
+    
+                    // These menu items may, or may not be added
+                    // So we need to check if its null or not
+                    // before we perform any further actions
                     if (def != null) {
                         def.getIcon().setAlpha(isJava ? 255 : 76);
                         def.setVisible(isJava);
@@ -225,28 +225,21 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
 
                 ListView createFixesListView() {
                     final ListView list = new ListView(mEditor.getContext());
-                    final QuickFixAdapter adapter = new QuickFixAdapter(
-                        fixes.stream()
-                        .filter(e -> e != null && e.isRight())
-                        .map(e -> e.getRight())
-                        .collect(Collectors.toList())
-                    );
+                    final QuickFixAdapter adapter = new QuickFixAdapter(fixes);
                     list.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                     list.setAdapter(adapter);
-                    list.setOnItemClickListener((a, b, c, d) -> {
-                        performCodeAction(adapter.getItem(c));
-                    });
+                    list.setOnItemClickListener((a, b, c, d) -> performCodeAction(adapter.getItem(c)));
                     return list;
                 }
 
                 class QuickFixAdapter extends BaseAdapter {
 
-                    private final List<CodeAction> actions;
+                    private final List<CodeActionItem> actions;
                     private final int dp16 = SizeUtils.dp2px(16);
                     private final int dp4 = SizeUtils.dp2px(4);
                     private final int dp48 = SizeUtils.dp2px(48);
 
-                    public QuickFixAdapter(List<CodeAction> actions) {
+                    public QuickFixAdapter(List<CodeActionItem> actions) {
                         this.actions = actions;
                     }
 
@@ -256,7 +249,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                     }
 
                     @Override
-                    public CodeAction getItem(int position) {
+                    public CodeActionItem getItem(int position) {
                         return actions.get(position);
                     }
 
@@ -274,7 +267,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                     }
 
                     private View createItemTextView(int position, ViewGroup parent) {
-                        final CodeAction action = getItem(position);
+                        final var action = getItem(position);
                         final TextView text = new TextView(parent.getContext());
                         final String title = action.getTitle();
 
@@ -287,7 +280,7 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                     }
                 }
 
-                void performCodeAction(CodeAction action) {
+                void performCodeAction(CodeActionItem action) {
                     if (mEditor.getLanguageClient() != null) {
                         mEditor.getLanguageClient().performCodeAction(mEditor, action);
                     }

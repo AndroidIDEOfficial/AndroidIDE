@@ -23,12 +23,12 @@ package com.itsaky.androidide.language.groovy;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
-import com.itsaky.lsp.SemanticHighlight;
-import com.itsaky.lsp.services.IDELanguageServer;
+import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.SemanticHighlight;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.Diagnostic;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeA
     }
     
 	@Override
-	public void analyze(IDELanguageServer server, File file, @NonNull Content content, TextAnalyzeResult colors, @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate) throws IOException {
+	public void analyze(ILanguageServer server, File file, @NonNull Content content, TextAnalyzeResult colors, @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate) throws IOException {
 		final var stream = CharStreams.fromReader (new StringReader (content.toString ()));
 		final var lexer = new GroovyLexer (stream);
 		final var stack = new Stack<BlockLine> ();
@@ -260,6 +260,6 @@ public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeA
     }
 
     @Override
-    public void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
+    public void updateDiagnostics(Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
     }
 }

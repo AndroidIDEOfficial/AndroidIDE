@@ -15,11 +15,12 @@
  */
 package io.github.rosemoe.editor.interfaces;
 
+import com.itsaky.lsp.models.CompletionItem;
+
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
-import io.github.rosemoe.editor.widget.CodeEditor;
+
 import java.util.List;
-import org.eclipse.lsp4j.CompletionItem;
-import com.itsaky.androidide.utils.Logger;
 
 /**
  * Interface for auto completion analysis
@@ -31,13 +32,15 @@ public interface AutoCompleteProvider {
     /**
      * Analyze auto complete items
      *
+     *
+     * @param content
      * @param prefix        The prefix of input to match
      * @param isInCodeBlock Whether auto complete position is in code block
      * @param colors        Last analyze result
      * @param line          The line of cursor
      * @return Analyzed items
      */
-    List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception;
+    List<CompletionItem> getAutoCompleteItems(Content content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception;
 
 }
 

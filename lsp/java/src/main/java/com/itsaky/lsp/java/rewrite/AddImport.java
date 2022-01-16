@@ -1,0 +1,81 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.lsp.java.rewrite;
+
+import com.itsaky.lsp.java.CompilerProvider;
+import com.itsaky.lsp.java.ParseTask;
+import com.itsaky.lsp.models.Position;
+import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.models.TextEdit;
+import com.sun.source.tree.ImportTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.util.SourcePositions;
+import com.sun.source.util.Trees;
+
+import java.nio.file.Path;
+import java.util.List;
+
+public class AddImport implements Rewrite {
+    final Path file;
+    final String className;
+    
+    public AddImport(Path file, String className) {
+        this.file = file;
+        this.className = className;
+    }
+    
+    @Override
+    public TextEdit rewrite(CompilerProvider compiler) {
+        final ParseTask task = compiler.parse(file);
+        Position point = insertPosition(task);
+        String text = "import " + className + ";\n";
+        return new TextEdit(new Range (point, point), text);
+    }
+    
+    private Position insertPosition(ParseTask task) {
+        List<? extends ImportTree> imports = task.root.getImports();
+        for (ImportTree i : imports) {
+            String next = i.getQualifiedIdentifier().toString();
+            if (className.compareTo(next) < 0) {
+                return insertBefore(task, i);
+            }
+        }
+        if (!imports.isEmpty()) {
+            Tree last = imports.get(imports.size() - 1);
+            return insertAfter(task, last);
+        }
+        if (task.root.getPackage() != null) {
+            return insertAfter(task, task.root.getPackage());
+        }
+        return new Position(0, 0);
+    }
+    
+    private Position insertBefore(ParseTask task, Tree i) {
+        SourcePositions pos = Trees.instance(task.task).getSourcePositions();
+        long offset = pos.getStartPosition(task.root, i);
+        int line = (int) task.root.getLineMap().getLineNumber(offset);
+        return new Position(line - 1, 0);
+    }
+    
+    private Position insertAfter(ParseTask task, Tree i) {
+        SourcePositions pos = Trees.instance(task.task).getSourcePositions();
+        long offset = pos.getStartPosition(task.root, i);
+        int line = (int) task.root.getLineMap().getLineNumber(offset);
+        return new Position(line, 0);
+    }
+}

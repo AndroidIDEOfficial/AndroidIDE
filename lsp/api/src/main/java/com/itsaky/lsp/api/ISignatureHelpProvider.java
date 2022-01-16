@@ -15,20 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.models
+package com.itsaky.lsp.api;
 
-import java.nio.file.Path
+import androidx.annotation.NonNull;
 
-data class CodeActionParams(var cursor: Position, var diagnostics: List<DiagnosticItem>)
+import com.itsaky.lsp.models.SignatureHelp;
+import com.itsaky.lsp.models.SignatureHelpParams;
 
-data class CodeActionResult (var actions: List <CodeActionItem>) {
-    constructor() : this (ArrayList())
+/**
+ * A signature help provider provides signature help
+ * when typing arguments for a method or constructor call.
+ *
+ * @author Akash Yadav
+ */
+public interface ISignatureHelpProvider {
+    
+    /**
+     * Provide signature help for the given parameters.
+     * @param params The params for the signature help.
+     * @return The signature help.
+     */
+    @NonNull
+    SignatureHelp provideSignatures (SignatureHelpParams params);
 }
-
-data class CodeActionItem (
-    var title: String,
-    var changes: List<DocumentChange>)
-
-data class DocumentChange (var file: Path, var edits: List<TextEdit>)
-
-data class TextEdit (var range: Range, var newText: String)

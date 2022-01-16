@@ -15,8 +15,11 @@
  */
 package io.github.rosemoe.editor.interfaces;
 
-import com.itsaky.lsp.SemanticHighlight;
-import com.itsaky.lsp.services.IDELanguageServer;
+import androidx.annotation.Nullable;
+
+import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.SemanticHighlight;
 
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
@@ -24,7 +27,6 @@ import io.github.rosemoe.editor.text.TextAnalyzer;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.lsp4j.Diagnostic;
 
 /**
  * Interface for analyzing highlight
@@ -45,16 +47,16 @@ public interface CodeAnalyzer {
      * @param diagnostics The diagnostics to update to.
                  They are first mapped by their start line and then by their start column.
      */
-    void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics);
+    void updateDiagnostics(Map<Integer, Map<Integer, DiagnosticItem>> diagnostics);
     
     /**
      * Find the diagnostic containing the specific position
      *
      * @param line The line to find
      * @param column The column to find
-     * @return The found {@link Diagnostic} or {@code null}
+     * @return The found {@link DiagnosticItem} or {@code null}
      */
-    Diagnostic findDiagnosticContaining(int line, int column);
+    DiagnosticItem findDiagnosticContaining(int line, int column);
     
     /**
      * Find all diagnostics at the specified line
@@ -62,14 +64,14 @@ public interface CodeAnalyzer {
      * @param line The line to find
      * @return A list containing all diagnostics at the line. Should never be null.
      */
-    List<Diagnostic> findDiagnosticsContainingLine(int line);
+    List<DiagnosticItem> findDiagnosticsContainingLine(int line);
     
     /**
      * Get diagnostics at the specified line.
      *
      * @return A map containing the diagnostics mapped by their columns
      */
-    Map<Integer, Diagnostic> getDiagnosticsAtLine(int line);
+    Map<Integer, DiagnosticItem> getDiagnosticsAtLine(int line);
     
     /**
      * Get any hex color string is present in provided line
@@ -89,6 +91,6 @@ public interface CodeAnalyzer {
      * @see TextAnalyzer#analyze(Content)
      * @see TextAnalyzer.AnalyzeThread.Delegate#shouldAnalyze()
      */
-    void analyze(IDELanguageServer languageServer, File file, Content content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception;
+    void analyze(@Nullable ILanguageServer languageServer, @Nullable File file, Content content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception;
 
 }

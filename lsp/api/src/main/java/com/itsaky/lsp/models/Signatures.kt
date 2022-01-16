@@ -17,6 +17,7 @@
 
 package com.itsaky.lsp.models
 
+import java.nio.file.Path
 import java.util.Collections
 
 data class ParameterInformation (var label: String, var documentation: MarkupContent) {
@@ -30,3 +31,5 @@ data class SignatureInformation (var label: String, var documentation: MarkupCon
 data class SignatureHelp (var signatures: List<SignatureInformation>, var activeSignature: Int, var activeParameter: Int) {
     constructor() : this (Collections.emptyList(), -1, -1)
 }
+
+data class SignatureHelpParams (var file: Path, var position: Position)

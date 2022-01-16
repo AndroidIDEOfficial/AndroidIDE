@@ -121,7 +121,7 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
         editor = new CodeEditor(getContext());
         editor.setEditable(false);
         editor.setDividerWidth(0);
-        editor.setEditorLanguage(new EmptyLanguage());
+        editor.setEditorLanguage(new EmptyLanguage(), null);
         editor.setOverScrollEnabled(false);
         editor.setTextActionMode(CodeEditor.TextActionMode.ACTION_MODE);
         editor.setWordwrap(false);

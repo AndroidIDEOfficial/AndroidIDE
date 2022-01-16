@@ -48,7 +48,7 @@ public class LintRelease extends BaseGradleTask {
 
 	@Override
 	public int getTaskID() {
-		return IDEService.TASK_LINT;
+		return IDEService.TASK_LINT_RELEASE;
 	}
 
 	@Override

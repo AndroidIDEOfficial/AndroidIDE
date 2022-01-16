@@ -22,20 +22,21 @@ import androidx.annotation.NonNull;
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
-import com.itsaky.androidide.lsp.LSPProvider;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.services.IDELanguageServer;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+
+import java.io.File;
+import java.io.StringReader;
+
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.TextUtils;
 import io.github.rosemoe.editor.widget.SymbolPairMatch;
-import java.io.File;
-import java.io.StringReader;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
 
 public class JavaLanguage extends BaseLanguage {
     
@@ -46,28 +47,13 @@ public class JavaLanguage extends BaseLanguage {
     
     private static final Logger LOG = Logger.instance("JavaLanguage");
     
-    public JavaLanguage() {
-        this(null);
-    }
-    
-	public JavaLanguage(File file) {
-        super(file);
+	public JavaLanguage() {
 		this.analyzer = new JavaAnalyzer ();
 		this.complete = new JavaAutoComplete();
         
         this.newlineHandlers = new NewlineHandler[1];
         this.newlineHandlers[0] = new BraceHandler();
 	}
-
-    @Override
-    public IDELanguageServer getLanguageServer() {
-        return LSPProvider.getServerForLanguage(LSPProvider.LANGUAGE_JAVA);
-    }
-
-    @Override
-    public String getLanguageCode() {
-        return LSPProvider.LANGUAGE_JAVA;
-    }
 
 	@Override
 	public CodeAnalyzer getAnalyzer() {

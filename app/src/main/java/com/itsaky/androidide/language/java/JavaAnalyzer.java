@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.androidide.language.java;
 
 import androidx.annotation.NonNull;
@@ -22,14 +21,14 @@ import androidx.annotation.NonNull;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.lsp.SemanticHighlight;
-import com.itsaky.lsp.services.IDELanguageServer;
+import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.Position;
+import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.models.SemanticHighlight;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 
 import java.io.File;
 import java.io.StringReader;
@@ -60,12 +59,12 @@ import io.github.rosemoe.editor.widget.EditorColorScheme;
 public class JavaAnalyzer extends AbstractCodeAnalyzer {
     
     private HighlightRangeHelper helper;
-    private Map<Integer, Map<Integer, Diagnostic>> diagnostics = new HashMap<> ();
+    private Map<Integer, Map<Integer, DiagnosticItem>> diagnostics = new HashMap<> ();
     
     private final Map<Integer, List<Range>> stringMap = new HashMap<> ();
     
     @Override
-    public void analyze (IDELanguageServer languageServer, File file, @NonNull Content content, TextAnalyzeResult colors, @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception {
+    public void analyze (ILanguageServer languageServer, File file, @NonNull Content content, TextAnalyzeResult colors, @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate) throws Exception {
         final var stream = CharStreams.fromReader (new StringReader (content.toString ()));
         final var lexer = new JavaLexer (stream);
         final var stack = new Stack<BlockLine> ();
@@ -414,7 +413,7 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
     }
     
     @Override
-    public void updateDiagnostics (Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
+    public void updateDiagnostics (Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
         if (diagnostics == null) {
             diagnostics = new HashMap<> ();
         }
@@ -422,17 +421,17 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
     }
     
     @Override
-    public Diagnostic findDiagnosticContaining (int line, int column) {
-        final Map<Integer, Diagnostic> mappedByColumn = diagnostics.get (line);
+    public DiagnosticItem findDiagnosticContaining (int line, int column) {
+        final Map<Integer, DiagnosticItem> mappedByColumn = diagnostics.get (line);
         if (mappedByColumn != null) {
-            Diagnostic diag = mappedByColumn.get (column);
+            DiagnosticItem diag = mappedByColumn.get (column);
             if (diag != null) {
                 return diag;
             } else {
-                for (Map.Entry<Integer, Diagnostic> entry : mappedByColumn.entrySet ()) {
+                for (Map.Entry<Integer, DiagnosticItem> entry : mappedByColumn.entrySet ()) {
                     diag = entry.getValue ();
-                    final int start = diag.getRange ().getStart ().getCharacter ();
-                    final int end = diag.getRange ().getEnd ().getCharacter ();
+                    final int start = diag.getRange ().getStart ().getColumn ();
+                    final int end = diag.getRange ().getEnd ().getColumn ();
                     
                     if (column >= start && column <= end) {
                         return diag;
@@ -440,12 +439,13 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
                 }
             }
         }
+        
         return super.findDiagnosticContaining (line, column);
     }
     
     @Override
-    public List<Diagnostic> findDiagnosticsContainingLine (int line) {
-        final Map<Integer, Diagnostic> diags = diagnostics.get (line);
+    public List<DiagnosticItem> findDiagnosticsContainingLine (int line) {
+        final Map<Integer, DiagnosticItem> diags = diagnostics.get (line);
         if (diags == null) {
             return super.findDiagnosticsContainingLine (line);
         }
@@ -456,7 +456,7 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
     }
     
     @Override
-    public Map<Integer, Diagnostic> getDiagnosticsAtLine (int line) {
+    public Map<Integer, DiagnosticItem> getDiagnosticsAtLine (int line) {
         return diagnostics.get (line);
     }
 }

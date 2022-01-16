@@ -15,20 +15,21 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.models
+package com.itsaky.lsp.java.rewrite;
 
-import java.nio.file.Path
+import com.itsaky.lsp.java.CompilerProvider;
+import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.models.TextEdit;
 
-data class CodeActionParams(var cursor: Position, var diagnostics: List<DiagnosticItem>)
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Map;
 
-data class CodeActionResult (var actions: List <CodeActionItem>) {
-    constructor() : this (ArrayList())
+public interface Rewrite {
+    /** Perform a rewrite across the entire codebase. */
+    TextEdit rewrite(CompilerProvider compiler);
+    /** CANCELLED signals that the rewrite couldn't be completed. */
+    TextEdit CANCELLED = new TextEdit (Range.NONE, "");
+    
+    Rewrite NOT_SUPPORTED = new RewriteNotSupported();
 }
-
-data class CodeActionItem (
-    var title: String,
-    var changes: List<DocumentChange>)
-
-data class DocumentChange (var file: Path, var edits: List<TextEdit>)
-
-data class TextEdit (var range: Range, var newText: String)

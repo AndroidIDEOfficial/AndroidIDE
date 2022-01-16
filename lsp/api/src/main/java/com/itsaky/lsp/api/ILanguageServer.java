@@ -103,6 +103,27 @@ public interface ILanguageServer {
     ICodeActionProvider getCodeActionProvider ();
     
     /**
+     * Get the reference provider associated with this language server.
+     * @return The reference provider instance.
+     */
+    @NonNull
+    IReferenceProvider getReferenceProvider ();
+    
+    /**
+     * Get the definition provider associated with this language server.
+     * @return The definition provider.
+     */
+    @NonNull
+    IDefinitionProvider getDefinitionProvider();
+    
+    /**
+     * Get the signature help provider associated with this language server.
+     * @return The signature help provider.
+     */
+    @NonNull
+    ISignatureHelpProvider getSignatureHelpProvider();
+    
+    /**
      * The document handler associated with this language server instance.
      *
      * @return The document handler. Must not be null.

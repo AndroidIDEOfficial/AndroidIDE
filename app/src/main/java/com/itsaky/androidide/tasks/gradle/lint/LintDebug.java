@@ -27,6 +27,7 @@ import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.tasks.BaseGradleTask;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class LintDebug extends BaseGradleTask {
@@ -43,7 +44,7 @@ public class LintDebug extends BaseGradleTask {
     
     @Override
     public List<String> getTasks() {
-        return Arrays.asList("lintDebug");
+        return Collections.singletonList ("lintDebug");
     }
 
 	@Override

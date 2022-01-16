@@ -1,6 +1,7 @@
 package com.itsaky.lsp.java;
 
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.java.utils.Extractors;
 import com.sun.source.tree.CompilationUnitTree;
 
 import java.io.BufferedReader;
@@ -107,7 +108,7 @@ class JavaCompilerService implements CompilerProvider {
         firstAttempt.close ();
         firstAttempt.borrow.close ();
         
-        List<JavaFileObject> moreSources = new ArrayList<JavaFileObject> (sources);
+        List<JavaFileObject> moreSources = new ArrayList<> (sources);
         for (Path add : addFiles) {
             moreSources.add (new SourceFileObject (add));
         }
@@ -124,26 +125,6 @@ class JavaCompilerService implements CompilerProvider {
         return cachedCompile;
     }
     
-    private static final Pattern PACKAGE_EXTRACTOR = Pattern.compile ("^([a-z][_a-zA-Z0-9]*\\.)*[a-z][_a-zA-Z0-9]*");
-    
-    private String packageName (String className) {
-        Matcher m = PACKAGE_EXTRACTOR.matcher (className);
-        if (m.find ()) {
-            return m.group ();
-        }
-        return "";
-    }
-    
-    private static final Pattern SIMPLE_EXTRACTOR = Pattern.compile ("[A-Z][_a-zA-Z0-9]*$");
-    
-    private String simpleName (String className) {
-        Matcher m = SIMPLE_EXTRACTOR.matcher (className);
-        if (m.find ()) {
-            return m.group ();
-        }
-        return "";
-    }
-    
     private static final Cache<String, Boolean> cacheContainsWord = new Cache<> ();
     
     private boolean containsWord (Path file, String word) {
@@ -158,7 +139,7 @@ class JavaCompilerService implements CompilerProvider {
     private boolean containsType (Path file, String className) {
         if (cacheContainsType.needs (file, null)) {
             CompilationUnitTree root = parse (file).root;
-            List<String> types = new ArrayList<String> ();
+            List<String> types = new ArrayList<> ();
             new FindTypeDeclarations ().scan (root, types);
             cacheContainsType.load (file, null, types);
         }
@@ -175,7 +156,7 @@ class JavaCompilerService implements CompilerProvider {
     }
     
     private void loadImports (Path file) {
-        List<String> list = new ArrayList<String> ();
+        List<String> list = new ArrayList<> ();
         Pattern importClass = Pattern.compile ("^import +([\\w\\.]+\\.\\w+);");
         Pattern importStar = Pattern.compile ("^import +([\\w\\.]+\\.\\*);");
         try (BufferedReader lines = FileStore.lines (file)) {
@@ -204,7 +185,7 @@ class JavaCompilerService implements CompilerProvider {
     
     @Override
     public Set<String> imports () {
-        HashSet<String> all = new HashSet<String> ();
+        HashSet<String> all = new HashSet<> ();
         for (Path f : FileStore.all ()) {
             all.addAll (readImports (f));
         }
@@ -213,7 +194,7 @@ class JavaCompilerService implements CompilerProvider {
     
     @Override
     public List<String> publicTopLevelTypes () {
-        List<String> all = new ArrayList<String> ();
+        List<String> all = new ArrayList<> ();
         for (Path file : FileStore.all ()) {
             String fileName = file.getFileName ().toString ();
             if (!fileName.endsWith (".java")) {
@@ -237,7 +218,7 @@ class JavaCompilerService implements CompilerProvider {
     }
     
     private boolean containsImport (Path file, String className) {
-        String packageName = packageName (className);
+        String packageName = Extractors.packageName (className);
         if (FileStore.packageName (file).equals (packageName)) {
             return true;
         }
@@ -273,8 +254,8 @@ class JavaCompilerService implements CompilerProvider {
         }
         // In principle, the slow path can be skipped in many cases.
         // If we're spending a lot of time in findTypeDeclaration, this would be a good optimization.
-        String packageName = packageName (className);
-        String simpleName = simpleName (className);
+        String packageName = Extractors.packageName (className);
+        String simpleName = Extractors.simpleName (className);
         for (Path f : FileStore.list (packageName)) {
             if (containsWord (f, simpleName) && containsType (f, className)) {
                 return f;
@@ -307,9 +288,9 @@ class JavaCompilerService implements CompilerProvider {
     
     @Override
     public Path[] findTypeReferences (String className) {
-        String packageName = packageName (className);
-        String simpleName = simpleName (className);
-        List<Path> candidates = new ArrayList<Path> ();
+        String packageName = Extractors.packageName (className);
+        String simpleName = Extractors.simpleName (className);
+        List<Path> candidates = new ArrayList<> ();
         for (Path f : FileStore.all ()) {
             if (containsWord (f, packageName) && containsImport (f, className) && containsWord (f, simpleName)) {
                 candidates.add (f);
@@ -321,7 +302,7 @@ class JavaCompilerService implements CompilerProvider {
     
     @Override
     public Path[] findMemberReferences (String className, String memberName) {
-        List<Path> candidates = new ArrayList<Path> ();
+        List<Path> candidates = new ArrayList<> ();
         for (Path f : FileStore.all ()) {
             if (containsWord (f, memberName)) {
                 candidates.add (f);
@@ -344,7 +325,7 @@ class JavaCompilerService implements CompilerProvider {
     
     @Override
     public CompileTask compile (Path... files) {
-        List<JavaFileObject> sources = new ArrayList<JavaFileObject> ();
+        List<JavaFileObject> sources = new ArrayList<> ();
         for (Path f : files) {
             sources.add (new SourceFileObject (f));
         }

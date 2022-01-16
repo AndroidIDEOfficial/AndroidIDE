@@ -38,6 +38,7 @@ data class CompletionItem(var label: String,
                           var sortText: String?,
                           var command: Command?,
                           var kind: CompletionItemKind,
+                          var additionalTextEdits: List<TextEdit>?,
                           var data: CompletionData?) {
     constructor() : this(
         "",
@@ -47,6 +48,7 @@ data class CompletionItem(var label: String,
         null,
         null,
         CompletionItemKind.NONE,
+        null,
         null
     )
     
@@ -122,6 +124,7 @@ enum class CompletionItemKind {
     MODULE,
     SNIPPET,
     TYPE_PARAMETER,
+    VALUE,
 
     KEYWORD,
     NONE

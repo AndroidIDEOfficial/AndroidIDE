@@ -23,11 +23,15 @@ import androidx.annotation.Nullable;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ICodeActionProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
+import com.itsaky.lsp.api.IDefinitionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.api.IReferenceProvider;
 import com.itsaky.lsp.api.IServerSettings;
+import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.java.completion.JavaCompletionProvider;
+import com.itsaky.lsp.java.completion.SignatureProvider;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
@@ -38,6 +42,9 @@ import com.itsaky.lsp.models.InitializeResult;
 import com.itsaky.lsp.util.DefaultServerSettings;
 import com.itsaky.lsp.util.NoCodeActionsProvider;
 import com.itsaky.lsp.util.NoCompletionsProvider;
+import com.itsaky.lsp.util.NoDefinitionProvider;
+import com.itsaky.lsp.util.NoReferenceProvider;
+import com.itsaky.lsp.util.NoSignatureHelpProvider;
 
 import java.util.Collections;
 
@@ -146,6 +153,28 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     @Override
     public ICodeActionProvider getCodeActionProvider () {
         return new NoCodeActionsProvider ();
+    }
+    
+    @NonNull
+    @Override
+    public IReferenceProvider getReferenceProvider () {
+        return new NoReferenceProvider ();
+    }
+    
+    @NonNull
+    @Override
+    public IDefinitionProvider getDefinitionProvider () {
+        return new NoDefinitionProvider ();
+    }
+    
+    @NonNull
+    @Override
+    public ISignatureHelpProvider getSignatureHelpProvider () {
+        if (!settings.signatureHelpEnabled ()) {
+            return new NoSignatureHelpProvider ();
+        }
+        
+        return new SignatureProvider (getCompiler ());
     }
     
     @NonNull

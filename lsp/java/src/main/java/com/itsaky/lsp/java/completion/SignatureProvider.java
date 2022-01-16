@@ -2,6 +2,7 @@ package com.itsaky.lsp.java.completion;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.java.CompileTask;
 import com.itsaky.lsp.java.CompilerProvider;
 import com.itsaky.lsp.java.FindHelper;
@@ -10,6 +11,7 @@ import com.itsaky.lsp.java.ParseTask;
 import com.itsaky.lsp.java.utils.ShortTypePrinter;
 import com.itsaky.lsp.models.ParameterInformation;
 import com.itsaky.lsp.models.SignatureHelp;
+import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.models.SignatureInformation;
 import com.sun.source.doctree.DocCommentTree;
 import com.sun.source.doctree.DocTree;
@@ -52,7 +54,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.tools.JavaFileObject;
 
-public class SignatureProvider {
+public class SignatureProvider implements ISignatureHelpProvider {
 
     private final CompilerProvider compiler;
 
@@ -61,7 +63,15 @@ public class SignatureProvider {
     public SignatureProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
-
+    
+    @NonNull
+    @Override
+    public SignatureHelp provideSignatures (SignatureHelpParams params) {
+        return signatureHelp (params.getFile (),
+                params.getPosition ().getLine (),
+                params.getPosition ().getColumn ());
+    }
+    
     public SignatureHelp signatureHelp(Path file, int line, int column) {
         // TODO prune
         try (CompileTask task = compiler.compile(file)) {

@@ -17,19 +17,23 @@
  **************************************************************************************/
 package com.itsaky.androidide.language.xml;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.models.CompletionItem;
+
+import org.jetbrains.annotations.Contract;
 
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-
-import org.eclipse.lsp4j.CompletionItem;
 
 public class XMLAutoComplete implements AutoCompleteProvider {
     
@@ -52,13 +56,15 @@ public class XMLAutoComplete implements AutoCompleteProvider {
     };
     
     @Override
-    public List<CompletionItem> getAutoCompleteItems (CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
+    public List<CompletionItem> getAutoCompleteItems (Content content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
         final XMLCompletionService service = StudioApp.getInstance ().getXmlCompletionService ();
         return sort (service.complete (content, index, prefix.toLowerCase (Locale.US).trim ()));
     }
     
-    private List<CompletionItem> sort (List<CompletionItem> result) {
-        Collections.sort (result, RESULTS_SORTER);
+    @NonNull
+    @Contract("_ -> param1")
+    private List<CompletionItem> sort (@NonNull List<CompletionItem> result) {
+        result.sort (RESULTS_SORTER);
         return result;
     }
 }

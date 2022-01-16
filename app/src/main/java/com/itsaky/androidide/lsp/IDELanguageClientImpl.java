@@ -31,7 +31,6 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
@@ -48,48 +47,24 @@ import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.CodeEditorView;
-import com.itsaky.lsp.SemanticHighlight;
-import com.itsaky.lsp.services.IDELanguageClient;
+import com.itsaky.lsp.api.ILanguageClient;
+import com.itsaky.lsp.models.CodeActionItem;
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.DiagnosticResult;
+import com.itsaky.lsp.models.Location;
+import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.models.SemanticHighlight;
+import com.itsaky.lsp.models.SignatureInformation;
+import com.itsaky.lsp.models.TextEdit;
 import com.itsaky.toaster.Toaster;
 
-import org.eclipse.lsp4j.ApplyWorkspaceEditParams;
-import org.eclipse.lsp4j.ApplyWorkspaceEditResponse;
-import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.Command;
-import org.eclipse.lsp4j.ConfigurationParams;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.Location;
-import org.eclipse.lsp4j.LocationLink;
-import org.eclipse.lsp4j.LogTraceParams;
-import org.eclipse.lsp4j.MessageActionItem;
-import org.eclipse.lsp4j.MessageParams;
-import org.eclipse.lsp4j.ParameterInformation;
-import org.eclipse.lsp4j.ProgressParams;
-import org.eclipse.lsp4j.PublishDiagnosticsParams;
-import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4j.RegistrationParams;
-import org.eclipse.lsp4j.SetTraceParams;
-import org.eclipse.lsp4j.ShowDocumentParams;
-import org.eclipse.lsp4j.ShowDocumentResult;
-import org.eclipse.lsp4j.ShowMessageRequestParams;
-import org.eclipse.lsp4j.SignatureHelp;
-import org.eclipse.lsp4j.SignatureInformation;
-import org.eclipse.lsp4j.TextEdit;
-import org.eclipse.lsp4j.UnregistrationParams;
-import org.eclipse.lsp4j.WorkDoneProgressCreateParams;
-import org.eclipse.lsp4j.WorkspaceFolder;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
-
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.widget.CodeEditor;
@@ -97,12 +72,12 @@ import io.github.rosemoe.editor.widget.CodeEditor;
 /**
  * AndroidIDE specific implementation of the LanguageClient
  */
-public class IDELanguageClientImpl implements IDELanguageClient {
+public class IDELanguageClientImpl implements ILanguageClient {
     
     protected static final Gson gson = new Gson();
     protected static final Logger LOG = Logger.instance("AbstractLanguageClient");
     
-    private final Map<File, List<Diagnostic>> diagnostics = new HashMap<>();
+    private final Map<File, List<DiagnosticItem>> diagnostics = new HashMap<>();
     private static IDELanguageClientImpl mInstance;
     
     protected EditorActivityProvider activityProvider;
@@ -147,8 +122,8 @@ public class IDELanguageClientImpl implements IDELanguageClient {
     }
 
     @Override
-    public void semanticHighlights(SemanticHighlight highlights) {
-        final File file = new File(URI.create(highlights.uri));
+    public void publishSemanticHighlights(SemanticHighlight highlights) {
+        final File file = highlights.getFile ().toFile ();
         final var editor = findEditorByFile(file);
         
         if(editor != null) {
@@ -156,7 +131,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         }
     }
     
-    public void showDiagnostic(Diagnostic diagnostic, final CodeEditor editor) {
+    public void showDiagnostic(DiagnosticItem diagnostic, final CodeEditor editor) {
         if(activity() == null || activity().getDiagnosticBinding() == null) {
             hideDiagnostics();
             return;
@@ -187,7 +162,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
      * @param diagnostic The diagnostic to show
      * @param editor The CodeEditor that requested
      */
-    public void showDiagnosticAtBottom(final File file, final Diagnostic diagnostic, final CodeEditor editor) {
+    public void showDiagnosticAtBottom(final File file, final DiagnosticItem diagnostic, final CodeEditor editor) {
         if(activity() == null || file == null || diagnostic == null) {
             hideBottomDiagnosticView(file);
             return;
@@ -205,22 +180,23 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         binding.diagnosticText.setClickable(false);
         binding.diagnosticText.setText(diagnostic.getMessage());
         
-        final CompletableFuture <List<Either<Command, CodeAction>>> future = editor.codeActions(Collections.singletonList(diagnostic));
+        final var future = editor.codeActions(Collections.singletonList(diagnostic));
         if(future == null) {
             hideBottomDiagnosticView(file);
             return;
         }
         
-        future.whenComplete((a, b) -> {
-            if(a == null || a.isEmpty()) {
+        future.whenComplete((result, error) -> {
+            if(result == null) {
                 hideBottomDiagnosticView(file);
                 return;
             }
-            final List<CodeAction> actions = a.stream().filter(Either::isRight).map (Either::getRight).collect(Collectors.toList());
-            if(actions.isEmpty()) {
+            
+            if(result.getActions ().isEmpty()) {
                 hideBottomDiagnosticView(file);
                 return;
             }
+            
             ThreadUtils.runOnUiThread(() -> {
                 final SpannableStringBuilder sb = new SpannableStringBuilder();
                 sb.append(activity().getString(R.string.msg_fix_diagnostic), new ForegroundColorSpan(ContextCompat.getColor(activity(), R.color.secondaryColor)), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -228,7 +204,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
                 sb.append(diagnostic.getMessage());
                 binding.diagnosticText.setText(sb);
                 binding.diagnosticText.setClickable(true);
-                binding.diagnosticText.setOnClickListener(v -> showAvailableQuickfixes(editor, actions));
+                binding.diagnosticText.setOnClickListener(v -> showAvailableQuickfixes(editor, result.getActions ()));
             });
         });
     }
@@ -256,22 +232,20 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         frag.getBinding().diagnosticText.setClickable(false);
     }
     
-    /**
-     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show signature help in EditorActivity
-     */
-    public void showSignatureHelp(SignatureHelp signature, File file) {
-        if(signature == null || signature.getSignatures() == null) {
+    public void showSignatureHelp (com.itsaky.lsp.models.SignatureHelp signature, File file) {
+        if(signature == null) {
             hideSignatureHelp();
             return;
         }
-        SignatureInformation info = signatureWithMostParams(signature);
+        
+        var info = signatureWithMostParams(signature);
         if(info == null) return;
         activity().getBinding().symbolText.setText(formatSignature(info, signature.getActiveParameter()));
         final var frag = findEditorByFile(file);
         if(frag != null) {
             final CodeEditor editor = frag.getEditor();
             final float[] cursor = editor.getCursorPosition();
-
+        
             float x = editor.updateCursorAnchor() - (activity().getBinding().symbolText.getWidth() / 2);
             float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - activity().getBinding().symbolText.getHeight());
             TransitionManager.beginDelayedTransition(activity().getBinding().getRoot());
@@ -294,12 +268,12 @@ public class IDELanguageClientImpl implements IDELanguageClient {
      *
      * @param signature The SignatureHelp provided by @{link IDELanguageServer}
      */
-    private SignatureInformation signatureWithMostParams(SignatureHelp signature) {
-        SignatureInformation signatureWithMostParams = null;
+    private com.itsaky.lsp.models.SignatureInformation signatureWithMostParams(com.itsaky.lsp.models.SignatureHelp signature) {
+        com.itsaky.lsp.models.SignatureInformation signatureWithMostParams = null;
         int mostParamCount = 0;
-        final List<SignatureInformation> signatures = signature.getSignatures();
+        final var signatures = signature.getSignatures();
         for(int i=0;i<signatures.size();i++) {
-            final SignatureInformation info = signatures.get(i);
+            final var info = signatures.get(i);
             int count = info.getParameters().size();
             if(mostParamCount < count) {
                 mostParamCount = count;
@@ -324,14 +298,14 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         sb.append(name, new ForegroundColorSpan(0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.append("(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        List<ParameterInformation> params = signature.getParameters();
+        var params = signature.getParameters();
         for(int i=0;i<params.size();i++) {
             int color = i == paramIndex ? 0xffff6060 : 0xffffffff;
-            final ParameterInformation info = params.get(i);
+            final var info = params.get(i);
             if(i == params.size() - 1) {
-                sb.append(info.getLabel().getLeft() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(info.getLabel() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
-                sb.append(info.getLabel().getLeft() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                sb.append(info.getLabel() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
                 sb.append(",", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
                 sb.append(" ");
             }
@@ -341,105 +315,91 @@ public class IDELanguageClientImpl implements IDELanguageClient {
     }
 
     @Override
-    public void publishDiagnostics(PublishDiagnosticsParams params) {
-        boolean error = params == null || params.getDiagnostics() == null;
-        activity().handleDiagnosticsResultVisibility(error || params.getDiagnostics().isEmpty());
+    public void publishDiagnostics(DiagnosticResult result) {
+        boolean error = result == null;
+        activity().handleDiagnosticsResultVisibility(error || result.getDiagnostics().isEmpty());
         
-        if(error) return;
+        if(error) {
+            return;
+        }
         
-        File file = new File(URI.create(params.getUri()));
+        File file = result.getFile ().toFile ();
         if(!file.exists() || !file.isFile()) return;
         
-        diagnostics.put(file, params.getDiagnostics());
+        diagnostics.put(file, result.getDiagnostics());
         activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
         
         CodeEditorView editor;
         if((editor = findEditorByFile(file)) != null) {
-            editor.setDiagnostics(params.getDiagnostics());
+            editor.setDiagnostics(result.getDiagnostics());
         }
     }
     
     /**
      * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show locations in EditorActivity
      */
-    public void showLocations(List<? extends Location> locations) {
-        
+    public void showLocations(List<Location> locations) {
+    
         // Cannot show anything if the activity() is null
-        if(activity() == null) {
+        if (activity () == null) {
             return;
         }
-        
-        boolean error = locations == null || locations.isEmpty();
-        activity().handleSearchResultVisibility(error);
-
-
-        if(error) {
-            activity().setSearchResultAdapter (new SearchListAdapter(null, null, null));
+    
+        boolean error = locations == null || locations.isEmpty ();
+        activity ().handleSearchResultVisibility (error);
+    
+    
+        if (error) {
+            activity ().setSearchResultAdapter (new SearchListAdapter (null, null, null));
             return;
         }
-
-        final Map<File, List<SearchResult>> results = new HashMap<>();
-        for(int i=0;i<locations.size();i++) {
+    
+        final Map<File, List<SearchResult>> results = new HashMap<> ();
+        for (int i = 0; i < locations.size (); i++) {
             try {
-                final Location loc = locations.get(i);
-                if(loc == null || loc.getUri() == null || loc.getRange() == null) continue;
-                final File file = new File(URI.create(loc.getUri()));
-                if(!file.exists() || !file.isFile()) continue;
-                var frag = findEditorByFile(file);
+                final Location loc = locations.get (i);
+                if (loc == null) {
+                    continue;
+                }
+                
+                final File file = loc.getFile ().toFile ();
+                if (!file.exists () || !file.isFile ()) continue;
+                var frag = findEditorByFile (file);
                 Content content;
-                if(frag != null && frag.getEditor() != null)
-                    content = frag.getEditor().getText();
-                else content = new Content(null, FileIOUtils.readFile2String(file));
-                final List<SearchResult> matches = results.containsKey(file) ? results.get(file) : new ArrayList<>();
-                Objects.requireNonNull (matches).add(
-                    new SearchResult(
-                        loc.getRange(),
-                        file,
-                        content.getLineString(loc.getRange().getStart().getLine()),
-                        content.subContent(
-                            loc.getRange().getStart().getLine(),
-                            loc.getRange().getStart().getCharacter(),
-                            loc.getRange().getEnd().getLine(),
-                            loc.getRange().getEnd().getCharacter()
-                        ).toString()
-                    )
+                if (frag != null && frag.getEditor () != null)
+                    content = frag.getEditor ().getText ();
+                else content = new Content (null, FileIOUtils.readFile2String (file));
+                final List<SearchResult> matches = results.containsKey (file) ? results.get (file) : new ArrayList<> ();
+                Objects.requireNonNull (matches).add (
+                        new SearchResult (
+                                loc.getRange (),
+                                file,
+                                content.getLineString (loc.getRange ().getStart ().getLine ()),
+                                content.subContent (
+                                        loc.getRange ().getStart ().getLine (),
+                                        loc.getRange ().getStart ().getColumn (),
+                                        loc.getRange ().getEnd ().getLine (),
+                                        loc.getRange ().getEnd ().getColumn ()
+                                ).toString ()
+                        )
                 );
-                results.put(file, matches);
+                results.put (file, matches);
             } catch (Throwable th) {
                 LOG.error ("Failed to show file location", th);
             }
         }
-
-        activity().handleSearchResults(results);
-    }
-
-    /**
-     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show location links in EditorActivity.
-     * These location links are mapped as {@link org.eclipse.lsp4j.Location Location} and then {@link #showLocations(List) } is called.
-     */
-    public void showLocationLinks(List<? extends LocationLink> locations) {
-        
-        if(locations == null || locations.size() <= 0) {
-            return;
-        }
-        
-        showLocations(locations
-            .stream()
-                .filter(Objects::nonNull)
-                .map(this::asLocation)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList())
-            );
+    
+        activity ().handleSearchResults (results);
     }
     
     /**
-     * Perform the given {@link CodeAction}
+     * Perform the given {@link CodeActionItem}
      *
      * @param editor The {@link CodeEditor} that invoked the code action request.
      *            This is required to reduce the time finding the code action from the edits.
      * @param action The action to perform
      */
-    public void performCodeAction(CodeEditor editor, CodeAction action) {
+    public void performCodeAction(CodeEditor editor, CodeActionItem action) {
         if(activity() == null || editor == null || action == null) {
             StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
             return;
@@ -460,74 +420,12 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         });
     }
 
-    /**
-     * Usually called {@link CodeEditor} to show a specific document in EditorActivity and select the specified range
-     */
-    @Override
-    public CompletableFuture<ShowDocumentResult> showDocument(ShowDocumentParams params) {
-        ShowDocumentResult result = new ShowDocumentResult();
-        boolean success = false;
-        
-        if(activity() == null) {
-            result.setSuccess(success);
-            return CompletableFuture.completedFuture(result);
-        }
-        
-        if(params != null && params.getUri() != null && params.getSelection() != null) {
-            File file = new File(URI.create(params.getUri()));
-            if(file.exists() && file.isFile() && FileUtils.isUtf8(file)) {
-                final Range range = params.getSelection();
-                var frag = activity().getEditorAtIndex (
-                        activity().getBinding ().tabs.getSelectedTabPosition ());
-                if(frag != null
-                   && frag.getFile() != null
-                   && frag.getEditor() != null
-                   && frag.getFile().getAbsolutePath().equals(file.getAbsolutePath())) {
-                    if(LSPUtils.isEqual(range.getStart(), range.getEnd())) {
-                        frag.getEditor().setSelection(range.getStart().getLine(), range.getStart().getCharacter());
-                    } else {
-                        frag.getEditor().setSelectionRegion(range.getStart().getLine(), range.getStart().getCharacter(), range.getEnd().getLine(), range.getEnd().getCharacter());
-                    }
-                } else {
-                    activity().openFileAndSelect(file, range);
-                }
-                success = true;
-            }
-        }
-        
-        result.setSuccess(success);
-        return CompletableFuture.completedFuture(result);
-    }
-
-    @Override
-    public void telemetryEvent(Object params) {
-        FirebaseCrashlytics.getInstance().log("LanguageServer[" + this.getClass().getName() + "][TelemetryEvent]\n" + params.toString());
-    }
-
-    @Override
-    public void logMessage(MessageParams params) {
-        // No logs
-    }
-
-    @Override
-    public void logTrace(LogTraceParams params) {
-        
-    }
-    
-    private Location asLocation(LocationLink link) {
-        if(link == null || link.getTargetRange() == null || link.getTargetUri() == null) return null;
-        final Location location = new Location();
-        location.setUri(link.getTargetUri());
-        location.setRange(link.getTargetRange());
-        return location;
-    }
-
-    private List<DiagnosticGroup> mapAsGroup(Map<File, List<Diagnostic>> diags) {
+    private List<DiagnosticGroup> mapAsGroup(Map<File, List<DiagnosticItem>> diags) {
         List<DiagnosticGroup> groups = new ArrayList<>();
         if(diags == null || diags.size() <= 0)
             return groups;
         for(File file : diags.keySet()) {
-            List<Diagnostic> fileDiags = diags.get(file);
+            List<DiagnosticItem> fileDiags = diags.get(file);
             if(fileDiags == null || fileDiags.size() <= 0)
                 continue;
             DiagnosticGroup group = new DiagnosticGroup(R.drawable.ic_language_java, file, fileDiags);
@@ -536,7 +434,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         return groups;
     }
     
-    private void showAvailableQuickfixes (CodeEditor editor, List<CodeAction> actions) {
+    private void showAvailableQuickfixes (CodeEditor editor, List<CodeActionItem> actions) {
         final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
         builder.setTitle(R.string.msg_code_actions);
         builder.setItems(asArray(actions), (d, w) -> {
@@ -548,7 +446,7 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         builder.show();
     }
 
-    private CharSequence[] asArray(List<CodeAction> actions) {
+    private CharSequence[] asArray(List<CodeActionItem> actions) {
         final String[] arr = new String[actions.size()];
         for(int i=0;i<actions.size();i++) {
             arr[i] = actions.get(i).getTitle();
@@ -556,17 +454,19 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         return arr;
     }
     
-    private Boolean performCodeActionAsync(final CodeEditor editor, final CodeAction action) {
-        final Map <String, List<TextEdit>> edits = action.getEdit().getChanges();
-        if(edits == null || edits.isEmpty()) {
+    private Boolean performCodeActionAsync(final CodeEditor editor, final CodeActionItem action) {
+        final var changes = action.getChanges();
+        if(changes.isEmpty()) {
             return Boolean.FALSE;
         }
         
-        for(Map.Entry<String, List<TextEdit>> entry : edits.entrySet()) {
-            final File file = new File(URI.create(entry.getKey()));
-            if(!file.exists()) continue;
+        for(var change : changes) {
+            final File file = change.getFile ().toFile ();
+            if(!file.exists()) {
+                continue;
+            }
 
-            for(TextEdit edit : entry.getValue()) {
+            for(TextEdit edit : change.getEdits ()) {
                 final String editorFilepath = editor.getFile() == null ? "" : editor.getFile().getAbsolutePath();
                 if(file.getAbsolutePath().equals(editorFilepath)) {
                     // Edit is in the same editor which requested the code action
@@ -595,9 +495,9 @@ public class IDELanguageClientImpl implements IDELanguageClient {
     private void editInEditor (final CodeEditor editor, final TextEdit edit) {
         final Range range = edit.getRange();
         final int startLine = range.getStart().getLine();
-        final int startCol = range.getStart().getCharacter();
+        final int startCol = range.getStart().getColumn ();
         final int endLine = range.getEnd().getLine();
-        final int endCol = range.getEnd().getCharacter();
+        final int endCol = range.getEnd().getColumn ();
         
         activity().runOnUiThread(() -> {
             if(startLine == endLine && startCol == endCol) {
@@ -612,65 +512,40 @@ public class IDELanguageClientImpl implements IDELanguageClient {
         return new DiagnosticsAdapter(mapAsGroup(this.diagnostics), activity());
     }
     
+    @Override
+    public com.itsaky.lsp.models.ShowDocumentResult showDocument (com.itsaky.lsp.models.ShowDocumentParams params) {
+        boolean success = false;
+        final var result = new com.itsaky.lsp.models.ShowDocumentResult (false);
+        if(activity() == null) {
+            return result;
+        }
     
-    /**************************************************
-             UNUSED METHODS
-    **************************************************/
+        if(params != null) {
+            File file = params.getFile ().toFile ();
+            if (file.exists () && file.isFile () && FileUtils.isUtf8 (file)) {
+                final var range = params.getSelection ();
+                var frag = activity ().getEditorAtIndex (
+                        activity ().getBinding ().tabs.getSelectedTabPosition ());
+                if (frag != null
+                        && frag.getFile () != null
+                        && frag.getEditor () != null
+                        && frag.getFile ().getAbsolutePath ().equals (file.getAbsolutePath ())) {
+                    if (LSPUtils.isEqual (range.getStart (), range.getEnd ())) {
+                        frag.getEditor ().setSelection (range.getStart ().getLine (), range.getStart ().getColumn ());
+                    } else {
+                        frag.getEditor ().setSelectionRegion (range.getStart ().getLine (),
+                                range.getStart ().getColumn (),
+                                range.getEnd ().getLine (),
+                                range.getEnd ().getColumn ());
+                    }
+                } else {
+                    activity ().openFileAndSelect (file, range);
+                }
+                success = true;
+            }
+        }
     
-    @Override
-    public CompletableFuture<ApplyWorkspaceEditResponse> applyEdit(ApplyWorkspaceEditParams p1) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<List<Object>> configuration(ConfigurationParams p1) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Void> createProgress(WorkDoneProgressCreateParams p1) {
-        return null;
-    }
-
-    @Override
-    public void notifyProgress(ProgressParams p1) {
-    }
-
-    @Override
-    public CompletableFuture<Void> refreshCodeLenses() {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Void> refreshSemanticTokens() {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Void> registerCapability(RegistrationParams p1) {
-        return null;
-    }
-
-    @Override
-    public void setTrace(SetTraceParams p1) {
-    }
-
-    @Override
-    public void showMessage(MessageParams p1) {
-    }
-
-    @Override
-    public CompletableFuture<MessageActionItem> showMessageRequest(ShowMessageRequestParams p1) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Void> unregisterCapability(UnregistrationParams p1) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<List<WorkspaceFolder>> workspaceFolders() {
-        return null;
+        result.setSuccess(success);
+        return result;
     }
 }

@@ -15,20 +15,15 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.models
+package com.itsaky.lsp.util
 
-import java.nio.file.Path
+import com.itsaky.lsp.api.ISignatureHelpProvider
+import com.itsaky.lsp.models.SignatureHelp
+import com.itsaky.lsp.models.SignatureHelpParams
 
-data class CodeActionParams(var cursor: Position, var diagnostics: List<DiagnosticItem>)
-
-data class CodeActionResult (var actions: List <CodeActionItem>) {
-    constructor() : this (ArrayList())
+/**
+ * @author Akash Yadav
+ */
+class NoSignatureHelpProvider: ISignatureHelpProvider {
+    override fun provideSignatures(params: SignatureHelpParams?): SignatureHelp = SignatureHelp(ArrayList(), -1, -1)
 }
-
-data class CodeActionItem (
-    var title: String,
-    var changes: List<DocumentChange>)
-
-data class DocumentChange (var file: Path, var edits: List<TextEdit>)
-
-data class TextEdit (var range: Range, var newText: String)

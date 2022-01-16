@@ -27,4 +27,5 @@ import com.itsaky.lsp.api.IServerSettings
 class DefaultServerSettings : IServerSettings {
     override fun completionsEnabled(): Boolean = true
     override fun codeActionsEnabled(): Boolean = true
+    override fun signatureHelpEnabled(): Boolean = true
 }

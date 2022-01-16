@@ -27,8 +27,27 @@ data class Position(var line: Int, var column: Int) {
     }
 }
 
-data class Range(var start: Position, var end: Position) {
+open class Range(var start: Position, var end: Position) {
+    
+    constructor() : this (Position(0, 0), Position(0, 0));
+    
     companion object {
         @JvmField val NONE = Range (Position.NONE, Position.NONE);
+    }
+    
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Range) return false
+        
+        if (start != other.start) return false
+        if (end != other.end) return false
+        
+        return true
+    }
+    
+    override fun hashCode(): Int {
+        var result = start.hashCode()
+        result = 31 * result + end.hashCode()
+        return result
     }
 }

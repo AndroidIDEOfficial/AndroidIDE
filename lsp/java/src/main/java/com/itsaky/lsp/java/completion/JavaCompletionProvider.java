@@ -11,6 +11,9 @@ import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.ParseTask;
 import com.itsaky.lsp.java.SourceFileObject;
 import com.itsaky.lsp.java.StringSearch;
+import com.itsaky.lsp.java.rewrite.AddImport;
+import com.itsaky.lsp.java.utils.EditHelper;
+import com.itsaky.lsp.java.utils.Extractors;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.CompletionData;
 import com.itsaky.lsp.models.CompletionItem;
@@ -18,6 +21,9 @@ import com.itsaky.lsp.models.CompletionItemKind;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.InsertTextFormat;
+import com.itsaky.lsp.models.TextEdit;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.MethodSpec;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ImportTree;
@@ -44,7 +50,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -54,6 +62,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.NoType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Types;
@@ -64,6 +74,9 @@ public class JavaCompletionProvider implements ICompletionProvider {
     
     public static final CompletionResult NOT_SUPPORTED = new CompletionResult ();
     public static final int MAX_COMPLETION_ITEMS = 50;
+    
+    private Path completingFile;
+    private long cursor;
     
     public JavaCompletionProvider (CompilerProvider compiler) {
         this.compiler = compiler;
@@ -85,7 +98,8 @@ public class JavaCompletionProvider implements ICompletionProvider {
         Instant started = Instant.now();
         ParseTask task = compiler.parse(file);
         
-        long cursor = task.root.getLineMap().getPosition(line, column);
+        this.completingFile = file;
+        this.cursor = task.root.getLineMap().getPosition(line, column);
         StringBuilder contents = new PruneMethodBodies(task.task).scan(task.root, cursor);
         int endOfLine = endOfLine(contents, (int) cursor);
         contents.insert(endOfLine, ';');
@@ -241,19 +255,18 @@ public class JavaCompletionProvider implements ICompletionProvider {
             @NonNull CompileTask task, TreePath path, String partial, boolean endsWithParen) {
         Trees trees = Trees.instance(task.task);
         List<CompletionItem> list = new ArrayList<> ();
-        Map<String, List<ExecutableElement>> methods = new HashMap<> ();
         Scope scope = trees.getScope(path);
         Predicate<CharSequence> filter = name -> StringSearch.matchesPartialName(name, partial);
         for (Element member : ScopeHelper.scopeMembers(task, scope, filter)) {
             if (member.getKind() == ElementKind.METHOD) {
-                putMethod((ExecutableElement) member, methods);
+                ExecutableElement method = (ExecutableElement) member;
+                TreePath parentPath = path.getParentPath()/*method*/.getParentPath()/*class*/;
+                list.add (overrideIfPossible (task, parentPath, method, endsWithParen));
             } else {
                 list.add(item(task, member));
             }
         }
-        for (List<ExecutableElement> overloads : methods.values()) {
-            list.add(method(task, overloads, !endsWithParen));
-        }
+        
         LOG.info("...found " + list.size() + " scope members");
         return list;
     }
@@ -303,11 +316,19 @@ public class JavaCompletionProvider implements ICompletionProvider {
         String packageName = Objects.toString(root.getPackageName(), "");
         Set<String> uniques = new HashSet<> ();
         int previousSize = list.getItems ().size();
+        
+        final Path file = Paths.get (root.getSourceFile ().toUri ());
+        final Set<String> imports = root.getImports ().stream ()
+                .map (ImportTree::getQualifiedIdentifier)
+                .map (Tree::toString)
+                .collect (Collectors.toSet ());
+        
         for (String className : compiler.packagePrivateTopLevelTypes(packageName)) {
             if (!StringSearch.matchesPartialName(className, partial)) continue;
-            list.getItems ().add(classItem(className));
+            list.getItems ().add(classItem(imports, file, className));
             uniques.add(className);
         }
+        
         for (String className : compiler.publicTopLevelTypes()) {
             if (!StringSearch.matchesPartialName(simpleName(className), partial)) continue;
             if (uniques.contains(className)) continue;
@@ -315,7 +336,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
                 list.setIncomplete (true);
                 break;
             }
-            list.getItems ().add(classItem(className));
+            list.getItems ().add(classItem(imports, file, className));
             uniques.add(className);
         }
         LOG.info("...found " + (list.getItems ().size() - previousSize) + " class names");
@@ -549,8 +570,12 @@ public class JavaCompletionProvider implements ICompletionProvider {
         i.setKind (CompletionItemKind.MODULE);
         return i;
     }
+    
+    private CompletionItem classItem (String className) {
+        return classItem (Collections.emptySet (), null, className);
+    }
 
-    private CompletionItem classItem(String className) {
+    private CompletionItem classItem(Set<String> imports, Path file, String className) {
         CompletionItem i = new CompletionItem();
         i.setLabel (simpleName (className).toString ());
         i.setKind (CompletionItemKind.CLASS);
@@ -559,7 +584,18 @@ public class JavaCompletionProvider implements ICompletionProvider {
         CompletionData data = new CompletionData ();
         data.setClassName (className);
         i.setData (data);
+        i.setAdditionalTextEdits (checkForImports (imports, file, className));
         return i;
+    }
+    
+    private List<TextEdit> checkForImports(@NonNull Set<String> fileImports, Path path, String className) {
+        final String star = Extractors.packageName(className) + ".*";
+        if (fileImports.contains(className) || fileImports.contains(star) || path == null) {
+            return null;
+        }
+        
+        AddImport addImport = new AddImport(path, className);
+        return Collections.singletonList (addImport.rewrite(compiler));
     }
 
     private CompletionItem snippetItem(String label, String snippet) {
@@ -603,7 +639,103 @@ public class JavaCompletionProvider implements ICompletionProvider {
         }
         return i;
     }
-
+    
+    /**
+     * Override the given method if it is overridable.
+     *
+     * @param task The compilation task.
+     * @param parentPath The tree path of the parent class.
+     * @param method The method to override if possible.
+     * @param endsWithParen Does the statement at cursor ends with a parenthesis?
+     * @return The completion item.
+     */
+    @NonNull
+    private CompletionItem overrideIfPossible (@NonNull CompileTask task, TreePath parentPath, @NonNull ExecutableElement method, boolean endsWithParen) {
+        final Types types = task.task.getTypes();
+        final Element parentElement = Trees.instance(task.task).getElement(parentPath);
+        final DeclaredType type = (DeclaredType) parentElement.asType();
+        final Element enclosing = method.getEnclosingElement ();
+        
+        boolean isFinalClass = enclosing.getModifiers ().contains (Modifier.FINAL);
+        boolean isNotOverridable = method.getModifiers ().contains (Modifier.STATIC)
+                || method.getModifiers ().contains (Modifier.FINAL)
+                || method.getModifiers ().contains (Modifier.PRIVATE);
+        if (isFinalClass
+                || isNotOverridable
+                || !types.isAssignable (type, enclosing.asType ())
+                || !(parentPath.getLeaf () instanceof ClassTree)) {
+            return method (task, Collections.singletonList (method), !endsWithParen);
+        }
+        
+        // Print the method details and the annotations
+        final int indent = EditHelper.indent (FileStore.contents (completingFile), (int) this.cursor);
+        final MethodSpec.Builder builder = MethodSpec.overriding (method, type, types);
+        final List<? extends AnnotationMirror> mirrors = method.getAnnotationMirrors ();
+        if (mirrors != null && !mirrors.isEmpty ()) {
+            for (final AnnotationMirror mirror : mirrors) {
+                builder.addAnnotation (AnnotationSpec.get (mirror));
+            }
+        }
+        
+        boolean addComment = true;
+        // Add super call if the method is not abstract
+        if (!method.getModifiers ().contains (Modifier.ABSTRACT)) {
+            if (method.getReturnType () instanceof NoType) {
+                builder.addStatement (createSuperCall (builder));
+            } else {
+                addComment = false;
+                builder.addComment ("TODO: Implement this method");
+                builder.addStatement ("return " + createSuperCall (builder));
+            }
+        }
+        
+        if (addComment) {
+            builder.addComment ("TODO: Implement this method");
+        }
+        
+        final MethodSpec built = builder.build ();
+        String insertText = built.toString ();
+        insertText = insertText.replace ("\n", "\n" + repeatSpaces (indent));
+        
+        // TODO Auto-import required classes.
+        CompletionItem item = new CompletionItem();
+        item.setLabel (built.name);
+        item.setKind (CompletionItemKind.METHOD);
+        item.setDetail (method.getReturnType () + " " + method);
+        item.setInsertText (insertText);
+        item.setInsertTextFormat (InsertTextFormat.SNIPPET);
+        item.setData (data(task, method, 1));
+        return item;
+    }
+    
+    /**
+     * Create a superclass method invocation statement.
+     * @param builder The method builder.
+     * @return The super invocation statement string without ending ';'.
+     */
+    private String createSuperCall (MethodSpec.Builder builder) {
+        final StringBuilder sb = new StringBuilder ();
+        sb.append ("super.");
+        sb.append (builder.name);
+        sb.append ("(");
+        for (int i = 0; i < builder.parameters.size (); i++) {
+            sb.append (builder.parameters.get (i).name);
+            if (i != builder.parameters.size () - 1) {
+                sb.append (", ");
+            }
+        }
+        sb.append (")");
+        return null;
+    }
+    
+    private String repeatSpaces (int count) {
+        StringBuilder result = new StringBuilder ();
+        for (int i = 0; i < count; i++) {
+            result.append (" ");
+        }
+        return result.toString ();
+    }
+    
     @Nullable
     private CompletionData data(CompileTask task, Element element, int overloads) {
         CompletionData data = new CompletionData();

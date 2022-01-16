@@ -120,16 +120,12 @@ dependencies {
 	// Local projects here
 	implementation project(':treeview')
     implementation project(':emulatorview')
-    implementation project(':lsp')
     implementation project(':xml-inflater')
     implementation project(':lexers')
     implementation project(':common')
 
     implementation project(':lsp:api')
     implementation project(':lsp:java')
-    
-    // LSP4J
-    implementation common.lsp4j
     
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	

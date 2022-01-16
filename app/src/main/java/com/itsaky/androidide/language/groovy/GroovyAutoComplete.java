@@ -21,14 +21,16 @@
 
 package com.itsaky.androidide.language.groovy;
 
+import com.itsaky.lsp.models.CompletionItem;
+import com.itsaky.lsp.models.CompletionItemKind;
+import com.itsaky.lsp.models.InsertTextFormat;
+
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
+import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.CompletionItemKind;
-import org.eclipse.lsp4j.InsertTextFormat;
 
 public class GroovyAutoComplete implements AutoCompleteProvider {
 	
@@ -37,7 +39,7 @@ public class GroovyAutoComplete implements AutoCompleteProvider {
 	private static final List<String> OTHERS = createOtherCompletions();
 
     @Override
-    public List<CompletionItem> getAutoCompleteItems(CharSequence content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
+    public List<CompletionItem> getAutoCompleteItems(Content content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
         List<CompletionItem>  result = new ArrayList<>();
 
         for(String artifact : ANDROIDX_ARTIFACTS) {
@@ -64,8 +66,8 @@ public class GroovyAutoComplete implements AutoCompleteProvider {
         item.setDetail("");
         item.setInsertText(itemLabel);
         item.setSortText("0" + itemLabel);
-        item.setInsertTextFormat(InsertTextFormat.PlainText);
-        item.setKind(CompletionItemKind.Text);
+        item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
+        item.setKind(CompletionItemKind.SNIPPET);
 		return item;
 	}
 	

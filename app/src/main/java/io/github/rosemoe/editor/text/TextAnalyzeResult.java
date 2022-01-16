@@ -15,6 +15,8 @@
  */
 package io.github.rosemoe.editor.text;
 
+import com.itsaky.lsp.models.Range;
+
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.NavigationItem;
 import io.github.rosemoe.editor.struct.Span;
@@ -24,8 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.lsp4j.Range;
 
 /**
  * The result of analysis

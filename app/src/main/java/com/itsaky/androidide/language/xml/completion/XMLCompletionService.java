@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,32 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.language.xml.completion;
 
 import androidx.annotation.NonNull;
 
-import com.google.gson.JsonObject;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.attrinfo.models.Attr;
+import com.itsaky.lsp.models.CompletionData;
+import com.itsaky.lsp.models.CompletionItem;
+import com.itsaky.lsp.models.CompletionItemKind;
+import com.itsaky.lsp.models.InsertTextFormat;
 import com.itsaky.widgets.WidgetInfo;
 import com.itsaky.widgets.models.Widget;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+import org.jetbrains.annotations.Contract;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.CompletionItemKind;
-import org.eclipse.lsp4j.InsertTextFormat;
-import org.jetbrains.annotations.Contract;
 
 public class XMLCompletionService {
 	
@@ -122,9 +124,9 @@ public class XMLCompletionService {
 		item.setLabel(value);
         item.setDetail("Attribute value");
         item.setInsertText(value);
-        item.setInsertTextFormat(InsertTextFormat.PlainText);
+        item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
         item.setSortText("0" + value);
-        item.setKind(CompletionItemKind.Value);
+        item.setKind(CompletionItemKind.VALUE);
 		return item;
 	}
 
@@ -134,9 +136,9 @@ public class XMLCompletionService {
         item.setLabel(attr.name);
         item.setDetail("Attribute");
         item.setInsertText(createAttributeInsertText(attr));
-        item.setInsertTextFormat(InsertTextFormat.PlainText);
+        item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
         item.setSortText("1" + attr.name);
-        item.setKind(CompletionItemKind.Snippet);
+        item.setKind(CompletionItemKind.SNIPPET);
 		return item;
 	}
 
@@ -166,13 +168,13 @@ public class XMLCompletionService {
         item.setLabel(view.simpleName);
         item.setDetail(view.name);
         item.setInsertText(createTagInsertText(view, slash));
-        item.setInsertTextFormat(InsertTextFormat.PlainText);
+        item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
         item.setSortText("2" + view.simpleName);
-        item.setKind(CompletionItemKind.Class);
+        item.setKind(CompletionItemKind.CLASS);
         
         // Required to show API information in completion list
-        final JsonObject data = new JsonObject();
-        data.addProperty("className", view.name);
+        final var data = new CompletionData ();
+        data.setClassName (view.name);
         
         item.setData(data);
         
@@ -206,7 +208,7 @@ public class XMLCompletionService {
 		item.setLabel (name + "Ns");
 		item.setDetail (StudioApp.getInstance ().getString(R.string.msg_add_namespace_decl, name));
 		item.setInsertText (String.format ("xmlns:%1$s=\"%2$s\"", name, value));
-		item.setKind (CompletionItemKind.Snippet);
+		item.setKind (CompletionItemKind.SNIPPET);
 		item.setSortText ("1000" + item.getLabel ()); // This item is expected to be at the last of the completion list
 		return item;
 	}

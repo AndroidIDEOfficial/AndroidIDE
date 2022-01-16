@@ -15,11 +15,6 @@
  */
 package io.github.rosemoe.editor.widget;
 
-/**
- * Adapter to display results
- *
- * @author Rose
- */
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
@@ -30,8 +25,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.R;
-import org.eclipse.lsp4j.CompletionItem;
+import com.itsaky.lsp.models.CompletionItem;
 
+/**
+ * Adapter to display results
+ *
+ * @author Rose
+ */
 @SuppressWarnings("CanBeFinal")
 class DefaultCompletionItemAdapter extends EditorCompletionAdapter {
 

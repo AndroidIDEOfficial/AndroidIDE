@@ -17,8 +17,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.adapters;
 
 import android.content.res.Resources;
@@ -28,7 +26,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -44,11 +44,10 @@ import com.itsaky.apiinfo.models.ClassInfo;
 import com.itsaky.apiinfo.models.FieldInfo;
 import com.itsaky.apiinfo.models.Info;
 import com.itsaky.apiinfo.models.MethodInfo;
+import com.itsaky.lsp.models.CompletionItem;
+import com.itsaky.lsp.models.CompletionItemKind;
+
 import io.github.rosemoe.editor.widget.EditorCompletionAdapter;
-import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.CompletionItemKind;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {
     
@@ -63,21 +62,24 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
     protected View getView(int position, View convertView, ViewGroup parent, boolean isCurrentCursorPosition) {
         final LayoutCompletionItemBinding binding = LayoutCompletionItemBinding.inflate(LayoutInflater.from(getContext()), parent, false);
 
-		CompletionItem item = getItem(position);
+		var item = getItem(position);
 		String label = item.getLabel(), desc = item.getDetail(), type = item.getKind().toString();
-		String header = type == null || type.length() <= 0 ? "O" : String.valueOf(type.toString().charAt(0));
+		String header = type.length() <= 0 ? "O" : String.valueOf(type.toString().charAt(0));
 		
         binding.completionIconText.setText(header);
         binding.completionLabel.setText(label);
         binding.completionType.setText(type);
         binding.completionDetail.setText(desc);
         binding.completionIconText.setTypeface(TypefaceUtils.jetbrainsMono(), Typeface.BOLD);
-		if (desc == null || desc.isEmpty())
-			binding.completionDetail.setVisibility(View.GONE);
+		if (desc.isEmpty()) {
+            binding.completionDetail.setVisibility(View.GONE);
+        }
 
-        if (isCurrentCursorPosition)
+        if (isCurrentCursorPosition) {
             binding.getRoot().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.completionList_backgroundSelected));
-        else binding.getRoot().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.completionList_background));
+        } else {
+            binding.getRoot().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.completionList_background));
+        }
 
         binding.completionApiInfo.setVisibility(View.GONE);
         
@@ -113,11 +115,9 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
                 if(clazz == null) return;
                 
                 Info info = clazz;
-
-                /**
-                 * If this Info is not a class info, find the right member
-                 */
-                if (kind == CompletionItemKind.Method
+    
+                // If this Info is not a class info, find the right member
+                if (kind == CompletionItemKind.METHOD
                     && data.has("erasedParameterTypes")
                     && data.has("memberName")) {
                     JsonElement erasedParameterTypesElement = data.get("erasedParameterTypes");
@@ -135,7 +135,7 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
                             info = method;
                         }
                     }
-                } else if(kind == CompletionItemKind.Field
+                } else if(kind == CompletionItemKind.FIELD
                           && data.has("memberName")) {
                     String simpleName = data.get("memberName").getAsString();
                     FieldInfo field = clazz.getFieldByName(simpleName);
@@ -146,17 +146,17 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
                 }
 
                 final StringBuilder infoBuilder = new StringBuilder();
-                if (info != null && info.since > 1) {
+                if (info.since > 1) {
                     infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_since, info.since));
                     infoBuilder.append("\n");
                 }
 
-                if (info != null && info.removed > 0) {
+                if (info.removed > 0) {
                     infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_removed, info.removed));
                     infoBuilder.append("\n");
                 }
 
-                if (info != null && info.deprecated > 0) {
+                if (info.deprecated > 0) {
                     infoBuilder.append(completionApiInfo.getContext().getString(R.string.msg_api_info_deprecated, info.deprecated));
                     infoBuilder.append("\n");
                 }
@@ -176,24 +176,18 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
         final CompletionItemKind type = item.getKind();
         JsonElement element = new Gson().toJsonTree(item.getData());
         if (
+    
+            // These represent a class type
+        (type == CompletionItemKind.CLASS
+            || type == CompletionItemKind.INTERFACE
+            || type == CompletionItemKind.ENUM
         
-        /**
-         * These represent a class type
-         */
-        (type == CompletionItemKind.Class
-            || type == CompletionItemKind.Interface
-            || type == CompletionItemKind.Enum
-            
-        /**
-         * These represent a method type
-         */
-            || type == CompletionItemKind.Method
-            || type == CompletionItemKind.Constructor
-            
-        /**
-         * A field type
-         */
-            || type == CompletionItemKind.Field)
+            // These represent a method type
+            || type == CompletionItemKind.METHOD
+            || type == CompletionItemKind.CONSTRUCTOR
+        
+            // A field type
+            || type == CompletionItemKind.FIELD)
             
             && element != null && element.isJsonObject()) {
             JsonObject data = element.getAsJsonObject();

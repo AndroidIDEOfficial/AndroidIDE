@@ -20,9 +20,8 @@ package com.itsaky.androidide.language.java;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.lsp.SemanticHighlight;
-
-import org.eclipse.lsp4j.Range;
+import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.models.SemanticHighlight;
 
 import java.util.Comparator;
 import java.util.List;
@@ -45,126 +44,126 @@ public class HighlightRangeHelper {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.enumTypes, line, column);
+        return isInRange (highlights.getEnumTypes (), line, column);
     }
     
     public boolean isAnnotationType (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.annotationTypes, line, column);
+        return isInRange (highlights.getAnnotationTypes (), line, column);
     }
     
     public boolean isInterface (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.interfaces, line, column);
+        return isInRange (highlights.getInterfaces (), line, column);
     }
     
     public boolean isEnum (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.enums, line, column);
+        return isInRange (highlights.getEnums (), line, column);
     }
     
     public boolean isParameter (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.parameters, line, column);
+        return isInRange (highlights.getParameters (), line, column);
     }
     
     public boolean isExceptionParam (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.exceptionParams, line, column);
+        return isInRange (highlights.getExceptionParams (), line, column);
     }
     
     public boolean isConstructor (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.constructors, line, column);
+        return isInRange (highlights.getConstructors (), line, column);
     }
     
     public boolean isStaticInit (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.staticInits, line, column);
+        return isInRange (highlights.getStaticInits (), line, column);
     }
     
     public boolean isInstanceInit (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.instanceInits, line, column);
+        return isInRange (highlights.getInstanceInits (), line, column);
     }
     
     public boolean isTypeParam (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.typeParams, line, column);
+        return isInRange (highlights.getTypeParams (), line, column);
     }
     
     public boolean isResourceVariable (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.resourceVariables, line, column);
+        return isInRange (highlights.getResourceVariables (), line, column);
     }
     
     public boolean isPackageName (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.packages, line, column);
+        return isInRange (highlights.getPackages (), line, column);
     }
     
     public boolean isClassName (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.classNames, line, column);
+        return isInRange (highlights.getClassNames (), line, column);
     }
     
     public boolean isField (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.fields, line, column);
+        return isInRange (highlights.getFields (), line, column);
     }
     
     public boolean isStaticField (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.statics, line, column);
+        return isInRange (highlights.getStatics (), line, column);
     }
     
     public boolean isMethodDeclaration (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.methodDeclarations, line, column);
+        return isInRange (highlights.getMethodDeclarations (), line, column);
     }
     
     public boolean isMethodInvocation (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.methodInvocations, line, column);
+        return isInRange (highlights.getMethodInvocations (), line, column);
     }
     
     public boolean isLocal (int line, int column) {
         if (highlights == null) {
             return false;
         }
-        return isInRange (highlights.locals, line, column);
+        return isInRange (highlights.getLocals (), line, column);
     }
     
     public boolean isInRange (List<Range> ranges, int line, int column) {
@@ -174,7 +173,7 @@ public class HighlightRangeHelper {
                 if (range == null) {
                     continue;
                 }
-                if (range.getStart ().getLine () == line && range.getStart ().getCharacter () == column) {
+                if (range.getStart ().getLine () == line && range.getStart ().getColumn () == column) {
                     return true;
                 }
             }
@@ -183,29 +182,29 @@ public class HighlightRangeHelper {
     }
     
     public void sortHighlights (Comparator<Range> comparator) {
-        final SemanticHighlight h = this.highlights;
+        final SemanticHighlight highlights = this.highlights;
     
         sortAll (comparator,
                 
                 // Semantic highlights
-                h.packages,
-                h.enumTypes,
-                h.classNames,
-                h.annotationTypes,
-                h.interfaces,
-                h.enums,
-                h.statics,
-                h.fields,
-                h.parameters,
-                h.locals,
-                h.exceptionParams,
-                h.methodDeclarations,
-                h.methodInvocations,
-                h.constructors,
-                h.staticInits,
-                h.instanceInits,
-                h.typeParams,
-                h.resourceVariables);
+                highlights.getPackages (),
+                highlights.getEnumTypes (),
+                highlights.getClassNames (),
+                highlights.getAnnotationTypes (),
+                highlights.getInterfaces (),
+                highlights.getEnums (),
+                highlights.getStatics (),
+                highlights.getFields (),
+                highlights.getParameters (),
+                highlights.getLocals (),
+                highlights.getExceptionParams (),
+                highlights.getMethodDeclarations (),
+                highlights.getMethodInvocations (),
+                highlights.getConstructors (),
+                highlights.getStaticInits (),
+                highlights.getInstanceInits (),
+                highlights.getTypeParams (),
+                highlights.getResourceVariables ());
     }
     
     @SafeVarargs

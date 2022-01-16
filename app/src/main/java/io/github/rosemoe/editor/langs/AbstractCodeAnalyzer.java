@@ -4,21 +4,20 @@ import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.SemanticHighlight;
+
+import org.antlr.v4.runtime.Token;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
 import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.antlr.v4.runtime.Token;
-import org.eclipse.lsp4j.Diagnostic;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.itsaky.lsp.SemanticHighlight;
 
 public abstract class AbstractCodeAnalyzer implements CodeAnalyzer {
 
@@ -27,27 +26,27 @@ public abstract class AbstractCodeAnalyzer implements CodeAnalyzer {
     }
 
     @Override
-    public void updateDiagnostics(Map<Integer, Map<Integer, Diagnostic>> diagnostics) {
+    public void updateDiagnostics(Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
     }
     
     @Override
-    public Diagnostic findDiagnosticContaining(int line, int column) {
+    public DiagnosticItem findDiagnosticContaining(int line, int column) {
         return null;
     }
 
     @Override
-    public List<Diagnostic> findDiagnosticsContainingLine(int line) {
-        return new ArrayList<Diagnostic>();
+    public List<DiagnosticItem> findDiagnosticsContainingLine(int line) {
+        return new ArrayList<>();
     }
 
     @Override
-    public Map<Integer, Diagnostic> getDiagnosticsAtLine(int line) {
-        return new HashMap<Integer, Diagnostic>();
+    public Map<Integer, DiagnosticItem> getDiagnosticsAtLine(int line) {
+        return new HashMap<>();
     }
 
     @Override
     public Map<Integer, Integer> getHexColorsInLine(int line) {
-        return new HashMap<Integer, Integer>();
+        return new HashMap<> ();
     }
     
     protected void checkAndAddHexString (@NonNull Token token, final int defaultColorId, TextAnalyzeResult result) {

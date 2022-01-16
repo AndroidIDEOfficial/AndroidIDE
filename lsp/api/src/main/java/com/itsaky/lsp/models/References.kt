@@ -19,16 +19,8 @@ package com.itsaky.lsp.models
 
 import java.nio.file.Path
 
-data class CodeActionParams(var cursor: Position, var diagnostics: List<DiagnosticItem>)
-
-data class CodeActionResult (var actions: List <CodeActionItem>) {
-    constructor() : this (ArrayList())
-}
-
-data class CodeActionItem (
-    var title: String,
-    var changes: List<DocumentChange>)
-
-data class DocumentChange (var file: Path, var edits: List<TextEdit>)
-
-data class TextEdit (var range: Range, var newText: String)
+/**
+ * @author Akash Yadav
+ */
+data class ReferenceParams (var file: Path, var position: Position, var includeDeclaration: Boolean)
+data class ReferenceResult (var locations: List<Location>)

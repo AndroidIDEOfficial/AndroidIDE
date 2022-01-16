@@ -429,7 +429,19 @@ public class StringSearch {
             return false;
         }
         for (int i = 0; i < partialName.length (); i++) {
-            if (candidate.charAt (i) != partialName.charAt (i)) {
+            char char1 = candidate.charAt (i);
+            char char2 = partialName.charAt (i);
+            
+            // Match by keeping the first character of the partial name and candidate as is
+            // The make all the characters lower case
+            // So if the first character is upper case, we could assume that the user is expecting a class name
+            // Otherwise a variable name
+            if (i != 0) {
+                char1 = Character.toLowerCase (char1);
+                char2 = Character.toLowerCase (char2);
+            }
+            
+            if (char1 != char2) {
                 return false;
             }
         }
