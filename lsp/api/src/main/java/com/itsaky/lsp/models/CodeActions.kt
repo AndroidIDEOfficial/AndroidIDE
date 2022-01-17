@@ -18,8 +18,10 @@
 package com.itsaky.lsp.models
 
 import java.nio.file.Path
+import java.util.*
+import kotlin.collections.ArrayList
 
-data class CodeActionParams(var cursor: Position, var diagnostics: List<DiagnosticItem>)
+data class CodeActionParams(var file: Path, var range: Range, var diagnostics: List<DiagnosticItem>)
 
 data class CodeActionResult (var actions: List <CodeActionItem>) {
     constructor() : this (ArrayList())
@@ -27,8 +29,24 @@ data class CodeActionResult (var actions: List <CodeActionItem>) {
 
 data class CodeActionItem (
     var title: String,
-    var changes: List<DocumentChange>)
+    var changes: List<DocumentChange>,
+    var kind: CodeActionKind
+) {
+    constructor() : this ("", Collections.emptyList(), CodeActionKind.None)
+}
 
-data class DocumentChange (var file: Path, var edits: List<TextEdit>)
+enum class CodeActionKind {
+    QuickFix,
+    
+    None
+}
 
-data class TextEdit (var range: Range, var newText: String)
+data class DocumentChange (var file: Path?, var edits: List<TextEdit>) {
+    constructor() : this (null, Collections.emptyList())
+}
+
+data class TextEdit (var range: Range, var newText: String) {
+    companion object {
+        @JvmField val NONE: TextEdit = TextEdit(Range.NONE, "");
+    }
+}

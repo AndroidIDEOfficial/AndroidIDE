@@ -22,14 +22,15 @@ import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 
 public interface Rewrite {
     /** Perform a rewrite across the entire codebase. */
-    TextEdit rewrite(CompilerProvider compiler);
+    Map<Path, TextEdit[]> rewrite(CompilerProvider compiler);
     /** CANCELLED signals that the rewrite couldn't be completed. */
-    TextEdit CANCELLED = new TextEdit (Range.NONE, "");
+    Map<Path, TextEdit[]> CANCELLED = Collections.emptyMap ();
     
     Rewrite NOT_SUPPORTED = new RewriteNotSupported();
 }

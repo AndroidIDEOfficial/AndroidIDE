@@ -42,13 +42,8 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 public class EditHelper {
-    final JavacTask task;
     
-    public EditHelper(JavacTask task) {
-        this.task = task;
-    }
-    
-    TextEdit removeTree(final CompilationUnitTree root, final Tree remove) {
+    public static TextEdit removeTree(final JavacTask task, final CompilationUnitTree root, final Tree remove) {
         SourcePositions pos = Trees.instance(task).getSourcePositions();
         LineMap lines = root.getLineMap();
         long start = pos.getStartPosition(root, remove);
@@ -165,5 +160,13 @@ public class EditHelper {
         int line = (int) lines.getLineNumber(end);
         int column = (int) lines.getColumnNumber(end);
         return new Position(line - 1, column - 2);
+    }
+    
+    public static String repeatSpaces (int count) {
+        StringBuilder result = new StringBuilder ();
+        for (int i = 0; i < count; i++) {
+            result.append (" ");
+        }
+        return result.toString ();
     }
 }

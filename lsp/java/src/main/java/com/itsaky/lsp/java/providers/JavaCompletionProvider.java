@@ -1,4 +1,23 @@
-package com.itsaky.lsp.java.completion;
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.lsp.java.providers;
+
+import static com.itsaky.lsp.java.utils.EditHelper.repeatSpaces;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +33,9 @@ import com.itsaky.lsp.java.StringSearch;
 import com.itsaky.lsp.java.rewrite.AddImport;
 import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.utils.Extractors;
+import com.itsaky.lsp.java.utils.ScopeHelper;
+import com.itsaky.lsp.java.visitors.FindCompletionsAt;
+import com.itsaky.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.CompletionData;
 import com.itsaky.lsp.models.CompletionItem;
@@ -41,6 +63,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,7 +86,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.NoType;
-import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Types;
@@ -100,7 +122,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
         
         this.completingFile = file;
         this.cursor = task.root.getLineMap().getPosition(line, column);
-        StringBuilder contents = new PruneMethodBodies(task.task).scan(task.root, cursor);
+        StringBuilder contents = new PruneMethodBodies (task.task).scan(task.root, cursor);
         int endOfLine = endOfLine(contents, (int) cursor);
         contents.insert(endOfLine, ';');
         CompletionResult list = compileAndComplete(file, contents.toString(), cursor);
@@ -125,7 +147,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
         boolean endsWithParen = endsWithParen(contents, (int) cursor);
         try (CompileTask task = compiler.compile(Collections.singletonList (source))) {
             LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
-            TreePath path = new FindCompletionsAt(task.task).scan(task.root(), cursor);
+            TreePath path = new FindCompletionsAt (task.task).scan(task.root(), cursor);
             switch (path.getLeaf().getKind()) {
                 case IDENTIFIER:
                     return completeIdentifier(task, path, partial, endsWithParen);
@@ -595,7 +617,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
         }
         
         AddImport addImport = new AddImport(path, className);
-        return Collections.singletonList (addImport.rewrite(compiler));
+        return Arrays.asList (Objects.requireNonNull (addImport.rewrite (compiler).get (path)));
     }
 
     private CompletionItem snippetItem(String label, String snippet) {
@@ -697,7 +719,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
         String insertText = built.toString ();
         insertText = insertText.replace ("\n", "\n" + repeatSpaces (indent));
         
-        // TODO Auto-import required classes.
+        // TODO Auto-import required classes instead of specifying qualified names.
         CompletionItem item = new CompletionItem();
         item.setLabel (built.name);
         item.setKind (CompletionItemKind.METHOD);
@@ -726,14 +748,6 @@ public class JavaCompletionProvider implements ICompletionProvider {
         }
         sb.append (")");
         return null;
-    }
-    
-    private String repeatSpaces (int count) {
-        StringBuilder result = new StringBuilder ();
-        for (int i = 0; i < count; i++) {
-            result.append (" ");
-        }
-        return result.toString ();
     }
     
     @Nullable

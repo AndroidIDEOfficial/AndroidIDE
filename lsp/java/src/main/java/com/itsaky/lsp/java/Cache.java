@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /** Cache maps a file + an arbitrary key to a value. When the file is modified, the mapping expires. */
-class Cache<K, V> {
+public class Cache<K, V> {
     private static class Key<K> {
         final Path file;
         final K key;
@@ -41,11 +41,11 @@ class Cache<K, V> {
 
     private final Map<Key, Value> map = new HashMap<>();
 
-    boolean has(Path file, K k) {
+    public boolean has(Path file, K k) {
         return !needs(file, k);
     }
 
-    boolean needs(Path file, K k) {
+    public boolean needs(Path file, K k) {
         // If key is not in map, it needs to be loaded
         Key key = new Key<K>(file, k);
         if (!map.containsKey(key)) return true;
@@ -57,14 +57,14 @@ class Cache<K, V> {
         return value.created.isBefore(modified);
     }
 
-    void load(Path file, K k, V v) {
+    public void load(Path file, K k, V v) {
         // TODO limit total size of cache
         Key key = new Key<K>(file, k);
         Value value = new Value(v);
         map.put(key, value);
     }
 
-    V get(Path file, K k) {
+    public V get(Path file, K k) {
         Key key = new Key<K>(file, k);
         if (!map.containsKey(key)) {
             throw new IllegalArgumentException(k + " is not in map " + map);

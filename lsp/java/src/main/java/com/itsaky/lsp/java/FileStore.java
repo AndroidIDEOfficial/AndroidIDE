@@ -58,7 +58,7 @@ public class FileStore {
         }
     }
     
-    static void setWorkspaceRoots (Set<Path> newRoots) {
+    public static void setWorkspaceRoots (Set<Path> newRoots) {
         for (Path root : workspaceRoots) {
             if (!newRoots.contains (root)) {
                 workspaceRoots.removeIf (f -> f.startsWith (root));
@@ -81,7 +81,7 @@ public class FileStore {
         }
     }
     
-    static class FindJavaSources extends SimpleFileVisitor<Path> {
+    public static class FindJavaSources extends SimpleFileVisitor<Path> {
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
             if (attrs.isSymbolicLink()) {
@@ -100,11 +100,11 @@ public class FileStore {
         }
     }
     
-    static Collection<Path> all () {
+    public static Collection<Path> all () {
         return javaSources.keySet ();
     }
     
-    static List<Path> list (String packageName) {
+    public static List<Path> list (String packageName) {
         List<Path> list = new ArrayList<> ();
         for (Path file : javaSources.keySet ()) {
             if (Objects.requireNonNull (javaSources.get (file)).packageName.equals (packageName)) {
@@ -140,11 +140,11 @@ public class FileStore {
         return dir;
     }
     
-    static boolean contains (Path file) {
+    public static boolean contains (Path file) {
         return isJavaFile (file) && javaSources.containsKey (file);
     }
     
-    static Instant modified (Path file) {
+    public static Instant modified (Path file) {
         // If file is open, use last in-memory modification time
         if (activeDocuments.containsKey (file)) {
             return Objects.requireNonNull (activeDocuments.get (file)).modified;
@@ -157,7 +157,7 @@ public class FileStore {
         return Objects.requireNonNull (javaSources.get (file)).modified;
     }
     
-    static String packageName (Path file) {
+    public static String packageName (Path file) {
         // If we've never checked before, look up package name on disk
         if (!javaSources.containsKey (file)) {
             readInfoFromDisk (file);
@@ -201,15 +201,15 @@ public class FileStore {
         return list;
     }
     
-    static void externalCreate (Path file) {
+    public static void externalCreate (Path file) {
         readInfoFromDisk (file);
     }
     
-    static void externalChange (Path file) {
+    public static void externalChange (Path file) {
         readInfoFromDisk (file);
     }
     
-    static void externalDelete (Path file) {
+    public static void externalDelete (Path file) {
         javaSources.remove (file);
     }
     
@@ -226,7 +226,7 @@ public class FileStore {
         }
     }
     
-    static void open (DocumentOpenEvent params) {
+    public static void open (DocumentOpenEvent params) {
         Path document = params.getOpenedFile ();
         if (!isJavaFile (document)) {
             LOG.error ("Opened file is not a java file. Ignoring...");
@@ -236,7 +236,7 @@ public class FileStore {
         activeDocuments.put (document, new VersionedContent (params.getText (), params.getVersion ()));
     }
     
-    static void change (DocumentChangeEvent params) {
+    public static void change (DocumentChangeEvent params) {
         final Path document = params.getChangedFile ();
         if (!isJavaFile (document)) {
             LOG.error ("Changed file is not a java file. Ignoring...");
@@ -248,7 +248,7 @@ public class FileStore {
         activeDocuments.put (document, new VersionedContent (newText, params.getVersion ()));
     }
     
-    static void close (DocumentCloseEvent params) {
+    public static void close (DocumentCloseEvent params) {
         final Path document = params.getClosedFile ();
         if (!isJavaFile (document)) {
             LOG.error ("Closed file is not a java file. Ignoring...");
@@ -257,7 +257,7 @@ public class FileStore {
         activeDocuments.remove (document);
     }
     
-    static Set<Path> activeDocuments () {
+    public static Set<Path> activeDocuments () {
         return activeDocuments.keySet ();
     }
     
@@ -284,7 +284,7 @@ public class FileStore {
         }
     }
     
-    static InputStream inputStream (Path file) {
+    public static InputStream inputStream (Path file) {
         if (activeDocuments.containsKey (file)) {
             String string = Objects.requireNonNull (activeDocuments.get (file)).content;
             byte[] bytes = string.getBytes ();
@@ -302,7 +302,7 @@ public class FileStore {
         }
     }
     
-    static BufferedReader bufferedReader (Path file) {
+    public static BufferedReader bufferedReader (Path file) {
         if (activeDocuments.containsKey (file)) {
             String string = Objects.requireNonNull (activeDocuments.get (file)).content;
             return new BufferedReader (new StringReader (string));
@@ -318,14 +318,14 @@ public class FileStore {
         }
     }
     
-    static BufferedReader lines (Path file) {
+    public static BufferedReader lines (Path file) {
         return bufferedReader (file);
     }
     
     /**
      * Convert from line/column (1-based) to offset (0-based)
      */
-    static int offset (String contents, int line, int column) {
+    public static int offset (String contents, int line, int column) {
         line--;
         column--;
         int cursor = 0;
@@ -338,7 +338,7 @@ public class FileStore {
         return cursor + column;
     }
     
-    static boolean isJavaFile (@NonNull Path file) {
+    public static boolean isJavaFile (@NonNull Path file) {
         String name = file.getFileName ().toString ();
         // We hide module-info.java from javac, because when javac sees module-info.java
         // it goes into "module mode" and starts looking for classes on the module class path.
@@ -349,11 +349,11 @@ public class FileStore {
         return name.endsWith (".java") && !Files.isDirectory (file) && !name.equals ("module-info.java");
     }
     
-    static boolean isJavaFile (@NonNull URI uri) {
+    public static boolean isJavaFile (@NonNull URI uri) {
         return uri.getScheme ().equals ("file") && isJavaFile (Paths.get (uri));
     }
     
-    static Optional<Path> findDeclaringFile (@NonNull TypeElement el) {
+    public static Optional<Path> findDeclaringFile (@NonNull TypeElement el) {
         String qualifiedName = el.getQualifiedName ().toString ();
         String packageName = StringSearch.mostName (qualifiedName);
         String className = StringSearch.lastName (qualifiedName);

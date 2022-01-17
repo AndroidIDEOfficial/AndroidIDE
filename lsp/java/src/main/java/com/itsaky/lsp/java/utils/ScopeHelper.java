@@ -1,4 +1,21 @@
-package com.itsaky.lsp.java.completion;
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.lsp.java.utils;
 
 import com.itsaky.lsp.java.CompileTask;
 import com.sun.source.tree.Scope;
@@ -14,9 +31,9 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 
-class ScopeHelper {
+public class ScopeHelper {
     // TODO is this still necessary? Test speed. We could get rid of the extra static-imports step.
-    static List<Scope> fastScopes (Scope start) {
+    public static List<Scope> fastScopes (Scope start) {
         List<Scope> scopes = new ArrayList<Scope> ();
         for (Scope s = start; s != null; s = s.getEnclosingScope ()) {
             scopes.add (s);
@@ -29,7 +46,7 @@ class ScopeHelper {
         return scopes.subList (0, scopes.size () - 2);
     }
     
-    static List<Element> scopeMembers (CompileTask task, Scope inner, Predicate<CharSequence> filter) {
+    public static List<Element> scopeMembers (CompileTask task, Scope inner, Predicate<CharSequence> filter) {
         Trees trees = Trees.instance (task.task);
         Elements elements = task.task.getElements ();
         boolean isStatic = false;

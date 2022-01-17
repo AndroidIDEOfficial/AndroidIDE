@@ -23,7 +23,7 @@ data class Location (var file: Path, var range: Range)
 
 data class Position(var line: Int, var column: Int) {
     companion object {
-        @JvmField val NONE = Position (0, 0)
+        @JvmField val NONE = Position (-1, -1)
     }
 }
 

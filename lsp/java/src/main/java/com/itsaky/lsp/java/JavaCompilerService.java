@@ -2,6 +2,7 @@ package com.itsaky.lsp.java;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.utils.Extractors;
+import com.itsaky.lsp.java.visitors.FindTypeDeclarations;
 import com.sun.source.tree.CompilationUnitTree;
 
 import java.io.BufferedReader;

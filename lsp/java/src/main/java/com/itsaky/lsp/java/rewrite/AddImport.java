@@ -28,7 +28,9 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class AddImport implements Rewrite {
     final Path file;
@@ -40,11 +42,11 @@ public class AddImport implements Rewrite {
     }
     
     @Override
-    public TextEdit rewrite(CompilerProvider compiler) {
+    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         final ParseTask task = compiler.parse(file);
         Position point = insertPosition(task);
         String text = "import " + className + ";\n";
-        return new TextEdit(new Range (point, point), text);
+        return Collections.singletonMap (file, new TextEdit[]{new TextEdit(new Range (point, point), text)});
     }
     
     private Position insertPosition(ParseTask task) {

@@ -1,20 +1,38 @@
-package com.itsaky.lsp.java.completion;
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
 import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.java.CompileTask;
 import com.itsaky.lsp.java.CompilerProvider;
-import com.itsaky.lsp.java.FindHelper;
+import com.itsaky.lsp.java.utils.FindHelper;
 import com.itsaky.lsp.java.MarkdownHelper;
 import com.itsaky.lsp.java.ParseTask;
+import com.itsaky.lsp.java.utils.ScopeHelper;
 import com.itsaky.lsp.java.utils.ShortTypePrinter;
+import com.itsaky.lsp.java.visitors.FindInvocationAt;
 import com.itsaky.lsp.models.ParameterInformation;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.models.SignatureInformation;
 import com.sun.source.doctree.DocCommentTree;
-import com.sun.source.doctree.DocTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.IdentifierTree;
@@ -23,14 +41,11 @@ import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.Scope;
-import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.DocTrees;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
-import com.sun.tools.javac.parser.DocCommentParser;
-import com.sun.tools.javac.parser.Parser;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -76,12 +91,12 @@ public class SignatureProvider implements ISignatureHelpProvider {
         // TODO prune
         try (CompileTask task = compiler.compile(file)) {
             long cursor = task.root().getLineMap().getPosition(line, column);
-            TreePath path = new FindInvocationAt(task.task).scan(task.root(), cursor);
+            TreePath path = new FindInvocationAt (task.task).scan(task.root(), cursor);
             if (path == null) return NOT_SUPPORTED;
             if (path.getLeaf() instanceof MethodInvocationTree) {
                 MethodInvocationTree invoke = (MethodInvocationTree) path.getLeaf();
                 List<ExecutableElement> overloads = methodOverloads(task, invoke);
-                List<SignatureInformation> signatures = new ArrayList<SignatureInformation>();
+                List<SignatureInformation> signatures = new ArrayList<> ();
                 for (ExecutableElement method : overloads) {
                     SignatureInformation info = info(method);
                     addSourceInfo(task, method, info);
@@ -95,7 +110,7 @@ public class SignatureProvider implements ISignatureHelpProvider {
             if (path.getLeaf() instanceof NewClassTree) {
                 NewClassTree invoke = (NewClassTree) path.getLeaf();
                 List<ExecutableElement> overloads = constructorOverloads(task, invoke);
-                List<SignatureInformation> signatures = new ArrayList<SignatureInformation>();
+                List<SignatureInformation> signatures = new ArrayList<> ();
                 for (ExecutableElement method : overloads) {
                     SignatureInformation info = info(method);
                     addSourceInfo(task, method, info);
@@ -127,7 +142,7 @@ public class SignatureProvider implements ISignatureHelpProvider {
         Trees trees = Trees.instance(task.task);
         TreePath path = trees.getPath(task.root(), method);
         Scope scope = trees.getScope(path);
-        List<ExecutableElement> list = new ArrayList<ExecutableElement>();
+        List<ExecutableElement> list = new ArrayList<> ();
         Predicate<CharSequence> filter = name -> method.getName().contentEquals(name);
         // TODO add static imports
         for (Element member : ScopeHelper.scopeMembers(task, scope, filter)) {
@@ -150,7 +165,7 @@ public class SignatureProvider implements ISignatureHelpProvider {
             return Collections.emptyList ();
         }
         
-        List<ExecutableElement> list = new ArrayList<ExecutableElement>();
+        List<ExecutableElement> list = new ArrayList<> ();
         for (Element member : task.task.getElements().getAllMembers(type)) {
             if (member.getKind() != ElementKind.METHOD) continue;
             if (!member.getSimpleName().contentEquals(method.getIdentifier())) continue;
@@ -179,7 +194,7 @@ public class SignatureProvider implements ISignatureHelpProvider {
         TreePath path = trees.getPath(task.root(), method.getIdentifier());
         Scope scope = trees.getScope(path);
         TypeElement type = (TypeElement) trees.getElement(path);
-        List<ExecutableElement> list = new ArrayList<ExecutableElement>();
+        List<ExecutableElement> list = new ArrayList<> ();
         for (Element member : task.task.getElements().getAllMembers(type)) {
             if (member.getKind() != ElementKind.CONSTRUCTOR) continue;
             if (!trees.isAccessible(scope, member, (DeclaredType) type.asType())) continue;
@@ -201,7 +216,7 @@ public class SignatureProvider implements ISignatureHelpProvider {
 
     @NonNull
     private List<ParameterInformation> parameters(@NonNull ExecutableElement method) {
-        List<ParameterInformation> list = new ArrayList<ParameterInformation>();
+        List<ParameterInformation> list = new ArrayList<> ();
         for (VariableElement p : method.getParameters()) {
             list.add(parameter(p));
         }
@@ -249,7 +264,7 @@ public class SignatureProvider implements ISignatureHelpProvider {
 
     @NonNull
     private List<ParameterInformation> parametersFromSource(MethodTree source) {
-        List<ParameterInformation> list = new ArrayList<ParameterInformation>();
+        List<ParameterInformation> list = new ArrayList<> ();
         for (VariableTree p : source.getParameters()) {
             ParameterInformation info = new ParameterInformation ();
             info.setLabel (p.getType () + " " + p.getName ());
