@@ -24,11 +24,11 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 
-public class FindVariableAt extends TreeScanner<VariableTree, Integer> {
+public class FindVariableAtCursor extends TreeScanner<VariableTree, Integer> {
     private final SourcePositions pos;
     private CompilationUnitTree root;
     
-    public FindVariableAt(JavacTask task) {
+    public FindVariableAtCursor (JavacTask task) {
         pos = Trees.instance(task).getSourcePositions();
     }
     

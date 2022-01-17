@@ -19,7 +19,7 @@ package com.itsaky.lsp.java.rewrite;
 
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.parser.ParseTask;
-import com.itsaky.lsp.java.visitors.FindVariableAt;
+import com.itsaky.lsp.java.visitors.FindVariableAtCursor;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
@@ -75,7 +75,7 @@ public class ConvertVariableToStatement implements Rewrite {
     }
     
     static VariableTree findVariable(ParseTask task, int position) {
-        return new FindVariableAt (task.task).scan(task.root, position);
+        return new FindVariableAtCursor (task.task).scan(task.root, position);
     }
     
     /** https://docs.oracle.com/javase/specs/jls/se13/html/jls-14.html#jls-14.8 */
