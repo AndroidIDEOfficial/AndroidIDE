@@ -1,4 +1,23 @@
-package com.itsaky.lsp.java;
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.lsp.java.utils;
+
+import com.itsaky.lsp.java.FileStore;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -150,7 +169,7 @@ public class StringSearch {
         return startsWord (text, offset) && endsWord (text, offset + pattern.length - 1);
     }
     
-    int nextWord (String text) {
+    private int nextWord (String text) {
         return nextWord (text.getBytes ());
     }
     
@@ -218,7 +237,7 @@ public class StringSearch {
     private static final ByteBuffer SEARCH_BUFFER = ByteBuffer.allocateDirect (1024 * 1024);
     
     // TODO cache the progress made by searching shorter queries
-    static boolean containsWordMatching (Path java, String query) {
+    public static boolean containsWordMatching (Path java, String query) {
         if (FileStore.activeDocuments ().contains (java)) {
             String text = FileStore.contents (java);
             return matchesTitleCase (text, query);
@@ -240,7 +259,7 @@ public class StringSearch {
         }
     }
     
-    static boolean containsWord (Path java, String query) {
+    public static boolean containsWord (Path java, String query) {
         StringSearch search = new StringSearch (query);
         if (FileStore.activeDocuments ().contains (java)) {
             byte[] text = FileStore.contents (java).getBytes ();
@@ -349,7 +368,7 @@ public class StringSearch {
         return Character.isAlphabetic (c) || Character.isDigit (c) || c == '_' || c == '$';
     }
     
-    static boolean containsType (Path file, TypeElement el) {
+    public static boolean containsType (Path file, TypeElement el) {
         switch (el.getKind ()) {
             case INTERFACE:
                 return containsInterface (file, el.getSimpleName ().toString ());
@@ -381,13 +400,13 @@ public class StringSearch {
     }
     
     // TODO this doesn't work for inner classes, eliminate
-    static String mostName (String name) {
+    public static String mostName (String name) {
         int lastDot = name.lastIndexOf ('.');
         return lastDot == -1 ? "" : name.substring (0, lastDot);
     }
     
     // TODO this doesn't work for inner classes, eliminate
-    static String lastName (String name) {
+    public static String lastName (String name) {
         int i = name.lastIndexOf ('.');
         if (i == -1) {
             return name;
@@ -396,7 +415,7 @@ public class StringSearch {
         }
     }
     
-    static String fileName (URI uri) {
+    public static String fileName (URI uri) {
         String[] parts = uri.toString ().split ("/");
         if (parts.length == 0) {
             return "";
@@ -404,7 +423,7 @@ public class StringSearch {
         return parts[parts.length - 1];
     }
     
-    static String packageName (Path file) {
+    public static String packageName (Path file) {
         Pattern packagePattern = Pattern.compile ("^package +(.*);");
         Pattern startOfClass = Pattern.compile ("^[\\w ]*class +\\w+");
         try (BufferedReader lines = FileStore.lines (file)) {

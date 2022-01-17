@@ -30,6 +30,7 @@ import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.api.IReferenceProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.api.ISignatureHelpProvider;
+import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.providers.JavaCompletionProvider;
 import com.itsaky.lsp.java.providers.SignatureProvider;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;

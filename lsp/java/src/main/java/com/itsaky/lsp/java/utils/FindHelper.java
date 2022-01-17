@@ -17,8 +17,8 @@
 
 package com.itsaky.lsp.java.utils;
 
-import com.itsaky.lsp.java.CompileTask;
-import com.itsaky.lsp.java.ParseTask;
+import com.itsaky.lsp.java.compiler.CompileTask;
+import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationNamed;
 import com.itsaky.lsp.models.Location;
 import com.itsaky.lsp.models.Position;

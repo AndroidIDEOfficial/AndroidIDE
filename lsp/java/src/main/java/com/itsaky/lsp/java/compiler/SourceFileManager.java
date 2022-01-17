@@ -1,5 +1,24 @@
-package com.itsaky.lsp.java;
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
+package com.itsaky.lsp.java.compiler;
+
+import com.itsaky.lsp.java.FileStore;
+import com.itsaky.lsp.java.utils.StringSearch;
 import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
@@ -12,9 +31,9 @@ import java.util.stream.Stream;
 
 import javax.tools.*;
 
-class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
+public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
     
-    SourceFileManager() {
+    public SourceFileManager() {
         super(createDelegateFileManager());
     }
 
@@ -40,7 +59,7 @@ class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManage
 
     private JavaFileObject asJavaFileObject(Path file) {
         // TODO erase method bodies of files that are not open
-        return new SourceFileObject(file);
+        return new SourceFileObject (file);
     }
 
     @Override

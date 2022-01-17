@@ -1,8 +1,30 @@
-package com.itsaky.lsp.java;
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.lsp.java.compiler;
 
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.java.FileStore;
+import com.itsaky.lsp.java.parser.ParseTask;
+import com.itsaky.lsp.java.parser.Parser;
+import com.itsaky.lsp.java.utils.ScanClassPath;
+import com.itsaky.lsp.java.utils.Cache;
 import com.itsaky.lsp.java.utils.Extractors;
-import com.itsaky.lsp.java.utils.SynchronizedTask;
+import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarations;
 import com.sun.source.tree.CompilationUnitTree;
 
@@ -28,7 +50,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
-class JavaCompilerService implements CompilerProvider {
+public class JavaCompilerService implements CompilerProvider {
     
     private CompileBatch cachedCompile;
     
@@ -37,14 +59,14 @@ class JavaCompilerService implements CompilerProvider {
     final ReusableCompiler compiler = new ReusableCompiler ();
     final SynchronizedTask synchronizedTask = new SynchronizedTask ();
     final ReentrantLock lock = new ReentrantLock ();
-    final List<Diagnostic<? extends JavaFileObject>> diags = new ArrayList<> ();
+    final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<> ();
     final Map<JavaFileObject, Long> cachedModified = new HashMap<> ();
     
     // Use the same file manager for multiple tasks, so we don't repeatedly re-compile the same files
     // TODO intercept files that aren't in the batch and erase method bodies so compilation is faster
     final SourceFileManager fileManager;
     
-    JavaCompilerService (Set<Path> classPath, Set<Path> docPath) {
+    public JavaCompilerService (Set<Path> classPath, Set<Path> docPath) {
         LOG.debug ("Class path:");
         for (Path p : classPath) {
             LOG.debug ("  " + p);
@@ -341,7 +363,7 @@ class JavaCompilerService implements CompilerProvider {
     public synchronized SynchronizedTask compile (Collection<? extends JavaFileObject> sources) {
         synchronized (synchronizedTask) {
             final CompileBatch compile = compileBatch (sources);
-            final CompileTask compileTask = new CompileTask (compile, diags);
+            final CompileTask compileTask = new CompileTask (compile, diagnostics);
             synchronizedTask.setTask (compileTask);
             return synchronizedTask;
         }

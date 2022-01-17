@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.java.utils;
 
-import com.itsaky.lsp.java.CompileTask;
+import com.itsaky.lsp.java.compiler.CompileTask;
 import com.sun.source.tree.Scope;
 import com.sun.source.util.Trees;
 

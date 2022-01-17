@@ -17,10 +17,9 @@
 
 package com.itsaky.lsp.java.rewrite;
 
-import com.itsaky.lsp.java.CompileTask;
-import com.itsaky.lsp.java.CompilerProvider;
+import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.utils.FindHelper;
-import com.itsaky.lsp.java.utils.SynchronizedTask;
+import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;

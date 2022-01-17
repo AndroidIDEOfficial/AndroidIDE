@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.java.visitors;
 
-import com.itsaky.lsp.java.CompileTask;
+import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.utils.FindHelper;
 import com.sun.source.tree.*;
 import com.sun.source.util.*;

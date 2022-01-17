@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.java.rewrite;
 
-import com.itsaky.lsp.java.CompilerProvider;
+import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.models.TextEdit;
 
 import java.nio.file.Path;

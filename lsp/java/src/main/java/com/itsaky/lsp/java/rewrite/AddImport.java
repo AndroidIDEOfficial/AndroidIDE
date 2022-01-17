@@ -17,8 +17,8 @@
 
 package com.itsaky.lsp.java.rewrite;
 
-import com.itsaky.lsp.java.CompilerProvider;
-import com.itsaky.lsp.java.ParseTask;
+import com.itsaky.lsp.java.compiler.CompilerProvider;
+import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;

@@ -1,8 +1,27 @@
-package com.itsaky.lsp.java;
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
-import android.text.TextUtils;
+package com.itsaky.lsp.java.parser;
 
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.java.FileStore;
+import com.itsaky.lsp.java.compiler.SourceFileManager;
+import com.itsaky.lsp.java.compiler.SourceFileObject;
+import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.BlockTree;
@@ -47,7 +66,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 
-class Parser {
+public class Parser {
     
     private static final JavaCompiler COMPILER = JavacTool.create ();
     private static final SourceFileManager FILE_MANAGER = new SourceFileManager ();
@@ -66,11 +85,11 @@ class Parser {
                 );
     }
     
-    final JavaFileObject file;
-    final String contents;
-    final JavacTask task;
-    final CompilationUnitTree root;
-    final Trees trees;
+    public final JavaFileObject file;
+    public final String contents;
+    public final JavacTask task;
+    public final CompilationUnitTree root;
+    public final Trees trees;
     
     private Parser (JavaFileObject file) {
         this.file = file;
@@ -88,7 +107,7 @@ class Parser {
         this.trees = Trees.instance (task);
     }
     
-    static Parser parseFile (Path file) {
+    public static Parser parseFile (Path file) {
         return parseJavaFileObject (new SourceFileObject (file));
     }
     
@@ -111,7 +130,7 @@ class Parser {
         cachedModified = file.getLastModified ();
     }
     
-    static Parser parseJavaFileObject (JavaFileObject file) {
+    public static Parser parseJavaFileObject (JavaFileObject file) {
         if (needsParse (file)) {
             loadParse (file);
         } else {
@@ -120,8 +139,8 @@ class Parser {
         return cachedParse;
     }
     
-    Set<Name> packagePrivateClasses () {
-        Set<Name> result = new HashSet<Name> ();
+    public Set<Name> packagePrivateClasses () {
+        Set<Name> result = new HashSet<> ();
         for (Tree t : root.getTypeDecls ()) {
             if (t instanceof ClassTree) {
                 ClassTree c = (ClassTree) t;
@@ -134,7 +153,7 @@ class Parser {
         return result;
     }
     
-    static Range range (JavacTask task, CharSequence contents, TreePath path) {
+    public static Range range (JavacTask task, CharSequence contents, TreePath path) {
         // Find start position
         Trees trees = Trees.instance (task);
         SourcePositions pos = trees.getSourcePositions ();
@@ -258,7 +277,7 @@ class Parser {
         return leaf.toString ();
     }
     
-    List<String> accessibleClasses (String partialName, String fromPackage) {
+    public List<String> accessibleClasses (String partialName, String fromPackage) {
         String toPackage = Objects.toString (root.getPackageName (), "");
         boolean samePackage = fromPackage.equals (toPackage) || toPackage.isEmpty ();
         List<String> result = new ArrayList<String> ();
