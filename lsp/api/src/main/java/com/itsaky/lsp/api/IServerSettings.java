@@ -59,4 +59,10 @@ public interface IServerSettings {
      * @return {@code true} if enabled, {@code false} otherwise.
      */
     boolean definitionsEnabled ();
+    
+    /**
+     * Called by the language server to check if code analysis is enabled.
+     * @return {@code true} if enabled, {@code false} otherwise.
+     */
+    boolean codeAnalysisEnabled ();
 }

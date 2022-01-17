@@ -132,6 +132,13 @@ public interface ILanguageServer {
     IDocumentHandler getDocumentHandler ();
     
     /**
+     * Get the code analyzer associated with this language server.
+     * @return The code analyzer.
+     */
+    @NonNull
+    ICodeAnalyzer getCodeAnalyzer ();
+    
+    /**
      * Thrown to indicate that a language server received an initialize notification
      * but was already initialized.
      *

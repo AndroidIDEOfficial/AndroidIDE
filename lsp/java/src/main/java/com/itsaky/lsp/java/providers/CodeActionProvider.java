@@ -101,18 +101,21 @@ public class CodeActionProvider implements ICodeActionProvider {
     
     public CodeActionResult codeActionsForCursor(CodeActionParams params) {
         final Path file = params.getFile ();
+        
+        // 1-based line and column index
+        final int line = params.getRange ().getStart ().getLine () + 1;
+        final int column = params.getRange ().getStart ().getColumn () + 1;
+        
         LOG.info(String.format(Locale.getDefault (), "Find code actions at %s(%d)...", file.getFileName (), params.getRange().getStart().getLine() + 1));
         Instant started = Instant.now();
-        // TODO this get-map / convert-to-CodeAction split is an ugly workaround of the fact that we need a new compile
-        // task to generate the code actions
-        // If we switch to resolving code actions asynchronously using Command, that will fix this problem.
+        
         final TreeMap<String, Rewrite> rewrites = new TreeMap<> ();
         try (final SynchronizedTask synchronizedTask = compiler.compile(file)) {
             synchronizedTask.runWithTask (task -> {
                 long elapsed = Duration.between(started, Instant.now()).toMillis();
                 LOG.info(String.format(Locale.getDefault (), "...compiled in %d ms", elapsed));
                 final LineMap lines = task.root().getLineMap();
-                final long cursor = lines.getPosition(params.getRange().getStart().getLine() + 1, params.getRange().getStart().getColumn () + 1);
+                final long cursor = lines.getPosition(line, column);
                 rewrites.putAll(overrideInheritedMethods(task, file, cursor));
             });
         }

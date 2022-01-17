@@ -19,6 +19,7 @@ package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.IDefinitionProvider;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -53,6 +54,8 @@ public class DefinitionProvider implements IDefinitionProvider {
     
     public static final List<Location> NOT_SUPPORTED = Collections.emptyList ();
     
+    private static final Logger LOG = Logger.instance ("JavaDefinitionProvider");
+    
     public DefinitionProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
@@ -61,9 +64,14 @@ public class DefinitionProvider implements IDefinitionProvider {
     @Override
     public DefinitionResult findDefinitions (DefinitionParams params) {
         this.file = params.getFile ();
-        this.line = params.getPosition ().getLine ();
-        this.column = params.getPosition ().getColumn ();
-        return new DefinitionResult (find ());
+        
+        // 1-based line and column index
+        this.line = params.getPosition ().getLine () + 1;
+        this.column = params.getPosition ().getColumn () + 1;
+        final List<Location> locations = find ();
+        
+        LOG.debug ("Found", locations.size (), "definitions...");
+        return new DefinitionResult (locations);
     }
     
     public List<Location> find() {
@@ -71,23 +79,28 @@ public class DefinitionProvider implements IDefinitionProvider {
             return synchronizedTask.getWithTask (task -> {
                 Element element = NavigationHelper.findElement(task, file, line, column);
                 if (element == null) {
+                    LOG.error ("Cannot find element at line:", line, "and column:", column);
                     return NOT_SUPPORTED;
                 }
                 
                 if (element.asType().getKind() == TypeKind.ERROR) {
                     task.close();
+                    LOG.debug ("Find definition of error element:", element);
                     return findError(element);
                 }
                 // TODO instead of checking isLocal, just try to resolve the location, fall back to searching
                 if (NavigationHelper.isLocal(element)) {
+                    LOG.debug ("Find definition of local element:", element);
                     return findDefinitions(task, element);
                 }
                 String className = className(element);
                 if (className.isEmpty()) {
+                    LOG.error ("No class name found for element:", element);
                     return NOT_SUPPORTED;
                 }
                 Optional<JavaFileObject> otherFile = compiler.findAnywhere(className);
                 if (!otherFile.isPresent ()) {
+                    LOG.error ("Cannot find source file for class:", className);
                     return Collections.emptyList ();
                 }
                 
@@ -95,7 +108,7 @@ public class DefinitionProvider implements IDefinitionProvider {
                     return findDefinitions(task, element);
                 }
                 task.close();
-
+                
                 return findRemoteDefinitions(otherFile.get());
             });
         }
@@ -118,6 +131,7 @@ public class DefinitionProvider implements IDefinitionProvider {
     private List<Location> findAllMembers(String className, String memberName) {
         Optional<JavaFileObject> otherFile = compiler.findAnywhere(className);
         if (!otherFile.isPresent ()) {
+            LOG.error ("Cannot find source file for class:", className);
             return Collections.emptyList ();
         }
         
@@ -171,6 +185,7 @@ public class DefinitionProvider implements IDefinitionProvider {
         Trees trees = Trees.instance(task.task);
         TreePath path = trees.getPath(element);
         if (path == null) {
+            LOG.error ("TreePath of element is null. Cannot find definition.", "Element is", element);
             return Collections.emptyList ();
         }
         

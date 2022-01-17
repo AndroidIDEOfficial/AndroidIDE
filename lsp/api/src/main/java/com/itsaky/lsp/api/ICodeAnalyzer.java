@@ -15,20 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.util
+package com.itsaky.lsp.api;
 
-import com.itsaky.lsp.api.IServerSettings
+import androidx.annotation.NonNull;
+
+import com.itsaky.lsp.models.AnalyzeParams;
+import com.itsaky.lsp.models.AnalyzeResult;
 
 /**
- * Default settings for a language server.
+ * A code analyzer analyzes the code and provides
+ * diagnostics and semantic highlighting.
  *
  * @author Akash Yadav
  */
-class DefaultServerSettings : IServerSettings {
-    override fun completionsEnabled(): Boolean = true
-    override fun codeActionsEnabled(): Boolean = true
-    override fun signatureHelpEnabled(): Boolean = true
-    override fun referencesEnabled(): Boolean = true
-    override fun definitionsEnabled(): Boolean = true
-    override fun codeAnalysisEnabled(): Boolean = true
+public interface ICodeAnalyzer {
+    
+    /**
+     * Analyze the file given in the params.
+     * @param params The params for code analysis.
+     * @return The result of the analysis containing diagnostics and semantic highlighting.
+     */
+    @NonNull
+    AnalyzeResult analyze (AnalyzeParams params);
 }

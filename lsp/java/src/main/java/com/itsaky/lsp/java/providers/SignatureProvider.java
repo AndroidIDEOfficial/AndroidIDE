@@ -88,7 +88,12 @@ public class SignatureProvider implements ISignatureHelpProvider {
                 params.getPosition ().getColumn ());
     }
     
-    public SignatureHelp signatureHelp(Path file, int line, int column) {
+    public SignatureHelp signatureHelp(Path file, int l, int c) {
+        
+        // 1-based line and column index
+        final int line = l + 1;
+        final int column = c + 1;
+        
         // TODO prune
         try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
             return synchronizedTask.getWithTask (task -> {

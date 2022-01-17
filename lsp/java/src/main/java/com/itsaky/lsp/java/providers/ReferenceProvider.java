@@ -56,8 +56,10 @@ public class ReferenceProvider implements IReferenceProvider {
     @Override
     public ReferenceResult findReferences (ReferenceParams params) {
         this.file = params.getFile ();
-        this.line = params.getPosition ().getLine ();
-        this.column = params.getPosition ().getColumn ();
+        
+        // 1-based line and column indexes
+        this.line = params.getPosition ().getLine () + 1;
+        this.column = params.getPosition ().getColumn ()+ 1;
         return new ReferenceResult (find());
     }
     

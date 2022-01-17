@@ -82,8 +82,6 @@ public class ReusableCompiler {
     private ReusableContext currentContext;
     private boolean checkedOut;
     
-    private static Borrow lastBorrow;
-    
     /**
      * Creates a new task as if by {@link javax.tools.JavaCompiler#getTask} and runs the provided worker with it. The
      * task is only valid while the worker is running. The internal structures may be reused from some previous
@@ -108,9 +106,8 @@ public class ReusableCompiler {
             Iterable<String> classes,
             Iterable<? extends JavaFileObject> compilationUnits) {
         
-        if (lastBorrow != null && checkedOut) {
-            // If the compiler is in use, try to cleanup the last task
-            lastBorrow.close ();
+        if (checkedOut) {
+            throw new RuntimeException ("Compiler us already in use.");
         }
         
         checkedOut = true;
@@ -127,7 +124,7 @@ public class ReusableCompiler {
         
         task.addTaskListener (currentContext);
         
-        return lastBorrow = new Borrow (task);
+        return new Borrow (task);
     }
     
     class Borrow implements AutoCloseable {

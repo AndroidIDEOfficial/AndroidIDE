@@ -21,9 +21,9 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.parser.Parser;
-import com.itsaky.lsp.java.utils.ScanClassPath;
 import com.itsaky.lsp.java.utils.Cache;
 import com.itsaky.lsp.java.utils.Extractors;
+import com.itsaky.lsp.java.utils.ScanClassPath;
 import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarations;
 import com.sun.source.tree.CompilationUnitTree;
@@ -67,17 +67,6 @@ public class JavaCompilerService implements CompilerProvider {
     final SourceFileManager fileManager;
     
     public JavaCompilerService (Set<Path> classPath, Set<Path> docPath) {
-        LOG.debug ("Class path:");
-        for (Path p : classPath) {
-            LOG.debug ("  " + p);
-        }
-    
-        LOG.debug ("Doc path:");
-        for (Path p : docPath) {
-            LOG.debug ("  " + p);
-        }
-        
-        // classPath can't actually be modified, because JavaCompiler remembers it from task to task
         this.classPath = Collections.unmodifiableSet (classPath);
         this.docPath = Collections.unmodifiableSet (docPath);
         this.classPathClasses = ScanClassPath.classPathTopLevelClasses (classPath);

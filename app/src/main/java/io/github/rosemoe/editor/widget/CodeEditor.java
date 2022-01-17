@@ -227,10 +227,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private boolean mLineNumberEnabled;
     private boolean mBlockLineEnabled;
     private boolean mAutoCompletionEnabled;
-    private boolean mFindReferencesEnabled;
-    private boolean mGotoDefinitionEnabled;
-    private boolean mCodeActionsEnabled;
-    private boolean mSignatureHelpEnabled;
     private boolean mCompletionOnComposing;
     private boolean mHighlightSelectedText;
     private boolean mHighlightCurrentBlock;
@@ -2546,54 +2542,11 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mCompletionWindow.hide ();
         }
     }
-    
-    /**
-     * Specify whether we should provide any code actions
-     * <p>
-     */
-    public void setCodeActionsEnabled (boolean codeActionsEnabled) {
-        mCodeActionsEnabled = codeActionsEnabled;
-    }
-    
-    /**
-     * Specify whether we should provide any 'Go to definition' support
-     */
-    public void setGotoDefinitionEnabled (boolean gotoDefinitionEnabled) {
-        mGotoDefinitionEnabled = gotoDefinitionEnabled;
-    }
-    
-    /**
-     * Specify whether we should provide any 'Find references' support
-     */
-    public void setFindReferencesEnabled (boolean findReferencesEnabled) {
-        mFindReferencesEnabled = findReferencesEnabled;
-    }
-    
-    public void setSignatureHelpEnabled (boolean enabled) {
-        this.mSignatureHelpEnabled = enabled;
-    }
-    
     /**
      * @see CodeEditor#setAutoCompletionEnabled(boolean)
      */
     public boolean isAutoCompletionEnabled () {
         return mAutoCompletionEnabled;
-    }
-    
-    public boolean isCodeActionsEnabled () {
-        return mCodeActionsEnabled && mLanguageServer != null;
-    }
-    
-    public boolean isGotoDefinitionEnabled () {
-        return mGotoDefinitionEnabled && mLanguageServer != null;
-    }
-    
-    public boolean isFindReferencesEnabled () {
-        return mFindReferencesEnabled && mLanguageServer != null;
-    }
-    
-    public boolean isSignatureHelpEnabled () {
-        return mSignatureHelpEnabled && mLanguageServer != null;
     }
     
     /**
@@ -4502,7 +4455,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     
     @SuppressWarnings ("deprecation")
     public void findDefinition () {
-        if (!isGotoDefinitionEnabled () || getFile () == null) {
+        if (getFile () == null) {
             return;
         }
         
@@ -4536,6 +4489,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     
                 final var locations = result.getLocations ();
                 if (locations.size () <= 0) {
+                    LOG.error ("No definitions found", "Size:", locations.size ());
                     showDefinitionNotFound (pd);
                     return;
                 }
@@ -4565,7 +4519,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     public void findReferences () {
-        if (!isFindReferencesEnabled () || getFile () == null) {
+        if (getFile () == null) {
             return;
         }
     
@@ -4621,8 +4575,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     public void signatureHelp (String insertedContent) {
-        if (mSignatureHelpEnabled
-                && mLanguageServer != null
+        if (mLanguageServer != null
                 && getFile () != null
                 && mSignatureHelpTriggerChars != null
                 && mSignatureHelpTriggerChars.size () > 0

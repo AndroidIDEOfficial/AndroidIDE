@@ -103,18 +103,14 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                             .setShowAsActionFlags(2)
                             .setIcon(array.getDrawable(3));
                     }
-
-                    if (mEditor.isGotoDefinitionEnabled()) {
-                        menu.add(0, 4, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_definition))
+    
+                    menu.add(0, 4, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_definition))
                             .setShowAsActionFlags(1)
                             .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_goto_definition));
-                    }
-
-                    if (mEditor.isFindReferencesEnabled()) {
-                        menu.add(0, 5, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_references))
+    
+                    menu.add(0, 5, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_references))
                             .setShowAsActionFlags(1)
                             .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_find_references));
-                    }
 
                     menu.add(0, 6, 0, mEditor.getContext().getString(com.itsaky.androidide.R.string.menu_comment_line))
                         .setShowAsActionFlags(1)

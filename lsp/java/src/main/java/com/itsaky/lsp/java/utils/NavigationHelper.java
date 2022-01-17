@@ -48,9 +48,9 @@ import javax.lang.model.element.Modifier;
 public class NavigationHelper {
     
     public static Element findElement(CompileTask task, Path file, int line, int column) {
+        Trees trees = Trees.instance(task.task);
         for (CompilationUnitTree root : task.roots) {
             if (root.getSourceFile().toUri().equals(file.toUri())) {
-                Trees trees = Trees.instance(task.task);
                 long cursor = root.getLineMap().getPosition(line, column);
                 TreePath path = new FindNameAt (task).scan(root, cursor);
                 if (path == null) {

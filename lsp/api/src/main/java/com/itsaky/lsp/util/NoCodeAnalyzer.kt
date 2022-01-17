@@ -17,18 +17,14 @@
 
 package com.itsaky.lsp.util
 
-import com.itsaky.lsp.api.IServerSettings
+import com.itsaky.lsp.api.ICodeAnalyzer
+import com.itsaky.lsp.models.AnalyzeParams
+import com.itsaky.lsp.models.AnalyzeResult
+import java.util.*
 
 /**
- * Default settings for a language server.
- *
  * @author Akash Yadav
  */
-class DefaultServerSettings : IServerSettings {
-    override fun completionsEnabled(): Boolean = true
-    override fun codeActionsEnabled(): Boolean = true
-    override fun signatureHelpEnabled(): Boolean = true
-    override fun referencesEnabled(): Boolean = true
-    override fun definitionsEnabled(): Boolean = true
-    override fun codeAnalysisEnabled(): Boolean = true
+class NoCodeAnalyzer : ICodeAnalyzer {
+    override fun analyze(params: AnalyzeParams?): AnalyzeResult = AnalyzeResult(Collections.emptyList(), Collections.emptyList());
 }

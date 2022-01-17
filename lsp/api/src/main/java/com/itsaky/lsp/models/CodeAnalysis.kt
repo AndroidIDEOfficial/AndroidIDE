@@ -15,20 +15,9 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.util
+package com.itsaky.lsp.models
 
-import com.itsaky.lsp.api.IServerSettings
+import java.nio.file.Path
 
-/**
- * Default settings for a language server.
- *
- * @author Akash Yadav
- */
-class DefaultServerSettings : IServerSettings {
-    override fun completionsEnabled(): Boolean = true
-    override fun codeActionsEnabled(): Boolean = true
-    override fun signatureHelpEnabled(): Boolean = true
-    override fun referencesEnabled(): Boolean = true
-    override fun definitionsEnabled(): Boolean = true
-    override fun codeAnalysisEnabled(): Boolean = true
-}
+data class AnalyzeParams(var file: Path)
+data class AnalyzeResult (var diagnostics: List<DiagnosticItem>, var semanticHighlights: List<Int>)
