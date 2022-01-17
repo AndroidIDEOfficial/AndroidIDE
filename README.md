@@ -25,9 +25,10 @@ More features will be implemented as we continue to develop this app.
   - [ ] Android Widgets (*)
 - [ ] String Translator
 - [ ] Asset Studio (Drawable & Icon Maker)
-- [ ] Git
+- [ ] Git (*)
 
 Items marked with ```(*)``` are partially implemented.
+Git is currently available only in the terminal i.e. no GUI interface for `git`.
 
 ## Limitations
 - Gradle Wrapper is supported. But, it requires that the project's application module is named 'app'. 
@@ -100,7 +101,6 @@ If you do and want us to feature it here, open an issue.
 - [Termux](https://github.com/termux) for [Terminal Emulator](https://github.com/termux/termux-app)
 - [Bogdan Melnychuk](https://github.com/bmelnychuk) for [AndroidTreeView](https://github.com/bmelnychuk/AndroidTreeView)
 - [George Fraser](https://github.com/georgewfraser) for the [Java Language Server](https://github.com/georgewfraser/java-language-server)
-- [Eclipse Foundation](https://github.com/eclipse) for [LSP4J](https://github.com/eclipse/lsp4j)
 
 And all the developers who have contributed to this project.
 
