@@ -673,8 +673,20 @@ public class JavaCompletionProvider implements ICompletionProvider {
      */
     @NonNull
     private CompletionItem overrideIfPossible (@NonNull CompileTask task, TreePath parentPath, @NonNull ExecutableElement method, boolean endsWithParen) {
+        
+        if (parentPath.getLeaf ().getKind () != Tree.Kind.CLASS) {
+            // Can only override if the cursor is directly in a class declaration
+            return method (task, Collections.singletonList (method), !endsWithParen);
+        }
+        
         final Types types = task.task.getTypes();
         final Element parentElement = Trees.instance(task.task).getElement(parentPath);
+        
+        if (parentElement == null) {
+            // Can't get further information for overriding this method
+            return method (task, Collections.singletonList (method), !endsWithParen);
+        }
+        
         final DeclaredType type = (DeclaredType) parentElement.asType();
         final Element enclosing = method.getEnclosingElement ();
         
@@ -686,6 +698,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
                 || isNotOverridable
                 || !types.isAssignable (type, enclosing.asType ())
                 || !(parentPath.getLeaf () instanceof ClassTree)) {
+            // Override is not possible
             return method (task, Collections.singletonList (method), !endsWithParen);
         }
         

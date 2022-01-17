@@ -129,6 +129,7 @@ import io.github.rosemoe.editor.util.LongArrayList;
  *
  * @author Rosemoe
  */
+@SuppressWarnings ("unused")
 public class CodeEditor extends View implements ContentListener, TextAnalyzer.Callback, FormatThread.FormatResultReceiver, LineRemoveListener {
     
     /**
@@ -3240,7 +3241,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * @return first visible row
      */
     public int getFirstVisibleRow () {
-        return (int) Math.max (0, getOffsetY () / getRowHeight ());
+        return Math.max (0, getOffsetY () / getRowHeight ());
     }
     
     /**
@@ -3249,7 +3250,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * @return last visible row
      */
     public int getLastVisibleRow () {
-        return (int) Math.max (0, (getOffsetY () + getHeight ()) / getRowHeight ());
+        return Math.max (0, (getOffsetY () + getHeight ()) / getRowHeight ());
     }
     
     /**
@@ -4689,12 +4690,12 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             return null;
         }
         
-        return CompletableFuture.supplyAsync (() -> {
-            return mLanguageServer.getCodeActionProvider ().codeActions (new CodeActionParams (
-                    getCursorAsLSPPosition (),
-                    diagnostics
-            ));
-        });
+        return CompletableFuture.supplyAsync (() -> mLanguageServer.getCodeActionProvider ()
+            .codeActions (new CodeActionParams (
+                getFile ().toPath (),
+                getCursorRange (),
+                diagnostics
+        )));
     }
     
     public Position getCursorAsLSPPosition () {

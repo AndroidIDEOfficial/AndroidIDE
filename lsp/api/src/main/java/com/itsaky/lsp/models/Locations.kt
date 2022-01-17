@@ -22,6 +22,22 @@ import java.nio.file.Path
 data class Location (var file: Path, var range: Range)
 
 data class Position(var line: Int, var column: Int) {
+    
+    /**
+     * Validate the line and column positions if necessary.
+     * This checks if the values are negative or not. If they are,
+     * sets them to 0.
+     */
+    fun validate () {
+        if (line < 0) {
+            line = 0
+        }
+        
+        if (column < 0) {
+            column = 0
+        }
+    }
+    
     companion object {
         @JvmField val NONE = Position (-1, -1)
     }
@@ -33,6 +49,15 @@ open class Range(var start: Position, var end: Position) {
     
     companion object {
         @JvmField val NONE = Range (Position.NONE, Position.NONE);
+    }
+    
+    /**
+     * Validate the start and end positions.
+     * @see Position.validate()
+     */
+    fun validate () {
+        start.validate()
+        end.validate()
     }
     
     override fun equals(other: Any?): Boolean {

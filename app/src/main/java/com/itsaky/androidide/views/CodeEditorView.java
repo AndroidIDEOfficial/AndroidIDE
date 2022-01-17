@@ -39,6 +39,7 @@ import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.Range;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
@@ -121,7 +122,7 @@ public class CodeEditorView extends FrameLayout {
         }
     };
     
-    public CodeEditorView (@NonNull Context context, @NonNull File file, final @NonNull com.itsaky.lsp.models.Range selection) {
+    public CodeEditorView (@NonNull Context context, @NonNull File file, final @NonNull Range selection) {
         super (context);
         this.file = file;
         this.isModified = false;
@@ -144,6 +145,7 @@ public class CodeEditorView extends FrameLayout {
         removeAllViews ();
         addView (this.binding.getRoot ());
         
+        selection.validate();
         CompletableFuture.runAsync (() -> {
             final var contents = FileIOUtils.readFile2String (file);
             binding.editor.post (() -> {
