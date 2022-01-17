@@ -31,9 +31,12 @@ import com.itsaky.lsp.api.IReferenceProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
-import com.itsaky.lsp.java.providers.JavaCompletionProvider;
-import com.itsaky.lsp.java.providers.SignatureProvider;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
+import com.itsaky.lsp.java.providers.CodeActionProvider;
+import com.itsaky.lsp.java.providers.CompletionProvider;
+import com.itsaky.lsp.java.providers.DefinitionProvider;
+import com.itsaky.lsp.java.providers.ReferenceProvider;
+import com.itsaky.lsp.java.providers.SignatureProvider;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
@@ -62,9 +65,9 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     private static final Logger LOG = Logger.instance ("JavaLanguageServer");
     
     public JavaLanguageServer () {
-        initialized = false;
-        createCompiler = true;
-        configuration = new JavaServerConfiguration ();
+        this.initialized = false;
+        this.createCompiler = true;
+        this.configuration = new JavaServerConfiguration ();
         
         applySettings (getSettings ());
     }
@@ -134,7 +137,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         
         this.configuration = (JavaServerConfiguration) newConfiguration;
         LOG.info ("Java language server configuration changed. New configuration:");
-        LOG.info (this.configuration);
+        LOG.info ("   ", this.configuration);
         
         // Compiler must be recreated on a configuration change
         this.createCompiler = true;
@@ -147,25 +150,37 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
             return new NoCompletionsProvider ();
         }
         
-        return new JavaCompletionProvider (getCompiler ());
+        return new CompletionProvider (getCompiler ());
     }
     
     @NonNull
     @Override
     public ICodeActionProvider getCodeActionProvider () {
-        return new NoCodeActionsProvider ();
+        if (!settings.codeActionsEnabled ()) {
+            return new NoCodeActionsProvider ();
+        }
+        
+        return new CodeActionProvider (getCompiler ());
     }
     
     @NonNull
     @Override
     public IReferenceProvider getReferenceProvider () {
-        return new NoReferenceProvider ();
+        if (!settings.referencesEnabled ()) {
+            return new NoReferenceProvider ();
+        }
+        
+        return new ReferenceProvider (getCompiler ());
     }
     
     @NonNull
     @Override
     public IDefinitionProvider getDefinitionProvider () {
-        return new NoDefinitionProvider ();
+        if (!settings.definitionsEnabled ()) {
+            return new NoDefinitionProvider ();
+        }
+        
+        return new DefinitionProvider (getCompiler ());
     }
     
     @NonNull

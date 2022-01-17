@@ -91,7 +91,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Types;
 
-public class JavaCompletionProvider implements ICompletionProvider {
+public class CompletionProvider implements ICompletionProvider {
     
     private final CompilerProvider compiler;
     
@@ -101,7 +101,7 @@ public class JavaCompletionProvider implements ICompletionProvider {
     private Path completingFile;
     private long cursor;
     
-    public JavaCompletionProvider (CompilerProvider compiler) {
+    public CompletionProvider (CompilerProvider compiler) {
         this.compiler = compiler;
     }
     

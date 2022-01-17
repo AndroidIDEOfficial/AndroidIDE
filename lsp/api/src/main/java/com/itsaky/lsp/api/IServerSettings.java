@@ -47,4 +47,16 @@ public interface IServerSettings {
      * @return {@code true} if enabled, {@code false} otherwise.
      */
     boolean signatureHelpEnabled ();
+    
+    /**
+     * Called by the language server to check if finding references is enabled.
+     * @return {@code true} if enabled, {@code false} otherwise.
+     */
+    boolean referencesEnabled ();
+    
+    /**
+     * Called by the language server to check if finding definitions is enabled.
+     * @return {@code true} if enabled, {@code false} otherwise.
+     */
+    boolean definitionsEnabled ();
 }
