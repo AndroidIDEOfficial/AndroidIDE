@@ -228,7 +228,14 @@ public class IDEService {
         final PreferenceManager prefs = StudioApp.getInstance ().getPrefManager();
         final List<String> args = new ArrayList<>();
         
-        args.add(Environment.SHELL.getAbsolutePath());
+        // 'bash' shell is always preferred
+        if (Environment.SHELL.exists ()) {
+            args.add(Environment.SHELL.getAbsolutePath());
+        } else {
+            args.add (Environment.BUSYBOX.getAbsolutePath ());
+            args.add ("sh");
+        }
+        
         args.add(new File (projectRoot, "gradlew").getAbsolutePath());
         args.addAll(asAppTasks(tasks));
         args.add("--init-script");
