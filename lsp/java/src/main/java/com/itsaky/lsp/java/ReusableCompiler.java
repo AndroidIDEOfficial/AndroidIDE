@@ -80,7 +80,7 @@ import javax.tools.JavaFileObject;
  */
 class ReusableCompiler {
     
-    private static final Logger LOG = Logger.instance ("main");
+    private static final Logger LOG = Logger.instance ("ReusableCompiler");
     private static final JavacTool systemProvider = JavacTool.create ();
     
     private List<String> currentOptions = new ArrayList<> ();
@@ -119,8 +119,7 @@ class ReusableCompiler {
         }
         
         checkedOut = true;
-        List<String> opts =
-                StreamSupport.stream (options.spliterator (), false).collect (Collectors.toCollection (ArrayList::new));
+        List<String> opts = StreamSupport.stream (options.spliterator (), false).collect (Collectors.toCollection (ArrayList::new));
         if (!opts.equals (currentOptions)) {
             LOG.warn (String.format ("Options changed from %s to %s, creating new compiler", options, opts));
             currentOptions = opts;
@@ -133,7 +132,7 @@ class ReusableCompiler {
         
         task.addTaskListener (currentContext);
         
-        return new Borrow (task, currentContext);
+        return lastBorrow = new Borrow (task);
     }
     
     class Borrow implements AutoCloseable {
@@ -141,7 +140,7 @@ class ReusableCompiler {
         final JavacTask task;
         boolean closed;
         
-        Borrow (JavacTask task, ReusableContext ctx) {
+        Borrow (JavacTask task) {
             this.task = task;
         }
         
@@ -160,7 +159,7 @@ class ReusableCompiler {
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException ("Unable to call cleanup() on JavacTaskImpl", e);
             }
-            
+    
             checkedOut = false;
             closed = true;
         }
@@ -287,8 +286,5 @@ class ReusableCompiler {
                         };
             }
         }
-    }
-    
-    static class CompilerInUseException extends RuntimeException {
     }
 }

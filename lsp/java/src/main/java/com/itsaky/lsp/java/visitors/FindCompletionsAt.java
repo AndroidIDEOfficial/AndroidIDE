@@ -32,6 +32,7 @@ import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
 
 public class FindCompletionsAt extends TreePathScanner<TreePath, Long> {
+    
     private final JavacTask task;
     private CompilationUnitTree root;
     

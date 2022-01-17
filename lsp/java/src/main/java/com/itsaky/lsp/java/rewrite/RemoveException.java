@@ -20,6 +20,7 @@ package com.itsaky.lsp.java.rewrite;
 import com.itsaky.lsp.java.CompileTask;
 import com.itsaky.lsp.java.CompilerProvider;
 import com.itsaky.lsp.java.utils.FindHelper;
+import com.itsaky.lsp.java.utils.SynchronizedTask;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
@@ -58,20 +59,22 @@ public class RemoveException implements Rewrite {
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         Path file = compiler.findTypeDeclaration(className);
-        try (CompileTask task = compiler.compile(file)) {
-            ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-            MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
-            if (methodTree.getThrows().size() == 1) {
-                TextEdit delete = removeEntireThrows(task.task, task.root(), methodTree);
-                if (delete == TextEdit.NONE) {
-                    return CANCELLED;
+        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
+            return synchronizedTask.getWithTask (task -> {
+                ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
+                MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
+                if (methodTree.getThrows().size() == 1) {
+                    TextEdit delete = removeEntireThrows(task.task, task.root(), methodTree);
+                    if (delete == TextEdit.NONE) {
+                        return CANCELLED;
+                    }
+        
+                    TextEdit[] edits = {delete};
+                    return Collections.singletonMap (file, edits);
                 }
-                
-                TextEdit[] edits = {delete};
+                TextEdit[] edits = {removeSingleException(task.task, task.root(), methodTree)};
                 return Collections.singletonMap (file, edits);
-            }
-            TextEdit[] edits = {removeSingleException(task.task, task.root(), methodTree)};
-            return Collections.singletonMap (file, edits);
+            });
         }
     }
     

@@ -1,5 +1,7 @@
 package com.itsaky.lsp.java;
 
+import com.itsaky.lsp.java.utils.SynchronizedTask;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -29,9 +31,9 @@ public interface CompilerProvider {
 
     ParseTask parse(JavaFileObject file);
 
-    CompileTask compile(Path... files);
+    SynchronizedTask compile(Path... files);
 
-    CompileTask compile(Collection<? extends JavaFileObject> sources);
+    SynchronizedTask compile(Collection<? extends JavaFileObject> sources);
 
     Path NOT_FOUND = Paths.get("");
 }

@@ -34,6 +34,7 @@ import com.itsaky.lsp.java.rewrite.AddImport;
 import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.utils.Extractors;
 import com.itsaky.lsp.java.utils.ScopeHelper;
+import com.itsaky.lsp.java.utils.SynchronizedTask;
 import com.itsaky.lsp.java.visitors.FindCompletionsAt;
 import com.itsaky.lsp.java.visitors.PruneMethodBodies;
 import com.itsaky.lsp.models.Command;
@@ -145,25 +146,27 @@ public class JavaCompletionProvider implements ICompletionProvider {
         SourceFileObject source = new SourceFileObject (file, contents, Instant.now());
         String partial = partialIdentifier(contents, (int) cursor);
         boolean endsWithParen = endsWithParen(contents, (int) cursor);
-        try (CompileTask task = compiler.compile(Collections.singletonList (source))) {
-            LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
-            TreePath path = new FindCompletionsAt (task.task).scan(task.root(), cursor);
-            switch (path.getLeaf().getKind()) {
-                case IDENTIFIER:
-                    return completeIdentifier(task, path, partial, endsWithParen);
-                case MEMBER_SELECT:
-                    return completeMemberSelect(task, path, partial, endsWithParen);
-                case MEMBER_REFERENCE:
-                    return completeMemberReference(task, path, partial);
-                case SWITCH:
-                    return completeSwitchConstant(task, path, partial);
-                case IMPORT:
-                    return completeImport(qualifiedPartialIdentifier(contents, (int) cursor));
-                default:
-                    CompletionResult list = new CompletionResult();
-                    addKeywords(path, partial, list);
-                    return list;
-            }
+        try (SynchronizedTask synchronizedTask = compiler.compile(Collections.singletonList (source))) {
+            return synchronizedTask.getWithTask (task -> {
+                LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
+                TreePath path = new FindCompletionsAt (task.task).scan(task.root(), cursor);
+                switch (path.getLeaf().getKind()) {
+                    case IDENTIFIER:
+                        return completeIdentifier(task, path, partial, endsWithParen);
+                    case MEMBER_SELECT:
+                        return completeMemberSelect(task, path, partial, endsWithParen);
+                    case MEMBER_REFERENCE:
+                        return completeMemberReference(task, path, partial);
+                    case SWITCH:
+                        return completeSwitchConstant(task, path, partial);
+                    case IMPORT:
+                        return completeImport(qualifiedPartialIdentifier(contents, (int) cursor));
+                    default:
+                        CompletionResult list = new CompletionResult();
+                        addKeywords(path, partial, list);
+                        return list;
+                }
+            });
         }
     }
 

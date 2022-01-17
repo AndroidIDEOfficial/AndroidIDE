@@ -21,6 +21,7 @@ import com.itsaky.lsp.java.CompileTask;
 import com.itsaky.lsp.java.CompilerProvider;
 import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.utils.FindHelper;
+import com.itsaky.lsp.java.utils.SynchronizedTask;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
@@ -51,22 +52,24 @@ public class AddSuppressWarningAnnotation implements Rewrite {
         if (file == CompilerProvider.NOT_FOUND) {
             return CANCELLED;
         }
-        try (CompileTask task = compiler.compile(file)) {
-            Trees trees = Trees.instance(task.task);
-            ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-            MethodTree methodTree = trees.getTree(methodElement);
-            SourcePositions pos = trees.getSourcePositions();
-            int startMethod = (int) pos.getStartPosition(task.root(), methodTree);
-            LineMap lines = task.root().getLineMap();
-            int line = (int) lines.getLineNumber(startMethod);
-            int column = (int) lines.getColumnNumber(startMethod);
-            int startLine = (int) lines.getStartPosition(line);
-            String indent = EditHelper.repeatSpaces (startMethod - startLine);
-            String insertText = "@SuppressWarnings(\"unchecked\")\n" + indent;
-            Position insertPoint = new Position(line - 1, column - 1);
-            TextEdit insert = new TextEdit(new Range(insertPoint, insertPoint), insertText);
-            TextEdit[] edits = {insert};
-            return Collections.singletonMap (file, edits);
+        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
+            return synchronizedTask.getWithTask (task -> {
+                Trees trees = Trees.instance(task.task);
+                ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
+                MethodTree methodTree = trees.getTree(methodElement);
+                SourcePositions pos = trees.getSourcePositions();
+                int startMethod = (int) pos.getStartPosition(task.root(), methodTree);
+                LineMap lines = task.root().getLineMap();
+                int line = (int) lines.getLineNumber(startMethod);
+                int column = (int) lines.getColumnNumber(startMethod);
+                int startLine = (int) lines.getStartPosition(line);
+                String indent = EditHelper.repeatSpaces (startMethod - startLine);
+                String insertText = "@SuppressWarnings(\"unchecked\")\n" + indent;
+                Position insertPoint = new Position(line - 1, column - 1);
+                TextEdit insert = new TextEdit(new Range(insertPoint, insertPoint), insertText);
+                TextEdit[] edits = {insert};
+                return Collections.singletonMap (file, edits);
+            });
         }
     }
 }

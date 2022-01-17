@@ -1,5 +1,7 @@
 package com.itsaky.lsp.java;
 
+import androidx.annotation.NonNull;
+
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
 import java.nio.file.Path;
@@ -12,7 +14,15 @@ public class CompileTask implements AutoCloseable {
     public final JavacTask task;
     public final List<CompilationUnitTree> roots;
     public final List<Diagnostic<? extends JavaFileObject>> diagnostics;
-    private final Runnable close;
+    
+    private final CompileBatch compileBatch;
+    
+    public CompileTask(@NonNull CompileBatch compileBatch, List<Diagnostic<? extends JavaFileObject>> diagnostics) {
+        this.compileBatch = compileBatch;
+        this.task = compileBatch.task;
+        this.roots = compileBatch.roots;
+        this.diagnostics = diagnostics;
+    }
 
     public CompilationUnitTree root() {
         if (roots.size() != 1) {
@@ -39,19 +49,8 @@ public class CompileTask implements AutoCloseable {
         throw new RuntimeException("Compilation unit not found");
     }
 
-    public CompileTask(
-            JavacTask task,
-            List<CompilationUnitTree> roots,
-            List<Diagnostic<? extends JavaFileObject>> diagnostics,
-            Runnable close) {
-        this.task = task;
-        this.roots = roots;
-        this.diagnostics = diagnostics;
-        this.close = close;
-    }
-
     @Override
     public void close() {
-        close.run();
+        compileBatch.close ();
     }
 }

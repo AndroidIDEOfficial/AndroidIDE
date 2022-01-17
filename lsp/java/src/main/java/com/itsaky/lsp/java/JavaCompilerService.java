@@ -2,6 +2,7 @@ package com.itsaky.lsp.java;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.utils.Extractors;
+import com.itsaky.lsp.java.utils.SynchronizedTask;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarations;
 import com.sun.source.tree.CompilationUnitTree;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,12 +30,15 @@ import javax.tools.StandardLocation;
 
 class JavaCompilerService implements CompilerProvider {
     
+    private CompileBatch cachedCompile;
+    
     final Set<Path> classPath, docPath;
     final Set<String> jdkClasses = new HashSet<> (), classPathClasses;
-    
     final ReusableCompiler compiler = new ReusableCompiler ();
-    
+    final SynchronizedTask synchronizedTask = new SynchronizedTask ();
+    final ReentrantLock lock = new ReentrantLock ();
     final List<Diagnostic<? extends JavaFileObject>> diags = new ArrayList<> ();
+    final Map<JavaFileObject, Long> cachedModified = new HashMap<> ();
     
     // Use the same file manager for multiple tasks, so we don't repeatedly re-compile the same files
     // TODO intercept files that aren't in the batch and erase method bodies so compilation is faster
@@ -56,9 +61,6 @@ class JavaCompilerService implements CompilerProvider {
         this.classPathClasses = ScanClassPath.classPathTopLevelClasses (classPath);
         this.fileManager = new SourceFileManager ();
     }
-    
-    private CompileBatch cachedCompile;
-    private final Map<JavaFileObject, Long> cachedModified = new HashMap<> ();
     
     private boolean needsCompile (Collection<? extends JavaFileObject> sources) {
         
@@ -325,18 +327,34 @@ class JavaCompilerService implements CompilerProvider {
     }
     
     @Override
-    public CompileTask compile (Path... files) {
-        List<JavaFileObject> sources = new ArrayList<> ();
-        for (Path f : files) {
-            sources.add (new SourceFileObject (f));
-        }
-        return compile (sources);
+    public synchronized SynchronizedTask compile (Path... files) {
+        return synchronizedTask.getWithTask (compileTask -> {
+            List<JavaFileObject> sources = new ArrayList<> ();
+            for (Path f : files) {
+                sources.add (new SourceFileObject (f));
+            }
+            return compile (sources);
+        });
     }
     
     @Override
-    public CompileTask compile (Collection<? extends JavaFileObject> sources) {
-        CompileBatch compile = compileBatch (sources);
-        return new CompileTask (compile.task, compile.roots, diags, compile::close);
+    public synchronized SynchronizedTask compile (Collection<? extends JavaFileObject> sources) {
+        synchronized (synchronizedTask) {
+            final CompileBatch compile = compileBatch (sources);
+            final CompileTask compileTask = new CompileTask (compile, diags);
+            synchronizedTask.setTask (compileTask);
+            return synchronizedTask;
+        }
+    }
+    
+    public synchronized void close () {
+        if (cachedCompile != null && !cachedCompile.closed) {
+            cachedCompile.close();
+        }
+        
+        if (lock.isHeldByCurrentThread() && lock.isLocked()) {
+            lock.unlock();
+        }
     }
     
     private static final Logger LOG = Logger.instance ("JavaCompilerService");

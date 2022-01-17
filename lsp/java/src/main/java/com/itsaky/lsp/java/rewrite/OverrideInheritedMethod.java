@@ -22,6 +22,7 @@ import com.itsaky.lsp.java.CompilerProvider;
 import com.itsaky.lsp.java.ParseTask;
 import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.utils.FindHelper;
+import com.itsaky.lsp.java.utils.SynchronizedTask;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
@@ -69,23 +70,25 @@ public class OverrideInheritedMethod implements Rewrite {
     }
     
     private String insertText(CompilerProvider compiler) {
-        try (final CompileTask task = compiler.compile(file)) {
-            final Types types = task.task.getTypes();
-            final Trees trees = Trees.instance(task.task);
-            final ExecutableElement superMethod = FindHelper.findMethod(task, superClassName, methodName, erasedParameterTypes);
-            final ClassTree thisTree = new FindTypeDeclarationAt (task.task).scan(task.root(), (long) insertPosition);
-            final TreePath thisPath = trees.getPath(task.root(), thisTree);
-            final TypeElement thisClass = (TypeElement) trees.getElement(thisPath);
-            final ExecutableType parameterizedType = (ExecutableType) types.asMemberOf((DeclaredType) thisClass.asType(), superMethod);
-            final int indent = EditHelper.indent(task.task, task.root(), thisTree) + 4;
-            final Optional<JavaFileObject> sourceFile = compiler.findAnywhere(superClassName);
-            if (!sourceFile.isPresent ()) return "";
-            final ParseTask parse = compiler.parse(sourceFile.get());
-            final MethodTree source = FindHelper.findMethod(parse, superClassName, methodName, erasedParameterTypes);
-            String text = EditHelper.printMethod(superMethod, parameterizedType, source);
-            text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
-            text = text + "\n\n";
-            return text;
+        try (final SynchronizedTask synchronizedTask = compiler.compile(file)) {
+            return synchronizedTask.getWithTask (task -> {
+                final Types types = task.task.getTypes();
+                final Trees trees = Trees.instance(task.task);
+                final ExecutableElement superMethod = FindHelper.findMethod(task, superClassName, methodName, erasedParameterTypes);
+                final ClassTree thisTree = new FindTypeDeclarationAt (task.task).scan(task.root(), (long) insertPosition);
+                final TreePath thisPath = trees.getPath(task.root(), thisTree);
+                final TypeElement thisClass = (TypeElement) trees.getElement(thisPath);
+                final ExecutableType parameterizedType = (ExecutableType) types.asMemberOf((DeclaredType) thisClass.asType(), superMethod);
+                final int indent = EditHelper.indent(task.task, task.root(), thisTree) + 4;
+                final Optional<JavaFileObject> sourceFile = compiler.findAnywhere(superClassName);
+                if (!sourceFile.isPresent ()) return "";
+                final ParseTask parse = compiler.parse(sourceFile.get());
+                final MethodTree source = FindHelper.findMethod(parse, superClassName, methodName, erasedParameterTypes);
+                String text = EditHelper.printMethod(superMethod, parameterizedType, source);
+                text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
+                text = text + "\n\n";
+                return text;
+            });
         }
     }
     

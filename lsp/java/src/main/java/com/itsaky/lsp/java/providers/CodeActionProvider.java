@@ -36,6 +36,7 @@ import com.itsaky.lsp.java.rewrite.RemoveClass;
 import com.itsaky.lsp.java.rewrite.RemoveException;
 import com.itsaky.lsp.java.rewrite.RemoveMethod;
 import com.itsaky.lsp.java.rewrite.Rewrite;
+import com.itsaky.lsp.java.utils.SynchronizedTask;
 import com.itsaky.lsp.java.visitors.FindMethodDeclarationAt;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.lsp.models.CodeActionItem;
@@ -106,12 +107,14 @@ public class CodeActionProvider implements ICodeActionProvider {
         // task to generate the code actions
         // If we switch to resolving code actions asynchronously using Command, that will fix this problem.
         final TreeMap<String, Rewrite> rewrites = new TreeMap<> ();
-        try (final CompileTask task = compiler.compile(file)) {
-            long elapsed = Duration.between(started, Instant.now()).toMillis();
-            LOG.info(String.format(Locale.getDefault (), "...compiled in %d ms", elapsed));
-            final LineMap lines = task.root().getLineMap();
-            final long cursor = lines.getPosition(params.getRange().getStart().getLine() + 1, params.getRange().getStart().getColumn () + 1);
-            rewrites.putAll(overrideInheritedMethods(task, file, cursor));
+        try (final SynchronizedTask synchronizedTask = compiler.compile(file)) {
+            synchronizedTask.runWithTask (task -> {
+                long elapsed = Duration.between(started, Instant.now()).toMillis();
+                LOG.info(String.format(Locale.getDefault (), "...compiled in %d ms", elapsed));
+                final LineMap lines = task.root().getLineMap();
+                final long cursor = lines.getPosition(params.getRange().getStart().getLine() + 1, params.getRange().getStart().getColumn () + 1);
+                rewrites.putAll(overrideInheritedMethods(task, file, cursor));
+            });
         }
         
         List<CodeActionItem> actions = new ArrayList<> ();
@@ -184,15 +187,17 @@ public class CodeActionProvider implements ICodeActionProvider {
         LOG.info(String.format(Locale.getDefault (), "Check %d diagnostics for quick fixes...", params.getDiagnostics().size()));
         Instant started = Instant.now();
         Path file = params.getFile ();
-        try (final CompileTask task = compiler.compile(file)) {
-            List<CodeActionItem> actions = new ArrayList<>();
-            for (DiagnosticItem d : params.getDiagnostics()) {
-                List<CodeActionItem> newActions = codeActionForDiagnostic(task, file, d);
-                actions.addAll(newActions);
-            }
-            long elapsed = Duration.between(started, Instant.now()).toMillis();
-            LOG.info(String.format(Locale.getDefault (), "...created %d quick fixes in %d ms", actions.size(), elapsed));
-            return actions;
+        try (final SynchronizedTask synchronizedTask = compiler.compile(file)) {
+            return synchronizedTask.getWithTask (task -> {
+                List<CodeActionItem> actions = new ArrayList<>();
+                for (DiagnosticItem d : params.getDiagnostics()) {
+                    List<CodeActionItem> newActions = codeActionForDiagnostic(task, file, d);
+                    actions.addAll(newActions);
+                }
+                long elapsed = Duration.between(started, Instant.now()).toMillis();
+                LOG.info(String.format(Locale.getDefault (), "...created %d quick fixes in %d ms", actions.size(), elapsed));
+                return actions;
+            });
         }
     }
     

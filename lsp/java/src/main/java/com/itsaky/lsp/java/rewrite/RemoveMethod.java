@@ -20,6 +20,7 @@ import com.itsaky.lsp.java.CompileTask;
 import com.itsaky.lsp.java.CompilerProvider;
 import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.utils.FindHelper;
+import com.itsaky.lsp.java.utils.SynchronizedTask;
 import com.itsaky.lsp.models.TextEdit;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.util.Trees;
@@ -46,11 +47,13 @@ public class RemoveMethod implements Rewrite {
         if (file == CompilerProvider.NOT_FOUND) {
             return CANCELLED;
         }
-        try (CompileTask task = compiler.compile(file)) {
-            ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-            MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
-            TextEdit[] edits = {EditHelper.removeTree(task.task, task.root(), methodTree)};
-            return Collections.singletonMap (file, edits);
+        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
+            return synchronizedTask.getWithTask (task -> {
+                ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
+                MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
+                TextEdit[] edits = {EditHelper.removeTree(task.task, task.root(), methodTree)};
+                return Collections.singletonMap (file, edits);
+            });
         }
     }
 }
