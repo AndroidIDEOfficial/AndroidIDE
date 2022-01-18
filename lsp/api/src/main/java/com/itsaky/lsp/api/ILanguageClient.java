@@ -18,7 +18,6 @@
 package com.itsaky.lsp.api;
 
 import com.itsaky.lsp.models.DiagnosticResult;
-import com.itsaky.lsp.models.SemanticHighlight;
 import com.itsaky.lsp.models.ShowDocumentParams;
 import com.itsaky.lsp.models.ShowDocumentResult;
 
@@ -35,12 +34,6 @@ public interface ILanguageClient {
      * @param result The diagnostic result.
      */
     void publishDiagnostics (DiagnosticResult result);
-    
-    /**
-     * Publish the given semantic highlight.
-     * @param highlight The highlights to publish.
-     */
-    void publishSemanticHighlights (SemanticHighlight highlight);
     
     /**
      * Notification sent by the language server to tell

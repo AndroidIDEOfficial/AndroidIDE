@@ -59,6 +59,12 @@ public class FileStore {
         }
     }
     
+    public static void shutdown () {
+        workspaceRoots.clear ();
+        activeDocuments.clear ();
+        javaSources.clear ();
+    }
+    
     public static void setWorkspaceRoots (Set<Path> newRoots) {
         for (Path root : workspaceRoots) {
             if (!newRoots.contains (root)) {

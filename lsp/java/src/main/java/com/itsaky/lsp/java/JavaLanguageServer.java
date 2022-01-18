@@ -106,9 +106,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     public InitializeResult initialize (@NonNull InitializeParams params) throws AlreadyInitializedException {
         
         if (initialized) {
-            // FIXME This is a temporary fix
-            // Shutdown the language server when no longer needed
-            // throw new AlreadyInitializedException ();
+            throw new AlreadyInitializedException ();
         }
         
         FileStore.setWorkspaceRoots (params.getWorkspaceRoots ());
@@ -120,6 +118,18 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         initialized = true;
         
         return result;
+    }
+    
+    @Override
+    public void shutdown () {
+        if (compiler != null) {
+            compiler.close ();
+            compiler = null;
+            createCompiler = true;
+        }
+        
+        FileStore.shutdown ();
+        initialized = false;
     }
     
     @Override

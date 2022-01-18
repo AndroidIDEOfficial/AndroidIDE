@@ -217,7 +217,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         setupContainers ();
         setupSignatureText ();
         setupDiagnosticInfo ();
-        startLanguageServers ();
         
         mUIDesignerLauncher = registerForActivityResult (new ActivityResultContracts.StartActivityForResult (), this::onGetUIDesignerResult);
     }
@@ -837,7 +836,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
     }
     
-    public void createServices () {
+    public void updateServices () {
         new TaskExecutor ().executeAsync (() -> {
             List<String> cps = Objects.requireNonNull (getAndroidProject ()).getClassPaths ();
             getApp ()
@@ -1121,10 +1120,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         startActivity (intent);
     }
     
-    private void startLanguageServers () {
-        getApp ().getJavaLanguageServer ().initialize (new InitializeParams (Collections.singleton (new File (Objects.requireNonNull (getAndroidProject ()).getProjectPath ()).toPath ())));
-    }
-    
     private void getProjectFromIntent () {
         final var project = (AndroidProject) getIntent ().getParcelableExtra (EXTRA_PROJECT);
         if (mViewModel != null) {
@@ -1185,13 +1180,56 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             IDELanguageClientImpl.initialize (this);
         }
         
+        initializeLanguageServers ();
+        
         // Actually, we don't need to start FileOptionsHandler
         // Because it would work anyway
         // But still we do...
         mFileOptionsHandler.start ();
-        
         mBuildServiceHandler.start ();
         getBuildServiceHandler ().assembleDebug (false);
+    }
+    
+    private void initializeLanguageServers () {
+        final var client = IDELanguageClientImpl.getInstance ();
+        final var javaLanguageServer = getApp ().getJavaLanguageServer ();
+        final var workspaceRoots = Collections.singleton (
+                new File (
+                        Objects.requireNonNull (getAndroidProject ())
+                                .getProjectPath ()
+                ).toPath ()
+        );
+        final var params = new InitializeParams (workspaceRoots);
+        
+        javaLanguageServer.connectClient (client);
+        javaLanguageServer.initialize (params);
+    }
+    
+    private void stopServices () {
+        
+        if (IDELanguageClientImpl.isInitialized ()) {
+            IDELanguageClientImpl.shutdown ();
+        }
+        
+        shutdownLanguageServers ();
+        
+        if (getBuildService () != null) {
+            getBuildService ().setListener (null);
+            if (mBuildServiceHandler != null) {
+                mBuildServiceHandler.stop ();
+            } else {
+                getBuildService ().exit ();
+            }
+        }
+        
+        if (mFileOptionsHandler != null) {
+            mFileOptionsHandler.stop ();
+        }
+    }
+    
+    private void shutdownLanguageServers () {
+        final var javaServer = getApp ().getJavaLanguageServer ();
+        javaServer.shutdown ();
     }
     
     private void onSoftInputChanged () {
@@ -1224,21 +1262,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void closeProject (boolean manualFinish) {
-        if (getBuildService () != null) {
-            getBuildService ().setListener (null);
-            if (mBuildServiceHandler != null) {
-                mBuildServiceHandler.stop ();
-            } else {
-                getBuildService ().exit ();
-            }
-        }
+        stopServices ();
         
         // Make sure we close files
         // This fill further make sure that file contents are not erased.
         closeAll ();
-        
         getApp ().getPrefManager ().setOpenedProject (PreferenceManager.NO_OPENED_PROJECT);
-        
         getApp ().stopAllDaemons ();
         
         if (manualFinish) {

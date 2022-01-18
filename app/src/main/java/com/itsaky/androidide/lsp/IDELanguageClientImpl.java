@@ -104,6 +104,10 @@ public class IDELanguageClientImpl implements ILanguageClient {
         return getInstance();
     }
     
+    public static void shutdown () {
+        mInstance = null;
+    }
+    
     public static boolean isInitialized () {
         return mInstance != null;
     }
@@ -119,16 +123,6 @@ public class IDELanguageClientImpl implements ILanguageClient {
     
     private CodeEditorView findEditorByFile (File file) {
         return activity ().getEditorForFile (file);
-    }
-
-    @Override
-    public void publishSemanticHighlights(SemanticHighlight highlights) {
-        final File file = highlights.getFile ().toFile ();
-        final var editor = findEditorByFile(file);
-        
-        if(editor != null) {
-            editor.getEditor().setSemanticHighlights(highlights);
-        }
     }
     
     public void showDiagnostic(DiagnosticItem diagnostic, final CodeEditor editor) {
@@ -328,11 +322,6 @@ public class IDELanguageClientImpl implements ILanguageClient {
         
         diagnostics.put(file, result.getDiagnostics());
         activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
-        
-        CodeEditorView editor;
-        if((editor = findEditorByFile(file)) != null) {
-            editor.setDiagnostics(result.getDiagnostics());
-        }
     }
     
     /**

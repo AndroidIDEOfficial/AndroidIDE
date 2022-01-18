@@ -98,7 +98,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
             if(androidJar.exists()) {
                 Environment.setBootClasspath(androidJar);
                 provider.provideAndroidProject().addClasspath(androidJar.getAbsolutePath());
-                activity().createServices();
+                activity().updateServices ();
             } else activity().setStatus("android.jar not found!");
         } else activity().setStatus("Cannot get :app module...");
     }

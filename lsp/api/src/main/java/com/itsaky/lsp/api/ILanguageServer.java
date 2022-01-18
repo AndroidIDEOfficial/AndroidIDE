@@ -61,6 +61,14 @@ public interface ILanguageServer {
     InitializeResult initialize (@NonNull InitializeParams params) throws AlreadyInitializedException;
     
     /**
+     * Called by client to notify the server to shutdown.
+     * Language servers must release all the resources in use.
+     *
+     * After this is called, clients must re-initialize the server.
+     */
+    void shutdown ();
+    
+    /**
      * Set the client to whom notifications and events must be sent.
      * @param client The client to set.
      */
