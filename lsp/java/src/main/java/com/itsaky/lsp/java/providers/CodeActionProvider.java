@@ -413,6 +413,7 @@ public class CodeActionProvider implements ICodeActionProvider {
                 continue;
             }
             final DocumentChange change = new DocumentChange ();
+            change.setFile (file);
             change.setEdits (Arrays.asList (textEdits));
             action.getChanges ().add (change);
         }

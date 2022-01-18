@@ -107,14 +107,6 @@ public class LogLanguageImpl extends BaseLanguage {
 			}
 			colors.determine(lastLine);
 		}
-
-        @Override
-        public void setSemanticHighlights(SemanticHighlight highlights) {
-        }
-
-        @Override
-        public void updateDiagnostics(Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
-        }
 	}
 	
 	private static class LogCompletor implements AutoCompleteProvider {

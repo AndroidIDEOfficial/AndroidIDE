@@ -20,4 +20,6 @@ package com.itsaky.lsp.models
 import java.nio.file.Path
 
 data class AnalyzeParams(var file: Path)
-data class AnalyzeResult (var diagnostics: List<DiagnosticItem>, var semanticHighlights: List<Int>)
+data class AnalyzeResult (var diagnostics: List<DiagnosticItem>, var semanticHighlights: List<Int>) {
+    constructor() : this (ArrayList(), ArrayList())
+}

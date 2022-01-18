@@ -20,6 +20,7 @@ package com.itsaky.lsp.models
 import android.text.TextUtils
 import java.nio.file.Path
 import java.util.*
+import kotlin.collections.ArrayList
 
 data class CompletionParams (var position: Position, var file: Path)
 
@@ -48,7 +49,7 @@ data class CompletionItem(var label: String,
         null,
         null,
         CompletionItemKind.NONE,
-        null,
+        ArrayList(),
         null
     )
     

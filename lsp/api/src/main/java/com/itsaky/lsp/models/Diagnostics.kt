@@ -22,7 +22,10 @@ import java.nio.file.Path
 data class DiagnosticItem(var message: String, var code: String, var range: Range, var source: String, var severity: DiagnosticSeverity) {
     constructor() : this ("", "", Range.NONE, "", DiagnosticSeverity.HINT)
 }
-data class DiagnosticResult(var file: Path, var diagnostics: List<DiagnosticItem>)
+
+data class DiagnosticResult(var file: Path, var diagnostics: List<DiagnosticItem>) {
+
+}
 enum class DiagnosticSeverity {
     ERROR, WARNING, INFO, HINT
 }

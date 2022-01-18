@@ -213,7 +213,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private float mInsertSelWidth;
     private float mBlockLineWidth;
     private float mLineInfoTextSize;
-    private long mLastEdited;
     private boolean mWait;
     private boolean mDrag;
     private boolean mScalable;
@@ -281,13 +280,11 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     private Paint.FontMetricsInt mGraphMetrics;
     private CursorBlink mCursorBlink;
     private SymbolPairMatch mOverrideSymbolPairs;
-    private LongArrayList mPostDrawLineNumbers = new LongArrayList ();
+    private final LongArrayList mPostDrawLineNumbers = new LongArrayList ();
     private CharPosition mLockedSelection;
     
     EditorInputConnection mConnection;
     KeyMetaStates mKeyMetaStates = new KeyMetaStates (this);
-    
-    private List<String> mSignatureHelpTriggerChars = new ArrayList<> ();
     
     private File currentFile;
     
@@ -329,7 +326,11 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      */
     public void setFile (File file) {
         this.currentFile = file;
-    
+        
+        if (mSpanner != null) {
+            mSpanner.setFile (file);
+        }
+        
         if (mLanguageServer != null) {
             final var text = getText ().toString ();
             final var event = new DocumentOpenEvent (file.toPath (), text, mFileVersion = 0);
@@ -501,7 +502,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mPaintOther.setTypeface (Typeface.MONOSPACE);
         mBuffer = new char[256];
         mBuffer2 = new char[16];
-        mLastEdited = 0;
         mStartedActionMode = ACTION_MODE_NONE;
         setTextSize (DEFAULT_TEXT_SIZE);
         setLineInfoTextSize (mPaint.getTextSize ());
@@ -600,12 +600,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
             mLanguageClient.hideDiagnostics ();
         } else {
             mLanguageClient.showDiagnostic (diag, this);
-        }
-    }
-    
-    public void notifySpansChanged () {
-        if (mSpanner != null) {
-            mSpanner.analyze (getText ());
         }
     }
     
@@ -759,12 +753,6 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         }
         
         invalidate ();
-    }
-    
-    public void setSemanticHighlights (SemanticHighlight highlights) {
-        mLanguage.getAnalyzer ().setSemanticHighlights (highlights);
-        
-        notifySpansChanged ();
     }
     
     public EditorLanguage getEditorLanguage () {
@@ -4575,12 +4563,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     public void signatureHelp (String insertedContent) {
-        if (mLanguageServer != null
-                && getFile () != null
-                && mSignatureHelpTriggerChars != null
-                && mSignatureHelpTriggerChars.size () > 0
-                && mSignatureHelpTriggerChars.contains (insertedContent)) {
-            
+        if (mLanguageServer != null && getFile () != null) {
             final CompletableFuture<SignatureHelp> future = CompletableFuture.supplyAsync (() -> {
                 final var provider = mLanguageServer.getSignatureHelpProvider ();
                 return provider.provideSignatures (new SignatureHelpParams (getFile ().toPath (), new com.itsaky.lsp.models.Position (
@@ -5031,5 +5014,4 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     private static final Logger LOG = Logger.instance ("CodeEditor");
-    
 }

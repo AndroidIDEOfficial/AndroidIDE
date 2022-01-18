@@ -109,12 +109,4 @@ public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnal
         }
         colors.determine (lastLine);
     }
-    
-    @Override
-    public void setSemanticHighlights (SemanticHighlight highlights) {
-    }
-    
-    @Override
-    public void updateDiagnostics (Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
-    }
 }

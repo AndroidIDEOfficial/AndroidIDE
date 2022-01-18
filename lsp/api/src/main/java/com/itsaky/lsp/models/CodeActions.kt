@@ -32,7 +32,7 @@ data class CodeActionItem (
     var changes: List<DocumentChange>,
     var kind: CodeActionKind
 ) {
-    constructor() : this ("", Collections.emptyList(), CodeActionKind.None)
+    constructor() : this ("", ArrayList(), CodeActionKind.None)
 }
 
 enum class CodeActionKind {
@@ -42,7 +42,7 @@ enum class CodeActionKind {
 }
 
 data class DocumentChange (var file: Path?, var edits: List<TextEdit>) {
-    constructor() : this (null, Collections.emptyList())
+    constructor() : this (null, ArrayList())
 }
 
 data class TextEdit (var range: Range, var newText: String) {

@@ -107,7 +107,7 @@ public class ReusableCompiler {
             Iterable<? extends JavaFileObject> compilationUnits) {
         
         if (checkedOut) {
-            throw new RuntimeException ("Compiler us already in use.");
+            throw new RuntimeException ("Compiler is already in-use!");
         }
         
         checkedOut = true;

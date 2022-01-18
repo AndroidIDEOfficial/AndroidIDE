@@ -42,7 +42,7 @@ public class GroovyLanguage extends BaseLanguage {
     private static final Logger LOG = Logger.instance ("GroovyLanguage");
     
     public GroovyLanguage () {
-        analyzer = new GroovyAnalyzer (this);
+        analyzer = new GroovyAnalyzer ();
         completer = new GroovyAutoComplete ();
     }
     

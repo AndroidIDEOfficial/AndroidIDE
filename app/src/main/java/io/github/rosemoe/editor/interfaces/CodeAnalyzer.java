@@ -34,21 +34,6 @@ import java.util.Map;
  * @author Rose
  */
 public interface CodeAnalyzer {
-    
-    /**
-     * Tells the analyzer to store the semantic highlight ranges provided by LanguageServer
-     */
-    void setSemanticHighlights(SemanticHighlight highlights);
-    
-    /**
-     * Tells the analyzer to update the diagnostics locally.
-     * They will be then used to provide spans
-     *
-     * @param diagnostics The diagnostics to update to.
-                 They are first mapped by their start line and then by their start column.
-     */
-    void updateDiagnostics(Map<Integer, Map<Integer, DiagnosticItem>> diagnostics);
-    
     /**
      * Find the diagnostic containing the specific position
      *
@@ -65,18 +50,6 @@ public interface CodeAnalyzer {
      * @return A list containing all diagnostics at the line. Should never be null.
      */
     List<DiagnosticItem> findDiagnosticsContainingLine(int line);
-    
-    /**
-     * Get diagnostics at the specified line.
-     *
-     * @return A map containing the diagnostics mapped by their columns
-     */
-    Map<Integer, DiagnosticItem> getDiagnosticsAtLine(int line);
-    
-    /**
-     * Get any hex color string is present in provided line
-     */
-    Map<Integer, Integer> getHexColorsInLine (int line);
     
     /**
      * Analyze spans for the given input

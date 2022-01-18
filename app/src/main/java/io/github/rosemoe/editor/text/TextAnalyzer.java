@@ -44,7 +44,7 @@ public class TextAnalyzer {
     private AnalyzeThread mThread;
     private final EditorLanguage mLanguage;
     private final ILanguageServer mLanguageServer;
-    private final File file;
+    private File file;
     
     private static final Logger LOG = Logger.instance ("TextAnalyzer");
     
@@ -63,6 +63,10 @@ public class TextAnalyzer {
         mResult = new TextAnalyzeResult ();
         mResult.addNormalIfNull ();
         mLanguage = language;
+    }
+    
+    public void setFile (File file) {
+        this.file = file;
     }
     
     private synchronized static int nextThreadId () {

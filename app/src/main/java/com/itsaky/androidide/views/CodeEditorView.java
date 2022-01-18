@@ -233,33 +233,6 @@ public class CodeEditorView extends FrameLayout {
         binding.editor.beginSearchMode ();
     }
     
-    public void setDiagnostics (List<DiagnosticItem> diagnostics) {
-        if (diagnostics == null) {
-            LOG.info ("Clearing diagnostics of code editor", "file:", file);
-            binding.editor.getEditorLanguage ().getAnalyzer ().updateDiagnostics (new HashMap<> ());
-            return;
-        }
-        
-        Map<Integer, Map<Integer, DiagnosticItem>> map = new HashMap<> ();
-        for (int i = 0; i < diagnostics.size (); i++) {
-            final var d = diagnostics.get (i);
-            if (d == null) {
-                continue;
-            }
-            final var range = d.getRange ();
-            final int line = range.getStart ().getLine ();
-            final int column = range.getStart ().getColumn ();
-            Map<Integer, DiagnosticItem> mappedByColumn = map.get (line);
-            if (mappedByColumn == null) {
-                mappedByColumn = new HashMap<> ();
-            }
-            mappedByColumn.put (column, d);
-            map.put (line, mappedByColumn);
-        }
-        
-        binding.editor.getEditorLanguage ().getAnalyzer ().updateDiagnostics (map);
-    }
-    
     protected void postRead () {
         if (file.isFile () && file.getName ().endsWith (".java")) {
             binding.editor.setEditorLanguage (new JavaLanguage (), StudioApp.getInstance ().getJavaLanguageServer ());

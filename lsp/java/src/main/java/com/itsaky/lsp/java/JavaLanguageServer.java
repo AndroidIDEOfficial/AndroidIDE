@@ -114,6 +114,10 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         final InitializeResult result = new InitializeResult ();
         result.setCompletionsAvailable (true);
         result.setCodeActionsAvailable (true);
+        result.setDefinitionsAvailable (true);
+        result.setReferencesAvailable (true);
+        result.setSignatureHelpAvailable (true);
+        result.setCodeAnalysisAvailable (true);
         
         initialized = true;
         
@@ -221,7 +225,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
             return new NoCodeAnalyzer ();
         }
         
-        return new JavaCodeAnalyzer ();
+        return new JavaCodeAnalyzer (getCompiler ());
     }
     
     @Override

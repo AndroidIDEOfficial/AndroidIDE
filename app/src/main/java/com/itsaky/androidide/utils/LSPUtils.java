@@ -148,14 +148,8 @@ public class LSPUtils {
                 
                 // Lines are same
                 // Compare by columns
-                if(r1StartCol < r2StartCol) {
-                    return -1;
-                } else if (r1StartCol > r2StartCol) {
-                    return 1;
-                } else {
-                    // Both ranges have same start position
-                    return 0;
-                }
+                // Both ranges have same start position
+                return Integer.compare (r1StartCol, r2StartCol);
             }
         }
     };

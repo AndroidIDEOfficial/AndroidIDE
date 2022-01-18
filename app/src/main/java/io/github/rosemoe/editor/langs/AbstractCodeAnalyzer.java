@@ -20,14 +20,6 @@ import io.github.rosemoe.editor.struct.Span;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 
 public abstract class AbstractCodeAnalyzer implements CodeAnalyzer {
-
-    @Override
-    public void setSemanticHighlights(SemanticHighlight highlights) {
-    }
-
-    @Override
-    public void updateDiagnostics(Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
-    }
     
     @Override
     public DiagnosticItem findDiagnosticContaining(int line, int column) {
@@ -37,16 +29,6 @@ public abstract class AbstractCodeAnalyzer implements CodeAnalyzer {
     @Override
     public List<DiagnosticItem> findDiagnosticsContainingLine(int line) {
         return new ArrayList<>();
-    }
-
-    @Override
-    public Map<Integer, DiagnosticItem> getDiagnosticsAtLine(int line) {
-        return new HashMap<>();
-    }
-
-    @Override
-    public Map<Integer, Integer> getHexColorsInLine(int line) {
-        return new HashMap<> ();
     }
     
     protected void checkAndAddHexString (@NonNull Token token, final int defaultColorId, TextAnalyzeResult result) {

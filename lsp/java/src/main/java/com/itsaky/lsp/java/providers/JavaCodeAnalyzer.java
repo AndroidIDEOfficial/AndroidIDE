@@ -20,8 +20,13 @@ package com.itsaky.lsp.java.providers;
 import androidx.annotation.NonNull;
 
 import com.itsaky.lsp.api.ICodeAnalyzer;
+import com.itsaky.lsp.java.compiler.CompileTask;
+import com.itsaky.lsp.java.compiler.CompilerProvider;
+import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.models.AnalyzeParams;
 import com.itsaky.lsp.models.AnalyzeResult;
+
+import java.nio.file.Path;
 
 /**
  * Code analyzer for java source code.
@@ -30,9 +35,33 @@ import com.itsaky.lsp.models.AnalyzeResult;
  */
 public class JavaCodeAnalyzer implements ICodeAnalyzer {
     
+    private final CompilerProvider compiler;
+    
+    public JavaCodeAnalyzer (CompilerProvider compiler) {
+        this.compiler = compiler;
+    }
+    
     @NonNull
     @Override
-    public AnalyzeResult analyze (AnalyzeParams params) {
-        return null;
+    public AnalyzeResult analyze (@NonNull AnalyzeParams params) {
+        final Path file = params.getFile ();
+        try (final SynchronizedTask synchronizedTask = compiler.compile (file)) {
+            return synchronizedTask.getWithTask (task -> {
+                final AnalyzeResult result = new AnalyzeResult ();
+                if (!isTaskValid (task)) {
+                    return result;
+                }
+                
+                result.setDiagnostics (DiagnosticsProvider.findDiagnostics (task, file));
+                return result;
+            });
+        }
+    }
+    
+    private static boolean isTaskValid (CompileTask task) {
+        return task != null
+                && task.task != null
+                && task.roots != null
+                && task.roots.size () > 0;
     }
 }

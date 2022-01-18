@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 
 package com.itsaky.androidide.language.groovy;
 
@@ -24,8 +22,6 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.SemanticHighlight;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
@@ -33,10 +29,8 @@ import org.antlr.v4.runtime.Token;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Map;
 import java.util.Stack;
 
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
@@ -44,13 +38,7 @@ import io.github.rosemoe.editor.text.TextAnalyzer;
 import io.github.rosemoe.editor.widget.EditorColorScheme;
 
 public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
-    
-    private final EditorLanguage language;
-    
-    public GroovyAnalyzer (EditorLanguage language) {
-        this.language = language;
-    }
-    
+ 
 	@Override
 	public void analyze(ILanguageServer server, File file, @NonNull Content content, TextAnalyzeResult colors, @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate) throws IOException {
 		final var stream = CharStreams.fromReader (new StringReader (content.toString ()));
@@ -254,12 +242,4 @@ public class GroovyAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeA
         colors.determine(lastLine);
         colors.setSuppressSwitch(maxSwitch + 10);
 	}
-
-    @Override
-    public void setSemanticHighlights(SemanticHighlight highlights) {
-    }
-
-    @Override
-    public void updateDiagnostics(Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
-    }
 }

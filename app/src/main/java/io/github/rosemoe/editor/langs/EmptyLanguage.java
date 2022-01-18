@@ -97,14 +97,6 @@ public class EmptyLanguage implements EditorLanguage {
         public void analyze(ILanguageServer server, File file, Content content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
             colors.addNormalIfNull();
         }
-
-        @Override
-        public void setSemanticHighlights(SemanticHighlight highlights) {
-        }
-
-        @Override
-        public void updateDiagnostics(Map<Integer, Map<Integer, DiagnosticItem>> diagnostics) {
-        }
     }
 }
 
