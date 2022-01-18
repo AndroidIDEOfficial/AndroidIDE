@@ -153,4 +153,9 @@
                 app:showAsAction="never"/>
         </menu>
     </item>
+	<item
+		android:id="@+id/menuEditor_daemonStatus"
+		android:icon="@drawable/ic_info"
+		android:title="@string/gradle_daemon_status"
+		app:showAsAction="ifRoom"/>
 </menu>

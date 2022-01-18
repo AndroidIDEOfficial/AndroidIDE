@@ -440,6 +440,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             }
         } else if (id == R.id.menuEditor_viewLayout) {
             previewLayout ();
+        } else if (id == R.id.menuEditor_daemonStatus) {
+            showDaemonStatus ();
         } else if (getCurrentEditor () != null) { // Should be checked at last
             if (id == R.id.menuEditor_undo) {
                 this.getCurrentEditor ().undo ();
