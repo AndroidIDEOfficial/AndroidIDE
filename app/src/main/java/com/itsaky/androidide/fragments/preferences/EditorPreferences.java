@@ -17,7 +17,6 @@
 **************************************************************************************/
 package com.itsaky.androidide.fragments.preferences;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import androidx.preference.Preference;
@@ -116,10 +115,9 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
         builder.setTitle(R.string.title_tab_size);
         builder.setSingleChoiceItems(sizes, current, (d, i) -> {
             d.dismiss();
-            int index = i;
-            
-            // Reversing the logic applied above...
-            int tabSize = (index + 1) * 2;
+	
+			// Reversing the logic applied above...
+            int tabSize = (i + 1) * 2;
             if(tabSize < 2 || tabSize > 8) tabSize = 4;
             getPrefManager().putInt(KEY_EDITOR_TAB_SIZE, tabSize);
         });
@@ -133,8 +131,9 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		float size = getPrefManager().getFloat(KEY_EDITOR_FONT_SIZE, 14);
 		if(size < 6 || size > 32) {
 			size = 14;
-			changeTextSize(binding, size);
 		}
+		changeTextSize(binding, size);
+		
 		binding.slider.setLabelFormatter(p1 -> String.valueOf((int) p1));
 		builder.setTitle(R.string.title_change_text_size);
 		builder.setMessage(R.string.msg_editor_font_size);
@@ -174,20 +173,17 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		};
 		final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ());
 		builder.setTitle(R.string.idepref_editor_paintingflags_title);
-		builder.setMultiChoiceItems(labels, checked, (p1, p2, p3) -> {
-			DialogInterface iface = p1;
-			int pos = p2;
-			boolean isChecked = p3;
+		builder.setMultiChoiceItems(labels, checked, (dialog, which, isChecked) -> {
 			
-			if(pos == 0) {
+			if(which == 0) {
 				getPrefManager().putBoolean(KEY_EDITORFLAG_WS_LEADING, isChecked);
-			} else if(pos == 1) {
+			} else if(which == 1) {
 				getPrefManager().putBoolean(KEY_EDITORFLAG_WS_TRAILING, isChecked);
-			} else if(pos == 2) {
+			} else if(which == 2) {
 				getPrefManager().putBoolean(KEY_EDITORFLAG_WS_INNER, isChecked);
-			} else if(pos == 3) {
+			} else if(which == 3) {
 				getPrefManager().putBoolean(KEY_EDITORFLAG_WS_EMPTY_LINE, isChecked);
-			} else if(pos == 4) {
+			} else if(which == 4) {
 				getPrefManager().putBoolean(KEY_EDITORFLAG_LINE_BREAK, isChecked);
 			}
 			

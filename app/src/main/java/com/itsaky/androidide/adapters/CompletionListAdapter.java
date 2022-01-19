@@ -85,12 +85,6 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
         
         showApiInfoIfNeeded(item, binding.completionApiInfo);
         
-        binding.getRoot().getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            ViewGroup.LayoutParams p = binding.completionIconText.getLayoutParams();
-            p.height = binding.getRoot().getHeight();
-            binding.completionIconText.setLayoutParams(p);
-        });
-        
         return binding.getRoot();
     }
 
