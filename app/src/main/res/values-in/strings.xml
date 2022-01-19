@@ -1,1 +1,352 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- AndroidIDE -->
+    <string name="app_name">AndroidIDE</string>
+    <string name="license_epl">AndroidIDE uses LSP4J in its object code form (i.e. without any modifications) which is licensed under EPL 2.0. If you want us to disclose the source code to you, contact us at: </string>
+    <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
+    <string name="title_developers">Pengembang</string>
+    <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
+    <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
+    <string name="msg_open_source_licenses">AndroidIDE menggunakan sumber pustaka terbuka. Anda dapat menemukan lisensi dan sumber dari pustaka yang digunakan dengan menekan link dibawah.</string>
+    <string name="msg_about_licensed_under">Berlisensi di bawah: </string>
+    <string name="about_option_email">Email</string>
+    <string name="about_option_website">Website</string>
+    <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
+    <string name="about_footer">AndroidIDE %1$s for %2$s</string>
+    <string name="about_subtitle">Simpel, sebuah IDE untuk Android</string>
+    <string name="msg_get_package_failed">Gagal untuk mengekstrak nama paket!</string>
+    <string name="msg_share_app">AndroidIDE adalah Integrated Development Environment (IDE) untuk membuat aplikasi Android pada Smartphone Android anda. AndroidIDE mendukung :\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Perlengkapan otomatis Java tingkat lanjut\n4. Perlengkapan Otomatis XML \n5. Dukungan Kotlin dan lainnya.\n\nUnduh AndroidIDE di https://androidide.com</string>
+    <string name="msg_need_help">Jika anda mengalami masalah ketika menggunakan AndroidIDE atau dengan pembuatan Aplikasi Android, anda dapat bergabung ke Grup Telegram dan bertanya disana.\n\nAnda juga dapat mengirim saran pada Email kami.</string>
+    <string name="discuss_amp_help">Diskusi &amp; bantuan</string>
+    <string name="title_github">GitHub</string>
+    <string name="need_help">Butuh Bantuan?</string>
+    <string name="other">Lainnya</string>
+    <string name="share_with_friends">Berbagi dengan Teman</string>
+    <string name="ide_preferences">Preferensi IDE</string>
+    <string name="discussions_on_telegram">Diskusi di Telegram</string>
+    <string name="msg_empty_view">Tidak ada yang dapat kami tampilkan untuk anda&#8230;</string>
+    <string name="btn_terminal">Terminal</string>
+    <string name="reset">Reset</string>
+    <string name="app_logs">Log App</string>
+    <string name="ide_logs">Log IDE</string>
+    <string name="label_splash_image">Splash image</string>
+    <string name="cancel">Batalkan</string>
+    <string name="get_started">Memulai</string>
+    <string name="nothing_here">Tidak ada apa-apa disini &#8230;</string>
+
+    <!-- LSP, Diagnostics & Completions -->
+    <string name="msg_sdk_info_load_failed">Gagal memuat informasi SDK</string>
+    <string name="msg_fix_diagnostic">[QuickFix]</string>
+    <string name="msg_no_code_actions">Tidak dapat menemukan perbaikan cepat (QuickFix)</string>
+    <string name="msg_cannot_perform_fix">Tidak dapat menampilkan perbaikan cepat (QuickFix)</string>
+    <string name="msg_performing_fixes">Menampilkan perbaikan&#8230;</string>
+    <string name="msg_code_actions">Quickfixes</string>
+    <string name="msg_api_info_since">Sejak API %d</string>
+    <string name="msg_api_info_removed">Dihapus pada API %d</string>
+    <string name="msg_api_info_deprecated">Telah usang pada API %d</string>
+    <string name="msg_finding_references">Menemukan referensi&#8230;</string>
+    <string name="msg_finding_definition">Menemukan definisi&#8230;</string>
+    <string name="msg_no_definition">Definisi tidak ditemukan</string>
+    <string name="msg_no_references">Referensi tidak ditemukan</string>
+    <string name="menu_navigate_definition">Menuju definisi</string>
+    <string name="menu_navigate_references">Temukan semua referensi</string>
+    <string name="menu_navigate">Kode</string>
+    <string name="menu_comment_line">Komentarkan baris</string>
+    <string name="menu_uncomment_line">Lepas komentar di baris</string>
+    <string name="view_diags">Diagnosa</string>
+
+    <!-- Build Tools Installation -->
+    <string name="title_installation_failed">Instalasi gagal</string>
+    <string name="msg_installation_failed">Proses instalasi dihentikan dengan kode exit %1$d. Pastikan anda mengunduh alat build dari sumber aslinya.\n\nAnda dapat mencoba untuk menghapus data aplikasi AndroidIDE dan lakukan instalasi kembali.</string>
+    <string name="choose">Pilih</string>
+    <string name="get_ready_for_something_awesome">Bersiap untuk sesuatu yang menakjubkan !</string>
+    <string name="androidide_build_tools">Alat Build AndroidIDE</string>
+    <string name="install_build_tools_required_b">Instalasi alat build diperlukan oleh AndroidIDE</string>
+    <string name="choose_directory_which_contain">pilih direktori mana yang terdapat alat build.</string>
+    <string name="click_install_button_to_st">Klik tombol \'Instal\' untuk memulai proses instalasi.</string>
+    <string name="msg_picked_isnt_dir">Jalur yang dipilih bukanlah direktori!</string>
+    <string name="msg_pick_single_file">Mohon untuk hanya memilih satu direktori</string>
+    <string name="msg_file_doesnt_exist">File tidak ada!</string>
+    <string name="msg_pick_files">Mohon untuk memilih file!</string>
+    <string name="msg_download_instructions">1. Unduh alat build dari website AndroidIDE.\n2. Pindahkan semua arsip ke satu direktori.\n3. Pilih direktori tersebut menggunakan tombol dibawah.\n4. Klik Instal.\n5. Proses instalasi akan dimulai.\n\nProses instalasi memakan waktu sekitar 5&#8211;10 menit bergantung pada performa perangkat anda. Mohon bersabar!</string>
+    <string name="msg_installable_files">File-file yang perlu di instal\n\n%s</string>
+    <string name="title_restart">Mohon mulai ulang</string>
+    <string name="msg_restart">Instalasi telah selesai. Mohon mulai ulang AndroidIDE.</string>
+    <string name="please_wait">Mohon tunggu sebentar &#8230;</string>
+    <string name="title_device_not_supported">Perangkat tidak didukung</string>
+    <string name="msg_device_not_supported">Sayang sekali, perangkat anda tidak didukung saat ini. Kami mohon maaf atas ketidaknyamanannya.\n\nCPU ABI yang didukung: aarch64 dan armeabi-v7a</string>
+
+    <!-- Project Builder -->
+    <string name="lint">Lint</string>
+    <string name="lint_debug">lintDebug</string>
+    <string name="lint_release">lintRelease</string>
+    <string name="build">Build</string>
+    <string name="build_debug">assembleDebug</string>
+    <string name="build_output">Hasil Build</string>
+    <string name="build_release">assembleRelease</string>
+    <string name="lint_tasks">Lint tasks</string>
+    <string name="clean_amp_build">Clean &amp; build</string>
+    <string name="clean_project">Clean</string>
+    <string name="create_aab">Buat AAB</string>
+    <string name="build_tasks">Build tasks</string>
+    <string name="stop_gradle_daemons">Hentikan Gradle Daemon</string>
+    <string name="quick_run_debug">Quick run</string>
+    <string name="msg_sync_needed">File Gradle telah berubah. Mohon build ulang project anda untuk menyinkronkan dependensi dan konfigurasi.</string>
+    <string name="msg_task_begin">========== [%s] MEMULAI_TUGAS_BUILD: %s ==========</string>
+    <string name="preparing">Menyiapkan</string>
+    <string name="preparing_first">Menyiapkan. Build pertama mungkin memakan waktu sekitar 10&#8211;15 menit!</string>
+    <string name="msg_gradle_terminated">Proses Gradle berhenti dengan kode exit %1$d</string>
+    <string name="msg_gradlew_installation_failed">Gagal untuk menginstal Gradle Wrapper: %s</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper tidak tersedia!\nMenginstal Gradle bawaan. Gradle v7.3 akan diunduh jika diperlukan.</string>
+    <string name="msg_getting_daemom_status">Mendapatkan status Daemon, mohon tunggu&#8230;</string>
+    <string name="msg_daemons_stopped">Gradle Daemon Dihentikan</string>
+    <string name="gradle_daemon_status">Status Gradle Daemon</string>
+    <string name="msg_service_started">Layanan Dimulai</string>
+    <string name="msg_starting_completion">Memulai layanan</string>
+    <string name="msg_starting_completion_failed">Gagal untuk memulai layanan perlengkapan otomatis</string>
+    <string name="msg_starting_daemon">Memulai Gradle daemon</string>
+    <string name="title_install_apks">Install Aplikasi</string>
+    <string name="title_clear_output">Bersihkan hasil</string>
+    <string name="install">Instal</string>
+    <string name="run">Jalankan</string>
+    <string name="gradle">Gradle</string>
+    <string name="title_first_build">Build Pertama</string>
+    <string name="msg_first_build">Ini adalah build pertama setelah anda memasang AndroidIDE. Build pertama biasanya memakan waktu selama Gradle mengunduh semua dependensi dan plugin. Proses ini diperkirakan sekitar 10&#8211;15 menit. Tetapi ini bergantung pada kecepatan koneksi internet anda.\n\nMohon bersabar &#8230;</string>
+    <string name="compiling">Mengkompilasi</string>
+
+    <!-- Project -->
+    <string name="create_project">Buat projek</string>
+    <string name="minimum_sdk">Minimum SDK</string>
+    <string name="target_sdk">Target SDK</string>
+    <string name="new_project">Projek baru</string>
+    <string name="package_name">Nama paket</string>
+    <string name="project_app_name">Nama aplikasi</string>
+    <string name="invalid_values">Isi tidak valid</string>
+    <string name="msg_no_projects">Sepertinya anda belum membuat satupun projek.</string>
+    <string name="msg_create_new_project_greeting">Mulailah membuat projek hebat anda!</string>
+    <string name="title_confirm_open_project">Buka projek yang terakhir dibuka?</string>
+    <string name="msg_confirm_open_project">Apakah anda ingin membuka projek yang terakhir kali dibuka? Projek terakhir yang dibuka:\n%s</string>
+    <string name="msg_init_project_failed">Gagal menginisialisasi projek!</string>
+    <string name="group_project">Projek</string>
+    <string name="title_close_project">Tutup projek ini</string>
+    <string name="msg_opened_project_does_not_exist">Projek yang terakhir dibuka tidak ada!</string>
+    <string name="msg_create_new_project">Buat projek baru</string>
+    <string name="msg_open_existing_project">Buka projek yang sudah ada</string>
+    <string name="msg_opening_project">Membuka projek&#8230;</string>
+    <string name="msg_invalid_project">Direktori yang dipilih bukan projek Android</string>
+    <string name="msg_project_deleted">Projek dihapus</string>
+    <string name="msg_project_delete_failed">Gagal menghapus projek!</string>
+    <string name="menu_project_info">Informasi Projek</string>
+    <string name="header_module_info">Informasi Modul</string>
+    <string name="msg_module_count">Modul : %d</string>
+    <string name="msg_task_count">Tugas : %d</string>
+    <string name="msg_dependency_count">Dependensi : %d</string>
+    <string name="msg_package_name">Paket : %s</string>
+    <string name="msg_min_sdk">Min SDK : %s</string>
+    <string name="msg_target_sdk">Target SDK : %s</string>
+    <string name="title_confirm_project_close">Tutup projek</string>
+    <string name="msg_confirm_project_close">anda yakin ingin menutup projek ini? Semua Gradle daemon yang berjalan akan diberhentikan setelah projek ini ditutup.</string>
+    <string name="project_exists">Sudah terdapat projek dengan nama yang sama!</string>
+
+    <!-- Templates -->
+    <string name="template_basic">Projek Dasar</string>
+    <string name="template_description_basic">Sebuah projek dasar dengan Toolbar AppCompat dan sebuah Floating Action Button</string>
+    <string name="template_description_empty">Sebuah projek kosong dengan toolbar bawaan. sangat cocok untuk melakukan semua hal mendasar anda sendiri.</string>
+    <string name="template_description_navigation_drawer">Projek dengan Toolbar AppCompat, DrawerLayout dan NavigationView</string>
+    <string name="template_empty">Projek Kosong</string>
+    <string name="template_navigation_drawer">Projek NavigationDrawer</string>
+
+    <!-- Files -->
+    <string name="save">Simpan</string>
+    <string name="show_files">File-file</string>
+    <string name="menu_find">Pencarian</string>
+    <string name="menu_find_file">Cari di dalam file</string>
+    <string name="menu_find_project">Cari di dalam projek</string>
+    <string name="msg_search_modules">Cari di modul-modul</string>
+    <string name="msg_no_modules">Modul tidak ditemukan dalam projek</string>
+    <string name="hint_find_project_filter">Filter ekstensi file (opsional)</string>
+    <string name="msg_find_project_filter">Dipisahkan dengan \'|\'</string>
+    <string name="msg_empty_search_query">Mohon masukan teks</string>
+    <string name="msg_select_search_modules">Pilih modul untuk dicari</string>
+    <string name="msg_searching_project">Mencari di projek, mohon tunggu&#8230;</string>
+    <string name="view_search_results">Hasil pencarian</string>
+    <string name="copying_files">Menyalin file</string>
+    <string name="writing_files">Menulis file</string>
+    <string name="copying_assets">Menyalin assets</string>
+    <string name="failed_create_project_dir">Gagal membuat direktori projek!</string>
+    <string name="failed_write_file">Gagal menulis file: %s</string>
+    <string name="asset_copy_failed">Gagal menyalin templat ke penyimpanan!</string>
+    <string name="cannot_create_temp">Gagal membuat direktori projek sementara!</string>
+    <string name="project_created_successfully">Projek sukses dibuat!</string>
+    <string name="msg_begin_project_write">Memulai proses penulisan</string>
+    <string name="msg_folder_creation_failed">Gagal membuat folder!</string>
+    <string name="msg_file_creation_failed">Gagal membuat file!</string>
+    <string name="msg_folder_created">Folder sukses dibuat!</string>
+    <string name="msg_file_created">File sukses dibuat!</string>
+    <string name="msg_folder_exists">Folder sudah ada!</string>
+    <string name="msg_file_exists">File sudah ada!</string>
+    <string name="msg_invalid_name">Nama Tidak Valid!</string>
+    <string name="text_create">Buat</string>
+    <string name="msg_can_contain_slashes">Jika jalur terdapat pemisah File (\'/\'), maka direktori (awal) yang diperlukan akan dibuat jika mereka tidak ada.</string>
+    <string name="folder_name">Nama Folder</string>
+    <string name="file_name">Nama File</string>
+    <string name="new_name">Nama baru</string>
+    <string name="new_file">File baru</string>
+    <string name="new_java_class">Class Java baru</string>
+    <string name="new_xml_resource">File XML baru</string>
+    <string name="new_folder">Folder baru</string>
+    <string name="title_confirm_delete">Konfirmasi hapus</string>
+    <string name="msg_confirm_delete">Anda yakin ingin menghapus:\n%s?</string>
+    <string name="copied">Sukses disalin!</string>
+    <string name="msg_rename_file">Masukan nama baru untuk file/folder.</string>
+    <string name="renamed">Sukses mengubah nama!</string>
+    <string name="rename_failed">Tidak dapat mengubah nama!</string>
+    <string name="deleted">Berhasil dihapus!</string>
+    <string name="delete_failed">Tidak dapat menghapus file!</string>
+    <string name="copy_path">Salin jalur</string>
+    <string name="rename_file">Ubah nama</string>
+    <string name="delete_file">Hapus</string>
+    <string name="file_options">Opsi file</string>
+    <string name="action_closeAll">Tutup semua</string>
+    <string name="action_closeOthers">Tutup lainnya</string>
+    <string name="action_closeThis">Tutup ini</string>
+    <string name="all_saved">Semua file disimpan!</string>
+    <string name="msg_newfile_dest">Tujuan: %s/</string>
+    <string name="restype_drawable">Drawable</string>
+    <string name="restype_layout">Layout</string>
+    <string name="restype_menu">Menu</string>
+    <string name="restype_other">Lainnya</string>
+    <string name="classtype_class">Class</string>
+    <string name="classtype_activity">Activity</string>
+    <string name="classtype_interface">Interface</string>
+    <string name="classtype_enum">Enum</string>
+    <string name="msg_checking_storage_permissions">Mengecek ijin penyimpanan</string>
+    <string name="msg_failed_list_files">Gagal memuat file-file dalam projek!</string>
+    <string name="msg_failed_save">Gagal menyimpan file!</string>
+    <string name="msg_storage_denied">Tidak dapat melanjutkan tanpa ijin penyimpanan</string>
+    <string name="msg_storage_granted">Peizinan penyimpanan diberikan!</string>
+
+    <!-- Code Editor -->
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <item name="paste" type="string">Tempel</item>
+    <item name="copy" type="string" tools:override="true">Salin</item>
+    <item name="selectAll" formatted="true" type="string">Pilih Semua</item>
+    <item name="cut" type="string">Potong</item>
+    <item name="last" type="string">Terakhir</item>
+    <item name="next" type="string">Selanjutnya</item>
+    <item name="replace" type="string">Ganti</item>
+    <item name="replaceAll" type="string">Ganti semua</item>
+    <item name="replacement" type="string">Pergantian</item>
+    <item name="text_to_search" type="string">Teks untuk dicari</item>
+    <item name="more" translatable="false" type="string">Lainnya</item>
+
+    <!-- Preferences -->
+    <string name="title_change_text_size">Ukuran huruf editor</string>
+    <string name="idepref_about_title">Tentang AndroidIDE</string>
+    <string name="idepref_build_clearCache_title">Bersihkan cache Gradle</string>
+    <string name="idepref_build_clearCache_summary">Membersihkan direktori cache Gradle. ini akan menghapus semua dependensi yang telah diunduh oleh Gradle. File yang diperlukan akan diunduh kembali pada build berikutnya.</string>
+    <string name="idepref_build_customgradlecommands_title">Penambahan perintah Gradle</string>
+    <string name="idepref_build_customgradlecommands_summary">Pilih tambahan perintah yang akan ditambahkan ketika melaksanakan setiap task</string>
+    <string name="idepref_build_editgradleproperties_title">Edit properti global Gradle</string>
+    <string name="idepref_build_editgradleproperties_summary">Edit gradle.properties di GRADLE_HOME</string>
+    <string name="idepref_editor_fontsize_title">Ukuran huruf</string>
+    <string name="idepref_editor_fontsize_summary">Ukuran huruf pada editor</string>
+    <string name="idepref_editor_paintingflags_title">Gambaran editor yang tidak tercetak</string>
+    <string name="idepref_editor_paintingflags_summary">Pilih apa saja karakter tidak tercetak yang seharusnya ditampilkan di editor</string>
+    <string name="idepref_editor_drawhexcolors_title">Tampilkan warna Hex</string>
+    <string name="idepref_editor_drawhexcolors_summary">Apakah editor harus menampilkan warna Hex?</string>
+    <string name="idepref_editor_title">Editor</string>
+    <string name="idepref_build_title">Build &amp; Jalankan</string>
+    <string name="title_open_projects">Buka projek terakhir</string>
+    <string name="msg_open_projects">Jika diaktifkan, IDE akan mengingat projek yang terakhir dibuka dan akan membuka ulang pada saat aplikasi memulai di selanjutnya.</string>
+    <string name="title_confirm_project_open">Konfirmasi membuka projek</string>
+    <string name="msg_confirm_project_open">Bertanya sebelum membuka projek yang terakhir dibuka.</string>
+    <string name="title_default_shell">Gunakan shell sistem pada terminal</string>
+    <string name="msg_default_shell">Jika diaktifkan, \'/system/bin/sh\' akan digunakan di dalam terminal.</string>
+    <string name="title_general">Pengaturan Umum</string>
+    <string name="title_tab_size">Ukuran tab</string>
+    <string name="msg_tab_size">Menentukan jumlah spasi pada tab</string>
+    <string name="msg_preferences">Preferensi</string>
+    <string name="msg_failed_get_changelog">Gagal untuk membaca log perubahan!</string>
+    <string name="pref_changelog">Log Perubahan</string>
+    <string name="msg_editor_font_size">Mohon pilih ukuran huruf bawaan dari editor :</string>
+    <string name="msg_clear_cache">Ini akan menghapus direktori cache yang dibuat oleh Gradle. Jika anda menghapusnya, build selanjutnya mungkin akan memakan waktu lebih lama selama Gradle mengunduh file-file yang diperlukan lagi.\nPENTING: Aksi ini juga akan menghapus AAPT2. Anda akan harus menginstal ulang atau anda akan berakhir dengan gagal build.\n\nAnda yakin ingin menghapus cache?</string>
+
+
+    <!-- Error Messages used while Logging -->
+    <string name="err_installation">Instalasi error</string>
+    <string name="err_completion">Perlengkapan error</string>
+    <string name="err_no_server_implementation">Tidak ditemukan implementasi LanguageServer.</string>
+    <string name="err_init_server">Error menginisialisasi server bahasa (LanguageServer)</string>
+    <string name="err_init_sdkinfo">Tidak dapat inisialisasi informasi SDK</string>
+    <string name="err_cannot_start_file_picker">Tidak dapat memulai pemilihan file (File Picker)</string>
+    <string name="err_cannot_parse_apk_metadata">Gagal mengurai metadata APK</string>
+    <string name="err_cannot_save_files">Tidak dapat menyimpan file</string>
+    <string name="err_cannot_preview_layout">Tidak dapat melihat pratinjau layout</string>
+    <string name="err_cannot_inflate_layout">Layout tidak dapat di-inflate</string>
+    <string name="err_cannot_start_server">Tidak dapat memulai layanan Language Server karena: %s</string>
+    <string name="err_cannot_write_socket">Gagal menulis ke Socket stream</string>
+    <string name="err_server_disconnected">Proses server bahasa (LanguageServer) berhenti secara tidak terduga.</string>
+
+    <!-- Layout preview and designer -->
+    <string name="msg_cannot_preview_layout">Tidak dapat melihat pratinjau layout!</string>
+    <string name="title_preview_layout">Pratinjau Layout</string>
+    <string name="label_ui_designer_content">Konten utama Desainer UI</string>
+    <string name="widget_textview">TextView</string>
+    <string name="widget_button">Button</string>
+    <string name="widget_group_android">Android</string>
+    <string name="widget_checkbox">CheckBox</string>
+    <string name="widget_checked_textview">CheckedTextView</string>
+    <string name="widget_edittext">EditText</string>
+    <string name="widget_image_button">ImageButton</string>
+    <string name="widget_image_view">ImageView</string>
+    <string name="widget_progressbar">ProgressBar</string>
+    <string name="widget_radio_button">RadioButton</string>
+    <string name="widget_seekbar">SeekBar</string>
+    <string name="widget_spinner">Spinner</string>
+    <string name="widget_group_layouts">Layouts</string>
+    <string name="layout_linear">LinearLayout</string>
+    <string name="layout_relative">RelativeLayout</string>
+    <string name="msg_attr_edit_hint">Klik pada item atribut untuk mengedit.</string>
+    <string name="sym_equal">=</string>
+    <string name="msg_attr_namespace">\'%s\' namespace</string>
+    <string name="msg_unknown_package">Nama paket tidak diketahui</string>
+    <string name="msg_attr_editor_select_view">Pilih sebuah View untuk mengedit atributnya.</string>
+    <string name="msg_attr_editor_no_attrs">Tidak ada atribut yang ditambahkan untuk View ini.\nKlik pada tombol \'+\' untuk menambahkan.</string>
+    <string name="msg_enter_attr_value">Masukan isi untuk atribut:</string>
+    <string name="hint_new_attr_value">Isi baru</string>
+    <string name="attr_val_wrap_content">wrap_content</string>
+    <string name="attr_val_match_parent">match_parent</string>
+    <string name="attr_val_other">Isi lainnya</string>
+    <string name="msg_enter_dimension_value">Masukan isi dimensi</string>
+    <string name="msg_applicable_attrs">Atribut yang tersedia</string>
+    <string name="msg_attr_editor_actions">Aksi</string>
+    <string name="title_viewaction_delete">Hapus</string>
+    <string name="msg_viewaction_select_parent">Pilih parent</string>
+    <string name="msg_no_view_parent">View ini tidak memiliki parent</string>
+    <string name="msg_yesno_def_title">Mohon konfirmasi</string>
+    <string name="msg_yesno_def_message">Anda yakin?</string>
+    <string name="msg_view_deletion_failed">Tidak dapat menghapus View.</string>
+    <string name="msg_empty_ui_layout">Tidak ada View yang ditambahkan. Klik untuk menambahkan.</string>
+    <string name="msg_no_attr_format">Tidak ada format atribut yang tersedia untuk atribut ini.</string>
+    <string name="msg_attr_editor_null">Tidak dapat membuat editor atribut untuk atribut ini</string>
+    <string name="msg_invalid_attr_value">Isi tidak valid</string>
+    <string name="msg_new_str_value">Isi baru string</string>
+    <string name="msg_add_namespace_decl">Tambahkan \'%1$s\' deklarasi namespace</string>
+    <string name="msg_choose_new_val">Pilih isi yang baru</string>
+    <string name="msg_select_one_flag">Mohon setidaknya pilih satu flag.</string>
+    <string name="msg_generate_xml_failed">Gagal untuk menghasilkan kode XML</string>
+    <string name="title_generating_xml">Hasilkan kode XML</string>
+    <string name="title_code_generation_failed">Gagal menghasilkan kode</string>
+    <string name="msg_code_generation_failed">Gagal menghasilkan kode XML. Apa anda tetap ingin keluar?</string>
+    <string name="msg_invalid_designer_result">Desainer UI menghasilkan hasil tidak valid</string>
+    <string name="msg_swipe_up">Geser ke atas untuk hasil build, log dan lainnya.</string>
+    <string name="msg_ide_crashed">AndroidIDE crashed</string>
+    <string name="msg_report_crash">Mohon buka isu di github dengan menyertakan stacktrace :</string>
+    <string name="msg_crash_report_hint">Klik tombol dibawah untuk menyalin log dan membuka halaman isu.</string>
+    <string name="msg_copy_report_action">Salin dan laporkan</string>
+    <string name="msg_reading_bootstrap">Membaca arsip bootstrap…</string>
+    <string name="msg_bootstrap_installation_error">Instalasi Bootstrap gagal dengan exception berikut.</string>
+
+</resources>
