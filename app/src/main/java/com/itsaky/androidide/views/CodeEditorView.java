@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.SizeUtils;
@@ -38,7 +39,6 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
-import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Range;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -46,10 +46,8 @@ import org.antlr.v4.runtime.Token;
 
 import java.io.File;
 import java.io.StringReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
@@ -166,11 +164,32 @@ public class CodeEditorView extends FrameLayout {
     }
     
     public boolean save () {
-        final var text = getText ();
-        final var saved = FileIOUtils.writeFileFromString (getFile (), text);
-        notifySaved ();
-        isModified = false;
-        return saved;
+        
+        if (getFile () == null) {
+            LOG.error ("Cannot save file. File instance is null.");
+            return false;
+        }
+        
+        final var path = getFile ().toPath ();
+        if (!isModified() && Files.exists (path)) {
+            LOG.info (getFile ());
+            LOG.info ("File was not modified. Skipping save operation.");
+            return false;
+        }
+    
+        final var lines = new ArrayList<> (getEditor ().getText ().getLines ());
+        try {
+            
+            Files.write (getFile ().toPath (), lines);
+            
+            notifySaved ();
+            isModified = false;
+        
+            return true;
+        } catch (Throwable e) {
+            LOG.error ("Failed to save file", getFile (), "\n", e);
+            return false;
+        }
     }
     
     public Editor getEditor () {
@@ -181,6 +200,7 @@ public class CodeEditorView extends FrameLayout {
         return binding;
     }
     
+    @Nullable
     public File getFile () {
         return file;
     }
@@ -194,7 +214,7 @@ public class CodeEditorView extends FrameLayout {
     }
     
     public void onPause () {
-        CompletableFuture.runAsync (this::save);
+        // unimplemented
     }
     
     public void onResume () {

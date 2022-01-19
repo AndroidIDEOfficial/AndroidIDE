@@ -649,33 +649,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     @Override
     public void onTabUnselected (@NonNull TabLayout.Tab tab) {
-        final var position = mViewModel.getCurrentFileIndex ();
-        if (position < 0 || position >= mViewModel.getOpenedFileCount ()) {
-            // This might happen when the file is being closed.
-            // In this case, the file has already been saved, so we don't need to save it again.
-            // see #close(int)
-            return;
-        }
-        
-        final var opened = mViewModel.getOpenedFile (position);
-        if (opened == null) {
-            LOG.error ("No opened file at index", position);
-            return;
-        }
-        
-        final var frag = getEditorAtIndex (position);
-        if (frag == null) {
-            LOG.error ("Cannot save unselected editor. Editor is null.");
-            return;
-        }
-        
-        boolean isGradle = frag.isModified () && opened.getName ().endsWith (".gradle");
-        frag.save ();
-        
-        if (isGradle) {
-            LOG.info ("Gradle files have been modified. Sync needed.");
-            notifySyncNeeded ();
-        }
+        // unimplemented
     }
     
     @Override
@@ -920,7 +894,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             var opened = mViewModel.getOpenedFile (index);
             LOG.info ("Closing file:", opened);
             final var editor = getEditorAtIndex (index);
-            if (editor != null) {
+            if (editor != null && editor.getEditor () != null) {
                 editor.save ();
                 editor.getEditor ().close ();
             } else {
@@ -947,7 +921,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         // Save and close all files one by one
         for (int i = 0; i < count; i++) {
             final var editor = getEditorAtIndex (i);
-            if (editor != null) {
+            if (editor != null && editor.getEditor () != null) {
                 editor.save ();
                 editor.getEditor ().close ();
             } else {

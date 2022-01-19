@@ -37,7 +37,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -154,7 +153,6 @@ public class BootstrapInstaller {
                             throw new CompletionException (throwable);
                         }
                     }
-                    
                     Os.symlink (symlink.first, symlink.second);
                 }
                 
