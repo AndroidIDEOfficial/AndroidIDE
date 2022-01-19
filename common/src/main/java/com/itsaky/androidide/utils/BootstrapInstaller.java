@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.utils;
 
-import static com.itsaky.androidide.utils.Environment.ROOT;
 import static com.itsaky.androidide.utils.Environment.SYSROOT;
 
 import android.content.Context;
@@ -37,7 +36,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -64,44 +62,6 @@ public class BootstrapInstaller {
             try (final var assetIn = context.getAssets ().open (ToolsManager.getArchSpecificAsset ("bootstrap.zip"));
                  final var zip = new ZipInputStream (assetIn)) {
                 
-                final var stagingDir = new File (ROOT, "sysroot-staging").toPath ();
-                final var sysroot = SYSROOT.toPath ();
-                if (Files.exists (stagingDir)) {
-                    try {
-                        Files.delete (stagingDir);
-                    } catch (IOException th) {
-                        LOG.error ("Cannot delete staging directory");
-                        throw new CompletionException (th);
-                    }
-                }
-                
-                if (Files.exists (sysroot)) {
-                    try {
-                        Files.delete (sysroot);
-                    } catch (IOException th) {
-                        LOG.error ("Cannot delete sysroot directory");
-                        throw new CompletionException (th);
-                    }
-                }
-                
-                if (!Files.exists (stagingDir)) {
-                    try {
-                        Files.createDirectories (stagingDir);
-                    } catch (IOException th) {
-                        LOG.error ("Cannot create staging directory");
-                        throw new CompletionException (th);
-                    }
-                }
-                
-                if (!Files.exists (sysroot)) {
-                    try {
-                        Files.createDirectories (sysroot);
-                    } catch (Throwable th) {
-                        LOG.error ("Cannot create sysroot directory");
-                        throw new CompletionException (th);
-                    }
-                }
-                
                 final var buffer = new byte[8096];
                 final var symlinks = new ArrayList<Pair<String, String>> (50);
                 
@@ -124,7 +84,7 @@ public class BootstrapInstaller {
                                 throw new CompletionException (new InstallationException (err));
                             }
                             String oldPath = parts[0];
-                            String newPath = stagingDir.resolve (parts[1]).toFile ().getAbsolutePath ();
+                            String newPath = SYSROOT.getAbsolutePath () + "/" + parts [1];
                             symlinks.add (Pair.create (oldPath, newPath));
                             
                             final var parentFile = new File (newPath).getParentFile ();
@@ -135,7 +95,7 @@ public class BootstrapInstaller {
                         }
                     } else {
                         String zipEntryName = entry.getName ();
-                        File targetFile = new File (stagingDir.toFile (), zipEntryName);
+                        File targetFile = new File (SYSROOT, zipEntryName);
                         boolean isDirectory = entry.isDirectory ();
                         
                         final var ___ = isDirectory ? targetFile : targetFile.getParentFile ();
@@ -172,13 +132,6 @@ public class BootstrapInstaller {
                 for (Pair<String, String> symlink : symlinks) {
                     notify (listener, context.getString (R.string.msg_linking, symlink.second, symlink.first));
                     Os.symlink (symlink.first, symlink.second);
-                }
-                
-                LOG.info ("Renaming 'sysroot-staging' directory to 'sysroot'");
-                
-                if (!FileUtils.rename (stagingDir.toFile (), SYSROOT.getName ())) {
-                    LOG.error ("Cannot rename 'sysroot-staging' to 'sysroot'");
-                    throw new CompletionException (new InstallationException ("Failed to rename staging sysroot directory."));
                 }
                 
                 notify (listener, context.getString (R.string.msg_extracting_hooks));
