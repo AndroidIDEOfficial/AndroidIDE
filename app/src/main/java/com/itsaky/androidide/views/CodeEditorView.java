@@ -19,6 +19,7 @@ package com.itsaky.androidide.views;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -160,6 +161,14 @@ public class CodeEditorView extends FrameLayout {
                     );
                 }
             });
+        });
+        
+        binding.editor.getViewTreeObserver ().addOnGlobalLayoutListener (new ViewTreeObserver.OnGlobalLayoutListener () {
+            @Override
+            public void onGlobalLayout () {
+                binding.editor.getViewTreeObserver ().removeOnGlobalLayoutListener (this);
+                configureEditorIfNeeded ();
+            }
         });
     }
     

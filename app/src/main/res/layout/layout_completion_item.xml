@@ -39,7 +39,7 @@
 		app:layout_constraintEnd_toStartOf="@id/completion_type"
 		app:layout_constraintStart_toEndOf="@id/completion_iconText"
 		app:layout_constraintTop_toTopOf="parent" />
-	
+
 	<TextView
 		android:id="@+id/completion_detail"
 		android:layout_width="0dp"
