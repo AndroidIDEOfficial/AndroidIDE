@@ -420,5 +420,5 @@ public class CodeActionProvider implements ICodeActionProvider {
         return Collections.singletonList (action);
     }
     
-    private static final Logger LOG = Logger.instance ("main");
+    private static final Logger LOG = Logger.instance ("JavaCodeActionProvider");
 }

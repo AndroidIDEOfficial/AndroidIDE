@@ -85,7 +85,6 @@ import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.ReferenceParams;
 import com.itsaky.lsp.models.ReferenceResult;
-import com.itsaky.lsp.models.SemanticHighlight;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.toaster.Toaster;
@@ -104,6 +103,7 @@ import io.github.rosemoe.editor.interfaces.NewlineHandler;
 import io.github.rosemoe.editor.langs.EmptyLanguage;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.Span;
+import io.github.rosemoe.editor.syntax.EditorColorScheme;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.ContentLine;
@@ -505,7 +505,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
         mStartedActionMode = ACTION_MODE_NONE;
         setTextSize (DEFAULT_TEXT_SIZE);
         setLineInfoTextSize (mPaint.getTextSize ());
-        mColors = new EditorColorScheme (this);
+        mColors = new EditorColorScheme (this::onColorUpdated);
         mEventHandler = new EditorTouchEventHandler (this);
         mBasicDetector = new GestureDetector (getContext (), mEventHandler);
         mBasicDetector.setOnDoubleTapListener (mEventHandler);
@@ -3803,7 +3803,7 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
      * @param colors A non-null and free EditorColorScheme
      */
     public void setColorScheme (@NonNull EditorColorScheme colors) {
-        colors.attachEditor (this);
+        colors.setOnColorUpdateListener (this::onColorUpdated);
         mColors = colors;
         if (mCompletionWindow != null) {
             mCompletionWindow.applyColorScheme ();

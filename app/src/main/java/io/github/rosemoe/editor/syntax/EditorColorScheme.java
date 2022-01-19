@@ -1,23 +1,24 @@
 /*
- *   Copyright 2020-2021 Rosemoe
+ *  This file is part of AndroidIDE.
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.github.rosemoe.editor.widget;
+package io.github.rosemoe.editor.syntax;
 
 import android.util.SparseIntArray;
 
-import io.github.rosemoe.editor.util.Objects;
+import java.util.Objects;
 
 /**
  * This class manages the colors of editor.
@@ -43,10 +44,6 @@ import io.github.rosemoe.editor.util.Objects;
  * Note that new colors can be added in newer version of editor,
  * it is dangerous not to call super.applyDefault(), which can cause
  * newer editor works wrongly.
- * <p>
- * For more pre-defined color schemes, please turn to package io.github.rosemoe.editor.widget.schemes
- * <p>
- * Thanks to liyujiang-gzu (GitHub @liyujiang-gzu) for contribution to color schemes
  *
  * @author Rose
  */
@@ -128,16 +125,6 @@ public class EditorColorScheme {
     protected static int COMMENT_DEFAULT = 0xffa8a8a8;
     
     /**
-     * Start index of Javadoc related color IDs
-     */
-    public static final int JD_SCHEME_START = 56;
-    
-    /**
-     * End index of Javadoc related color IDs
-     */
-    public static final int JD_SCHEME_END = 102;
-    
-    /**
      * Min pre-defined color id
      */
     protected static final int START_COLOR_ID = 1;
@@ -150,38 +137,24 @@ public class EditorColorScheme {
      * Real color saver
      */
     protected final SparseIntArray mColors;
-    /**
-     * Host editor object
-     */
-    private CodeEditor mEditor;
     
-    /**
-     * Create a new ColorScheme for the given editor
-     *
-     * @param editor Host editor
-     */
-    EditorColorScheme (CodeEditor editor) {
-        mEditor = editor;
+    private OnColorUpdateListener listener;
+    
+    public void setOnColorUpdateListener (OnColorUpdateListener listener) {
+        this.listener = Objects.requireNonNull (listener);
+    }
+    
+    public EditorColorScheme (OnColorUpdateListener listener) {
+        this.listener = listener;
         mColors = new SparseIntArray ();
         applyDefault ();
     }
     
     /**
-     * For sub classes
+     * Subclasses only
      */
-    public EditorColorScheme () {
-        mColors = new SparseIntArray ();
-        applyDefault ();
-    }
-    
-    /**
-     * Called by editor
-     */
-    void attachEditor (CodeEditor editor) {
-        if (mEditor != null) {
-            throw new IllegalStateException ("A editor is already attached to this ColorScheme object");
-        }
-        mEditor = Objects.requireNonNull (editor);
+    protected EditorColorScheme () {
+        this (type -> {});
     }
     
     /**
@@ -199,12 +172,6 @@ public class EditorColorScheme {
      * @param type The type
      */
     private void applyDefault (int type) {
-        
-        // By default, all javadoc syntax will be treated as comments
-        if (type >= JD_SCHEME_START && type <= JD_SCHEME_END) {
-            setColor (type, COMMENT_DEFAULT); // Comment
-        }
-        
         int color;
         switch (type) {
             case LINE_DIVIDER:
@@ -215,13 +182,6 @@ public class EditorColorScheme {
                 break;
             case LINE_NUMBER_BACKGROUND:
                 color = 0xfff0f0f0;
-                break;
-            case WHOLE_BACKGROUND:
-            case LINE_NUMBER_PANEL_TEXT:
-            case AUTO_COMP_PANEL_BG:
-            case AUTO_COMP_PANEL_CORNER:
-            case TEXT_SELECTED:
-                color = 0xffffffff;
                 break;
             case OPERATOR:
                 color = 0xFF0066D6;
@@ -321,9 +281,6 @@ public class EditorColorScheme {
             case DIAGNOSTIC_INFO:
                 color = 0xff4CAF50;
                 break;
-            case DIAGNOSTIC_HINT:
-                color = 0xffffffff;
-                break;
             default:
                 color = 0xffffffff;
         }
@@ -347,10 +304,8 @@ public class EditorColorScheme {
         
         mColors.put (type, color);
         
-        //Notify the editor
-        if (mEditor != null) {
-            mEditor.onColorUpdated (type);
-        }
+        //Notify the listener
+        listener.onColorUpdated (type);
     }
     
     /**
@@ -363,4 +318,7 @@ public class EditorColorScheme {
         return mColors.get (type);
     }
     
+    public interface OnColorUpdateListener {
+        void onColorUpdated (int type);
+    }
 }

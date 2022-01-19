@@ -17,13 +17,10 @@ package io.github.rosemoe.editor.langs;
 
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.CompletionItem;
-import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.SemanticHighlight;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;

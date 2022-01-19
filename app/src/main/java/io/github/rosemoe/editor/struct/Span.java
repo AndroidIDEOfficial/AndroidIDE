@@ -15,13 +15,13 @@
  */
 package io.github.rosemoe.editor.struct;
 
-import android.graphics.Typeface;
-
 import androidx.annotation.NonNull;
 
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+
+import io.github.rosemoe.editor.syntax.EditorColorScheme;
 
 /**
  * The span model

@@ -5,14 +5,11 @@ import android.graphics.Color;
 import androidx.annotation.NonNull;
 
 import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.SemanticHighlight;
 
 import org.antlr.v4.runtime.Token;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import io.github.rosemoe.editor.interfaces.CodeAnalyzer;

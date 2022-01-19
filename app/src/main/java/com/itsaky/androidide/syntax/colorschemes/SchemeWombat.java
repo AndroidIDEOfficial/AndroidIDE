@@ -21,7 +21,7 @@
 
 package com.itsaky.androidide.syntax.colorschemes;
 
-import io.github.rosemoe.editor.widget.EditorColorScheme;
+import io.github.rosemoe.editor.syntax.EditorColorScheme;
 
 public class SchemeWombat extends EditorColorScheme {
 

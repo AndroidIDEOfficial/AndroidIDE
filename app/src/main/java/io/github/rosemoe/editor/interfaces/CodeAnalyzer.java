@@ -19,14 +19,13 @@ import androidx.annotation.Nullable;
 
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.SemanticHighlight;
+
+import java.io.File;
+import java.util.List;
 
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
-import java.io.File;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Interface for analyzing highlight

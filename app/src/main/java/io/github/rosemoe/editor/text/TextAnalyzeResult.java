@@ -20,7 +20,7 @@ import com.itsaky.lsp.models.Range;
 import io.github.rosemoe.editor.struct.BlockLine;
 import io.github.rosemoe.editor.struct.NavigationItem;
 import io.github.rosemoe.editor.struct.Span;
-import io.github.rosemoe.editor.widget.EditorColorScheme;
+import io.github.rosemoe.editor.syntax.EditorColorScheme;
 
 import java.util.ArrayList;
 import java.util.HashMap;

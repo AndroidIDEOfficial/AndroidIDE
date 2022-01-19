@@ -53,6 +53,7 @@ public class JavaCodeAnalyzer implements ICodeAnalyzer {
                 }
                 
                 result.setDiagnostics (DiagnosticsProvider.findDiagnostics (task, file));
+                result.setSemanticHighlights (SemanticHighlightProvider.highlight (task, file));
                 return result;
             });
         }

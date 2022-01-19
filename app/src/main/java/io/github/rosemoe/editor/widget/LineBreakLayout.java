@@ -130,6 +130,9 @@ class LineBreakLayout extends AbstractLayout {
 
     @Override
     public float[] getCharLayoutOffset(int line, int column, float[] dest) {
+        if (text == null) {
+            return new float[2];
+        }
         if (dest == null || dest.length < 2) {
             dest = new float[2];
         }

@@ -477,5 +477,5 @@ public class Parser {
         return "";
     }
     
-    private static final Logger LOG = Logger.instance ("Parser");
+    private static final Logger LOG = Logger.instance ("JavaParser");
 }

@@ -29,6 +29,7 @@ import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
 
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
+import io.github.rosemoe.editor.syntax.EditorColorScheme;
 import io.github.rosemoe.editor.text.CharPosition;
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;

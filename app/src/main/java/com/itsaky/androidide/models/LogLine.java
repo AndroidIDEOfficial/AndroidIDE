@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import com.itsaky.androidide.R;
 import java.util.Locale;
-import io.github.rosemoe.editor.widget.EditorColorScheme;
+import io.github.rosemoe.editor.syntax.EditorColorScheme;
 
 public class LogLine {
 	

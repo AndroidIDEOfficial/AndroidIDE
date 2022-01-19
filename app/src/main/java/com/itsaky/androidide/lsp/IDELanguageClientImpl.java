@@ -53,7 +53,6 @@ import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.Location;
 import com.itsaky.lsp.models.Range;
-import com.itsaky.lsp.models.SemanticHighlight;
 import com.itsaky.lsp.models.SignatureInformation;
 import com.itsaky.lsp.models.TextEdit;
 import com.itsaky.toaster.Toaster;

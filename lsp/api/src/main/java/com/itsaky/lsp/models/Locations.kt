@@ -64,10 +64,10 @@ data class Position(var line: Int, var column: Int) : Comparable<Position> {
 
 open class Range(var start: Position, var end: Position) : Comparable<Range> {
     
-    constructor() : this (Position(0, 0), Position(0, 0));
+    constructor() : this (Position(0, 0), Position(0, 0))
     
     companion object {
-        @JvmField val NONE = Range (Position.NONE, Position.NONE);
+        @JvmField val NONE = Range (Position.NONE, Position.NONE)
     }
     
     /**
@@ -114,31 +114,35 @@ open class Range(var start: Position, var end: Position) : Comparable<Range> {
         
         // The position might appear before this range
         if (position.line < start.line) {
-            return -1;
+            return -1
         }
         
         // The position might appear after this range
         if (position.line > end.line) {
-            return 1;
+            return 1
         }
         
         // If start and end lines are same, compare by column indexes
         if (start.line == end.line) {
             
             if (position.column < start.column) {
-                return -1;
+                return -1
             }
             
             if (position.column > end.column) {
-                return 1;
+                return 1
             }
         }
         
         // This range definitely contains the position.
-        return 0;
+        return 0
     }
     
     fun containsLine (line: Int): Boolean {
-        return start.line <= line && end.line >= line;
+        return start.line <= line && end.line >= line
+    }
+    
+    override fun toString(): String {
+        return "Range(start=$start, end=$end)"
     }
 }

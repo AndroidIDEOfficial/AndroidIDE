@@ -25,8 +25,6 @@ import androidx.annotation.NonNull;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.SemanticHighlight;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -35,12 +33,11 @@ import org.antlr.v4.runtime.Token;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Map;
 
 import io.github.rosemoe.editor.text.Content;
 import io.github.rosemoe.editor.text.TextAnalyzeResult;
 import io.github.rosemoe.editor.text.TextAnalyzer;
-import io.github.rosemoe.editor.widget.EditorColorScheme;
+import io.github.rosemoe.editor.syntax.EditorColorScheme;
 
 public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
     
