@@ -36,6 +36,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -104,6 +107,17 @@ public class BootstrapInstaller {
                             throw new CompletionException (new InstallationException (context.getString (R.string.msg_mkdir_failed, ___.getAbsolutePath ())));
                         }
                         
+                        // If the file exists and it is not a directory
+                        // Delete that file
+                        final var targetFilePath = targetFile.toPath ();
+                        if (Files.exists (targetFilePath) && !Files.isDirectory (targetFilePath)) {
+                            try {
+                                Files.delete (targetFilePath);
+                            } catch (Throwable th) {
+                                throw new CompletionException (th);
+                            }
+                        }
+                        
                         if (!isDirectory) {
                             try (final var outStream = new FileOutputStream (targetFile)) {
                                 int readBytes;
@@ -131,6 +145,16 @@ public class BootstrapInstaller {
                 
                 for (Pair<String, String> symlink : symlinks) {
                     notify (listener, context.getString (R.string.msg_linking, symlink.second, symlink.first));
+                    
+                    final var target = Paths.get (symlink.second);
+                    if (Files.exists (target) && !Files.isDirectory (target)) {
+                        try {
+                            Files.delete (target);
+                        } catch (Throwable throwable) {
+                            throw new CompletionException (throwable);
+                        }
+                    }
+                    
                     Os.symlink (symlink.first, symlink.second);
                 }
                 
