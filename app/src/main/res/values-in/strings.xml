@@ -12,9 +12,9 @@
     <string name="about_option_email">Email</string>
     <string name="about_option_website">Website</string>
     <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
-    <string name="about_footer">AndroidIDE %1$s for %2$s</string>
+    <string name="about_footer">AndroidIDE %1$s untuk %2$s</string>
     <string name="about_subtitle">Simpel, sebuah IDE untuk Android</string>
-    <string name="msg_get_package_failed">Gagal untuk mengekstrak nama paket!</string>
+    <string name="msg_get_package_failed">Gagal mengekstrak nama paket!</string>
     <string name="msg_share_app">AndroidIDE adalah Integrated Development Environment (IDE) untuk membuat aplikasi Android pada Smartphone Android anda. AndroidIDE mendukung :\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Perlengkapan otomatis Java tingkat lanjut\n4. Perlengkapan Otomatis XML \n5. Dukungan Kotlin dan lainnya.\n\nUnduh AndroidIDE di https://androidide.com</string>
     <string name="msg_need_help">Jika anda mengalami masalah ketika menggunakan AndroidIDE atau dengan pembuatan Aplikasi Android, anda dapat bergabung ke Grup Telegram dan bertanya disana.\n\nAnda juga dapat mengirim saran pada Email kami.</string>
     <string name="discuss_amp_help">Diskusi &amp; bantuan</string>
@@ -29,7 +29,7 @@
     <string name="reset">Reset</string>
     <string name="app_logs">Log App</string>
     <string name="ide_logs">Log IDE</string>
-    <string name="label_splash_image">Splash image</string>
+    <string name="label_splash_image">Gambar Splash</string>
     <string name="cancel">Batalkan</string>
     <string name="get_started">Memulai</string>
     <string name="nothing_here">Tidak ada apa-apa disini &#8230;</string>
@@ -37,7 +37,7 @@
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_sdk_info_load_failed">Gagal memuat informasi SDK</string>
     <string name="msg_fix_diagnostic">[QuickFix]</string>
-    <string name="msg_no_code_actions">Tidak dapat menemukan perbaikan cepat (QuickFix)</string>
+    <string name="msg_no_code_actions">Tidak ditemukan perbaikan cepat (QuickFix)</string>
     <string name="msg_cannot_perform_fix">Tidak dapat menampilkan perbaikan cepat (QuickFix)</string>
     <string name="msg_performing_fixes">Menampilkan perbaikan&#8230;</string>
     <string name="msg_code_actions">Quickfixes</string>
@@ -105,7 +105,7 @@
     <string name="msg_starting_completion">Memulai layanan</string>
     <string name="msg_starting_completion_failed">Gagal untuk memulai layanan perlengkapan otomatis</string>
     <string name="msg_starting_daemon">Memulai Gradle daemon</string>
-    <string name="title_install_apks">Install Aplikasi</string>
+    <string name="title_install_apks">Instal Aplikasi</string>
     <string name="title_clear_output">Bersihkan hasil</string>
     <string name="install">Instal</string>
     <string name="run">Jalankan</string>
@@ -131,7 +131,7 @@
     <string name="title_close_project">Tutup projek ini</string>
     <string name="msg_opened_project_does_not_exist">Projek yang terakhir dibuka tidak ada!</string>
     <string name="msg_create_new_project">Buat projek baru</string>
-    <string name="msg_open_existing_project">Buka projek yang sudah ada</string>
+    <string name="msg_open_existing_project">Buka projek</string>
     <string name="msg_opening_project">Membuka projek&#8230;</string>
     <string name="msg_invalid_project">Direktori yang dipilih bukan projek Android</string>
     <string name="msg_project_deleted">Projek dihapus</string>
@@ -139,13 +139,13 @@
     <string name="menu_project_info">Informasi Projek</string>
     <string name="header_module_info">Informasi Modul</string>
     <string name="msg_module_count">Modul : %d</string>
-    <string name="msg_task_count">Tugas : %d</string>
+    <string name="msg_task_count">Task : %d</string>
     <string name="msg_dependency_count">Dependensi : %d</string>
     <string name="msg_package_name">Paket : %s</string>
     <string name="msg_min_sdk">Min SDK : %s</string>
     <string name="msg_target_sdk">Target SDK : %s</string>
     <string name="title_confirm_project_close">Tutup projek</string>
-    <string name="msg_confirm_project_close">anda yakin ingin menutup projek ini? Semua Gradle daemon yang berjalan akan diberhentikan setelah projek ini ditutup.</string>
+    <string name="msg_confirm_project_close">anda yakin ingin menutup projek ini? Semua Gradle daemon yang berjalan akan dihentikan setelah projek ini ditutup.</string>
     <string name="project_exists">Sudah terdapat projek dengan nama yang sama!</string>
 
     <!-- Templates -->
