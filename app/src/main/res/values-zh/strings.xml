@@ -278,9 +278,9 @@
     <!-- Error Messages used while Logging -->
     <string name="err_installation">安装错误</string>
     <string name="err_completion">补全错误</string>
-    <string name="err_no_server_implementation">为找到可用的语言服务器.</string>
+    <string name="err_no_server_implementation">未找到可用的语言服务器.</string>
     <string name="err_init_server">初始化语言服务器失败</string>
-    <string name="err_init_sdkinfo">无法获取SDK信息/string>
+    <string name="err_init_sdkinfo">无法获取SDK信息</string>
     <string name="err_cannot_start_file_picker">无法启动文件选择</string>
     <string name="err_cannot_parse_apk_metadata">转换APK元信息失败</string>
     <string name="err_cannot_save_files">保存文件失败</string>
