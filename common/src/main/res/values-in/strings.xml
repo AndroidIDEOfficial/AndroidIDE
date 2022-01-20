@@ -1,0 +1,14 @@
+<resources>
+    <string name="cms_channel_id_devs">Notifikasi dari pengembang</string>
+	<string name="cms_channel_id_update">Notifikasi Update Aplikasi</string>
+    <string name="msg_hex_color_code">Kode warna Hex</string>
+    <string name="msg_color_picker_pick">Pilih</string>
+    <string name="msg_delete_sysroot_staging">Tidak dapat menghapus direktori sysroot yang ditampilkan</string>
+    <string name="msg_delete_sysroot">Tidak dapat menghapus direktori sysroot</string>
+    <string name="msg_create_sysroot_staging">Tidak dapat membuat direktori sysroot yang ditampilkan</string>
+    <string name="msg_create_sysroot">Tidak dapat membuat direktori sysroot</string>
+    <string name="msg_mkdir_failed">Tidak dapat membuat direktori: %s</string>
+    <string name="msg_chmod_exec">Mengatur perijinan eksekusi…</string>
+    <string name="msg_linking">Menghubungkan %1$s ke %2$s</string>
+    <string name="msg_extracting_hooks">Mengekstrak pustaka yang berkaitan…</string>
+</resources>
