@@ -1,6 +1,4 @@
 <resources>
-    <string name="cms_channel_id_devs">Notifikasi dari pengembang</string>
-	<string name="cms_channel_id_update">Notifikasi Update Aplikasi</string>
     <string name="msg_hex_color_code">Kode warna Hex</string>
     <string name="msg_color_picker_pick">Pilih</string>
     <string name="msg_delete_sysroot_staging">Tidak dapat menghapus direktori sysroot yang ditampilkan</string>
