@@ -304,15 +304,17 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
             mAdapter.clear();
             mAdapter.attachAttributes(this, results);
             if (results == null || results.isEmpty()) {
-                hide();
+                if (isShowing ()) {
+                    hide();
+                }
                 return;
             }
             mBinding.list.setAdapter(mAdapter);
             mCurrent = 0;
             float newHeight = mEditor.getDpUnit() * mAdapter.getItemHeight() * results.size();
-            if (isShowing()) {
-                update(getWidth(), (int) Math.min(newHeight, mMaxHeight));
-            }
+            
+            show ();
+            update(getWidth(), (int) Math.min(newHeight, mMaxHeight));
         });
     }
 
