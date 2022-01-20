@@ -162,14 +162,8 @@ public class CodeEditorView extends FrameLayout {
                 }
             });
         });
-        
-        binding.editor.getViewTreeObserver ().addOnGlobalLayoutListener (new ViewTreeObserver.OnGlobalLayoutListener () {
-            @Override
-            public void onGlobalLayout () {
-                binding.editor.getViewTreeObserver ().removeOnGlobalLayoutListener (this);
-                configureEditorIfNeeded ();
-            }
-        });
+    
+        configureEditorIfNeeded ();
     }
     
     public boolean save () {

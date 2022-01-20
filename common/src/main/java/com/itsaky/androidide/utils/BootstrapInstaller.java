@@ -92,7 +92,7 @@ public class BootstrapInstaller {
                             final var parentFile = new File (newPath).getParentFile ();
                             if (!FileUtils.createOrExistsDir (parentFile)) {
                                 LOG.error ("Cannot create symlink parent directory.");
-                                throw new CompletionException (new InstallationException (context.getString (R.string.msg_mkdir_failed, parentFile)));
+                                throw new CompletionException (new InstallationException ("Unable to create directory: " + parentFile));
                             }
                         }
                     } else {
@@ -103,7 +103,7 @@ public class BootstrapInstaller {
                         final var ___ = isDirectory ? targetFile : targetFile.getParentFile ();
                         if (!FileUtils.createOrExistsDir (___)) {
                             LOG.error ("Cannot create target file parent directory");
-                            throw new CompletionException (new InstallationException (context.getString (R.string.msg_mkdir_failed, ___.getAbsolutePath ())));
+                            throw new CompletionException (new InstallationException ("Unable to create directory: " + ___));
                         }
                         
                         // If the file exists and it is not a directory
