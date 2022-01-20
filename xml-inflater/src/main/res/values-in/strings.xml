@@ -1,0 +1,6 @@
+<resources>
+    <string name="msg_cannot_create_view">Tidak dapat membuat View untuk tag: %s</string>
+    <string name="err_cannot_read_values">Tidak dapat membaca isi (values)</string>
+    <string name="err_no_attr_adapter">Tidak ditemukan implementasi adapter atribut untuk %s</string>
+    <string name="msg_view_not_supported">View %s saat ini tidak didukung.</string>
+</resources>
