@@ -1,0 +1,9 @@
+<resources>
+    <string name="cms_channel_id_devs">来自开发者的通知</string>
+    <string name="cms_channel_id_update">应用更新通知</string>
+    <string name="msg_hex_color_code">十六进制颜色代码</string>
+    <string name="msg_color_picker_pick">选择</string>
+    <string name="msg_chmod_exec">正在设置可执行权限…</string>
+    <string name="msg_linking">正在将 %1$s 链接到 %2$s</string>
+    <string name="msg_extracting_hooks">正在提取钩子库…</string>
+</resources>
