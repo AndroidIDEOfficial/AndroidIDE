@@ -84,7 +84,7 @@
 	<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/title_developers"
+		android:text="@string/title_translations"
 		android:layout_marginStart="16dp"
 		android:layout_marginEnd="16dp"
 		android:layout_marginBottom="4dp"
@@ -100,13 +100,14 @@
 		android:layout_marginBottom="8dp"/>
 
 	<TextView
+		android:id="@+id/translations"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginStart="24dp"
 		android:layout_marginEnd="16dp"
-		android:text="@string/msg_developers"
 		android:layout_marginBottom="16dp"
 		android:textSize="15sp"/>
+
 
 	<TextView
 		android:layout_width="wrap_content"

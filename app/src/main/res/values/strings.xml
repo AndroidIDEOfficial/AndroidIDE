@@ -2,7 +2,6 @@
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_epl">AndroidIDE uses LSP4J in its object code form (i.e. without any modifications) which is licensed under EPL 2.0. If you want us to disclose the source code to you, contact us at: </string>
     <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
     <string name="title_developers">Developers</string>
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
@@ -348,5 +347,6 @@
     <string name="msg_copy_report_action">Copy and report</string>
     <string name="msg_reading_bootstrap">Reading bootstrap archive…</string>
     <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
+    <string name="title_translations">Translations</string>
 
 </resources>

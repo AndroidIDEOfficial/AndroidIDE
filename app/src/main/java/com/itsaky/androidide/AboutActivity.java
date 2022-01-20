@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
-
-
+ */
 package com.itsaky.androidide;
 
 import android.os.Bundle;
@@ -26,6 +22,8 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import androidx.appcompat.widget.TooltipCompat;
+import androidx.core.util.Pair;
+
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivityAboutBinding;
@@ -52,6 +50,7 @@ public class AboutActivity extends StudioActivity {
         
         binding.items.footerText.setText(getFooter());
         
+        setupTranslations ();
         setupLicenses();
         
         LayoutAboutItemsBinding items = binding.items;
@@ -73,6 +72,46 @@ public class AboutActivity extends StudioActivity {
         });
     }
     
+    private void setupTranslations () {
+        final var translations = createTranslationsList ();
+        final var sb = new StringBuilder ();
+        
+        for (var translation : translations) {
+            final var author = translation.first;
+            final var language = translation.second;
+            
+            sb.append (author);
+            sb.append (" - ");
+            sb.append (language);
+            sb.append ("\n");
+        }
+        
+        binding.items.translations.setText (sb);
+    }
+    
+    /**
+     * Create the list of translations.
+     * The list items are pairs.
+     * The first item of the pair is the name of the language.
+     * The second item is the name of the person who made the translations.
+     *
+     * If you're adding translations, make sure you add an item to this list.
+     * You can choose to display the language in a localized version. For example :
+     * Language: हिन्दी - < name of author >
+     *
+     * Prefer using unicode escapes for language names. For example, हिन्दी can be written as :
+     * Language: \u0939\u093f\u0928\u094d\u0926\u0940 - < name of author >
+     *
+     * @return The translations list.
+     */
+    private List<Pair<String, String>> createTranslationsList () {
+        final var list = new ArrayList<Pair<String, String>> ();
+        
+        list.add (Pair.create ("Bahasa Indonesia", "Fitrah Nuno Syahbani"));
+        
+        return list;
+    }
+    
     private void setupLicenses() {
         final var licenses = new ArrayList<License>();
         licenses.add(new License("AndroidX Libraries", "Apache License 2.0", "https://github.com/androidx/androidx"));
@@ -88,7 +127,6 @@ public class AboutActivity extends StudioActivity {
         licenses.add(new License("AndroidTreeView", "Apache License 2.0", "https://github.com/bmelnychuk/AndroidTreeView"));
         licenses.add(new License("CodeEditor v0.5.2", "Apache License 2.0", "https://github.com/Rosemoe/CodeEditor"));
         licenses.add(new License("Guava-Android", "Apache License 2.0", "https://github.com/google/guava"));
-        licenses.add(new License("LSP4J", "Eclipse Public License 2.0", "https://github.com/eclipse/lsp4j"));
         licenses.add(new License("Jsoup", "MIT License", "https://github.com/jhy/jsoup"));
         licenses.add(new License("Termux [Terminal Emulator]", "GPL 3", "https://github.com/termux/termux-app"));
         licenses.add(new License("JavaPoet", "Apache License 2.0", "https://github.com/square/JavaPoet"));
@@ -111,8 +149,6 @@ public class AboutActivity extends StudioActivity {
         sb.append(getString(R.string.license_jdk));
         sb.append(String.format("<br><a href=\"%1$s\">%1$s</a>", JDK_SOURCE));
         sb.append("<br><br>");
-        sb.append(getString(R.string.license_epl));
-        sb.append(String.format("<br><a href=\"mailto:%1$s\">%1$s</a>", StudioApp.EMAIL));
         binding.items.licenses.setText(Html.fromHtml(sb.toString()));
         binding.items.licenses.setMovementMethod(LinkMovementMethod.getInstance());
     }

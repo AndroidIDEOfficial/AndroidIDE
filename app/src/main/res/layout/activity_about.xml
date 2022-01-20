@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
 	android:layout_width="match_parent"
@@ -7,13 +7,13 @@
 	app:layoutDescription="@xml/motion_about">
 
 	<View
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/icon_anchor"
+		android:id="@+id/icon_anchor"
 		android:layout_width="0dp"
 		android:layout_height="200dp"
-		android:background="@color/primaryDarkColor"/>
+		android:background="@color/primaryDarkColor"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
 
 	<com.google.android.material.card.MaterialCardView
         app:layout_constraintStart_toStartOf="parent"
@@ -34,34 +34,36 @@
 			android:src="@mipmap/ic_launcher"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:id="@+id/icon"/>
+			android:id="@+id/icon" />
 
 	</com.google.android.material.card.MaterialCardView>
 
 	<TextView
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/icon_container"
-        android:id="@+id/title"
+		android:id="@+id/title"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="4dp"
+		android:gravity="center"
 		android:text="@string/app_name"
-		android:textStyle="bold"
-		android:textSize="30sp"
 		android:textColor="@color/primaryTextColor"
-		android:layout_marginBottom="4dp"/>
+		android:textSize="30sp"
+		android:textStyle="bold"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/icon_container" />
 
 	<TextView
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
 		android:id="@+id/subtitle"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:gravity="center"
 		android:text="@string/about_subtitle"
 		android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/secondaryTextColor"
-		android:layout_marginBottom="24dp"/>
+		android:textColor="@color/secondaryTextColor"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/title" />
     
 	<androidx.core.widget.NestedScrollView
 		android:layout_width="0dp"
@@ -72,8 +74,13 @@
         app:layout_constraintTop_toBottomOf="@id/subtitle"
 		android:id="@+id/about_scroller">
         
-        <include android:id="@+id/items" layout="@layout/layout_about_items"/>
+        <include
+			android:id="@+id/items"
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:layout_marginTop="24dp"
+			layout="@layout/layout_about_items"/>
         
     </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
