@@ -17,6 +17,7 @@
 
 package com.itsaky.lsp.java.visitors;
 
+import com.itsaky.androidide.utils.Logger;
 import com.sun.source.tree.CaseTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ErroneousTree;
@@ -82,6 +83,12 @@ public class FindCompletionsAt extends TreePathScanner<TreePath, Long> {
     @Override
     public TreePath visitCase (CaseTree t, Long find) {
         SourcePositions pos = Trees.instance (task).getSourcePositions ();
+        
+        // default statements have null expression
+//        if (t.getExpression () != null) {
+//
+//        }
+        
         long start = pos.getStartPosition (root, t) + "case".length ();
         long end = pos.getEndPosition (root, t.getExpression ());
         if (start <= find && find <= end) {
@@ -122,4 +129,6 @@ public class FindCompletionsAt extends TreePathScanner<TreePath, Long> {
         }
         return b;
     }
+    
+    private static final Logger LOG = Logger.instance ("FindCompletionsAt");
 }
