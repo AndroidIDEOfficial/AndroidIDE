@@ -124,7 +124,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
         mBg.setStroke(1, colors.getColor(EditorColorScheme.AUTO_COMP_PANEL_CORNER));
         mBg.setColor(colors.getColor(EditorColorScheme.AUTO_COMP_PANEL_BG));
     }
-
+    
     /**
      * Change layout to loading/idle
      *
@@ -154,7 +154,7 @@ public class EditorAutoCompleteWindow extends EditorBasePopupWindow {
         ((EditorCompletionAdapter) mBinding.list.getAdapter()).notifyDataSetChanged();
         ensurePosition();
     }
-
+    
     /**
      * Move selection up
      */
