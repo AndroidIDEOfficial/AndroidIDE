@@ -35,10 +35,8 @@ public class ToolsManager {
     
     private static PreferenceManager prefs;
     
-    public static final int JLS_VERSION = 27;
     public static final int LOG_SENDER_VERSION = 2;
     
-    public static final String KEY_JLS_VERSION = "tools_jlsVersion";
     public static final String KEY_LOG_SENDER_VERSION = "tools_logsenderVersion";
     
     public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
@@ -48,7 +46,6 @@ public class ToolsManager {
         prefs = app.getPrefManager();
         
         copyBusyboxIfNeeded();
-        extractJlsIfNeeded();
         extractLogsenderIfNeeded();
         extractLibHooks();
         writeInitScript();
@@ -92,22 +89,6 @@ public class ToolsManager {
     @NonNull
     private static String readInitScript() {
         return ResourceUtils.readAssets2String(getCommonAsset("androidide.init.gradle"));
-    }
-
-    private static void extractJlsIfNeeded() {
-        final boolean isOld = JLS_VERSION > prefs.getInt(KEY_JLS_VERSION, 0);
-        
-        if(!Environment.JLS_JAR.exists() || isOld) {
-            try {
-                extractJls();
-            } catch (Throwable e) {
-                LOG.error("Error extracting Java language server.", e);
-            }
-        }
-    }
-
-    private static void extractJls(){
-        ResourceUtils.copyFileFromAssets(getCommonAsset("jls.jar"), Environment.JLS_JAR.getAbsolutePath());
     }
     
     private static void extractLogsenderIfNeeded() {
