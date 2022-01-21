@@ -108,6 +108,7 @@ public class AboutActivity extends StudioActivity {
         final var list = new ArrayList<Pair<String, String>> ();
         
         list.add (Pair.create ("Bahasa Indonesia", "Fitrah Nuno Syahbani"));
+        list.add (Pair.create ("Chinese", "Rosemoe"));
         
         return list;
     }
