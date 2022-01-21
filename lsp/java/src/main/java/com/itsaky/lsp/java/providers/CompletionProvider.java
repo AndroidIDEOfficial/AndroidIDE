@@ -158,7 +158,7 @@ public class CompletionProvider implements ICompletionProvider {
                     case MEMBER_REFERENCE:
                         return completeMemberReference(task, path, partial);
                     case SWITCH:
-                        return completeSwitchConstant(task, path, partial);
+                        return completeSwitchConstant(task, path, partial, endsWithParen);
                     case IMPORT:
                         return completeImport(qualifiedPartialIdentifier(contents, (int) cursor));
                     default:
@@ -245,7 +245,7 @@ public class CompletionProvider implements ICompletionProvider {
         addKeywords(path, partial, list);
         return list;
     }
-
+    
     private void addKeywords(TreePath path, String partial, CompletionResult list) {
         Tree level = findKeywordLevel(path);
         String[] keywords = {};
@@ -543,22 +543,36 @@ public class CompletionProvider implements ICompletionProvider {
         Objects.requireNonNull (methods.get (name)).add(method);
     }
 
-    private CompletionResult completeSwitchConstant(@NonNull CompileTask task, @NonNull TreePath path, String partial) {
+    private CompletionResult completeSwitchConstant(@NonNull CompileTask task, @NonNull TreePath path, String partial, boolean endsWithParen) {
         SwitchTree switchTree = (SwitchTree) path.getLeaf();
         path = new TreePath(path, switchTree.getExpression());
         TypeMirror type = Trees.instance(task.task).getTypeMirror(path);
-        LOG.info("...complete constants of type " + type);
-        if (!(type instanceof DeclaredType)) {
-            return NOT_SUPPORTED;
+        
+        if (type.getKind ().isPrimitive () || !(type instanceof DeclaredType)) {
+            // primitive types do not have any members
+            return completeIdentifier (task, path, partial, endsWithParen);
         }
+        
         DeclaredType declared = (DeclaredType) type;
         TypeElement element = (TypeElement) declared.asElement();
+        
+        if (element.getKind () != ElementKind.ENUM) {
+            // If the switch's expression is not an enum type
+            // we will not get any constants to complete
+            // In this case, we fall back to completing identifiers
+            // At this point, we are sure that the case expression will definitely be an identifier tree
+            // see visitCase (CaseTree, Long) in FindCompletionsAt.java
+            return completeIdentifier (task, path, partial, endsWithParen);
+        }
+        
+        LOG.info("...complete constants of type " + type);
         List<CompletionItem> list = new ArrayList<> ();
         for (Element member : task.task.getElements().getAllMembers(element)) {
             if (member.getKind() != ElementKind.ENUM_CONSTANT) continue;
             if (!StringSearch.matchesPartialName(member.getSimpleName(), partial)) continue;
             list.add(item(task, member));
         }
+        
         return new CompletionResult(false, list);
     }
 

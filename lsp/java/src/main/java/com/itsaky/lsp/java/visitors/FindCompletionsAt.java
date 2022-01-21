@@ -84,16 +84,23 @@ public class FindCompletionsAt extends TreePathScanner<TreePath, Long> {
     public TreePath visitCase (CaseTree t, Long find) {
         SourcePositions pos = Trees.instance (task).getSourcePositions ();
         
+        // check if the cursor is in the case expression
         // default statements have null expression
-//        if (t.getExpression () != null) {
-//
-//        }
+        // In case of an identifier tree, we have to check for both, variables and switch constants in CompletionProvider
+        if (t.getExpression () != null && !(t.getExpression () instanceof IdentifierTree)) {
+            long start = pos.getStartPosition (root, t.getExpression ());
+            long end = pos.getEndPosition (root, t.getExpression ());
+            if (start <= find && find <= end) {
+                return new TreePath (getCurrentPath (), t.getExpression ());
+            }
+        }
         
         long start = pos.getStartPosition (root, t) + "case".length ();
         long end = pos.getEndPosition (root, t.getExpression ());
         if (start <= find && find <= end) {
             return getCurrentPath ().getParentPath ();
         }
+        
         return super.visitCase (t, find);
     }
     
