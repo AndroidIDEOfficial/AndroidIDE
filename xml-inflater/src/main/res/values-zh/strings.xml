@@ -1,0 +1,6 @@
+<resources>
+    <string name="msg_cannot_create_view">无法为标签 %s 创建视图</string>
+    <string name="err_cannot_read_values">Unable to read values</string>
+    <string name="err_no_attr_adapter">未找到可用于 %s 的属性适配器</string>
+    <string name="msg_view_not_supported">控件 %s 当前不受支持</string>
+</resources>

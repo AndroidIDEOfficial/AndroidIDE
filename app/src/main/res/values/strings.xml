@@ -238,7 +238,7 @@
     <item name="replaceAll" type="string">Replace all</item>
     <item name="replacement" type="string">Replacement</item>
     <item name="text_to_search" type="string">Text to search</item>
-    <item name="more" translatable="false" type="string">More</item>
+    <item name="more" type="string">More</item>
 
     <!-- Preferences -->
     <string name="title_change_text_size">Editor font size</string>
