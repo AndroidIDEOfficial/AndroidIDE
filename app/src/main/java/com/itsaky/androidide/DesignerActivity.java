@@ -204,7 +204,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
             
             progress.dismiss ();
             
-            if (future.isCompletedExceptionally () && throwable != null) {
+            if (throwable != null) {
                 notifyXmlGenerationFailed (throwable);
                 return;
             }
