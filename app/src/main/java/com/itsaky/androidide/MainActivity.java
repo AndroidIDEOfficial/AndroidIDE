@@ -289,7 +289,7 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
         mTemplates.add (empty);
         mTemplates.add (basic);
         mTemplates.add (drawer);
-        mTemllates.add (kotlinBasic);
+        mTemplates.add (kotlinBasic);
         
     }
     
