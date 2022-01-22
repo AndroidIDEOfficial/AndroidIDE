@@ -330,22 +330,24 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     @NonNull
     protected ViewGroup.LayoutParams generateLayoutParams (ViewGroup parent) {
         try {
-            final Class<?> clazz = parent.getClass ();
+            Class<?> clazz = parent.getClass ();
             Method method = null;
             
-            try {
-                method = clazz.getDeclaredMethod ("generateDefaultLayoutParams");
-            } catch (NoSuchMethodException | SecurityException e) {
-                // If the method is not implicitly declared in this ViewGroup,
-                // Then try to get the method from its superclass
-                method = clazz.getMethod ("generateDefaultLayoutParams");
+            while (clazz != null) {
+                try {
+                    method = clazz.getMethod ("generateDefaultLayoutParams");
+                    break;
+                } catch (Throwable e) { /* ignored */ }
+                clazz = clazz.getSuperclass ();
             }
             
-            // No null check here
-            // If we reach here, then method is definitely not null
+            if (method != null) {
+                method.setAccessible (true);
+                return (ViewGroup.LayoutParams) method.invoke (parent);
+            }
             
-            method.setAccessible (true);
-            return (ViewGroup.LayoutParams) method.invoke (parent);
+            LOG.error ("Unable to create default params for view parent:", parent);
+            return new ViewGroup.LayoutParams (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         } catch (Throwable th) {
             throw new InflateException ("Unable to create layout params for parent: " + parent, th);
         }
