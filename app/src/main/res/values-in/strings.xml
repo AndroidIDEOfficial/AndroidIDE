@@ -149,11 +149,13 @@
 
     <!-- Templates -->
     <string name="template_basic">Projek Dasar</string>
-    <string name="template_description_basic">Sebuah projek dasar dengan Toolbar AppCompat dan sebuah Floating Action Button</string>
+    <string name="template_description_basic">Sebuah projek dasar dengan Toolbar AppCompat dan Floating Action Button</string>
     <string name="template_description_empty">Sebuah projek kosong dengan toolbar bawaan. sangat cocok untuk melakukan semua hal mendasar anda sendiri.</string>
     <string name="template_description_navigation_drawer">Projek dengan Toolbar AppCompat, DrawerLayout dan NavigationView</string>
     <string name="template_empty">Projek Kosong</string>
     <string name="template_navigation_drawer">Projek NavigationDrawer</string>
+    <string name="template_kotlin_basic">Project Kotlin Dasar</string>
+    <string name="template_description_kotlin_basic">Project Kotlin dengan Toolbar Appcompat dan Floating Action Button</string>
 
     <!-- Files -->
     <string name="save">Simpan</string>
