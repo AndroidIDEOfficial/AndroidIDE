@@ -43,7 +43,7 @@ public class ValuesTableFactory {
      * @param resDirs The resource directories.
      */
     public static void setupWithResDirectories (File... resDirs) {
-    
+        
         if (resDirs == null || resDirs.length <= 0) {
             LOG.error ("Cannot create value tables. No directories were specified.");
             return;

@@ -43,6 +43,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
@@ -67,6 +68,7 @@ import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
 import com.itsaky.androidide.fragments.FileTreeFragment;
+import com.itsaky.androidide.fragments.NonEditableEditorFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
@@ -258,9 +260,41 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             }
         });
         
+        mBinding.bottomSheet.tabs.addOnTabSelectedListener (new TabLayout.OnTabSelectedListener () {
+            
+            @Override
+            public void onTabSelected (TabLayout.Tab tab) {
+                final var fragment = bottomSheetTabAdapter.getFragmentAtIndex (tab.getPosition ());
+                if (fragment instanceof NonEditableEditorFragment) {
+                    mBinding.bottomSheet.clearFab.show ();
+                } else {
+                    mBinding.bottomSheet.clearFab.hide ();
+                }
+            }
+            
+            @Override
+            public void onTabUnselected (TabLayout.Tab tab) {
+        
+            }
+            @Override
+            public void onTabReselected (TabLayout.Tab tab) {
+        
+            }
+        });
+        
+        TooltipCompat.setTooltipText (mBinding.bottomSheet.clearFab, getString (R.string.title_clear_output));
+        mBinding.bottomSheet.clearFab.setOnClickListener (v -> {
+            final var fragment = bottomSheetTabAdapter.getFragmentAtIndex (mBinding.bottomSheet.tabs.getSelectedTabPosition ());
+            if (fragment instanceof NonEditableEditorFragment) {
+                final var editor = (NonEditableEditorFragment) fragment;
+                if (editor.getEditor () != null) {
+                    editor.getEditor ().setText ("");
+                }
+            }
+        });
+        
         if (!getApp ().getPrefManager ().getBoolean (KEY_BOTTOM_SHEET_SHOWN) && mEditorBottomSheet.getState () != BottomSheetBehavior.STATE_EXPANDED) {
             mEditorBottomSheet.setState (BottomSheetBehavior.STATE_EXPANDED);
-            
             new Handler (Looper.getMainLooper ()).postDelayed (() -> {
                 mEditorBottomSheet.setState (BottomSheetBehavior.STATE_COLLAPSED);
                 getApp ().getPrefManager ().putBoolean (KEY_BOTTOM_SHEET_SHOWN, true);

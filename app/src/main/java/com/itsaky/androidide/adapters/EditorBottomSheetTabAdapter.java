@@ -49,6 +49,10 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
         this.fragments.add (new Tab (fragmentActivity.getString (R.string.view_search_results), new SearchResultFragment ()));
     }
     
+    public Fragment getFragmentAtIndex (int index) {
+        return this.fragments.get (index).fragment;
+    }
+    
     @NonNull
     @Override
     public Fragment createFragment (int position) {

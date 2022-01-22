@@ -177,18 +177,18 @@ public class CommonParseUtils {
                     if (drawable == null) {
                         return null;
                     }
-    
+                    
                     try {
                         final var parser = DrawableParserFactory.newParser (ctx, drawable, resourceFinder);
                         if (parser == null) {
                             return null;
                         }
-                        
                         return parser.parse();
                     } catch (Exception e) {
                         LOG.error ("Error parsing drawable", e);
                         return null;
                     }
+                    
                 } else if (value.startsWith("@color/")) {
                     final String color = resourceFinder.findColor(value.substring("@color/".length()));
                     // TODO Check if this color resource is a selector
