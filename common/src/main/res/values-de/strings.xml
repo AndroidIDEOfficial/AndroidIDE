@@ -1,0 +1,9 @@
+<resources>
+    <string name="cms_channel_id_devs">Benachrichtigungen von Entwicklern</string>
+<string name="cms_channel_id_update">App Update Benachrichtigungen</string>
+    <string name="msg_hex_color_code">Hex Farbcode</string>
+    <string name="msg_color_picker_pick">Auswählen</string>
+    <string name="msg_chmod_exec">Ausführbare Berechtigungen festlegen…</string>
+    <string name="msg_linking">Verlinken von %1$s zu %2$s</string>
+    <string name="msg_extracting_hooks">Hook-Bibliotheken extrahieren…</string>
+</resources>
