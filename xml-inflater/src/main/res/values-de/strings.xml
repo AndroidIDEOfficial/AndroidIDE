@@ -1,0 +1,6 @@
+<resources>
+    <string name="msg_cannot_create_view">View kann nicht erstellt werden für: %s</string>
+    <string name="err_cannot_read_values">Werte können nicht ausgelesen werden</string>
+    <string name="err_no_attr_adapter">Keine Implementierung des Attributadapters gefunden für%s</string>
+    <string name="msg_view_not_supported">View %s ist noch nicht untestützt.</string>
+</resources>
