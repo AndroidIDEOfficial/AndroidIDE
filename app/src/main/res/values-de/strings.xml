@@ -1,0 +1,704 @@
+<resources xmlns:tools="http://schemas.android.com/tools"> 
+
+ 
+
+    <!-- AndroidIDE --> 
+
+    <string name="app_name">AndroidIDE</string> 
+
+    <string name="license_jdk">AndroidIDE verwendet einen modifizierten Build des JDK, das unter der GNU General Public License v2.0 lizenziert ist. Der Quellcode und die Lizenz des JDK sind verfügbar unter:</string> 
+
+    <string name="title_developers">Entwickler</string> 
+
+    <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string> 
+
+    <string name="title_open_source_licenses">Open-Source-Lizenzen</string> 
+
+    <string name="msg_open_source_licenses">AndroidIDE verwendet Open-Source-Bibliotheken. Sie können den Quellcode und die Lizenz der verwendeten Bibliotheken finden, indem Sie auf die folgenden Links klicken.</string> 
+
+    <string name="msg_about_licensed_under">Lizenziert unter:</string> 
+
+    <string name="about_option_email">Email</string> 
+
+    <string name="about_option_website">Webseite</string> 
+
+    <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string> 
+
+    <string name="about_footer">AndroidIDE %1$s für %2$s</string> 
+
+    <string name="about_subtitle">Die IDE für Android Geräte</string> 
+
+    <string name="msg_get_package_failed">Fehler beim Extrahieren des Paketnamens!</string> 
+
+    <string name="msg_share_app">AndroidIDE ist eine integrierte Entwicklungsumgebung zum Erstellen von Android-Apps auf Ihrem Android-Smartphone. Es unterstützt:\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Erweiterte automatische Java-Vervollständigung\n4. Automatische XML-Vervollständigung \n5. Kotlin-Support und vieles mehr.\n\nLaden sie AndroidIDE unter https://androidide.com herunter</string> 
+
+    <string name="msg_need_help">Wenn Sie bei der Verwendung von AndroidIDE oder beim Erstellen von Android-Apps auf Probleme stoßen, können Sie unserer Telegram-Gruppe beitreten und dort um Hilfe bitten.\n\nSie können uns auch Vorschläge per E-Mail senden.</string> 
+
+    <string name="discuss_amp_help">Diskutieren &amp; Hilfe</string> 
+
+    <string name="title_github">GitHub</string> 
+
+    <string name="need_help">Brauchen Sie Hilfe?</string> 
+
+    <string name="other">Andere</string> 
+
+    <string name="share_with_friends">Mit Freunden teilen</string> 
+
+    <string name="ide_preferences">IDE-Einstellungen</string> 
+
+    <string name="discussions_on_telegram">Auf Telegram diskutieren</string> 
+
+    <string name="msg_empty_view">Es gibt nichts zum anzeigen&#8230;</string> 
+
+    <string name="btn_terminal">Terminal</string> 
+
+    <string name="reset">Zurücksetzen</string> 
+
+    <string name="app_logs">App Logs</string> 
+
+    <string name="ide_logs">IDE Logs</string> 
+
+    <string name="label_splash_image">Splash-Bild</string> 
+
+    <string name="cancel">Abbrechen</string> 
+
+    <string name="get_started">Loslegen</string> 
+
+    <string name="nothing_here">Nichts hier &#8230;</string> 
+
+ 
+
+    <!-- LSP, Diagnostics & Completions --> 
+
+    <string name="msg_sdk_info_load_failed">SDK-Informationen konnten nicht geladen werden</string> 
+
+    <string name="msg_fix_diagnostic">[Schnelle Lösung]</string> 
+
+    <string name="msg_no_code_actions">Kein Quickfix gefunden</string> 
+
+    <string name="msg_cannot_perform_fix">Schnellkorrektur kann nicht durchgeführt werden</string> 
+
+    <string name="msg_performing_fixes">Korrekturen durchführen&#8230;</string> 
+
+    <string name="msg_code_actions">Schnellkorrekturen</string> 
+
+    <string name="msg_api_info_since">Seit API %d</string> 
+
+    <string name="msg_api_info_removed">In API %d entfernt</string> 
+
+    <string name="msg_api_info_deprecated">Veraltet in API %d</string> 
+
+    <string name="msg_finding_references">Referenzen finden&#8230;</string> 
+
+    <string name="msg_finding_definition">Definition finden&#8230;</string> 
+
+    <string name="msg_no_definition">Definition nicht gefunden</string> 
+
+    <string name="msg_no_references">Keine Referenzen gefunden</string> 
+
+    <string name="menu_navigate_definition">Gehen Sie zur Definition</string> 
+
+    <string name="menu_navigate_references">Finden Sie alle Referenzen</string> 
+
+    <string name="menu_navigate">Code</string> 
+
+    <string name="menu_comment_line">Kommentarzeile</string> 
+
+    <string name="menu_uncomment_line">Zeile auskommentieren</string> 
+
+    <string name="view_diags">Diagnose</string> 
+
+ 
+
+    <!-- Build Tools Installation --> 
+
+    <string name="title_installation_failed">Installation fehlgeschlagen</string> 
+
+    <string name="msg_installation_failed">Der Installationsvorgang wurde mit dem Beendigungscode %1$d beendet. Stellen Sie sicher, dass Sie die Build-Tools aus Originalquellen heruntergeladen haben.\n\nSie könnten versuchen, Daten von AndroidIDE zu löschen und erneut zu installieren.</string> 
+
+    <string name="choose">Wählen</string> 
+
+    <string name="get_ready_for_something_awesome">Machen Sie sich bereit für etwas Großartiges!</string> 
+
+    <string name="androidide_build_tools">AndroidIDE-Build-Tools</string> 
+
+    <string name="install_build_tools_required_b">Installieren Sie die von AndroidIDE benötigten Build-Tools</string> 
+
+    <string name="choose_directory_which_contain">Wählen Sie das Verzeichnis, das Build-Tools enthält.</string> 
+
+    <string name="click_install_button_to_st">Klicken Sie auf die Schaltfläche \'Installieren\', um den Installationsvorgang zu starten.</string> 
+
+    <string name="msg_picked_isnt_dir">Ausgewählte Datei ist kein Verzeichnis!</string> 
+
+    <string name="msg_pick_single_file">Bitte wählen Sie nur ein Verzeichnis aus</string> 
+
+    <string name="msg_file_doesnt_exist">Datei existiert nicht!</string> 
+
+    <string name="msg_pick_files">Bitte Dateien auswählen!</string> 
+
+    <string name="msg_download_instructions">1. Laden Sie die Build-Tools von der AndroidIDE-Website herunter.\n2. Verschieben Sie alle Archive in ein Verzeichnis.\n3. Wählen Sie dieses Verzeichnis mit der Schaltfläche unten aus.\n4. Klicken Sie auf Installieren.\n5. Der Installationsvorgang beginnt.\n\nDer Installationsvorgang dauert je nach Leistung Ihres Geräts etwa 5 bis 10 Minuten. Bitte haben Sie Geduld!</string> 
+
+    <string name="msg_installable_files">Zu installierende Dateien\n\n%s</string> 
+
+    <string name="title_restart">Bitte neustarten</string> 
+
+    <string name="msg_restart">Die Installation ist erfolgreich abgeschlossen. Bitte starten Sie AndroidIDE neu.</string> 
+
+    <string name="please_wait">Bitte warten Sie einen Moment &#8230;</string> 
+
+    <string name="title_device_not_supported">Gerät nicht unterstützt</string> 
+
+    <string name="msg_device_not_supported">Leider wird Ihr Gerät derzeit nicht unterstützt. Wir entschuldigen uns für die Unannehmlichkeiten.\n\nUnterstützte CPU-ABIs: aarch64 und armeabi-v7a</string> 
+
+ 
+
+    <!-- Project Builder --> 
+
+    <string name="lint">Fussel</string> 
+
+    <string name="lint_debug">lintDebug</string> 
+
+    <string name="lint_release">lintRelease</string> 
+
+    <string name="build">Bauen</string> 
+
+    <string name="build_debug">AssembleDebug</string> 
+
+    <string name="build_output">Ausgabe erstellen</string> 
+
+    <string name="build_release">montierenRelease</string> 
+
+    <string name="lint_tasks">Lint-Aufgaben</string> 
+
+    <string name="clean_amp_build">Clean &amp; build</string> 
+
+    <string name="clean_project">Säubern</string> 
+
+    <string name="create_aab">AAB erstellen</string> 
+
+    <string name="build_tasks">Build Aufgaben</string> 
+
+    <string name="stop_gradle_daemons">Stoppen sie Gradle-Dämonen</string> 
+
+    <string name="quick_run_debug">Schnelldurchlauf</string> 
+
+    <string name="msg_sync_needed">Die Gradle-Dateien haben sich verändert. Bitte starte den Build Prozess um diese zu Synchronisieren.</string> 
+
+    <string name="msg_task_begin">========== [%s] TASK_BEGIN: %s ==========</string> 
+
+    <string name="preparing">Vorbereiten</string> 
+
+    <string name="preparing_first">Vorbereiten. Der erste Build kann bis zu 10 bis 15 Minuten dauern!</string> 
+
+    <string name="msg_gradle_terminated">Der Gradle-Prozess wurde mit dem Exit-Code %1$d beendet</string> 
+
+    <string name="msg_gradlew_installation_failed">Gradle Wrapper konnte nicht installiert werden: %s</string> 
+
+    <string name="msg_installing_gradlew">Gradle Wrapper ist nicht verfügbar!\nStandard-Wrapper wird installiert. Gradle v7.3 wird bei Bedarf heruntergeladen.</string> 
+
+    <string name="msg_getting_daemom_status">Abrufen des Daemon-Status, bitte warten&#8230;</string> 
+
+    <string name="msg_daemons_stopped">Gradle-Dämonen gestoppt</string> 
+
+    <string name="gradle_daemon_status">Gradle-Daemon-Status</string> 
+
+    <string name="msg_service_started">Dienst gestartet</string> 
+
+    <string name="msg_starting_completion">Dienste starten</string> 
+
+    <string name="msg_starting_completion_failed">Completion Services konnten nicht gestartet werden</string> 
+
+    <string name="msg_starting_daemon">Gradle Daemon wird gestartet</string> 
+
+    <string name="title_install_apks">APK(s) installieren</string> 
+
+    <string name="title_clear_output">Ausgabe säubern</string> 
+
+    <string name="install">Installieren</string> 
+
+    <string name="run">Run</string> 
+
+    <string name="gradle">Gradle</string> 
+
+    <string name="title_first_build">Erster Build</string> 
+
+    <string name="msg_first_build">Dies ist der erste Build, nachdem Sie AndroidIDE installiert haben. Der erste Build dauert normalerweise einige Zeit, da Gradle benötigte Dateien herunterlädt. Dieser Vorgang kann etwa 10 bis 15 Minuten dauern. Dies hängt jedoch von Ihrer Netzwerkverbindung ab.\n\nBitte haben Sie etwas Geduld &#8230;</string> 
+
+    <string name="compiling">Kompilieren</string> 
+
+ 
+
+    <!-- Project --> 
+
+    <string name="create_project">Projekt erstellen</string> 
+
+    <string name="minimum_sdk">Mindest SDK</string> 
+
+    <string name="target_sdk">Ziel SDK</string> 
+
+    <string name="new_project">Neues Projekt</string> 
+
+    <string name="package_name">Paketnamen</string> 
+
+    <string name="project_app_name">App Name</string> 
+
+    <string name="invalid_values">Ungültige Werte</string> 
+
+    <string name="msg_no_projects">Anscheinend haben Sie noch keine Projekte erstellt.</string> 
+
+    <string name="msg_create_new_project_greeting">Starten Sie Ihr neues großartiges Projekt!</string> 
+
+    <string name="title_confirm_open_project">Letztes Projekt öffnen?</string> 
+
+    <string name="msg_confirm_open_project">Soll das zuletzt geöffnete Projekt geöffnet werden? Geöffnetes Projekt war:\n%s</string> 
+
+    <string name="msg_init_project_failed">Fehler beim Initialisieren des Projekts!</string> 
+
+    <string name="group_project">Projekt</string> 
+
+    <string name="title_close_project">Dieses Projekt schließen</string> 
+
+    <string name="msg_opened_project_does_not_exist">Zuletzt geöffnetes Projekt existiert nicht!</string> 
+
+    <string name="msg_create_new_project">Neues Projekt erstellen</string> 
+
+    <string name="msg_open_existing_project">Vorhandenes Projekt öffnen</string> 
+
+    <string name="msg_opening_project">Projekt öffnen&#8230;</string> 
+
+    <string name="msg_invalid_project">Das ausgewählte Verzeichnis ist kein Android-Projekt</string> 
+
+    <string name="msg_project_deleted">Projekt gelöscht</string> 
+
+    <string name="msg_project_delete_failed">Projekt konnte nicht gelöscht werden!</string> 
+
+    <string name="menu_project_info">Projektinfo</string> 
+
+    <string name="header_module_info">Modulinfo</string> 
+
+    <string name="msg_module_count">Module : %d</string> 
+
+    <string name="msg_task_count">Aufgaben : %d</string> 
+
+    <string name="msg_dependency_count">Dependencies: %d</string> 
+
+    <string name="msg_package_name">Pakete</string> 
+
+    <string name="msg_min_sdk">Mindest-SDK: %s</string> 
+
+    <string name="msg_target_sdk">Ziel-SDK: %s</string> 
+
+    <string name="title_confirm_project_close">Projekt schließen</string> 
+
+    <string name="msg_confirm_project_close">Möchten Sie dieses Projekt wirklich schließen? Alle gestarteten Gradle-Daemons werden gestoppt, nachdem dieses Projekt geschlossen wurde.</string> 
+
+    <string name="project_exists">Ein gleichnamiges Projekt existiert bereits!</string> 
+
+ 
+
+    <!-- Templates --> 
+
+    <string name="template_basic">Basis Projekt</string> 
+
+    <string name="template_description_basic">Ein einfaches Projekt mit einer AppCompat Toolbar und einem Floating Action Button</string> 
+
+    <string name="template_description_empty">Ein leeres Projekt mit einer Toolbar. Geeignet, wenn Sie alle grundlegenden Dinge selbst hinzufügen möchten.</string> 
+
+    <string name="template_description_navigation_drawer">Projekt mit AppCompat Toolbar, DrawerLayout und NavigationView</string> 
+
+    <string name="template_empty">Leeres Projekt</string> 
+
+    <string name="template_navigation_drawer">Projekt mit NavigationDrawer</string> 
+
+ 
+
+    <!-- Files --> 
+
+    <string name="save">Speichern</string> 
+
+    <string name="show_files">Dateien</string> 
+
+    <string name="menu_find">Finden</string> 
+
+    <string name="menu_find_file">In Datei suchen</string> 
+
+    <string name="menu_find_project">Im Projekt suchen</string> 
+
+    <string name="msg_search_modules">In Modulen suchen</string> 
+
+    <string name="msg_no_modules">Keine Module im Projekt gefunden</string> 
+
+    <string name="hint_find_project_filter">Dateiendungen filtern (optional)</string> 
+
+    <string name="msg_find_project_filter">Getrennt durch \'|\'</string> 
+
+    <string name="msg_empty_search_query">Bitte Text eingeben</string> 
+
+    <string name="msg_select_search_modules">Wählen Sie die zu durchsuchenden Module aus</string> 
+
+    <string name="msg_searching_project">Suche im Projekt, bitte warten&#8230;</string> 
+
+    <string name="view_search_results">Suchergebnisse</string> 
+
+    <string name="copying_files">Kopieren von Dateien</string> 
+
+    <string name="writing_files">Dateien schreiben</string> 
+
+    <string name="copying_assets">Kopieren von Assets</string> 
+
+    <string name="failed_create_project_dir">Projektverzeichnis konnte nicht erstellt werden!</string> 
+
+    <string name="failed_write_file">Datei konnte nicht geschrieben werden: %s</string> 
+
+    <string name="asset_copy_failed">Vorlage konnte nicht in den Speicher kopiert werden!</string> 
+
+    <string name="cannot_create_temp">Fehler beim Erstellen des temporären Projektverzeichnisses!</string> 
+
+    <string name="project_created_successfully">Projekt erfolgreich erstellt!</string> 
+
+    <string name="msg_begin_project_write">Schreibprozess starten</string> 
+
+    <string name="msg_folder_creation_failed">Ordner konnte nicht erstellt werden!</string> 
+
+    <string name="msg_file_creation_failed">Erstellen der Datei fehlgeschlagen!</string> 
+
+    <string name="msg_folder_created">Ordner erfolgreich erstellt!</string> 
+
+    <string name="msg_file_created">Datei erfolgreich erstellt!</string> 
+
+    <string name="msg_folder_exists">Ordner existiert bereits!</string> 
+
+    <string name="msg_file_exists">Die Datei existiert bereits!</string> 
+
+    <string name="msg_invalid_name">Ungültiger Name!</string> 
+
+    <string name="text_create">Erstellen</string> 
+
+    <string name="msg_can_contain_slashes">Wenn der Pfad Dateitrennzeichen (\'/\') enthält, werden die erforderlichen (übergeordneten) Verzeichnisse erstellt, falls sie nicht vorhanden sind.</string> 
+
+    <string name="folder_name">Ordnernamen</string> 
+
+    <string name="file_name">Dateinamen</string> 
+
+    <string name="new_name">Neuer Name</string> 
+
+    <string name="new_file">Neue Datei</string> 
+
+    <string name="new_java_class">Neue Java-Klasse</string> 
+
+    <string name="new_xml_resource">Neue XML-Ressource</string> 
+
+    <string name="new_folder">Neuer Ordner</string> 
+
+    <string name="title_confirm_delete">Löschen bestätigen</string> 
+
+    <string name="msg_confirm_delete">Sind Sie sicher, dass Sie Folgendes löschen möchten:\n%s?</string> 
+
+    <string name="copied">Erfolgreich kopiert!</string> 
+
+    <string name="msg_rename_file">Geben Sie einen neuen Namen für die Datei oder den Ordner ein.</string> 
+
+    <string name="renamed">Erfolgreich umbenannt!</string> 
+
+    <string name="rename_failed">Datei kann nicht umbenannt werden!</string> 
+
+    <string name="deleted">Erfolgreich gelöscht!</string> 
+
+    <string name="delete_failed">Datei kann nicht gelöscht werden!</string> 
+
+    <string name="copy_path">Pfad kopieren</string> 
+
+    <string name="rename_file">Umbenennen</string> 
+
+    <string name="delete_file">Löschen</string> 
+
+    <string name="file_options">Dateioptionen</string> 
+
+    <string name="action_closeAll">Alle schließen</string> 
+
+    <string name="action_closeOthers">Andere schließen</string> 
+
+    <string name="action_closeThis">Diese Datei schließen</string> 
+
+    <string name="all_saved">Alle Dateien gespeichert!</string> 
+
+    <string name="msg_newfile_dest">Ziel: %s/</string> 
+
+    <string name="restype_drawable">Drawable</string> 
+
+    <string name="restype_layout">Layout</string> 
+
+    <string name="restype_menu">Menu</string> 
+
+    <string name="restype_other">Andere</string> 
+
+    <string name="classtype_class">Klasse</string> 
+
+    <string name="classtype_activity">Aktivity</string> 
+
+    <string name="classtype_interface">Interface</string> 
+
+    <string name="classtype_enum">Enum</string> 
+
+    <string name="msg_checking_storage_permissions">Überprüfung der Speicherberechtigungen</string> 
+
+    <string name="msg_failed_list_files">Projektdateien konnten nicht aufgelistet werden!</string> 
+
+    <string name="msg_failed_save">Dateien konnten nicht gespeichert werden!</string> 
+
+    <string name="msg_storage_denied">Ohne die Speicherberechtigung kann nicht fortgefahren werden</string> 
+
+    <string name="msg_storage_granted">Speicherberechtigung erteilt!</string> 
+
+ 
+
+    <!-- Code Editor --> 
+
+    <string name="undo">Rückgängig machen</string> 
+
+    <string name="redo">Wiederholen</string> 
+
+    <item name="paste" type="string">Paste</item> 
+
+    <item name="copy" type="string" tools:override="true">Copy</item> 
+
+    <item name="selectAll" formatted="true" type="string">Select All</item> 
+
+    <item name="cut" type="string">Cut</item> 
+
+    <item name="last" type="string">Last</item> 
+
+    <item name="next" type="string">Next</item> 
+
+    <item name="replace" type="string">Replace</item> 
+
+    <item name="replaceAll" type="string">Replace all</item> 
+
+    <item name="replacement" type="string">Replacement</item> 
+
+    <item name="text_to_search" type="string">Text to search</item> 
+
+    <item name="more" type="string">More</item> 
+
+ 
+
+    <!-- Preferences --> 
+
+    <string name="title_change_text_size">Editor Schriftgröße</string> 
+
+    <string name="idepref_about_title">Über AndroidIDE</string> 
+
+    <string name="idepref_build_clearCache_title">Gradle-Caches löschen</string> 
+
+    <string name="idepref_build_clearCache_summary">Löschen Sie das Gradle-Cache-Verzeichnis. Dadurch werden alle von Gradle heruntergeladenen Dateien gelöscht. Erforderliche Dateien werden im nächsten Build erneut heruntergeladen.</string> 
+
+    <string name="idepref_build_customgradlecommands_title">Zusätzliche Gradle-Befehle</string> 
+
+    <string name="idepref_build_customgradlecommands_summary">Wählen Sie zusätzliche Befehle aus, die beim Ausführen jeder Aufgabe hinzugefügt werden</string> 
+
+    <string name="idepref_build_editgradleproperties_title">Bearbeiten Sie globale Gradle-Eigenschaften</string> 
+
+    <string name="idepref_build_editgradleproperties_summary">Bearbeiten Sie gradle.properties in GRADLE_HOME</string> 
+
+    <string name="idepref_editor_fontsize_title">Schriftgröße</string> 
+
+    <string name="idepref_editor_fontsize_summary">Schriftgröße des Editors</string> 
+
+    <string name="idepref_editor_paintingflags_title">Non-printable painting flags</string> 
+
+    <string name="idepref_editor_paintingflags_summary">Wählen Sie aus, welche nicht anzeigbaren Zeichen vom Editor gezeichnet werden sollen</string> 
+
+    <string name="idepref_editor_drawhexcolors_title">Farben im Editor anzeigen</string> 
+
+    <string name="idepref_editor_drawhexcolors_summary">Soll der Editor Hex-Farbstrings anzeigen?</string> 
+
+    <string name="idepref_editor_title">Editor</string> 
+
+    <string name="idepref_build_title">Build &amp; Run</string> 
+
+    <string name="title_open_projects">Letztes Projekt öffnen</string> 
+
+    <string name="msg_open_projects">Wenn diese Option aktiviert ist, merkt sich die IDE das zuletzt geöffnete Projekt und öffnet dieses beim nächsten Start.</string> 
+
+    <string name="title_confirm_project_open">Projekt öffnung bestätigen</string> 
+
+    <string name="msg_confirm_project_open">Vor dem Öffnen des zuletzt geöffneten Projekts nachfragen.</string> 
+
+    <string name="title_default_shell">Verwenden Sie die System-Shell im Terminal</string> 
+
+    <string name="msg_default_shell">Wenn aktiviert, wird \'/system/bin/sh\' im Terminal verwendet.</string> 
+
+    <string name="title_general">Allgemein</string> 
+
+    <string name="title_tab_size">Tab-Größe</string> 
+
+    <string name="msg_tab_size">Geben Sie die Anzahl der Leerzeichen für TAB an</string> 
+
+    <string name="msg_preferences">Einstellungen</string> 
+
+    <string name="msg_failed_get_changelog">Änderungsprotokoll konnte nicht gelesen werden!</string> 
+
+    <string name="pref_changelog">Änderungsprotokoll</string> 
+
+    <string name="msg_editor_font_size">Bitte wählen Sie die Standardschriftgröße des Editors aus:</string> 
+
+    <string name="msg_clear_cache">Dadurch wird das von Gradle erstellte Cache-Verzeichnis gelöscht. Wenn Sie es löschen, kann der nächste Build etwas länger als normal dauern, da Gradle die erforderlichen Dateien erneut herunterlädt.\nWICHTIG: Dadurch wird auch AAPT2 gelöscht. Sie müssen es neu installieren, andernfalls kommt es zu einem Build-Fehler.\n\nSind Sie sicher, dass Sie Caches löschen möchten?</string> 
+
+ 
+
+ 
+
+    <!-- Error Messages used while Logging --> 
+
+    <string name="err_installation">Installationsfehler</string> 
+
+    <string name="err_completion">Completion Fehler</string> 
+
+    <string name="err_no_server_implementation">Keine Language Server Implementierung gefunden.</string> 
+
+    <string name="err_init_server">Fehler beim Initialisieren des Language Server.</string> 
+
+    <string name="err_init_sdkinfo">SDK Info kann nicht initialisiert werden</string> 
+
+    <string name="err_cannot_start_file_picker">Datei Picker kann nicht gestartet werden</string> 
+
+    <string name="err_cannot_parse_apk_metadata">APK-Metadaten konnten nicht geparst werden</string> 
+
+    <string name="err_cannot_save_files">Dateien können nicht gespeichert werden</string> 
+
+    <string name="err_cannot_preview_layout">Vorschau des Layouts nicht möglich</string> 
+
+    <string name="err_cannot_inflate_layout">Layout kann nicht angezeigt werden</string> 
+
+    <string name="err_cannot_start_server">Language Server kann nicht gestartet werden für: %s</string> 
+
+    <string name="err_cannot_write_socket">Fehler beim Schreiben in den Socket-Stream</string> 
+
+    <string name="err_server_disconnected">Der Language Server Prozess wurde unerwartet beendet.</string> 
+
+ 
+
+    <!-- Layout preview and designer --> 
+
+    <string name="msg_cannot_preview_layout">Vorschau des Layouts nicht möglich!</string> 
+
+    <string name="title_preview_layout">Layout Vorschau</string> 
+
+    <string name="label_ui_designer_content">Hauptinhalt des UI-Designers</string> 
+
+    <string name="widget_textview">TextView</string> 
+
+    <string name="widget_button">Button</string> 
+
+    <string name="widget_group_android">Android</string> 
+
+    <string name="widget_checkbox">CheckBox</string> 
+
+    <string name="widget_checked_textview">CheckedTextViev</string> 
+
+    <string name="widget_edittext">EditText</string> 
+
+    <string name="widget_image_button">ImageButton</string> 
+
+    <string name="widget_image_view">ImageView</string> 
+
+    <string name="widget_progressbar">ProgressBar</string> 
+
+    <string name="widget_radio_button">RadioButton</string> 
+
+    <string name="widget_seekbar">SeekBar</string> 
+
+    <string name="widget_spinner">Spinner</string> 
+
+    <string name="widget_group_layouts">Layouts</string> 
+
+    <string name="layout_linear">LinearLayout</string> 
+
+    <string name="layout_relative">RelativeLayout</string> 
+
+    <string name="msg_attr_edit_hint">Klicken Sie auf die zu bearbeitenden Attributelemente.</string> 
+
+    <string name="sym_equal">=</string> 
+
+    <string name="msg_attr_namespace">Namespace \'%s\'</string> 
+
+    <string name="msg_unknown_package">Unbekannter Paketname</string> 
+
+    <string name="msg_attr_editor_select_view">Wählen Sie eine View aus, um ihre Attribute zu bearbeiten.</string> 
+
+    <string name="msg_attr_editor_no_attrs">Für diese View wurden keine Attribute hinzugefügt.\nKlicken Sie zum Hinzufügen auf die Schaltfläche \'+\'.</string> 
+
+    <string name="msg_enter_attr_value">Neuen Wert für Attribut eingeben:</string> 
+
+    <string name="hint_new_attr_value">Neuer Wert</string> 
+
+    <string name="attr_val_wrap_content">wrap_content</string> 
+
+    <string name="attr_val_match_parent">match_parent</string> 
+
+    <string name="attr_val_other">Anderer Wert</string> 
+
+    <string name="msg_enter_dimension_value">Dimensionswert eingeben</string> 
+
+    <string name="msg_applicable_attrs">Anwendbare Attribute</string> 
+
+    <string name="msg_attr_editor_actions">Aktionen</string> 
+
+    <string name="title_viewaction_delete">Löschen</string> 
+
+    <string name="msg_viewaction_select_parent">Parent auswählen</string> 
+
+    <string name="msg_no_view_parent">Diese View hat kein übergeordnetes Element</string> 
+
+    <string name="msg_yesno_def_title">Bitte bestätigen</string> 
+
+    <string name="msg_yesno_def_message">Bist du dir sicher?</string> 
+
+    <string name="msg_view_deletion_failed">Die View kann nicht gelöscht werden.</string> 
+
+    <string name="msg_empty_ui_layout">Es wurden keine View hinzugefügt. Zum Hinzufügen klicken.</string> 
+
+    <string name="msg_no_attr_format">Für dieses Attribut ist kein Attributformat verfügbar.</string> 
+
+    <string name="msg_attr_editor_null">Attribut Editor kann für dieses Attribut nicht erstellt werden</string> 
+
+    <string name="msg_invalid_attr_value">Ungültiger Wert</string> 
+
+    <string name="msg_new_str_value">Neue string value</string> 
+
+    <string name="msg_add_namespace_decl">Namespace-Deklaration \'%1$s\' hinzufügen</string> 
+
+    <string name="msg_choose_new_val">Wählen Sie einen neuen Wert aus</string> 
+
+    <string name="msg_select_one_flag">Bitte kreuzen Sie mindestens eine Flag an.</string> 
+
+    <string name="msg_generate_xml_failed">XML-Code konnte nicht generiert werden</string> 
+
+    <string name="title_generating_xml">Generieren von XML-Code</string> 
+
+    <string name="title_code_generation_failed">Code generierung fehlgeschlagen</string> 
+
+    <string name="msg_code_generation_failed">XML-Code konnte nicht generiert werden. Trotzdem verlassen?</string> 
+
+    <string name="msg_invalid_designer_result">Der UI-Designer hat ein ungültiges Ergebnis zurückgegeben</string> 
+
+    <string name="msg_swipe_up">Wischen Sie nach oben, um Build Ausgaben, Logs und mehr anzuzeigen.</string> 
+
+    <string name="msg_ide_crashed">AndroidIDE ist abgestürzt</string> 
+
+    <string name="msg_report_crash">Bitte öffnen Sie ein Issue auf GitHub mit dem folgenden Stacktrace:</string> 
+
+    <string name="msg_crash_report_hint">Klicken Sie auf die Schaltfläche unten, um den Log zu kopieren und die Problemseite zu öffnen.</string> 
+
+    <string name="msg_copy_report_action">Kopieren und melden</string> 
+
+    <string name="msg_reading_bootstrap">Bootstrap-Archiv wird gelesen…</string> 
+
+    <string name="msg_bootstrap_installation_error">Die Bootstrap-Installation ist mit der folgenden Ausnahme fehlgeschlagen.</string> 
+
+    <string name="title_translations">Übersetzungen</string> 
+
+ 
+
+</resources> 
+
