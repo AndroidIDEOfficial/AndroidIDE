@@ -60,6 +60,88 @@ public class ValuesTable {
         this.booleans = new HashMap<> ();
     }
     
+    /**
+     * Finds a resource value of any type.
+     * @param name The name of the resource to find.
+     * @return The resource value or {@code null} if there is no resource with the given name.
+     */
+    @SuppressWarnings ("unused")
+    public IResourceValue findResource (final String name) {
+        IResourceValue value;
+        
+        value = findString (name);
+        if (value != null) {
+            return value;
+        }
+    
+        value = findColor (name);
+        if (value != null) {
+            return value;
+        }
+    
+        value = findInteger (name);
+        if (value != null) {
+            return value;
+        }
+    
+        value = findDimension (name);
+        if (value != null) {
+            return value;
+        }
+    
+        value = findBoolean (name);
+        //noinspection RedundantIfStatement
+        if (value != null) {
+            return value;
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Find a string value with the given name.
+     * @param name The name of the string resource.
+     * @return The string resource or {@code null} if there is no resource with the given name.
+     */
+    public StringValue findString (final String name) {
+        return (StringValue) strings.getOrDefault (name, null);
+    }
+    
+    /**
+     * Find a color value with the given name.
+     * @param name The name of the color resource.
+     * @return The color resource or {@code null} if there is no resource with the given name.
+     */
+    public ColorValue findColor (final String name) {
+        return (ColorValue) colors.getOrDefault (name, null);
+    }
+    /**
+     * Find a integer value with the given name.
+     * @param name The name of the integer resource.
+     * @return The integer resource or {@code null} if there is no resource with the given name.
+     */
+    public IntegerValue findInteger (final String name) {
+        return (IntegerValue) integers.getOrDefault (name, null);
+    }
+    
+    /**
+     * Find a dimension value with the given name.
+     * @param name The name of the dimension resource.
+     * @return The dimension resource or {@code null} if there is no resource with the given name.
+     */
+    public DimensionValue findDimension (final String name) {
+        return (DimensionValue) dimens.getOrDefault (name, null);
+    }
+    
+    /**
+     * Find a boolean value with the given name.
+     * @param name The name of the boolean resource.
+     * @return The boolean resource or {@code null} if there is no resource with the given name.
+     */
+    public BooleanValue findBoolean (final String name) {
+        return (BooleanValue) booleans.getOrDefault (name, null);
+    }
+    
     @NonNull
     @Override
     public String toString () {
@@ -181,7 +263,7 @@ public class ValuesTable {
         }
     }
     
-    private static void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
+    private static void skip(@NonNull XmlPullParser parser) throws XmlPullParserException, IOException {
         if (parser.getEventType() != XmlPullParser.START_TAG) {
             throw new IllegalStateException();
         }
@@ -198,7 +280,7 @@ public class ValuesTable {
         }
     }
     
-    private static String getName (XmlPullParser parser) {
+    private static String getName (@NonNull XmlPullParser parser) {
         return parser.getAttributeValue (null, "name");
     }
     

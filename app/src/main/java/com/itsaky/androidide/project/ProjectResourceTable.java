@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IResourceTable;
+import com.itsaky.inflater.values.ValuesTableFactory;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -30,13 +31,9 @@ public class ProjectResourceTable implements IResourceTable {
     private File resDir;
     private File color;
     private File layout;
-    private File values;
     
     private File[] drawables;
     private File[] mipmaps;
-    
-    public ProjectResourceTable (@NonNull final Iterable<File> resourceDirectories) {
-    }
     
     private static final Logger LOG = Logger.instance ("ProjectResourceFinder");
     
@@ -59,12 +56,50 @@ public class ProjectResourceTable implements IResourceTable {
 
     @Override
     public String findString(@NonNull String name) {
-        return name;
+        final var table = ValuesTableFactory.getTable (resDir);
+    
+        if (table == null) {
+            return name;
+        }
+        
+        final var resource = table.findString (name);
+        if (resource == null) {
+            return name;
+        }
+    
+        final var value = resource.getValue ();
+        if (value.startsWith ("@string/")) {
+            var ref = value.substring ("@string/".length ());
+            if (name.equals (ref)) {
+                return name;
+            }
+        }
+        
+        return value;
     }
 
     @Override
     public String findColor(@NonNull String name) {
-        return name;
+        final var table = ValuesTableFactory.getTable (resDir);
+    
+        if (table == null) {
+            return name;
+        }
+    
+        final var resource = table.findColor (name);
+        if (resource == null) {
+            return name;
+        }
+    
+        final var value = resource.getValue ();
+        if (value.startsWith ("@color/")) {
+            var ref = value.substring ("@color/".length ());
+            if (name.equals (ref)) {
+                return name;
+            }
+        }
+    
+        return value;
     }
     
     @Override
@@ -74,7 +109,26 @@ public class ProjectResourceTable implements IResourceTable {
 
     @Override
     public String findDimension(@NonNull String name) {
-        return name;
+        final var table = ValuesTableFactory.getTable (resDir);
+    
+        if (table == null) {
+            return name;
+        }
+    
+        final var resource = table.findDimension (name);
+        if (resource == null) {
+            return name;
+        }
+    
+        final var value = resource.getValue ();
+        if (value.startsWith ("@dimen/")) {
+            var ref = value.substring ("@dimen/".length ());
+            if (name.equals (ref)) {
+                return name;
+            }
+        }
+        
+        return value;
     }
 
     @Override
@@ -98,7 +152,6 @@ public class ProjectResourceTable implements IResourceTable {
         this.resDir = resDir;
         this.color = new File (resDir, "color");
         this.layout = new File (resDir, "layout");
-        this.values = new File (resDir, "values");
         
         final File[] drawables = resDir.listFiles(new NameStartsWith ("drawable"));
         this.drawables = drawables == null ? new File [0] : drawables;

@@ -102,7 +102,7 @@ public class StudioApp extends BaseApplication {
         return new LayoutInflaterConfiguration.Builder ()
                 .setAttrInfo(this.attrInfo())
                 .setWidgetInfo(this.widgetInfo())
-                .setResourceFinder(mResFinder == null ? mResFinder = new ProjectResourceTable (resDirs) : mResFinder)
+                .setResourceFinder(mResFinder == null ? mResFinder = new ProjectResourceTable () : mResFinder)
                 .setResourceDirectories(resDirs)
                 .setContextProvider(contextProvider)
                 .create();

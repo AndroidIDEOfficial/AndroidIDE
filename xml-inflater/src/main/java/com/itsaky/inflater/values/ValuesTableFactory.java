@@ -32,6 +32,10 @@ public class ValuesTableFactory {
     private static final Map<File, ValuesTable> valueTables = new HashMap<> ();
     private static final Logger LOG = Logger.instance ("ValuesTableFactory");
     
+    public static ValuesTable getTable (final File resDir) {
+        return valueTables.getOrDefault (resDir, null);
+    }
+    
     /**
      * Setup this ValuesTableFactory with the given "res" directories.
      * @param resDirs The resource directories.
