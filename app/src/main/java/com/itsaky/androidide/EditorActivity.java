@@ -1141,6 +1141,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
         getApp ().getPrefManager ().setOpenedProject (Objects.requireNonNull (this.getAndroidProject ()).getProjectPath ());
         
+        try {
+            //noinspection ConstantConditions
+            getSupportActionBar ().setSubtitle (new File (getAndroidProject ().getProjectPath ()).getName ());
+        } catch (Throwable th) {
+            // ignored
+        }
+        
         CompletableFuture.runAsync (() -> ValuesTableFactory.setupWithResDirectories (getResourceDirectories ().toArray (new File[0])));
     }
     
