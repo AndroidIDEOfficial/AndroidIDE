@@ -333,12 +333,17 @@ class XMLLayoutInflater extends BaseLayoutInflater {
             Class<?> clazz = parent.getClass ();
             Method method = null;
             
-            while (clazz != null) {
+            while (true) {
                 try {
-                    method = clazz.getMethod ("generateDefaultLayoutParams");
+                    method = clazz.getDeclaredMethod ("generateDefaultLayoutParams");
                     break;
                 } catch (Throwable e) { /* ignored */ }
                 clazz = clazz.getSuperclass ();
+                
+                if (clazz == null) {
+                    break;
+                }
+                
             }
             
             if (method != null) {
