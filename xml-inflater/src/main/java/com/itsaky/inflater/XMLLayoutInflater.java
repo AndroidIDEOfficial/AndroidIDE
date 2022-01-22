@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.ui.util.Preconditions;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
@@ -37,6 +36,7 @@ import com.itsaky.inflater.impl.ErrorUiView;
 import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.inflater.impl.UiView;
 import com.itsaky.inflater.impl.UiViewGroup;
+import com.itsaky.inflater.util.Preconditions;
 import com.itsaky.widgets.WidgetInfo;
 import com.itsaky.widgets.models.Widget;
 
@@ -54,7 +54,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 
-import static com.itsaky.androidide.ui.util.Preconditions.*;
+import static com.itsaky.inflater.util.Preconditions.*;
 
 class XMLLayoutInflater extends BaseLayoutInflater {
     

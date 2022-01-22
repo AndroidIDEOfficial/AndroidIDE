@@ -100,6 +100,8 @@ import com.itsaky.androidide.views.CodeEditorView;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.inflater.ILayoutInflater;
+import com.itsaky.inflater.values.ValuesTable;
+import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
@@ -1103,8 +1105,9 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         } else {
             LOG.error ("ViewModel is null. Cannot set project.");
         }
-        
         getApp ().getPrefManager ().setOpenedProject (Objects.requireNonNull (this.getAndroidProject ()).getProjectPath ());
+        
+        CompletableFuture.runAsync (() -> ValuesTableFactory.setupWithResDirectories (getResourceDirectories ().toArray (new File[0])));
     }
     
     @Nullable

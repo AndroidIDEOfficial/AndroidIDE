@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
-package com.itsaky.androidide.ui.util;
+ */
+package com.itsaky.inflater.util;
 
 import com.itsaky.inflater.InflateException;
 
@@ -41,6 +41,12 @@ public class Preconditions {
         Preconditions.assertNotnull(str, msg);
         if(str.trim().length() <= 0) {
             throw new InflateException (msg);
+        }
+    }
+    
+    public static void assertTrue (boolean condition, String message) {
+        if (!condition) {
+            throw new AssertionError (message);
         }
     }
 }

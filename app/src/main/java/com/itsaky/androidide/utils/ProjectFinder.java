@@ -65,7 +65,7 @@ public class ProjectFinder {
     }
 
     private static void proceedModule(File file, File module, AndroidProject project) throws JSONException {
-        final Pattern appPattern = Pattern.compile("apply\\s+plugin\\s*:\\s*(\'|\")com.android.application(\'|\")");
+        final Pattern appPattern = Pattern.compile("apply\\s+plugin\\s*:\\s*(['\"])com.android.application(['\"])");
         File projectGradle = new File(file, "build.gradle");
         File moduleGradle = new File(module, "build.gradle");
         File manifest = new File(module, "src/main/AndroidManifest.xml");

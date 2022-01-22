@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  * 
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,13 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  * 
-**************************************************************************************/
+ */
 package com.itsaky.androidide.project;
 
-import android.os.FileObserver;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IResourceTable;
@@ -38,15 +35,7 @@ public class ProjectResourceTable implements IResourceTable {
     private File[] drawables;
     private File[] mipmaps;
     
-    private final FileObserver mFileObserver;
-    
     public ProjectResourceTable (@NonNull final Iterable<File> resourceDirectories) {
-        mFileObserver = new FileObserver (resDir) {
-            @Override
-            public void onEvent (int event, @Nullable String path) {
-        
-            }
-        };
     }
     
     private static final Logger LOG = Logger.instance ("ProjectResourceFinder");

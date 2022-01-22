@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.itsaky.androidide.ui.util.Preconditions;
+import com.itsaky.inflater.util.Preconditions;
 
 import java.io.File;
 import java.util.regex.Matcher;
