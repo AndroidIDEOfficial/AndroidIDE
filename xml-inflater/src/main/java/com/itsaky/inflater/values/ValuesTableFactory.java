@@ -22,6 +22,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * A factory class that reads the files in the "values" directory of given "res" directories.
@@ -64,6 +66,41 @@ public class ValuesTableFactory {
         }
         
         LOG.debug (String.format (Locale.getDefault (), "Created value tables for %d resource directories in %d ms", resDirs.length, (System.currentTimeMillis () - start)));
+    }
+    
+    /**
+     * Notify that the given file's contents were changed and
+     * the corresponding table must be updated with new values.
+     *
+     * @param file The file that was changed.
+     */
+    public static void syncWithFile (final File file) {
+        if (file == null) {
+            LOG.error ("Cannot update value tables. Given file is null.");
+            return;
+        }
+        
+        final var pattern = Pattern.compile (".*/src/.*/res/values/(\\w|_)+\\.xml");
+        if (!pattern.matcher (file.getAbsolutePath ()).matches ()) {
+            // This file is not a values resource file.
+            return;
+        }
+        
+        final var resDir = Objects.requireNonNull (file.getParentFile ())/* values dir */.getParentFile () /* res dir*/;
+        var table = valueTables.getOrDefault (resDir, null);
+        if (table == null) {
+            table = createTable (resDir);
+            if (table != null) {
+                valueTables.put (resDir, table);
+            }
+            return;
+        }
+        
+        try {
+            table.syncWithFile (file);
+        } catch (Throwable e) {
+            LOG.error ("Failed to sync values table", e);
+        }
     }
     
     private static ValuesTable createTable (File res) {

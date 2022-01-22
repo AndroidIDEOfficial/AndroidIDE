@@ -40,6 +40,7 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.models.Range;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -49,6 +50,7 @@ import java.io.File;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.editor.interfaces.EditorEventListener;
@@ -184,7 +186,6 @@ public class CodeEditorView extends FrameLayout {
         try {
             
             Files.write (getFile ().toPath (), lines);
-            
             notifySaved ();
             isModified = false;
         
@@ -369,5 +370,9 @@ public class CodeEditorView extends FrameLayout {
     
     private void notifySaved () {
         binding.editor.didSave ();
+        
+        if (Objects.requireNonNull (getFile ()).getName ().endsWith (".xml")) {
+            ValuesTableFactory.syncWithFile (getFile ());
+        }
     }
 }

@@ -142,6 +142,33 @@ public class ValuesTable {
         return (BooleanValue) booleans.getOrDefault (name, null);
     }
     
+    /**
+     * Reads the contents of the given file and updates this table.
+     * @param file The file to sync with.
+     */
+    public void syncWithFile (final File file) throws Exception {
+        final var start = System.currentTimeMillis ();
+        final var factory = XmlPullParserFactory.newInstance ();
+        final var parser = factory.newPullParser ();
+        parser.setInput (new FileInputStream (file), null);
+    
+        var event = parser.getEventType ();
+        while (event != XmlPullParser.END_DOCUMENT) {
+            if (event == XmlPullParser.START_TAG) {
+                final var tag = parser.getName ();
+                if ("resources".equals (tag)) {
+                    event = parser.next ();
+                    continue;
+                }
+            
+                ValuesTable.readTag (tag, parser, this);
+            }
+            event = parser.next ();
+        }
+        
+        LOG.debug ("Syncing with file", file.getName (), "took", (System.currentTimeMillis () - start), "ms");
+    }
+    
     @NonNull
     @Override
     public String toString () {
