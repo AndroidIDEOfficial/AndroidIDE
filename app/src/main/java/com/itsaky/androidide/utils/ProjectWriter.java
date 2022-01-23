@@ -49,9 +49,10 @@ public class ProjectWriter {
 		"app/src/main/AndroidManifest.xml",
 		"app/src/main/res/values/strings.xml",
 		"app/src/main/java/$package_name/MainActivity.java"
+		"app/src/main/java/$package_name/MainActivity.kt"
 	};
 	
-	private static final String JAVA_PATH_REGEX = "/.*/src/.*/java";
+	private static final String JAVA_PATH_REGEX = "/.*/src/.*/java|kt";
 	private static final String APP_NAME = "$app_name",
 								PACKAGE_NAME = "$package_name",
 								MIN_SDK = "$min_sdk",
