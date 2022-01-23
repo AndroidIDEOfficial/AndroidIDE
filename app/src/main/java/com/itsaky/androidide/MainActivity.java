@@ -280,10 +280,16 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
                         .setId (2)
                         .setName (this, R.string.template_navigation_drawer)
                         .setDescription (this, R.string.template_description_navigation_drawer)
-                        .setImageId (R.drawable.template_navigation_drawer);
+                        .setImageId (R.drawable.template_navigation_drawer),
+                kotlinBasic = new ProjectTemplate ()
+                        .setId (3)
+                        .setName (this, R.string.template_kotlin_basic)
+                        .setDescription (this, R.string.template_description_kotlin_basic)
+                        .setImageId (R.drawable.template_basic);
         mTemplates.add (empty);
         mTemplates.add (basic);
         mTemplates.add (drawer);
+        mTemplates.add (kotlinBasic);
         
     }
     
