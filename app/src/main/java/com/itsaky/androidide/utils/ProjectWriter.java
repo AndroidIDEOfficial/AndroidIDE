@@ -48,7 +48,7 @@ public class ProjectWriter {
         "settings.gradle",
 		"app/src/main/AndroidManifest.xml",
 		"app/src/main/res/values/strings.xml",
-		"app/src/main/java/$package_name/MainActivity.java"
+		"app/src/main/java/$package_name/MainActivity.java",
 		"app/src/main/java/$package_name/MainActivity.kt"
 	};
 	
