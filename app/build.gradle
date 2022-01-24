@@ -78,11 +78,14 @@ android {
 	}
 }
 
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.4.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+// Build the gradle plugin before building app
+project.afterEvaluate {
+    tasks.preBuild {
+        finalizedBy rootProject.project(':gradle-plugin').getTasksByName("jar", true).iterator().next()
+    }
+}
 
+dependencies {
     // Annotation processors
 	annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 	

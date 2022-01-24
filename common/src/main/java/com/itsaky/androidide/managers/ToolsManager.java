@@ -20,6 +20,7 @@ package com.itsaky.androidide.managers;
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.FileIOUtils;
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.app.BaseApplication;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.zip.ZipInputStream;
 
 public class ToolsManager {
     
@@ -48,6 +50,7 @@ public class ToolsManager {
         copyBusyboxIfNeeded();
         extractLogsenderIfNeeded();
         extractLibHooks();
+        extractGradlePlugin();
         writeInitScript();
         rewriteProjectData();
         
@@ -55,7 +58,24 @@ public class ToolsManager {
             onFinish.run();
         }
     }
-
+    
+    private static void extractGradlePlugin () {
+        final var repoDir = new File (Environment.HOME, ".androidide");
+        FileUtils.createOrExistsDir (repoDir);
+        
+        final var zip = new File (Environment.TMP_DIR, "gradle-plugin.zip");
+        if (zip.exists ()) {
+            FileUtils.delete (zip);
+        }
+        
+        ResourceUtils.copyFileFromAssets (getCommonAsset ("gradle-plugin.zip"), zip.getAbsolutePath ());
+        try {
+            ZipUtils.unzipFile (zip, repoDir);
+        } catch (Throwable e) {
+            LOG.error ("Unable to extract gradle plugin zip file");
+        }
+    }
+    
     public static void extractLibHooks() {
         if(!Environment.LIB_HOOK.exists()) {
             ResourceUtils.copyFileFromAssets(getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
@@ -83,6 +103,9 @@ public class ToolsManager {
     }
     
     private static void writeInitScript() {
+        if (Environment.INIT_SCRIPT.exists ()) {
+            FileUtils.delete (Environment.INIT_SCRIPT);
+        }
         FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, readInitScript());
     }
 
