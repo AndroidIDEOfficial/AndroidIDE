@@ -349,5 +349,11 @@
     <string name="msg_copy_report_action">复制并反馈</string>
     <string name="msg_reading_bootstrap">正在读取引导程序压缩包…</string>
     <string name="msg_bootstrap_installation_error">因为以下异常，引导程序安装失败</string>
+    <string name="title_translations">翻译</string>
+    <string name="title_compiler_module_install">正在安装编译器模块</string>
+    <string name="msg_compiler_module_install">正在安装编译器模块，请稍等&#8230;</string>
+    <string name="msg_compiler_module_install_failed">编译器模块安装失败！ 错误信息:\n%s</string>
+    <string name="msg_compiler_module_installed">编译器模块已成功安装!</string>
+
 
 </resources>
