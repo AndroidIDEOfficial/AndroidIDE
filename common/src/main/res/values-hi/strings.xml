@@ -1,0 +1,9 @@
+<resources>
+    <string name="cms_channel_id_devs">नोटिफिकेशंस फ्रम डेवलपर्स</string>
+    <string name="cms_channel_id_update">एप अपडेट नोटिफिकेशंस</string>
+    <string name="msg_hex_color_code">हेक्स कलर कोड</string>
+    <string name="msg_color_picker_pick">पिक</string>
+    <string name="msg_chmod_exec">सेटिंग एग्जीक्यूटेवल परमिशंस...</string>
+    <string name="msg_linking">लिंकिंग %1$s टू %2$s</string>
+    <string name="msg_extracting_hooks">एक्सट्रेक्टिंग हुक लाइब्रेरीज...</string>
+</resources>

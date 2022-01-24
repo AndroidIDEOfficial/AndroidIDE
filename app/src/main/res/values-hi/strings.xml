@@ -7,7 +7,7 @@
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
     <string name="title_open_source_licenses">ओपन सोर्स लाइसेंस </string>
     <string name="msg_open_source_licenses">एंड्रॉयडआईडीई ओपन सोर्स लाइब्रेरी का उपयोग करता है। आप नीचे दिए गए लिंक पर क्लिक करके उपयोग किए गए लाइब्रेरी के स्रोत और लाइसेंस प्राप्त कर सकते हैं ।</string>
-    <string name="msg_about_licensed_under">लाइसेंसड अंडर</string>
+    <string name="msg_about_licensed_under">लाइसेंस</string>
     <string name="about_option_email">ईमेल</string>
     <string name="about_option_website">वेबसाइट</string>
     <string name="about_footer_alternate">एंड्रॉयडआईडीई v\u2022 %s</string>
@@ -351,4 +351,5 @@
 
 </resources>
  
+
 
