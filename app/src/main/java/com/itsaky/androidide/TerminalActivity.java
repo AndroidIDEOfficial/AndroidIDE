@@ -21,13 +21,10 @@ package com.itsaky.androidide;
 
 import static com.itsaky.androidide.utils.Environment.*;
 
-import android.graphics.Typeface;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import com.blankj.utilcode.util.ClipboardUtils;
@@ -41,7 +38,6 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.BootstrapInstaller;
-import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.virtualkeys.SpecialButton;
@@ -62,10 +58,8 @@ import java.util.Map;
 import org.json.JSONException;
 
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 public class TerminalActivity extends StudioActivity {
     
@@ -213,7 +207,7 @@ public class TerminalActivity extends StudioActivity {
     }
     
     private TerminalSession createSession (final String workingDirectory) {
-        final Map<String, String> envs = getEnvironment (true);
+        final Map<String, String> envs = getEnvironment ();
         final String[] env = new String[envs.size ()];
         int i = 0;
         for (Map.Entry<String, String> entry : envs.entrySet ()) {

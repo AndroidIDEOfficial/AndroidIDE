@@ -350,5 +350,9 @@
     <string name="msg_reading_bootstrap">Reading bootstrap archive…</string>
     <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
     <string name="title_translations">Translations</string>
+    <string name="title_compiler_module_install">Installing compiler module</string>
+    <string name="msg_compiler_module_install">Compiler module is being installed, please wait&#8230;</string>
+    <string name="msg_compiler_module_install_failed">Compiler module installation failed. The error was:\n%s</string>
+    <string name="msg_compiler_module_installed">Compiler module installed successfully!</string>
 
 </resources>

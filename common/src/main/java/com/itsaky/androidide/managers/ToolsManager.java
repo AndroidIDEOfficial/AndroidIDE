@@ -60,7 +60,7 @@ public class ToolsManager {
     }
     
     private static void extractGradlePlugin () {
-        final var repoDir = new File (Environment.HOME, ".androidide");
+        final var repoDir = new File (Environment.ANDROIDIDE_HOME, "repo");
         FileUtils.createOrExistsDir (repoDir);
         
         final var zip = new File (Environment.TMP_DIR, "gradle-plugin.zip");
@@ -118,7 +118,7 @@ public class ToolsManager {
         try {
             final boolean isOld = LOG_SENDER_VERSION > prefs.getInt(KEY_LOG_SENDER_VERSION, 0);
             if(isOld) {
-                final File logsenderZip = new File(Environment.JLS_HOME, "logsender.zip");
+                final File logsenderZip = new File(Environment.TMP_DIR, "logsender.zip");
                 ResourceUtils.copyFileFromAssets(getCommonAsset("logsender.zip"), logsenderZip.getAbsolutePath());
                 ZipUtils.unzipFile(logsenderZip, Environment.HOME);
                 prefs.putInt(KEY_LOG_SENDER_VERSION, LOG_SENDER_VERSION);
