@@ -350,5 +350,9 @@
     <string name="msg_reading_bootstrap">Membaca arsip bootstrap…</string>
     <string name="msg_bootstrap_installation_error">Instalasi Bootstrap gagal dengan exception berikut.</string>
     <string name="title_translations">Terjemahan</string>
+    <string name="title_compiler_module_install">Memasang modul compiler</string>
+    <string name="msg_compiler_module_install">Modul compiler sedang dipasang, mohon tunggu&#8230;</string>
+    <string name="msg_compiler_module_install_failed">Pemasangan modul compiler gagal. Berikut errornya:\n%s</string>
+    <string name="msg_compiler_module_installed">Modul compiler sukses terpasang!</string>
 
 </resources>
