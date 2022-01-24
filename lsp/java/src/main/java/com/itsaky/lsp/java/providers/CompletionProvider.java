@@ -146,28 +146,27 @@ public class CompletionProvider implements ICompletionProvider {
         SourceFileObject source = new SourceFileObject (file, contents, Instant.now());
         String partial = partialIdentifier(contents, (int) cursor);
         boolean endsWithParen = endsWithParen(contents, (int) cursor);
-        try (SynchronizedTask synchronizedTask = compiler.compile(Collections.singletonList (source))) {
-            return synchronizedTask.getWithTask (task -> {
-                LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
-                TreePath path = new FindCompletionsAt (task.task).scan(task.root(), cursor);
-                switch (path.getLeaf().getKind()) {
-                    case IDENTIFIER:
-                        return completeIdentifier(task, path, partial, endsWithParen);
-                    case MEMBER_SELECT:
-                        return completeMemberSelect(task, path, partial, endsWithParen);
-                    case MEMBER_REFERENCE:
-                        return completeMemberReference(task, path, partial);
-                    case SWITCH:
-                        return completeSwitchConstant(task, path, partial, endsWithParen);
-                    case IMPORT:
-                        return completeImport(qualifiedPartialIdentifier(contents, (int) cursor));
-                    default:
-                        CompletionResult list = new CompletionResult();
-                        addKeywords(path, partial, list);
-                        return list;
-                }
-            });
-        }
+        SynchronizedTask synchronizedTask = compiler.compile(Collections.singletonList (source));
+        return synchronizedTask.getWithTask (task -> {
+            LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
+            TreePath path = new FindCompletionsAt (task.task).scan(task.root(), cursor);
+            switch (path.getLeaf().getKind()) {
+                case IDENTIFIER:
+                    return completeIdentifier(task, path, partial, endsWithParen);
+                case MEMBER_SELECT:
+                    return completeMemberSelect(task, path, partial, endsWithParen);
+                case MEMBER_REFERENCE:
+                    return completeMemberReference(task, path, partial);
+                case SWITCH:
+                    return completeSwitchConstant(task, path, partial, endsWithParen);
+                case IMPORT:
+                    return completeImport(qualifiedPartialIdentifier(contents, (int) cursor));
+                default:
+                    CompletionResult list = new CompletionResult();
+                    addKeywords(path, partial, list);
+                    return list;
+            }
+        });
     }
 
     private void addTopLevelSnippets(@NonNull ParseTask task, CompletionResult list) {

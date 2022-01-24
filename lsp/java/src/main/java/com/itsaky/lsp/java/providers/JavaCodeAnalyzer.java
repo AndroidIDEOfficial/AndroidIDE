@@ -45,18 +45,17 @@ public class JavaCodeAnalyzer implements ICodeAnalyzer {
     @Override
     public AnalyzeResult analyze (@NonNull AnalyzeParams params) {
         final Path file = params.getFile ();
-        try (final SynchronizedTask synchronizedTask = compiler.compile (file)) {
-            return synchronizedTask.getWithTask (task -> {
-                final AnalyzeResult result = new AnalyzeResult ();
-                if (!isTaskValid (task)) {
-                    return result;
-                }
-                
-                result.setDiagnostics (DiagnosticsProvider.findDiagnostics (task, file));
-                result.setSemanticHighlights (SemanticHighlightProvider.highlight (task, file));
+        final SynchronizedTask synchronizedTask = compiler.compile (file);
+        return synchronizedTask.getWithTask (task -> {
+            final AnalyzeResult result = new AnalyzeResult ();
+            if (!isTaskValid (task)) {
                 return result;
-            });
-        }
+            }
+        
+            result.setDiagnostics (DiagnosticsProvider.findDiagnostics (task, file));
+            result.setSemanticHighlights (SemanticHighlightProvider.highlight (task, file));
+            return result;
+        });
     }
     
     private static boolean isTaskValid (CompileTask task) {

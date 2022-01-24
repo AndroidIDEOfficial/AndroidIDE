@@ -62,53 +62,52 @@ public class CreateMissingMethod implements Rewrite {
     
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
-        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                final Trees trees = Trees.instance(task.task);
-                final FindMethodCallAt methodFinder = new FindMethodCallAt (task.task);
-                final MethodInvocationTree call = methodFinder.scan(task.root(), position);
-                if (call == null) {
-                    return CANCELLED;
-                }
-    
-                final TreePath path = trees.getPath(task.root(), call);
-                final String returnType = methodFinder.getReturnType();
-                Path sourceFile = file;
-                MethodTree currentMethod = surroundingMethod(path);
-                String insertText = "\n";
-    
-                insertText += printMethodHeader(task, call, returnType, methodFinder.isMemberSelect(), (currentMethod.getModifiers().getFlags().contains(Modifier.STATIC) || methodFinder.isStaticAccess()))  + " {\n" +
-                        "    // TODO: Implement this method\n"     +
-                        "    " + createReturnStatement(returnType) + "\n" +
-                        "}";
-    
-                TextEdit[] edits;
-                if(methodFinder.isMemberSelect()) {
-                    // Accessing method from another class
-                    final CompilationUnitTree compilationUnit = methodFinder.getEnclosingTreePath().getCompilationUnit();
-                    final ClassTree enclosingClass = methodFinder.getEnclosingClass();
-                    final int indent = EditHelper.indent(task.task, compilationUnit, enclosingClass) + 4;
-                    insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
-                    insertText = insertText + "\n";
-                    final Position insertPoint = EditHelper.insertAtEndOfClass(task.task, compilationUnit, enclosingClass);
-                    edits = new TextEdit[]{new TextEdit(new Range (insertPoint, insertPoint), insertText)};
-                    sourceFile = Paths.get (compilationUnit.getSourceFile ().toUri ());
-                } else {
-                    ClassTree surroundingClass = surroundingClass(path);
-                    int indent = EditHelper.indent(task.task, task.root(), surroundingClass) + 4;
-                    insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
-                    insertText = insertText + "\n";
-                    Position insertPoint = EditHelper.insertAfter(task.task, task.root(), surroundingMethod(path));
-                    edits = new TextEdit[]{new TextEdit(new Range(insertPoint, insertPoint), insertText)};
-                }
-    
-                if(file != null) {
-                    return Collections.singletonMap (sourceFile, edits);
-                } else {
-                    return null;
-                }
-            });
-        }
+        SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask (task -> {
+            final Trees trees = Trees.instance(task.task);
+            final FindMethodCallAt methodFinder = new FindMethodCallAt (task.task);
+            final MethodInvocationTree call = methodFinder.scan(task.root(), position);
+            if (call == null) {
+                return CANCELLED;
+            }
+        
+            final TreePath path = trees.getPath(task.root(), call);
+            final String returnType = methodFinder.getReturnType();
+            Path sourceFile = file;
+            MethodTree currentMethod = surroundingMethod(path);
+            String insertText = "\n";
+        
+            insertText += printMethodHeader(task, call, returnType, methodFinder.isMemberSelect(), (currentMethod.getModifiers().getFlags().contains(Modifier.STATIC) || methodFinder.isStaticAccess()))  + " {\n" +
+                    "    // TODO: Implement this method\n"     +
+                    "    " + createReturnStatement(returnType) + "\n" +
+                    "}";
+        
+            TextEdit[] edits;
+            if(methodFinder.isMemberSelect()) {
+                // Accessing method from another class
+                final CompilationUnitTree compilationUnit = methodFinder.getEnclosingTreePath().getCompilationUnit();
+                final ClassTree enclosingClass = methodFinder.getEnclosingClass();
+                final int indent = EditHelper.indent(task.task, compilationUnit, enclosingClass) + 4;
+                insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
+                insertText = insertText + "\n";
+                final Position insertPoint = EditHelper.insertAtEndOfClass(task.task, compilationUnit, enclosingClass);
+                edits = new TextEdit[]{new TextEdit(new Range (insertPoint, insertPoint), insertText)};
+                sourceFile = Paths.get (compilationUnit.getSourceFile ().toUri ());
+            } else {
+                ClassTree surroundingClass = surroundingClass(path);
+                int indent = EditHelper.indent(task.task, task.root(), surroundingClass) + 4;
+                insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
+                insertText = insertText + "\n";
+                Position insertPoint = EditHelper.insertAfter(task.task, task.root(), surroundingMethod(path));
+                edits = new TextEdit[]{new TextEdit(new Range(insertPoint, insertPoint), insertText)};
+            }
+        
+            if(file != null) {
+                return Collections.singletonMap (sourceFile, edits);
+            } else {
+                return null;
+            }
+        });
     }
     
     private String createReturnStatement(String returnType) {

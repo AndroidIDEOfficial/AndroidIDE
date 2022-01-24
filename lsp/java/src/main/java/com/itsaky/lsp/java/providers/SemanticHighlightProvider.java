@@ -61,8 +61,6 @@ public class SemanticHighlightProvider {
         highlighter.scan (root, result);
         result.sort (SORT_BY_START);
         
-        LOG.debug ("Java semantic highlights:", result);
-        
         return result;
     }
     
