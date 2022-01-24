@@ -2,27 +2,27 @@
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE utilise une version modifiée du  JDK d\'ont la licence est sous GNU General Public License v2.0. Le code source et la license du JDK sont disponibles ici : </string>
+    <string name="licence_jdk">AndroidIDE utilise une version modifiée du JDK d\'ont la licence est sous GNU General Public licence v2.0. Le code source et la licence du JDK sont disponibles ici : </string>
     <string name="title_developers">Développeurs</string>
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
-    <string name="title_open_source_licenses">License Open Source</string>
-    <string name="msg_open_source_licenses">AndroidIDE utilise des librairies open sources. Vous pouvez trouvez la source et les licences des librairies utilisés en cliquant sur les liens suivant en dessous.</string>
-    <string name="msg_about_licensed_under">License sous: </string>
+    <string name="title_open_source_licences">licence Open Source</string>
+    <string name="msg_open_source_licences">AndroidIDE utilise des librairies open sources. vous pouvez trouver la source et les licences des librairies utilisées en cliquant sur les liens suivant ci-dessous.</string>
+    <string name="msg_about_licenced_under">licence sous:&#x20;</string>
     <string name="about_option_email">Émail</string>
     <string name="about_option_website">Site Web</string>
     <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
     <string name="about_footer">AndroidIDE %1$s for %2$s</string>
     <string name="about_subtitle">Simplement, un IDE pour android.</string>
     <string name="msg_get_package_failed">Impossible d\'extraire le nom du package !</string>
-    <string name="msg_share_app">AndroidIDE est un Environnement de développement integré (IDE) pour la construction d\'application Android sur votre appareil android. Il support :\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Complétion Java automatique \n4. Complétion XML Auto \n5. Support Kotlin et bien plus.\n\nTélecharger AndroidIDE sur https://androidide.com</string>
+    <string name="msg_share_app">AndroidIDE est un Environnement de développement integré (IDE) pour la création d\'application Android sur votre appareil android. Il support :\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Complétation Java automatique \n4. Complétation XML Auto \n5. Support Kotlin et bien plus.\n\nTélecharger AndroidIDE sur https://androidide.com</string>
     <string name="msg_need_help">Si vous rencontrez des problémes lorsque vous utilisez AndroidIDE (ex: pendant la compilation d\'une application), vous pouvez demandez de l\'aide sur le groupe Telegram (Anglais).\n\nVous pouvez également demander de l\'aide sur notre émail.</string>
-    <string name="discuss_amp_help">Discussion &amp; aide</string>
+    <string name="discuss_amp_help">Discussions &amp; Aides</string>
     <string name="title_github">GitHub</string>
     <string name="need_help">Besoin d\'aide ?</string>
     <string name="other">Autre</string>
-    <string name="share_with_friends">Partagez avec des amis</string>
+    <string name="share_with_friends">Partager avec des amis</string>
     <string name="ide_preferences">Préférences de l\'IDE</string>
-    <string name="discussions_on_telegram">Discussions sur Telegram</string>
+    <string name="discussions_on_telegram">Discuter sur Telegram</string>
     <string name="msg_empty_view">je n\'ai rien à vous montrez &#8230;</string>
     <string name="btn_terminal">Terminal</string>
     <string name="reset">Réinitialiser</string>
@@ -30,7 +30,7 @@
     <string name="ide_logs">IDE Logs</string>
     <string name="label_splash_image">Splash image</string>
     <string name="cancel">Annuler</string>
-    <string name="get_started">Commençer</string>
+    <string name="get_started">Commencer</string>
     <string name="nothing_here">Rien ici &#8230;</string>
 
     <!-- LSP, Diagnostics & Completions -->
@@ -38,7 +38,7 @@
     <string name="msg_fix_diagnostic">[QuickFix]</string>
     <string name="msg_no_code_actions">Pas de QuickFix trouvé</string>
     <string name="msg_cannot_perform_fix">Impossible de lancer QuickFix</string>
-    <string name="msg_performing_fixes">Lancements corrigés&#8230;</string>
+    <string name="msg_performing_fixes">Réglage de quelques bugs&#8230;</string>
     <string name="msg_code_actions">Quickfixes</string>
     <string name="msg_api_info_since">Depuis l\'API %d</string>
     <string name="msg_api_info_removed">Supprimé dans l\'API %d</string>
@@ -48,7 +48,7 @@
     <string name="msg_no_definition">Définition introuvable</string>
     <string name="msg_no_references">Pas de références trouvés</string>
     <string name="menu_navigate_definition">Aller à la définition</string>
-    <string name="menu_navigate_references">Trouver tous les références</string>
+    <string name="menu_navigate_references">Trouver toutes les références</string>
     <string name="menu_navigate">Code</string>
     <string name="menu_comment_line">Commenter la ligne</string>
     <string name="menu_uncomment_line">Décommenter la ligne</string>
@@ -79,7 +79,7 @@
     <string name="lint">Lint</string>
     <string name="lint_debug">lintDebug</string>
     <string name="lint_release">lintRelease</string>
-    <string name="build">Build</string>
+    <string name="build">Compiler</string>
     <string name="build_debug">assembleDebug</string>
     <string name="build_output">Build output</string>
     <string name="build_release">assembleRelease</string>
@@ -89,12 +89,12 @@
     <string name="create_aab">Créer un AAB</string>
     <string name="build_tasks">Tâches de la compilation</string>
     <string name="stop_gradle_daemons">Arrêter les Deamons Gradle </string>
-    <string name="quick_run_debug">Lancement rapide</string>
+    <string name="quick_run_debug">Compilation rapide</string>
     <string name="msg_sync_needed">Le fichier Gradle a été modifié. Veuillez recompiler le projet pour synchroniser les dépendances et les configurations.</string>
     <string name="msg_task_begin">========== [%s] TASK_BEGIN: %s ==========</string>
     <string name="preparing">Préparation</string>
     <string name="preparing_first">Préparation en cours, la première compilation peut prendre de 10&#8211;15 minutes !</string>
-    <string name="msg_gradle_terminated">Résultat (Code) du processus Gradle : %1$d</string>
+    <string name="msg_gradle_terminated">Résultat de la compilation de Gradle : %1$d</string>
     <string name="msg_gradlew_installation_failed">Impossible d\'installer Gradle Wrapper: %s</string>
     <string name="msg_installing_gradlew">Gradle Wrapper n\'est pas disponible !\nInstallation de celui par défaut. Gradle v7.3 sera téléchargé si nécessaire.</string>
     <string name="msg_getting_daemom_status">Récupération du status du Daemon, veuillez patienter&#8230;</string>
@@ -107,7 +107,7 @@
     <string name="title_install_apks">Installer l\'APK</string>
     <string name="title_clear_output">Nettoyer l\'output</string>
     <string name="install">Installer</string>
-    <string name="run">Lancé</string>
+    <string name="run">Compiler</string>
     <string name="gradle">Gradle</string>
     <string name="title_first_build">Première compilation</string>
     <string name="msg_first_build">C\'est la première compilation que vous effectuez après l\'installation de AndroidIDE. La première compilation prends le temps qu\'il faut pour télécharger les dépendances et les plugins. Ce processus peut prendre 10&#8211;15 minutes. Mais cela dépends totalement de votre connexion internet.\n\Soyez patient &#8230;</string>
@@ -121,8 +121,8 @@
     <string name="package_name">nom du package</string>
     <string name="project_app_name">Nom de l\'application</string>
     <string name="invalid_values">Champs Invalides</string>
-    <string name="msg_no_projects">Mmmmm...Il semblerait que vous n\'ayez créez aucun projet.</string>
-    <string name="msg_create_new_project_greeting">Commencer votre superbe projet !</string>
+    <string name="msg_no_projects">Mmmmm...Il semblerait que vous n\'ayez créé aucun projet.</string>
+    <string name="msg_create_new_project_greeting">Libérez vos talents de développeur\nCréer un projet et commencer à créer votre propre application</string>
     <string name="title_confirm_open_project">Ouvrir le dernier projet ouvert ?</string>
     <string name="msg_confirm_open_project">Voulez-vous ouvrir le dernier projet ouvert ? Dérnier projet ouvert :\n%s</string>
     <string name="msg_init_project_failed">Impossible d\'initialiser le projet !</string>
@@ -209,7 +209,7 @@
     <string name="action_closeAll">Tout fermer</string>
     <string name="action_closeOthers">Fermez les autres</string>
     <string name="action_closeThis">Fermer celui actuel</string>
-    <string name="all_saved">Tous les fichiers ont été sauvegardés !</string>
+    <string name="all_saved">Fichiers ouverts sauvegardés</string>
     <string name="msg_newfile_dest">Destination: %s/</string>
     <string name="restype_drawable">Drawable</string>
     <string name="restype_layout">Layout</string>
@@ -256,9 +256,9 @@
     <string name="idepref_editor_drawhexcolors_title">Afficher les couleurs hex</string>
     <string name="idepref_editor_drawhexcolors_summary">L\'éditeur doit-il afficher les couleurs hex ?</string>
     <string name="idepref_editor_title">Éditeur</string>
-    <string name="idepref_build_title">Compiler et lancer</string>
+    <string name="idepref_build_title">Compileur et lancement</string>
     <string name="title_open_projects">Ouvrir le dernier projet</string>
-    <string name="msg_open_projects">Si cela est activer, l\'IDE se rappelera du dernier projet ouvert et l\'ouvrira au prochain démarrage de l\'application</string>
+    <string name="msg_open_projects">Si il est activé, l\'IDE se rappelera du dernier projet ouvert et l\'ouvrira au prochain démarrage de l\'application</string>
     <string name="title_confirm_project_open">Confirmer l\'ouverture du projet</string>
     <string name="msg_confirm_project_open">Demander avant d\'ouvrir le dernier projet ouvert</string>
     <string name="title_default_shell">Utiliser le système Shell dans le terminal</string>
