@@ -35,7 +35,7 @@ initscript {
     }
 }
 
-// Source code for the plugin is available in the GitHub repo
+// Source code for the plugin is available in :gradle-plugin module
 gradle.projectsLoaded {
     rootProject.subprojects.forEach { sub ->
         sub.afterEvaluate {
