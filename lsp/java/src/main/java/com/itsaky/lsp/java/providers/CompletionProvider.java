@@ -73,6 +73,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -363,6 +364,24 @@ public class CompletionProvider implements ICompletionProvider {
             list.getItems ().add(classItem(imports, file, className));
             uniques.add(className);
         }
+    
+        for (Tree t: root.getTypeDecls ()) {
+            if (!(t instanceof ClassTree)) {
+                continue;
+            }
+            
+            final ClassTree c = (ClassTree) t;
+            if (c.getModifiers ().getFlags ().isEmpty ()) {
+                // This is a package private class defined in the same file
+                final String name = packageName + "." + c.getSimpleName ();
+                list.getItems ().add (classItem (name));
+                if (list.getItems ().size () > MAX_COMPLETION_ITEMS) {
+                    list.setIncomplete (true);
+                    break;
+                }
+            }
+        }
+        
         LOG.info("...found " + (list.getItems ().size() - previousSize) + " class names");
     }
 
