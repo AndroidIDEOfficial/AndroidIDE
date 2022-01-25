@@ -253,6 +253,7 @@ public abstract class BaseView implements IView {
             if (hasChildren) {
                 sb.append(">");
                 newLine(sb, indentCount + 1);
+                
                 for (var child : group.getChildren()) {
                     newLine(sb, indentCount + 1);
                     sb.append(child.generateCode(indentCount + 1));
