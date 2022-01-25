@@ -56,7 +56,7 @@
 
     <!-- Build Tools Installation -->
     <string name="title_installation_failed">Installation failed</string>
-    <string name="msg_installation_failed">Installation process terminated with exit code %1$d. Make sure you downloaded the build tools from original sources.\n\nYou could try to clear data of AndroidIDE and install again.</string>
+    <string name="msg_installation_failed">Installation process terminated with exit code %1$d. Make sure you downloaded the build tools from original sources.\n\nYou could try to clear data of AndroidIDE and install again. \n\n%2$s</string>
     <string name="choose">Choose</string>
     <string name="get_ready_for_something_awesome">Get ready for something awesome !</string>
     <string name="androidide_build_tools">AndroidIDE Build Tools</string>

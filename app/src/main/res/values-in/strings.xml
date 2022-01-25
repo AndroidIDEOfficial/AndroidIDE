@@ -56,7 +56,7 @@
 
     <!-- Build Tools Installation -->
     <string name="title_installation_failed">Instalasi gagal</string>
-    <string name="msg_installation_failed">Proses instalasi dihentikan dengan kode exit %1$d. Pastikan anda mengunduh alat build dari sumber aslinya.\n\nAnda dapat mencoba untuk menghapus data aplikasi AndroidIDE dan lakukan instalasi kembali.</string>
+    <string name="msg_installation_failed">Proses instalasi dihentikan dengan kode exit %1$d. Pastikan anda mengunduh alat build dari sumber aslinya.\n\nAnda dapat mencoba untuk menghapus data aplikasi AndroidIDE dan lakukan instalasi kembali.\n\n%2$s</string>
     <string name="choose">Pilih</string>
     <string name="get_ready_for_something_awesome">Bersiap untuk sesuatu yang menakjubkan !</string>
     <string name="androidide_build_tools">Alat Build AndroidIDE</string>

@@ -58,7 +58,7 @@
     <!-- Build Tools Installation -->
     <string name="title_installation_failed">安装失败</string>
     <string name="msg_installation_failed">安装进程以代码%1$d退出。请确保您从原始来源下载了构建工具(build tools) 
-    \n\n您可以尝试清楚AndroidIDE的数据，然后重试。</string>
+    \n\n您可以尝试清楚AndroidIDE的数据，然后重试。\n\n%2$s</string>
     <string name="choose">选择</string>
     <string name="get_ready_for_something_awesome">让我们准备迎接很棒的东西!</string>
     <string name="androidide_build_tools">AndroidIDE Build Tools</string>
