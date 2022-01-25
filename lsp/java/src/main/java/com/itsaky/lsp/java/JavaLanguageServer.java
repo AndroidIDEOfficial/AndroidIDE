@@ -141,6 +141,12 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         this.client = client;
     }
     
+    @Nullable
+    @Override
+    public ILanguageClient getClient () {
+        return this.client;
+    }
+    
     @Override
     public void applySettings (@Nullable IServerSettings settings) {
         this.settings = settings;

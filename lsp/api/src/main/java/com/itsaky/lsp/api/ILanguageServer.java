@@ -75,6 +75,13 @@ public interface ILanguageServer {
     void connectClient (@Nullable ILanguageClient client);
     
     /**
+     * Get the instance of the language client connected to this server.
+     * @return The language client.
+     */
+    @Nullable
+    ILanguageClient getClient ();
+    
+    /**
      * Apply settings to the language server. Its up to the language server how it
      * applies these settings to the language service providers.
      *

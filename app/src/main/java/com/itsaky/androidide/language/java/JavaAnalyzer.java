@@ -27,6 +27,7 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.AnalyzeParams;
 import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 
@@ -79,6 +80,10 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
                 
                 JavaAnalyzer.this.diagnostics = result.getDiagnostics ();
                 JavaAnalyzer.this.helper = new HighlightRangeHelper (result.getSemanticHighlights ());
+                
+                if (languageServer.getClient () != null) {
+                    languageServer.getClient ().publishDiagnostics (new DiagnosticResult (file.toPath (), JavaAnalyzer.this.diagnostics));
+                }
             });
         }
         
