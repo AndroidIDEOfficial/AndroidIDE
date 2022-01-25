@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.inflater.impl;
 
 import android.view.View;
@@ -266,7 +266,7 @@ public abstract class BaseView implements IView {
             // Closing '>' is already printed, no need to print it here.
             // Leave one line and append the closing tag.
             newLine(sb, indentCount);
-            newLine(sb, indentCount - 1);
+            newLine(sb, indentCount);
             sb.append("</");
             sb.append(getXmlTag());
             sb.append(">");
