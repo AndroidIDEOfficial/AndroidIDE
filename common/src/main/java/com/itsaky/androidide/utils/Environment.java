@@ -120,20 +120,6 @@ public final class Environment {
         
         System.setProperty("user.home", HOME.getAbsolutePath());
         System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
-        
-        CompletableFuture.runAsync (() -> {
-            try {
-                final var tClass = Objects.requireNonNull (Environment.class.getClassLoader ())
-                        .loadClass ("com.itsaky.javac11.LocationsProvider");
-                final var method = tClass.getDeclaredMethod ("init");
-                if (!method.isAccessible ()) {
-                    method.setAccessible (true);
-                }
-                method.invoke (null);
-            } catch (Throwable th) {
-                LOG.error ("Error notifying LocationsProvider about Environment init", th);
-            }
-        });
     }
 	
 	public static void setExecutable (@NonNull final File file) {
