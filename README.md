@@ -2,11 +2,13 @@
   <img src="./images/icon.png" width="150"/>
   <h1 align="center"><b>AndroidIDE</b></h1>
 </p>
-<br><br>
-<p>
+<p align="center">
   <img src="https://img.shields.io/badge/Minimum%20SDK-26-%23ff5252" alt="Minimum SDK"/>
   <img src="https://github.com/itsaky/AndroidIDE/actions/workflows/android_workflow.yml/badge.svg" alt="CI Build Status"/>
-</p>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="GPL v3 License"/></a>
+  <br>
+  <a href="https://t.me/androidide_discussions"><img src="https://img.shields.io/badge/Telegram-90CAF9?style=flag&logo=telegram&logoColor=white" alt="Join us on Telegram"/></a>
+</p><br>
 
 ## Main Features
 - Supports Gradle
