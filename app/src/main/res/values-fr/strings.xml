@@ -118,7 +118,7 @@
     <string name="minimum_sdk">SDK minimum</string>
     <string name="target_sdk">SDK actuel</string>
     <string name="new_project">Nouveau project</string>
-    <string name="package_name">nom du package</string>
+    <string name="package_name">om du package</string>
     <string name="project_app_name">Nom de l\'application</string>
     <string name="invalid_values">Champs Invalides</string>
     <string name="msg_no_projects">Mmmmm...Il semblerait que vous n\'ayez créé aucun projet.</string>
