@@ -132,6 +132,14 @@ public interface ILanguageServer {
     IDefinitionProvider getDefinitionProvider();
     
     /**
+     * Get the selection provider associated with this language server.
+     *
+     * @return The selection provider instance.
+     */
+    @NonNull
+    ISelectionProvider getSelectionProvider ();
+    
+    /**
      * Get the signature help provider associated with this language server.
      * @return The signature help provider.
      */

@@ -17,19 +17,13 @@
 
 package com.itsaky.lsp.util
 
-import com.itsaky.lsp.api.IServerSettings
+import com.itsaky.lsp.api.ISelectionProvider
+import com.itsaky.lsp.models.ExpandSelectionParams
+import com.itsaky.lsp.models.Range
 
 /**
- * Default settings for a language server.
- *
  * @author Akash Yadav
  */
-class DefaultServerSettings : IServerSettings {
-    override fun completionsEnabled(): Boolean = true
-    override fun codeActionsEnabled(): Boolean = true
-    override fun smartSelectionsEnabled(): Boolean = true
-    override fun signatureHelpEnabled(): Boolean = true
-    override fun referencesEnabled(): Boolean = true
-    override fun definitionsEnabled(): Boolean = true
-    override fun codeAnalysisEnabled(): Boolean = true
+class NoSelectionProvider : ISelectionProvider {
+    override fun expandSelection(params: ExpandSelectionParams): Range = params.selection;
 }

@@ -29,6 +29,7 @@ import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.api.IReferenceProvider;
+import com.itsaky.lsp.api.ISelectionProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
@@ -37,6 +38,7 @@ import com.itsaky.lsp.java.providers.CodeActionProvider;
 import com.itsaky.lsp.java.providers.CompletionProvider;
 import com.itsaky.lsp.java.providers.DefinitionProvider;
 import com.itsaky.lsp.java.providers.JavaCodeAnalyzer;
+import com.itsaky.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.lsp.java.providers.ReferenceProvider;
 import com.itsaky.lsp.java.providers.SignatureProvider;
 import com.itsaky.lsp.models.DocumentChangeEvent;
@@ -51,6 +53,7 @@ import com.itsaky.lsp.util.NoCodeAnalyzer;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 import com.itsaky.lsp.util.NoDefinitionProvider;
 import com.itsaky.lsp.util.NoReferenceProvider;
+import com.itsaky.lsp.util.NoSelectionProvider;
 import com.itsaky.lsp.util.NoSignatureHelpProvider;
 
 import java.util.Collections;
@@ -206,6 +209,16 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         }
         
         return new DefinitionProvider (getCompiler ());
+    }
+    
+    @NonNull
+    @Override
+    public ISelectionProvider getSelectionProvider () {
+        if (!settings.smartSelectionsEnabled ()) {
+            return new NoSelectionProvider ();
+        }
+        
+        return new JavaSelectionProvider (getCompiler ());
     }
     
     @NonNull

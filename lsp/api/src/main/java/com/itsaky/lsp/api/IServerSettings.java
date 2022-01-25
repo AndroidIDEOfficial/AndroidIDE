@@ -42,6 +42,14 @@ public interface IServerSettings {
     boolean codeActionsEnabled ();
     
     /**
+     * Called by language server to check if
+     * smart selections are enabled or not.
+     *
+     * @return {@code true} if enabled, {@code false} otherwise.
+     */
+    boolean smartSelectionsEnabled ();
+    
+    /**
      * Called by the language server to check if the signature
      * help is enabled.
      * @return {@code true} if enabled, {@code false} otherwise.
