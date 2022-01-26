@@ -29,11 +29,7 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
 
   -->
-
 <resources>
-
     <string name="msg_not_thrown">\'%s\' is not thrown in the body of the method</string>
-
     <string name="msg_not_used">\'%s\' n'est pas utilisé</string>
-
 </resources>
