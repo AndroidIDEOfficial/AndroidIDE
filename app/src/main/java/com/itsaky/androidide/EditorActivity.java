@@ -20,6 +20,7 @@
 package com.itsaky.androidide;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Rect;
@@ -51,10 +52,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
 
+import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
+import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ThrowableUtils;
+import com.blankj.utilcode.util.ZipUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
@@ -80,8 +85,10 @@ import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
+import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.models.PrefBasedJavaServerSettings;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
@@ -93,6 +100,7 @@ import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
+import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
@@ -114,6 +122,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,6 +132,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -330,6 +340,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         super.onResume ();
         
         try {
+            checkForCompilerModule();
             dispatchOnResumeToEditors ();
             mFileTreeFragment.listProjectFiles ();
         } catch (Throwable th) {
@@ -1036,6 +1047,70 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     ////////////// PRIVATE APIS /////////////////////
     /////////////////////////////////////////////////
     
+    @SuppressWarnings ("deprecation")
+    private void checkForCompilerModule () {
+        if (!Environment.isCompilerModuleInstalled ()) {
+            final var pd = ProgressDialog.show (this,
+                    getString(R.string.title_compiler_module_install),
+                    getString(R.string.msg_compiler_module_install),
+                    true,
+                    false);
+            
+            final CompletableFuture<Boolean> future = CompletableFuture.supplyAsync (() -> {
+                
+                final var tmpModule = new File (Environment.TMP_DIR, "compiler-module.zip");
+                if (!ResourceUtils.copyFileFromAssets (
+                        ToolsManager.getCommonAsset ("compiler-module.zip"),
+                        tmpModule.getAbsolutePath ())) {
+                    throw new CompletionException (new RuntimeException ("Unable to copy compiler-module.zip"));
+                }
+    
+                try {
+                    ZipUtils.unzipFile (tmpModule, Environment.COMPILER_MODULE);
+                } catch (Throwable e) {
+                    throw new CompletionException (e);
+                }
+                
+                if (!Environment.isCompilerModuleInstalled ()) {
+                    throw new CompletionException (new RuntimeException ("Unknown error"));
+                }
+    
+                try {
+                    FileUtils.delete (tmpModule);
+                } catch (Exception e) {
+                    // ignored
+                }
+                
+                return true;
+            });
+            
+            future.whenComplete ((result, error) -> {
+                pd.dismiss ();
+                
+                if (error != null) {
+                    showCompilerModuleInstallError (error);
+                    return;
+                }
+                
+                getApp ().toast (getString(R.string.msg_compiler_module_installed), Toaster.Type.SUCCESS);
+            });
+        }
+    }
+    
+    private void showCompilerModuleInstallError (Throwable error) {
+        final var stacktrace = ThrowableUtils.getFullStackTrace (error);
+        final var builder = DialogUtils.newMaterialDialogBuilder (this);
+        builder.setTitle (R.string.title_installation_failed);
+        builder.setMessage (getString(R.string.msg_compiler_module_install_failed, stacktrace));
+        builder.setCancelable (false);
+        builder.setPositiveButton (android.R.string.ok, (dialog, which) -> dialog.dismiss ());
+        builder.setNegativeButton (R.string.copy, (dialog, which) -> {
+            ClipboardUtils.copyText (stacktrace);
+            dialog.dismiss ();
+        });
+        builder.show ();
+    }
+    
     private void dispatchOnPauseToEditors () {
         CompletableFuture.runAsync (() -> {
             for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
@@ -1219,9 +1294,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                                 .getProjectPath ()
                 ).toPath ()
         );
+        
         final var params = new InitializeParams (workspaceRoots);
         
         javaLanguageServer.connectClient (client);
+        javaLanguageServer.applySettings (PrefBasedJavaServerSettings.getInstance ());
         javaLanguageServer.initialize (params);
     }
     

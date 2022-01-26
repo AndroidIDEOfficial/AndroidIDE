@@ -46,13 +46,11 @@ public class RemoveMethod implements Rewrite {
         if (file == CompilerProvider.NOT_FOUND) {
             return CANCELLED;
         }
-        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-                MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
-                TextEdit[] edits = {EditHelper.removeTree(task.task, task.root(), methodTree)};
-                return Collections.singletonMap (file, edits);
-            });
-        }
+        return compiler.compile (file).getWithTask (task -> {
+            ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
+            MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
+            TextEdit[] edits = {EditHelper.removeTree(task.task, task.root(), methodTree)};
+            return Collections.singletonMap (file, edits);
+        });
     }
 }

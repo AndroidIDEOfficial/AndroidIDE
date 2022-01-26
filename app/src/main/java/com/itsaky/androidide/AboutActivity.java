@@ -109,6 +109,7 @@ public class AboutActivity extends StudioActivity {
         
         list.add (Pair.create ("Bahasa Indonesia", "Fitrah Nuno Syahbani"));
         list.add (Pair.create ("Chinese", "Rosemoe"));
+        list.add (Pair.create ("German", "Marvin Stelter"));
         
         return list;
     }

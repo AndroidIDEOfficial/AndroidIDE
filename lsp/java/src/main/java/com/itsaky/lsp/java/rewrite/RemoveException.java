@@ -58,23 +58,22 @@ public class RemoveException implements Rewrite {
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         Path file = compiler.findTypeDeclaration(className);
-        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-                MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
-                if (methodTree.getThrows().size() == 1) {
-                    TextEdit delete = removeEntireThrows(task.task, task.root(), methodTree);
-                    if (delete == TextEdit.NONE) {
-                        return CANCELLED;
-                    }
-        
-                    TextEdit[] edits = {delete};
-                    return Collections.singletonMap (file, edits);
+        SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask (task -> {
+            ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
+            MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
+            if (methodTree.getThrows().size() == 1) {
+                TextEdit delete = removeEntireThrows(task.task, task.root(), methodTree);
+                if (delete == TextEdit.NONE) {
+                    return CANCELLED;
                 }
-                TextEdit[] edits = {removeSingleException(task.task, task.root(), methodTree)};
+            
+                TextEdit[] edits = {delete};
                 return Collections.singletonMap (file, edits);
-            });
-        }
+            }
+            TextEdit[] edits = {removeSingleException(task.task, task.root(), methodTree)};
+            return Collections.singletonMap (file, edits);
+        });
     }
     
     private static final Pattern THROWS = Pattern.compile("\\s*\\bthrows\\b");

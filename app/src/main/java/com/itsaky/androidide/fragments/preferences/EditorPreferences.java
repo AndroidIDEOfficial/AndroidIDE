@@ -20,15 +20,18 @@ package com.itsaky.androidide.fragments.preferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceScreen;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
 import com.itsaky.androidide.models.ConstantsBridge;
+import com.itsaky.androidide.models.PrefBasedJavaServerSettings;
 import com.itsaky.androidide.utils.DialogUtils;
 
 import static com.itsaky.androidide.managers.PreferenceManager.*;
+import static com.itsaky.androidide.models.PrefBasedJavaServerSettings.*;
 
 public class EditorPreferences extends BasePreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     
@@ -37,11 +40,19 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		super.onCreatePreferences(p1, p2);
 		if(getContext() == null) return;
 		
-		final PreferenceScreen screen = getPreferenceScreen();
-		final Preference fontSize = new Preference(getContext());
-		final Preference nonPrintable = new Preference(getContext());
-        final Preference tabSize = new Preference(getContext());
-		final SwitchPreference drawHex = new SwitchPreference(getContext());
+		final var screen = getPreferenceScreen();
+		final var commonCategory = new PreferenceCategory (getContext ());
+		final var javaCategory = new PreferenceCategory (getContext ());
+		
+		final var fontSize = new Preference(getContext());
+		final var nonPrintable = new Preference(getContext());
+        final var tabSize = new Preference(getContext());
+		final var drawHex = new SwitchPreference(getContext());
+		
+		final var javaMatchLower = new SwitchPreference (getContext ());
+		
+		screen.addPreference (commonCategory);
+		screen.addPreference (javaCategory);
         
 		fontSize.setIcon(R.drawable.ic_text_size);
 		fontSize.setKey(KEY_EDITOR_FONT_SIZE);
@@ -62,34 +73,50 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		drawHex.setKey(KEY_EDITOR_DRAW_HEX);
 		drawHex.setTitle(R.string.idepref_editor_drawhexcolors_title);
 		drawHex.setSummary(R.string.idepref_editor_drawhexcolors_summary);
-
-		screen.addPreference(fontSize);
-		screen.addPreference(nonPrintable);
-        screen.addPreference(tabSize);
-		screen.addPreference(drawHex);
+		
+		javaMatchLower.setKey (KEY_JAVA_PREF_MATCH_LOWER);
+		javaMatchLower.setIcon (R.drawable.ic_text_lower);
+		javaMatchLower.setTitle (getString(R.string.idepref_java_matchLower_title));
+		javaMatchLower.setSummary (getString(R.string.idepref_java_matchLower_summary));
+		
+		commonCategory.setTitle (getString(R.string.idepref_editor_category_common));
+		commonCategory.addPreference(fontSize);
+		commonCategory.addPreference(nonPrintable);
+		commonCategory.addPreference(tabSize);
+		commonCategory.addPreference(drawHex);
+		
+		javaCategory.setTitle (getString(R.string.idepref_editor_category_java));
+		javaCategory.addPreference (javaMatchLower);
+		
 		setPreferenceScreen(screen);
 		
 		fontSize.setOnPreferenceClickListener(this);
 		nonPrintable.setOnPreferenceClickListener(this);
         tabSize.setOnPreferenceClickListener(this);
 		drawHex.setOnPreferenceChangeListener(this);
+		javaMatchLower.setOnPreferenceChangeListener (this);
 		
 		drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
+		javaMatchLower.setChecked (getPrefManager ().getBoolean (KEY_JAVA_PREF_MATCH_LOWER, false));
 	}
 
 	@Override
-	public boolean onPreferenceChange(Preference p1, Object p2) {
-		if(p1.getKey().equals(KEY_EDITOR_DRAW_HEX)) {
-			boolean drawHex = (Boolean) p2;
-			getPrefManager().putBoolean(KEY_EDITOR_DRAW_HEX, drawHex);
+	public boolean onPreferenceChange(Preference preference, Object newValue) {
+    	final boolean value = (boolean) newValue;
+		if(preference.getKey().equals(KEY_EDITOR_DRAW_HEX)) {
+			getPrefManager().putBoolean(KEY_EDITOR_DRAW_HEX, value);
 			ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = true;
+		} else if (preference.getKey ().equals (KEY_JAVA_PREF_MATCH_LOWER)) {
+			getPrefManager ().putBoolean (KEY_JAVA_PREF_MATCH_LOWER, value);
+			final var javaServer = StudioApp.getInstance ().getJavaLanguageServer ();
+			javaServer.applySettings (PrefBasedJavaServerSettings.getInstance ());
 		}
 		return true;
 	}
 
 	@Override
-	public boolean onPreferenceClick(Preference p1) {
-		final String key = p1.getKey();
+	public boolean onPreferenceClick(Preference preference) {
+		final String key = preference.getKey();
 		if(key.equals(KEY_EDITOR_FONT_SIZE)) {
 			showTextSizeDialog();
 		} else if(key.equals(KEY_EDITOR_PRINTABLE_CHARS)) {
@@ -115,7 +142,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
         builder.setTitle(R.string.title_tab_size);
         builder.setSingleChoiceItems(sizes, current, (d, i) -> {
             d.dismiss();
-	
+            
 			// Reversing the logic applied above...
             int tabSize = (i + 1) * 2;
             if(tabSize < 2 || tabSize > 8) tabSize = 4;
@@ -165,26 +192,26 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 			"Line breaks"
 		};
 		final boolean[] checked = {
-			getPrefManager().getBoolean(KEY_EDITORFLAG_WS_LEADING, true),
-			getPrefManager().getBoolean(KEY_EDITORFLAG_WS_TRAILING, false),
-			getPrefManager().getBoolean(KEY_EDITORFLAG_WS_INNER, true),
-			getPrefManager().getBoolean(KEY_EDITORFLAG_WS_EMPTY_LINE, true),
-			getPrefManager().getBoolean(KEY_EDITORFLAG_LINE_BREAK, true)
+			getPrefManager().getBoolean(KEY_EDITOR_FLAG_WS_LEADING, true),
+			getPrefManager().getBoolean(KEY_EDITOR_FLAG_WS_TRAILING, false),
+			getPrefManager().getBoolean(KEY_EDITOR_FLAG_WS_INNER, true),
+			getPrefManager().getBoolean(KEY_EDITOR_FLAG_WS_EMPTY_LINE, true),
+			getPrefManager().getBoolean(KEY_EDITOR_FLAG_LINE_BREAK, true)
 		};
 		final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (getContext ());
 		builder.setTitle(R.string.idepref_editor_paintingflags_title);
 		builder.setMultiChoiceItems(labels, checked, (dialog, which, isChecked) -> {
 			
 			if(which == 0) {
-				getPrefManager().putBoolean(KEY_EDITORFLAG_WS_LEADING, isChecked);
+				getPrefManager().putBoolean(KEY_EDITOR_FLAG_WS_LEADING, isChecked);
 			} else if(which == 1) {
-				getPrefManager().putBoolean(KEY_EDITORFLAG_WS_TRAILING, isChecked);
+				getPrefManager().putBoolean(KEY_EDITOR_FLAG_WS_TRAILING, isChecked);
 			} else if(which == 2) {
-				getPrefManager().putBoolean(KEY_EDITORFLAG_WS_INNER, isChecked);
+				getPrefManager().putBoolean(KEY_EDITOR_FLAG_WS_INNER, isChecked);
 			} else if(which == 3) {
-				getPrefManager().putBoolean(KEY_EDITORFLAG_WS_EMPTY_LINE, isChecked);
+				getPrefManager().putBoolean(KEY_EDITOR_FLAG_WS_EMPTY_LINE, isChecked);
 			} else if(which == 4) {
-				getPrefManager().putBoolean(KEY_EDITORFLAG_LINE_BREAK, isChecked);
+				getPrefManager().putBoolean(KEY_EDITOR_FLAG_LINE_BREAK, isChecked);
 			}
 			
 			ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED = true;

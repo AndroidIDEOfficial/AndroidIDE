@@ -68,33 +68,32 @@ public class ImplementAbstractMethods implements Rewrite {
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         StringJoiner insertText = new StringJoiner ("\n");
-        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                Elements elements = task.task.getElements();
-                Types types = task.task.getTypes();
-                Trees trees = Trees.instance(task.task);
-                TypeElement thisClass = (TypeElement) trees.getElement(this.path);
-                DeclaredType thisType = (DeclaredType) thisClass.asType();
-                ClassTree thisTree = trees.getTree(thisClass);
-                int indent = EditHelper.indent(task.task, task.root(), thisTree) + 4;
-                for (Element member : elements.getAllMembers(thisClass)) {
-                    if (member.getKind() == ElementKind.METHOD && member.getModifiers().contains(Modifier.ABSTRACT)) {
-                        ExecutableElement method = (ExecutableElement) member;
-                        MethodTree source = findSource(compiler, task, method);
-                        if (source == null) {
-                            LOG.warn("...couldn't find source for " + method);
-                        }
-                        ExecutableType parameterizedType = (ExecutableType) types.asMemberOf(thisType, method);
-                        String text = EditHelper.printMethod(method, parameterizedType, source);
-                        text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
-                        insertText.add(text);
+        SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask (task -> {
+            Elements elements = task.task.getElements();
+            Types types = task.task.getTypes();
+            Trees trees = Trees.instance(task.task);
+            TypeElement thisClass = (TypeElement) trees.getElement(this.path);
+            DeclaredType thisType = (DeclaredType) thisClass.asType();
+            ClassTree thisTree = trees.getTree(thisClass);
+            int indent = EditHelper.indent(task.task, task.root(), thisTree) + 4;
+            for (Element member : elements.getAllMembers(thisClass)) {
+                if (member.getKind() == ElementKind.METHOD && member.getModifiers().contains(Modifier.ABSTRACT)) {
+                    ExecutableElement method = (ExecutableElement) member;
+                    MethodTree source = findSource(compiler, task, method);
+                    if (source == null) {
+                        LOG.warn("...couldn't find source for " + method);
                     }
+                    ExecutableType parameterizedType = (ExecutableType) types.asMemberOf(thisType, method);
+                    String text = EditHelper.printMethod(method, parameterizedType, source);
+                    text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
+                    insertText.add(text);
                 }
-                Position insert = EditHelper.insertAtEndOfClass(task.task, task.root(), thisTree);
-                TextEdit[] edits = {new TextEdit(new Range (insert, insert), insertText + "\n")};
-                return Collections.singletonMap (file, edits);
-            });
-        }
+            }
+            Position insert = EditHelper.insertAtEndOfClass(task.task, task.root(), thisTree);
+            TextEdit[] edits = {new TextEdit(new Range (insert, insert), insertText + "\n")};
+            return Collections.singletonMap (file, edits);
+        });
     }
     
     private MethodTree findSource(CompilerProvider compiler, CompileTask task, ExecutableElement method) {

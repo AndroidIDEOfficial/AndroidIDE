@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -444,9 +445,14 @@ public class StringSearch {
     }
     
     public static boolean matchesPartialName (CharSequence candidate, CharSequence partialName) {
+        return matchesPartialName (candidate, partialName, false);
+    }
+    
+    public static boolean matchesPartialName (CharSequence candidate, CharSequence partialName, boolean allLower) {
         if (candidate.length () < partialName.length ()) {
             return false;
         }
+        
         for (int i = 0; i < partialName.length (); i++) {
             char char1 = candidate.charAt (i);
             char char2 = partialName.charAt (i);
@@ -455,7 +461,7 @@ public class StringSearch {
             // The make all the characters lower case
             // So if the first character is upper case, we could assume that the user is expecting a class name
             // Otherwise a variable name
-            if (i != 0) {
+            if (allLower || i != 0) {
                 char1 = Character.toLowerCase (char1);
                 char2 = Character.toLowerCase (char2);
             }

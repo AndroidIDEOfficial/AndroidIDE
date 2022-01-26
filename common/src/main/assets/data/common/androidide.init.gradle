@@ -14,224 +14,32 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-import groovy.json.*
-
-
 /**
  * Init script used by AndroidIDE for gradle builds.
  *
  * DO NOT MODIFY
  * Unless you know what this does.
  */
+//noinspection GrPackage
+
+initscript {
+
+    repositories {
+        maven {
+            url file("${System.getenv("HOME")}/.androidide/repo")
+        }
+    }
+
+    dependencies {
+        classpath 'com.itsaky.androidide:gradle-plugin:1.0.0'
+    }
+}
+
+// Source code for the plugin is available in :gradle-plugin module
 gradle.projectsLoaded {
     rootProject.subprojects.forEach { sub ->
         sub.afterEvaluate {
-            sub.apply plugin: AndroidIDEPlugin
+            sub.apply plugin: com.itsaky.androidide.gradle.plugin.AndroidIDEPlugin
         }
     }
-}
-
-class AndroidIDEPlugin implements Plugin<Project> {
-
-    @Override
-    void apply(Project project) {
-
-        def isApp = project.getPluginManager().hasPlugin("com.android.application")
-        def isLibrary = project.getPluginManager().hasPlugin("com.android.library")
-
-        if(!(isApp || isLibrary)) {
-            println "Project: " + project.getName() + " doesn't apply Android's application or library plugin"
-            println "AndroidIDE's plugin will not be applied to this project!"
-            return
-        }
-
-        if(isApp) {
-            project.android {
-                sourceSets {
-                    main.java.srcDirs += "${System.getenv("HOME")}/logsender"
-                }
-            }
-        }
-
-        def variants = null
-        if(isApp) {
-            variants = project.android.applicationVariants
-        } else if (isLibrary) {
-            variants = project.android.libraryVariants
-        } else {
-            println "AndroidIDE: Cannot find applicationVariants or libraryVariants"
-            return
-        }
-
-        project.tasks.create(
-                name: "initializeIDEProject",
-                group: "AndroidIDE",
-                description: "Initializes the project in AndroidIDE. AndroidIDE manages the proper execution of this task. You're not supposed to execute this task manually!"
-        )
-                {
-                    outputs.upToDateWhen { false }
-
-                    doLast {
-                        def root = project.getRootProject()
-
-                        IDEProject ideProject = new IDEProject()
-                        ideProject.name = root.getName()
-                        ideProject.displayName = root.getDisplayName()
-                        ideProject.description = root.getDescription()
-                        ideProject.path = root.getPath()
-                        ideProject.projectDir = root.getProjectDir().getAbsolutePath()
-
-                        def tasks = root.tasks
-                        if(tasks != null && tasks.size() > 0) {
-                            addTasks(ideProject, root)
-                        }
-
-                        root.subprojects.forEach { sub ->
-                            addIDEProject(ideProject, sub);
-                        }
-
-                        File out = new File("/data/data/com.itsaky.androidide/files/sysroot/tmp/ide_project")
-                        if(out.exists()) {
-                            out.delete()
-                        }
-                        out << new JsonBuilder( ideProject ).toPrettyString()
-
-                        println ">>> PROJECT INITIALIZED <<<"
-                    }
-                }
-
-        project.afterEvaluate {
-            project.tasks.getByName('compileDebugJavaWithJavac').finalizedBy('initializeIDEProject')
-            project.tasks.getByName('compileReleaseJavaWithJavac').finalizedBy('initializeIDEProject')
-        }
-    }
-
-    def addIDEProject (IDEProject parent, Project sub) {
-        if(parent == null || sub == null) {
-            return
-        }
-
-        def isApp = sub.getPluginManager().hasPlugin("com.android.application")
-        def isLibrary = sub.getPluginManager().hasPlugin("com.android.library")
-
-        if(!(isApp || isLibrary)) {
-            return
-        }
-
-        IDEModule module = new IDEModule()
-        if(isApp) {
-            module = new IDEAppModule()
-        }
-
-        def android = sub.android
-        def config = android.defaultConfig
-
-        module.name = sub.getName()
-        module.displayName = sub.getDisplayName()
-        module.description = sub.getDescription()
-        module.path = sub.getPath()
-        module.buildToolsVersion = android.buildToolsVersion
-        module.compileSdkVersion = android.compileSdkVersion
-        module.minSdk = config.minSdkVersion
-        module.targetSdk = config.targetSdkVersion
-        module.versionCode = config.versionCode
-        module.versionName = config.versionName
-        module.projectDir = sub.getProjectDir().getAbsolutePath()
-        module.viewBindingEnabled = android.buildFeatures.viewBinding
-
-        if(isApp) {
-            module.applicationId = config.applicationId
-        }
-
-        def tasks = sub.tasks
-        if(tasks != null && tasks.size() > 0) {
-            addTasks(module, sub)
-        }
-
-        def variants = null
-        if(isApp) {
-            variants = sub.android.applicationVariants
-        } else if (isLibrary) {
-            variants = sub.android.libraryVariants
-        } else {
-            println "AndroidIDE: Cannot find build variants of project: ${module.name}(${module.path})"
-        }
-
-        if(variants != null) {
-            variants.all { variant ->
-                addDependencies(module, variant);
-            }
-        }
-
-        def subs = sub.getSubprojects()
-        if(subs != null && subs.size() > 0) {
-            subs.forEach { subOfSub ->
-                addIDEProject(module, subOfSub)
-            }
-        }
-        parent.modules.add(module)
-    }
-
-    def addDependencies(def module, def variant) {
-        variant.getCompileClasspath().each { dependency ->
-            def path = dependency.absolutePath
-            if(!module.dependencies.contains(path)) {
-                module.dependencies.add(dependency.absolutePath);
-            }
-        }
-    }
-
-    def addTasks (IDEProject project, Project gradleProject) {
-        if(project == null || gradleProject == null) {
-            return
-        }
-
-        gradleProject.tasks.forEach { gradleTask ->
-            IDETask task = new IDETask()
-            task.name = gradleTask.getName()
-            task.description = gradleTask.getDescription()
-            task.group = gradleTask.getGroup()
-            task.path = gradleTask.getPath()
-
-            project.tasks.add(task)
-        }
-    }
-}
-
-class IDEProject {
-    def name = "Not defined"
-    def displayName = "Not defined"
-    def description = "Not defined"
-    def path = "Not defined"
-    def projectDir = "Not defined"
-    List<IDEProject> modules = new ArrayList<IDEProject>()
-    List<IDETask> tasks = new ArrayList<IDETask>()
-    List<String> dependencies = new ArrayList<String>()
-}
-
-class IDEModule extends IDEProject {
-    def buildToolsVersion = 0
-    def compileSdkVersion = 0
-    def minSdk = 0
-    def targetSdk = 0
-    def versionCode = 0
-    def versionName = "Not defined"
-    def isLibrary = true
-    def viewBindingEnabled = false
-}
-
-class IDEAppModule extends IDEModule {
-    def applicationId = "Not defined"
-
-    public IDEAppModule() {
-        isLibrary = false
-    }
-}
-
-class IDETask {
-    def name = "Not defined"
-    def description = "Not defined"
-    def group = "Not defined"
-    def path = "Not defined"
 }

@@ -116,7 +116,7 @@ public abstract class BaseApplication extends MultiDexApplication {
         ShellServer shellServer = new ShellServer(callback,
                 "sh",
                 Environment.mkdirIfNotExits(getRootDir()).getAbsolutePath(),
-                Environment.getEnvironment(true),
+                Environment.getEnvironment(),
                 redirectErrors);
         shellServer.start();
         return shellServer;

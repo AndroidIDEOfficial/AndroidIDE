@@ -25,6 +25,7 @@ import com.sun.source.util.*;
 import javax.lang.model.element.Name;
 
 public class FindNameAt extends TreePathScanner<TreePath, Long> {
+    
     private final JavacTask task;
     private CompilationUnitTree root;
     private ClassTree surroundingClass;

@@ -56,34 +56,34 @@ public class GenerateRecordConstructor implements Rewrite {
         LOG.info("Generate default constructor for " + className + "...");
         // TODO this needs to fall back on looking for inner classes and package-private classes
         Path file = compiler.findTypeDeclaration(className);
-        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                TypeElement typeElement = task.task.getElements().getTypeElement(className);
-                ClassTree typeTree = Trees.instance(task.task).getTree(typeElement);
-                List<VariableTree> fields = fieldsNeedingInitialization(typeTree);
-                String parameters = generateParameters(task, fields);
-                String initializers = generateInitializers(fields);
-                StringBuilder buf = new StringBuilder ();
-                buf.append("\n");
-                if (typeTree.getModifiers().getFlags().contains(Modifier.PUBLIC)) {
-                    buf.append("public ");
-                }
+        SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask (task -> {
+            TypeElement typeElement = task.task.getElements().getTypeElement(className);
+            ClassTree typeTree = Trees.instance(task.task).getTree(typeElement);
+            List<VariableTree> fields = fieldsNeedingInitialization(typeTree);
+            String parameters = generateParameters(task, fields);
+            String initializers = generateInitializers(fields);
+            StringBuilder buf = new StringBuilder ();
+            buf.append("\n");
+            if (typeTree.getModifiers().getFlags().contains(Modifier.PUBLIC)) {
+                buf.append("public ");
+            }
+        
+            buf.append(simpleName(className))
+                    .append("(")
+                    .append(parameters)
+                    .append(") {\n    ")
+                    .append(initializers)
+                    .append("\n}");
+            String string = buf.toString();
+            int indent = EditHelper.indent(task.task, task.root(), typeTree) + 4;
+            string = string.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
+            string = string + "\n\n";
+            Position insert = insertPoint(task, typeTree);
+            TextEdit[] edits = {new TextEdit(new Range (insert, insert), string)};
+            return Collections.singletonMap (file, edits);
+        });
     
-                buf.append(simpleName(className))
-                        .append("(")
-                        .append(parameters)
-                        .append(") {\n    ")
-                        .append(initializers)
-                        .append("\n}");
-                String string = buf.toString();
-                int indent = EditHelper.indent(task.task, task.root(), typeTree) + 4;
-                string = string.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
-                string = string + "\n\n";
-                Position insert = insertPoint(task, typeTree);
-                TextEdit[] edits = {new TextEdit(new Range (insert, insert), string)};
-                return Collections.singletonMap (file, edits);
-            });
-        }
     }
     
     private List<VariableTree> fieldsNeedingInitialization(ClassTree typeTree) {

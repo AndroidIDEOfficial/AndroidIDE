@@ -1,5 +1,14 @@
-# AndroidIDE
-AndroidIDE is an IDE for Android to develop full featured Android apps on Android smartphones.
+<p align="center">
+  <img src="./images/icon.png" width="150"/>
+  <h1 align="center"><b>AndroidIDE</b></h1>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/Minimum%20SDK-26-%23ff5252" alt="Minimum SDK"/>
+  <img src="https://github.com/itsaky/AndroidIDE/actions/workflows/android_workflow.yml/badge.svg" alt="CI Build Status"/>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="GPL v3 License"/></a>
+  <br>
+  <a href="https://t.me/androidide_discussions"><img src="https://img.shields.io/badge/Telegram-90CAF9?style=flag&logo=telegram&logoColor=white" alt="Join us on Telegram"/></a>
+</p><br>
 
 ## Main Features
 - Supports Gradle
@@ -15,10 +24,12 @@ More features will be implemented as we continue to develop this app.
 - [x] SDK Manager (Available via terminal)
 - [x] Gradlew support (with some limitations)
 - [x] API information for classes and their members (since, removed, deprecated).
-- [ ] Implement language server for XML and Kotlin
+- [ ] Implement language servers
+  - [ ] XML
+  - [ ] Kotlin
 - [ ] UI Designer
   - [x] Layout inflater
-  - [ ] Resolve resource references
+  - [x] Resolve resource references
   - [ ] Auto-complete resource values when user edits attributes using the attribute editor
   - [ ] Drag & Drop (*)
   - [ ] Visual attribute editor (*)
@@ -27,11 +38,11 @@ More features will be implemented as we continue to develop this app.
 - [ ] Asset Studio (Drawable & Icon Maker)
 - [ ] Git (*)
 
-Items marked with ```(*)``` are partially implemented.
+Items marked with `(*)` are partially implemented.
 Git is currently available only in the terminal i.e. no GUI interface for `git`.
 
 ## Limitations
-- Gradle Wrapper is supported. But, it requires that the project's application module is named 'app'. 
+- Gradle Wrapper is supported. But, it requires that the project's application module is named 'app'.
 - SDK Manager is already included in Android SDK and is accessible in AndroidIDE via its Terminal. But, you cannot use it to install some tools (like NDK) because those tools are not built for Android.
 - No official NDK support because we haven't built the NDK for Android.
 - No Android Gradle Plugin versions other than v7.0.2 are supported (due to AAPT2).
@@ -67,9 +78,9 @@ If you open a build related issue, please provide these details:
 | <img src="images/gradle_buildscript.jpg" width="100" height="200" alt="AndroidIDE Gradle Support" /> | <img src="images/file_tree.jpg" width="100" height="200" alt="AndroidIDE File Tree" /> |
 
 ## Posts to help you get started
-- [Installing AndroidIDE](https://telegra.ph/How-to-install-AndroidIDE-09-11)  
+- [Installing AndroidIDE](https://telegra.ph/How-to-install-AndroidIDE-09-11)
   - Author: [Marvin Stelter](https://github.com/MarvinStelter)
-- [Create your first project](https://itsaky.github.io/create-your-first-project-in-androidIDE/)  
+- [Create your first project](https://itsaky.github.io/create-your-first-project-in-androidIDE/)
   - Author: [Akash Yadav](https://github.com/itsaky)
 
 ## Developers
@@ -90,7 +101,7 @@ If you create new source files, please make sure you include the license header 
 There are some things that you should take care of while writing related code.
 
 - Layout Inflater adapters
-  - [Read the docs](./layout-inflater/src/main/java/com/itsaky/layoutinflater/adapters/README.md) about layout inflater adapters.
+  - [Read the docs](./xml-inflater/src/main/java/com/itsaky/inflater/adapters/README.md) about layout inflater adapters.
 
 ### Any other ways to contribute?
 You can also write blog posts or create YouTube videos to help newbies get started.
@@ -108,7 +119,7 @@ And all the developers who have contributed to this project.
 - [Website](https://androidide.com)
 - [Telegram](https://t.me/androidide_discussions)
 
-## License 
+## License
 ```
 AndroidIDE is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

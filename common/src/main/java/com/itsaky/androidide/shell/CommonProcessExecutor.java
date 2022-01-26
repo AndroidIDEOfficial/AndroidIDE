@@ -17,6 +17,8 @@
 **************************************************************************************/
 package com.itsaky.androidide.shell;
 
+import com.itsaky.androidide.utils.Environment;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -78,34 +80,14 @@ public class CommonProcessExecutor implements IProcessExecutor {
     }
 
     private static File getHome() {
-        try {
-            final Class<?> env = CommonProcessExecutor.class.getClassLoader().loadClass("com.itsaky.androidide.utils.Environment");
-            final Field home = env.getDeclaredField("HOME");
-            home.setAccessible(true);
-            return (File) home.get(null);
-        } catch (Throwable th) {
-            // ignored
-        }
-
-        // Return this if we cannot get it from Environment class
-        return new File("/data/data/com.itsaky.androidide/files/framework");
+        return Environment.HOME;
     }
 
     private static Map<String, String> getEnv() {
-        try {
-            final Class<?> env = CommonProcessExecutor.class.getClassLoader().loadClass("com.itsaky.androidide.utils.Environment");
-            final Method method = env.getDeclaredMethod("getEnvironment", boolean.class);
-            method.setAccessible(true);
-            return (Map<String, String>) method.invoke(null, true);
-        } catch (Throwable th) {
-            // ignored
-        }
-
-        // Return this if we cannot get it from Environment class
-        return new HashMap<String, String>();
+        return Environment.getEnvironment ();
     }
 
-    private class ExitListenerRunnable implements Runnable {
+    private static class ExitListenerRunnable implements Runnable {
         
         private final Process proc;
         private final IProcessExitListener listener;

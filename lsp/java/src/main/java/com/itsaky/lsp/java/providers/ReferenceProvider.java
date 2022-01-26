@@ -64,48 +64,43 @@ public class ReferenceProvider implements IReferenceProvider {
     }
     
     public List<Location> find() {
-        try (final SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                Element element = NavigationHelper.findElement(task, file, line, column);
-                if (element == null) return NOT_SUPPORTED;
-                if (NavigationHelper.isLocal(element)) {
-                    return findReferences(task);
+        final SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask (task -> {
+            Element element = NavigationHelper.findElement(task, file, line, column);
+            if (element == null) return NOT_SUPPORTED;
+            if (NavigationHelper.isLocal(element)) {
+                return findReferences(task);
+            }
+            if (NavigationHelper.isType(element)) {
+                TypeElement type = (TypeElement) element;
+                String className = type.getQualifiedName().toString();
+                task.close();
+                return findTypeReferences(className);
+            }
+            if (NavigationHelper.isMember(element)) {
+                TypeElement parentClass = (TypeElement) element.getEnclosingElement();
+                String className = parentClass.getQualifiedName().toString();
+                String memberName = element.getSimpleName().toString();
+                if (memberName.equals("<init>")) {
+                    memberName = parentClass.getSimpleName().toString();
                 }
-                if (NavigationHelper.isType(element)) {
-                    TypeElement type = (TypeElement) element;
-                    String className = type.getQualifiedName().toString();
-                    task.close();
-                    return findTypeReferences(className);
-                }
-                if (NavigationHelper.isMember(element)) {
-                    TypeElement parentClass = (TypeElement) element.getEnclosingElement();
-                    String className = parentClass.getQualifiedName().toString();
-                    String memberName = element.getSimpleName().toString();
-                    if (memberName.equals("<init>")) {
-                        memberName = parentClass.getSimpleName().toString();
-                    }
-                    task.close();
-                    return findMemberReferences(className, memberName);
-                }
-                return NOT_SUPPORTED;
-            });
-        }
+                task.close();
+                return findMemberReferences(className, memberName);
+            }
+            return NOT_SUPPORTED;
+        });
     }
     
     private List<Location> findTypeReferences(String className) {
         Path[] files = compiler.findTypeReferences(className);
         if (files.length == 0) return Collections.emptyList ();
-        try (SynchronizedTask synchronizedTask = compiler.compile(files)) {
-            return synchronizedTask.getWithTask (this::findReferences);
-        }
+        return compiler.compile (files).getWithTask (this::findReferences);
     }
     
     private List<Location> findMemberReferences(String className, String memberName) {
         Path[] files = compiler.findMemberReferences(className, memberName);
         if (files.length == 0) return Collections.emptyList ();
-        try (SynchronizedTask task = compiler.compile(files)) {
-            return task.getWithTask (this::findReferences);
-        }
+        return compiler.compile (files).getWithTask (this::findReferences);
     }
     
     private List<Location> findReferences(CompileTask task) {

@@ -78,7 +78,7 @@ public class ReusableCompiler {
     private static final Logger LOG = Logger.instance ("ReusableCompiler");
     private static final JavacTool systemProvider = JavacTool.create ();
     
-    private List<String> currentOptions = new ArrayList<> ();
+    private final List<String> currentOptions = new ArrayList<> ();
     private ReusableContext currentContext;
     private boolean checkedOut;
     
@@ -113,9 +113,13 @@ public class ReusableCompiler {
         checkedOut = true;
         List<String> opts = StreamSupport.stream (options.spliterator (), false).collect (Collectors.toCollection (ArrayList::new));
         if (!opts.equals (currentOptions)) {
-            LOG.warn (String.format ("Options changed from %s to %s, creating new compiler", options, opts));
-            currentOptions = opts;
-            currentContext = new ReusableContext (opts);
+            final ArrayList<String> newOpts = new ArrayList<> (currentOptions);
+            newOpts.removeAll (opts);
+            LOG.debug ("New compiler options:", newOpts);
+            
+            currentOptions.clear ();
+            currentOptions.addAll (opts);
+            currentContext = new ReusableContext (new ArrayList<> (opts));
         }
         JavacTaskImpl task =
                 (JavacTaskImpl)

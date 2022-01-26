@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
@@ -60,8 +59,6 @@ public class SemanticHighlightProvider {
         final SemanticHighlighter highlighter = new SemanticHighlighter (task);
         highlighter.scan (root, result);
         result.sort (SORT_BY_START);
-        
-        LOG.debug ("Java semantic highlights:", result);
         
         return result;
     }

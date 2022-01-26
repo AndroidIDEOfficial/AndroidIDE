@@ -19,7 +19,6 @@ package com.itsaky.androidide.views;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -291,23 +290,23 @@ public class CodeEditorView extends FrameLayout {
         
         if (flagsChanged) {
             int flags = 0;
-            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_WS_LEADING, true)) {
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITOR_FLAG_WS_LEADING, true)) {
                 flags |= CodeEditor.FLAG_DRAW_WHITESPACE_LEADING;
             }
             
-            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_WS_TRAILING, false)) {
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITOR_FLAG_WS_TRAILING, false)) {
                 flags |= CodeEditor.FLAG_DRAW_WHITESPACE_TRAILING;
             }
             
-            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_WS_INNER, true)) {
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITOR_FLAG_WS_INNER, true)) {
                 flags |= CodeEditor.FLAG_DRAW_WHITESPACE_INNER;
             }
             
-            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_WS_EMPTY_LINE, true)) {
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITOR_FLAG_WS_EMPTY_LINE, true)) {
                 flags |= CodeEditor.FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE;
             }
             
-            if (prefs.getBoolean (PreferenceManager.KEY_EDITORFLAG_LINE_BREAK, true)) {
+            if (prefs.getBoolean (PreferenceManager.KEY_EDITOR_FLAG_LINE_BREAK, true)) {
                 flags |= CodeEditor.FLAG_DRAW_LINE_SEPARATOR;
             }
             

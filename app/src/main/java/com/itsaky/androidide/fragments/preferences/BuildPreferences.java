@@ -92,7 +92,7 @@ public class BuildPreferences extends BasePreferenceFragment implements Preferen
 			"--warning-mode all"
 		};
 		final boolean[] checked = {
-			getPrefManager().isStracktraceEnabled(),
+			getPrefManager().isStackTraceEnabled (),
 			getPrefManager().isGradleInfoEnabled(),
 			getPrefManager().isGradleDebugEnabled(),
 			getPrefManager().isGradleScanEnabled(),
