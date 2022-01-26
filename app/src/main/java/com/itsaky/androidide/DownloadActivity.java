@@ -209,10 +209,6 @@ public class DownloadActivity extends StudioActivity {
         
         sb.append ("echo 'Cleaning unsupported flags in binaries...'");
         joiner (sb);
-        if (Environment.JAVA_HOME.exists ()) {
-            sb.append ("$BUSYBOX find $JAVA_HOME -type f -exec androidide-cleaner {} \\;");
-            joiner (sb);
-        }
         String DONE = "DONE";
         sb.append ("echo ").append (DONE);
         
