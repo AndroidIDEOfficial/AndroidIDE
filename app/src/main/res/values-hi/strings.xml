@@ -1,33 +1,33 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- AndroidIDE -->
-    <string name="app_name">एंड्रॉयडआईडीई</string>
-    <string name="license_jdk">एंड्रॉयडआईडीई जेडीके के एक संशोधित निर्माण का उपयोग करता है जिसे GNU General Public License v2.0 के तहत लाइसेंस प्राप्त है। स्रोत कोड और जेडीके का लाइसेंस यहां उपलब्ध है: </string>
+    <string name="app_name">AndroidIDE</string>
+    <string name="license_jdk">AndroidIDE JDK के एक संशोधित निर्माण का उपयोग करता है जिसे GNU General Public License v2.0 के तहत लाइसेंस प्राप्त है। स्रोत कोड और जेडीके का लाइसेंस यहां उपलब्ध है: </string>
     <string name="title_developers">डेवलपर्स</string>
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
     <string name="title_open_source_licenses">ओपन सोर्स लाइसेंस </string>
-    <string name="msg_open_source_licenses">एंड्रॉयडआईडीई ओपन सोर्स लाइब्रेरी का उपयोग करता है। आप नीचे दिए गए लिंक पर क्लिक करके उपयोग किए गए लाइब्रेरी के स्रोत और लाइसेंस प्राप्त कर सकते हैं ।</string>
+    <string name="msg_open_source_licenses">AndroidIDE ओपन सोर्स लाइब्रेरी का उपयोग करता है। आप नीचे दिए गए लिंक पर क्लिक करके उपयोग किए गए लाइब्रेरी के स्रोत और लाइसेंस प्राप्त कर सकते हैं ।</string>
     <string name="msg_about_licensed_under">लाइसेंस</string>
     <string name="about_option_email">ईमेल</string>
     <string name="about_option_website">वेबसाइट</string>
-    <string name="about_footer_alternate">एंड्रॉयडआईडीई v\u2022 %s</string>
+    <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
     <string name="about_footer">AndroidIDE %1$s for %2$s</string>
     <string name="about_subtitle">बस, एक आईडीई एंड्रॉयड के लिए</string>
     <string name="msg_get_package_failed">पैकेज का नाम निकालने में विफल रहे !</string>
-    <string name="msg_share_app">एंड्रॉयडआईडीई आपके एंड्रॉइड स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 11.0.1.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n एंड्रॉयडआईडीई यहा से डाउनलोड करे https://androidide.com </string>
-    <string name="msg_need_help">यदि आपको एंड्रॉयडआईडीई का उपयोग करते समय या एंड्रॉयड ऐप्स बनाते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
-    <string name="discuss_amp_help">चर्चा करें &amp; मदद करें</string>
-    <string name="title_github">गिटहब</string>
+    <string name="msg_share_app">AndroidIDE आपके Android स्मार्टफ़ोन पर एंड्रॉइड ऐप्स बनाने के लिए एक एकीकृत विकास परिवेश है । यह समर्थन करता है : \n1. Gradle \n2. OpenJDK 11.0.1.\n3. Advanced Java auto completion\n4. XML Auto Completion \n5. Kotlin Support और भी बहुत कुछ।\n\n एंड्रॉयडआईडीई यहा से डाउनलोड करे https://androidide.com </string>
+    <string name="msg_need_help">यदि आपको AndroidIDE का उपयोग करते समय या एंड्रॉयड ऐप्स बनाते समय समस्याओं का सामना करना पड़ रहा है, तो आप टेलीग्राम समूह में शामिल हो सकते हैं और वहां सहायता मांग सकते हैं।\n\nआप हमारे ईमेल पर भी सुझाव भेज सकते हैं।</string>
+    <string name="discuss_amp_help">चर्चा और मदद</string>
+    <string name="title_github">GitHub</string>
     <string name="need_help">मदद की ज़रूरत है?</string>
     <string name="other">अन्य</string>
     <string name="share_with_friends">मित्रो के साथ शेयर करे</string>
-    <string name="ide_preferences">आईडीई प्रेफरेंसेस</string>
+    <string name="ide_preferences">IDE प्रेफरेंसेस</string>
     <string name="discussions_on_telegram">टेलीग्राम पर चर्चाएं</string>
     <string name="msg_empty_view">मेरे पास आपको दिखाने के लिए कुछ नहीं है &#8230;</string>
-    <string name="btn_terminal">टर्मिनल</string>
+    <string name="btn_terminal">Terminal</string>
     <string name="reset">रिसेट</string>
     <string name="app_logs">एप लॉग्स</string>
-    <string name="ide_logs">आईडीई लॉग्स</string>
+    <string name="ide_logs">IDE लॉग्स</string>
     <string name="label_splash_image">स्प्लेश इमेज</string>
     <string name="cancel">रद्द करे</string>
     <string name="get_started">शुरु करे</string>
@@ -35,54 +35,54 @@
 
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_sdk_info_load_failed">एसडीके की जानकारी लोड करने में विफल रहे</string>
-    <string name="msg_fix_diagnostic">[क्विकफिक्स]</string>
-    <string name="msg_no_code_actions">कोई क्विकफिक्स नहीं मिला</string>
-    <string name="msg_cannot_perform_fix">क्विकफिक्स करने में असमर्थ </string>
+    <string name="msg_fix_diagnostic">[QuickFix]</string>
+    <string name="msg_no_code_actions">कोई कोड कार्रवाई नहीं मिली</string>
+    <string name="msg_cannot_perform_fix">कोड क्रिया करने में असमर्थ </string>
     <string name="msg_performing_fixes">सुधार कर रहे है &#8230;</string>
-    <string name="msg_code_actions">क्विकफिक्सेस</string>
-    <string name="msg_api_info_since">%d तब से एपीआई </string>
+    <string name="msg_code_actions">कोड क्रियाएं</string>
+    <string name="msg_api_info_since">एपीआई %d से उपलब्ध है</string>
     <string name="msg_api_info_removed">एपीआई %d  में हटाया गया</string>
     <string name="msg_api_info_deprecated">एपीआई %d में बहिष्कृत हो गया हे</string>
-    <string name="msg_finding_references">फाइंडिंग रेफरेंसेस &#8230;</string>
-    <string name="msg_finding_definition">फाइंडिंग डेफिनेशंस &#8230;</string>
-    <string name="msg_no_definition">डेफिनेशन नहीं मिला</string>
-    <string name="msg_no_references">कोई रेफरेंसेस नहीं मिला </string>
-    <string name="menu_navigate_definition">गो टू डेफिनेशन</string>
-    <string name="menu_navigate_references">फाइन्ड अल रेफरेंसेस</string>
+    <string name="msg_finding_references">सन्दर्भ ढूंढे जा रहे है&#8230;</string>
+    <string name="msg_finding_definition">परिभासा ढूंढी जा रही है&#8230;</string>
+    <string name="msg_no_definition">परिभाषा नहीं मिलीा</string>
+    <string name="msg_no_references">कोई सन्दर्भ नहीं मिला</string>
+    <string name="menu_navigate_definition">परिभाषा पर जाएं</string>
+    <string name="menu_navigate_references">संदर्भ खोजें</string>
     <string name="menu_navigate">कोड</string>
-    <string name="menu_comment_line">कमेन्ट लाइन</string>
+    <string name="menu_comment_line">कमेंट लाइन</string>
     <string name="menu_uncomment_line">अनकमेंट लाइन</string>
     <string name="view_diags">डायग्नोस्टिक्स</string>
 
     <!-- Build Tools Installation -->
-    <string name="title_installation_failed">इंस्टॉलेशन फैल्ड</string>
-    <string name="msg_installation_failed">इंस्टॉलेशन प्रोसेस समाप्त हो गया है एग्जिट कोड %1$d के साथ ।सुनिश्चित करें कि आपने बिल्ड टूल्स को मूल स्रोतों से डाउनलोड किया है।\n\nआप एंड्रॉयडआईडीई के डेटा को साफ़ करने और फिर से इंस्टॉल करने का प्रयास कर सकते हैं।</string>
+    <string name="title_installation_failed">इनस्टॉल करने में विफल रहा</string>
+    <string name="msg_installation_failed">इंस्टॉलेशन प्रोसेस समाप्त हो गया है एग्जिट कोड %1$d के साथ ।सुनिश्चित करें कि आपने बिल्ड टूल्स को मूल स्रोतों से डाउनलोड किया है।\n\nआप AndroidIDE के डेटा को साफ़ करने और फिर से इंस्टॉल करने का प्रयास कर सकते हैं।</string>
     <string name="choose">चुने</string>
     <string name="get_ready_for_something_awesome">कुछ कमाल के लिए तैयार हो जाओ!</string>
-    <string name="androidide_build_tools">एंड्रॉयडआईडीई बिल्ड टूल्स</string>
-    <string name="install_build_tools_required_b">एंड्रॉयडआईडीई के लिए आवश्यक बिल्ड टूल्स इंस्टॉल करें</string>
+    <string name="androidide_build_tools">AndroidIDE बिल्ड टूल्स</string>
+    <string name="install_build_tools_required_b">AndroidIDE के लिए आवश्यक बिल्ड टूल्स इंस्टॉल करें</string>
     <string name="choose_directory_which_contain">वह डायरेक्टरी चुनें जिसमें बिल्ड टूल्स हों।</string>
     <string name="click_install_button_to_st">इंस्टॉलेशन प्रक्रिया शुरू करने के लिए \'इंस्टॉल\' बटन पर क्लिक करें।</string>
     <string name="msg_picked_isnt_dir">चुनी गई फ़ाइल एक डायरेक्टरी नहीं है!</string>
     <string name="msg_pick_single_file">कृपया केवल एक डायरेक्टरी चुनें</string>
     <string name="msg_file_doesnt_exist">फ़ाइल मौजूद नहीं है!</string>
     <string name="msg_pick_files">कृपया फ़ाइलें चुनें!</string>
-    <string name="msg_download_instructions">1. एंड्रॉयडआईडीई की वेबसाइट से बिल्ड टूल्स डाउनलोड करें।\n2. सभी आर्काइवो को एक डायरेक्टरी में ले जाएँ।\n3. नीचे दिए गए बटन का उपयोग करके उस डायरेक्टरी को चुनें।\n4. इंस्टॉल पर क्लिक करें.\n5. इंस्टॉलेशन प्रक्रिया शुरू हो जाएगी।\n\nआपके डिवाइस के प्रदर्शन के आधार पर इंस्टॉलेशन प्रक्रिया में लगभग 5&#8211;10 मिनट लगेंगे। कृपया धैर्य रखें!</string>
+    <string name="msg_download_instructions">1. AndroidIDE की वेबसाइट से बिल्ड टूल्स डाउनलोड करें।\n2. सभी आर्काइवो को एक डायरेक्टरी में ले जाएँ।\n3. नीचे दिए गए बटन का उपयोग करके उस डायरेक्टरी को चुनें।\n4. इंस्टॉल पर क्लिक करें.\n5. इंस्टॉलेशन प्रक्रिया शुरू हो जाएगी।\n\nआपके डिवाइस के प्रदर्शन के आधार पर इंस्टॉलेशन प्रक्रिया में लगभग 5&#8211;10 मिनट लगेंगे। कृपया धैर्य रखें!</string>
     <string name="msg_installable_files">इंस्टॉल की जाने वाली फ़ाइलें\n\n%s</string>
     <string name="title_restart">कृपया पुनः प्रारंभ करें</string>
-    <string name="msg_restart">इंस्टॉलेशन सफलतापूर्वक समाप्त हो गई है। कृपया एंड्रॉयडआईडीई को पुनरारंभ करें।</string>
+    <string name="msg_restart">इंस्टॉलेशन सफलतापूर्वक समाप्त हो गई है। कृपया AndroidIDE को पुनरारंभ करें।</string>
     <string name="please_wait">कृपया कुछ क्षण प्रतीक्षा करें &#8230;</string>
     <string name="title_device_not_supported">डिवाइस सपोर्ट नहीं करता</string>
     <string name="msg_device_not_supported">दुर्भाग्य से, आपका डिवाइस इस समय समर्थित नहीं है। असुविधा के लिए हमें खेद है.\n\nसमर्थित CPU ABIs: aarch64 और armeabi-v7a</string>
 
     <!-- Project Builder -->
     <string name="lint">लिंट</string>
-    <string name="lint_debug">लिंटडिबग</string>
-    <string name="lint_release">लिंटरिलीज़</string>
+    <string name="lint_debug">लिंट डिबग</string>
+    <string name="lint_release">लिंट रिलीज़</string>
     <string name="build">बिल्ड</string>
-    <string name="build_debug">असेंबलडिबग</string>
+    <string name="build_debug">असेंबल डिबग</string>
     <string name="build_output">बिल्ड आउटपुट</string>
-    <string name="build_release">असेंबलरिलीज़</string>
+    <string name="build_release">असेंबल रिलीज़</string>
     <string name="lint_tasks">लिंट टास्क्स</string>
     <string name="clean_amp_build">क्लीन &amp; बिल्ड</string>
     <string name="clean_project">क्लीन</string>
@@ -91,7 +91,7 @@
     <string name="stop_gradle_daemons">ग्रैडल डेमंस बंद करे</string>
     <string name="quick_run_debug">क्विक रन</string>
     <string name="msg_sync_needed">ग्रैडल फाइलें बदल गई हैं। डिपेंडेंसी और कॉन्फ़िगरेशन्स को सिंक करने के लिए कृपया अपनी प्रोजेक्ट का पुनर्निर्माण करें।</string>
-    <string name="msg_task_begin">========== [%s] TASK_BEGIN: %s ==========</string>
+    <string name="msg_task_begin">========== [%s] टास्क सुरु हो रहा है: %s ==========</string>
     <string name="preparing">तैयार कर रहे हैं</string>
     <string name="preparing_first">तैयार कर रहे हैं। पहले निर्माण में 10&#8211;15 मिनट तक लग सकते हैं!</string>
     <string name="msg_gradle_terminated">ग्रैडल प्रक्रिया एग्जिट कोड %1$d के साथ बाहर निकली</string>
@@ -110,7 +110,7 @@
     <string name="run">रन</string>
     <string name="gradle">ग्रेडल</string>
     <string name="title_first_build">फर्स्ट बिल्ड</string>
-    <string name="msg_first_build">एंड्रॉयडआईडीई इंस्टॉल करने के बाद यह पहली बार बिल्ड है। पहले निर्माण में आमतौर पर समय लगता है क्योंकि ग्रैडल सभी डिपेंडेंसीज और प्लगइन्स को डाउनलोड करता है। इस प्रक्रिया में लगभग 10&#8211;15 मिनट का समय लग सकता है। लेकिन यह पूरी तरह से आपके नेटवर्क कनेक्शन पर निर्भर करता है।\n\nकृपया धैर्य रखें &#8230;</string>
+    <string name="msg_first_build">AndroidIDE इंस्टॉल करने के बाद यह पहली बार बिल्ड है। पहले निर्माण में आमतौर पर समय लगता है क्योंकि ग्रैडल सभी डिपेंडेंसीज और प्लगइन्स को डाउनलोड करता है। इस प्रक्रिया में लगभग 10&#8211;15 मिनट का समय लग सकता है। लेकिन यह पूरी तरह से आपके नेटवर्क कनेक्शन पर निर्भर करता है।\n\nकृपया धैर्य रखें &#8230;</string>
     <string name="compiling">कम्पााइलिंग</string>
 
     <!-- Project -->
@@ -131,9 +131,9 @@
     <string name="msg_opened_project_does_not_exist">अंतिम बार खोला गया प्रोजेक्ट मौजूद नहीं है!</string>
     <string name="msg_create_new_project">नया प्रोजेक्ट बनाएं</string>
     <string name="msg_open_existing_project">मौजूदा प्रोजेक्ट खोलें</string>
-    <string name="msg_opening_project">ओपनिंग प्रोजेक्ट&#8230;</string>
+    <string name="msg_opening_project">प्रोजेक्ट खुल रहा है&#8230;</string>
     <string name="msg_invalid_project">चुनी गई डायरेक्टरी एक एंड्रॉयड प्रोजेक्ट नहीं है</string>
-    <string name="msg_project_deleted">प्रोजेक्ट डिलीटेड</string>
+    <string name="msg_project_deleted">प्रोजेक्ट डिलीट करने में सफल</string>
     <string name="msg_project_delete_failed">प्रोजेक्ट मिटाया नहीं जा सका!</string>
     <string name="menu_project_info">प्रोजेक्ट की जानकारी</string>
     <string name="header_module_info">मॉड्यूल की जानकारी</string>
@@ -164,13 +164,13 @@
     <string name="msg_search_modules">मॉड्यूल्स में खोजें</string>
     <string name="msg_no_modules">प्रोजेक्ट में कोई भी मॉड्यूल्स नहीं मिला </string>
     <string name="hint_find_project_filter">फ़ाइल एक्सटेंशन्स फ़िल्टर करें (वैकल्पिक)</string>
-    <string name="msg_find_project_filter">\'|\' द्वारा अलग किया गया</string>
+    <string name="msg_find_project_filter">\'|\' द्वारा अलग किया जा सकता है</string>
     <string name="msg_empty_search_query">कृपया टेक्स्ट दर्ज करें</string>
     <string name="msg_select_search_modules">खोजने के लिए मॉड्यूल्स का चयन करें</string>
     <string name="msg_searching_project">प्रोजेक्ट में ढूँढ रहे है, कृपया प्रतीक्षा करें &#8230;</string>
     <string name="view_search_results">रिजल्ट्स खोजें</string>
     <string name="copying_files">फाइलों की कॉपी बनाई जा रही</string>
-    <string name="writing_files">फ़ाइलें राइट की जा रही</string>
+    <string name="writing_files">फाइल्स लिखी जा रही है</string>
     <string name="copying_assets">एसेट्स कॉपी की जा रही </string>
     <string name="failed_create_project_dir">प्रोजेक्ट डायरेक्टरी बनाने में विफल रहे!</string>
     <string name="failed_write_file">फ़ाइल राइट करने में विफल: %s</string>
@@ -232,17 +232,17 @@
     <item name="copy" type="string" tools:override="true">कॉपी</item>
     <item name="selectAll" formatted="true" type="string">सिलेक्ट ऑल</item>
     <item name="cut" type="string">कट</item>
-    <item name="last" type="string">लास्ट</item>
-    <item name="next" type="string">नेक्स्ट</item>
-    <item name="replace" type="string">रिप्लेस</item>
-    <item name="replaceAll" type="string">रिप्लेस ऑल</item>
-    <item name="replacement" type="string">रिप्लेसमेंट</item>
-    <item name="text_to_search" type="string">टेक्स्ट टू सर्च</item>
-    <item name="more" translatable="false" type="string">मोर</item>
+    <item name="last" type="string">आखरी</item>
+    <item name="next" type="string">अगला</item>
+    <item name="replace" type="string">बदले</item>
+    <item name="replaceAll" type="string">सभी बदले</item>
+    <item name="replacement" type="string">बदलाव</item>
+    <item name="text_to_search" type="string">खोजने के लिए शब्द</item>
+    <item name="more" translatable="false" type="string">और</item>
 
     <!-- Preferences -->
-    <string name="title_change_text_size">एडिटर फ़ॉन्ट साइज</string>
-    <string name="idepref_about_title">एंड्रॉयडआईडीई के बारे में</string>
+    <string name="title_change_text_size">एडिटर के फॉण्ट का आकार</string>
+    <string name="idepref_about_title">AndroidIDE के बारे में</string>
     <string name="idepref_build_clearCache_title">क्लियर ग्रैडल कैश</string>
     <string name="idepref_build_clearCache_summary">ग्रैडल कैश डायरेक्ट्री साफ़ करें। यह ग्रैडल द्वारा डाउनलोड की गई सभी डिपेंडेंसीज को हटा देगा। आवश्यक फ़ाइलें अगले निर्माण में फिर से डाउनलोड की जाएंगी।</string>
     <string name="idepref_build_customgradlecommands_title">अतिरिक्त ग्रैडल कमांड्स</string>
