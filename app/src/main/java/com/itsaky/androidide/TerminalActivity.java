@@ -368,7 +368,9 @@ public class TerminalActivity extends StudioActivity {
         @Override
         public void onPasteTextFromClipboard (TerminalSession session) {
             String clip = ClipboardUtils.getText ().toString ();
-            if (terminal != null && terminal.mEmulator != null) {
+            if (clip.trim ().length () > 0
+                    && terminal != null
+                    && terminal.mEmulator != null) {
                 terminal.mEmulator.paste (clip);
             }
         }
