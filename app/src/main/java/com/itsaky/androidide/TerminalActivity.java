@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 package com.itsaky.androidide;
 
 import static com.itsaky.androidide.utils.Environment.*;
@@ -38,6 +36,7 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.BootstrapInstaller;
+import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.virtualkeys.SpecialButton;
@@ -53,6 +52,8 @@ import com.itsaky.terminal.view.TerminalView;
 import com.itsaky.terminal.view.TerminalViewClient;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -74,6 +75,8 @@ public class TerminalActivity extends StudioActivity {
     private static final Logger LOG = Logger.instance ("TerminalActivity");
     
     public static final String KEY_WORKING_DIRECTORY = "terminal_workingDirectory";
+    
+    private static final byte[] SOURCES_LIST_CONTENT = "deb https://androidide.com/packages/ stable main".getBytes ();
     
     @Override
     protected View bindLayout () {
@@ -223,6 +226,16 @@ public class TerminalActivity extends StudioActivity {
                 TerminalEmulator.DEFAULT_TERMINAL_TRANSCRIPT_ROWS, // Transcript rows
                 client // TerminalSessionClient
         );
+        
+        try {
+            final var file = new File (SYSROOT, "etc/apt/sources.list");
+            final var out = new FileOutputStream (file);
+            out.write (SOURCES_LIST_CONTENT);
+            out.flush ();
+            out.close ();
+        } catch (Throwable th) {
+            LOG.error ("Unable to update sources.list", th);
+        }
         
         return session;
     }
