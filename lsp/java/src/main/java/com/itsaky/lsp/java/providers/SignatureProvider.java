@@ -95,42 +95,41 @@ public class SignatureProvider implements ISignatureHelpProvider {
         final int column = c + 1;
         
         // TODO prune
-        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                long cursor = task.root().getLineMap().getPosition(line, column);
-                TreePath path = new FindInvocationAt (task.task).scan(task.root(), cursor);
-                if (path == null) return NOT_SUPPORTED;
-                if (path.getLeaf() instanceof MethodInvocationTree) {
-                    MethodInvocationTree invoke = (MethodInvocationTree) path.getLeaf();
-                    List<ExecutableElement> overloads = methodOverloads(task, invoke);
-                    List<SignatureInformation> signatures = new ArrayList<> ();
-                    for (ExecutableElement method : overloads) {
-                        SignatureInformation info = info(method);
-                        addSourceInfo(task, method, info);
-                        addFancyLabel(info);
-                        signatures.add(info);
-                    }
-                    int activeSignature = activeSignature(task, path, invoke.getArguments(), overloads);
-                    int activeParameter = activeParameter(task, invoke.getArguments(), cursor);
-                    return new SignatureHelp(signatures, activeSignature, activeParameter);
+        SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask (task -> {
+            long cursor = task.root().getLineMap().getPosition(line, column);
+            TreePath path = new FindInvocationAt (task.task).scan(task.root(), cursor);
+            if (path == null) return NOT_SUPPORTED;
+            if (path.getLeaf() instanceof MethodInvocationTree) {
+                MethodInvocationTree invoke = (MethodInvocationTree) path.getLeaf();
+                List<ExecutableElement> overloads = methodOverloads(task, invoke);
+                List<SignatureInformation> signatures = new ArrayList<> ();
+                for (ExecutableElement method : overloads) {
+                    SignatureInformation info = info(method);
+                    addSourceInfo(task, method, info);
+                    addFancyLabel(info);
+                    signatures.add(info);
                 }
-                if (path.getLeaf() instanceof NewClassTree) {
-                    NewClassTree invoke = (NewClassTree) path.getLeaf();
-                    List<ExecutableElement> overloads = constructorOverloads(task, invoke);
-                    List<SignatureInformation> signatures = new ArrayList<> ();
-                    for (ExecutableElement method : overloads) {
-                        SignatureInformation info = info(method);
-                        addSourceInfo(task, method, info);
-                        addFancyLabel(info);
-                        signatures.add(info);
-                    }
-                    int activeSignature = activeSignature(task, path, invoke.getArguments(), overloads);
-                    int activeParameter = activeParameter(task, invoke.getArguments(), cursor);
-                    return new SignatureHelp (signatures, activeSignature, activeParameter);
+                int activeSignature = activeSignature(task, path, invoke.getArguments(), overloads);
+                int activeParameter = activeParameter(task, invoke.getArguments(), cursor);
+                return new SignatureHelp(signatures, activeSignature, activeParameter);
+            }
+            if (path.getLeaf() instanceof NewClassTree) {
+                NewClassTree invoke = (NewClassTree) path.getLeaf();
+                List<ExecutableElement> overloads = constructorOverloads(task, invoke);
+                List<SignatureInformation> signatures = new ArrayList<> ();
+                for (ExecutableElement method : overloads) {
+                    SignatureInformation info = info(method);
+                    addSourceInfo(task, method, info);
+                    addFancyLabel(info);
+                    signatures.add(info);
                 }
-                return NOT_SUPPORTED;
-            });
-        }
+                int activeSignature = activeSignature(task, path, invoke.getArguments(), overloads);
+                int activeParameter = activeParameter(task, invoke.getArguments(), cursor);
+                return new SignatureHelp (signatures, activeSignature, activeParameter);
+            }
+            return NOT_SUPPORTED;
+        });
     }
 
     private List<ExecutableElement> methodOverloads(CompileTask task, @NonNull MethodInvocationTree method) {

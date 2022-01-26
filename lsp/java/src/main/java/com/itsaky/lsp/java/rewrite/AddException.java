@@ -52,35 +52,35 @@ public class AddException implements Rewrite {
         if (file == CompilerProvider.NOT_FOUND) {
             return CANCELLED;
         }
-        
-        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                Trees trees = Trees.instance(task.task);
-                ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-                MethodTree methodTree = trees.getTree(methodElement);
-                SourcePositions pos = trees.getSourcePositions();
-                LineMap lines = task.root().getLineMap();
-                long startBody = pos.getStartPosition(task.root(), methodTree.getBody());
-                int line = (int) lines.getLineNumber(startBody);
-                int column = (int) lines.getColumnNumber(startBody);
-                Position insertPos = new Position(line - 1, column - 1);
-                String simpleName = exceptionType;
-                int lastDot = simpleName.lastIndexOf('.');
-                if (lastDot != -1) {
-                    simpleName = exceptionType.substring(lastDot + 1);
-                }
     
-                String insertText;
-                if (methodTree.getThrows().isEmpty()) {
-                    insertText = "throws " + simpleName + " ";
-                } else {
-                    insertText = ", " + simpleName + " ";
-                }
-                TextEdit insertThrows = new TextEdit(new Range (insertPos, insertPos), insertText);
-                // TODO add import if needed
-                TextEdit[] edits = {insertThrows};
-                return Collections.singletonMap (file, edits);
-            });
-        }
+        SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask (task -> {
+            Trees trees = Trees.instance(task.task);
+            ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
+            MethodTree methodTree = trees.getTree(methodElement);
+            SourcePositions pos = trees.getSourcePositions();
+            LineMap lines = task.root().getLineMap();
+            long startBody = pos.getStartPosition(task.root(), methodTree.getBody());
+            int line = (int) lines.getLineNumber(startBody);
+            int column = (int) lines.getColumnNumber(startBody);
+            Position insertPos = new Position(line - 1, column - 1);
+            String simpleName = exceptionType;
+            int lastDot = simpleName.lastIndexOf('.');
+            if (lastDot != -1) {
+                simpleName = exceptionType.substring(lastDot + 1);
+            }
+        
+            String insertText;
+            if (methodTree.getThrows().isEmpty()) {
+                insertText = "throws " + simpleName + " ";
+            } else {
+                insertText = ", " + simpleName + " ";
+            }
+            TextEdit insertThrows = new TextEdit(new Range (insertPos, insertPos), insertText);
+            // TODO add import if needed
+            TextEdit[] edits = {insertThrows};
+            return Collections.singletonMap (file, edits);
+        });
+    
     }
 }

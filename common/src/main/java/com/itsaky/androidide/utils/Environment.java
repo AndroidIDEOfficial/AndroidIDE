@@ -41,9 +41,9 @@ public final class Environment {
     public static File ROOT;
     public static File SYSROOT;
 	public static File HOME;
+	public static File ANDROIDIDE_HOME;
 	public static File JAVA_HOME;
 	public static File ANDROID_HOME;
-    public static File JLS_HOME;
 	public static File TMP_DIR;
     public static File BIN_DIR;
     public static File LIB_DIR;
@@ -52,9 +52,15 @@ public final class Environment {
     public static File LIB_HOOK;
     public static File LIB_HOOK2;
     
+    /**
+     * JDK modules used by the java language server for completions.
+     * This version of JDK modules contains only the classes included in
+     * android.jar
+     */
+    public static File COMPILER_MODULE;
+    
     public static File INIT_SCRIPT;
     public static File PROJECT_DATA_FILE;
-    public static File JLS_JAR;
     
 	public static File GRADLE_PROPS;
 	public static File GRADLE_USER_HOME;
@@ -82,17 +88,17 @@ public final class Environment {
         ROOT = app.getIDEDataDir();
         SYSROOT = mkdirIfNotExits(new File(app.getIDEDataDir(), "sysroot"));
         HOME = mkdirIfNotExits(app.getRootDir());
-        JLS_HOME = mkdirIfNotExits(new File(app.getIDEDataDir(), "jls"));
+        ANDROIDIDE_HOME = mkdirIfNotExits (new File (HOME, ".androidide"));
         TMP_DIR = mkdirIfNotExits(new File(SYSROOT, "tmp"));
         BIN_DIR = mkdirIfNotExits(new File(SYSROOT, "bin"));
         LIB_DIR = mkdirIfNotExits(new File(SYSROOT, "lib"));
         PROJECTS_DIR = mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
+        COMPILER_MODULE = mkdirIfNotExits (new File (ANDROIDIDE_HOME, "compiler-module"));
         
         IDE_PROPS_FILE = new File(SYSROOT, "etc/ide-environment.properties");
         LIB_HOOK = new File(LIB_DIR, "libhook.so");
         LIB_HOOK2 = new File(LIB_DIR, "libhook2.so");
         PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
-        JLS_JAR = new File(JLS_HOME, "jls.jar");
         
         INIT_SCRIPT = new File(mkdirIfNotExits(new File(app.getIDEDataDir(), "init")), "data/common/androidide.init.gradle");
         BOOTCLASSPATH = new File("");
@@ -114,20 +120,6 @@ public final class Environment {
         
         System.setProperty("user.home", HOME.getAbsolutePath());
         System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
-        
-        CompletableFuture.runAsync (() -> {
-            try {
-                final var tClass = Objects.requireNonNull (Environment.class.getClassLoader ())
-                        .loadClass ("com.itsaky.javac11.LocationsProvider");
-                final var method = tClass.getDeclaredMethod ("init");
-                if (!method.isAccessible ()) {
-                    method.setAccessible (true);
-                }
-                method.invoke (null);
-            } catch (Throwable th) {
-                LOG.error ("Error notifying LocationsProvider about Environment init", th);
-            }
-        });
     }
 	
 	public static void setExecutable (@NonNull final File file) {
@@ -156,7 +148,7 @@ public final class Environment {
         BOOTCLASSPATH = new File(file.getAbsolutePath());
     }
     
-    public static Map<String, String> getEnvironment(boolean publicUse) {
+    public static Map<String, String> getEnvironment () {
         
         if(!ENV_VARS.isEmpty()) {
             return ENV_VARS;
@@ -170,11 +162,6 @@ public final class Environment {
         ENV_VARS.put("PROJECTS", PROJECTS_DIR.getAbsolutePath());
         ENV_VARS.put("LANG", "en_US.UTF-8");
         ENV_VARS.put("LC_ALL", "en_US.UTF-8");
-        
-        if(!publicUse) {
-            // These environment variables are not supposed to be accessed by users
-            ENV_VARS.put("JLS_HOME", JLS_HOME.getAbsolutePath());
-        }
         
         ENV_VARS.put("SYSROOT", SYSROOT.getAbsolutePath());
         
@@ -266,6 +253,13 @@ public final class Environment {
 			
 		return in;
 	}
+	
+	public static boolean isCompilerModuleInstalled () {
+	    final var modules = new File (COMPILER_MODULE, "lib/modules");
+	    final var release = new File (COMPILER_MODULE, "release");
+	    return modules.exists () && modules.isFile ()
+                && release.exists () && release.isFile ();
+    }
     
     private static final List<String> blacklist = new ArrayList<>();
     

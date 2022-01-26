@@ -241,7 +241,7 @@ public class IDEService {
         args.add("--init-script");
         args.add(Environment.INIT_SCRIPT.getAbsolutePath());
 
-        if (prefs.isStracktraceEnabled()) {
+        if (prefs.isStackTraceEnabled ()) {
             args.add("--stacktrace");
         }
         if (prefs.isGradleInfoEnabled()) {

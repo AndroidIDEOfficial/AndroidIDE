@@ -129,6 +129,7 @@ public class DownloadActivity extends StudioActivity {
                     script.getAbsolutePath ()
             );
             
+            this.output = new StringBuilder ();
             final InputStreamLineReader reader = new InputStreamLineReader (holder.in, this::onInstallationOutput);
             new Thread (reader).start ();
             
@@ -142,7 +143,7 @@ public class DownloadActivity extends StudioActivity {
     }
     
     private void onInstallationOutput (final String line) {
-        ThreadUtils.runOnUiThread (() -> getProgressSheet ().setSubMessage (line));
+        ThreadUtils.runOnUiThread (() -> this.appendOut (line));
     }
     
     private void onInstallProcessExit (final int code) {
@@ -168,7 +169,7 @@ public class DownloadActivity extends StudioActivity {
         
         final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (this);
         builder.setTitle (R.string.title_installation_failed);
-        builder.setMessage (getString (R.string.msg_installation_failed, code));
+        builder.setMessage (getString (R.string.msg_installation_failed, code, this.output.toString ()));
         builder.setPositiveButton (android.R.string.ok, (d, w) -> {
             d.dismiss ();
             finishAffinity ();
@@ -208,10 +209,6 @@ public class DownloadActivity extends StudioActivity {
         
         sb.append ("echo 'Cleaning unsupported flags in binaries...'");
         joiner (sb);
-        if (Environment.JAVA_HOME.exists ()) {
-            sb.append ("$BUSYBOX find $JAVA_HOME -type f -exec androidide-cleaner {} \\;");
-            joiner (sb);
-        }
         String DONE = "DONE";
         sb.append ("echo ").append (DONE);
         
@@ -225,6 +222,15 @@ public class DownloadActivity extends StudioActivity {
     
     private void joiner (StringBuilder sb) {
         sb.append (" && ");
+    }
+    
+    private StringBuilder output = new StringBuilder ();
+    private void appendOut (String line) {
+        LOG.debug ("Installation:", line);
+        output.append(line.trim ());
+        output.append ("\n");
+        
+        getProgressSheet ().setSubMessage (line);
     }
     
     @Override

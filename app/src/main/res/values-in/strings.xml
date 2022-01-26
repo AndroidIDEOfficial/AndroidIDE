@@ -11,9 +11,9 @@
     <string name="about_option_email">Email</string>
     <string name="about_option_website">Website</string>
     <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
-    <string name="about_footer">AndroidIDE %1$s for %2$s</string>
+    <string name="about_footer">AndroidIDE %1$s untuk %2$s</string>
     <string name="about_subtitle">Simpel, sebuah IDE untuk Android</string>
-    <string name="msg_get_package_failed">Gagal untuk mengekstrak nama paket!</string>
+    <string name="msg_get_package_failed">Gagal mengekstrak nama paket!</string>
     <string name="msg_share_app">AndroidIDE adalah Integrated Development Environment (IDE) untuk membuat aplikasi Android pada Smartphone Android anda. AndroidIDE mendukung :\n1. Gradle \n2. OpenJDK 11.0.1.\n3. Perlengkapan otomatis Java tingkat lanjut\n4. Perlengkapan Otomatis XML \n5. Dukungan Kotlin dan lainnya.\n\nUnduh AndroidIDE di https://androidide.com</string>
     <string name="msg_need_help">Jika anda mengalami masalah ketika menggunakan AndroidIDE atau dengan pembuatan Aplikasi Android, anda dapat bergabung ke Grup Telegram dan bertanya disana.\n\nAnda juga dapat mengirim saran pada Email kami.</string>
     <string name="discuss_amp_help">Diskusi &amp; bantuan</string>
@@ -28,7 +28,7 @@
     <string name="reset">Reset</string>
     <string name="app_logs">Log App</string>
     <string name="ide_logs">Log IDE</string>
-    <string name="label_splash_image">Splash image</string>
+    <string name="label_splash_image">Gambar Splash</string>
     <string name="cancel">Batalkan</string>
     <string name="get_started">Memulai</string>
     <string name="nothing_here">Tidak ada apa-apa disini &#8230;</string>
@@ -56,7 +56,7 @@
 
     <!-- Build Tools Installation -->
     <string name="title_installation_failed">Instalasi gagal</string>
-    <string name="msg_installation_failed">Proses instalasi dihentikan dengan kode exit %1$d. Pastikan anda mengunduh alat build dari sumber aslinya.\n\nAnda dapat mencoba untuk menghapus data aplikasi AndroidIDE dan lakukan instalasi kembali.</string>
+    <string name="msg_installation_failed">Proses instalasi dihentikan dengan kode exit %1$d. Pastikan anda mengunduh alat build dari sumber aslinya.\n\nAnda dapat mencoba untuk menghapus data aplikasi AndroidIDE dan lakukan instalasi kembali.\n\n%2$s</string>
     <string name="choose">Pilih</string>
     <string name="get_ready_for_something_awesome">Bersiap untuk sesuatu yang menakjubkan !</string>
     <string name="androidide_build_tools">Alat Build AndroidIDE</string>
@@ -104,7 +104,7 @@
     <string name="msg_starting_completion">Memulai layanan</string>
     <string name="msg_starting_completion_failed">Gagal untuk memulai layanan perlengkapan otomatis</string>
     <string name="msg_starting_daemon">Memulai Gradle daemon</string>
-    <string name="title_install_apks">Install Aplikasi</string>
+    <string name="title_install_apks">Instal Aplikasi</string>
     <string name="title_clear_output">Bersihkan hasil</string>
     <string name="install">Instal</string>
     <string name="run">Jalankan</string>
@@ -130,7 +130,7 @@
     <string name="title_close_project">Tutup projek ini</string>
     <string name="msg_opened_project_does_not_exist">Projek yang terakhir dibuka tidak ada!</string>
     <string name="msg_create_new_project">Buat projek baru</string>
-    <string name="msg_open_existing_project">Buka projek yang sudah ada</string>
+    <string name="msg_open_existing_project">Buka projek</string>
     <string name="msg_opening_project">Membuka projek&#8230;</string>
     <string name="msg_invalid_project">Direktori yang dipilih bukan projek Android</string>
     <string name="msg_project_deleted">Projek dihapus</string>
@@ -149,11 +149,13 @@
 
     <!-- Templates -->
     <string name="template_basic">Projek Dasar</string>
-    <string name="template_description_basic">Sebuah projek dasar dengan Toolbar AppCompat dan sebuah Floating Action Button</string>
+    <string name="template_description_basic">Sebuah projek dasar dengan Toolbar AppCompat dan Floating Action Button</string>
     <string name="template_description_empty">Sebuah projek kosong dengan toolbar bawaan. sangat cocok untuk melakukan semua hal mendasar anda sendiri.</string>
     <string name="template_description_navigation_drawer">Projek dengan Toolbar AppCompat, DrawerLayout dan NavigationView</string>
     <string name="template_empty">Projek Kosong</string>
     <string name="template_navigation_drawer">Projek NavigationDrawer</string>
+    <string name="template_kotlin_basic">Project Kotlin Dasar</string>
+    <string name="template_description_kotlin_basic">Project Kotlin dengan Toolbar Appcompat dan Floating Action Button</string>
 
     <!-- Files -->
     <string name="save">Simpan</string>
@@ -348,5 +350,9 @@
     <string name="msg_reading_bootstrap">Membaca arsip bootstrap…</string>
     <string name="msg_bootstrap_installation_error">Instalasi Bootstrap gagal dengan exception berikut.</string>
     <string name="title_translations">Terjemahan</string>
+    <string name="title_compiler_module_install">Memasang modul compiler</string>
+    <string name="msg_compiler_module_install">Modul compiler sedang dipasang, mohon tunggu&#8230;</string>
+    <string name="msg_compiler_module_install_failed">Pemasangan modul compiler gagal. Berikut errornya:\n%s</string>
+    <string name="msg_compiler_module_installed">Modul compiler sukses terpasang!</string>
 
 </resources>

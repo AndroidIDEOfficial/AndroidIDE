@@ -54,7 +54,7 @@
   <string name="view_diags">Diagnose</string>
   <!-- Build Tools Installation -->
   <string name="title_installation_failed">Installation fehlgeschlagen</string>
-  <string name="msg_installation_failed">Der Installationsvorgang wurde mit dem Beendigungscode %1$d beendet. Stellen Sie sicher, dass Sie die Build-Tools aus Originalquellen heruntergeladen haben.\n\nSie k&#xF6;nnten versuchen, Daten von AndroidIDE zu l&#xF6;schen und erneut zu installieren.</string>
+  <string name="msg_installation_failed">Der Installationsvorgang wurde mit dem Beendigungscode %1$d beendet. Stellen Sie sicher, dass Sie die Build-Tools aus Originalquellen heruntergeladen haben.\n\nSie k&#xF6;nnten versuchen, Daten von AndroidIDE zu l&#xF6;schen und erneut zu installieren.\n\n%2$s</string>
   <string name="choose">W&#xE4;hlen</string>
   <string name="get_ready_for_something_awesome">Machen Sie sich bereit f&#xFC;r etwas Gro&#xDF;artiges!</string>
   <string name="androidide_build_tools">AndroidIDE-Build-Tools</string>

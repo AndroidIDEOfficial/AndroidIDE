@@ -130,13 +130,18 @@ public class JavaCompilerService implements CompilerProvider {
         return new CompileBatch (this, moreSources);
     }
     
-    private CompileBatch compileBatch (Collection<? extends JavaFileObject> sources) {
-        if (needsCompile (sources)) {
-            loadCompile (sources);
-        } else {
-            LOG.info ("...using cached compile");
-        }
-        return cachedCompile;
+    private SynchronizedTask compileBatch (Collection<? extends JavaFileObject> sources) {
+        synchronizedTask.doCompile (() -> {
+            if (needsCompile (sources)) {
+                loadCompile (sources);
+            } else {
+                LOG.info ("...using cached compile");
+            }
+            final CompileTask task = new CompileTask (cachedCompile, diagnostics);
+            synchronizedTask.setTask (task);
+        });
+        
+        return synchronizedTask;
     }
     
     private static final Cache<String, Boolean> cacheContainsWord = new Cache<> ();
@@ -338,29 +343,25 @@ public class JavaCompilerService implements CompilerProvider {
     }
     
     @Override
-    public synchronized SynchronizedTask compile (Path... files) {
-        return synchronizedTask.getWithTask (compileTask -> {
-            List<JavaFileObject> sources = new ArrayList<> ();
-            for (Path f : files) {
-                sources.add (new SourceFileObject (f));
-            }
-            return compile (sources);
-        });
+    public SynchronizedTask compile (Path... files) {
+        List<JavaFileObject> sources = new ArrayList<> ();
+        for (Path f : files) {
+            sources.add (new SourceFileObject (f));
+        }
+        return compile (sources);
     }
     
     @Override
-    public synchronized SynchronizedTask compile (Collection<? extends JavaFileObject> sources) {
-        synchronized (synchronizedTask) {
-            final CompileBatch compile = compileBatch (sources);
-            final CompileTask compileTask = new CompileTask (compile, diagnostics);
-            synchronizedTask.setTask (compileTask);
-            return synchronizedTask;
-        }
+    public SynchronizedTask compile (Collection<? extends JavaFileObject> sources) {
+        return compileBatch (sources);
     }
     
     public synchronized void close () {
         if (cachedCompile != null && !cachedCompile.closed) {
             cachedCompile.close();
+            if (!cachedCompile.borrow.closed) {
+                cachedCompile.borrow.close ();
+            }
         }
         
         if (lock.isHeldByCurrentThread() && lock.isLocked()) {

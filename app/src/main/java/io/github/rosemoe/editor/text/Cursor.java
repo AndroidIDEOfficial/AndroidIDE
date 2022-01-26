@@ -15,19 +15,20 @@
  */
 package io.github.rosemoe.editor.text;
 
+import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.utils.Logger;
+
 import io.github.rosemoe.editor.interfaces.EditorLanguage;
 import io.github.rosemoe.editor.util.IntPair;
 import io.github.rosemoe.editor.widget.CodeEditor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Rose
  * Warning:The cursor position will update automatically when the content has been changed by other way
  */
-public final class Cursor {
+public final class  Cursor {
 
     private final Content mContent;
     private final CachedIndexer mIndexer;
@@ -40,7 +41,9 @@ public final class Cursor {
     private final CodeEditor editor;
     
     private final List<Character> pairs;
-
+    
+    private static final Logger LOG = Logger.instance ("Cursor");
+    
     /**
      * Create a new Cursor for Content
      *
@@ -315,11 +318,10 @@ public final class Cursor {
     /**
      * Create indent space
      *
-     * @param p Target width effect
+     * @param space Target width effect
      * @return Generated space string
      */
-    private String createIndent(int p) {
-        int space = p;
+    private String createIndent(int space) {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < space; i++) {
             s.append(' ');
@@ -334,7 +336,29 @@ public final class Cursor {
         if (isSelected()) {
             mContent.delete(getLeftLine(), getLeftColumn(), getRightLine(), getRightColumn());
         } else {
+            final int line = getLeftLine ();
             int col = getLeftColumn(), len = 1;
+    
+            final int tabCount = StudioApp.getInstance ().getPrefManager ().getEditorTabSize ();
+            if (col - tabCount >= 0) {
+                final int start = col - tabCount;
+                final CharSequence sub = mContent.subContent (line, start, line, col);
+                
+                boolean deleteSpaces = true;
+                for (int i = 0; i < sub.length (); i++) {
+                    final char c = sub.charAt (i);
+                    if (!isWhitespace (c)) {
+                        deleteSpaces = false;
+                        break;
+                    }
+                }
+                
+                if (deleteSpaces) {
+                    mContent.delete (line, start, line, col);
+                    return;
+                }
+            }
+            
             //Do not put cursor inside a emotion character
             if (col > 1) {
                 char before = mContent.charAt(getLeftLine(), col - 2);

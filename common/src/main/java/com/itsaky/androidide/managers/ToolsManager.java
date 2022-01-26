@@ -20,6 +20,7 @@ package com.itsaky.androidide.managers;
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.FileIOUtils;
+import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.app.BaseApplication;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.zip.ZipInputStream;
 
 public class ToolsManager {
     
@@ -48,6 +50,7 @@ public class ToolsManager {
         copyBusyboxIfNeeded();
         extractLogsenderIfNeeded();
         extractLibHooks();
+        extractGradlePlugin();
         writeInitScript();
         rewriteProjectData();
         
@@ -55,7 +58,24 @@ public class ToolsManager {
             onFinish.run();
         }
     }
-
+    
+    private static void extractGradlePlugin () {
+        final var repoDir = new File (Environment.ANDROIDIDE_HOME, "repo");
+        FileUtils.createOrExistsDir (repoDir);
+        
+        final var zip = new File (Environment.TMP_DIR, "gradle-plugin.zip");
+        if (zip.exists ()) {
+            FileUtils.delete (zip);
+        }
+        
+        ResourceUtils.copyFileFromAssets (getCommonAsset ("gradle-plugin.zip"), zip.getAbsolutePath ());
+        try {
+            ZipUtils.unzipFile (zip, repoDir);
+        } catch (Throwable e) {
+            LOG.error ("Unable to extract gradle plugin zip file");
+        }
+    }
+    
     public static void extractLibHooks() {
         if(!Environment.LIB_HOOK.exists()) {
             ResourceUtils.copyFileFromAssets(getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
@@ -83,6 +103,9 @@ public class ToolsManager {
     }
     
     private static void writeInitScript() {
+        if (Environment.INIT_SCRIPT.exists ()) {
+            FileUtils.delete (Environment.INIT_SCRIPT);
+        }
         FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, readInitScript());
     }
 
@@ -95,7 +118,7 @@ public class ToolsManager {
         try {
             final boolean isOld = LOG_SENDER_VERSION > prefs.getInt(KEY_LOG_SENDER_VERSION, 0);
             if(isOld) {
-                final File logsenderZip = new File(Environment.JLS_HOME, "logsender.zip");
+                final File logsenderZip = new File(Environment.TMP_DIR, "logsender.zip");
                 ResourceUtils.copyFileFromAssets(getCommonAsset("logsender.zip"), logsenderZip.getAbsolutePath());
                 ZipUtils.unzipFile(logsenderZip, Environment.HOME);
                 prefs.putInt(KEY_LOG_SENDER_VERSION, LOG_SENDER_VERSION);

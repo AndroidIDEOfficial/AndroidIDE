@@ -153,7 +153,7 @@ public class CompileBatch implements AutoCloseable {
         
         Collections.addAll (list, "-classpath", joinPath (classPath));
         Collections.addAll (list, "-source", "11", "-target", "11");
-        Collections.addAll (list, "--system", Environment.JAVA_HOME.getAbsolutePath ());
+        Collections.addAll (list, "--system", Environment.COMPILER_MODULE.getAbsolutePath ());
         Collections.addAll (list, "-proc:none");
         Collections.addAll (list, "-g");
         

@@ -75,43 +75,43 @@ public class DefinitionProvider implements IDefinitionProvider {
     }
     
     public List<Location> find() {
-        try (SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                Element element = NavigationHelper.findElement(task, file, line, column);
-                if (element == null) {
-                    LOG.error ("Cannot find element at line:", line, "and column:", column);
-                    return NOT_SUPPORTED;
-                }
-                
-                if (element.asType().getKind() == TypeKind.ERROR) {
-                    task.close();
-                    LOG.debug ("Find definition of error element:", element);
-                    return findError(element);
-                }
-                // TODO instead of checking isLocal, just try to resolve the location, fall back to searching
-                if (NavigationHelper.isLocal(element)) {
-                    LOG.debug ("Find definition of local element:", element);
-                    return findDefinitions(task, element);
-                }
-                String className = className(element);
-                if (className.isEmpty()) {
-                    LOG.error ("No class name found for element:", element);
-                    return NOT_SUPPORTED;
-                }
-                Optional<JavaFileObject> otherFile = compiler.findAnywhere(className);
-                if (!otherFile.isPresent ()) {
-                    LOG.error ("Cannot find source file for class:", className);
-                    return Collections.emptyList ();
-                }
-                
-                if (otherFile.get().toUri().equals(file.toUri())) {
-                    return findDefinitions(task, element);
-                }
+        SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask (task -> {
+            Element element = NavigationHelper.findElement(task, file, line, column);
+            if (element == null) {
+                LOG.error ("Cannot find element at line:", line, "and column:", column);
+                return NOT_SUPPORTED;
+            }
+        
+            if (element.asType().getKind() == TypeKind.ERROR) {
                 task.close();
-                
-                return findRemoteDefinitions(otherFile.get());
-            });
-        }
+                LOG.debug ("Find definition of error element:", element);
+                return findError(element);
+            }
+            // TODO instead of checking isLocal, just try to resolve the location, fall back to searching
+            if (NavigationHelper.isLocal(element)) {
+                LOG.debug ("Find definition of local element:", element);
+                return findDefinitions(task, element);
+            }
+            String className = className(element);
+            if (className.isEmpty()) {
+                LOG.error ("No class name found for element:", element);
+                return NOT_SUPPORTED;
+            }
+            Optional<JavaFileObject> otherFile = compiler.findAnywhere(className);
+            if (!otherFile.isPresent ()) {
+                LOG.error ("Cannot find source file for class:", className);
+                return Collections.emptyList ();
+            }
+        
+            if (otherFile.get().toUri().equals(file.toUri())) {
+                return findDefinitions(task, element);
+            }
+            task.close();
+        
+            return findRemoteDefinitions(otherFile.get());
+        });
+    
     }
     
     private List<Location> findError(Element element) {
@@ -142,22 +142,21 @@ public class DefinitionProvider implements IDefinitionProvider {
         }
         
         List<Location> locations = new ArrayList<> ();
-        try (SynchronizedTask synchronizedTask = compiler.compile(sources)) {
-            synchronizedTask.runWithTask (task -> {
-                Trees trees = Trees.instance(task.task);
-                Elements elements = task.task.getElements();
-                TypeElement parentClass = elements.getTypeElement(className);
-                for (Element member : elements.getAllMembers(parentClass)) {
-                    if (!member.getSimpleName().contentEquals(memberName)) continue;
-                    TreePath path = trees.getPath(member);
-                    if (path == null) {
-                        continue;
-                    }
-                    Location location = FindHelper.location(task, path, memberName);
-                    locations.add(location);
+        SynchronizedTask synchronizedTask = compiler.compile(sources);
+        synchronizedTask.runWithTask (task -> {
+            Trees trees = Trees.instance(task.task);
+            Elements elements = task.task.getElements();
+            TypeElement parentClass = elements.getTypeElement(className);
+            for (Element member : elements.getAllMembers(parentClass)) {
+                if (!member.getSimpleName().contentEquals(memberName)) continue;
+                TreePath path = trees.getPath(member);
+                if (path == null) {
+                    continue;
                 }
-            });
-        }
+                Location location = FindHelper.location(task, path, memberName);
+                locations.add(location);
+            }
+        });
         return locations;
     }
     
@@ -173,12 +172,11 @@ public class DefinitionProvider implements IDefinitionProvider {
     }
     
     private List<Location> findRemoteDefinitions(JavaFileObject otherFile) {
-        try (SynchronizedTask synchronizedTask = compiler.compile(Arrays.asList (new SourceFileObject(file), otherFile))) {
-            return synchronizedTask.getWithTask (task -> {
-                Element element = NavigationHelper.findElement(task, file, line, column);
-                return findDefinitions(task, element);
-            });
-        }
+        SynchronizedTask synchronizedTask = compiler.compile(Arrays.asList (new SourceFileObject(file), otherFile));
+        return synchronizedTask.getWithTask (task -> {
+            Element element = NavigationHelper.findElement(task, file, line, column);
+            return findDefinitions(task, element);
+        });
     }
     
     private List<Location> findDefinitions(CompileTask task, Element element) {

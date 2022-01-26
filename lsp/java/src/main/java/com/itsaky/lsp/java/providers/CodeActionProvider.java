@@ -110,15 +110,14 @@ public class CodeActionProvider implements ICodeActionProvider {
         Instant started = Instant.now();
         
         final TreeMap<String, Rewrite> rewrites = new TreeMap<> ();
-        try (final SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            synchronizedTask.runWithTask (task -> {
-                long elapsed = Duration.between(started, Instant.now()).toMillis();
-                LOG.info(String.format(Locale.getDefault (), "...compiled in %d ms", elapsed));
-                final LineMap lines = task.root().getLineMap();
-                final long cursor = lines.getPosition(line, column);
-                rewrites.putAll(overrideInheritedMethods(task, file, cursor));
-            });
-        }
+        final SynchronizedTask synchronizedTask = compiler.compile(file);
+        synchronizedTask.runWithTask (task -> {
+            long elapsed = Duration.between(started, Instant.now()).toMillis();
+            LOG.info(String.format(Locale.getDefault (), "...compiled in %d ms", elapsed));
+            final LineMap lines = task.root().getLineMap();
+            final long cursor = lines.getPosition(line, column);
+            rewrites.putAll(overrideInheritedMethods(task, file, cursor));
+        });
         
         List<CodeActionItem> actions = new ArrayList<> ();
         for (String title : rewrites.keySet()) {
@@ -190,18 +189,17 @@ public class CodeActionProvider implements ICodeActionProvider {
         LOG.info(String.format(Locale.getDefault (), "Check %d diagnostics for quick fixes...", params.getDiagnostics().size()));
         Instant started = Instant.now();
         Path file = params.getFile ();
-        try (final SynchronizedTask synchronizedTask = compiler.compile(file)) {
-            return synchronizedTask.getWithTask (task -> {
-                List<CodeActionItem> actions = new ArrayList<>();
-                for (DiagnosticItem d : params.getDiagnostics()) {
-                    List<CodeActionItem> newActions = codeActionForDiagnostic(task, file, d);
-                    actions.addAll(newActions);
-                }
-                long elapsed = Duration.between(started, Instant.now()).toMillis();
-                LOG.info(String.format(Locale.getDefault (), "...created %d quick fixes in %d ms", actions.size(), elapsed));
-                return actions;
-            });
-        }
+        final SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask (task -> {
+            List<CodeActionItem> actions = new ArrayList<>();
+            for (DiagnosticItem d : params.getDiagnostics()) {
+                List<CodeActionItem> newActions = codeActionForDiagnostic(task, file, d);
+                actions.addAll(newActions);
+            }
+            long elapsed = Duration.between(started, Instant.now()).toMillis();
+            LOG.info(String.format(Locale.getDefault (), "...created %d quick fixes in %d ms", actions.size(), elapsed));
+            return actions;
+        });
     }
     
     private List<CodeActionItem> codeActionForDiagnostic(CompileTask task, Path file, DiagnosticItem d) {

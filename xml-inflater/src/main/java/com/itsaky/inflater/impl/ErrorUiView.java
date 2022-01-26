@@ -78,13 +78,13 @@ public class ErrorUiView extends UiViewGroup {
     
     @Override
     public void addView (IView view, int index) {
-        // Adding the view at the given index will result in an error
-        // This is because the children list is different in this error
-        //    view. Because of TextView added in ErrorView.create (...);
-        // So we simply add the view at index 0 and make it invisible
-        super.addView (view, 0);
-        
+        super.addView (view, index);
         view.asView ().setVisibility (View.GONE);
+    }
+    
+    @Override
+    public int getChildCount () {
+        return super.getChildCount () - 1;
     }
     
     @Override

@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.lsp.models.CodeActionItem;
@@ -84,23 +85,27 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                         android.R.attr.actionModePasteDrawable,
                     });
                     
+                    menu.add (0, 8, 0, R.string.action_expand_selection)
+                            .setShowAsActionFlags (1)
+                            .setIcon (createDrawable (R.drawable.ic_expand_selection));
+                    
                     menu.add(0, 0, 0, mEditor.getContext().getString(android.R.string.selectAll))
-                        .setShowAsActionFlags(2)
+                        .setShowAsActionFlags(1)
                         .setIcon(array.getDrawable(0));
 
                     if (mEditor.isEditable()) {
                         menu.add(0, 1, 0, mEditor.getContext().getString(android.R.string.cut))
-                            .setShowAsActionFlags(2)
+                            .setShowAsActionFlags(1)
                             .setIcon(array.getDrawable(1));
                     }
 
                     menu.add(0, 2, 0, mEditor.getContext().getString(android.R.string.copy))
-                        .setShowAsActionFlags(2)
+                        .setShowAsActionFlags(1)
                         .setIcon(array.getDrawable(2));
 
                     if (mEditor.isEditable()) {
                         menu.add(0, 3, 0, mEditor.getContext().getString(android.R.string.paste))
-                            .setShowAsActionFlags(2)
+                            .setShowAsActionFlags(1)
                             .setIcon(array.getDrawable(3));
                     }
     
@@ -191,18 +196,16 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                             mEditor.uncommentLine();
                             break;
                         case 8 :
-                            if (fixes == null || fixes.isEmpty()) {
-                                StudioApp.getInstance().toast(com.itsaky.androidide.R.string.msg_no_code_actions, Toaster.Type.INFO);
-                                break;
-                            }
-                            showFixes();
+                            mEditor.expandSelection ();
                             break;
                     }
-
-                    if (menuItem.getItemId() != 0) {
-                        onExit();
+    
+                    final var id = menuItem.getItemId ();
+                    if (id == 0 || id == 8) {
+                        return true;
                     }
-                    return false;
+                    
+                    return onExit ();
                 }
 
                 @Override
@@ -211,77 +214,6 @@ class EditorTextActionModeStarter implements CodeEditor.EditorTextActionPresente
                     mActionMode = null;
                     mEditor.setSelection(mEditor.getCursor().getLeftLine(), mEditor.getCursor().getLeftColumn());
                 }
-
-                void showFixes() {
-                    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (mEditor.getContext ());
-                    builder.setTitle(com.itsaky.androidide.R.string.msg_code_actions);
-                    builder.setView(createFixesListView());
-                    builder.show();
-                }
-
-                ListView createFixesListView() {
-                    final ListView list = new ListView(mEditor.getContext());
-                    final QuickFixAdapter adapter = new QuickFixAdapter(fixes);
-                    list.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                    list.setAdapter(adapter);
-                    list.setOnItemClickListener((a, b, c, d) -> performCodeAction(adapter.getItem(c)));
-                    return list;
-                }
-
-                class QuickFixAdapter extends BaseAdapter {
-
-                    private final List<CodeActionItem> actions;
-                    private final int dp16 = SizeUtils.dp2px(16);
-                    private final int dp4 = SizeUtils.dp2px(4);
-                    private final int dp48 = SizeUtils.dp2px(48);
-
-                    public QuickFixAdapter(List<CodeActionItem> actions) {
-                        this.actions = actions;
-                    }
-
-                    @Override
-                    public int getCount() {
-                        return actions.size();
-                    }
-
-                    @Override
-                    public CodeActionItem getItem(int position) {
-                        return actions.get(position);
-                    }
-
-                    @Override
-                    public long getItemId(int position) {
-                        return position;
-                    }
-
-                    @Override
-                    public View getView(int position, View convertView, ViewGroup parent) {
-                        if (convertView == null) {
-                            convertView = createItemTextView(position, parent);
-                        }
-                        return convertView;
-                    }
-
-                    private View createItemTextView(int position, ViewGroup parent) {
-                        final var action = getItem(position);
-                        final TextView text = new TextView(parent.getContext());
-                        final String title = action.getTitle();
-
-                        text.setText(title);
-                        text.setPaddingRelative(dp16, dp4, dp16, dp4);
-                        text.setMinHeight(dp48);
-                        text.setGravity(Gravity.CENTER_VERTICAL);
-
-                        return text;
-                    }
-                }
-
-                void performCodeAction(CodeActionItem action) {
-                    if (mEditor.getLanguageClient() != null) {
-                        mEditor.getLanguageClient().performCodeAction(mEditor, action);
-                    }
-                }
-
             });
     }
 

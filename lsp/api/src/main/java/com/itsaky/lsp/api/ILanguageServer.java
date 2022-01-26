@@ -75,6 +75,13 @@ public interface ILanguageServer {
     void connectClient (@Nullable ILanguageClient client);
     
     /**
+     * Get the instance of the language client connected to this server.
+     * @return The language client.
+     */
+    @Nullable
+    ILanguageClient getClient ();
+    
+    /**
      * Apply settings to the language server. Its up to the language server how it
      * applies these settings to the language service providers.
      *
@@ -123,6 +130,14 @@ public interface ILanguageServer {
      */
     @NonNull
     IDefinitionProvider getDefinitionProvider();
+    
+    /**
+     * Get the selection provider associated with this language server.
+     *
+     * @return The selection provider instance.
+     */
+    @NonNull
+    ISelectionProvider getSelectionProvider ();
     
     /**
      * Get the signature help provider associated with this language server.

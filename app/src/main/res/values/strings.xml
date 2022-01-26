@@ -56,7 +56,7 @@
 
     <!-- Build Tools Installation -->
     <string name="title_installation_failed">Installation failed</string>
-    <string name="msg_installation_failed">Installation process terminated with exit code %1$d. Make sure you downloaded the build tools from original sources.\n\nYou could try to clear data of AndroidIDE and install again.</string>
+    <string name="msg_installation_failed">Installation process terminated with exit code %1$d. Make sure you downloaded the build tools from original sources.\n\nYou could try to clear data of AndroidIDE and install again. \n\n%2$s</string>
     <string name="choose">Choose</string>
     <string name="get_ready_for_something_awesome">Get ready for something awesome !</string>
     <string name="androidide_build_tools">AndroidIDE Build Tools</string>
@@ -154,7 +154,9 @@
     <string name="template_description_navigation_drawer">Project with AppCompat Toolbar, DrawerLayout and NavigationView</string>
     <string name="template_empty">Empty project</string>
     <string name="template_navigation_drawer">Navigation drawer project</string>
-
+    <string name="template_kotlin_basic">Kotlin Basic Project</string>
+    <string name="template_description_kotlin_basic">Kotlin project with Appcompat Toolbar and a Floating Action Button</string>
+    
     <!-- Files -->
     <string name="save">Save</string>
     <string name="show_files">Files</string>
@@ -348,5 +350,14 @@
     <string name="msg_reading_bootstrap">Reading bootstrap archive…</string>
     <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
     <string name="title_translations">Translations</string>
+    <string name="title_compiler_module_install">Installing compiler module</string>
+    <string name="msg_compiler_module_install">Compiler module is being installed, please wait&#8230;</string>
+    <string name="msg_compiler_module_install_failed">Compiler module installation failed. The error was:\n%s</string>
+    <string name="msg_compiler_module_installed">Compiler module installed successfully!</string>
+    <string name="action_expand_selection">Expand selection</string>
+    <string name="idepref_java_matchLower_title">Match completions in lower case</string>
+    <string name="idepref_java_matchLower_summary">If enabled, then typing a lower case or upper case letters will suggest class names as well as scope members.</string>
+    <string name="idepref_editor_category_common">Common</string>
+    <string name="idepref_editor_category_java">Java</string>
 
 </resources>

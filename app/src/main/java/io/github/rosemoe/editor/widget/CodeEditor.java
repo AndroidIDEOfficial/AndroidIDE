@@ -81,6 +81,7 @@ import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
+import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.ReferenceParams;
@@ -3529,6 +3530,17 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
     }
     
     /**
+     * Set selection to the given range.
+     * @param range The range to select.
+     */
+    public void setSelection (Range range) {
+        setSelectionRegion (range.getStart ().getLine (),
+                range.getStart ().getColumn (),
+                range.getEnd ().getLine (),
+                range.getEnd ().getColumn ());
+    }
+    
+    /**
      * Set selection region with a call to {@link CodeEditor#ensureSelectionVisible()}
      *
      * @param lineLeft    Line left
@@ -4632,6 +4644,36 @@ public class CodeEditor extends View implements ContentListener, TextAnalyzer.Ca
                 getCursorRange (),
                 diagnostics
         )));
+    }
+    
+    public void expandSelection () {
+        if (mLanguageServer == null || getFile () == null) {
+            LOG.error ("Cannot expand selection. Language server or file is null");
+            return;
+        }
+        
+        final var pd = ProgressDialog.show (getContext (), null, getContext ().getString (R.string.please_wait), true, false);
+        final CompletableFuture<Range> future = CompletableFuture.supplyAsync (() ->
+                mLanguageServer.getSelectionProvider ()
+                    .expandSelection (
+                            new ExpandSelectionParams (
+                                    getFile ().toPath (),
+                                    getCursorRange ()
+                            )
+                    )
+        );
+        
+        future.whenComplete (((range, throwable) -> {
+            
+            pd.dismiss ();
+            
+            if (throwable != null) {
+                LOG.error ("Error computing expanded selection range", throwable);
+                return;
+            }
+            
+            setSelection (range);
+        }));
     }
     
     public Position getCursorAsLSPPosition () {

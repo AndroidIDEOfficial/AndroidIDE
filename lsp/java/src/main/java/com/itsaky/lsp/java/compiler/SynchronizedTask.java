@@ -34,32 +34,93 @@
 
 package com.itsaky.lsp.java.compiler;
 
+import androidx.annotation.GuardedBy;
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * @author Akash Yadav
- */
-public class SynchronizedTask implements AutoCloseable {
+// See CodeAssist's CompilerContainer
+public class SynchronizedTask {
     
+    private volatile boolean isWriting;
+    private final Object lock = new Object ();
+    
+    @GuardedBy ("lock")
     private volatile CompileTask task;
     
-    public synchronized void runWithTask (Consumer<CompileTask> taskConsumer) {
-        taskConsumer.accept (task);
+    private final List<Thread> readerThreads = Collections.synchronizedList(new ArrayList<> ());
+    
+    private void closeIfEmpty() {
+        if (readerThreads.isEmpty()) {
+            if (task != null) {
+                task.close();
+            }
+        }
     }
     
-    public synchronized <T> T getWithTask (Function<CompileTask, T> function) {
-        return function.apply (task);
+    public void runWithTask (@NonNull Consumer<CompileTask> taskConsumer) {
+        waitForWriter ();
+        readerThreads.add (Thread.currentThread ());
+        synchronized (lock) {
+            try {
+                taskConsumer.accept (task);
+            } finally {
+                readerThreads.remove(Thread.currentThread());
+            }
+        }
     }
     
-    public synchronized void setTask (CompileTask task) {
+    public <T> T getWithTask (@NonNull Function<CompileTask, T> function) {
+        waitForWriter();
+        readerThreads.add(Thread.currentThread());
+        try {
+            return function.apply (task);
+        } finally {
+            readerThreads.remove(Thread.currentThread());
+        }
+    }
+    
+    void doCompile (@NonNull Runnable run) {
+        synchronized (lock) {
+            assertIsNotReader();
+            waitForReaders();
+            try {
+                isWriting = true;
+                run.run();
+            } finally {
+                isWriting = false;
+            }
+        }
+    }
+    
+    void setTask (CompileTask task) {
         this.task = task;
     }
     
-    @Override
-    public void close () {
-        if (task != null) {
-            task.close ();
+    private void waitForReaders() {
+        while (true) {
+            if (readerThreads.isEmpty()) {
+                closeIfEmpty();
+                return;
+            }
+        }
+    }
+    
+    private void waitForWriter() {
+        while (true) {
+            if (!isWriting) {
+                return;
+            }
+        }
+    }
+    
+    private void assertIsNotReader() {
+        if (readerThreads.contains(Thread.currentThread())) {
+            throw new RuntimeException("Cannot compile inside a container.");
         }
     }
 }

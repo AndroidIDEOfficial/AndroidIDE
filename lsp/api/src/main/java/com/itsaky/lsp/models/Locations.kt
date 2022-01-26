@@ -142,7 +142,44 @@ open class Range(var start: Position, var end: Position) : Comparable<Range> {
         return start.line <= line && end.line >= line
     }
     
+    fun containsColumn (column: Int): Boolean {
+        return start.column <= column && end.column >= column
+    }
+    
+    fun containsRange (other: Range) : Boolean {
+        if (!containsLine(other.start.line) || !containsLine(other.end.line)) {
+            return false
+        }
+        
+        return containsColumn(other.start.column) && containsColumn(other.end.column);
+    }
+    
+    fun isSmallerThan (other: Range) : Boolean {
+        return other.isBiggerThan(this)
+    }
+    
+    fun isBiggerThan (other: Range) : Boolean {
+        
+        if (equals(other)) {
+            return false
+        }
+        
+        if (start.line < other.start.line && end.line > other.end.line) {
+            return true
+        }
+        
+        if (start.line == other.start.line && end.line == other.end.line) {
+            if (start.column <= other.start.column && end.column >= other.end.column) {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
     override fun toString(): String {
         return "Range(start=$start, end=$end)"
     }
 }
+
+data class ExpandSelectionParams (var file: Path, var selection: Range)

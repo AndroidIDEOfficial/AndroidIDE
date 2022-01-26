@@ -7,7 +7,7 @@ buildscript {
         targetSdk = 28
         versionCode = 200
         versionName = "2.0-beta"
-		packageName = "com.itsaky.androidide"
+        packageName = "com.itsaky.androidide"
         
         javaSourceVersion = JavaVersion.VERSION_11
         javaTargetVersion = JavaVersion.VERSION_11
@@ -16,14 +16,14 @@ buildscript {
     repositories {
         google()
         mavenLocal()
-		mavenCentral()
+        mavenCentral()
         maven { url 'https://jitpack.io'}
     }
     
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.4"
-		classpath 'com.google.gms:google-services:4.3.8'
-		classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
+        classpath 'com.google.gms:google-services:4.3.8'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -44,3 +44,4 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+

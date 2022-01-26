@@ -25,7 +25,6 @@
 package jdk.internal.jrtfs;
 
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.javac11.LocationsProvider;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -111,6 +110,6 @@ abstract class SystemImage {
      * otherwise the JDK home is located relative to jrt-fs.jar.
      */
     private static String findHome() {
-        return Environment.JAVA_HOME.getAbsolutePath ();
+        return Environment.COMPILER_MODULE.getAbsolutePath ();
     }
 }
