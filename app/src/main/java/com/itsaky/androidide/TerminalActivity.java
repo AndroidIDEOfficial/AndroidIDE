@@ -17,13 +17,20 @@
  */
 package com.itsaky.androidide;
 
-import static com.itsaky.androidide.utils.Environment.*;
+import static com.itsaky.androidide.utils.Environment.BIN_DIR;
+import static com.itsaky.androidide.utils.Environment.HOME;
+import static com.itsaky.androidide.utils.Environment.LOGIN_SHELL;
+import static com.itsaky.androidide.utils.Environment.SYSROOT;
+import static com.itsaky.androidide.utils.Environment.getEnvironment;
 
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -36,7 +43,6 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.BootstrapInstaller;
-import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.virtualkeys.SpecialButton;
@@ -51,16 +57,11 @@ import com.itsaky.terminal.TextStyle;
 import com.itsaky.terminal.view.TerminalView;
 import com.itsaky.terminal.view.TerminalViewClient;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.file.Path;
-import java.util.Map;
-
 import org.json.JSONException;
 
-import android.os.Bundle;
-
-import androidx.annotation.NonNull;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Map;
 
 public class TerminalActivity extends StudioActivity {
     
