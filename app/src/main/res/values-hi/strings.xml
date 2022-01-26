@@ -256,7 +256,7 @@
     <string name="idepref_editor_drawhexcolors_title">हेक्स रंग के स्ट्रिंग्स ड्रा करें</string>
     <string name="idepref_editor_drawhexcolors_summary">क्या एडिटर को हेक्स रंग की स्ट्रिंग ड्रा करनी चाहिए?</string>
     <string name="idepref_editor_title">एडिटर</string>
-    <string name="idepref_build_title">बिल्ड &amp; रन</string>
+    <string name="idepref_build_title">बनिर्माण सम्बंधित</string>
     <string name="title_open_projects">अंतिम प्रोजेक्ट खोलें</string>
     <string name="msg_open_projects">यदि चेक किया गया है, तो आईडीई पिछले खुले हुए प्रोजेक्ट को याद रखेगा और इसे अगले स्टार्टअप पर फिर से खोल दिया जाएगा।</string>
     <string name="title_confirm_project_open">प्रोजेक्ट के खोलने की पुष्टि करें</string>
@@ -270,15 +270,15 @@
     <string name="msg_failed_get_changelog">चैंजलॉग पढ़ने में विफल!</string>
     <string name="pref_changelog">चैंजलॉग</string>
     <string name="msg_editor_font_size">कृपया एडिटर का डिफ़ॉल्ट फ़ॉन्ट साइज चुनें :</string>
-    <string name="msg_clear_cache">यह ग्रैडल द्वारा बनाई गई कैश डायरेक्टरी को हटा देगा। यदि आप इसे हटाते हैं, तो अगली बिल्ड में सामान्य से थोड़ा अधिक समय लग सकता है क्योंकि ग्रैडल आवश्यक फ़ाइलों को फिर से डाउनलोड करेगा।\nमहत्वपूर्ण: यह एएपीटी२ को भी हटा देगा। आपको इसे पुनः इंस्टॉल करने की आवश्यकता होगी अन्यथा आप एक निर्माण विफलता के साथ समाप्त हो जाएंगे।\n\nक्या आप सुनिश्चित हैं कि आप कैश हटाना चाहते हैं?</string>
+    <string name="msg_clear_cache">यह ग्रैडल द्वारा बनाई गई कैश डायरेक्टरी को हटा देगा। यदि आप इसे हटाते हैं, तो अगली बिल्ड में सामान्य से थोड़ा अधिक समय लग सकता है क्योंकि ग्रैडल आवश्यक फ़ाइलों को फिर से डाउनलोड करेगा।\nमहत्वपूर्ण: यह AAPT2 को भी हटा देगा। आपको इसे पुनः इंस्टॉल करने की आवश्यकता होगी अन्यथा अगला निर्माण विफल होने की संभावना है।।\n\nक्या आप सुनिश्चित हैं कि आप कैश हटाना चाहते हैं?</string>
 
 
     <!-- Error Messages used while Logging -->
     <string name="err_installation">इंस्टॉलेशन एरर</string>
     <string name="err_completion">कंप्लीशन एरर</string>
-    <string name="err_no_server_implementation">कोई लैंग्वेजसर्वर इंप्लीमेंटेशन नहीं मिला।</string>
+    <string name="err_no_server_implementation">कोई लैंग्वेज सर्वर उपलब्ध नही है।</string>
     <string name="err_init_server">लैंग्वेज सर्वर प्रारंभ करने में एरर</string>
-    <string name="err_init_sdkinfo">एसडीके जानकारी प्रारंभ करने में असमर्थ</string>
+    <string name="err_init_sdkinfo">SDK जानकारी प्रारंभ करने में असमर्थ</string>
     <string name="err_cannot_start_file_picker">फ़ाइल पिकर प्रारंभ करने में असमर्थ</string>
     <string name="err_cannot_parse_apk_metadata">एपीके मेटाडेटा को पार्स करने में विफल</string>
     <string name="err_cannot_save_files">फ़ाइलें सेव में असमर्थ</string>
@@ -296,18 +296,18 @@
     <string name="widget_button">बटन</string>
     <string name="widget_group_android">एंड्रॉयड</string>
     <string name="widget_checkbox">चेकबॉक्स</string>
-    <string name="widget_checked_textview">चेक्डटेक्सटव्यू</string>
+    <string name="widget_checked_textview">चेक्ड टेक्सटव्यू</string>
     <string name="widget_edittext">एडिटेक्सट</string>
-    <string name="widget_image_button">इमेजबटन</string>
-    <string name="widget_image_view">इमेजव्यू</string>
-    <string name="widget_progressbar">प्रोग्रेसबार</string>
+    <string name="widget_image_button">इमेज बटन</string>
+    <string name="widget_image_view">इमेज व्यू</string>
+    <string name="widget_progressbar">प्रोग्रेस बार</string>
     <string name="widget_radio_button">रेडियो बटन</string>
-    <string name="widget_seekbar">सीकबार</string>
+    <string name="widget_seekbar">सीक बार</string>
     <string name="widget_spinner">स्पिनर</string>
     <string name="widget_group_layouts">लेयाउट्स</string>
     <string name="layout_linear">लीनियर लेयाउट</string>
     <string name="layout_relative">रिलेटिव लेयाउट</string>
-    <string name="msg_attr_edit_hint">एडिट करने के लिए अट्रीब्यूट आइटम पर क्लिक करें।</string>
+    <string name="msg_attr_edit_hint">एडिट करने के लिए अट्रीब्यूट पर क्लिक करें।</string>
     <string name="sym_equal">=</string>
     <string name="msg_attr_namespace">\'%s\' नेमस्पेस</string>
     <string name="msg_unknown_package">अज्ञात पैकेज का नाम</string>
@@ -315,11 +315,11 @@
     <string name="msg_attr_editor_no_attrs">इस व्यू के लिए कोई अट्रीब्यूट नहीं जोड़ी गई है।\n जोड़ने के लिए \'+\' बटन पर क्लिक करें।</string>
     <string name="msg_enter_attr_value">अट्रीब्यूट के लिए नया वैल्यू दर्ज करें:</string>
     <string name="hint_new_attr_value">नया वैल्यू</string>
-    <string name="attr_val_wrap_content">रेप_कॉन्टेंट</string>
-    <string name="attr_val_match_parent">मैच_पैरेंट</string>
+    <string name="attr_val_wrap_content">रेप कॉन्टेंट</string>
+    <string name="attr_val_match_parent">मैच पैरेंट</string>
     <string name="attr_val_other">अन्य वैल्यू</string>
     <string name="msg_enter_dimension_value">डायमेंशन वैल्यू दर्ज करें</string>
-    <string name="msg_applicable_attrs">एप्लीकेबल अट्रीब्यूट्स</string>
+    <string name="msg_applicable_attrs">लागू अट्रीब्यूट्स</string>
     <string name="msg_attr_editor_actions">एक्शन्स</string>
     <string name="title_viewaction_delete">डिलीट</string>
     <string name="msg_viewaction_select_parent">पैरेंट सिलेक्ट करें</string>
@@ -335,19 +335,19 @@
     <string name="msg_add_namespace_decl">\'%1$s\' नेमस्पेस डिक्लेरेशन जोड़े</string>
     <string name="msg_choose_new_val">नया वैल्यू चयन करें</string>
     <string name="msg_select_one_flag">कृपया कम से कम एक फ्लैग जांचें।</string>
-    <string name="msg_generate_xml_failed">एक्सएमएल कोड जनरेट करने में विफल</string>
-    <string name="title_generating_xml">जेनरैटिंग एक्सएमएल कोड</string>
+    <string name="msg_generate_xml_failed">XML कोड जनरेट करने में विफल</string>
+    <string name="title_generating_xml"> XML कोड उत्पन्न किया जा रहा है</string>
     <string name="title_code_generation_failed">कोड जनरेशन विफल</string>
     <string name="msg_code_generation_failed">एक्सएमएल कोड जनरेट करने में विफल। क्या आप वैसे भी बाहर निकलना चाहेंगे?</string>
-    <string name="msg_invalid_designer_result">यूआई डिज़ाइनर ने अमान्य परिणाम लौटाया</string>
+    <string name="msg_invalid_designer_result">UI Designer ने अमान्य परिणाम लौटाया</string>
     <string name="msg_swipe_up">बिल्ड आउटपुट, लॉग आदि के लिए ऊपर की ओर स्वाइप करें।</string>
-    <string name="msg_ide_crashed">एंड्रॉयडआईडीई क्रैश हो गया</string>
+    <string name="msg_ide_crashed">AndroidIDE क्रैश हो गया</string>
     <string name="msg_report_crash">कृपया निम्नलिखित स्टैकट्रेस के साथ गिटहब पर एक मुद्दा खोलें :</string>
     <string name="msg_crash_report_hint">लॉग कॉपी करने के लिए नीचे दिए गए बटन पर क्लिक करें और मुद्दों का पेज खोलें।</string>
-    <string name="msg_copy_report_action">कॉपी एंड रिपोर्ट</string>
+    <string name="msg_copy_report_action">कॉपी करके रिपोर्ट करे</string>
     <string name="msg_reading_bootstrap">बूटस्ट्रैप आर्काइव रीड कर रहे…</string>
     <string name="msg_bootstrap_installation_error">बूटस्ट्रैप इंस्टॉलेशन निम्न एक्सेप्शन के साथ विफल रही।</string>
-    <string name="title_translations">ट्रांसलेशंस</string>
+    <string name="title_translations">अनुवाद</string>
 
 </resources>
  
