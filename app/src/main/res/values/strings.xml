@@ -355,5 +355,9 @@
     <string name="msg_compiler_module_install_failed">Compiler module installation failed. The error was:\n%s</string>
     <string name="msg_compiler_module_installed">Compiler module installed successfully!</string>
     <string name="action_expand_selection">Expand selection</string>
-    
+    <string name="idepref_java_matchLower_title">Match completions in lower case</string>
+    <string name="idepref_java_matchLower_summary">If enabled, then typing a lower case or upper case letters will suggest class names as well as scope members.</string>
+    <string name="idepref_editor_category_common">Common</string>
+    <string name="idepref_editor_category_java">Java</string>
+
 </resources>

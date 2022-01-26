@@ -73,4 +73,12 @@ public interface IServerSettings {
      * @return {@code true} if enabled, {@code false} otherwise.
      */
     boolean codeAnalysisEnabled ();
+    
+    /**
+     * Called by the completions provider to check if
+     * it should match partial names in all lowercase.
+     *
+     * @return {@code true} if enabled, {@code false} otherwise.
+     */
+    boolean shouldMatchAllLowerCase ();
 }

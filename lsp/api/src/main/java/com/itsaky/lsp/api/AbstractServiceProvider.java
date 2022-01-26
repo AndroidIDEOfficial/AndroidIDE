@@ -15,23 +15,31 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.util
+package com.itsaky.lsp.api;
 
-import com.itsaky.lsp.api.IServerSettings
+import com.itsaky.lsp.util.DefaultServerSettings;
 
 /**
- * Default settings for a language server.
- *
  * @author Akash Yadav
  */
-open class DefaultServerSettings : IServerSettings {
-    override fun completionsEnabled(): Boolean = true
-    override fun codeActionsEnabled(): Boolean = true
-    override fun smartSelectionsEnabled(): Boolean = true
-    override fun signatureHelpEnabled(): Boolean = true
-    override fun referencesEnabled(): Boolean = true
-    override fun definitionsEnabled(): Boolean = true
-    override fun codeAnalysisEnabled(): Boolean = true
+public class AbstractServiceProvider implements ConfigurableServiceProvider {
     
-    override fun shouldMatchAllLowerCase(): Boolean = false
+    private IServerSettings settings;
+    
+    public AbstractServiceProvider () {
+        this.settings = new DefaultServerSettings ();
+    }
+    
+    @Override
+    public void applySettings (IServerSettings settings) {
+        if (settings == null) {
+            settings = new DefaultServerSettings ();
+        }
+        
+        this.settings = settings;
+    }
+    
+    public IServerSettings getSettings () {
+        return settings;
+    }
 }

@@ -23,10 +23,8 @@ import android.content.SharedPreferences;
 
 public class PreferenceManager {
 
-    private SharedPreferences prefs;
+    private final SharedPreferences prefs;
     
-    public static final int LOGSENDER_LATEST_VERSION = 102;
-
     public static final String KEY_FRAMEWORK_DOWNLOADED = "framework_downloaded";
     public static final String KEY_FRAMEWORK_INSTALLED = "framework_installed";
     public static final String KEY_IS_FIRST_PROJECT_BUILD = "project_isFirstBuild";
@@ -35,26 +33,22 @@ public class PreferenceManager {
     public static final String KEY_CONFIRM_PROJECT_OPEN = "idepref_general_confirmProjectOpen";
     public static final String KEY_TERMINAL_USE_SYSTEM_SHELL = "idepref_general_terminalShell";
     
-    public static final String KEY_EDITORFLAG_WS_LEADING = "idepref_editor_wsLeading";
-    public static final String KEY_EDITORFLAG_WS_TRAILING = "idepref_editor_wsTrailing";
-    public static final String KEY_EDITORFLAG_WS_INNER = "idepref_editor_wsInner";
-    public static final String KEY_EDITORFLAG_WS_EMPTY_LINE = "idepref_editor_wsEmptyLine";
-    public static final String KEY_EDITORFLAG_LINE_BREAK = "idepref_editor_lineBreak";
+    public static final String KEY_EDITOR_FLAG_WS_LEADING = "idepref_editor_wsLeading";
+    public static final String KEY_EDITOR_FLAG_WS_TRAILING = "idepref_editor_wsTrailing";
+    public static final String KEY_EDITOR_FLAG_WS_INNER = "idepref_editor_wsInner";
+    public static final String KEY_EDITOR_FLAG_WS_EMPTY_LINE = "idepref_editor_wsEmptyLine";
+    public static final String KEY_EDITOR_FLAG_LINE_BREAK = "idepref_editor_lineBreak";
     public static final String KEY_EDITOR_DRAW_HEX = "idepref_editor_drawHexColors";
     public static final String KEY_EDITOR_FONT_SIZE = "idepref_editor_fontSize";
     public static final String KEY_EDITOR_PRINTABLE_CHARS = "idepref_editor_nonPrintableFlags";
     public static final String KEY_EDITOR_TAB_SIZE = "idepref_editor_tabSize";
     
-    public static final String KEY_GRADLE_CURRENT_DIR = "idepref_customGradle_currentFolder";
-    public static final String KEY_GRADLE_FILENAMES = "idepref_customGradle_folderNames";
-    public static final String KEY_GRADLECMD_STACKTRACRE = "idepref_gradleCmd_stacktrace";
-    public static final String KEY_GRADLECMD_DEBUG = "idepref_gradleCmd_debug";
-    public static final String KEY_GRADLECMD_SCAN = "idepref_gradleCmd_scan";
-    public static final String KEY_GRADLECMD_INFO = "idepref_gradleCmd_info";
-    public static final String KEY_GRADLECMD_WARNINGMODE = "idepref_gradleCmd_warningMode";
-
-    public static final String KEY_LOGSENDER_CURRENT_VERSION = "logsender_currentVersion";
-
+    public static final String KEY_GRADLE_CMD_STACK_TRACE = "idepref_gradleCmd_stacktrace";
+    public static final String KEY_GRADLE_CMD_DEBUG = "idepref_gradleCmd_debug";
+    public static final String KEY_GRADLE_CMD_SCAN = "idepref_gradleCmd_scan";
+    public static final String KEY_GRADLE_CMD_INFO = "idepref_gradleCmd_info";
+    public static final String KEY_GRADLE_CMD_WARNING_MODE = "idepref_gradleCmd_warningMode";
+    
     public static final String KEY_LAST_OPENED_PROJECT = "ide_last_project";
     public static final String NO_OPENED_PROJECT = "<NO_OPENED_PROJECT>";
 
@@ -135,44 +129,44 @@ public class PreferenceManager {
         return isFrameworkDownloaded() && getBoolean(KEY_FRAMEWORK_INSTALLED);
     }
 
-    public boolean isStracktraceEnabled() {
-        return getBoolean(KEY_GRADLECMD_STACKTRACRE);
+    public boolean isStackTraceEnabled () {
+        return getBoolean(KEY_GRADLE_CMD_STACK_TRACE);
     }
 
     public boolean isGradleInfoEnabled() {
-        return getBoolean(KEY_GRADLECMD_INFO, true);
+        return getBoolean(KEY_GRADLE_CMD_INFO, true);
     }
 
     public boolean isGradleDebugEnabled() {
-        return getBoolean(KEY_GRADLECMD_DEBUG);
+        return getBoolean(KEY_GRADLE_CMD_DEBUG);
     }
 
     public boolean isGradleScanEnabled() {
-        return getBoolean(KEY_GRADLECMD_SCAN);
+        return getBoolean(KEY_GRADLE_CMD_SCAN);
     }
 
     public boolean isGradleWarningEnabled() {
-        return getBoolean(KEY_GRADLECMD_WARNINGMODE);
+        return getBoolean(KEY_GRADLE_CMD_WARNING_MODE);
     }
 
     public PreferenceManager setGradleStacktraceEnabled(boolean enabled) {
-        return putBoolean(KEY_GRADLECMD_STACKTRACRE, enabled);
+        return putBoolean(KEY_GRADLE_CMD_STACK_TRACE, enabled);
     }
 
     public PreferenceManager setGradleInfoEnabled(boolean enabled) {
-        return putBoolean(KEY_GRADLECMD_INFO, enabled);
+        return putBoolean(KEY_GRADLE_CMD_INFO, enabled);
     }
 
     public PreferenceManager setGradleDebugEnabled(boolean enabled) {
-        return putBoolean(KEY_GRADLECMD_DEBUG, enabled);
+        return putBoolean(KEY_GRADLE_CMD_DEBUG, enabled);
     }
 
     public PreferenceManager setGradleScanEnabled(boolean enabled) {
-        return putBoolean(KEY_GRADLECMD_SCAN, enabled);
+        return putBoolean(KEY_GRADLE_CMD_SCAN, enabled);
     }
 
     public PreferenceManager setGradleWarningEnabled(boolean enabled) {
-        return putBoolean(KEY_GRADLECMD_WARNINGMODE, enabled);
+        return putBoolean(KEY_GRADLE_CMD_WARNING_MODE, enabled);
     }
     
     public int getEditorTabSize() {

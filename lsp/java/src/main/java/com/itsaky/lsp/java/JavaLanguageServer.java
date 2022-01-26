@@ -178,7 +178,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
             return new NoCompletionsProvider ();
         }
         
-        return new CompletionProvider (getCompiler ());
+        return new CompletionProvider (getCompiler (), this.settings);
     }
     
     @NonNull

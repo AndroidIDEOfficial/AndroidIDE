@@ -6,9 +6,14 @@
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable-hdpi/ic_expand_selection.xml" value="0.20833333333333334" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/bg_design_container_background.xml" value="0.1" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/bg_ui_view_pressed.xml" value="0.1" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_code.xml" value="0.19907407407407407" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_code_actions.xml" value="0.19907407407407407" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_completions.xml" value="0.19907407407407407" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_github.xml" value="0.21837606837606838" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_linear_layout.xml" value="0.175" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_relative_layout.xml" value="0.175" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_signature_help.xml" value="0.19907407407407407" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_text_lower.xml" value="0.19907407407407407" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/activity_about.xml" value="0.264" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/activity_crash_handler.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/activity_designer.xml" value="0.264" />

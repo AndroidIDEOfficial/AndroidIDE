@@ -15,23 +15,21 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.util
+package com.itsaky.lsp.api;
 
-import com.itsaky.lsp.api.IServerSettings
+import androidx.annotation.NonNull;
 
 /**
- * Default settings for a language server.
+ * Base class for service providers which can be configured using
+ * {@link IServerSettings}.
  *
  * @author Akash Yadav
  */
-open class DefaultServerSettings : IServerSettings {
-    override fun completionsEnabled(): Boolean = true
-    override fun codeActionsEnabled(): Boolean = true
-    override fun smartSelectionsEnabled(): Boolean = true
-    override fun signatureHelpEnabled(): Boolean = true
-    override fun referencesEnabled(): Boolean = true
-    override fun definitionsEnabled(): Boolean = true
-    override fun codeAnalysisEnabled(): Boolean = true
+public interface ConfigurableServiceProvider {
     
-    override fun shouldMatchAllLowerCase(): Boolean = false
+    /**
+     * Apply the given settings to this service provider.
+     * @param settings The settings to apply. If {@code null}, {@link com.itsaky.lsp.util.DefaultServerSettings} should be used.
+     */
+    void applySettings (IServerSettings settings);
 }

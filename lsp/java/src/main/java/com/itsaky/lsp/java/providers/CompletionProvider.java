@@ -23,7 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
+import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.FileStore;
@@ -92,7 +94,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Types;
 
-public class CompletionProvider implements ICompletionProvider {
+public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
     
     private final CompilerProvider compiler;
     
@@ -102,7 +104,10 @@ public class CompletionProvider implements ICompletionProvider {
     private Path completingFile;
     private long cursor;
     
-    public CompletionProvider (CompilerProvider compiler) {
+    public CompletionProvider (CompilerProvider compiler, IServerSettings settings) {
+        super ();
+        applySettings (settings);
+        
         this.compiler = compiler;
     }
     
@@ -239,8 +244,11 @@ public class CompletionProvider implements ICompletionProvider {
         CompletionResult list = new CompletionResult();
         list.setItems (completeUsingScope (task, path, partial, endsWithParen));
         addStaticImports(task, path.getCompilationUnit(), partial, endsWithParen, list);
-        if (!list.isIncomplete () && partial.length() > 0 && Character.isUpperCase(partial.charAt(0))) {
-            addClassNames(path.getCompilationUnit(), partial, list);
+        if (!list.isIncomplete ()) {
+            final boolean allLower = getSettings ().shouldMatchAllLowerCase ();
+            if (allLower || (partial.length () > 0 && Character.isUpperCase (partial.charAt (0)))) {
+                addClassNames(path.getCompilationUnit(), partial, list, allLower);
+            }
         }
         addKeywords(path, partial, list);
         return list;
@@ -257,7 +265,7 @@ public class CompletionProvider implements ICompletionProvider {
             keywords = METHOD_BODY_KEYWORDS;
         }
         for (String k : keywords) {
-            if (StringSearch.matchesPartialName(k, partial)) {
+            if (StringSearch.matchesPartialName(k, partial, getSettings ().shouldMatchAllLowerCase ())) {
                 list.getItems ().add(keyword(k));
             }
         }
@@ -281,7 +289,7 @@ public class CompletionProvider implements ICompletionProvider {
         Trees trees = Trees.instance(task.task);
         List<CompletionItem> list = new ArrayList<> ();
         Scope scope = trees.getScope(path);
-        Predicate<CharSequence> filter = name -> StringSearch.matchesPartialName(name, partial);
+        Predicate<CharSequence> filter = name -> StringSearch.matchesPartialName(name, partial, true);
         for (Element member : ScopeHelper.scopeMembers(task, scope, filter)) {
             if (member.getKind() == ElementKind.METHOD) {
                 ExecutableElement method = (ExecutableElement) member;
@@ -311,7 +319,7 @@ public class CompletionProvider implements ICompletionProvider {
             for (Element member : type.getEnclosedElements()) {
                 if (!member.getModifiers().contains(Modifier.STATIC)) continue;
                 if (!memberMatchesImport(id.getIdentifier(), member)) continue;
-                if (!StringSearch.matchesPartialName(member.getSimpleName(), partial)) continue;
+                if (!StringSearch.matchesPartialName(member.getSimpleName(), partial, getSettings ().shouldMatchAllLowerCase ())) continue;
                 if (member.getKind() == ElementKind.METHOD) {
                     putMethod((ExecutableElement) member, methods);
                 } else {
@@ -330,14 +338,14 @@ public class CompletionProvider implements ICompletionProvider {
     }
 
     private boolean importMatchesPartial(@NonNull Name staticImport, String partial) {
-        return staticImport.contentEquals("*") || StringSearch.matchesPartialName(staticImport, partial);
+        return staticImport.contentEquals("*") || StringSearch.matchesPartialName(staticImport, partial, getSettings ().shouldMatchAllLowerCase ());
     }
 
     private boolean memberMatchesImport(@NonNull Name staticImport, Element member) {
         return staticImport.contentEquals("*") || staticImport.contentEquals(member.getSimpleName());
     }
 
-    private void addClassNames(@NonNull CompilationUnitTree root, String partial, @NonNull CompletionResult list) {
+    private void addClassNames(@NonNull CompilationUnitTree root, String partial, @NonNull CompletionResult list, boolean allLower) {
         String packageName = Objects.toString(root.getPackageName(), "");
         Set<String> uniques = new HashSet<> ();
         int previousSize = list.getItems ().size();
@@ -349,13 +357,13 @@ public class CompletionProvider implements ICompletionProvider {
                 .collect (Collectors.toSet ());
         
         for (String className : compiler.packagePrivateTopLevelTypes(packageName)) {
-            if (!StringSearch.matchesPartialName(className, partial)) continue;
+            if (!StringSearch.matchesPartialName(className, partial, allLower)) continue;
             list.getItems ().add(classItem(imports, file, className));
             uniques.add(className);
         }
         
         for (String className : compiler.publicTopLevelTypes()) {
-            if (!StringSearch.matchesPartialName(simpleName(className), partial)) continue;
+            if (!StringSearch.matchesPartialName(simpleName(className), partial, allLower)) continue;
             if (uniques.contains(className)) continue;
             if (list.getItems ().size() > MAX_COMPLETION_ITEMS) {
                 list.setIncomplete (true);
@@ -371,14 +379,15 @@ public class CompletionProvider implements ICompletionProvider {
             }
             
             final ClassTree c = (ClassTree) t;
-            if (c.getModifiers ().getFlags ().isEmpty ()) {
-                // This is a package private class defined in the same file
-                final String name = packageName + "." + c.getSimpleName ();
-                list.getItems ().add (classItem (name));
-                if (list.getItems ().size () > MAX_COMPLETION_ITEMS) {
-                    list.setIncomplete (true);
-                    break;
-                }
+            if (!StringSearch.matchesPartialName (c.getSimpleName () == null ? "" : c.getSimpleName (), partial, allLower)) {
+                continue;
+            }
+    
+            final String name = packageName + "." + c.getSimpleName ();
+            list.getItems ().add (classItem (name));
+            if (list.getItems ().size () > MAX_COMPLETION_ITEMS) {
+                list.setIncomplete (true);
+                break;
             }
         }
         
@@ -437,7 +446,7 @@ public class CompletionProvider implements ICompletionProvider {
         Map<String, List<ExecutableElement>> methods = new HashMap<> ();
         for (Element member : task.task.getElements().getAllMembers(typeElement)) {
             if (member.getKind() == ElementKind.CONSTRUCTOR) continue;
-            if (!StringSearch.matchesPartialName(member.getSimpleName(), partial)) continue;
+            if (!StringSearch.matchesPartialName(member.getSimpleName(), partial, getSettings ().shouldMatchAllLowerCase ())) continue;
             if (!trees.isAccessible(scope, member, type)) continue;
             if (isStatic != member.getModifiers().contains(Modifier.STATIC)) continue;
             if (member.getKind() == ElementKind.METHOD) {
@@ -530,7 +539,7 @@ public class CompletionProvider implements ICompletionProvider {
         List<CompletionItem> list = new ArrayList<> ();
         Map<String, List<ExecutableElement>> methods = new HashMap<> ();
         for (Element member : task.task.getElements().getAllMembers(typeElement)) {
-            if (!StringSearch.matchesPartialName(member.getSimpleName(), partial)) continue;
+            if (!StringSearch.matchesPartialName(member.getSimpleName(), partial, getSettings ().shouldMatchAllLowerCase ())) continue;
             if (member.getKind() != ElementKind.METHOD) continue;
             if (!trees.isAccessible(scope, member, type)) continue;
             if (!isStatic && member.getModifiers().contains(Modifier.STATIC)) continue;
@@ -587,7 +596,7 @@ public class CompletionProvider implements ICompletionProvider {
         List<CompletionItem> list = new ArrayList<> ();
         for (Element member : task.task.getElements().getAllMembers(element)) {
             if (member.getKind() != ElementKind.ENUM_CONSTANT) continue;
-            if (!StringSearch.matchesPartialName(member.getSimpleName(), partial)) continue;
+            if (!StringSearch.matchesPartialName(member.getSimpleName(), partial, getSettings ().shouldMatchAllLowerCase ())) continue;
             list.add(item(task, member));
         }
         

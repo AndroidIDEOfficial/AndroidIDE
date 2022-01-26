@@ -88,6 +88,7 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.models.PrefBasedJavaServerSettings;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
@@ -1293,9 +1294,11 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                                 .getProjectPath ()
                 ).toPath ()
         );
+        
         final var params = new InitializeParams (workspaceRoots);
         
         javaLanguageServer.connectClient (client);
+        javaLanguageServer.applySettings (PrefBasedJavaServerSettings.getInstance ());
         javaLanguageServer.initialize (params);
     }
     
