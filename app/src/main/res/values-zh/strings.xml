@@ -2,7 +2,6 @@
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_epl">AndroidIDE使用了许可证为EPL的LSP4J的目标代码形式(即不做任何修改)。如果您希望我们向你展示它的源代码，请通过如下方式联系我们： </string>
     <string name="license_jdk">AndroidIDE使用了以GPL v2.0开源的JDK的修改版构建版本。你可以在此处找到它的源代码和许可证： </string>
     <string name="title_developers">开发者</string>
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
@@ -354,6 +353,5 @@
     <string name="msg_compiler_module_install">正在安装编译器模块，请稍等&#8230;</string>
     <string name="msg_compiler_module_install_failed">编译器模块安装失败！ 错误信息:\n%s</string>
     <string name="msg_compiler_module_installed">编译器模块已成功安装!</string>
-
 
 </resources>
