@@ -356,12 +356,12 @@
     <string name="msg_compiler_module_installed">Compiler module installed successfully!</string>
     <string name="action_expand_selection">Expand selection</string>
     <string name="idepref_java_matchLower_title">Match completions in lower case</string>
-    <string name="idepref_java_matchLower_summary">If enabled, then typing a lower case or upper case letters will suggest class names as well as scope members.</string>
     <string name="idepref_editor_category_common">Common</string>
     <string name="idepref_editor_category_java">Java</string>
     <string name="title_files_unsaved">Unsaved files</string>
-    <string name="msg_files_unsaved">Some files are not saved. Would you like to save them before closing? Unsaved files are:\n%s</string>
+    <string name="msg_files_unsaved">Some files are not saved. Would you like to save them before closing? Unsaved files are: \n%s</string>
     <string name="idepref_editor_autoSave_title">Save before closing files</string>
     <string name="idepref_editor_autoSave_summary">Save files before closing them. This is an EXPERIMENTAL feature. You are expected to save the files yourself.</string>
+    <string name="idepref_java_matchLower_summary">If enabled, then typing a lower case or upper case letters will suggest class names as well as scope members.</string>
 
 </resources>
