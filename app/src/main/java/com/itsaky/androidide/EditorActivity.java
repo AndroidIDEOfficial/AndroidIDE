@@ -28,6 +28,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -110,7 +111,6 @@ import com.itsaky.androidide.views.CodeEditorView;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.inflater.ILayoutInflater;
-import com.itsaky.inflater.values.ValuesTable;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.models.DiagnosticItem;
@@ -122,7 +122,6 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -133,6 +132,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -827,7 +827,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public void saveResult (int index, SaveResult result) {
         if (index >= 0 && index < mViewModel.getOpenedFileCount ()) {
             var frag = getEditorAtIndex (index);
-            if (frag == null) {
+            if (frag == null || frag.getFile () == null) {
                 return;
             }
             
@@ -941,8 +941,13 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             var opened = mViewModel.getOpenedFile (index);
             LOG.info ("Closing file:", opened);
             final var editor = getEditorAtIndex (index);
+            
+            if (editor != null && editor.isModified ()) {
+                notifyFilesUnsaved (Collections.singletonList (editor), () -> closeFile (index));
+                return;
+            }
+            
             if (editor != null && editor.getEditor () != null) {
-                editor.save ();
                 editor.getEditor ().close ();
             } else {
                 LOG.error ("Cannot save file before close. Editor instance is null");
@@ -964,40 +969,80 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     
     public void closeAll () {
         final var count = mViewModel.getOpenedFileCount ();
+        final var unsavedFiles = mViewModel.getOpenedFiles ()
+                .stream ()
+                .map (this::getEditorForFile)
+                .filter (editor -> editor != null && editor.isModified ())
+                .collect (Collectors.toList ());
         
-        // Save and close all files one by one
-        for (int i = 0; i < count; i++) {
-            final var editor = getEditorAtIndex (i);
-            if (editor != null && editor.getEditor () != null) {
-                editor.save ();
-                editor.getEditor ().close ();
-            } else {
-                LOG.error ("Unable to save file at index:", i);
+        if (unsavedFiles.isEmpty ()) {
+            // Files were already saved, close all files one by one
+            for (int i = 0; i < count; i++) {
+                final var editor = getEditorAtIndex (i);
+                if (editor != null && editor.getEditor () != null) {
+                    editor.getEditor ().close ();
+                } else {
+                    LOG.error ("Unable to close file at index:", i);
+                }
             }
+    
+            mViewModel.removeAllFiles ();
+            mBinding.tabs.removeAllTabs ();
+            mBinding.tabs.requestLayout ();
+            mBinding.editorContainer.removeAllViews ();
+    
+            invalidateOptionsMenu ();
+        } else {
+            // There are unsaved files
+            notifyFilesUnsaved (unsavedFiles, this::closeAll);
         }
-        
-        mViewModel.removeAllFiles ();
-        mBinding.tabs.removeAllTabs ();
-        mBinding.tabs.requestLayout ();
-        mBinding.editorContainer.removeAllViews ();
-        
-        invalidateOptionsMenu ();
+    }
+    
+    private void notifyFilesUnsaved (List<CodeEditorView> unsavedEditors, Runnable invokeAfter) {
+        final var builder = DialogUtils.newYesNoDialog (this,
+                getString (R.string.title_files_unsaved), // title
+                getString (R.string.msg_files_unsaved, TextUtils.join ("\n", unsavedEditors)), // message
+                (dialog, which) -> { // 'yes' click
+                    dialog.dismiss ();
+                    saveAll (true);
+                    invokeAfter.run ();
+                },
+                (dialog, which) -> { // 'no' click
+                    dialog.dismiss ();
+                    // Mark all the files as saved, then try to close them all
+                    for (var editor : unsavedEditors) {
+                        editor.markAsSaved ();
+                    }
+                    
+                    invokeAfter.run ();
+                });
+        builder.show ();
     }
     
     public void closeOthers () {
-        final var file = mViewModel.getCurrentFile ();
-        for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
-            final var editor = getEditorAtIndex (i);
-            
-            // Index of files changes as we keep close files
-            // So we compare the files instead of index
-            if (editor != null) {
-                if (!file.equals (editor.getFile ())) {
-                    closeFile (i);
+        final var unsavedFiles = mViewModel.getOpenedFiles ()
+                .stream ()
+                .map (this::getEditorForFile)
+                .filter (editor -> editor != null && editor.isModified ())
+                .collect (Collectors.toList ());
+        
+        if (unsavedFiles.isEmpty ()) {
+            final var file = mViewModel.getCurrentFile ();
+            for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
+                final var editor = getEditorAtIndex (i);
+        
+                // Index of files changes as we keep close files
+                // So we compare the files instead of index
+                if (editor != null) {
+                    if (!file.equals (editor.getFile ())) {
+                        closeFile (i);
+                    }
+                } else {
+                    LOG.error ("Unable to save file at index:", i);
                 }
-            } else {
-                LOG.error ("Unable to save file at index:", i);
             }
+        } else {
+            notifyFilesUnsaved (unsavedFiles, this::closeOthers);
         }
     }
     
@@ -1019,7 +1064,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     public CodeEditorView getEditorForFile (@NonNull final File file) {
         for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
             final CodeEditorView editor = (CodeEditorView) mBinding.editorContainer.getChildAt (i);
-            if (editor.getFile ().equals (file)) {
+            if (file.equals (editor.getFile ())) {
                 return editor;
             }
         }
@@ -1157,7 +1202,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     private void previewLayout () {
         try {
             
-            if (getCurrentEditor () == null) {
+            if (getCurrentEditor () == null || getCurrentEditor ().getFile () == null) {
                 LOG.error ("No file is opened. Cannot preview layout.");
                 return;
             }
@@ -1498,13 +1543,15 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         
         mTabCloseAction.setOnActionItemClickListener ((item) -> {
             final int id = item.getActionId ();
-            saveAll ();
+            if (getApp ().getPrefManager ().getBoolean (PreferenceManager.KEY_EDITOR_AUTO_SAVE, false)) {
+                saveAll ();
+            }
+            
             if (id == ACTION_ID_CLOSE) {
                 closeFile (mBinding.tabs.getSelectedTabPosition ());
             }
             
             if (id == ACTION_ID_OTHERS) {
-                closeOthers ();
                 closeOthers ();
             }
             

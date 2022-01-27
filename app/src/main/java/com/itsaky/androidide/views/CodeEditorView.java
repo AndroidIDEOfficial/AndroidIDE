@@ -374,4 +374,12 @@ public class CodeEditorView extends FrameLayout {
             ValuesTableFactory.syncWithFile (getFile ());
         }
     }
+    
+    /**
+     * Mark this files as saved. Even if it not saved.
+     */
+    public void markAsSaved () {
+        isModified = false;
+        notifySaved ();
+    }
 }

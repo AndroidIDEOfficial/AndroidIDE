@@ -19,6 +19,8 @@ package com.itsaky.androidide.fragments.preferences;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+
+import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
@@ -33,12 +35,15 @@ import com.itsaky.androidide.utils.DialogUtils;
 import static com.itsaky.androidide.managers.PreferenceManager.*;
 import static com.itsaky.androidide.models.PrefBasedJavaServerSettings.*;
 
-public class EditorPreferences extends BasePreferenceFragment implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+public class EditorPreferences extends BasePreferenceFragment {
     
     @Override
 	public void onCreatePreferences(Bundle p1, String p2) {
 		super.onCreatePreferences(p1, p2);
-		if(getContext() == null) return;
+		
+		if(getContext() == null) {
+			return;
+		}
 		
 		final var screen = getPreferenceScreen();
 		final var commonCategory = new PreferenceCategory (getContext ());
@@ -48,6 +53,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		final var nonPrintable = new Preference(getContext());
         final var tabSize = new Preference(getContext());
 		final var drawHex = new SwitchPreference(getContext());
+		final var autoSave = new SwitchPreference (getContext ());
 		
 		final var javaMatchLower = new SwitchPreference (getContext ());
 		
@@ -74,6 +80,11 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		drawHex.setTitle(R.string.idepref_editor_drawhexcolors_title);
 		drawHex.setSummary(R.string.idepref_editor_drawhexcolors_summary);
 		
+		autoSave.setIcon (R.drawable.ic_save);
+		autoSave.setKey (KEY_EDITOR_AUTO_SAVE);
+		autoSave.setTitle (getString(R.string.idepref_editor_autoSave_title));
+		autoSave.setSummary (getString(R.string.idepref_editor_autoSave_summary));
+		
 		javaMatchLower.setKey (KEY_JAVA_PREF_MATCH_LOWER);
 		javaMatchLower.setIcon (R.drawable.ic_text_lower);
 		javaMatchLower.setTitle (getString(R.string.idepref_java_matchLower_title));
@@ -84,46 +95,55 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 		commonCategory.addPreference(nonPrintable);
 		commonCategory.addPreference(tabSize);
 		commonCategory.addPreference(drawHex);
+		commonCategory.addPreference (autoSave);
 		
 		javaCategory.setTitle (getString(R.string.idepref_editor_category_java));
 		javaCategory.addPreference (javaMatchLower);
 		
 		setPreferenceScreen(screen);
 		
-		fontSize.setOnPreferenceClickListener(this);
-		nonPrintable.setOnPreferenceClickListener(this);
-        tabSize.setOnPreferenceClickListener(this);
-		drawHex.setOnPreferenceChangeListener(this);
-		javaMatchLower.setOnPreferenceChangeListener (this);
+		fontSize.setOnPreferenceClickListener(this::onPreferenceClick);
+		nonPrintable.setOnPreferenceClickListener(this::onPreferenceClick);
+        tabSize.setOnPreferenceClickListener(this::onPreferenceClick);
+		drawHex.setOnPreferenceChangeListener(this::onPreferenceChange);
+		autoSave.setOnPreferenceChangeListener (this::onPreferenceChange);
+		javaMatchLower.setOnPreferenceChangeListener (this::onPreferenceChange);
 		
 		drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
+		autoSave.setChecked (getPrefManager ().getBoolean (KEY_EDITOR_AUTO_SAVE, false));
 		javaMatchLower.setChecked (getPrefManager ().getBoolean (KEY_JAVA_PREF_MATCH_LOWER, false));
 	}
-
-	@Override
-	public boolean onPreferenceChange(Preference preference, Object newValue) {
+	
+	public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
     	final boolean value = (boolean) newValue;
-		if(preference.getKey().equals(KEY_EDITOR_DRAW_HEX)) {
-			getPrefManager().putBoolean(KEY_EDITOR_DRAW_HEX, value);
-			ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = true;
-		} else if (preference.getKey ().equals (KEY_JAVA_PREF_MATCH_LOWER)) {
-			getPrefManager ().putBoolean (KEY_JAVA_PREF_MATCH_LOWER, value);
-			final var javaServer = StudioApp.getInstance ().getJavaLanguageServer ();
-			javaServer.applySettings (PrefBasedJavaServerSettings.getInstance ());
+    	
+		switch (preference.getKey ()) {
+			case KEY_EDITOR_DRAW_HEX:
+				ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = true;
+				break;
+			case KEY_JAVA_PREF_MATCH_LOWER:
+				final var javaServer = StudioApp.getInstance ().getJavaLanguageServer ();
+				javaServer.applySettings (PrefBasedJavaServerSettings.getInstance ());
+				break;
 		}
+		
+		getPrefManager ().putBoolean (preference.getKey (), value);
 		return true;
 	}
-
-	@Override
-	public boolean onPreferenceClick(Preference preference) {
+	
+	public boolean onPreferenceClick(@NonNull Preference preference) {
 		final String key = preference.getKey();
-		if(key.equals(KEY_EDITOR_FONT_SIZE)) {
-			showTextSizeDialog();
-		} else if(key.equals(KEY_EDITOR_PRINTABLE_CHARS)) {
-			showPrintableCharsDialog();
-		} else if(key.equals(KEY_EDITOR_TAB_SIZE)) {
-            showTabSizeDialog();
-        }
+		switch (key) {
+			case KEY_EDITOR_FONT_SIZE:
+				showTextSizeDialog ();
+				break;
+			case KEY_EDITOR_PRINTABLE_CHARS:
+				showPrintableCharsDialog ();
+				break;
+			case KEY_EDITOR_TAB_SIZE:
+				showTabSizeDialog ();
+				break;
+		}
 		return true;
 	}
 
@@ -170,9 +190,7 @@ public class EditorPreferences extends BasePreferenceFragment implements Prefere
 			float s = binding.slider.getValue();
 			changeTextSize(binding, s);
 		});
-		builder.setNeutralButton(R.string.reset, (p1, p2) -> {
-			changeTextSize(binding, 14);
-		});
+		builder.setNeutralButton(R.string.reset, (p1, p2) -> changeTextSize(binding, 14));
 		builder.setCancelable(false);
 		builder.show();
 	}

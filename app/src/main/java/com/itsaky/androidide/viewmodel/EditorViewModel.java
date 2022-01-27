@@ -126,6 +126,15 @@ public class EditorViewModel extends ViewModel {
     }
     
     /**
+     * Get the list of currently opened files.
+     * @return The list of opened files.
+     */
+    @NonNull
+    public List<File> getOpenedFiles () {
+        return mFiles.getValue () == null ? new ArrayList<> () : mFiles.getValue ();
+    }
+    
+    /**
      * Add an observer to the list of opened files.
      * @param lifecycleOwner The lifecycle owner.
      * @param observer The observer.

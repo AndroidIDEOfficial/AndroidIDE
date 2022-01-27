@@ -42,6 +42,7 @@ public class PreferenceManager {
     public static final String KEY_EDITOR_FONT_SIZE = "idepref_editor_fontSize";
     public static final String KEY_EDITOR_PRINTABLE_CHARS = "idepref_editor_nonPrintableFlags";
     public static final String KEY_EDITOR_TAB_SIZE = "idepref_editor_tabSize";
+    public static final String KEY_EDITOR_AUTO_SAVE = "idepref_editor_autoSave";
     
     public static final String KEY_GRADLE_CMD_STACK_TRACE = "idepref_gradleCmd_stacktrace";
     public static final String KEY_GRADLE_CMD_DEBUG = "idepref_gradleCmd_debug";

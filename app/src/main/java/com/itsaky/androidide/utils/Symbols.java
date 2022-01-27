@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 
 
 package com.itsaky.androidide.utils;
+
+import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.views.SymbolInputView.Symbol;
@@ -27,7 +27,11 @@ import java.io.File;
 
 public class Symbols {
     
-	public static Symbol[] forFile(File file) {
+	public static Symbol[] forFile(@Nullable File file) {
+		if (file == null) {
+			return new Symbol[0];
+		}
+		
 		if (file.isFile()) {
 			if (file.getName().endsWith(".java")
                 || file.getName().endsWith(".gradle"))
