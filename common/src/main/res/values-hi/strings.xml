@@ -1,0 +1,9 @@
+<resources>
+    <string name="cms_channel_id_devs">डेवलपर्स से सूचनाएंस</string>
+    <string name="cms_channel_id_update">एप अपडेट नोटिफिकेशंस</string>
+    <string name="msg_hex_color_code">हेक्स कलर कोड</string>
+    <string name="msg_color_picker_pick">चुने</string>
+    <string name="msg_chmod_exec">एक्सेक्यूटबले अनुमति सेट कर रहा है...</string>
+    <string name="msg_linking">%2$s %1$s से लिंक हो रहा है</string>
+    <string name="msg_extracting_hooks">libhook लाइब्रेरीज एक्सट्रेक्ट हो रही है...</string>
+</resources>
