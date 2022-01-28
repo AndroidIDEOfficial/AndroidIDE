@@ -65,12 +65,10 @@ public class SynchronizedTask {
     public void runWithTask (@NonNull Consumer<CompileTask> taskConsumer) {
         waitForWriter ();
         readerThreads.add (Thread.currentThread ());
-        synchronized (lock) {
-            try {
-                taskConsumer.accept (task);
-            } finally {
-                readerThreads.remove(Thread.currentThread());
-            }
+        try {
+            taskConsumer.accept (task);
+        } finally {
+            readerThreads.remove(Thread.currentThread());
         }
     }
     

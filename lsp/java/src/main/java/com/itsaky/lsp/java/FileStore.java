@@ -16,12 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.net.URI;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
@@ -90,15 +88,6 @@ public class FileStore {
     
     public static class FindJavaSources extends SimpleFileVisitor<Path> {
         @Override
-        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-            if (attrs.isSymbolicLink()) {
-                LOG.warn("Don't check " + dir + " for java sources");
-                return FileVisitResult.SKIP_SUBTREE;
-            }
-            return FileVisitResult.CONTINUE;
-        }
-        
-        @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes _attrs) {
             if (isJavaFile(file)) {
                 readInfoFromDisk(file);
@@ -119,32 +108,6 @@ public class FileStore {
             }
         }
         return list;
-    }
-    
-    public static Set<Path> sourceRoots () {
-        Set<Path> roots = new HashSet<> ();
-        for (Path file : javaSources.keySet ()) {
-            Path root = sourceRoot (file);
-            if (root != null) {
-                roots.add (root);
-            }
-        }
-        return roots;
-    }
-    
-    private static Path sourceRoot (Path file) {
-        Info info = javaSources.get (file);
-        String[] parts = Objects.requireNonNull (info).packageName.split ("\\.");
-        Path dir = file.getParent ();
-        for (int i = parts.length - 1; i >= 0; i--) {
-            String end = parts[i];
-            if (dir.endsWith (end)) {
-                dir = dir.getParent ();
-            } else {
-                return null;
-            }
-        }
-        return dir;
     }
     
     public static boolean contains (Path file) {
@@ -356,10 +319,6 @@ public class FileStore {
         return name.endsWith (".java") && !Files.isDirectory (file) && !name.equals ("module-info.java");
     }
     
-    public static boolean isJavaFile (@NonNull URI uri) {
-        return uri.getScheme ().equals ("file") && isJavaFile (Paths.get (uri));
-    }
-    
     public static Optional<Path> findDeclaringFile (@NonNull TypeElement el) {
         String qualifiedName = el.getQualifiedName ().toString ();
         String packageName = StringSearch.mostName (qualifiedName);
@@ -379,17 +338,17 @@ public class FileStore {
         return Optional.empty ();
     }
     
-    private static final Logger LOG = Logger.instance ("FileStore");
-}
-
-class VersionedContent {
-    final String content;
-    final int version;
-    final Instant modified = Instant.now ();
-    
-    VersionedContent (String content, int version) {
-        Objects.requireNonNull (content, "content is null");
-        this.content = content;
-        this.version = version;
+    static class VersionedContent {
+        final String content;
+        final int version;
+        final Instant modified = Instant.now ();
+        
+        VersionedContent (String content, int version) {
+            Objects.requireNonNull (content, "content is null");
+            this.content = content;
+            this.version = version;
+        }
     }
+    
+    private static final Logger LOG = Logger.instance ("FileStore");
 }

@@ -15,25 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.models
+package com.itsaky.lsp.xml.providers;
 
-import java.nio.file.Path
-
-data class InitializeParams (var workspaceRoots: Set<Path>)
-
-data class InitializeResult
-(
-    var completionsAvailable: Boolean,
-    var codeActionsAvailable: Boolean,
-    var definitionsAvailable: Boolean,
-    var referencesAvailable: Boolean,
-    var signatureHelpAvailable: Boolean,
-    var codeAnalysisAvailable: Boolean
-) {
-    constructor() : this(false,
-        false,
-        false,
-        false,
-        false,
-        false)
+/**
+ * Completion provider for the XML Language
+ * @author Akash Yadav
+ */
+public class CompletionProvider {
 }

@@ -15,25 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.models
+package com.itsaky.lsp.xml.models;
 
-import java.nio.file.Path
+import com.itsaky.lsp.util.DefaultServerSettings;
 
-data class InitializeParams (var workspaceRoots: Set<Path>)
-
-data class InitializeResult
-(
-    var completionsAvailable: Boolean,
-    var codeActionsAvailable: Boolean,
-    var definitionsAvailable: Boolean,
-    var referencesAvailable: Boolean,
-    var signatureHelpAvailable: Boolean,
-    var codeAnalysisAvailable: Boolean
-) {
-    constructor() : this(false,
-        false,
-        false,
-        false,
-        false,
-        false)
+/**
+ * @author Akash Yadav
+ */
+public class DefaultXMLServerSettings extends DefaultServerSettings {
 }

@@ -58,7 +58,6 @@ public class JavaCompilerService implements CompilerProvider {
     final Set<String> jdkClasses = new HashSet<> (), classPathClasses;
     final ReusableCompiler compiler = new ReusableCompiler ();
     final SynchronizedTask synchronizedTask = new SynchronizedTask ();
-    final ReentrantLock lock = new ReentrantLock ();
     final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<> ();
     final Map<JavaFileObject, Long> cachedModified = new HashMap<> ();
     
@@ -94,6 +93,7 @@ public class JavaCompilerService implements CompilerProvider {
     private void loadCompile (Collection<? extends JavaFileObject> sources) {
         if (cachedCompile != null) {
             if (!cachedCompile.closed) {
+                final SynchronizedTask task = this.synchronizedTask;
                 throw new RuntimeException ("Compiler is still in-use!");
             }
             cachedCompile.borrow.close ();
@@ -233,7 +233,7 @@ public class JavaCompilerService implements CompilerProvider {
     
     @Override
     public List<String> packagePrivateTopLevelTypes (String packageName) {
-        return Collections.singletonList ("TODO");
+        return Collections.emptyList ();
     }
     
     private boolean containsImport (Path file, String className) {
@@ -362,10 +362,6 @@ public class JavaCompilerService implements CompilerProvider {
             if (!cachedCompile.borrow.closed) {
                 cachedCompile.borrow.close ();
             }
-        }
-        
-        if (lock.isHeldByCurrentThread() && lock.isLocked()) {
-            lock.unlock();
         }
     }
     

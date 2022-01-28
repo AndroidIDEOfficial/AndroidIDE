@@ -33,6 +33,7 @@ import com.itsaky.lsp.api.ISelectionProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
+import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.java.providers.CodeActionProvider;
 import com.itsaky.lsp.java.providers.CompletionProvider;
@@ -90,7 +91,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     
     public IServerSettings getSettings () {
         if (settings == null) {
-            settings = new DefaultServerSettings ();
+            settings = new DefaultJavaServerSettings ();
         }
         
         return settings;

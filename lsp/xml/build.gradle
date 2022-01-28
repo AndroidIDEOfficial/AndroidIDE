@@ -14,7 +14,10 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-apply plugin: 'com.android.library'
+
+plugins {
+    id 'com.android.library'
+}
 
 android {
     compileSdkVersion rootProject.ext.compileSdk
@@ -33,25 +36,15 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility rootProject.ext.javaSourceVersion
+        targetCompatibility rootProject.ext.javaTargetVersion
     }
 }
+
 dependencies {
     implementation common.utilcode
-    implementation androidx.annotation
-    implementation google.guava
-    implementation google.gson
 
-    implementation "com.github.marschall:zipfilesystem-standalone:1.0.1"
+    implementation project(':lsp:api')
 
-    compileOnly androidx.appcompat
-    compileOnly project(path: ':common')
-
-    implementation project(path: ':lsp:api')
-    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
-}
-
-repositories {
-    mavenCentral()
+    compileOnly project(':common')
 }

@@ -43,7 +43,7 @@ import javax.tools.JavaFileObject;
 public class CompileBatch implements AutoCloseable {
     
     final JavaCompilerService parent;
-    static ReusableCompiler.Borrow borrow;
+    final ReusableCompiler.Borrow borrow;
     /**
      * Indicates the task that requested the compilation is finished with it.
      */
