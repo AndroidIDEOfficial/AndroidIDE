@@ -55,7 +55,7 @@
   <!-- Build Tools Installation -->
   <string name="title_installation_failed">Installation fehlgeschlagen</string>
   <string name="msg_installation_failed">Der Installationsvorgang wurde mit dem Beendigungscode %1$d beendet. Stellen Sie sicher, dass Sie die Build-Tools aus Originalquellen heruntergeladen haben.\n\nSie k&#xF6;nnten versuchen, Daten von AndroidIDE zu l&#xF6;schen und erneut zu installieren.\n\n%2$s</string>
-  <string name="choose">W&#xE4;hlen</string>
+  <string name="choose">Ausw&#xE4;hlen</string>
   <string name="get_ready_for_something_awesome">Machen Sie sich bereit f&#xFC;r etwas Gro&#xDF;artiges!</string>
   <string name="androidide_build_tools">AndroidIDE-Build-Tools</string>
   <string name="install_build_tools_required_b">Installieren Sie die von AndroidIDE ben&#xF6;tigten Build-Tools</string>
@@ -231,7 +231,7 @@
   <item name="replaceAll" type="string">Replace all</item>
   <item name="replacement" type="string">Replacement</item>
   <item name="text_to_search" type="string">Text to search</item>
-  <item name="more" type="string">More</item>
+  <item name="more" type="string">Mehr</item>
   <!-- Preferences -->
   <string name="title_change_text_size">Editor Schriftgr&#xF6;&#xDF;e</string>
   <string name="idepref_about_title">&#xDC;ber AndroidIDE</string>
@@ -336,4 +336,19 @@
   <string name="msg_reading_bootstrap">Bootstrap-Archiv wird gelesen&#x2026;</string>
   <string name="msg_bootstrap_installation_error">Die Bootstrap-Installation ist mit der folgenden Ausnahme fehlgeschlagen.</string>
   <string name="title_translations">&#xDC;bersetzungen</string>
+  <string name="title_compiler_module_install">Kompilierer Modul wird installiert</string>
+  <string name="msg_compiler_module_install_failed">Installation des Kompilierer Moduls ist Fehlgeschlagen</string>
+  <string name="msg_compiler_module_installed">Kompilierer Modul installation erfolgreich abgeschlossen!</string>
+  <string name="idepref_editor_category_java">Java</string>
+  <string name="title_files_unsaved">Ungespeicherte Dateien</string>
+  <string name="idepref_editor_autoSave_summary">Speicher deine Dateien vor dem schließen.</string>
+  <string name="idepref_editor_autoSave_title">Dateien vor dem schließen speichern</string>
+  <string name="idepref_java_matchLower_summary">Wenn diese Option aktiviert ist, werden durch die Eingabe von Klein- oder Großbuchstaben Klassennamen sowie Bereichsmitglieder vorgeschlagen.</string>
+  <string name="msg_files_unsaved">Einige Dateien wurden noch nicht gespeichert. Möchtest du diese nun speichern? Nicht gespeicherte Dateien: %s</string>
+  <string name="idepref_editor_category_common">Common</string>
+  <string name="action_expand_selection">Auswahl erweitern</string>
+  <string name="idepref_java_matchLower_title">Vervollständigungen in Kleinbuchstaben nutzen</string>
+  <string name="msg_compiler_module_install">Kompilierer Modul wird installiert, bitte warten&#8230;</string>
+  <string name="template_description_kotlin_basic">Kotlin Projekt mit einer AppCompat Toolbar und einen FloatingActionButton</string>
+  <string name="template_kotlin_basic">Kotlin Basis Projekt</string>
 </resources>
