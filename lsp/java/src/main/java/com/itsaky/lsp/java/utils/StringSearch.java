@@ -18,6 +18,7 @@
 package com.itsaky.lsp.java.utils;
 
 import com.itsaky.lsp.java.FileStore;
+import com.itsaky.lsp.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -445,32 +446,11 @@ public class StringSearch {
     }
     
     public static boolean matchesPartialName (CharSequence candidate, CharSequence partialName) {
-        return matchesPartialName (candidate, partialName, false);
+        return StringUtils.matchesPartialName (candidate, partialName, false);
     }
     
     public static boolean matchesPartialName (CharSequence candidate, CharSequence partialName, boolean allLower) {
-        if (candidate.length () < partialName.length ()) {
-            return false;
-        }
-        
-        for (int i = 0; i < partialName.length (); i++) {
-            char char1 = candidate.charAt (i);
-            char char2 = partialName.charAt (i);
-            
-            // Match by keeping the first character of the partial name and candidate as is
-            // The make all the characters lower case
-            // So if the first character is upper case, we could assume that the user is expecting a class name
-            // Otherwise a variable name
-            if (allLower || i != 0) {
-                char1 = Character.toLowerCase (char1);
-                char2 = Character.toLowerCase (char2);
-            }
-            
-            if (char1 != char2) {
-                return false;
-            }
-        }
-        return true;
+        return StringUtils.matchesPartialName (candidate, partialName, allLower);
     }
     
     private static final Logger LOG = Logger.getLogger ("main");

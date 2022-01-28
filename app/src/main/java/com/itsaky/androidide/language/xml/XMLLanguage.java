@@ -17,7 +17,9 @@
  */
 package com.itsaky.androidide.language.xml;
 
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.BaseLanguage;
+import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.Logger;
@@ -35,13 +37,13 @@ import io.github.rosemoe.editor.widget.SymbolPairMatch;
 public class XMLLanguage extends BaseLanguage {
 
 	private final XMLAnalyzer analyzer;
-	private final XMLAutoComplete completer;
+	private final AutoCompleteProvider completer;
 	private final NewlineHandler[] newlineHandlers;
 	
 	private static final Logger LOG = Logger.instance ("XMLLanguage");
 	
 	public XMLLanguage() {
-		this.completer = new XMLAutoComplete();
+		this.completer = new CommonCompletionProvider (StudioApp.getInstance ().getXMLLanguageServer ());
 		this.analyzer = new XMLAnalyzer();
 		this.newlineHandlers = new NewlineHandler[0];
 	}

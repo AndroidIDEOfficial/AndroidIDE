@@ -260,7 +260,7 @@ public class CodeEditorView extends FrameLayout {
         if (file.isFile () && file.getName ().endsWith (".java")) {
             binding.editor.setEditorLanguage (new JavaLanguage (), StudioApp.getInstance ().getJavaLanguageServer ());
         } else if (file.isFile () && file.getName ().endsWith (".xml")) {
-            binding.editor.setEditorLanguage (new XMLLanguage (), null);
+            binding.editor.setEditorLanguage (new XMLLanguage (), StudioApp.getInstance ().getXMLLanguageServer ());
         } else if (file.isFile () && file.getName ().endsWith (".gradle")) {
             binding.editor.setEditorLanguage (new GroovyLanguage (), null);
         } else {

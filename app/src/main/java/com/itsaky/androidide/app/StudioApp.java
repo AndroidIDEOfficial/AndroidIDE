@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  * 
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.app;
 
 import android.content.Intent;
@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.CrashHandlerActivity;
-import com.itsaky.androidide.language.xml.completion.XMLCompletionService;
+import com.itsaky.androidide.R;
 import com.itsaky.androidide.project.ProjectResourceTable;
 import com.itsaky.androidide.services.MessagingService;
 import com.itsaky.androidide.utils.Logger;
@@ -35,6 +35,8 @@ import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.LayoutInflaterConfiguration;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.java.JavaLanguageServer;
+import com.itsaky.lsp.xml.XMLLanguageServer;
+import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.WidgetInfo;
 
 import java.io.File;
@@ -43,17 +45,14 @@ import java.util.Set;
 public class StudioApp extends BaseApplication {
     
 	private static StudioApp instance;
-    private static ApiInfo mApiInfo;
-    private static AttrInfo mAttrInfo;
-    private static WidgetInfo mWidgetInfo;
+    private static SDKInfo sdkInfo;
     
     private final ILanguageServer mJavaLanguageServer = new JavaLanguageServer ();
+    private final ILanguageServer mXMLLanguageServer = new XMLLanguageServer ();
+    
     private IResourceTable mResFinder;
-    private XMLCompletionService mXmlCompletionService;
     private ILayoutInflater mLayoutInflater;
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
-    
-	public static final boolean DEBUG = com.itsaky.androidide.BuildConfig.DEBUG;
     
     private static final Logger LOG = Logger.instance("StudioApp");
 	
@@ -73,6 +72,11 @@ public class StudioApp extends BaseApplication {
 	@NonNull
     public ILanguageServer getJavaLanguageServer () {
         return mJavaLanguageServer;
+    }
+    
+    @NonNull
+    public ILanguageServer getXMLLanguageServer () {
+        return mXMLLanguageServer;
     }
     
     private void handleCrash(Thread thread, Throwable th) {
@@ -122,42 +126,28 @@ public class StudioApp extends BaseApplication {
     public void initializeApiInformation() {
         new Thread(() -> {
             try {
-                mApiInfo = new ApiInfo (StudioApp.this);
-                mAttrInfo = new AttrInfo (StudioApp.this);
-                mWidgetInfo = new WidgetInfo (StudioApp.this);
-                
-                mXmlCompletionService = new XMLCompletionService (mAttrInfo, mWidgetInfo);
+                sdkInfo = new SDKInfo (StudioApp.this);
+                ((XMLLanguageServer) mXMLLanguageServer).setupSDK (sdkInfo);
             } catch (Throwable th) {
-                LOG.error (getString (com.itsaky.androidide.R.string.err_init_sdkinfo), th);
+                LOG.error (getString (R.string.err_init_sdkinfo), th);
             }
-        }, "SDK Information Loader").start();
+        }, "SDKInfo Loader").start();
     }
     
     public void stopAllDaemons() {
         newShell(null).bgAppend("gradle --stop");
     }
-	
-	public XMLCompletionService getXmlCompletionService() {
-		return mXmlCompletionService;
-	}
     
     public ApiInfo apiInfo() {
-        return mApiInfo;
+        return sdkInfo.getApiInfo ();
     }
     
     public AttrInfo attrInfo () {
-        return mAttrInfo;
+        return sdkInfo.getAttrInfo ();
     }
 
     public WidgetInfo widgetInfo () {
-        return mWidgetInfo;
-    }
-	
-	public boolean isXmlServiceStarted() {
-		return mXmlCompletionService != null;
-	}
-    
-    public void setStopGradleDaemon(boolean startGradleDaemon) {
+        return sdkInfo.getWidgetInfo ();
     }
     
     public static StudioApp getInstance() {

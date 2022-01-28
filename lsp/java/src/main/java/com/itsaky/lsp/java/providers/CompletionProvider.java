@@ -75,7 +75,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -98,7 +97,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     
     private final CompilerProvider compiler;
     
-    public static final CompletionResult NOT_SUPPORTED = new CompletionResult ();
     public static final int MAX_COMPLETION_ITEMS = 50;
     
     private Path completingFile;
@@ -109,6 +107,11 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         applySettings (settings);
         
         this.compiler = compiler;
+    }
+    
+    @Override
+    public boolean canComplete (Path file) {
+        return ICompletionProvider.super.canComplete (file) && file.toFile ().getName ().endsWith (".java");
     }
     
     @NonNull
@@ -174,7 +177,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             }
         });
     }
-
+    
+    @SuppressWarnings("Since15")
     private void addTopLevelSnippets(@NonNull ParseTask task, CompletionResult list) {
         Path file = Paths.get(task.root.getSourceFile().toUri());
         if (!hasTypeDeclaration(task.root)) {
@@ -410,7 +414,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         } else if (type instanceof DeclaredType) {
             return completeDeclaredTypeMemberSelect(task, scope, (DeclaredType) type, isStatic, partial, endsWithParen);
         } else {
-            return NOT_SUPPORTED;
+            return EMPTY;
         }
     }
 
@@ -433,7 +437,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             return completeTypeVariableMemberSelect(
                     task, scope, (TypeVariable) type.getUpperBound(), isStatic, partial, endsWithParen);
         } else {
-            return NOT_SUPPORTED;
+            return EMPTY;
         }
     }
 
@@ -504,7 +508,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         } else if (type instanceof DeclaredType) {
             return completeDeclaredTypeMemberReference(task, scope, (DeclaredType) type, isStatic, partial);
         } else {
-            return NOT_SUPPORTED;
+            return EMPTY;
         }
     }
 
@@ -527,7 +531,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             return completeTypeVariableMemberReference(
                     task, scope, (TypeVariable) type.getUpperBound(), isStatic, partial);
         } else {
-            return NOT_SUPPORTED;
+            return EMPTY;
         }
     }
 
@@ -557,8 +561,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         }
         return new CompletionResult(false, list);
     }
-
-    private static final CompletionResult EMPTY = new CompletionResult(false, Collections.emptyList ());
 
     private void putMethod(@NonNull ExecutableElement method, @NonNull Map<String, List<ExecutableElement>> methods) {
         String name = method.getSimpleName().toString();

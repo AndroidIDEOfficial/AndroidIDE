@@ -871,7 +871,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                             )
                     );
             return null;
-        }, __ -> setStatus (getString (getApp ().isXmlServiceStarted () ? R.string.msg_service_started : R.string.msg_starting_completion_failed)));
+        }, __ -> setStatus (getString (R.string.msg_service_started)));
     }
     
     @Override

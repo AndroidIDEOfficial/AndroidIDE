@@ -333,7 +333,6 @@
     <string name="msg_attr_editor_null">无法为该属性创建属性编辑器</string>
     <string name="msg_invalid_attr_value">非法属性值</string>
     <string name="msg_new_str_value">新字符串值</string>
-    <string name="msg_add_namespace_decl">添加 \'%1$s\' 命名空间</string>
     <string name="msg_choose_new_val">选择新值</string>
     <string name="msg_select_one_flag">请至少勾选一个值</string>
     <string name="msg_generate_xml_failed">生成XML代码失败</string>

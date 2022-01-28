@@ -18,11 +18,34 @@
 package com.itsaky.lsp.models
 
 import android.text.TextUtils
+import java.lang.IllegalArgumentException
 import java.nio.file.Path
 import java.util.*
 import kotlin.collections.ArrayList
 
-data class CompletionParams (var position: Position, var file: Path)
+data class CompletionParams (var position: Position, var file: Path) {
+    var content: CharSequence? = null
+    var prefix: String? = null
+    
+    fun requirePrefix () : String {
+        if (prefix == null) {
+            throw IllegalArgumentException ("Prefix is required but none was provided")
+        }
+        
+        return prefix as String
+    }
+    
+    fun requireContents () : CharSequence {
+        if (content == null) {
+            throw IllegalArgumentException("Content is required but no content was provided!");
+        }
+        return content as CharSequence;
+    }
+    
+    fun discardContents () {
+        content = null
+    }
+}
 
 data class CompletionResult (var isIncomplete: Boolean, var items: List<CompletionItem>) {
     constructor() : this (false, ArrayList<CompletionItem>())

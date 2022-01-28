@@ -321,7 +321,6 @@
   <string name="msg_attr_editor_null">Attribut Editor kann f&#xFC;r dieses Attribut nicht erstellt werden</string>
   <string name="msg_invalid_attr_value">Ung&#xFC;ltiger Wert</string>
   <string name="msg_new_str_value">Neue string value</string>
-  <string name="msg_add_namespace_decl">Namespace-Deklaration \'%1$s\' hinzuf&#xFC;gen</string>
   <string name="msg_choose_new_val">W&#xE4;hlen Sie einen neuen Wert aus</string>
   <string name="msg_select_one_flag">Bitte kreuzen Sie mindestens eine Flag an.</string>
   <string name="msg_generate_xml_failed">XML-Code konnte nicht generiert werden</string>

@@ -17,11 +17,21 @@
 
 package com.itsaky.lsp.models
 
+import java.lang.IllegalArgumentException
 import java.nio.file.Path
 
 data class Location (var file: Path, var range: Range)
 
-data class Position(var line: Int, var column: Int) : Comparable<Position> {
+data class Position(var line: Int, var column: Int, var index: Int) : Comparable<Position> {
+    
+    constructor(line: Int, column: Int) : this (line, column, -1);
+    
+    fun requireIndex () : Int {
+        if (index == -1) {
+            throw IllegalArgumentException ("No index provided")
+        }
+        return index
+    }
     
     /**
      * Validate the line and column positions if necessary.

@@ -332,7 +332,6 @@
     <string name="msg_attr_editor_null">इस अट्रीब्यूट के लिए अट्रीब्यूट एडिटर बनाने में असमर्थ</string>
     <string name="msg_invalid_attr_value">अमान्य वैल्यू</string>
     <string name="msg_new_str_value">नया स्ट्रिंग वैल्यू</string>
-    <string name="msg_add_namespace_decl">\'%1$s\' नेमस्पेस डिक्लेरेशन जोड़े</string>
     <string name="msg_choose_new_val">नया वैल्यू चयन करें</string>
     <string name="msg_select_one_flag">कृपया कम से कम एक फ्लैग जांचें।</string>
     <string name="msg_generate_xml_failed">XML कोड जनरेट करने में विफल</string>

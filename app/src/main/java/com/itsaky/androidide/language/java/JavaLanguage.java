@@ -19,7 +19,9 @@ package com.itsaky.androidide.language.java;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.BaseLanguage;
+import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
 import com.itsaky.androidide.utils.JavaCharacter;
@@ -28,7 +30,6 @@ import com.itsaky.androidide.utils.Logger;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
-import java.io.File;
 import java.io.StringReader;
 
 import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
@@ -41,7 +42,7 @@ import io.github.rosemoe.editor.widget.SymbolPairMatch;
 public class JavaLanguage extends BaseLanguage {
     
     private final JavaAnalyzer analyzer;
-	private final JavaAutoComplete complete;
+	private final AutoCompleteProvider complete;
     
     private final NewlineHandler[] newlineHandlers;
     
@@ -49,7 +50,7 @@ public class JavaLanguage extends BaseLanguage {
     
 	public JavaLanguage() {
 		this.analyzer = new JavaAnalyzer ();
-		this.complete = new JavaAutoComplete();
+		this.complete = new CommonCompletionProvider (StudioApp.getInstance ().getJavaLanguageServer ());
         
         this.newlineHandlers = new NewlineHandler[1];
         this.newlineHandlers[0] = new BraceHandler();

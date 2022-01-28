@@ -106,7 +106,6 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     @Override
     public void onStartingGradleDaemon(GradleTask task) {
         activity().setStatus(activity().getString(R.string.msg_starting_daemon));
-        activity().getApp().setStopGradleDaemon(false);
     }
     
     @Override

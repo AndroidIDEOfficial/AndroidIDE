@@ -334,7 +334,6 @@
     <string name="msg_attr_editor_null">Tidak dapat membuat editor atribut untuk atribut ini</string>
     <string name="msg_invalid_attr_value">Isi tidak valid</string>
     <string name="msg_new_str_value">Isi baru string</string>
-    <string name="msg_add_namespace_decl">Tambahkan \'%1$s\' deklarasi namespace</string>
     <string name="msg_choose_new_val">Pilih isi yang baru</string>
     <string name="msg_select_one_flag">Mohon setidaknya pilih satu flag.</string>
     <string name="msg_generate_xml_failed">Gagal untuk menghasilkan kode XML</string>

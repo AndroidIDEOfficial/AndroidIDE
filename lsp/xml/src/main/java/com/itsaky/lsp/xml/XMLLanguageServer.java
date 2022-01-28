@@ -30,32 +30,43 @@ import com.itsaky.lsp.api.IReferenceProvider;
 import com.itsaky.lsp.api.ISelectionProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.api.ISignatureHelpProvider;
-import com.itsaky.lsp.models.DocumentChangeEvent;
-import com.itsaky.lsp.models.DocumentCloseEvent;
-import com.itsaky.lsp.models.DocumentOpenEvent;
-import com.itsaky.lsp.models.DocumentSaveEvent;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.InitializeResult;
+import com.itsaky.lsp.util.NoCodeActionsProvider;
+import com.itsaky.lsp.util.NoCodeAnalyzer;
+import com.itsaky.lsp.util.NoCompletionsProvider;
+import com.itsaky.lsp.util.NoDefinitionProvider;
+import com.itsaky.lsp.util.NoDocumentHandler;
+import com.itsaky.lsp.util.NoReferenceProvider;
+import com.itsaky.lsp.util.NoSelectionProvider;
+import com.itsaky.lsp.util.NoSignatureHelpProvider;
 import com.itsaky.lsp.xml.models.DefaultXMLServerSettings;
+import com.itsaky.lsp.xml.providers.CompletionProvider;
+import com.itsaky.sdk.SDKInfo;
 
 import org.jetbrains.annotations.Nullable;
-
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Language server implementation for XML files.
  * @author Akash Yadav
  */
-public class XMLLanguageServer implements ILanguageServer, IDocumentHandler {
+public class XMLLanguageServer implements ILanguageServer {
+    
+    private SDKInfo sdkInfo;
     
     private ILanguageClient client;
     private IServerSettings settings;
     private boolean initialized = false;
+    private boolean canProvideCompletions = false;
+    
+    private final IDocumentHandler documentHandler = new NoDocumentHandler ();
     
     public XMLLanguageServer () {
+    }
     
+    public void setupSDK (@NonNull final SDKInfo info) {
+        this.sdkInfo = info;
+        this.canProvideCompletions = true;
     }
     
     @NonNull
@@ -66,13 +77,12 @@ public class XMLLanguageServer implements ILanguageServer, IDocumentHandler {
         return settings;
     }
     
+    @NonNull
     @Override
-    public InitializeResult initialize (InitializeParams params) throws AlreadyInitializedException {
+    public InitializeResult initialize (@NonNull InitializeParams params) throws AlreadyInitializedException {
         if (initialized) {
             throw new AlreadyInitializedException ();
         }
-        
-        XMLFileStore.setWorkspaceRoots (params.getWorkspaceRoots ());
         
         final var result = new InitializeResult ();
         result.setCompletionsAvailable (true);
@@ -109,66 +119,57 @@ public class XMLLanguageServer implements ILanguageServer, IDocumentHandler {
     
     @Override
     public void configurationChanged (Object newConfiguration) {
-    
     }
     
+    @NonNull
     @Override
     public ICompletionProvider getCompletionProvider () {
-        return null;
+        if (!getSettings ().completionsEnabled () || !canProvideCompletions) {
+            return new NoCompletionsProvider ();
+        }
+        
+        return new CompletionProvider (this.sdkInfo, this.getSettings ());
     }
     
+    @NonNull
     @Override
     public ICodeActionProvider getCodeActionProvider () {
-        return null;
+        return new NoCodeActionsProvider ();
     }
     
+    @NonNull
     @Override
     public IReferenceProvider getReferenceProvider () {
-        return null;
+        return new NoReferenceProvider ();
     }
     
+    @NonNull
     @Override
     public IDefinitionProvider getDefinitionProvider () {
-        return null;
+        return new NoDefinitionProvider ();
     }
     
+    @NonNull
     @Override
     public ISelectionProvider getSelectionProvider () {
-        return null;
+        return new NoSelectionProvider ();
     }
     
+    @NonNull
     @Override
     public ISignatureHelpProvider getSignatureHelpProvider () {
-        return null;
+        return new NoSignatureHelpProvider ();
     }
     
+    @NonNull
     @Override
     public IDocumentHandler getDocumentHandler () {
-        return null;
+        return this.documentHandler;
     }
     
+    @NonNull
     @Override
     public ICodeAnalyzer getCodeAnalyzer () {
-        return null;
-    }
-    
-    @Override
-    public void onFileOpened (DocumentOpenEvent event) {
-        XMLFileStore.open (event);
-    }
-    
-    @Override
-    public void onContentChange (DocumentChangeEvent event) {
-        XMLFileStore.change (event);
-    }
-    
-    @Override
-    public void onFileSaved (DocumentSaveEvent event) {
-        XMLFileStore.save (event);
-    }
-    
-    @Override
-    public void onFileClosed (DocumentCloseEvent event) {
-        XMLFileStore.close (event);
+        return new NoCodeAnalyzer ();
     }
 }

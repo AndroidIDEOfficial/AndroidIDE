@@ -39,12 +39,21 @@ import androidx.annotation.NonNull;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.CompletionParams;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 /**
  * A completion provider provides completions at the given line and column.
  *
  * @author Akash Yadav
  */
 public interface ICompletionProvider {
+    
+    CompletionResult EMPTY = new CompletionResult ();
+    
+    default boolean canComplete (Path file) {
+        return file != null && Files.exists (file) && !Files.isDirectory (file);
+    }
     
     /**
      * Compute completions using the given params and return the given completion result.
