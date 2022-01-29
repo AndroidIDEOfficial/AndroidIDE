@@ -1,0 +1,5 @@
+<resources>
+  <string name="paste_text">Coller</string>
+  <string name="copy_text">Copier</string>
+  <string name="text_selection_more">Plus…</string>
+</resources>

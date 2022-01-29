@@ -1,0 +1,9 @@
+<resources>
+<string name="cms_channel_id_devs">Notifications des Développeurs</string>
+<string name="cms_channel_id_update">Notifications de Mise à jour</string>   
+<string name="msg_hex_color_code">Code de couleur Hex</string>
+<string name="msg_color_picker_pick">Prendre</string>
+<string name="msg_chmod_exec">Définition des permissions exécutables…</string>
+<string name="msg_linking">Liaison %1$s à %2$s</string>
+<string name="msg_extracting_hooks">Extraction des librairies hook…</string>
+</resources>
