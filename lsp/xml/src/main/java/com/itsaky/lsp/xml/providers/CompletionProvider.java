@@ -47,7 +47,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+
+import jaxp.sax.InputSource;
+import jaxp.xml.parsers.DocumentBuilderFactory;
+import jaxp.xml.parsers.ParserConfigurationException;
 
 /**
  * Completion provider for the XML Language
@@ -126,7 +131,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                                        final String fileType,
                                        final int index
     ) {
-        
         if (fileType == null) {
             return EMPTY;
         }
