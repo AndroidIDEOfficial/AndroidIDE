@@ -17,6 +17,9 @@
  */
 package com.itsaky.inflater;
 
+import static com.itsaky.inflater.util.Preconditions.assertNotBlank;
+import static com.itsaky.inflater.util.Preconditions.assertNotnull;
+
 import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -34,18 +37,12 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
 import com.itsaky.inflater.impl.BaseView;
 import com.itsaky.inflater.impl.ErrorUiView;
 import com.itsaky.inflater.impl.UiAttribute;
+import com.itsaky.inflater.impl.UiNamespace;
 import com.itsaky.inflater.impl.UiView;
 import com.itsaky.inflater.impl.UiViewGroup;
 import com.itsaky.inflater.util.Preconditions;
 import com.itsaky.widgets.WidgetInfo;
 import com.itsaky.widgets.models.Widget;
-
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
@@ -54,7 +51,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 
-import static com.itsaky.inflater.util.Preconditions.*;
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 class XMLLayoutInflater extends BaseLayoutInflater {
     
@@ -67,10 +69,6 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     
     private static final Logger LOG = Logger.instance ("XMLLayoutInflater");
     public static final String ATTR_ADAPTER_SUFFIX = "AttrAdapter";
-    
-    private XMLLayoutInflater () {
-        throw new UnsupportedOperationException ();
-    }
     
     XMLLayoutInflater (@NonNull LayoutInflaterConfiguration config) {
         this.resDirs = config.resDirs;
@@ -139,7 +137,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
             return createFromInclude (tag.attributes (), parent);
         }
         
-        IView root = null;
+        IView root;
         int style = tag.hasAttr ("style") ? parseFrameworkStyle (tag.attr ("style")) : 0;
         if (!name.contains (".")) {
             root = createFromSimpleName (name, parent, style);
@@ -158,7 +156,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         }
         
         if (root instanceof IViewGroup) {
-            addChildren (tag, (IViewGroup) root, parent);
+            addChildren (tag, (IViewGroup) root);
         }
         
         postCreateView (root);
@@ -166,7 +164,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         return root;
     }
     
-    protected void addChildren (@NonNull Element tag, IViewGroup root, ViewGroup parent) {
+    protected void addChildren (@NonNull Element tag, IViewGroup root) {
         if (tag.childrenSize () > 0 && !root.isPlaceholder ()) {
             for (Element child : tag.children ()) {
                 final BaseView created = (BaseView) onCreateView (child, (ViewGroup) root.asView ());
@@ -222,7 +220,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         }
         
         // If we cannot find a suitable adapter, fall back to using common adapters
-        IAttributeAdapter adapter = null;
+        IAttributeAdapter adapter;
         if (view instanceof ViewGroup) {
             adapter = new ViewGroupAttrAdapter (resFinder, displayMetrics);
         } else {
@@ -241,14 +239,26 @@ class XMLLayoutInflater extends BaseLayoutInflater {
             final String name = split[1];
             final String value = attr.getValue ();
             
-            final IAttribute iAttr = asAttribute (namespace, name, value);
+            INamespace ns;
+            if (namespace.equals ("xmlns")) {
+                ns = INamespace.DECLARATOR;
+                view.registerNamespace (new UiNamespace (name, value));
+            } else {
+                ns = view.findRegisteredNamespace (namespace);
+            }
+            
+            if (ns == null) {
+                ns = INamespace.invalid (namespace);
+            }
+            
+            final IAttribute iAttr = asAttribute (ns, name, value);
             view.addAttribute (iAttr);
             
             postApplyAttribute (iAttr, view);
         }
     }
     
-    protected IAttribute asAttribute (String namespace, String name, String value) {
+    protected IAttribute asAttribute (INamespace namespace, String name, String value) {
         return new UiAttribute (namespace, name, value);
     }
     

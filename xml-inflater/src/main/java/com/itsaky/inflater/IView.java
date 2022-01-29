@@ -36,7 +36,7 @@ public interface IView {
      * You can modify this to change the number of spaces used for
      * indentation.
      */
-    public static int DEFAULT_INDENTATION_LENGTH = 4;
+    int DEFAULT_INDENTATION_LENGTH = 4;
     
     /**
      * Get this view as android {@link View}. This will be used to display this view in the designer
@@ -85,7 +85,7 @@ public interface IView {
      * @param name The name of the attribute to check.
      * @return {@code true} if this view contains the attribute, {@code false} otherwise.
      */
-    boolean hasAttribute (String namespace, String name);
+    boolean hasAttribute (INamespace namespace, String name);
     
     /**
      * Get the attribute with the given namespace and attribute name.
@@ -95,7 +95,7 @@ public interface IView {
      * @return Found {@link IAttribute} or {@code null}.
      */
     @Nullable
-    IAttribute getAttribute (String namespace, String name);
+    IAttribute getAttribute (INamespace namespace, String name);
     
     /**
      * Update the value of the given attribute.
@@ -114,7 +114,7 @@ public interface IView {
      * @param value The new value of the attribute.
      * @return {@code true} if the attribute was successfully updated, {@code false} otherwise.
      */
-    boolean updateAttribute (String namespace, String name, String value);
+    boolean updateAttribute (INamespace namespace, String name, String value);
 
     /**
      * Register this attribute adapter
@@ -122,7 +122,23 @@ public interface IView {
      * @param adapter The adapter to register
      */
     void registerAttributeAdapter (IAttributeAdapter adapter);
-
+    
+    /**
+     * Register the given namespace to this view.
+     * @param namespace The name space to register.
+     */
+    void registerNamespace (INamespace namespace);
+    
+    /**
+     * Find the namespace registered by the given name.
+     * Returns <code>null</code> if there is none.
+     *
+     * @param name The name of the namespace to look for. Must not be <code>null</code>.
+     * @return The found namespace or <code>null</code>.
+     */
+    @Nullable
+    INamespace findRegisteredNamespace (@NonNull String name);
+    
     /**
      * Set the parent of this view.
      * This is set by {@link IViewGroup} when {@link IViewGroup#addView(IView, int)}

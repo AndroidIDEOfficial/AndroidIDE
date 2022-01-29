@@ -31,6 +31,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.INamespace;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.IViewGroup;
 import com.itsaky.inflater.impl.ErrorUiView;
@@ -187,13 +188,13 @@ public class WidgetDragListener implements View.OnDragListener {
     @NonNull
     @Contract(" -> new")
     private IAttribute layoutHeightAttr () {
-        return new UiAttribute (ANDROID_NS, "layout_height", "wrap_content");
+        return new UiAttribute (INamespace.ANDROID, "layout_height", "wrap_content");
     }
     
     @NonNull
     @Contract(" -> new")
     private IAttribute layoutWidthAttr () {
-        return new UiAttribute (ANDROID_NS, "layout_width", "wrap_content");
+        return new UiAttribute (INamespace.ANDROID, "layout_width", "wrap_content");
     }
     
     @NonNull

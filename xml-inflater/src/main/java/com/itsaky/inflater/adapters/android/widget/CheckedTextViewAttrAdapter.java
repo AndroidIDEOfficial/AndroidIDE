@@ -46,11 +46,10 @@ public class CheckedTextViewAttrAdapter extends TextViewAttrAdapter {
     public boolean apply(IAttribute attribute, View view) {
         
         final CheckedTextView text = (CheckedTextView) view;
-        final String namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
         
-        if (!canHandleNamespace(namespace)) {
+        if (!canHandleNamespace(attribute)) {
             return false;
         }
         

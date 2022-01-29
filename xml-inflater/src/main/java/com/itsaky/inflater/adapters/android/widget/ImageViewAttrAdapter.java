@@ -51,11 +51,10 @@ public class ImageViewAttrAdapter extends ViewAttrAdapter {
         final ImageView image = (ImageView) view;
         final Context context = image.getContext();
         final DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        final String namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
 
-        if (!canHandleNamespace(namespace)) {
+        if (!canHandleNamespace(attribute)) {
             return false;
         }
 

@@ -50,11 +50,10 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
         final ProgressBar pb = (ProgressBar) view;
         final Context context = pb.getContext();
         final DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        final String namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
         
-        if (!canHandleNamespace(namespace)) {
+        if (!canHandleNamespace(attribute)) {
             return false;
         }
         

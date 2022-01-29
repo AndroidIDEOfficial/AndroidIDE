@@ -30,11 +30,10 @@ public class CompondButtonAttrAdapter extends ButtonAttrAdapter {
     public boolean apply(IAttribute attribute, View view) {
         final CompoundButton button = (CompoundButton) view;
         final Context context = button.getContext();
-        final String namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
         
-        if (!canHandleNamespace(namespace)) {
+        if (!canHandleNamespace(attribute)) {
             return false;
         }
         

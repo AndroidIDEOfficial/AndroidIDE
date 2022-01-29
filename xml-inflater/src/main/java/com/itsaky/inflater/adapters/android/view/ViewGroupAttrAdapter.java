@@ -49,11 +49,10 @@ public class ViewGroupAttrAdapter extends ViewAttrAdapter {
     public boolean apply(IAttribute attribute, View view) {
         
         final ViewGroup group = (ViewGroup) view;
-        final String namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
         
-        if (!canHandleNamespace(namespace)) {
+        if (!canHandleNamespace(attribute)) {
             return false;
         }
         

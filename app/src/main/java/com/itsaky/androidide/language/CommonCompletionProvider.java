@@ -105,5 +105,5 @@ public class CommonCompletionProvider implements AutoCompleteProvider {
         return s1.compareTo (s2);
     };
     
-    private static final Logger LOG = Logger.instance("GenericCompletionProvider");
+    private static final Logger LOG = Logger.instance("CommonCompletionProvider");
 }

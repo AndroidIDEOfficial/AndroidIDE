@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.inflater.adapters.android.view;
 
 import android.content.Context;
@@ -27,12 +27,14 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IAttributeAdapter;
 import com.itsaky.inflater.IDTable;
+import com.itsaky.inflater.INamespace;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.util.CommonParseUtils;
 
@@ -63,7 +65,7 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
     
     @Override
     public boolean apply(IAttribute attribute, View view) {
-        final String namespace = attribute.getNamespace();
+        final INamespace namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
         final ViewGroup.LayoutParams params = view.getLayoutParams();
@@ -394,9 +396,12 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
         return handled;
     }
     
-    protected boolean canHandleNamespace(String namespace) {
-        // TODO Compare namespace URI instead of name
-        return "android".equals(namespace);
+    protected boolean canHandleNamespace (@NonNull IAttribute attr) {
+        return canHandleNamespace (attr.getNamespace ());
+    }
+    
+    protected boolean canHandleNamespace(INamespace namespace) {
+        return INamespace.ANDROID.equals (namespace);
     }
     
     protected int parseInteger(String value, int defaultVal) {
@@ -516,14 +521,14 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
         char c = value.charAt(0);
         if (Character.isDigit(c)) {
             // A dimension value which starts with a digit. E.g.: 1dp, 12sp, 123px, etc.
-            String dimensionVal = "";
+            StringBuilder dimensionVal = new StringBuilder ();
             int index = 0;
             while (Character.isDigit(c = value.charAt(index))) {
-                dimensionVal += c;
+                dimensionVal.append (c);
                 index ++;
             }
             
-            final int dimen = Integer.parseInt(dimensionVal);
+            final int dimen = Integer.parseInt(dimensionVal.toString ());
             final String dimensionType = value.substring(index);
             return (int) TypedValue.applyDimension(getUnitForDimensionType(dimensionType), dimen, dm);
         } else if (c == '@') {
@@ -566,17 +571,20 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
     }
     
     protected boolean isApi26() {
-        return Build.VERSION.SDK_INT >= 26;
+        return true;
     }
     
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.P)
     protected boolean isApi28() {
         return Build.VERSION.SDK_INT >= 28;
     }
     
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
     protected boolean isApi29() {
         return Build.VERSION.SDK_INT >= 29;
     }
     
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
     protected boolean isApi30() {
         return Build.VERSION.SDK_INT >= 30;
     }

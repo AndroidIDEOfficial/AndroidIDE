@@ -70,6 +70,7 @@ import com.itsaky.inflater.IInflateListener;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.IViewGroup;
+import com.itsaky.inflater.impl.BaseView;
 
 import org.jetbrains.annotations.Contract;
 
@@ -96,8 +97,6 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     
     private final boolean isTablet = DeviceUtils.isTablet ();
     private final List<UIWidgetGroup> widgetGroups = new ArrayList<> ();
-    
-    private final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
     
     // This will make sure to apply listeners, background and data to view that are inflated from XML.
     private final IInflateListener mInflateListener = new IInflateListener () {
@@ -201,7 +200,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         progress.setSubMessage (getString (R.string.please_wait));
         progress.show (getSupportFragmentManager (), "generate_code_progress");
         
-        final var future = CompletableFuture.supplyAsync (() -> XML_HEADER.concat ("\n").concat (inflatedRoot.generateCode ()));
+        final var future = CompletableFuture.supplyAsync (() -> BaseView.XML_HEADER.concat ("\n").concat (inflatedRoot.generateCode ()));
         future.whenComplete ((s, throwable) -> {
             
             progress.dismiss ();

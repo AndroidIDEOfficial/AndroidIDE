@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.INamespace;
 import com.itsaky.inflater.impl.UiAttribute;
 
 import org.jetbrains.annotations.Contract;
@@ -39,7 +40,7 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     /**
      * Is this attribute applied to any view?
      */
-    private boolean isApplied = false;
+    private boolean isApplied;
     
     /**
      * Format of this attribute. May be stored here so we don't
@@ -58,13 +59,13 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
         this (attribute.getNamespace (), attribute.getAttributeName (), attribute.getValue (), isApplied);
     }
     
-    public XMLAttribute (String namespace, String name, String value, boolean isApplied) {
+    public XMLAttribute (INamespace namespace, String name, String value, boolean isApplied) {
         super (namespace, name, value);
         this.isApplied = isApplied;
     }
     
     private XMLAttribute (@NonNull Parcel in) {
-        this (in.readString (), in.readString (), in.readString (), in.readByte () != 0);
+        this (in.readParcelable (INamespace.class.getClassLoader ()), in.readString (), in.readString (), in.readByte () != 0);
     }
     
     public void setFormat (int format) {
@@ -98,14 +99,14 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
         return attr;
     }
     
-    public static final Creator<XMLAttribute> CREATOR = new Creator<XMLAttribute> () {
+    public static final Creator<XMLAttribute> CREATOR = new Creator<> () {
         @NonNull
         @Contract("_ -> new")
         @Override
         public XMLAttribute createFromParcel (Parcel in) {
             return new XMLAttribute (in);
         }
-        
+    
         @NonNull
         @Contract(value = "_ -> new", pure = true)
         @Override
@@ -134,7 +135,7 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     @NonNull
     @Contract("_, _ -> new")
     public static XMLAttribute newAndroidAttribute (String name, String value) {
-        return new XMLAttribute ("android", name, value, true);
+        return new XMLAttribute (INamespace.ANDROID, name, value, true);
     }
     
     /**
@@ -146,7 +147,7 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     @NonNull
     @Contract("_ -> new")
     public static XMLAttribute newAndroidAttribute (String name) {
-        return new XMLAttribute ("android", name, "", false);
+        return new XMLAttribute (INamespace.ANDROID, name, "", false);
     }
     
     @Override
@@ -156,7 +157,7 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     
     @Override
     public void writeToParcel (@NonNull Parcel dest, int flags) {
-        dest.writeString (getNamespace ());
+        dest.writeParcelable (getNamespace (), flags);
         dest.writeString (getAttributeName ());
         dest.writeString (getValue ());
         dest.writeByte ((byte) (isApplied ? 1 : 0));

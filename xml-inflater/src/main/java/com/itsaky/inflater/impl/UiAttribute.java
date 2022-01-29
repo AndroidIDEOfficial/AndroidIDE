@@ -17,32 +17,38 @@
 **************************************************************************************/
 package com.itsaky.inflater.impl;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
+import com.itsaky.inflater.INamespace;
 
 import java.util.Objects;
 
 public class UiAttribute implements IAttribute {
     
-    private final String namespace;
+    private final INamespace namespace;
     private final String name;
     protected String value;
     
-    public UiAttribute(String namespace, String name, String value) {
+    public UiAttribute(INamespace namespace, String name, String value) {
         this.namespace = namespace;
         this.name = name;
         this.value = value;
     }
     
+    @NonNull
     @Override
-    public String getNamespace() {
+    public INamespace getNamespace() {
         return namespace;
     }
     
+    @NonNull
     @Override
     public String getAttributeName() {
         return name;
     }
     
+    @NonNull
     @Override
     public String getValue() {
         return this.value;
@@ -53,6 +59,7 @@ public class UiAttribute implements IAttribute {
         this.value = value;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return

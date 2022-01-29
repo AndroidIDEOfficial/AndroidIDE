@@ -26,7 +26,6 @@ import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -35,6 +34,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
+
 import java.util.regex.Pattern;
 
 /**
@@ -56,17 +56,15 @@ public class TextViewAttrAdapter extends ViewAttrAdapter {
     @Override
     public boolean apply(IAttribute attribute, View view) {
         final TextView text = (TextView) view;
-        final String namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
-        final ViewGroup.LayoutParams params = view.getLayoutParams();
         final Resources res = view.getResources();
         final DisplayMetrics dm = res.getDisplayMetrics();
         final Context ctx = view.getContext();
         final Drawable[] drawables = text.getCompoundDrawables();
         final Drawable[] drawablesRelative = text.getCompoundDrawablesRelative();
         
-        if (!canHandleNamespace(namespace)) {
+        if (!canHandleNamespace(attribute)) {
             return false;
         }
         

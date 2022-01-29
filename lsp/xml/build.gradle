@@ -45,7 +45,6 @@ dependencies {
     implementation common.utilcode
 
     implementation project(':lsp:api')
-    implementation project(':lsp:xml:jaxp')
 
     compileOnly project(':lexers')
     compileOnly project(':common')

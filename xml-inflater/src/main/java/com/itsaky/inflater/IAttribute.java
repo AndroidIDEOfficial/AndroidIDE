@@ -20,6 +20,7 @@
 package com.itsaky.inflater;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Comparator;
 
@@ -30,13 +31,8 @@ import java.util.Comparator;
  */
 public interface IAttribute {
     
-    /**
-     * The android namespace
-     */
-    public static final String NS_ANDROID = "android";
-    
-    @NonNull
-    String getNamespace ();
+    @Nullable
+    INamespace getNamespace ();
     
     @NonNull
     String getAttributeName ();
@@ -52,7 +48,7 @@ public interface IAttribute {
      */
     void apply (String value);
 
-    public static final Comparator <IAttribute> COMPARATOR = (first, second) -> {
+    Comparator <IAttribute> COMPARATOR = (first, second) -> {
         var result = compareNull(first, second);
         if (result != IAttribute.DO_COMPARE) {
             return result;
@@ -68,22 +64,21 @@ public interface IAttribute {
 
         final var firstNs = first.getNamespace();
         final var secondNs = second.getNamespace();
-
-        if (firstNs.equals(secondNs)) {
-
+    
+        if (firstNs != null && firstNs.equals (secondNs)) {
             // Compare by attribute names if the namespaces are same
-            return first.getAttributeName().compareTo(second.getAttributeName());
+            return first.getAttributeName ().compareTo (second.getAttributeName ());
         }
-
+    
         // xmlns declarations must be on top
-        if (firstNs.equals("xmlns") && !secondNs.equals("xmlns")) {
+        if (firstNs != null && firstNs.equals (INamespace.DECLARATOR)) {
             return -1;
         }
-
-        if (!firstNs.equals("xmlns") && secondNs.equals("xmlns")) {
+    
+        if (secondNs != null && secondNs.equals (INamespace.DECLARATOR)) {
             return 1;
         }
-
+    
         return 0;
     };
 
@@ -91,7 +86,7 @@ public interface IAttribute {
      * Returned by {@link #compareNull(Object, Object)} to indicate
      * that the comparison must be done further.
      */
-    static final int DO_COMPARE = 2;
+    int DO_COMPARE = 2;
 
     private static int compareNull (Object first, Object second) {
         if (first == null && second == null) {
@@ -102,7 +97,7 @@ public interface IAttribute {
             return -1;
         }
 
-        if (first == null && second != null) {
+        if (first == null) {
             return 1;
         }
 
