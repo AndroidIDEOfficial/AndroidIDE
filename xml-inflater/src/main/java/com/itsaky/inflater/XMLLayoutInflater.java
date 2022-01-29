@@ -100,7 +100,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
                 throw new InflateException ("More than one root element was found. An XML layout can have only one root element.");
             }
             
-            IView root = onCreateView (doc.child (0), parent);
+            IView root = onCreateView (doc.child (0), parent, null);
             
             if (root == null) {
                 root = onCreateErrorView (TextView.class.getName (), "No views added", parent);
@@ -126,7 +126,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         return this.resFinder;
     }
     
-    protected IView onCreateView (Element tag, ViewGroup parent) throws InflateException {
+    protected IView onCreateView (Element tag, ViewGroup parentGroup, IViewGroup parent) throws InflateException {
         if (tag == null) {
             return null;
         }
@@ -134,15 +134,15 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         final String name = tag.tagName ().trim ();
         
         if (name.equals ("include")) {
-            return createFromInclude (tag.attributes (), parent);
+            return createFromInclude (tag.attributes (), parentGroup);
         }
         
         IView root;
         int style = tag.hasAttr ("style") ? parseFrameworkStyle (tag.attr ("style")) : 0;
         if (!name.contains (".")) {
-            root = createFromSimpleName (name, parent, style);
+            root = createFromSimpleName (name, parentGroup, style);
         } else {
-            root = createFromQualifiedName (name, parent, style);
+            root = createFromQualifiedName (name, parentGroup, style);
         }
         
         if (root == null) {
@@ -152,7 +152,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         registerAttributeAdaptersTo (root);
         
         if (!tag.attributes ().isEmpty ()) {
-            addAttributesTo (root, tag.attributes ());
+            addAttributesTo (root, tag.attributes (), parent);
         }
         
         if (root instanceof IViewGroup) {
@@ -164,13 +164,13 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         return root;
     }
     
-    protected void addChildren (@NonNull Element tag, IViewGroup root) {
-        if (tag.childrenSize () > 0 && !root.isPlaceholder ()) {
+    protected void addChildren (@NonNull Element tag, IViewGroup parent) {
+        if (tag.childrenSize () > 0 && !parent.isPlaceholder ()) {
             for (Element child : tag.children ()) {
-                final BaseView created = (BaseView) onCreateView (child, (ViewGroup) root.asView ());
+                final BaseView created = (BaseView) onCreateView (child, (ViewGroup) parent.asView (), parent);
                 if (created != null) {
-                    root.addView (created);
-                    created.setParent (root);
+                    parent.addView (created);
+                    created.setParent (parent);
                 }
             }
         }
@@ -229,7 +229,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         return adapter;
     }
     
-    protected void addAttributesTo (IView view, Attributes attributes) {
+    protected void addAttributesTo (IView view, Attributes attributes, IViewGroup parent) {
         assertNotnull (attributes, "Cannot apply null attributes!");
         
         for (Attribute attr : attributes) {
@@ -244,6 +244,9 @@ class XMLLayoutInflater extends BaseLayoutInflater {
                 ns = INamespace.DECLARATOR;
                 view.registerNamespace (new UiNamespace (name, value));
             } else {
+                // set the parent so that we could look for
+                // declared namespaces
+                view.setParent (parent);
                 ns = view.findRegisteredNamespace (namespace);
             }
             

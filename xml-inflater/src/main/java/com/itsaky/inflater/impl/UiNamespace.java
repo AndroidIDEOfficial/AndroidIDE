@@ -81,12 +81,15 @@ public class UiNamespace implements INamespace {
         }
         
         UiNamespace that = (UiNamespace) o;
-        return Objects.equals (getName (), that.getName ()) && Objects.equals (getUri (), that.getUri ());
+        
+        // name doesn't matter while
+        // check for URI
+        return Objects.equals (getUri (), that.getUri ());
     }
     
     @Override
     public int hashCode () {
-        return Objects.hash (getName (), getUri ());
+        return Objects.hash (getUri ());
     }
     
     @Override

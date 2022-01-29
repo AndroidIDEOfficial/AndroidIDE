@@ -190,6 +190,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     }
     
     private void addLayoutXmlTags (CompletionResult result, String prefix, boolean slash) {
+        prefix = prefix.toLowerCase(Locale.ROOT);
         for (var widget : this.sdkInfo.getWidgetInfo ().getWidgets ()) {
             var name = widget.simpleName.toLowerCase(Locale.ROOT);
             if (name.startsWith (prefix)) {

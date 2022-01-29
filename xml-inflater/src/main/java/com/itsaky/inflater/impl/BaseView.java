@@ -228,6 +228,13 @@ public abstract class BaseView implements IView {
                 .collect (Collectors.toSet ());
         
         if (namespaces.isEmpty ()) {
+            
+            // If the namespace was not declared in this view,
+            // check if it was declared in parent
+            if (getParent () != null) {
+                return getParent ().findRegisteredNamespace (name);
+            }
+            
             return null;
         }
         

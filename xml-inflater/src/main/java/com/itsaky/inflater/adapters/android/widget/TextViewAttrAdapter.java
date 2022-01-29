@@ -54,7 +54,7 @@ public class TextViewAttrAdapter extends ViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         final TextView text = (TextView) view;
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();
