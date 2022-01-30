@@ -285,11 +285,17 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
                         .setId (3)
                         .setName (this, R.string.template_kotlin_basic)
                         .setDescription (this, R.string.template_description_kotlin_basic)
-                        .setImageId (R.drawable.template_basic);
+                        .setImageId (R.drawable.template_basic),
+                libgdx = new ProjectTemplate ()
+                        .setId (4)
+                        .setName (this, R.string.template_libgdx)
+                        .setDescription (this, R.string.template_description_libgdx)
+                        .setImageId (R.drawable.template_libgdx);
         mTemplates.add (empty);
         mTemplates.add (basic);
         mTemplates.add (drawer);
         mTemplates.add (kotlinBasic);
+        mTemplates.add (libgdx);
         
     }
     
