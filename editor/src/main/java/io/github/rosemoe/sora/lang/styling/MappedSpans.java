@@ -86,6 +86,62 @@ public class MappedSpans implements Spans {
         return new Mdf();
     }
 
+    @Override
+    public int getLineCount() {
+        return spanMap.size();
+    }
+
+    /**
+     * A mirror method of {@link Builder#markProblemRegion(int, int, int, int, int)}
+     */
+    public void markProblemRegion(int newFlag, int startLine, int startColumn, int endLine, int endColumn) {
+        for (int line = startLine; line <= endLine; line++) {
+            int start = (line == startLine ? startColumn : 0);
+            int end = (line == endLine ? endColumn : Integer.MAX_VALUE);
+            List<Span> spans = spanMap.get(line);
+            int increment;
+            for (int i = 0; i < spans.size(); i += increment) {
+                Span span = spans.get(i);
+                increment = 1;
+                if (span.column >= end) {
+                    break;
+                }
+                int spanEnd = (i + 1 >= spans.size() ? Integer.MAX_VALUE : spans.get(i + 1).column);
+                if (spanEnd >= start) {
+                    int regionStartInSpan = Math.max(span.column, start);
+                    int regionEndInSpan = Math.min(end, spanEnd);
+                    if (regionStartInSpan == span.column) {
+                        if (regionEndInSpan != spanEnd) {
+                            increment = 2;
+                            Span nSpan = span.copy();
+                            nSpan.column = regionEndInSpan;
+                            spans.add(i + 1, nSpan);
+                        }
+                        span.problemFlags |= newFlag;
+                    } else {
+                        //regionStartInSpan > span.column
+                        if (regionEndInSpan == spanEnd) {
+                            increment = 2;
+                            Span nSpan = span.copy();
+                            nSpan.column = regionStartInSpan;
+                            spans.add(i + 1, nSpan);
+                            nSpan.problemFlags |= newFlag;
+                        } else {
+                            increment = 3;
+                            Span span1 = span.copy();
+                            span1.column = regionStartInSpan;
+                            span1.problemFlags |= newFlag;
+                            Span span2 = span.copy();
+                            span2.column = regionEndInSpan;
+                            spans.add(i + 1, span1);
+                            spans.add(i + 2, span2);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Allow you to build a span map linearly.
      */

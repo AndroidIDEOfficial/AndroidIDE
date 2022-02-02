@@ -24,6 +24,7 @@
 package io.github.rosemoe.sora.event;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -38,26 +40,100 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * This class manages event dispatching in editor.
  * Users can either register their event receivers here or dispatch event to
  * the receivers in this manager.
- *
+ * <p>
  * There may be several EventManagers in one editor instance. For example, each plugin
  * will have it own EventManager and the editor also has a root event manager for external
  * listeners.
- *
+ * <p>
  * Note that the event type must be exact. That's to say, you need to use a terminal class instead
  * of using its parent classes. For instance, if you register a receiver with the event type {@link Event},
  * no event will be sent to your receiver.
  *
  * @author Rosemoe
  */
-public class EventManager {
+public final class EventManager {
 
     @SuppressWarnings("rawtypes")
     private final Map<Class<?>, Receivers> receivers;
     private final ReadWriteLock lock;
+    private boolean enabled;
+    private final EventManager parent;
+    private final List<EventManager> children;
+    private boolean detached = false;
 
-    public EventManager() {
+    /**
+     * Create an EventManager with no parent
+     */
+    public  EventManager() {
+        this(null);
+    }
+
+    /**
+     * Create an EventManager with the given parent.
+     * Null for no parent.
+     */
+    public EventManager(@Nullable EventManager parent) {
         receivers = new HashMap<>();
+        this.parent = parent;
         lock = new ReentrantReadWriteLock();
+        children = new Vector<>();
+        if (parent != null) {
+            parent.children.add(this);
+        }
+    }
+
+    /**
+     * Set enabled.
+     * Disabled EventManager will not deliver event to its subscribers or children.
+     * Root EventManager can not be disabled.
+     */
+    public void setEnabled(boolean enabled) {
+        if (parent == null && !enabled) {
+            throw new IllegalStateException("The event manager is set to be root, and can not be disabled");
+        }
+        this.enabled = enabled;
+    }
+
+    /**
+     * Check is the manager enabled
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Get root node
+     */
+    public EventManager getRootManager() {
+        checkDetached();
+        return parent == null ? this : parent.getRootManager();
+    }
+
+    /**
+     * Get root manager and dispatch the given event
+     * @see #dispatchEvent(Event)
+     */
+    public <T extends Event> boolean dispatchEventFromRoot(@NonNull T event) {
+        return getRootManager().dispatchEvent(event);
+    }
+
+    /**
+     * Detached from parent.
+     * This manager will not receive future events from parent
+     */
+    public void detach() {
+        if (parent == null) {
+            throw new IllegalStateException("root manager can not be detached");
+        }
+        checkDetached();
+        detached = true;
+        parent.children.remove(this);
+    }
+
+    private void checkDetached() {
+        if (detached) {
+            throw new IllegalStateException("already detached");
+        }
     }
 
     /**
@@ -95,7 +171,7 @@ public class EventManager {
      * @param receiver Receiver of event
      * @param <T> Event type
      */
-    public <T extends Event> void subscribeEvent(Class<T> eventType, EventReceiver<T> receiver) {
+    public <T extends Event> void subscribeEvent(@NonNull Class<T> eventType, @NonNull EventReceiver<T> receiver) {
         var receivers = getReceivers(eventType);
         receivers.lock.writeLock().lock();
         try {
@@ -116,7 +192,7 @@ public class EventManager {
      * @return Whether the event's intercept flag is set
      */
     @SuppressWarnings("unchecked")
-    public <T extends Event> boolean dispatchEvent(T event) {
+    public <T extends Event> boolean dispatchEvent(@NonNull T event) {
         // Safe cast
         var receivers = getReceivers((Class<T>)event.getClass());
         receivers.lock.readLock().lock();
@@ -154,6 +230,17 @@ public class EventManager {
             }
             recycleBuffer(receiverArr);
         }
+        for (int i = 0;i < children.size() && !event.isIntercepted();i++) {
+            EventManager sub = null;
+            try {
+                sub = children.get(i);
+            } catch (IndexOutOfBoundsException e) {
+                // concurrent mod ignored
+            }
+            if (sub != null) {
+                sub.dispatchEvent(event);
+            }
+        }
         return event.isIntercepted();
     }
 
@@ -169,7 +256,7 @@ public class EventManager {
 
     }
 
-    private final EventReceiver<?>[][] caches = new EventReceiver[10][];
+    private final EventReceiver<?>[][] caches = new EventReceiver[5][];
 
     @SuppressWarnings("unchecked")
     private <V extends Event> EventReceiver<V>[] obtainBuffer(int size) {

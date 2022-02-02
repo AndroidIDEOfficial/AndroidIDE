@@ -91,7 +91,7 @@ public class IDEEditor extends CodeEditor {
         this.mActionMode = new EditorTextActionMode (this);
         
         setColorScheme (new SchemeAndroidIDE ());
-        subscribeEvent (ContentChangeEvent.class, (event, unsubscribe) -> notifyContentChanged ());
+        subscribeEvent (ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange (event));
         
         // default editor input type + no suggestions flag
         setInputType (EditorInfo.TYPE_CLASS_TEXT
@@ -461,8 +461,7 @@ public class IDEEditor extends CodeEditor {
     }
     
     public void showSignatureHelp (SignatureHelp help) {
-        getSignatureHelpWindow ().setSignatureHelp (help);
-        getSignatureHelpWindow ().show ();
+        getSignatureHelpWindow ().setupAndDisplay (help);
     }
     
     /**
@@ -596,8 +595,9 @@ public class IDEEditor extends CodeEditor {
     /**
      * Notify the language server that the content of this file
      * has been changed.
+     * @param event
      */
-    private void notifyContentChanged () {
+    private void handleContentChange (ContentChangeEvent event) {
         
         if (getFile () == null) {
             return;
@@ -613,6 +613,30 @@ public class IDEEditor extends CodeEditor {
                                 mFileVersion + 1
                         )
                 );
+        
+        checkForSignatureHelp (event);
+    }
+    
+    /**
+     * Checks if the content change event should trigger signature help.
+     * Signature help trigger characters are :
+     * <ul>
+     *     <li><code>'('</code> (parentheses) </li>
+     *     <li><code>','</code> (comma) </li>
+     * </ul>
+     *
+     * @param event The content change event.
+     */
+    private void checkForSignatureHelp (@NonNull ContentChangeEvent event) {
+        if (event.getAction () != ContentChangeEvent.ACTION_INSERT
+                || event.getChangedText ().length () != 1) {
+            return;
+        }
+        
+        final var ch = event.getChangedText ().charAt (0);
+        if (ch == '(' || ch == ',') {
+            signatureHelp ();
+        }
     }
     
     private SignatureHelpWindow getSignatureHelpWindow () {

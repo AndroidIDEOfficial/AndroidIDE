@@ -84,6 +84,7 @@ import io.github.rosemoe.sora.R;
 import io.github.rosemoe.sora.annotations.Experimental;
 import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.EditorKeyEvent;
 import io.github.rosemoe.sora.event.Event;
 import io.github.rosemoe.sora.event.EventManager;
 import io.github.rosemoe.sora.event.EventReceiver;
@@ -369,6 +370,10 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
         } else {
             throw new IllegalArgumentException("Unknown component type");
         }
+    }
+
+    public KeyMetaStates getKeyMetaStates() {
+        return mKeyMetaStates;
     }
 
     /**
@@ -4538,6 +4543,10 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         mKeyMetaStates.onKeyDown(event);
+        var e = new EditorKeyEvent(this, event);
+        if (mEventManager.dispatchEvent(e)) {
+            return e.result(false);
+        }
         boolean isShiftPressed = mKeyMetaStates.isShiftPressed();
         switch (keyCode) {
             case KeyEvent.KEYCODE_DPAD_DOWN:
@@ -4557,22 +4566,22 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
             case KeyEvent.KEYCODE_BACK: {
                 if (mCursor.isSelected()) {
                     setSelection(mCursor.getLeftLine(), mCursor.getLeftColumn());
-                    return true;
+                    return e.result(true);
                 }
-                return false;
+                return e.result(false);
             }
             case KeyEvent.KEYCODE_DEL:
                 if (isEditable()) {
                     deleteText();
                     notifyIMEExternalCursorChange();
                 }
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_FORWARD_DEL: {
                 if (isEditable()) {
                     mConnection.deleteSurroundingText(0, 1);
                     notifyIMEExternalCursorChange();
                 }
-                return true;
+                return e.result(true);
             }
             case KeyEvent.KEYCODE_ENTER: {
                 if (isEditable()) {
@@ -4606,8 +4615,8 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
                                         } else {
                                             continue;
                                         }
-                                    } catch (Exception e) {
-                                        Log.w(LOG_TAG, "Error occurred while calling Language's NewlineHandler", e);
+                                    } catch (Exception ex) {
+                                        Log.w(LOG_TAG, "Error occurred while calling Language's NewlineHandler", ex);
                                     }
                                     break;
                                 }
@@ -4619,32 +4628,32 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
                     }
                     notifyIMEExternalCursorChange();
                 }
-                return true;
+                return e.result(true);
             }
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 moveSelectionDown();
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_DPAD_UP:
                 moveSelectionUp();
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_DPAD_LEFT:
                 moveSelectionLeft();
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 moveSelectionRight();
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_MOVE_END:
                 moveSelectionEnd();
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_MOVE_HOME:
                 moveSelectionHome();
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_PAGE_DOWN:
                 movePageDown();
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_PAGE_UP:
                 movePageUp();
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_TAB:
                 if (isEditable()) {
                     if (mCompletionWindow.isShowing()) {
@@ -4653,21 +4662,21 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
                         commitTab();
                     }
                 }
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_PASTE:
                 if (isEditable()) {
                     pasteText();
                 }
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_COPY:
                 copyText();
-                return true;
+                return e.result(true);
             case KeyEvent.KEYCODE_SPACE:
                 if (isEditable()) {
                     commitText(" ");
                     notifyIMEExternalCursorChange();
                 }
-                return true;
+                return e.result(true);
             default:
                 if (event.isCtrlPressed() && !event.isAltPressed()) {
                     switch (keyCode) {
@@ -4675,30 +4684,30 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
                             if (isEditable()) {
                                 pasteText();
                             }
-                            return true;
+                            return e.result(true);
                         case KeyEvent.KEYCODE_C:
                             copyText();
-                            return true;
+                            return e.result(true);
                         case KeyEvent.KEYCODE_X:
                             if (isEditable()) {
                                 cutText();
                             } else {
                                 copyText();
                             }
-                            return true;
+                            return e.result(true);
                         case KeyEvent.KEYCODE_A:
                             selectAll();
-                            return true;
+                            return e.result(true);
                         case KeyEvent.KEYCODE_Z:
                             if (isEditable()) {
                                 undo();
                             }
-                            return true;
+                            return e.result(true);
                         case KeyEvent.KEYCODE_Y:
                             if (isEditable()) {
                                 redo();
                             }
-                            return true;
+                            return e.result(true);
                     }
                 } else if (!event.isCtrlPressed() && !event.isAltPressed()) {
                     if (event.isPrintingKey() && isEditable()) {
@@ -4739,19 +4748,33 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
                     } else {
                         return super.onKeyDown(keyCode, event);
                     }
-                    return true;
+                    return e.result(true);
                 }
         }
-        return super.onKeyDown(keyCode, event);
+        return e.result(super.onKeyDown(keyCode, event));
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         mKeyMetaStates.onKeyUp(event);
+        var e = new EditorKeyEvent(this, event);
+        if (mEventManager.dispatchEvent(e)) {
+            return e.result(false);
+        }
         if (!mKeyMetaStates.isShiftPressed() && mSelectionAnchor != null && !mCursor.isSelected()) {
             mSelectionAnchor = null;
+            return e.result(true);
         }
-        return super.onKeyUp(keyCode, event);
+        return e.result(super.onKeyUp(keyCode, event));
+    }
+
+    @Override
+    public boolean onKeyMultiple(int keyCode, int repeatCount, KeyEvent event) {
+        var e = new EditorKeyEvent(this, event);
+        if (mEventManager.dispatchEvent(e)) {
+            return e.result(false);
+        }
+        return e.result(super.onKeyMultiple(keyCode, repeatCount, event));
     }
 
     @Override

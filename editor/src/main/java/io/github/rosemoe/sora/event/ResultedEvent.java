@@ -21,26 +21,34 @@
  *     Please contact Rosemoe by email 2073412493@qq.com if you need
  *     additional information or have any questions
  */
-package io.github.rosemoe.sora.widget.component;
+package io.github.rosemoe.sora.event;
+
+import androidx.annotation.NonNull;
+
+import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
- * Builtin editor component.
- *
- * @see EditorAutoCompletion
- * @see EditorTextActionWindow
- * @see Magnifier
- * @author Rosemoe
+ * Event with a result
+ * @param <T> Result type
  */
-public interface EditorBuiltinComponent {
+public abstract class ResultedEvent<T> extends Event {
 
-    /**
-     * Enable/disable this builtin component
-     */
-    void setEnabled(boolean enabled);
+    private T result;
 
-    /**
-     * Check whether this component is enabled
-     */
-    boolean isEnabled();
+    public ResultedEvent(@NonNull CodeEditor editor) {
+        super(editor);
+    }
+
+    public void setResult(T result) {
+        this.result = result;
+    }
+
+    public T getResult() {
+        return result;
+    }
+
+    public boolean isResultSet() {
+        return result != null;
+    }
 
 }

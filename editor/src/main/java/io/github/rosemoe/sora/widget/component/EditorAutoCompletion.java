@@ -24,17 +24,10 @@
 package io.github.rosemoe.sora.widget.component;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
@@ -57,14 +50,12 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
  */
 public class EditorAutoCompletion extends EditorPopupWindow implements EditorBuiltinComponent {
     private final CodeEditor mEditor;
-    private final ListView mListView;
-    private final ProgressBar mProgressBar;
-    private final GradientDrawable mBackground;
     protected boolean mCancelShowUp = false;
     private int mCurrent = -1;
     private long mRequestTime;
     private int mMaxHeight;
     private EditorCompletionAdapter mAdapter;
+    private CompletionLayout mLayout;
     private CompletionThread mThread;
     private long requestShow = 0;
     private long requestHide = -1;
@@ -78,30 +69,19 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
     public EditorAutoCompletion(CodeEditor editor) {
         super(editor, FEATURE_HIDE_WHEN_FAST_SCROLL);
         mEditor = editor;
+        setLayout(new DefaultCompletionLayout());
         mAdapter = new DefaultCompletionItemAdapter();
-        RelativeLayout layout = new RelativeLayout(mEditor.getContext());
-        mListView = new ListView(mEditor.getContext());
-        layout.addView(mListView, new LinearLayout.LayoutParams(-1, -1));
-        mProgressBar = new ProgressBar(editor.getContext());
-        layout.addView(mProgressBar);
-        var params = ((RelativeLayout.LayoutParams) mProgressBar.getLayoutParams());
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params.width = params.height = (int) (mEditor.getDpUnit() * 30);
-        setContentView(layout);
-        GradientDrawable gd = new GradientDrawable();
-        gd.setCornerRadius(editor.getDpUnit() * 8);
-        layout.setBackground(gd);
-        mBackground = gd;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setLayout(@NonNull CompletionLayout layout) {
+        mLayout = layout;
+        layout.setEditorCompletion(this);
+        setContentView(layout.inflate(mEditor.getContext()));
         applyColorScheme();
-        mListView.setDividerHeight(0);
-        setLoading(true);
-        mListView.setOnItemClickListener((parent, view, position, id) -> {
-            try {
-                select(position);
-            } catch (Exception e) {
-                Toast.makeText(mEditor.getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (mAdapter != null) {
+            mLayout.getCompletionList().setAdapter(mAdapter);
+        }
     }
 
     @Override
@@ -157,8 +137,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
      */
     public void applyColorScheme() {
         EditorColorScheme colors = mEditor.getColorScheme();
-        mBackground.setStroke(1, colors.getColor(EditorColorScheme.AUTO_COMP_PANEL_CORNER));
-        mBackground.setColor(colors.getColor(EditorColorScheme.AUTO_COMP_PANEL_BG));
+        mLayout.onApplyColorScheme(colors);
     }
 
     /**
@@ -167,18 +146,19 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
      * @param state Whether loading
      */
     public void setLoading(boolean state) {
-        mProgressBar.setVisibility(state ? View.VISIBLE : View.INVISIBLE);
+        mLayout.setLoading(state);
     }
 
     /**
      * Move selection down
      */
     public void moveDown() {
-        if (mCurrent + 1 >= mListView.getAdapter().getCount()) {
+        var adpView = mLayout.getCompletionList();
+        if (mCurrent + 1 >= adpView.getAdapter().getCount()) {
             return;
         }
         mCurrent++;
-        ((EditorCompletionAdapter) mListView.getAdapter()).notifyDataSetChanged();
+        ((EditorCompletionAdapter) adpView.getAdapter()).notifyDataSetChanged();
         ensurePosition();
     }
 
@@ -186,44 +166,21 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
      * Move selection up
      */
     public void moveUp() {
+        var adpView = mLayout.getCompletionList();
         if (mCurrent - 1 < 0) {
             return;
         }
         mCurrent--;
-        ((EditorCompletionAdapter) mListView.getAdapter()).notifyDataSetChanged();
+        ((EditorCompletionAdapter) adpView.getAdapter()).notifyDataSetChanged();
         ensurePosition();
-    }
-
-    /**
-     * Perform motion events
-     */
-    private void performScrollList(int offset) {
-        long down = SystemClock.uptimeMillis();
-        var ev = MotionEvent.obtain(down, down, MotionEvent.ACTION_DOWN, 0, 0, 0);
-        mListView.onTouchEvent(ev);
-        ev.recycle();
-
-        ev = MotionEvent.obtain(down, down, MotionEvent.ACTION_MOVE, 0, offset, 0);
-        mListView.onTouchEvent(ev);
-        ev.recycle();
-
-        ev = MotionEvent.obtain(down, down, MotionEvent.ACTION_CANCEL, 0, offset, 0);
-        mListView.onTouchEvent(ev);
-        ev.recycle();
     }
 
     /**
      * Make current selection visible
      */
     private void ensurePosition() {
-        mListView.post(() -> {
-            while (mListView.getFirstVisiblePosition() + 1 > mCurrent && mListView.canScrollList(-1)) {
-                performScrollList(mAdapter.getItemHeight() / 2);
-            }
-            while (mListView.getLastVisiblePosition() - 1 < mCurrent && mListView.canScrollList(1)) {
-                performScrollList(-mAdapter.getItemHeight() / 2);
-            }
-        });
+        if (mCurrent != -1)
+            mLayout.ensureListPositionVisible(mCurrent, mAdapter.getItemHeight());
     }
 
     /**
@@ -250,7 +207,8 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
             mEditor.commitText("\n");
             return;
         }
-        CompletionItem item = ((EditorCompletionAdapter) mListView.getAdapter()).getItem(pos);
+        var adpView = mLayout.getCompletionList();
+        CompletionItem item = ((EditorCompletionAdapter) adpView.getAdapter()).getItem(pos);
         Cursor cursor = mEditor.getCursor();
         if (!cursor.isSelected()) {
             mCancelShowUp = true;
@@ -296,7 +254,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
             if (index == -1) {
                 return true;
             }
-            for (int i = 0;i < reader.getSpanCount();i++) {
+            for (int i = 0; i < reader.getSpanCount(); i++) {
                 if (reader.getSpanAt(i).column > column) {
                     index = i - 1;
                     break;
@@ -319,6 +277,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
     /**
      * Start completion at current selection position
      */
+    @SuppressWarnings("unchecked")
     public void requireCompletion() {
         if (mCancelShowUp || !isEnabled()) {
             return;
@@ -345,7 +304,8 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
             }
         }, mEditor.getEditorLanguage().getInterruptionLevel());
         mAdapter.attachValues(this, publisher.getItems());
-        mListView.setAdapter(mAdapter);
+        var adpView = mLayout.getCompletionList();
+        adpView.setAdapter(mAdapter);
         mThread = new CompletionThread(mRequestTime, publisher);
         setLoading(true);
         mThread.start();

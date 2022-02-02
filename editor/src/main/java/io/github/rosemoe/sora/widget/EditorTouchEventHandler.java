@@ -32,6 +32,7 @@ import android.view.ScaleGestureDetector;
 import android.widget.OverScroller;
 
 import io.github.rosemoe.sora.event.ClickEvent;
+import io.github.rosemoe.sora.event.DoubleClickEvent;
 import io.github.rosemoe.sora.event.HandleStateChangeEvent;
 import io.github.rosemoe.sora.event.LongPressEvent;
 import io.github.rosemoe.sora.event.ScrollEvent;
@@ -682,7 +683,16 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        onLongPress(e);
+        if (mEditor.getCursor().isSelected() || e.getPointerCount() != 1) {
+            return true;
+        }
+        long res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
+        int line = IntPair.getFirst(res);
+        int column = IntPair.getSecond(res);
+        if (mEditor.dispatchEvent(new DoubleClickEvent(mEditor, mEditor.getText().getIndexer().getCharPosition(line, column), e))) {
+            return true;
+        }
+        selectWord(line, column);
         return true;
     }
 

@@ -29,11 +29,13 @@
 	android:layout_height="match_parent"
 	android:orientation="horizontal"
 	android:gravity="center_vertical"
-	android:background="@drawable/magnifier_background">
+	android:background="@drawable/magnifier_background"
+	android:id="@+id/panel_root">
 
 	<HorizontalScrollView
 		android:layout_height="match_parent"
-		android:layout_width="wrap_content">
+		android:layout_width="wrap_content"
+		android:id="@+id/panel_hv">
 
 		<LinearLayout
 			android:layout_height="match_parent"

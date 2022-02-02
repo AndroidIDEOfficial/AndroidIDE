@@ -67,9 +67,14 @@ public abstract class Event {
         return mEditor;
     }
 
-    /*
+    /**
      * Check whether this event can be intercepted (so that the event is not sent to other
      * receivers after being intercepted)
+     * Intercept-able events:
+     * @see LongPressEvent
+     * @see ClickEvent
+     * @see DoubleClickEvent
+     * @see EditorKeyEvent
      */
     public boolean canIntercept() {
         return false;

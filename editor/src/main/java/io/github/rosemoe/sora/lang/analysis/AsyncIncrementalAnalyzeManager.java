@@ -289,6 +289,11 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T> implements Incrementa
         }
 
         @Override
+        public int getLineCount() {
+            return lines.size();
+        }
+
+        @Override
         public Reader read() {
             return new ReaderImpl();
         }

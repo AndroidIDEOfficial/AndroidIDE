@@ -17,16 +17,19 @@
 
 package com.itsaky.androidide.views.editor;
 
-import android.graphics.Color;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.SizeUtils;
@@ -35,7 +38,7 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureInformation;
 
-import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 
 /**
@@ -53,12 +56,12 @@ public class SignatureHelpWindow extends EditorPopupWindow {
      *
      * @param editor The editor.
      */
-    public SignatureHelpWindow (@NonNull CodeEditor editor) {
+    public SignatureHelpWindow (@NonNull IDEEditor editor) {
         super (editor, getFeatureFlags ());
         
         final var context = editor.getContext ();
-        final var dp8 = SizeUtils.dp2px (8);
-        final var dp4 = SizeUtils.dp2px (4);
+        final var dp1 = SizeUtils.dp2px (1);
+        final var dp4 = dp1 * 4;
         
         this.text = new TextView (context);
         this.text.setBackground (createBackground ());
@@ -66,9 +69,16 @@ public class SignatureHelpWindow extends EditorPopupWindow {
         this.text.setTextSize (TypedValue.COMPLEX_UNIT_SP, 14);
         this.text.setClickable (false);
         this.text.setFocusable (false);
-        this.text.setPaddingRelative (dp8, dp4, dp8, dp4);
+        this.text.setPaddingRelative (dp1, dp4, dp1, dp4);
+        this.text.setLayoutParams (new ViewGroup.LayoutParams (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         
         setContentView (this.text);
+        
+        editor.subscribeEvent (SelectionChangeEvent.class, (event, unsubscribe) -> {
+            if (isShowing ()) {
+                dismiss ();
+            }
+        });
     }
     
     private Drawable createBackground () {
@@ -80,8 +90,19 @@ public class SignatureHelpWindow extends EditorPopupWindow {
         return background;
     }
     
-    public void setSignatureHelp (SignatureHelp signature) {
+    public void displayWindow() {
+        this.text.measure (View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        setSize (this.text.getMeasuredWidth (), this.text.getMeasuredHeight ());
         
+        final var line = getEditor ().getCursor ().getLeftLine ();
+        final var column = getEditor ().getCursor ().getLeftColumn ();
+        int x = (int) ((getEditor ().getOffset (line, column) - (getWidth () / 2)));
+        int y = (int) (getEditor ().getRowHeight () * (line - 2)) - getEditor ().getOffsetY ();
+        setLocationAbsolutely(x, y);
+        show();
+    }
+    
+    public void setupAndDisplay (SignatureHelp signature) {
         if (signature == null || signature.getSignatures ().isEmpty ()) {
             if (isShowing ()) {
                 dismiss ();
@@ -97,73 +118,88 @@ public class SignatureHelpWindow extends EditorPopupWindow {
         }
         
         this.text.setText (signatureText);
+        displayWindow ();
     }
     
-    private CharSequence createSignatureText (SignatureHelp signature) {
+    @Nullable
+    private CharSequence createSignatureText (@NonNull SignatureHelp signature) {
         final var signatures = signature.getSignatures ();
         final var activeSignature = signature.getActiveSignature ();
         final var activeParameter = signature.getActiveParameter ();
         final SpannableStringBuilder sb = new SpannableStringBuilder ();
         
         if (activeSignature < 0 || activeParameter < 0) {
+            LOG.debug ("activeSignature:",activeSignature, "activeParameter:", activeParameter);
             return null;
         }
         
         if (activeSignature >= signatures.size ()) {
+            LOG.debug ("Active signature is invalid", "Size is " + signatures.size ());
             return null;
         }
         
         // remove all with non-applicable signatures
-        signatures.removeIf (info -> info.getParameters ().size () >= activeParameter);
+        signatures.removeIf (info -> {
+            final var remove = activeParameter >= info.getParameters ().size ();
+            if (remove) {
+                LOG.debug ("Removing", info, "params=" + info.getParameters ().size (), "active=" + activeParameter);
+            }
+            return remove;
+        });
         
         for (var i = 0; i<signatures.size (); i++) {
             final var info = signatures.get (i);
-            sb.append (formatSignature (info, activeParameter, i == activeSignature));
-            sb.append ('\n');
-    
+            formatSignature (info, activeParameter, i == activeSignature, sb);
+            if (i != signatures.size () - 1) {
+                sb.append ('\n');
+            }
         }
         
         return sb;
     }
     
     private static int getFeatureFlags () {
-        return FEATURE_SCROLL_AS_CONTENT | FEATURE_HIDE_WHEN_FAST_SCROLL;
+        return FEATURE_SCROLL_AS_CONTENT | FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED;
     }
     
     /**
      * Formats (highlights) a method signature
-     *  @param signature Signature information
+     * @param signature Signature information
      * @param paramIndex Currently active parameter index
      * @param isCurrentSignature <code>true</code> if the given signature is the active signature.
+     * @param result The builder to append spanned text to.
      */
-    @NonNull
-    private CharSequence formatSignature (@NonNull SignatureInformation signature, int paramIndex, boolean isCurrentSignature) {
+    private void formatSignature (@NonNull SignatureInformation signature, int paramIndex, boolean isCurrentSignature, SpannableStringBuilder result) {
+        
+        final var currentIndex = Math.max (0, result.length () - 1);
         String name = signature.getLabel();
         name = name.substring(0, name.indexOf("("));
+    
+        // append spaces at start and end of this line, instead of using extra padding
+        result.insert (currentIndex, "   ");
         
-        SpannableStringBuilder sb = new SpannableStringBuilder();
-        sb.append(name, new ForegroundColorSpan (0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.append("(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        result.append(name, new ForegroundColorSpan (0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        result.append("(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         
         var params = signature.getParameters();
         for(int i=0;i<params.size();i++) {
             int color = i == paramIndex ? 0xffff6060 : 0xffffffff;
             final var info = params.get(i);
             if(i == params.size() - 1) {
-                sb.append(info.getLabel() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                result.append(info.getLabel() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
             } else {
-                sb.append(info.getLabel() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.append(",", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.append(" ");
+                result.append(info.getLabel() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                result.append(",", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                result.append(" ");
             }
         }
-        sb.append(")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-        
+        result.append(")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+    
+        result.append ("   ");
         if (isCurrentSignature) {
-            sb.setSpan (new BackgroundColorSpan (Color.parseColor ("#e0e0e0")), 0, sb.length (), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // set background span to little light color than the text's background
+            result.setSpan (new BackgroundColorSpan (0xff373737), currentIndex, result.length (), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        
-        return sb;
     }
     
 }

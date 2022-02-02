@@ -21,26 +21,62 @@
  *     Please contact Rosemoe by email 2073412493@qq.com if you need
  *     additional information or have any questions
  */
-package io.github.rosemoe.sora.widget.component;
+package io.github.rosemoe.sora.event;
+
+import android.view.MotionEvent;
+
+import androidx.annotation.NonNull;
+
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
- * Builtin editor component.
+ * Report double click in editor.
+ * This event can be intercepted.
  *
- * @see EditorAutoCompletion
- * @see EditorTextActionWindow
- * @see Magnifier
  * @author Rosemoe
  */
-public interface EditorBuiltinComponent {
+public class DoubleClickEvent extends Event {
+
+    private final CharPosition pos;
+    private final MotionEvent event;
+
+    public DoubleClickEvent(@NonNull CodeEditor editor, CharPosition position, MotionEvent event) {
+        super(editor);
+        this.pos = position;
+        this.event = event;
+    }
+
+    @Override
+    public boolean canIntercept() {
+        return true;
+    }
+
+    public int getLine() {
+        return pos.line;
+    }
+
+    public int getColumn() {
+        return pos.column;
+    }
+
+    public int getIndex() {
+        return pos.index;
+    }
+
+    public float getX() {
+        return event.getX();
+    }
+
+    public float getY() {
+        return event.getY();
+    }
 
     /**
-     * Enable/disable this builtin component
+     * Get original event object from Android framework
      */
-    void setEnabled(boolean enabled);
-
-    /**
-     * Check whether this component is enabled
-     */
-    boolean isEnabled();
+    public MotionEvent getCausingEvent() {
+        return event;
+    }
 
 }

@@ -26,6 +26,7 @@ package io.github.rosemoe.sora.widget.component;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.BaseAdapter;
 
 import java.util.List;
@@ -38,7 +39,7 @@ import io.github.rosemoe.sora.lang.completion.CompletionItem;
  * @see EditorCompletionAdapter#getItemHeight()
  * @see EditorCompletionAdapter#getView(int, View, ViewGroup, boolean)
  */
-public abstract class EditorCompletionAdapter extends BaseAdapter {
+public abstract class EditorCompletionAdapter extends BaseAdapter implements Adapter {
 
     private EditorAutoCompletion mWindow;
     private List<CompletionItem> mItems;

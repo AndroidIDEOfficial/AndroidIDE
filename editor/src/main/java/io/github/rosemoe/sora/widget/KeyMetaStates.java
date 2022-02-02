@@ -55,6 +55,10 @@ public class KeyMetaStates extends android.text.method.MetaKeyKeyListener {
         return getMetaState(dest, META_SHIFT_ON) != 0;
     }
 
+    public boolean isAltPressed() {
+        return getMetaState(dest, META_ALT_ON) != 0;
+    }
+
     public void adjust() {
         adjustMetaAfterKeypress(dest);
     }

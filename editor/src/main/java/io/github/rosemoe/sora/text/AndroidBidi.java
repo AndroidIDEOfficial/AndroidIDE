@@ -30,11 +30,16 @@ import android.os.Build;
 import androidx.annotation.IntRange;
 import androidx.annotation.RequiresApi;
 
+import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
+
 /**
  * Bidi algorithm for text directions.
+ *
  * Replacement of android.text.AndroidBidi
+ * @author Rosemoe
  */
 @SuppressLint("PrivateApi")
+@UnsupportedUserUsage
 public final class AndroidBidi {
 
     public final static int RUN_LENGTH_MASK = 0x03ffffff;
@@ -71,11 +76,20 @@ public final class AndroidBidi {
     }
 
     public static int bidi(int dir, char[] chs, byte[] chInfo) {
+        // TODO
+        return 0;
+    }
+
+    private static int bidiImplLollipop(int dir, char[] chs, byte[] chInfo) {
+        // Android API 21-27
+        // public static int bidi(int dir, char[] chs, byte[] chInfo, int n, boolean haveInfo)
         return 0;
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
-    private static int bidiImpl(int dir, char[] chs, byte[] chInfo) {
+    private static int bidiImplP(int dir, char[] chs, byte[] chInfo) {
+        // Android API 28+
+        // public static int bidi(int dir, char[] chs, byte[] chInfo)
        return 0;
     }
 

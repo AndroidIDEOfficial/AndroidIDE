@@ -28,6 +28,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 
 import io.github.rosemoe.sora.R;
@@ -114,6 +115,23 @@ public final class EditorTextActionWindow extends EditorPopupWindow implements V
         return mEnabled;
     }
 
+    /**
+     * Get the view root of the panel.
+     *
+     * Root view is {@link android.widget.LinearLayout}
+     * Inside is a {@link android.widget.HorizontalScrollView}
+     *
+     * @see R.id#panel_root
+     * @see R.id#panel_hv
+     * @see R.id#panel_btn_select_all
+     * @see R.id#panel_btn_copy
+     * @see R.id#panel_btn_cut
+     * @see R.id#panel_btn_paste
+     */
+    public ViewGroup getView() {
+        return (ViewGroup) getPopup().getContentView();
+    }
+
     private void postDisplay() {
         if (!isShowing()) {
             return;
@@ -189,7 +207,7 @@ public final class EditorTextActionWindow extends EditorPopupWindow implements V
         setLocationAbsolutely(panelX, top);
         show();
     }
-
+    
     /**
      * Update the state of paste button
      */

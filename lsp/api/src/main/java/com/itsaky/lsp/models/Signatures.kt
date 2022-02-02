@@ -28,8 +28,5 @@ data class SignatureInformation (var label: String, var documentation: MarkupCon
     constructor() : this ("", MarkupContent(), Collections.emptyList())
 }
 
-data class SignatureHelp (var signatures: List<SignatureInformation>, var activeSignature: Int, var activeParameter: Int) {
-    constructor() : this (Collections.emptyList(), -1, -1)
-}
-
+data class SignatureHelp (var signatures: List<SignatureInformation>, var activeSignature: Int, var activeParameter: Int)
 data class SignatureHelpParams (var file: Path, var position: Position)
