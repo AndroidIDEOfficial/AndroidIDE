@@ -1,6 +1,6 @@
 ext {
     common = [
-            editor: 'io.github.Rosemoe.sora-editor:editor:0.9.0',
+            editor: 'io.github.Rosemoe.sora-editor:editor:0.9.1',
             utilcode: 'com.blankj:utilcodex:1.30.6',
             file_picker: 'com.github.abhishekti7:UnicornFilePicker:1.0.2',
             glide: 'com.github.bumptech.glide:glide:4.12.0',
