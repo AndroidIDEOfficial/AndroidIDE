@@ -74,7 +74,7 @@ public abstract class SimpleTextWindow extends EditorPopupWindow {
         final var line = getEditor ().getCursor ().getLeftLine ();
         final var column = getEditor ().getCursor ().getLeftColumn ();
         int x = (int) ((getEditor ().getOffset (line, column) - (getWidth () / 2)));
-        int y = (int) (getEditor ().getRowHeight () * (line - 2)) - getEditor ().getOffsetY ();
+        int y = (int) (getEditor ().getRowHeight () * line) - getEditor ().getOffsetY () - getHeight () - 5;
         setLocationAbsolutely(x, y);
         show();
     }
