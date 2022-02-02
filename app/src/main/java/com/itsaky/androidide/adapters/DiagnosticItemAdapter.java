@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDiagnosticItemBinding;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
@@ -33,13 +34,13 @@ import com.itsaky.lsp.models.DiagnosticSeverity;
 import java.io.File;
 import java.util.List;
 
-public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAdpater.VH> {
+public class DiagnosticItemAdapter extends RecyclerView.Adapter<DiagnosticItemAdapter.VH> {
     
     private final List<DiagnosticItem> diags;
     private final File file;
     private final DiagnosticClickListener listener;
 
-    public DiagnosticItemAdpater(List<DiagnosticItem> diags, File file, DiagnosticClickListener listener) {
+    public DiagnosticItemAdapter (List<DiagnosticItem> diags, File file, DiagnosticClickListener listener) {
         this.diags = diags;
         this.file = file;
         this.listener = listener;
@@ -47,12 +48,12 @@ public class DiagnosticItemAdpater extends RecyclerView.Adapter<DiagnosticItemAd
     
     @NonNull
     @Override
-    public DiagnosticItemAdpater.VH onCreateViewHolder(@NonNull ViewGroup p1, int p2) {
+    public DiagnosticItemAdapter.VH onCreateViewHolder(@NonNull ViewGroup p1, int p2) {
         return new VH (LayoutDiagnosticItemBinding.inflate (LayoutInflater.from (p1.getContext ()), p1, false));
     }
     
     @Override
-    public void onBindViewHolder(DiagnosticItemAdpater.VH p1, int p2) {
+    public void onBindViewHolder(DiagnosticItemAdapter.VH p1, int p2) {
         final DiagnosticItem diagnostic = diags.get(p2);
         final LayoutDiagnosticItemBinding binding = p1.binding;
         

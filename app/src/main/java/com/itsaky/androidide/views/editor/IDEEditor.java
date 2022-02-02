@@ -23,10 +23,12 @@ import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.Logger;
@@ -50,13 +52,12 @@ import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.layout.Layout;
 
 public class IDEEditor extends CodeEditor {
     
@@ -66,6 +67,7 @@ public class IDEEditor extends CodeEditor {
     private ILanguageServer mLanguageServer;
     private IDELanguageClientImpl mLanguageClient;
     private SignatureHelpWindow mSignatureHelpWindow;
+    private DiagnosticWindow mDiagnosticWindow;
     
     @SuppressWarnings("FieldCanBeLocal,unused")
     private final EditorTextActionMode mActionMode;
@@ -91,6 +93,7 @@ public class IDEEditor extends CodeEditor {
         this.mActionMode = new EditorTextActionMode (this);
         
         setColorScheme (new SchemeAndroidIDE ());
+        subscribeEvent (SelectionChangeEvent.class, (event, unsubscribe) -> handleSelectionChange (event));
         subscribeEvent (ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange (event));
         
         // default editor input type + no suggestions flag
@@ -188,21 +191,6 @@ public class IDEEditor extends CodeEditor {
     public void goToEnd () {
         final var line = getText ().getLineCount () - 1;
         setSelection (line, 0);
-    }
-    
-    /**
-     * @see CodeEditor#updateCursorAnchor()
-     */
-    public float updateCursorAnchor () {
-        return super.updateCursorAnchor ();
-    }
-    
-    /**
-     * The the coordinates of the left cursor.
-     * @return A <code>float[]</code> containing the cursor position.
-     */
-    public float[] getCursorPosition () {
-        return getLayout().getCharLayoutOffset (getCursor ().getLeftLine (), getCursor ().getLeftColumn ());
     }
     
     /**
@@ -579,17 +567,48 @@ public class IDEEditor extends CodeEditor {
         return new Range (start, end);
     }
     
-    // FIXME This is temporary. Find another way to show diagnostic messages in editor.
-    private Layout getLayout () {
-        final var c = CodeEditor.class;
-        final Field f;
-        try {
-            f = c.getDeclaredField ("mLayout");
-            f.setAccessible (true);
-            return (Layout) f.get (this);
-        } catch (Throwable e) {
-            throw new RuntimeException (e);
+    private void handleSelectionChange (SelectionChangeEvent event) {
+        if (event.isSelected () || !(getEditorLanguage () instanceof IDELanguage)) {
+            // do not show diagnostics when text is selected
+            // or if we cannot get diagnostics
+            return;
         }
+        
+        final var diagnostics = ((IDELanguage) getEditorLanguage ()).getDiagnostics ();
+        final var line = event.getLeft ().line;
+        final var column = event.getLeft ().column;
+        
+        // diagnostics are expected to be sorted, so, do a binary search
+        final var diagnostic = binarySearchDiagnostic (diagnostics, line, column);
+        LOG.debug ("Diagnostic at line", line, "and column", column, "is", diagnostic);
+        
+        getDiagnosticWindow ().showDiagnostic (diagnostic);
+    }
+    
+    @Nullable
+    private DiagnosticItem binarySearchDiagnostic (@NonNull List<DiagnosticItem> diagnostics, int line, int column) {
+        
+        if (diagnostics.isEmpty ()) {
+            return null;
+        }
+        
+        final var pos = new Position (line, column);
+        int left = 0; int right = diagnostics.size () - 1; int mid;
+        while (left < right) {
+            mid = (left + right) / 2;
+            var d = diagnostics.get (mid);
+            var r = d.getRange ();
+            var c = r.containsForBinarySearch (pos);
+            if (c < 0) {
+                right = mid - 1;
+            } else if (c > 0) {
+                left = mid + 1;
+            } else {
+                return d;
+            }
+        }
+        
+        return null;
     }
     
     /**
@@ -645,5 +664,13 @@ public class IDEEditor extends CodeEditor {
         }
         
         return mSignatureHelpWindow;
+    }
+    
+    private DiagnosticWindow getDiagnosticWindow () {
+        if (mDiagnosticWindow == null) {
+            mDiagnosticWindow = new DiagnosticWindow (this);
+        }
+        
+        return mDiagnosticWindow;
     }
 }

@@ -21,7 +21,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.language.BaseLanguage;
+import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
@@ -41,7 +41,7 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
-public class GroovyLanguage extends BaseLanguage {
+public class GroovyLanguage extends IDELanguage {
     
     private final GroovyAnalyzer analyzer;
     private final GroovyAutoComplete completer;

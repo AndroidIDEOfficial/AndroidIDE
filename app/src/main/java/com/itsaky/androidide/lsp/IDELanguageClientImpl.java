@@ -19,15 +19,10 @@
  */
 package com.itsaky.androidide.lsp;
 
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.view.View;
-
-import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
-import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
@@ -35,7 +30,6 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.models.DiagnosticGroup;
@@ -57,7 +51,6 @@ import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,84 +112,6 @@ public class IDELanguageClientImpl implements ILanguageClient {
     
     private CodeEditorView findEditorByFile (File file) {
         return activity ().getEditorForFile (file);
-    }
-    
-    public void showDiagnostic(DiagnosticItem diagnostic, final IDEEditor editor) {
-        if(activity() == null || activity().getDiagnosticBinding() == null) {
-            hideDiagnostics();
-            return;
-        }
-        
-        if(diagnostic == null) {
-            hideDiagnostics();
-            return;
-        }
-        
-        final LayoutDiagnosticInfoBinding binding = activity().getDiagnosticBinding();
-        binding.getRoot().setText(diagnostic.getMessage());
-        binding.getRoot().setVisibility(View.VISIBLE);
-        
-        final float[] cursor = editor.getCursorPosition();
-        
-        float x = editor.updateCursorAnchor() - (binding.getRoot().getWidth() / 2);
-        float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - binding.getRoot().getHeight());
-        binding.getRoot().setX(x);
-        binding.getRoot().setY(y);
-        activity().positionViewWithinScreen(binding.getRoot(), x, y);
-    }
-
-    /**
-     * Shows the diagnostic at the bottom of the screen (just above the status text)
-     * and requests code actions from language server
-     *
-     * @param diagnostic The diagnostic to show
-     * @param editor The IDEEditor that requested
-     */
-    public void showDiagnosticAtBottom(final File file, final DiagnosticItem diagnostic, final IDEEditor editor) {
-        if(activity() == null || file == null || diagnostic == null) {
-            hideBottomDiagnosticView(file);
-            return;
-        }
-        
-        final var frag = findEditorByFile(file);
-        if(frag == null) {
-            hideBottomDiagnosticView(file);
-            return;
-        }
-        
-        final var binding = frag.getBinding();
-        binding.diagnosticTextContainer.setVisibility(View.VISIBLE);
-        binding.diagnosticText.setVisibility(View.VISIBLE);
-        binding.diagnosticText.setClickable(false);
-        binding.diagnosticText.setText(diagnostic.getMessage());
-        
-        final var future = editor.codeActions(Collections.singletonList(diagnostic));
-        if(future == null) {
-            hideBottomDiagnosticView(file);
-            return;
-        }
-        
-        future.whenComplete((result, error) -> {
-            if(result == null) {
-                hideBottomDiagnosticView(file);
-                return;
-            }
-            
-            if(result.getActions ().isEmpty()) {
-                hideBottomDiagnosticView(file);
-                return;
-            }
-            
-            ThreadUtils.runOnUiThread(() -> {
-                final SpannableStringBuilder sb = new SpannableStringBuilder();
-                sb.append(activity().getString(R.string.msg_fix_diagnostic), new ForegroundColorSpan(ContextCompat.getColor(activity(), R.color.secondaryColor)), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.append(" ");
-                sb.append(diagnostic.getMessage());
-                binding.diagnosticText.setText(sb);
-                binding.diagnosticText.setClickable(true);
-                binding.diagnosticText.setOnClickListener(v -> showAvailableQuickfixes(editor, result.getActions ()));
-            });
-        });
     }
     
     public void hideDiagnostics() {
@@ -328,7 +243,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
         if(diags == null || diags.size() <= 0)
             return groups;
         for(File file : diags.keySet()) {
-            List<DiagnosticItem> fileDiags = diags.get(file);
+            var fileDiags = diags.get(file);
             if(fileDiags == null || fileDiags.size() <= 0)
                 continue;
             DiagnosticGroup group = new DiagnosticGroup(R.drawable.ic_language_java, file, fileDiags);

@@ -21,7 +21,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.language.BaseLanguage;
+import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 
@@ -39,7 +39,7 @@ import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
-public class LogLanguageImpl extends BaseLanguage {
+public class LogLanguageImpl extends IDELanguage {
 	
 	private static final LogAnalyzer analyzer = new LogAnalyzer();
 	

@@ -42,8 +42,6 @@ import com.sun.source.util.Trees;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -62,9 +60,6 @@ import javax.tools.JavaFileObject;
  * @author Akash Yadav
  */
 public class DiagnosticsProvider {
-    
-    private static final Comparator<? super DiagnosticItem>
-            DIAGNOSTIC_START_COMPARATOR = Comparator.comparing (DiagnosticItem::getRange);
     
     /**
      * Finds diagnostics from the given task (only the diagnostics for the given file). The task should be
@@ -97,7 +92,6 @@ public class DiagnosticsProvider {
         addCompilerErrors (task, root, result);
         addDiagnosticsByVisiting (task, root, result);
         
-        result.sort (DIAGNOSTIC_START_COMPARATOR);
         return result;
     }
     

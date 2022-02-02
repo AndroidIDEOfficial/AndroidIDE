@@ -22,12 +22,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.CommonCompletionProvider;
+import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.editor.IDEEditor;
+import com.itsaky.lsp.models.DiagnosticItem;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
@@ -35,6 +36,9 @@ import org.antlr.v4.runtime.Token;
 import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
@@ -46,7 +50,7 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
-public class JavaLanguage extends BaseLanguage {
+public class JavaLanguage extends IDELanguage {
     
     private JavaAnalyzer analyzer;
 	private CommonCompletionProvider completer;
@@ -62,6 +66,12 @@ public class JavaLanguage extends BaseLanguage {
         
         this.newlineHandlers = new NewlineHandler[1];
         this.newlineHandlers[0] = new BraceHandler();
+	}
+	
+	@NonNull
+	@Override
+	public List<DiagnosticItem> getDiagnostics () {
+		return analyzer == null ? Collections.emptyList () : analyzer.getDiagnostics ();
 	}
 	
 	public int getIndentAdvance(String p1) {

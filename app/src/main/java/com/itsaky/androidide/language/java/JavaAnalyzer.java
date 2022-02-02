@@ -67,10 +67,21 @@ import io.github.rosemoe.sora.lang.styling.Styles;
 public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
     
     private List<DiagnosticItem> diagnostics = new ArrayList<> ();
+    private final List<DiagnosticItem> ideDiagnostics = new ArrayList<> ();
     private final ILanguageServer languageServer;
     
     public JavaAnalyzer (ILanguageServer languageServer) {
         this.languageServer = languageServer;
+    }
+    
+    @NonNull
+    public List<DiagnosticItem> getDiagnostics () {
+        final var result = new ArrayList<> (ideDiagnostics);
+        if (diagnostics != null && !diagnostics.isEmpty ()) {
+            result.addAll (diagnostics);
+        }
+        result.sort (DiagnosticItem.START_COMPARATOR);
+        return result;
     }
     
     @Override
@@ -81,7 +92,7 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
             if (languageServer != null && file.exists()) {
                 CompletableFuture.runAsync (() -> {
                     final var analyzer = languageServer.getCodeAnalyzer ();
-                    
+    
                     diagnostics = analyzer.analyze (file.toPath ());
                     
                     if (languageServer.getClient () != null) {
@@ -107,7 +118,7 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
         Token token;
         int line, column, lastLine = 1, type, currSwitch = 0, maxSwitch = 0, previous = -1;
         boolean isFirst = true;
-    
+        
         while (!delegate.isCancelled ()) {
             token = lexer.nextToken ();
         
@@ -277,7 +288,7 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
                             diagnostic.setCode ("special.comment");
                             diagnostic.setRange (new Range (new Position (line, column), new Position (line, column + tokenLength)));
                             diagnostic.setSource (commentText);
-                            diagnostics.add (diagnostic);
+                            ideDiagnostics.add (diagnostic);
                         }
                     }
                     
@@ -339,21 +350,30 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
         styles.setSuppressSwitch (maxSwitch + 10);
         
         if (diagnostics != null && !diagnostics.isEmpty ()) {
-            for (var d : diagnostics) {
-                var start = d.getRange ().getStart ();
-                var end = d.getRange ().getEnd ();
-                
-                colors.markProblemRegion (convertToSpanFlag(d.getSeverity ()),
-                        start.getLine (),
-                        start.getColumn (),
-                        end.getLine (),
-                        end.getColumn ());
-            }
+            markDiagnostics (colors, diagnostics);
+        }
+        
+        if (!ideDiagnostics.isEmpty ()) {
+            markDiagnostics (colors, ideDiagnostics);
         }
         
         styles.spans = colors.build ();
         
         return styles;
+    }
+    
+    private void markDiagnostics (MappedSpans.Builder colors, List<DiagnosticItem> diagnostics) {
+        diagnostics.sort (DiagnosticItem.START_COMPARATOR);
+        for (var d : diagnostics) {
+            var start = d.getRange ().getStart ();
+            var end = d.getRange ().getEnd ();
+            
+            colors.markProblemRegion (convertToSpanFlag(d.getSeverity ()),
+                    start.getLine (),
+                    start.getColumn (),
+                    end.getLine (),
+                    end.getColumn ());
+        }
     }
     
     @Contract(pure = true)

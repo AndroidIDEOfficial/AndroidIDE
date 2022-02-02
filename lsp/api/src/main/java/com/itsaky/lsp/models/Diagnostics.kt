@@ -21,6 +21,10 @@ import java.nio.file.Path
 
 data class DiagnosticItem(var message: String, var code: String, var range: Range, var source: String, var severity: DiagnosticSeverity) {
     constructor() : this ("", "", Range.NONE, "", DiagnosticSeverity.HINT)
+    
+    companion object {
+        @JvmField val START_COMPARATOR: Comparator<in DiagnosticItem> = Comparator.comparing(DiagnosticItem::range)
+    }
 }
 
 data class DiagnosticResult(var file: Path, var diagnostics: List<DiagnosticItem>)
