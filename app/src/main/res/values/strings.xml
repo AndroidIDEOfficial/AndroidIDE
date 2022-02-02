@@ -367,4 +367,7 @@
     <string name="idepref_editor_ligatures_title">Font ligatures</string>
     <string name="idepref_editor_ligatures_summary">Enable/disable font ligatures</string>
 
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

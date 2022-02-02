@@ -123,8 +123,8 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
         builder.setTitle (R.string.title_confirm_open_project);
         builder.setMessage (getString (R.string.msg_confirm_open_project, root.getAbsolutePath ()));
         builder.setCancelable (false);
-        builder.setPositiveButton (android.R.string.yes, (d, w) -> openProject (root));
-        builder.setNegativeButton (android.R.string.no, null);
+        builder.setPositiveButton (R.string.yes, (d, w) -> openProject (root));
+        builder.setNegativeButton (R.string.no, null);
         builder.show ();
     }
     

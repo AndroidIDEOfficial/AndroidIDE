@@ -41,6 +41,7 @@ public class EditorViewModel extends ViewModel {
     private final MutableLiveData <List<File>> mFiles = new MutableLiveData<> (new ArrayList<> ());
     private final MutableLiveData <AndroidProject> mProject = new MutableLiveData<> (null);
     private final MutableLiveData <IDEProject> mIDEProject = new MutableLiveData<> (null);
+    private final MutableLiveData <Boolean> mFilesModified = new MutableLiveData<> (false);
     
     /**
      * Holds information about the currently selected editor fragment.
@@ -161,5 +162,14 @@ public class EditorViewModel extends ViewModel {
     
     public void setCurrentFile (final int index, @Nullable final File file) {
         mCurrentFile.setValue (Pair.create (index, file));
+    }
+    
+    public void setFilesModified (boolean modified) {
+        this.mFilesModified.setValue (modified);
+    }
+    
+    public boolean areFilesModified () {
+        final var modified = this.mFilesModified.getValue ();
+        return modified != null && modified;
     }
 }

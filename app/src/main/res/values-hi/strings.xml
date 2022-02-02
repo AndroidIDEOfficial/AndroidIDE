@@ -362,5 +362,11 @@
     <string name="msg_files_unsaved">कुछ फ़ाइलें सेव नहीं की गई हैं। क्या आप बंद करने से पहले उन्हें सेव करना चाहेंगे? सेव न की गयी फाइल्स : %s</string>
     <string name="idepref_editor_autoSave_title">फ़ाइलें बंद करने से पहले सेव करे</string>
     <string name="idepref_editor_autoSave_summary">फ़ाइलों को बंद करने से पहले सेव करे। यह एक प्रायोगिक विशेषता है। आपसे फ़ाइलों को स्वयं सेव करने की अपेक्षा की जाती है।</string>
+    <string name="template_libgdx">libGDX गेम</string>
+    <string name="template_description_libgdx">एक उदाहरण के रूप में एक छवि प्रस्तुत करने के लिए स्थापित LibGDX गेम प्रोजेक्ट।</string>
+    <string name="idepref_editor_ligatures_title">संयुक्ताक्षर बनाना</string>
+    <string name="idepref_editor_ligatures_summary">फ़ॉन्ट संयुक्ताक्षर को सक्षम/अक्षम करें</string>
+    <string name="yes">हां</string>
+    <string name="no">नहीं</string>
 
 </resources>

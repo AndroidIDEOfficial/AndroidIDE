@@ -22,9 +22,11 @@
 package com.itsaky.androidide.fragments.preferences;
 
 import android.os.Bundle;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
+
 import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
@@ -32,6 +34,7 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
+
 import java.io.File;
 
 public class BuildPreferences extends BasePreferenceFragment implements Preference.OnPreferenceClickListener {
@@ -125,14 +128,14 @@ public class BuildPreferences extends BasePreferenceFragment implements Preferen
 		builder.setTitle(R.string.idepref_build_clearCache_title);
 		builder.setMessage(R.string.msg_clear_cache);
 		builder.setCancelable(false);
-		builder.setPositiveButton(android.R.string.yes, (p1, p2) -> {
+		builder.setPositiveButton(R.string.yes, (p1, p2) -> {
 			p1.dismiss();
 			getProgressSheet().show(getChildFragmentManager(), "progress_sheet");
-			new TaskExecutor().executeAsync(() -> deleteCaches(), __ -> {
+			new TaskExecutor().executeAsync(this::deleteCaches, __ -> {
 				getProgressSheet().dismiss();
 			});
 		});
-		builder.setNegativeButton(android.R.string.no, null);
+		builder.setNegativeButton(R.string.no, null);
 		builder.create().show();
 	}
 	

@@ -284,8 +284,8 @@ public class FileOptionsHandler extends IDEHandler implements OptionsListFragmen
     private void delete(final File f) {
         MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
         builder
-            .setNegativeButton(android.R.string.no, null)
-            .setPositiveButton(android.R.string.yes, (p1, p2) -> {
+            .setNegativeButton(R.string.no, null)
+            .setPositiveButton(R.string.yes, (p1, p2) -> {
             p1.dismiss();
             final boolean deleted = FileUtils.delete(f);
             activity(). getApp().toast(deleted ? R.string.deleted : R.string.delete_failed, deleted ? Toaster.Type.SUCCESS : Toaster.Type.ERROR);

@@ -85,8 +85,8 @@ public class DialogUtils {
         final var builder = DialogUtils.newMaterialDialogBuilder (context);
         builder.setTitle (title);
         builder.setMessage (message);
-        builder.setPositiveButton (android.R.string.yes, positiveClickListener);
-        builder.setNegativeButton (android.R.string.no, negativeClickListener);
+        builder.setPositiveButton (R.string.yes, positiveClickListener);
+        builder.setNegativeButton (R.string.no, negativeClickListener);
         
         return builder;
     }

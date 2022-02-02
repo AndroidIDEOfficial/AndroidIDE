@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -107,10 +106,10 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.viewmodel.EditorViewModel;
-import com.itsaky.androidide.views.editor.CodeEditorView;
-import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
+import com.itsaky.androidide.views.editor.CodeEditorView;
+import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
@@ -136,6 +135,8 @@ import java.util.concurrent.CompletionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.Unsubscribe;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
@@ -401,19 +402,21 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final var editor = getCurrentEditor ();
         final var file = editor != null ? editor.getFile () : null;
         final var notNull = editor != null && file != null;
-        final boolean isJava = notNull && file.getName ().endsWith (".java");
-        final boolean isXml = notNull && file.getName ().endsWith (".xml");
-        final boolean isLayout = isXml && file.getParentFile () != null &&
+        final var isJava = notNull && file.getName ().endsWith (".java");
+        final var isXml = notNull && file.getName ().endsWith (".xml");
+        final var filesModified = notNull && mViewModel != null && mViewModel.areFilesModified ();
+        final var isLayout = isXml && file.getParentFile () != null &&
                 Pattern.compile (FileOptionsHandler.LAYOUT_RES_PATH_REGEX)
                         .matcher (file.getParentFile ().getAbsolutePath ())
                         .matches ();
-        final int nullableAlpha = notNull ? 255 : 76;
-        final int javaFileAlpha = isJava ? 255 : 76;
-        final int layoutFileAlpha = isLayout ? 255 : 76;
+        final var nullableAlpha = notNull ? 255 : 76;
+        final var javaFileAlpha = isJava ? 255 : 76;
+        final var layoutFileAlpha = isLayout ? 255 : 76;
+        final var saveAlpha = filesModified ? 255 : 76;
         
         undo.setEnabled (notNull);
         redo.setEnabled (notNull);
-        save.setEnabled (notNull);
+        save.setEnabled (filesModified);
         comment.setEnabled (notNull);
         uncomment.setEnabled (notNull);
         findFile.setEnabled (notNull);
@@ -422,7 +425,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         
         undo.getIcon ().setAlpha (nullableAlpha);
         redo.getIcon ().setAlpha (nullableAlpha);
-        save.getIcon ().setAlpha (nullableAlpha);
+        save.getIcon ().setAlpha (saveAlpha);
         comment.getIcon ().setAlpha (nullableAlpha);
         uncomment.getIcon ().setAlpha (nullableAlpha);
         findFile.getIcon ().setAlpha (nullableAlpha);
@@ -638,34 +641,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return mDiagnosticInfoBinding;
     }
     
-    /**
-     * Positions the view to the provided coordinates and within screen
-     *
-     * @param view     View to position
-     * @param initialX Initial X coordinate of view
-     * @param initialY Initial Y coordinate of view
-     */
-    public void positionViewWithinScreen (@NonNull final View view, final float initialX, final float initialY) {
-        view.setX (initialX);
-        view.setY (initialY);
-        
-        final Rect r = new Rect ();
-        final int width = view.getWidth ();
-        view.getWindowVisibleDisplayFrame (r);
-        if (r.width () != width) {
-            
-            // Will be true when the view is going out of screen to left
-            if (initialX < r.left) {
-                view.setX (SizeUtils.dp2px (8)); // an offset of 8dp from the left edge of screen
-            }
-            
-            // Will be true when the view is going out of screen to right
-            if (initialX + width > r.right) {
-                view.setX (r.right - SizeUtils.dp2px (8) - width);  // position to the right but leaving 8dp space from the right edge of screen
-            }
-        }
-    }
-    
     public void openFileAndSelect (File file, Range range) {
         openFile (file, range);
         final var opened = getEditorForFile (file);
@@ -846,6 +821,17 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 result.xmlSaved = modified && isXml;
             }
         }
+    
+        var modified = false;
+        for (var file : mViewModel.getOpenedFiles ()) {
+            var editor = getEditorForFile (file);
+            if (editor == null) {
+                continue;
+            }
+            modified = modified || editor.isModified ();
+        }
+        
+        mViewModel.setFilesModified (modified);
     }
     
     public void install (@NonNull File apk) {
@@ -919,6 +905,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         LOG.info ("Opening file at index:", position, "file: ", file);
         
         final var editor = new CodeEditorView (this, file, selection);
+        editor.getEditor ().subscribeEvent (ContentChangeEvent.class, this::onEditorContentChanged);
         editor.setLayoutParams (new ViewGroup.LayoutParams (
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -950,9 +937,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             } else {
                 LOG.error ("Cannot save file before close. Editor instance is null");
             }
-            
-            opened = null;
-            
+    
             mViewModel.removeFile (index);
             mBinding.tabs.removeTabAt (index);
             mBinding.editorContainer.removeViewAt (index);
@@ -997,9 +982,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     private void notifyFilesUnsaved (List<CodeEditorView> unsavedEditors, Runnable invokeAfter) {
+        //noinspection ConstantConditions
+        final var mapped = unsavedEditors
+                .stream ()
+                .map (CodeEditorView::getFile)
+                .filter (Objects::nonNull)
+                .map (File::getAbsolutePath)
+                .collect (Collectors.toList ());
         final var builder = DialogUtils.newYesNoDialog (this,
                 getString (R.string.title_files_unsaved), // title
-                getString (R.string.msg_files_unsaved, TextUtils.join ("\n", unsavedEditors)), // message
+                getString (R.string.msg_files_unsaved, TextUtils.join ("\n", mapped)), // message
                 (dialog, which) -> { // 'yes' click
                     dialog.dismiss ();
                     saveAll (true);
@@ -1089,6 +1081,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     /////////////////////////////////////////////////
     ////////////// PRIVATE APIS /////////////////////
     /////////////////////////////////////////////////
+    
+    private void onEditorContentChanged (ContentChangeEvent event, Unsubscribe unsubscribe) {
+        if (event.getAction () != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
+            mViewModel.setFilesModified (true);
+        }
+    }
     
     @SuppressWarnings ("deprecation")
     private void checkForCompilerModule () {
@@ -1409,8 +1407,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (this);
         builder.setTitle (R.string.title_confirm_project_close);
         builder.setMessage (R.string.msg_confirm_project_close);
-        builder.setNegativeButton (android.R.string.no, null);
-        builder.setPositiveButton (android.R.string.yes, (d, w) -> {
+        builder.setNegativeButton (R.string.no, null);
+        builder.setPositiveButton (R.string.yes, (d, w) -> {
             d.dismiss ();
             closeProject (true);
         });
