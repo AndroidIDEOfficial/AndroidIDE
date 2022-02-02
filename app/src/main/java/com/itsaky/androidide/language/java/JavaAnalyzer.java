@@ -119,6 +119,8 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
         int line, column, lastLine = 1, type, currSwitch = 0, maxSwitch = 0, previous = -1;
         boolean isFirst = true;
         
+        ideDiagnostics.clear ();
+        
         while (!delegate.isCancelled ()) {
             token = lexer.nextToken ();
         

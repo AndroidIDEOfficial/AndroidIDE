@@ -578,11 +578,8 @@ public class IDEEditor extends CodeEditor {
         final var line = event.getLeft ().line;
         final var column = event.getLeft ().column;
         
-        // diagnostics are expected to be sorted, so, do a binary search
-        final var diagnostic = binarySearchDiagnostic (diagnostics, line, column);
-        LOG.debug ("Diagnostic at line", line, "and column", column, "is", diagnostic);
-        
-        getDiagnosticWindow ().showDiagnostic (diagnostic);
+        // diagnostics are expected to be sorted, so, we do a binary search
+        getDiagnosticWindow ().showDiagnostic (binarySearchDiagnostic (diagnostics, line, column));
     }
     
     @Nullable
