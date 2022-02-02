@@ -114,12 +114,12 @@ public class GraphicTextRow {
         if (mText.widthCache != null) {
             float w = 0f;
             var cache = mText.widthCache;
-            for (int i = start; i < mEnd;i++) {
+            for (int i = start; i <= mEnd;i++) {
                 if (w > advance) {
                     mBuffer[0] = Math.max(start, i - 1);
                     mBuffer[1] = i > start ? w - cache[i - 1] : w;
                     return mBuffer;
-                } else {
+                } else if(i < mEnd) {
                     w += cache[i];
                 }
             }

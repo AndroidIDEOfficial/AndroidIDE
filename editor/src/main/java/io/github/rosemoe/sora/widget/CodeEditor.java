@@ -782,7 +782,7 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
 
     /**
      * Set the editor's language.
-     * A language is a for auto-completion,highlight and auto indent analysis.
+     * A language is a tool for auto-completion,highlight and auto indent analysis.
      *
      * @param lang New EditorLanguage for editor
      */
@@ -1847,7 +1847,7 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
                 if (ch == ' ') {
                     paintCount = 1;
                 } else if (ch == '\t') {
-                    if ((getNonPrintableFlags() & FLAG_DRAW_TAB_SAME_AS_SPACE) != 0) {
+                    if ((getNonPrintablePaintingFlags() & FLAG_DRAW_TAB_SAME_AS_SPACE) != 0) {
                         paintCount = getTabWidth();
                     } else {
                         paintLine = true;
@@ -2914,7 +2914,7 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
      * @see #FLAG_DRAW_LINE_SEPARATOR
      * @see #FLAG_DRAW_WHITESPACE_IN_SELECTION
      */
-    public int getNonPrintableFlags() {
+    public int getNonPrintablePaintingFlags() {
         return mNonPrintableOptions;
     }
 
@@ -4413,8 +4413,6 @@ public class CodeEditor extends View implements ContentListener, StyleReceiver, 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawView(canvas);
-        int x = (int) (getWidth() - getDpUnit() * 50);
-        canvas.drawLine(x, 0, x, getHeight(), mPaintGraph);
         // Update magnifier
         if ((mLastCursorState != mCursorBlink.visibility || !mEventHandler.getScroller().isFinished()) && mEventHandler.mMagnifier.isShowing()) {
             mLastCursorState = mCursorBlink.visibility;

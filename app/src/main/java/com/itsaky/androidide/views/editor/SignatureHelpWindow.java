@@ -31,6 +31,7 @@ import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureInformation;
 
@@ -44,6 +45,8 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 public class SignatureHelpWindow extends EditorPopupWindow {
     
     private final TextView text;
+    
+    private static final Logger LOG = Logger.instance ("SignatureHelpWindow");
     
     /**
      * Create a signature help popup window for editor
@@ -78,6 +81,7 @@ public class SignatureHelpWindow extends EditorPopupWindow {
     }
     
     public void setSignatureHelp (SignatureHelp signature) {
+        
         if (signature == null || signature.getSignatures ().isEmpty ()) {
             if (isShowing ()) {
                 dismiss ();

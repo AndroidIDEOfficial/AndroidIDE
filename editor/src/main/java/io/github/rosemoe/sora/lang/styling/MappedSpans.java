@@ -38,13 +38,13 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
  * @see Builder
  */
 public class MappedSpans implements Spans {
-    
+
     private final List<List<Span>> spanMap;
-    
+
     private MappedSpans(@NonNull List<List<Span>> spanMap) {
         this.spanMap = spanMap;
     }
-    
+
     @Override
     public void adjustOnInsert(CharPosition start, CharPosition end) {
         var startLine = start.line;
@@ -294,12 +294,12 @@ public class MappedSpans implements Spans {
             }
             spanMap.set(line, spans);
         }
-        
+
         @Override
         public void addLineAt(int line, List<Span> spans) {
             spanMap.add(line, spans);
         }
-        
+
         @Override
         public void deleteLineAt(int line) {
             spanMap.remove(line);

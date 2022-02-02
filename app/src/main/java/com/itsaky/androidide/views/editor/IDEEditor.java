@@ -67,6 +67,9 @@ public class IDEEditor extends CodeEditor {
     private IDELanguageClientImpl mLanguageClient;
     private SignatureHelpWindow mSignatureHelpWindow;
     
+    @SuppressWarnings("FieldCanBeLocal,unused")
+    private final EditorTextActionMode mActionMode;
+    
     public static final String KEY_FILE = "editor_file";
     private static final Logger LOG = Logger.instance ("IDEEditor");
     
@@ -84,6 +87,8 @@ public class IDEEditor extends CodeEditor {
     
     public IDEEditor (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        
+        this.mActionMode = new EditorTextActionMode (this);
         
         setColorScheme (new SchemeAndroidIDE ());
         subscribeEvent (ContentChangeEvent.class, (event, unsubscribe) -> notifyContentChanged ());
@@ -104,6 +109,14 @@ public class IDEEditor extends CodeEditor {
                 range.getStart ().getColumn (),
                 range.getEnd ().getLine (),
                 range.getEnd ().getColumn ());
+    }
+    
+    /**
+     * Set the selection of this editor to the given position.
+     * @param position The position to select.
+     */
+    public void setSelection (@NonNull Position position) {
+        setSelection (position.getLine (), position.getColumn ());
     }
     
     /**
