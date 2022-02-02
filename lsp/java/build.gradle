@@ -46,7 +46,8 @@ dependencies {
     implementation "com.github.marschall:zipfilesystem-standalone:1.0.1"
 
     compileOnly androidx.appcompat
-    compileOnly project(path: ':common')
+    compileOnly project(':common')
+    compileOnly project(':editor')
 
     implementation project(path: ':lsp:api')
     implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])

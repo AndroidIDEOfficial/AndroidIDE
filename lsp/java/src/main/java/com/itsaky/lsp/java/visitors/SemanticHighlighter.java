@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.visitors;
 
+import static android.text.TextUtils.substring;
+
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.Logger;
@@ -171,8 +173,8 @@ public class SemanticHighlighter extends TreePathScanner<Void, List<HighlightTok
         }
         // Find name inside expression
         Path file = Paths.get(root.getSourceFile().toUri());
-        String contents = FileStore.contents(file);
-        String region = contents.substring(start, end);
+        CharSequence contents = FileStore.contents(file);
+        String region = substring(contents, start, end);
         start += region.indexOf(name.toString());
         end = start + name.length();
         return new Range (getPosition (start, root.getLineMap ()), getPosition (end, root.getLineMap ()));

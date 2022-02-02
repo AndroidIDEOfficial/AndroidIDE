@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.compiler;
 
+import static android.text.TextUtils.substring;
+
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.FileStore;
@@ -99,10 +101,10 @@ public class CompileBatch implements AutoCloseable {
     
     private String errorText (javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
         Path file = Paths.get (err.getSource ().toUri ());
-        String contents = FileStore.contents (file);
+        CharSequence contents = FileStore.contents (file);
         int begin = (int) err.getStartPosition ();
         int end = (int) err.getEndPosition ();
-        return contents.substring (begin, end);
+        return substring (contents, begin, end);
     }
     
     private String packageName (javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {

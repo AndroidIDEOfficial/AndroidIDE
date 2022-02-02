@@ -29,17 +29,18 @@ import com.itsaky.lsp.models.Position;
 
 import org.jetbrains.annotations.Contract;
 
-import java.net.URI;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 
-import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
-import io.github.rosemoe.editor.text.Content;
-import io.github.rosemoe.editor.text.TextAnalyzeResult;
+import io.github.rosemoe.sora.lang.completion.CompletionHelper;
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.ContentReference;
+import io.github.rosemoe.sora.util.MyCharacter;
 
 /**
  * Common implementation of completion provider which requests completions
@@ -47,7 +48,7 @@ import io.github.rosemoe.editor.text.TextAnalyzeResult;
  *
  * @author Akash Yadav
  */
-public class CommonCompletionProvider implements AutoCompleteProvider {
+public class CommonCompletionProvider {
     
     private CompletableFuture<CompletionResult> future;
     
@@ -57,8 +58,7 @@ public class CommonCompletionProvider implements AutoCompleteProvider {
         this.server = server;
     }
     
-    @Override
-    public List<CompletionItem> getAutoCompleteItems(Content content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
+    public List<CompletionItem> complete(ContentReference content, Path file, CharPosition position) {
         if (this.future != null && !this.future.isDone ()) {
             try {
                 this.future.cancel (true);
@@ -68,20 +68,29 @@ public class CommonCompletionProvider implements AutoCompleteProvider {
         }
         
         this.future = CompletableFuture.supplyAsync (() -> {
+            final var prefix = CompletionHelper.computePrefix (content, position, this::checkCompletionChar);
             final var completer = server.getCompletionProvider ();
-            final var path = Paths.get (URI.create (fileUri));
             
-            if (!completer.canComplete (path)) {
+            if (!completer.canComplete (file)) {
                 return ICompletionProvider.EMPTY;
             }
             
-            final var params = new CompletionParams (new Position (line, column, index), path);
+            final var params = new CompletionParams (new Position (position.line, position.column, position.index), file);
             params.setContent (content);
             params.setPrefix (prefix);
             return completer.complete (params);
         });
-        
-        return finalizeResults (future.get ().getItems ());
+    
+        try {
+            return finalizeResults (future.get ().getItems ());
+        } catch (Throwable e) {
+            LOG.error ("Unable to compute completions", e);
+            return Collections.emptyList ();
+        }
+    }
+    
+    private boolean checkCompletionChar (char c) {
+        return MyCharacter.isJavaIdentifierPart (c) || c == '.';
     }
     
     @NonNull

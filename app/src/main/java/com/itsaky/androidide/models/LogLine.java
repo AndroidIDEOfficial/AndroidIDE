@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  * 
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,16 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.models;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+
 import java.util.Locale;
-import io.github.rosemoe.editor.syntax.EditorColorScheme;
 
 public class LogLine {
 	
@@ -42,14 +44,10 @@ public class LogLine {
 	public boolean formatted;
 	
 	// It makes things easier in LogLanguageImpl
-	public static final int INFO = EditorColorScheme.LOG_INFO;
-	public static final int DEBUG = EditorColorScheme.LOG_DEBUG;
-	public static final int ERROR = EditorColorScheme.LOG_ERROR;
-	public static final int WARNING = EditorColorScheme.LOG_WARNING;
-	
-	public LogLine(@NonNull LogLine src ) {
-		this(src.date, src.time, src.pid, src.tid, src.priorityChar, src.tag, src.message);
-	}
+	public static final int INFO = SchemeAndroidIDE.LOG_INFO;
+	public static final int DEBUG = SchemeAndroidIDE.LOG_DEBUG;
+	public static final int ERROR = SchemeAndroidIDE.LOG_ERROR;
+	public static final int WARNING = SchemeAndroidIDE.LOG_WARNING;
 	
 	public LogLine (String date, String time, String pid, String tid, String priorityChar, String tag, String message) {
 		this (date, time, pid, tid, priorityChar, tag, message, true);
@@ -122,6 +120,7 @@ public class LogLine {
 		return ContextCompat.getColor(ctx, id);
 	}
 
+	@NonNull
 	@Override
 	public String toString() {
 		return this.formatted ? String.format("%-6s %-13s %-6s %-6s %-2s %-40s %s", date, time, pid, tid, priorityChar, tag, message) : this.unformatted;

@@ -46,8 +46,10 @@ dependencies {
 
     implementation project(':lsp:api')
 
+    compileOnly project(':editor')
     compileOnly project(':lexers')
     compileOnly project(':common')
     compileOnly project(':sdk-info')
+
     compileOnly common.antlr4
 }

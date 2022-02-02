@@ -190,7 +190,7 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
         if (mProgressSheet == null) {
             createProgressSheet ();
         }
-    
+        
         if (mProgressSheet.isShowing ()) {
             mProgressSheet.dismiss ();
         }
@@ -204,7 +204,7 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
         if (mProgressSheet == null) {
             createProgressSheet ();
         }
-    
+        
         if (mProgressSheet.isShowing ()) {
             mProgressSheet.dismiss ();
         }
@@ -267,10 +267,10 @@ public class MainActivity extends StudioActivity implements View.OnClickListener
         
         ProjectTemplate
                 empty = new ProjectTemplate ()
-                .setId (0)
-                .setName (this, R.string.template_empty)
-                .setDescription (this, R.string.template_description_empty)
-                .setImageId (R.drawable.template_empty),
+                        .setId (0)
+                        .setName (this, R.string.template_empty)
+                        .setDescription (this, R.string.template_description_empty)
+                        .setImageId (R.drawable.template_empty),
                 basic = new ProjectTemplate ()
                         .setId (1)
                         .setName (this, R.string.template_basic)

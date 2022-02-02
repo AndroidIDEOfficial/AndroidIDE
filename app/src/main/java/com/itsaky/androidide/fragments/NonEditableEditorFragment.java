@@ -29,9 +29,9 @@ import androidx.fragment.app.Fragment;
 import com.itsaky.androidide.databinding.FragmentNonEditableEditorBinding;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.TypefaceUtils;
+import com.itsaky.androidide.views.editor.IDEEditor;
 
-import io.github.rosemoe.editor.langs.EmptyLanguage;
-import io.github.rosemoe.editor.widget.CodeEditor;
+import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public abstract class NonEditableEditorFragment extends Fragment {
     
@@ -51,9 +51,7 @@ public abstract class NonEditableEditorFragment extends Fragment {
         final var editor = binding.getRoot ();
         editor.setEditable (false);
         editor.setDividerWidth (0);
-        editor.setEditorLanguage (new EmptyLanguage (), null);
-        editor.setOverScrollEnabled (false);
-        editor.setTextActionMode (CodeEditor.TextActionMode.ACTION_MODE);
+        editor.setEditorLanguage (new EmptyLanguage ());
         editor.setWordwrap (false);
         editor.setUndoEnabled (false);
         editor.setTypefaceLineNumber (TypefaceUtils.jetbrainsMono ());
@@ -63,7 +61,7 @@ public abstract class NonEditableEditorFragment extends Fragment {
     }
     
     @Nullable
-    public CodeEditor getEditor () {
+    public IDEEditor getEditor () {
         if (binding == null) {
             return null;
         }

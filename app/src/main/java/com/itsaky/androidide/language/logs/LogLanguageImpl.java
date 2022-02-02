@@ -17,49 +17,53 @@
  */
 package com.itsaky.androidide.language.logs;
 
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.models.CompletionItem;
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
-import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.interfaces.NewlineHandler;
-import io.github.rosemoe.editor.text.Content;
-import io.github.rosemoe.editor.text.TextAnalyzeResult;
-import io.github.rosemoe.editor.text.TextAnalyzer;
-import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
+import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
+import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
+import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
+import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
+import io.github.rosemoe.sora.lang.styling.MappedSpans;
+import io.github.rosemoe.sora.lang.styling.Styles;
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.ContentReference;
+import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class LogLanguageImpl extends BaseLanguage {
 	
 	private static final LogAnalyzer analyzer = new LogAnalyzer();
-	private static final LogCompletor completor = new LogCompletor();
 	
 	public void addLine(LogLine line) {
 		analyzer.addLine (line);
 	}
 	
+	@NonNull
 	@Override
-	public CodeAnalyzer getAnalyzer() {
+	public AnalyzeManager getAnalyzeManager () {
 		return analyzer;
 	}
 	
 	@Override
-	public AutoCompleteProvider getAutoCompleteProvider() {
-		return completor;
+	public int getInterruptionLevel () {
+		return 0;
 	}
 	
 	@Override
-	public boolean isAutoCompleteChar(char ch) {
-		return false;
+	public void requireAutoComplete (@NonNull ContentReference content, @NonNull CharPosition position, @NonNull CompletionPublisher publisher, @NonNull Bundle extraArguments) throws CompletionCancelledException {
 	}
 	
 	@Override
-	public int getIndentAdvance(String content) {
+	public int getIndentAdvance (@NonNull ContentReference content, int line, int column) {
 		return 0;
 	}
 	
@@ -83,7 +87,12 @@ public class LogLanguageImpl extends BaseLanguage {
 		return new NewlineHandler[0];
 	}
 	
-	private static class LogAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
+	@Override
+	public void destroy () {
+	
+	}
+	
+	private static class LogAnalyzer extends SimpleAnalyzeManager<Void> {
 		
 		private static final List<LogLine> lines = new ArrayList<>();
 		
@@ -95,23 +104,21 @@ public class LogLanguageImpl extends BaseLanguage {
 		}
 		
 		@Override
-		public void analyze(ILanguageServer server, File file, Content content, TextAnalyzeResult colors, TextAnalyzer.AnalyzeThread.Delegate delegate) {
+		protected Styles analyze (StringBuilder text, Delegate<Void> delegate) {
+			final var styles = new Styles ();
+			final var colors = new MappedSpans.Builder ();
 			int lastLine = 0;
-			for(int i=0;i<lines.size() && delegate.shouldAnalyze();i++) {
+			for(int i=0;i<lines.size() && !delegate.isCancelled ();i++) {
 				if(i==0) colors.addNormalIfNull();
 				LogLine line = lines.get(i);
-				colors.addIfNeeded(i, 0, line.priority);
+				colors.addIfNeeded(i, 0, SchemeAndroidIDE.get (line.priority));
 				lastLine = i;
 			}
 			colors.determine(lastLine);
-		}
-	}
-	
-	private static class LogCompletor implements AutoCompleteProvider {
-		
-		@Override
-		public List<CompletionItem> getAutoCompleteItems(Content content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) {
-			return new ArrayList<> ();
+			
+			styles.spans = colors.build ();
+			
+			return styles;
 		}
 	}
 }

@@ -159,7 +159,7 @@ public interface ILanguageServer {
      * @return The code analyzer.
      */
     @NonNull
-    ICodeAnalyzer getCodeAnalyzer ();
+    IDiagnosticProvider getCodeAnalyzer ();
     
     /**
      * Thrown to indicate that a language server received an initialize notification

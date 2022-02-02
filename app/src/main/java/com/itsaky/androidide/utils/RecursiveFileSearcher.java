@@ -26,8 +26,6 @@ import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 
-import io.github.rosemoe.editor.text.CharPosition;
-import io.github.rosemoe.editor.text.Content;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -37,6 +35,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.Content;
 
 /**
  * This class provides API to search in files recursively
@@ -97,7 +98,7 @@ public class RecursiveFileSearcher {
                     if(file.isDirectory()) continue;
                     final String text = FileIOUtils.readFile2String(file);
                     if(text == null || text.trim().isEmpty()) continue;
-                    final Content content = new Content(null, text);
+                    final Content content = new Content(text);
                     final List<SearchResult> ranges = new ArrayList<>();
                     Matcher matcher = Pattern.compile(Pattern.quote(this.query)).matcher(text);
                     while(matcher.find()) {

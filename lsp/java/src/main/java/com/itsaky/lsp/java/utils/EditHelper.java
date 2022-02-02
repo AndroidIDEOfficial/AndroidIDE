@@ -124,7 +124,7 @@ public class EditHelper {
         return (int) (startClass - startLine);
     }
     
-    public static int indent (final String contents, final int cursor) {
+    public static int indent (final CharSequence contents, final int cursor) {
         int indent = 0;
         for (int i=0;i<=cursor && i<contents.length();i++) {
             char c = contents.charAt(i);

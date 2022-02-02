@@ -16,88 +16,99 @@
  */
 package com.itsaky.androidide.language.java;
 
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.ANNOTATION;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.LITERAL;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATOR;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TEXT_NORMAL;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TYPE_NAME;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forKeyword;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.withoutCompletion;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.lexers.java.JavaLexer;
-import com.itsaky.androidide.models.ConstantsBridge;
-import com.itsaky.androidide.utils.HighlightRangeHelper;
-import com.itsaky.androidide.utils.LSPUtils;
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.models.AnalyzeParams;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticResult;
+import com.itsaky.lsp.models.DiagnosticSeverity;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
-import java.io.StringReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-import io.github.rosemoe.editor.langs.AbstractCodeAnalyzer;
-import io.github.rosemoe.editor.struct.BlockLine;
-import io.github.rosemoe.editor.syntax.EditorColorScheme;
-import io.github.rosemoe.editor.text.CharPosition;
-import io.github.rosemoe.editor.text.Content;
-import io.github.rosemoe.editor.text.TextAnalyzeResult;
-import io.github.rosemoe.editor.text.TextAnalyzer;
+import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
+import io.github.rosemoe.sora.lang.styling.CodeBlock;
+import io.github.rosemoe.sora.lang.styling.MappedSpans;
+import io.github.rosemoe.sora.lang.styling.Span;
+import io.github.rosemoe.sora.lang.styling.Styles;
 
 /**
  * Code analyzer for the Java Language
  *
  * @author Akash Yadav
  */
-public class JavaAnalyzer extends AbstractCodeAnalyzer {
+public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
     
-    private final Map<Integer, List<Range>> stringMap = new HashMap<> ();
     private List<DiagnosticItem> diagnostics = new ArrayList<> ();
+    private final ILanguageServer languageServer;
     
-    private HighlightRangeHelper helper;
+    public JavaAnalyzer (ILanguageServer languageServer) {
+        this.languageServer = languageServer;
+    }
     
     @Override
-    public void analyze (@Nullable ILanguageServer languageServer,
-                         @Nullable File file,
-                         @NonNull Content content,
-                         @NonNull TextAnalyzeResult colors,
-                         @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate
-    ) throws Exception {
-        
-        if (languageServer != null && file != null) {
-            CompletableFuture.runAsync (() -> {
-                final var analyzer = languageServer.getCodeAnalyzer ();
-                final var result = analyzer.analyze (new AnalyzeParams (file.toPath ()));
-                
-                JavaAnalyzer.this.diagnostics = result.getDiagnostics ();
-                JavaAnalyzer.this.helper = new HighlightRangeHelper (result.getSemanticHighlights ());
-                
-                if (languageServer.getClient () != null) {
-                    languageServer.getClient ().publishDiagnostics (new DiagnosticResult (file.toPath (), JavaAnalyzer.this.diagnostics));
-                }
-            });
+    protected Styles analyze (StringBuilder text, Delegate<Void> delegate) {
+        final var args = getExtraArguments ();
+        if (args.containsKey (IDEEditor.KEY_FILE)) {
+            final var file = new File (args.getString (IDEEditor.KEY_FILE));
+            if (languageServer != null && file.exists()) {
+                CompletableFuture.runAsync (() -> {
+                    final var analyzer = languageServer.getCodeAnalyzer ();
+                    
+                    diagnostics = analyzer.analyze (file.toPath ());
+                    
+                    if (languageServer.getClient () != null) {
+                        languageServer.getClient ().publishDiagnostics (new DiagnosticResult (file.toPath (), diagnostics));
+                    }
+                });
+            }
+    
         }
         
-        final var stream = CharStreams.fromReader (new StringReader (content.toString ()));
+        final CodePointCharStream stream;
+        final var styles = new Styles ();
+        final var colors = new MappedSpans.Builder ();
+        try {
+            stream = CharStreams.fromReader (new CharSequenceReader (text));
+        } catch (IOException e) {
+            LOG.error ("Unable to create char stream for text", e);
+            return styles;
+        }
         final var lexer = new JavaLexer (stream);
-        final var stack = new Stack<BlockLine> ();
+        final var stack = new Stack<CodeBlock> ();
     
         Token token;
-        int line, column, lastLine = 1, type, currSwitch = 0, maxSwitch = 0;
+        int line, column, lastLine = 1, type, currSwitch = 0, maxSwitch = 0, previous = -1;
         boolean isFirst = true;
     
-        this.stringMap.clear ();
-    
-        while (delegate.shouldAnalyze ()) {
+        while (!delegate.isCancelled ()) {
             token = lexer.nextToken ();
         
             if (token == null) {
@@ -112,7 +123,8 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
                 lastLine = line;
                 break;
             }
-        
+    
+            final var tokenLength = token.getText ().length ();
             switch (type) {
                 case JavaLexer.WS:
                     if (isFirst) {
@@ -161,7 +173,7 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
                 case JavaLexer.VOLATILE:
                 case JavaLexer.WHILE:
                 case JavaLexer.VAR:
-                    colors.addIfNeeded (line, column, EditorColorScheme.KEYWORD);
+                    colors.addIfNeeded (line, column, forKeyword ());
                     break;
                 case JavaLexer.DECIMAL_LITERAL:
                 case JavaLexer.HEX_LITERAL:
@@ -172,24 +184,11 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
                 case JavaLexer.BOOL_LITERAL:
                 case JavaLexer.CHAR_LITERAL:
                 case JavaLexer.NULL_LITERAL:
-                    colors.addIfNeeded (line, column, EditorColorScheme.LITERAL);
+                    colors.addIfNeeded (line, column, get (LITERAL));
                     break;
                 case JavaLexer.STRING_LITERAL:
-                    checkAndAddHexString (token, EditorColorScheme.LITERAL, colors);
-                
-                    Position start = new Position (line, column);
-                    Position end = new Position (line, column + token.getText ().length ());
-                    colors.addStringRange (line, new Range (start, end));
-            
-                {
-                    List<Range> ranges = stringMap.get (line);
-                    if (ranges == null) {
-                        ranges = new ArrayList<> ();
-                    }
-                    ranges.add (new Range (start, end));
-                    stringMap.put (line, ranges);
-                }
-                break;
+                    colors.addIfNeeded (line, column, forString ());
+                    break;
                 case JavaLexer.LPAREN:
                 case JavaLexer.RPAREN:
                 case JavaLexer.LBRACK:
@@ -234,7 +233,7 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
                 case JavaLexer.COLONCOLON:
                 case JavaLexer.ELLIPSIS:
                 case JavaLexer.DOT:
-                    colors.addIfNeeded (line, column, EditorColorScheme.OPERATOR);
+                    colors.addIfNeeded (line, column, get (OPERATOR));
                     break;
                 case JavaLexer.BOOLEAN:
                 case JavaLexer.BYTE:
@@ -245,154 +244,58 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
                 case JavaLexer.INT:
                 case JavaLexer.LONG:
                 case JavaLexer.SHORT:
-                    colors.addIfNeeded (line, column, EditorColorScheme.TYPE_NAME);
+                    colors.addIfNeeded (line, column, get (TYPE_NAME));
                     break;
                 case JavaLexer.BLOCK_COMMENT:
+                    colors.addIfNeeded (line, column, forComment ());
+                    break;
                 case JavaLexer.LINE_COMMENT:
-                    colors.addIfNeeded (line, column, EditorColorScheme.COMMENT);
-                
-                    final CharPosition a = content.getIndexer ().getCharPosition (token.getStopIndex ());
-                    final Position s = new Position (line, column);
-                    final Position e = new Position (a.line, a.column);
-                    colors.addCommentRange (line, new Range (s, e));
-                
-                    String lineComment = token.getText ();
-                    if (lineComment != null) {
-                        if (lineComment.startsWith ("//")) {
-                            lineComment = lineComment.substring (2);
-                        }
+                    var commentType = SchemeAndroidIDE.COMMENT;
                     
-                        // Trim leading whitespaces
-                        int startsFrom = 0;
-                        for (int i = 0; i < lineComment.length (); i++) {
-                            if (Character.isWhitespace (lineComment.charAt (i))) {
-                                startsFrom++;
-                            } else {
-                                break;
+                    // highlight special line comments
+                    var commentText = token.getText ();
+                    if (commentText.length () > 2) {
+                        commentText = commentText.substring (2);
+                        commentText = commentText.trim ();
+                        
+                        var mark = true;
+                        if ("todo".equalsIgnoreCase (commentText.substring (0, 4))) {
+                            commentType = SchemeAndroidIDE.TODO_COMMENT;
+                        } else if ("fixme".equalsIgnoreCase (commentText.substring (0, 5))) {
+                            commentType = SchemeAndroidIDE.FIXME_COMMENT;
+                        } else {
+                            mark = false;
+                        }
+                        
+                        if (mark) {
+                            if (diagnostics == null) {
+                                diagnostics = new ArrayList<> ();
                             }
-                        }
-                    
-                        lineComment = lineComment.substring (startsFrom);
-                    
-                        final String text = new String (lineComment.toCharArray ());
-                        lineComment = lineComment.toLowerCase (Locale.getDefault ());
-                        if (lineComment.startsWith ("todo ")) {
-                            diagnostics.add (LSPUtils.newInfoDiagnostic (line,
-                                    column,
-                                    token.getText ().length (),
-                                    text,
-                                    token.getText ()));
-                        } else if (lineComment.startsWith (ConstantsBridge.CUSTOM_COMMENT_WARNING_TOKEN)) {
-                            diagnostics.add (LSPUtils.newWarningDiagnostic (line,
-                                    column,
-                                    token.getText ().length (),
-                                    text,
-                                    token.getText ()));
+                            final var diagnostic = new DiagnosticItem ();
+                            diagnostic.setSeverity (DiagnosticSeverity.WARNING);
+                            diagnostic.setMessage (commentText);
+                            diagnostic.setCode ("special.comment");
+                            diagnostic.setRange (new Range (new Position (line, column), new Position (line, column + tokenLength)));
+                            diagnostic.setSource (commentText);
+                            diagnostics.add (diagnostic);
                         }
                     }
+                    
+                    colors.addIfNeeded (line, column, withoutCompletion (commentType));
                 
                     break;
                 case JavaLexer.AT:
-                    colors.addIfNeeded (line, column, EditorColorScheme.ANNOTATION);
+                    colors.addIfNeeded (line, column, get (ANNOTATION));
                     break;
                 case JavaLexer.IDENTIFIER:
-    
-                    if (helper != null) {
-                        if (helper.isPackageName (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.PACKAGE_NAME);
-                            break;
-                        }
-    
-                        if (helper.isEnumType (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.ENUM_TYPE);
-                            break;
-                        }
-    
-                        if (helper.isClassName (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.TYPE_NAME);
-                            break;
-                        }
-    
-                        if (helper.isAnnotationType (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.ANNOTATION);
-                            break;
-                        }
-    
-                        if (helper.isInterface (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.INTERFACE);
-                            break;
-                        }
-    
-                        if (helper.isEnum (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.ENUM);
-                            break;
-                        }
-    
-                        if (helper.isStaticField (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.STATIC_FIELD);
-                            break;
-                        }
-    
-                        if (helper.isField (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.FIELD);
-                            break;
-                        }
-    
-                        if (helper.isParameter (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.PARAMETER);
-                            break;
-                        }
-    
-                        if (helper.isLocal (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.LOCAL_VARIABLE);
-                            break;
-                        }
-    
-                        if (helper.isExceptionParam (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.EXCEPTION_PARAM);
-                            break;
-                        }
-    
-                        if (helper.isMethodDeclaration (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.METHOD_DECLARATION);
-                            break;
-                        }
-    
-                        if (helper.isMethodInvocation (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.METHOD_INVOCATION);
-                            break;
-                        }
-    
-                        if (helper.isConstructor (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.CONSTRUCTOR);
-                            break;
-                        }
-    
-                        if (helper.isStaticInit (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.STATIC_INIT);
-                            break;
-                        }
-    
-                        if (helper.isInstanceInit (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.INSTANCE_INIT);
-                            break;
-                        }
-    
-                        if (helper.isTypeParam (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.TYPE_PARAM);
-                            break;
-                        }
-    
-                        if (helper.isResourceVariable (line, column)) {
-                            colors.addIfNeeded (line, column, EditorColorScheme.RESOURCE_VARIABLE);
-                            break;
-                        }
+                    int colorId = SchemeAndroidIDE.TEXT_NORMAL;
+                    if (previous == JavaLexer.AT) {
+                        colorId = SchemeAndroidIDE.ANNOTATION;
                     }
-                    
-                    colors.addIfNeeded (line, column, EditorColorScheme.TEXT_NORMAL);
+                    colors.addIfNeeded (line, column, get (colorId));
                     break;
                 case JavaLexer.LBRACE:
-                    colors.addIfNeeded (line, column, EditorColorScheme.OPERATOR);
+                    colors.addIfNeeded (line, column, get (OPERATOR));
                     if (stack.isEmpty ()) {
                         if (currSwitch > maxSwitch) {
                             maxSwitch = currSwitch;
@@ -400,66 +303,71 @@ public class JavaAnalyzer extends AbstractCodeAnalyzer {
                         currSwitch = 0;
                     }
                     currSwitch++;
-                    BlockLine block = colors.obtainNewBlock ();
+                    var block = styles.obtainNewBlock ();
                     block.startLine = line;
                     block.startColumn = column;
                     stack.push (block);
                     break;
                 case JavaLexer.RBRACE:
-                    colors.addIfNeeded (line, column, EditorColorScheme.OPERATOR);
+                    colors.addIfNeeded (line, column, get (OPERATOR));
                     if (!stack.isEmpty ()) {
-                        BlockLine block2 = stack.pop ();
+                        var block2 = stack.pop ();
                         block2.endLine = line;
                         block2.endColumn = column;
                         if (block2.startLine != block2.endLine) {
-                            colors.addBlockLine (block2);
+                            styles.addCodeBlock (block2);
                         }
                     }
                     break;
                 default:
-                    colors.addIfNeeded (line, column, EditorColorScheme.TEXT_NORMAL);
+                    colors.addIfNeeded (line, column, get (TEXT_NORMAL));
                     break;
             }
         
             isFirst = false;
+            
+            if (type != JavaLexer.WS) {
+                previous = type;
+            }
         }
     
         if (stack.isEmpty () && currSwitch > maxSwitch) {
             maxSwitch = currSwitch;
         }
-        
-        colors.determine (lastLine);
-        colors.setSuppressSwitch (maxSwitch + 10);
-    }
     
-    @Override
-    public DiagnosticItem findDiagnosticContaining (int line, int column) {
-        final var position = new Position (line, column);
+        colors.determine (lastLine);
+        styles.setSuppressSwitch (maxSwitch + 10);
         
-        // binary search the diagnostic item at the given position
-        // compare by search position
-        int left = 0; int right = diagnostics.size () - 1; int mid;
-        while (left < right) {
-            mid = (left + right) / 2;
-            final var diagnostic = diagnostics.get (mid);
-            final var range = diagnostic.getRange ();
-            final var res = range.containsForBinarySearch (position);
-            if (res < 0) {
-                left = mid + 1;
-            } else if (res > 0) {
-                right = mid - 1;
-            } else {
-                return diagnostic;
+        if (diagnostics != null && !diagnostics.isEmpty ()) {
+            for (var d : diagnostics) {
+                var start = d.getRange ().getStart ();
+                var end = d.getRange ().getEnd ();
+                
+                colors.markProblemRegion (convertToSpanFlag(d.getSeverity ()),
+                        start.getLine (),
+                        start.getColumn (),
+                        end.getLine (),
+                        end.getColumn ());
             }
         }
-        return super.findDiagnosticContaining (line, column);
+        
+        styles.spans = colors.build ();
+        
+        return styles;
     }
     
-    @Override
-    public List<DiagnosticItem> findDiagnosticsContainingLine (int line) {
-        return diagnostics.stream ()
-                .filter (diagnostic -> diagnostic.getRange ().containsLine (line))
-                .collect (Collectors.toList ());
+    @Contract(pure = true)
+    private int convertToSpanFlag (@NonNull DiagnosticSeverity severity) {
+        switch (severity) {
+            case WARNING:
+                return Span.FLAG_WARNING;
+            case ERROR:
+                return Span.FLAG_ERROR;
+            case HINT:
+            case INFO:
+            default:
+                return Span.FLAG_TYPO;
+        }
     }
     
     private static final Logger LOG = Logger.instance ("JavaAnalyzer");

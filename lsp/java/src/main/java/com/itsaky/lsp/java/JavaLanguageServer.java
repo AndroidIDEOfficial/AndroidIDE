@@ -22,7 +22,7 @@ import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ICodeActionProvider;
-import com.itsaky.lsp.api.ICodeAnalyzer;
+import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDefinitionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
@@ -38,7 +38,7 @@ import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.java.providers.CodeActionProvider;
 import com.itsaky.lsp.java.providers.CompletionProvider;
 import com.itsaky.lsp.java.providers.DefinitionProvider;
-import com.itsaky.lsp.java.providers.JavaCodeAnalyzer;
+import com.itsaky.lsp.java.providers.JavaDiagnosticProvider;
 import com.itsaky.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.lsp.java.providers.ReferenceProvider;
 import com.itsaky.lsp.java.providers.SignatureProvider;
@@ -48,9 +48,8 @@ import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.InitializeResult;
-import com.itsaky.lsp.util.DefaultServerSettings;
 import com.itsaky.lsp.util.NoCodeActionsProvider;
-import com.itsaky.lsp.util.NoCodeAnalyzer;
+import com.itsaky.lsp.util.NoDiagnosticProvider;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 import com.itsaky.lsp.util.NoDefinitionProvider;
 import com.itsaky.lsp.util.NoReferenceProvider;
@@ -240,12 +239,12 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     
     @NonNull
     @Override
-    public ICodeAnalyzer getCodeAnalyzer () {
+    public IDiagnosticProvider getCodeAnalyzer () {
         if (!settings.codeAnalysisEnabled ()) {
-            return new NoCodeAnalyzer ();
+            return new NoDiagnosticProvider ();
         }
         
-        return new JavaCodeAnalyzer (getCompiler ());
+        return new JavaDiagnosticProvider (getCompiler ());
     }
     
     @Override

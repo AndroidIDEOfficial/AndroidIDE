@@ -20,7 +20,7 @@ package com.itsaky.lsp.xml;
 import androidx.annotation.NonNull;
 
 import com.itsaky.lsp.api.ICodeActionProvider;
-import com.itsaky.lsp.api.ICodeAnalyzer;
+import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDefinitionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
@@ -33,7 +33,7 @@ import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.InitializeResult;
 import com.itsaky.lsp.util.NoCodeActionsProvider;
-import com.itsaky.lsp.util.NoCodeAnalyzer;
+import com.itsaky.lsp.util.NoDiagnosticProvider;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 import com.itsaky.lsp.util.NoDefinitionProvider;
 import com.itsaky.lsp.util.NoDocumentHandler;
@@ -98,7 +98,6 @@ public class XMLLanguageServer implements ILanguageServer {
     
     @Override
     public void shutdown () {
-        XMLFileStore.shutdown ();
     }
     
     @Override
@@ -169,7 +168,7 @@ public class XMLLanguageServer implements ILanguageServer {
     
     @NonNull
     @Override
-    public ICodeAnalyzer getCodeAnalyzer () {
-        return new NoCodeAnalyzer ();
+    public IDiagnosticProvider getCodeAnalyzer () {
+        return new NoDiagnosticProvider ();
     }
 }

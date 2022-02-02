@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,42 +14,62 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
-
+ */
 package com.itsaky.androidide.language.xml;
 
-import androidx.annotation.NonNull;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATOR;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TEXT_SELECTED;
 
 import com.itsaky.androidide.lexers.xml.XMLLexer;
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.api.ILanguageServer;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
+import java.util.Stack;
 
-import io.github.rosemoe.editor.text.Content;
-import io.github.rosemoe.editor.text.TextAnalyzeResult;
-import io.github.rosemoe.editor.text.TextAnalyzer;
-import io.github.rosemoe.editor.syntax.EditorColorScheme;
+import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
+import io.github.rosemoe.sora.lang.styling.CodeBlock;
+import io.github.rosemoe.sora.lang.styling.MappedSpans;
+import io.github.rosemoe.sora.lang.styling.Styles;
 
-public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnalyzer {
+/**
+ * Simple analyzer implementation for the XML files.
+ * @author Akash Yadav
+ */
+public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
     
     private static final Logger LOG = Logger.instance ("XMLAnalyzer");
     
     @Override
-    public void analyze (ILanguageServer server, File file, @NonNull Content content, TextAnalyzeResult colors, @NonNull TextAnalyzer.AnalyzeThread.Delegate delegate) throws IOException {
-        CodePointCharStream stream = CharStreams.fromReader (new StringReader (content.toString ()));
+    protected Styles analyze (StringBuilder text, Delegate<Void> delegate) {
+        final var styles = new Styles ();
+        final var colors = new MappedSpans.Builder ();
+        
+        CodePointCharStream stream;
+        try {
+            stream = CharStreams.fromReader (new CharSequenceReader (text));
+        } catch (IOException e) {
+            LOG.error ("Unable to create stream for analyze", e);
+            return styles;
+        }
+        
         XMLLexer lexer = new XMLLexer (stream);
-        Token token = null, previous = null;
-        int line = 0, column = 0, lastLine = 1;
+        Token token;
+        int previous = 0;
+        int line, column, lastLine = 1;
         var first = true;
         
-        while (delegate.shouldAnalyze ()) {
+        final var stack = new Stack<CodeBlock> ();
+        
+        while (!delegate.isCancelled ()) {
             token = lexer.nextToken ();
             if (token == null) {
                 break;
@@ -75,35 +93,62 @@ public class XMLAnalyzer extends io.github.rosemoe.editor.langs.AbstractCodeAnal
                     
                     break;
                 case XMLLexer.COMMENT:
-                    colors.addIfNeeded (line, column, EditorColorScheme.COMMENT);
+                    colors.addIfNeeded (line, column, forComment ());
                     break;
                 case XMLLexer.OPEN:
                 case XMLLexer.OPEN_SLASH:
                 case XMLLexer.CLOSE:
                 case XMLLexer.SLASH:
-                case XMLLexer.SLASH_CLOSE:
                 case XMLLexer.SPECIAL_CLOSE:
                 case XMLLexer.EQUALS:
+                case XMLLexer.COLON:
                 case XMLLexer.XMLDeclOpen:
-                    colors.addIfNeeded (line, column, EditorColorScheme.OPERATOR);
+                    colors.addIfNeeded (line, column, get (OPERATOR));
+                    break;
+                case XMLLexer.SLASH_CLOSE:
+                    colors.addIfNeeded (line, column, get (OPERATOR));
+                    final var closeBlock = stack.pop ();
+                    closeBlock.endLine = line;
+                    closeBlock.endColumn = column;
+                    styles.addCodeBlock (closeBlock);
                     break;
                 case XMLLexer.STRING:
-                    checkAndAddHexString (token, EditorColorScheme.LITERAL, colors);
+                    colors.addIfNeeded (line, column, forString ());
                     break;
                 case XMLLexer.Name:
-                    checkAndAddHexString (token, previous.getType () == XMLLexer.OPEN || previous.getType () == XMLLexer.OPEN_SLASH ? EditorColorScheme.XML_TAG : EditorColorScheme.TEXT_NORMAL, colors);
+                    var type = SchemeAndroidIDE.TEXT_NORMAL;
+                    if (previous == XMLLexer.OPEN) {
+                        type = SchemeAndroidIDE.XML_TAG;
+                        final var block = styles.obtainNewBlock ();
+                        block.startLine = line;
+                        block.startColumn = column;
+                        stack.push (block);
+                    }
+                    
+                    if (previous == XMLLexer.OPEN_SLASH) {
+                        type = SchemeAndroidIDE.XML_TAG;
+                        final var block = stack.pop ();
+                        block.endLine = line;
+                        block.endColumn = column;
+                        styles.addCodeBlock (block);
+                    }
+                    
+                    colors.addIfNeeded (line, column, get (type));
                     break;
                 case XMLLexer.TEXT:
-                    checkAndAddHexString (token, EditorColorScheme.TEXT_NORMAL, colors);
                 default:
-                    colors.addIfNeeded(line, column, EditorColorScheme.TEXT_NORMAL);
+                    colors.addIfNeeded (line, column, get (TEXT_SELECTED));
                     break;
             }
             first = false;
             if (token.getType () != XMLLexer.SEA_WS) {
-                previous = token;
+                previous = token.getType ();
             }
         }
         colors.determine (lastLine);
+        
+        styles.spans = colors.build ();
+        
+        return styles;
     }
 }

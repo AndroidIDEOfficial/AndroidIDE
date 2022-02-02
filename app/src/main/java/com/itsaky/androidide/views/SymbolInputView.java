@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,29 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
-
-
+ */
 package com.itsaky.androidide.views;
 
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
-import android.view.Gravity;
-import android.widget.Button;
-import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.TextViewCompat;
-import com.itsaky.androidide.R;
-import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.utils.TypefaceUtils;
-import io.github.rosemoe.editor.widget.CodeEditor;
-import io.github.rosemoe.editor.widget.SymbolChannel;
-import android.util.TypedValue;
-import androidx.recyclerview.widget.RecyclerView;
-import com.itsaky.androidide.adapters.SymbolInputAdapter;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.itsaky.androidide.adapters.SymbolInputAdapter;
+import com.itsaky.androidide.views.editor.IDEEditor;
 
 public class SymbolInputView extends RecyclerView {
 	
@@ -57,7 +43,7 @@ public class SymbolInputView extends RecyclerView {
 		setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 	}
 	
-	public void bindEditor(CodeEditor editor) {
+	public void bindEditor(IDEEditor editor) {
 		adapter = new SymbolInputAdapter(editor);
 		setAdapter(adapter);
 		setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));

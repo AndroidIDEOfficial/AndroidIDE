@@ -39,7 +39,7 @@ public class SimpleOutputFragment extends NonEditableEditorFragment {
         
         if (!unsavedLines.isEmpty ()) {
             for (String line : unsavedLines) {
-                Objects.requireNonNull (getEditor ()).getText ().append (line.trim () + "\n");
+                Objects.requireNonNull (getEditor ()).append (line.trim () + "\n");
             }
             unsavedLines.clear ();
         }
@@ -52,7 +52,7 @@ public class SimpleOutputFragment extends NonEditableEditorFragment {
         }
         ThreadUtils.runOnUiThread (() -> {
             final var message = output == null || output.endsWith ("\n") ? output : output + "\n";
-            getEditor ().getText ().append (message);
+            getEditor ().append (message);
         });
     }
 }

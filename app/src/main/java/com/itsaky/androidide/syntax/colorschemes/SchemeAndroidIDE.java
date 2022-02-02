@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +14,58 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 package com.itsaky.androidide.syntax.colorschemes;
 
-import io.github.rosemoe.editor.syntax.EditorColorScheme;
+import org.w3c.dom.Text;
 
+import io.github.rosemoe.sora.lang.styling.TextStyle;
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
+/**
+ * Base class for editor color schemes in AndroidIDE.
+ * If you're implementing a color scheme for the IDE,
+ * this should be the base class instead of {@link EditorColorScheme}.
+ *
+ * @author Akash Yadav
+ */
 public class SchemeAndroidIDE extends EditorColorScheme {
+    
+    private static int current = EditorColorScheme.END_COLOR_ID;
+    
+    public static final int LOG_INFO            = current++;
+    public static final int LOG_DEBUG           = current++;
+    public static final int LOG_ERROR           = current++;
+    public static final int LOG_WARNING         = current++;
+    public static final int DIAGNOSTIC_ERROR    = current++;
+    public static final int DIAGNOSTIC_WARNING  = current++;
+    public static final int DIAGNOSTIC_HINT     = current++;
+    public static final int DIAGNOSTIC_INFO     = current++;
+    public static final int STDERR              = current++;
+    public static final int STDOUT              = current++;
+    public static final int XML_TAG             = current++;
+    public static final int FIELD               = current++;
+    public static final int STATIC_FIELD        = current++;
+    public static final int PACKAGE_NAME        = current++;
+    public static final int ENUM_TYPE           = current++;
+    public static final int INTERFACE           = current++;
+    public static final int ENUM                = current++;
+    public static final int PARAMETER           = current++;
+    public static final int CONSTRUCTOR         = current++;
+    public static final int STATIC_INIT         = current++;
+    public static final int INSTANCE_INIT       = current++;
+    public static final int TYPE_PARAM          = current++;
+    public static final int RESOURCE_VARIABLE   = current++;
+    public static final int EXCEPTION_PARAM     = current++;
+    public static final int METHOD_DECLARATION  = current++;
+    public static final int METHOD_INVOCATION   = current++;
+    public static final int TYPE_NAME           = current++;
+    public static final int LOCAL_VARIABLE      = current++;
+    public static final int TODO_COMMENT        = current++;
+    public static final int FIXME_COMMENT       = current++;
     
     @Override
     public void applyDefault () {
-        // Change the default comment color
-        // This will make sure that all javadoc elements
-        // which are not implemented in this scheme are 
-        // same as other comments
-        COMMENT_DEFAULT = 0xffbdbdbd;
-        
         // Apply default colors
         super.applyDefault ();
         
@@ -58,7 +93,6 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         setColor (MATCHED_TEXT_BACKGROUND, 0xffFF8F00);
         setColor (NON_PRINTABLE_CHAR, 0xffdddddd);
         setColor (KEYWORD, 0xffff6060);
-        setColor (COMMENT, COMMENT_DEFAULT);
         setColor (OPERATOR, 0xff4fc3f7);
         setColor (LITERAL, 0xff8bc34a);
         setColor (TYPE_NAME, 0xff4fc3f7);
@@ -88,5 +122,51 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         
         setColor (STDERR, 0xfff44336);
         setColor (STDOUT, 0xff4CAF50);
+        
+        setColor (TODO_COMMENT, 0xffffc400);
+        setColor (FIXME_COMMENT, 0xffffab00);
+        setColor (COMMENT, 0xffbdbdbd);
+    }
+    
+    /**
+     * Delegates to {@link TextStyle#makeStyle(int)}
+     * @param id The color id.
+     * @return The style flags.
+     */
+    public static long get (int id) {
+        return TextStyle.makeStyle (id);
+    }
+    
+    /**
+     * Create style for keywords. Convenient method to avoid calling {@link TextStyle#makeStyle(int, int, boolean, boolean, boolean)}
+     * @return The default style for keywords.
+     */
+    public static long forKeyword () {
+        return TextStyle.makeStyle (KEYWORD, WHOLE_BACKGROUND, true, false, false);
+    }
+    
+    /**
+     * Create style for string literals. The returned style sets the {@link TextStyle#NO_COMPLETION_BIT}.
+     * @return The style for string literals.
+     */
+    public static long forString () {
+        return TextStyle.makeStyle (LITERAL, true);
+    }
+    
+    /**
+     * Create color style for default comments.
+     * @return The style for {@link #COMMENT}.
+     */
+    public static long forComment () {
+        return TextStyle.makeStyle (COMMENT, true);
+    }
+    
+    /**
+     * Create style for the given id without completions.
+     * @param id The id to create style for.
+     * @return The style for the id.
+     */
+    public static long withoutCompletion (int id) {
+        return TextStyle.makeStyle (id, true);
     }
 }

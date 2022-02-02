@@ -17,50 +17,50 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
 **************************************************************************************/
-
-
 package com.itsaky.androidide.language.groovy;
+
+import android.os.Bundle;
 
 import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionItemKind;
 import com.itsaky.lsp.models.InsertTextFormat;
 
-import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
-import io.github.rosemoe.editor.text.Content;
-import io.github.rosemoe.editor.text.TextAnalyzeResult;
+import io.github.rosemoe.sora.lang.completion.CompletionHelper;
+import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.ContentReference;
+import io.github.rosemoe.sora.util.MyCharacter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class GroovyAutoComplete implements AutoCompleteProvider {
+public class GroovyAutoComplete {
 	
 	private static final List<String> ANDROIDX_ARTIFACTS = createArtifacts();
 	private static final List<String> CONFIGURATIONS = createConfigs();
 	private static final List<String> OTHERS = createOtherCompletions();
-
-    @Override
-    public List<CompletionItem> getAutoCompleteItems(Content content, String fileUri, String prefix, boolean isInCodeBlock, TextAnalyzeResult colors, int index, int line, int column) throws Exception {
-        List<CompletionItem>  result = new ArrayList<>();
-
-        for(String artifact : ANDROIDX_ARTIFACTS) {
-            if(!artifact.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) continue;
-            result.add(createCompletionItem(artifact, prefix, true));
-        }
-
-        for(String config : CONFIGURATIONS) {
-            if(!config.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) continue;
-            result.add(createCompletionItem(config, prefix, false));
-        }
-
-        for(String other : OTHERS) {
-            if(!other.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) continue;
-            result.add(createCompletionItem(other, prefix, false));
-        }
-
-		return result;
-    }
+	
+	public void complete (ContentReference content, CharPosition position, CompletionPublisher publisher, Bundle extraArguments) {
+		publisher.setUpdateThreshold (0);
+		final var prefix = CompletionHelper.computePrefix (content, position, MyCharacter::isJavaIdentifierPart);
+		for(String artifact : ANDROIDX_ARTIFACTS) {
+			if(!artifact.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
+			publisher.addItem (createCompletionItem(artifact));
+		}
+		
+		for(String config : CONFIGURATIONS) {
+			if(!config.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
+			publisher.addItem (createCompletionItem(config));
+		}
+		
+		for(String other : OTHERS) {
+			if(!other.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
+			publisher.addItem (createCompletionItem(other));
+		}
+	}
     
-	private CompletionItem createCompletionItem(String itemLabel, String prefix, boolean artifact) {
+	private CompletionItem createCompletionItem (String itemLabel) {
         CompletionItem item = new CompletionItem();
         item.setLabel(itemLabel);
         item.setDetail("");
@@ -72,7 +72,7 @@ public class GroovyAutoComplete implements AutoCompleteProvider {
 	}
 	
 	private static List<String> createArtifacts() {
-		List<String> artifacts = new ArrayList<String>();
+		var artifacts = new ArrayList<String>();
 		artifacts.add("androidx.arch.core:core-common");
 		artifacts.add("androidx.arch.core:core");
 		artifacts.add("androidx.arch.core:core-testing");
@@ -182,7 +182,7 @@ public class GroovyAutoComplete implements AutoCompleteProvider {
 	}
 	
 	private static List<String> createConfigs() {
-		List<String> configs = new ArrayList<String>();
+		var configs = new ArrayList<String>();
 		configs.add("androidApis");
 		configs.add("androidTestAnnotationProcessor");
 		configs.add("androidTestApi");
@@ -268,112 +268,111 @@ public class GroovyAutoComplete implements AutoCompleteProvider {
 	}
 	
 	private static List<String> createOtherCompletions() {
-		List<String> others = new ArrayList<String>();
-
+		var others = new ArrayList<String> ();
+		
 		// Common words that user may use
-		others.add("android");
-		others.add("applicationVariants");
-		others.add("compileSdkVersion");
-		others.add("buildToolsVersion");
-		others.add("defaultConfig");
-		others.add("applicationId");
-		others.add("minSdkVersion");
-		others.add("targetSdkVersion");
-		others.add("versionCode");
-		others.add("versionName");
-		others.add("multiDexEnabled");
-		others.add("vectorDrawables.useSupportLibrary");
-		others.add("compileOptions");
-		others.add("coreLibraryDesugaringEnabled");
-		others.add("sourceCompatibility");
-		others.add("targetCompatibility");
-		others.add("JavaVersion.VERSION_1_8");
-		others.add("JavaVersion.VERSION_1_7");
-
+		others.add ("android");
+		others.add ("applicationVariants");
+		others.add ("compileSdkVersion");
+		others.add ("buildToolsVersion");
+		others.add ("defaultConfig");
+		others.add ("applicationId");
+		others.add ("minSdkVersion");
+		others.add ("targetSdkVersion");
+		others.add ("versionCode");
+		others.add ("versionName");
+		others.add ("multiDexEnabled");
+		others.add ("vectorDrawables.useSupportLibrary");
+		others.add ("compileOptions");
+		others.add ("coreLibraryDesugaringEnabled");
+		others.add ("sourceCompatibility");
+		others.add ("targetCompatibility");
+		others.add ("JavaVersion.VERSION_1_8");
+		others.add ("JavaVersion.VERSION_1_7");
+		
 		// Lint options
-		others.add("lintOptions");
-		others.add("quiet");
-		others.add("abortOnError");
-		others.add("checkReleaseBuilds");
-		others.add("ignoreWarnings");
-		others.add("checkAllWarnings");
-		others.add("warningsAsErrors");
-		others.add("disable");
-		others.add("enable");
-		others.add("check");
-		others.add("noLines");
-		others.add("showAll");
-		others.add("explainIssues");
-		others.add("lintConfig");
-		others.add("textReport");
-		others.add("textOutput");
-		others.add("xmlReport");
-		others.add("xmlOutput");
-		others.add("htmlReport");
-		others.add("htmlOutput");
-		others.add("fatal");
-		others.add("error");
-		others.add("warning");
-		others.add("ignore");
-		others.add("informational");
-		others.add("baseline");
-		others.add("checkTestSources");
-		others.add("ignoreTestSources");
-		others.add("checkGeneratedSources");
-		others.add("checkDependencies");
-
+		others.add ("lintOptions");
+		others.add ("quiet");
+		others.add ("abortOnError");
+		others.add ("checkReleaseBuilds");
+		others.add ("ignoreWarnings");
+		others.add ("checkAllWarnings");
+		others.add ("warningsAsErrors");
+		others.add ("disable");
+		others.add ("enable");
+		others.add ("check");
+		others.add ("noLines");
+		others.add ("showAll");
+		others.add ("explainIssues");
+		others.add ("lintConfig");
+		others.add ("textReport");
+		others.add ("textOutput");
+		others.add ("xmlReport");
+		others.add ("xmlOutput");
+		others.add ("htmlReport");
+		others.add ("htmlOutput");
+		others.add ("fatal");
+		others.add ("error");
+		others.add ("warning");
+		others.add ("ignore");
+		others.add ("informational");
+		others.add ("baseline");
+		others.add ("checkTestSources");
+		others.add ("ignoreTestSources");
+		others.add ("checkGeneratedSources");
+		others.add ("checkDependencies");
+		
 		// buildFeatures options
-		others.add("buildFeatures");
-		others.add("aidl");
-		others.add("buildConfig");
-		others.add("compose");
-		others.add("prefab");
-		others.add("renderScript");
-		others.add("resValues");
-		others.add("shaders");
-		others.add("viewBinding");
+		others.add ("buildFeatures");
+		others.add ("aidl");
+		others.add ("buildConfig");
+		others.add ("compose");
+		others.add ("prefab");
+		others.add ("renderScript");
+		others.add ("resValues");
+		others.add ("shaders");
+		others.add ("viewBinding");
 		
 		// Signing configs and all
-		others.add("signingConfigs");
-		others.add("debug");
-		others.add("storeFile");
-		others.add("storePassword");
-		others.add("keyAlias");
-		others.add("keyPassword");
-		others.add("release");
-		others.add("storeFile");
-		others.add("storePassword");
-		others.add("keyAlias");
-		others.add("keyPassword");
-		others.add("buildTypes");
-		others.add("debug");
-		others.add("minifyEnabled");
-		others.add("proguardFiles");
-		others.add("signingConfig");
-		others.add("stringfog.enable");
-		others.add("release");
-		others.add("minifyEnabled");
-		others.add("proguardFiles");
-		others.add("signingConfig");
-		others.add("stringfog.enable");
-		others.add("packagingOptions");
-		others.add("exclude");
+		others.add ("signingConfigs");
+		others.add ("debug");
+		others.add ("storeFile");
+		others.add ("storePassword");
+		others.add ("keyAlias");
+		others.add ("keyPassword");
+		others.add ("release");
+		others.add ("storeFile");
+		others.add ("storePassword");
+		others.add ("keyAlias");
+		others.add ("keyPassword");
+		others.add ("buildTypes");
+		others.add ("debug");
+		others.add ("minifyEnabled");
+		others.add ("proguardFiles");
+		others.add ("signingConfig");
+		others.add ("stringfog.enable");
+		others.add ("release");
+		others.add ("minifyEnabled");
+		others.add ("proguardFiles");
+		others.add ("signingConfig");
+		others.add ("stringfog.enable");
+		others.add ("packagingOptions");
+		others.add ("exclude");
 		
 		// Maybe used in root project's build.gradle
-		others.add("buildscript");
-		others.add("ext");
-		others.add("project.ext");
-		others.add("repositories");
-		others.add("maven");
-		others.add("url");
-		others.add("google()");
-		others.add("mavenLocal()");
-		others.add("mavenCentral()");
-		others.add("jcenter()");
-		others.add("classpath");
-		others.add("allprojects");
-		others.add("subprojects");
+		others.add ("buildscript");
+		others.add ("ext");
+		others.add ("project.ext");
+		others.add ("repositories");
+		others.add ("maven");
+		others.add ("url");
+		others.add ("google()");
+		others.add ("mavenLocal()");
+		others.add ("mavenCentral()");
+		others.add ("jcenter()");
+		others.add ("classpath");
+		others.add ("allprojects");
+		others.add ("subprojects");
 		return others;
 	}
-	
 }

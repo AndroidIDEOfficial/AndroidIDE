@@ -23,9 +23,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-import androidx.transition.TransitionManager;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
@@ -46,14 +44,14 @@ import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.androidide.views.CodeEditorView;
+import com.itsaky.androidide.views.editor.CodeEditorView;
+import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.Location;
 import com.itsaky.lsp.models.Range;
-import com.itsaky.lsp.models.SignatureInformation;
 import com.itsaky.lsp.models.TextEdit;
 import com.itsaky.toaster.Toaster;
 
@@ -65,8 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import io.github.rosemoe.editor.text.Content;
-import io.github.rosemoe.editor.widget.CodeEditor;
+import io.github.rosemoe.sora.text.Content;
 
 /**
  * AndroidIDE specific implementation of the LanguageClient
@@ -124,7 +121,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
         return activity ().getEditorForFile (file);
     }
     
-    public void showDiagnostic(DiagnosticItem diagnostic, final CodeEditor editor) {
+    public void showDiagnostic(DiagnosticItem diagnostic, final IDEEditor editor) {
         if(activity() == null || activity().getDiagnosticBinding() == null) {
             hideDiagnostics();
             return;
@@ -140,7 +137,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
         binding.getRoot().setVisibility(View.VISIBLE);
         
         final float[] cursor = editor.getCursorPosition();
-
+        
         float x = editor.updateCursorAnchor() - (binding.getRoot().getWidth() / 2);
         float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - binding.getRoot().getHeight());
         binding.getRoot().setX(x);
@@ -153,9 +150,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
      * and requests code actions from language server
      *
      * @param diagnostic The diagnostic to show
-     * @param editor The CodeEditor that requested
+     * @param editor The IDEEditor that requested
      */
-    public void showDiagnosticAtBottom(final File file, final DiagnosticItem diagnostic, final CodeEditor editor) {
+    public void showDiagnosticAtBottom(final File file, final DiagnosticItem diagnostic, final IDEEditor editor) {
         if(activity() == null || file == null || diagnostic == null) {
             hideBottomDiagnosticView(file);
             return;
@@ -225,88 +222,6 @@ public class IDELanguageClientImpl implements ILanguageClient {
         frag.getBinding().diagnosticText.setClickable(false);
     }
     
-    public void showSignatureHelp (com.itsaky.lsp.models.SignatureHelp signature, File file) {
-        if(signature == null) {
-            hideSignatureHelp();
-            return;
-        }
-        
-        var info = signatureWithMostParams(signature);
-        if(info == null) return;
-        activity().getBinding().symbolText.setText(formatSignature(info, signature.getActiveParameter()));
-        final var frag = findEditorByFile(file);
-        if(frag != null) {
-            final CodeEditor editor = frag.getEditor();
-            final float[] cursor = editor.getCursorPosition();
-        
-            float x = editor.updateCursorAnchor() - (activity().getBinding().symbolText.getWidth() / 2);
-            float y = activity().getBinding().editorAppBarLayout.getHeight() + (cursor[0] - editor.getRowHeight() - editor.getOffsetY() - activity().getBinding().symbolText.getHeight());
-            TransitionManager.beginDelayedTransition(activity().getBinding().getRoot());
-            activity().getBinding().symbolText.setVisibility(View.VISIBLE);
-            activity().positionViewWithinScreen(activity().getBinding().symbolText, x, y);
-        }
-    }
-    
-    /**
-     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to hide signature help in EditorActivity
-     */
-    public void hideSignatureHelp() {
-        if(activity() == null) return;
-        TransitionManager.beginDelayedTransition(activity().getBinding().getRoot());
-        activity().getBinding().symbolText.setVisibility(View.GONE);
-    }
-     
-    /**
-     * Find the signature with most parameters
-     *
-     * @param signature The SignatureHelp provided by @{link IDELanguageServer}
-     */
-    private com.itsaky.lsp.models.SignatureInformation signatureWithMostParams(com.itsaky.lsp.models.SignatureHelp signature) {
-        com.itsaky.lsp.models.SignatureInformation signatureWithMostParams = null;
-        int mostParamCount = 0;
-        final var signatures = signature.getSignatures();
-        for(int i=0;i<signatures.size();i++) {
-            final var info = signatures.get(i);
-            int count = info.getParameters().size();
-            if(mostParamCount < count) {
-                mostParamCount = count;
-                signatureWithMostParams = info;
-            }
-        }
-        return signatureWithMostParams;
-    }
-
-    /**
-     * Formats (highlights) a method signature
-     *
-     * @param signature Signature information
-     * @param paramIndex Currently active parameter index
-     */
-    @NonNull
-    private CharSequence formatSignature(@NonNull SignatureInformation signature, int paramIndex) {
-        String name = signature.getLabel();
-        name = name.substring(0, name.indexOf("("));
-
-        SpannableStringBuilder sb = new SpannableStringBuilder();
-        sb.append(name, new ForegroundColorSpan(0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.append("(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        var params = signature.getParameters();
-        for(int i=0;i<params.size();i++) {
-            int color = i == paramIndex ? 0xffff6060 : 0xffffffff;
-            final var info = params.get(i);
-            if(i == params.size() - 1) {
-                sb.append(info.getLabel() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-            } else {
-                sb.append(info.getLabel() + "", new ForegroundColorSpan(color), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.append(",", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-                sb.append(" ");
-            }
-        }
-        sb.append(")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return sb;
-    }
-
     @Override
     public void publishDiagnostics(DiagnosticResult result) {
         boolean error = result == null;
@@ -324,7 +239,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
     }
     
     /**
-     * Called by {@link io.github.rosemoe.editor.widget.CodeEditor CodeEditor} to show locations in EditorActivity
+     * Called by {@link IDEEditor IDEEditor} to show locations in EditorActivity
      */
     public void showLocations(List<Location> locations) {
     
@@ -356,7 +271,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
                 Content content;
                 if (frag != null && frag.getEditor () != null)
                     content = frag.getEditor ().getText ();
-                else content = new Content (null, FileIOUtils.readFile2String (file));
+                else content = new Content (FileIOUtils.readFile2String (file));
                 final List<SearchResult> matches = results.containsKey (file) ? results.get (file) : new ArrayList<> ();
                 Objects.requireNonNull (matches).add (
                         new SearchResult (
@@ -383,11 +298,11 @@ public class IDELanguageClientImpl implements ILanguageClient {
     /**
      * Perform the given {@link CodeActionItem}
      *
-     * @param editor The {@link CodeEditor} that invoked the code action request.
+     * @param editor The {@link IDEEditor} that invoked the code action request.
      *            This is required to reduce the time finding the code action from the edits.
      * @param action The action to perform
      */
-    public void performCodeAction(CodeEditor editor, CodeActionItem action) {
+    public void performCodeAction(IDEEditor editor, CodeActionItem action) {
         if(activity() == null || editor == null || action == null) {
             StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
             return;
@@ -422,7 +337,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
         return groups;
     }
     
-    private void showAvailableQuickfixes (CodeEditor editor, List<CodeActionItem> actions) {
+    private void showAvailableQuickfixes (IDEEditor editor, List<CodeActionItem> actions) {
         final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder (activity ());
         builder.setTitle(R.string.msg_code_actions);
         builder.setItems(asArray(actions), (d, w) -> {
@@ -442,14 +357,19 @@ public class IDELanguageClientImpl implements ILanguageClient {
         return arr;
     }
     
-    private Boolean performCodeActionAsync(final CodeEditor editor, final CodeActionItem action) {
+    private Boolean performCodeActionAsync(final IDEEditor editor, final CodeActionItem action) {
         final var changes = action.getChanges();
         if(changes.isEmpty()) {
             return Boolean.FALSE;
         }
         
         for(var change : changes) {
-            final File file = change.getFile ().toFile ();
+            final var path = change.getFile ();
+            if (path == null) {
+                continue;
+            }
+            
+            final File file = path.toFile ();
             if(!file.exists()) {
                 continue;
             }
@@ -480,7 +400,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
         return Boolean.TRUE;
     }
     
-    private void editInEditor (final CodeEditor editor, final TextEdit edit) {
+    private void editInEditor (final IDEEditor editor, final TextEdit edit) {
         final Range range = edit.getRange();
         final int startLine = range.getStart().getLine();
         final int startCol = range.getStart().getColumn ();

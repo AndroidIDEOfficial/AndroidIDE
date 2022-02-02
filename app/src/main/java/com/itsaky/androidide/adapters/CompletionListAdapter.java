@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.adapters;
 
 import android.content.res.Resources;
@@ -47,7 +45,7 @@ import com.itsaky.apiinfo.models.MethodInfo;
 import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionItemKind;
 
-import io.github.rosemoe.editor.widget.EditorCompletionAdapter;
+import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {
     
@@ -61,10 +59,10 @@ public class CompletionListAdapter extends EditorCompletionAdapter {
     @Override
     protected View getView(int position, View convertView, ViewGroup parent, boolean isCurrentCursorPosition) {
         final LayoutCompletionItemBinding binding = LayoutCompletionItemBinding.inflate(LayoutInflater.from(getContext()), parent, false);
-
-		var item = getItem(position);
+        
+		var item = (CompletionItem) getItem(position);
 		String label = item.getLabel(), desc = item.getDetail(), type = item.getKind().toString();
-		String header = type.length() <= 0 ? "O" : String.valueOf(type.toString().charAt(0));
+		String header = type.length() <= 0 ? "O" : String.valueOf(type.charAt(0));
 		
         binding.completionIconText.setText(header);
         binding.completionLabel.setText(label);

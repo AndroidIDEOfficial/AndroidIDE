@@ -107,7 +107,8 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.viewmodel.EditorViewModel;
-import com.itsaky.androidide.views.CodeEditorView;
+import com.itsaky.androidide.views.editor.CodeEditorView;
+import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.inflater.ILayoutInflater;
@@ -135,7 +136,6 @@ import java.util.concurrent.CompletionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import io.github.rosemoe.editor.widget.CodeEditor;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
 
@@ -228,7 +228,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         KeyboardUtils.registerSoftInputChangedListener (this, __ -> onSoftInputChanged ());
         registerLogReceiver ();
         setupContainers ();
-        setupSignatureText ();
         setupDiagnosticInfo ();
         
         mUIDesignerLauncher = registerForActivityResult (new ActivityResultContracts.StartActivityForResult (), this::onGetUIDesignerResult);
@@ -671,7 +670,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         openFile (file, range);
         final var opened = getEditorForFile (file);
         if (opened != null && opened.getEditor () != null) {
-            CodeEditor editor = opened.getEditor ();
+            IDEEditor editor = opened.getEditor ();
             editor.post (() -> {
                 if (LSPUtils.isEqual (range.getStart (), range.getEnd ())) {
                     editor.setSelection (range.getStart ().getLine (), range.getEnd ().getColumn ());
@@ -1286,16 +1285,6 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
         
         return mViewModel.getIDEProject ();
-    }
-    
-    private void setupSignatureText () {
-        GradientDrawable gd = new GradientDrawable ();
-        gd.setShape (GradientDrawable.RECTANGLE);
-        gd.setColor (0xff212121);
-        gd.setStroke (1, 0xffffffff);
-        gd.setCornerRadius (8);
-        mBinding.symbolText.setBackground (gd);
-        mBinding.symbolText.setVisibility (View.GONE);
     }
     
     private void setupDiagnosticInfo () {

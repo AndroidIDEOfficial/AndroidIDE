@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,58 +14,58 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
-
-
+ */
 package com.itsaky.androidide.adapters;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.itsaky.androidide.databinding.LayoutSymbolItemBinding;
+import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.androidide.views.SymbolInputView.Symbol;
-import io.github.rosemoe.editor.widget.CodeEditor;
-import io.github.rosemoe.editor.widget.SymbolChannel;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.VH> {
 	
-	private SymbolChannel channel;
+	private final IDEEditor editor;
 	private Symbol[] symbols;
 	
-	public SymbolInputAdapter(CodeEditor editor) {
+	public SymbolInputAdapter(IDEEditor editor) {
 		this(editor, null);
 	}
 
-	public SymbolInputAdapter(CodeEditor editor, Symbol[] symbols) {
-		this.channel = editor.createNewSymbolChannel();
+	public SymbolInputAdapter(IDEEditor editor, Symbol[] symbols) {
+		this.editor = editor;
 		this.symbols = symbols == null ? new Symbol[0] : symbols;
 	}
 	
-	public SymbolInputAdapter setSymbols(Symbol... symbols) {
-		return setSymbols(false, symbols);
-	}
-	
-    @SuppressLint("NotifyDataSetChanged")
-	public SymbolInputAdapter setSymbols(boolean notify, Symbol... symbols) {
+	@SuppressLint("NotifyDataSetChanged")
+	public void setSymbols(boolean notify, Symbol... symbols) {
 		this.symbols = symbols;
 		if(notify) {
 			notifyDataSetChanged();
 		}
-		return this;
+	}
+	
+	@NonNull
+	@Override
+	public VH onCreateViewHolder(@NonNull ViewGroup parent, int itemType) {
+		return new VH (LayoutSymbolItemBinding.inflate (LayoutInflater.from (parent.getContext ()), parent, false));
 	}
 	
 	@Override
-	public VH onCreateViewHolder(ViewGroup parent, int itemType) {
-		return new VH(LayoutSymbolItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-	}
-	
-	@Override
-	public void onBindViewHolder(VH holder, int position) {
+	public void onBindViewHolder(@NonNull VH holder, int position) {
 		if(symbols == null || symbols[position] == null) return;
 		final Symbol symbol = symbols[position];
 		holder.binding.symbol.setText(symbol.label);
-        holder.binding.symbol.setOnClickListener(__ -> channel.insertSymbol(symbol.commit, symbol.offset));
+        holder.binding.symbol.setOnClickListener(__ -> insertSymbol(symbol.commit, symbol.offset));
 	}
 	
 	@Override
@@ -75,12 +73,50 @@ public class SymbolInputAdapter extends RecyclerView.Adapter<SymbolInputAdapter.
 		return symbols == null ? 0 : symbols.length;
 	}
 	
-	public class VH extends RecyclerView.ViewHolder {
+	public static class VH extends RecyclerView.ViewHolder {
 		LayoutSymbolItemBinding binding;
 		
 		public VH(LayoutSymbolItemBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}
+	}
+	
+	void insertSymbol(String text, int selectionOffset) {
+		if (selectionOffset < 0 || selectionOffset > text.length()) {
+			return;
+		}
+		var cur = editor.getText().getCursor();
+		if (cur.isSelected()) {
+			editor.getText ().delete (cur.getLeftLine (),
+					cur.getLeftColumn (),
+					cur.getRightLine (),
+					cur.getRightColumn ()
+			);
+			editor.notifyIMEExternalCursorChange ();
+		}
+		
+		if(cur.getLeftColumn() < editor.getText().getColumnCount(cur.getLeftLine())
+				&& text.length() == 1
+				&& text.charAt(0) == editor.getText().charAt(cur.getLeftLine(), cur.getLeftColumn())
+				&& pairs.contains(text.charAt(0))) {
+			editor.moveSelectionRight();
+		} else {
+			editor.commitText(text);
+			if (selectionOffset != text.length()) {
+				editor.setSelection(cur.getRightLine(), cur.getRightColumn() - (text.length() - selectionOffset));
+			}
+		}
+	}
+	
+	private static final List<Character> pairs;
+	static {
+		pairs = new ArrayList<>();
+		pairs.add('}');
+		pairs.add(')');
+		pairs.add(']');
+		pairs.add('"');
+		pairs.add('\'');
+		pairs.add('>');
 	}
 }

@@ -17,22 +17,28 @@
 
 package com.itsaky.lsp.java.utils;
 
+import com.itsaky.androidide.utils.CharSequenceReader;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.util.StringUtils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -241,7 +247,7 @@ public class StringSearch {
     // TODO cache the progress made by searching shorter queries
     public static boolean containsWordMatching (Path java, String query) {
         if (FileStore.activeDocuments ().contains (java)) {
-            String text = FileStore.contents (java);
+            CharSequence text = FileStore.contents (java);
             return matchesTitleCase (text, query);
         }
         try (FileChannel channel = FileChannel.open (java)) {
@@ -254,7 +260,7 @@ public class StringSearch {
             CharBuffer chars = StandardCharsets.UTF_8.decode (SEARCH_BUFFER);
             return matchesTitleCase (chars, query);
         } catch (NoSuchFileException e) {
-            LOG.warning (e.getMessage ());
+            LOG.warn (e.getMessage ());
             return false;
         } catch (IOException e) {
             throw new RuntimeException (e);
@@ -264,7 +270,12 @@ public class StringSearch {
     public static boolean containsWord (Path java, String query) {
         StringSearch search = new StringSearch (query);
         if (FileStore.activeDocuments ().contains (java)) {
-            byte[] text = FileStore.contents (java).getBytes ();
+            byte[] text = new byte[0];
+            try {
+                text = toByteArray (new CharSequenceReader (FileStore.contents (java)), Charset.defaultCharset ());
+            } catch (IOException e) {
+                LOG.error (e);
+            }
             return search.nextWord (text) != -1;
         }
         try (FileChannel channel = FileChannel.open (java)) {
@@ -276,7 +287,7 @@ public class StringSearch {
             SEARCH_BUFFER.position (0);
             return search.nextWord (SEARCH_BUFFER) != -1;
         } catch (NoSuchFileException e) {
-            LOG.warning (e.getMessage ());
+            LOG.warn (e.getMessage ());
             return false;
         } catch (IOException e) {
             throw new RuntimeException (e);
@@ -286,7 +297,12 @@ public class StringSearch {
     private static boolean containsString (Path java, String query) {
         StringSearch search = new StringSearch (query);
         if (FileStore.activeDocuments ().contains (java)) {
-            byte[] text = FileStore.contents (java).getBytes ();
+            byte[] text = new byte[0];
+            try {
+                text = toByteArray (new CharSequenceReader (FileStore.contents (java)), Charset.defaultCharset ());
+            } catch (IOException e) {
+                LOG.error (e);
+            }
             return search.next (text) != -1;
         }
         try (FileChannel channel = FileChannel.open (java)) {
@@ -298,7 +314,7 @@ public class StringSearch {
             SEARCH_BUFFER.position (0);
             return search.next (SEARCH_BUFFER) != -1;
         } catch (NoSuchFileException e) {
-            LOG.warning (e.getMessage ());
+            LOG.warn (e.getMessage ());
             return false;
         } catch (IOException e) {
             throw new RuntimeException (e);
@@ -337,11 +353,9 @@ public class StringSearch {
                         // TODO match things like fb ~ foo_bar
                         boolean isStartOfWord = Character.isUpperCase (c);
                         boolean isMatch = Character.toLowerCase (f) == Character.toLowerCase (c);
+                        i++;
                         if (isStartOfWord && isMatch) {
-                            i++;
                             break;
-                        } else {
-                            i++;
                         }
                     }
                     if (i >= candidate.length ()) {
@@ -453,5 +467,48 @@ public class StringSearch {
         return StringUtils.matchesPartialName (candidate, partialName, allLower);
     }
     
-    private static final Logger LOG = Logger.getLogger ("main");
+    public static byte[] toByteArray(final Reader reader, final Charset charset) throws IOException {
+        try (final ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            copy(reader, output, charset);
+            return output.toByteArray();
+        }
+    }
+    
+    public static void copy(final Reader reader, final OutputStream output, final Charset outputCharset)
+            throws IOException {
+        final OutputStreamWriter writer = new OutputStreamWriter (output, toCharset(outputCharset));
+        copy(reader, writer);
+        // XXX Unless anyone is planning on rewriting OutputStreamWriter,
+        // we have to flush here.
+        writer.flush();
+    }
+    
+    static Charset toCharset(final Charset charset) {
+        return charset == null ? Charset.defaultCharset() : charset;
+    }
+    
+    public static int copy(final Reader reader, final Writer writer) throws IOException {
+        final long count = copyLarge(reader, writer, SKIP_CHAR_BUFFER.get ());
+        if (count > Integer.MAX_VALUE) {
+            return -1;
+        }
+        return (int) count;
+    }
+    
+    public static long copyLarge(final Reader reader, final Writer writer, final char[] buffer) throws IOException {
+        long count = 0;
+        int n;
+        while (-1 != (n = reader.read(buffer))) {
+            writer.write(buffer, 0, n);
+            count += n;
+        }
+        return count;
+    }
+    
+    private static char [] charArray () {
+        return new char[8192];
+    }
+    
+    private static final ThreadLocal<char[]> SKIP_CHAR_BUFFER = ThreadLocal.withInitial(StringSearch::charArray);
+    private static final Logger LOG = Logger.instance ("StringSearch");
 }

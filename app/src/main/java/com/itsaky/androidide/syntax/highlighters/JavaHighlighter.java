@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *  
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,8 +13,7 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.syntax.highlighters;
 
 import android.text.SpannableStringBuilder;
@@ -24,12 +21,13 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import io.github.rosemoe.editor.syntax.EditorColorScheme;
 import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
+
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 public class JavaHighlighter implements Highlighter {
 
@@ -159,7 +157,7 @@ public class JavaHighlighter implements Highlighter {
                 case JavaLexer.INT :
                 case JavaLexer.LONG:
                 case JavaLexer.SHORT:
-                    sb.append(token.getText(), new ForegroundColorSpan(scheme.getColor(EditorColorScheme.TYPE_NAME)), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    sb.append(token.getText(), new ForegroundColorSpan(scheme.getColor(SchemeAndroidIDE.TYPE_NAME)), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
                     break;
                 case JavaLexer.BLOCK_COMMENT :
                 case JavaLexer.LINE_COMMENT :

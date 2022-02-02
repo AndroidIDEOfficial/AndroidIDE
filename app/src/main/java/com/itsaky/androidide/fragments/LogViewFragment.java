@@ -31,22 +31,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
+import io.github.rosemoe.sora.lang.Language;
 
 public class LogViewFragment extends NonEditableEditorFragment {
     
-    private final EditorLanguage language = getLanguage ();
+    private final Language language = getLanguage ();
     private final List<LogLine> unsavedLines = new ArrayList<> ();
     
     @Override
     public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
-        Objects.requireNonNull (getEditor ()).setEditorLanguage (language, null);
+        Objects.requireNonNull (getEditor ()).setEditorLanguage (language);
         
         if (!unsavedLines.isEmpty ()) {
             for (var line : unsavedLines) {
                 applyToLanguage (line);
-                getEditor ().getText ().append (line.toString ().trim () + "\n");
+                getEditor ().append (line.toString ().trim () + "\n");
             }
             unsavedLines.clear ();
         }
@@ -62,7 +62,7 @@ public class LogViewFragment extends NonEditableEditorFragment {
     
         final var lineString = line.toString ();
         final var msg = lineString.endsWith ("\n") ? lineString : lineString + "\n";
-        ThreadUtils.runOnUiThread (() -> getEditor ().getText ().append (msg));
+        ThreadUtils.runOnUiThread (() -> getEditor ().append (msg));
     }
     
     private void applyToLanguage (LogLine line) {
@@ -71,7 +71,7 @@ public class LogViewFragment extends NonEditableEditorFragment {
         }
     }
     
-    protected EditorLanguage getLanguage () {
+    protected Language getLanguage () {
         return new LogLanguageImpl ();
     }
 }

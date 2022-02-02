@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.utils.CharSequenceInputStream;
+import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.models.DocumentChangeEvent;
@@ -214,7 +216,7 @@ public class FileStore {
         }
         
         // We do not support range changes
-        String newText = params.getNewText ();
+        CharSequence newText = params.getNewText ();
         activeDocuments.put (document, new VersionedContent (newText, params.getVersion ()));
     }
     
@@ -231,7 +233,7 @@ public class FileStore {
         return activeDocuments.keySet ();
     }
     
-    public static String contents (Path file) {
+    public static CharSequence contents (Path file) {
         if (!isJavaFile (file)) {
             throw new RuntimeException (file + " is not a java file");
         }
@@ -256,9 +258,8 @@ public class FileStore {
     
     public static InputStream inputStream (Path file) {
         if (activeDocuments.containsKey (file)) {
-            String string = Objects.requireNonNull (activeDocuments.get (file)).content;
-            byte[] bytes = string.getBytes ();
-            return new ByteArrayInputStream (bytes);
+            CharSequence content = Objects.requireNonNull (activeDocuments.get (file)).content;
+            return new CharSequenceInputStream (content, "UTF-8");
         }
         
         try {
@@ -274,8 +275,8 @@ public class FileStore {
     
     public static BufferedReader bufferedReader (Path file) {
         if (activeDocuments.containsKey (file)) {
-            String string = Objects.requireNonNull (activeDocuments.get (file)).content;
-            return new BufferedReader (new StringReader (string));
+            CharSequence string = Objects.requireNonNull (activeDocuments.get (file)).content;
+            return new BufferedReader (new CharSequenceReader (string));
         }
         
         try {
@@ -339,11 +340,11 @@ public class FileStore {
     }
     
     static class VersionedContent {
-        final String content;
+        final CharSequence content;
         final int version;
         final Instant modified = Instant.now ();
         
-        VersionedContent (String content, int version) {
+        VersionedContent (CharSequence content, int version) {
             Objects.requireNonNull (content, "content is null");
             this.content = content;
             this.version = version;

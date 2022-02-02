@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,8 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.language.java;
+
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
@@ -24,58 +26,48 @@ import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
-import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.views.editor.IDEEditor;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
 import java.io.StringReader;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
-import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
-import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.interfaces.NewlineHandler;
-import io.github.rosemoe.editor.text.CharPosition;
-import io.github.rosemoe.editor.text.TextUtils;
-import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
+import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
+import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
+import io.github.rosemoe.sora.lang.smartEnter.NewlineHandleResult;
+import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.ContentReference;
+import io.github.rosemoe.sora.text.TextUtils;
+import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class JavaLanguage extends BaseLanguage {
     
-    private final JavaAnalyzer analyzer;
-	private final AutoCompleteProvider complete;
+    private JavaAnalyzer analyzer;
+	private CommonCompletionProvider completer;
     
     private final NewlineHandler[] newlineHandlers;
     
     private static final Logger LOG = Logger.instance("JavaLanguage");
     
 	public JavaLanguage() {
-		this.analyzer = new JavaAnalyzer ();
-		this.complete = new CommonCompletionProvider (StudioApp.getInstance ().getJavaLanguageServer ());
+		final var server = StudioApp.getInstance ().getJavaLanguageServer ();
+		this.analyzer = new JavaAnalyzer (server);
+		this.completer = new CommonCompletionProvider (server);
         
         this.newlineHandlers = new NewlineHandler[1];
         this.newlineHandlers[0] = new BraceHandler();
 	}
-
-	@Override
-	public CodeAnalyzer getAnalyzer() {
-		return analyzer;
-	}
-
-	@Override
-	public AutoCompleteProvider getAutoCompleteProvider() {
-		return complete;
-	}
-
-	@Override
-	public boolean isAutoCompleteChar(char p1) {
-		return JavaCharacter.isJavaIdentifierPart(p1) || p1 == '.';
-	}
-
-	@Override
+	
 	public int getIndentAdvance(String p1) {
 		try {
 			JavaLexer lexer = new JavaLexer(CharStreams.fromReader(new StringReader(p1)));
-			Token token = null;
+			Token token;
 			int advance = 0;
 			while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
 				switch (token.getType()) {
@@ -92,6 +84,7 @@ public class JavaLanguage extends BaseLanguage {
 		} catch (Throwable e) {
 			LOG.error ("Error calculating indent advance", e);
 		}
+		
 		return 0;
 	}
 
@@ -99,7 +92,33 @@ public class JavaLanguage extends BaseLanguage {
 	public SymbolPairMatch getSymbolPairs() {
 		return new JavaSymbolPairs ();
 	}
-
+	
+	@NonNull
+	@Override
+	public AnalyzeManager getAnalyzeManager () {
+		return analyzer;
+	}
+	
+	@Override
+	public int getInterruptionLevel () {
+		return 0;
+	}
+	
+	@Override
+	public void requireAutoComplete (@NonNull ContentReference content, @NonNull CharPosition position, @NonNull CompletionPublisher publisher, @NonNull Bundle extraArguments) throws CompletionCancelledException {
+		if (!extraArguments.containsKey (IDEEditor.KEY_FILE)) {
+			return;
+		}
+		final var file = Paths.get (extraArguments.getString (IDEEditor.KEY_FILE));
+		publisher.setUpdateThreshold (0);
+		publisher.addItems (new ArrayList<> (completer.complete (content, file, position)));
+	}
+	
+	@Override
+	public int getIndentAdvance (@NonNull ContentReference content, int line, int column) {
+		return getIndentAdvance (content.getLine (line).substring (0, column));
+	}
+	
 	@Override
 	public boolean useTab() {
 		return false;
@@ -114,16 +133,22 @@ public class JavaLanguage extends BaseLanguage {
     public NewlineHandler[] getNewlineHandlers() {
         return newlineHandlers;
     }
-
-    class BraceHandler implements NewlineHandler {
-
-        @Override
-        public boolean matchesRequirement(@NonNull String beforeText, String afterText, CharPosition cursor) {
-            return beforeText.endsWith("{") && afterText.startsWith("}");
-        }
-
-        @Override
-        public HandleResult handleNewline(String beforeText, String afterText, int tabSize) {
+	
+	@Override
+	public void destroy () {
+		analyzer = null;
+		completer = null;
+	}
+	
+	class BraceHandler implements NewlineHandler {
+		
+		@Override
+		public boolean matchesRequirement (String beforeText, String afterText) {
+			return beforeText.endsWith("{") && afterText.startsWith("}");
+		}
+		
+		@Override
+        public NewlineHandleResult handleNewline(String beforeText, String afterText, int tabSize) {
             int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
             int advanceBefore = getIndentAdvance(beforeText);
             int advanceAfter = getIndentAdvance(afterText);
@@ -133,7 +158,7 @@ public class JavaLanguage extends BaseLanguage {
                 .append('\n')
                 .append(text = TextUtils.createIndent(count + advanceAfter, tabSize, useTab()));
             int shiftLeft = text.length() + 1;
-            return new HandleResult(sb, shiftLeft);
+            return new NewlineHandleResult (sb, shiftLeft);
         }
     }
     

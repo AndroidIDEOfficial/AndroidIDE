@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~    sora-editor - the awesome code editor for Android
+  ~    https://github.com/Rosemoe/sora-editor
+  ~    Copyright (C) 2020-2022  Rosemoe
+  ~
+  ~     This library is free software; you can redistribute it and/or
+  ~     modify it under the terms of the GNU Lesser General Public
+  ~     License as published by the Free Software Foundation; either
+  ~     version 2.1 of the License, or (at your option) any later version.
+  ~
+  ~     This library is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  ~     Lesser General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU Lesser General Public
+  ~     License along with this library; if not, write to the Free Software
+  ~     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+  ~     USA
+  ~
+  ~     Please contact Rosemoe by email 2073412493@qq.com if you need
+  ~     additional information or have any questions
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20"
+    android:tint="@android:color/tertiary_text_light">
+  <path
+      android:fillColor="@android:color/white"
+      android:pathData="M4.5,16.5h8.75c0.41,0 0.75,0.34 0.75,0.75l0,0c0,0.41 -0.34,0.75 -0.75,0.75H4.5C3.67,18 3,17.33 3,16.5V5.75C3,5.34 3.34,5 3.75,5h0C4.16,5 4.5,5.34 4.5,5.75V16.5zM17,3.5v10c0,0.83 -0.67,1.5 -1.5,1.5h-8C6.67,15 6,14.33 6,13.5v-10C6,2.67 6.67,2 7.5,2h8C16.33,2 17,2.67 17,3.5zM15.5,3.5h-8v10h8V3.5z"/>
+</vector>

@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ANTLRGenerationPreferences">
+    <option name="perGrammarGenerationSettings">
+      <list>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/lexers/src/main/java/com/itsaky/androidide/lexers/xml/XMLParser.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="D:\Projects\AndroidStudioProjects\AndroidIDE\lexers\src\main\java" />
+          <option name="libDir" value="" />
+          <option name="encoding" value="" />
+          <option name="pkg" value="" />
+          <option name="language" value="Java" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+      </list>
+    </option>
+  </component>
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
@@ -24,6 +40,7 @@
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/fragment_editor.xml" value="0.20512820512820512" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/fragment_non_editable_editor.xml" value="0.20512820512820512" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_about_items.xml" value="0.20512820512820512" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_code_editor.xml" value="0.20185185185185187" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_completion_item.xml" value="0.23854166666666668" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_crash_report.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_diagnostic_info.xml" value="0.20512820512820512" />

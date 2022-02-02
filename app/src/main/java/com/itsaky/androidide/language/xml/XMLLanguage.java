@@ -17,27 +17,37 @@
  */
 package com.itsaky.androidide.language.xml;
 
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.BaseLanguage;
 import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.views.editor.IDEEditor;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
 import java.io.StringReader;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
-import io.github.rosemoe.editor.interfaces.AutoCompleteProvider;
-import io.github.rosemoe.editor.interfaces.CodeAnalyzer;
-import io.github.rosemoe.editor.interfaces.NewlineHandler;
-import io.github.rosemoe.editor.widget.SymbolPairMatch;
+import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
+import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
+import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
+import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.ContentReference;
+import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class XMLLanguage extends BaseLanguage {
 
-	private final XMLAnalyzer analyzer;
-	private final AutoCompleteProvider completer;
+	private XMLAnalyzer analyzer;
+	private final CommonCompletionProvider completer;
 	private final NewlineHandler[] newlineHandlers;
 	
 	private static final Logger LOG = Logger.instance ("XMLLanguage");
@@ -47,25 +57,13 @@ public class XMLLanguage extends BaseLanguage {
 		this.analyzer = new XMLAnalyzer();
 		this.newlineHandlers = new NewlineHandler[0];
 	}
-    
-	@Override
-	public CodeAnalyzer getAnalyzer() {
-		return analyzer;
-	}
-
-	@Override
-	public AutoCompleteProvider getAutoCompleteProvider() {
-		return completer;
-	}
-
-	@Override
+	
 	public boolean isAutoCompleteChar(char ch) {
 		return JavaCharacter.isJavaIdentifierPart(ch)
         || ch == '<'
         || ch == '/';
 	}
-
-	@Override
+	
 	public int getIndentAdvance(String content) {
 		try {
 			XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(content)));
@@ -99,7 +97,35 @@ public class XMLLanguage extends BaseLanguage {
 	public SymbolPairMatch getSymbolPairs() {
 		return new SymbolPairMatch.DefaultSymbolPairs();
 	}
-
+	
+	@NonNull
+	@Override
+	public AnalyzeManager getAnalyzeManager () {
+		return analyzer;
+	}
+	
+	@Override
+	public int getInterruptionLevel () {
+		return INTERRUPTION_LEVEL_STRONG;
+	}
+	
+	@Override
+	public void requireAutoComplete (@NonNull ContentReference content, @NonNull CharPosition position, @NonNull CompletionPublisher publisher, @NonNull Bundle extraArguments) throws CompletionCancelledException {
+		if (!extraArguments.containsKey (IDEEditor.KEY_FILE)) {
+			return;
+		}
+		
+		final var file = Paths.get (extraArguments.getString (IDEEditor.KEY_FILE));
+		publisher.setUpdateThreshold (0);
+		publisher.addItems (new ArrayList<> (completer.complete (content, file, position)));
+	}
+	
+	@Override
+	public int getIndentAdvance (@NonNull ContentReference content, int line, int column) {
+		final var text = content.getLine (line).substring (0, column);
+		return getIndentAdvance (text);
+	}
+	
 	@Override
 	public boolean useTab() {
 		return false;
@@ -114,4 +140,9 @@ public class XMLLanguage extends BaseLanguage {
     public NewlineHandler[] getNewlineHandlers() {
         return newlineHandlers;
     }
+	
+	@Override
+	public void destroy () {
+		analyzer = null;
+	}
 }

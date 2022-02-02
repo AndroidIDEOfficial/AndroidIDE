@@ -21,9 +21,9 @@ package com.itsaky.androidide.language;
 
 import com.itsaky.androidide.app.StudioApp;
 
-import io.github.rosemoe.editor.interfaces.EditorLanguage;
+import io.github.rosemoe.sora.lang.Language;
 
-public abstract class BaseLanguage implements EditorLanguage {
+public abstract class BaseLanguage implements Language {
     
     @Override
     public boolean useTab() {
