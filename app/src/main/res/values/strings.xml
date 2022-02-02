@@ -156,6 +156,8 @@
     <string name="template_navigation_drawer">Navigation drawer project</string>
     <string name="template_kotlin_basic">Kotlin Basic Project</string>
     <string name="template_description_kotlin_basic">Kotlin project with Appcompat Toolbar and a Floating Action Button</string>
+    <string name="template_libgdx">LibGDX Game</string>
+    <string name="template_description_libgdx">LibGDX game project set up to render an image as an example.</string>
     
     <!-- Files -->
     <string name="save">Save</string>
