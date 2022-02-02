@@ -49,7 +49,13 @@ public class ProjectWriter {
 		"app/src/main/AndroidManifest.xml",
 		"app/src/main/res/values/strings.xml",
 		"app/src/main/java/$package_name/MainActivity.java",
-		"app/src/main/java/$package_name/MainActivity.kt"
+		"app/src/main/java/$package_name/MainActivity.kt",
+		"app/build.gradle",
+		"app/src/main/java/$package_name/AndroidLauncher.java",
+		"app/res/values/strings.xml",
+		"core/build.gradle",
+		"core/src/main/java/$package_name/GameSuperClass.java",
+		"app/AndroidManifest.xml"
 	};
 	
 	private static final String JAVA_PATH_REGEX = "/.*/src/.*/java|kt";
