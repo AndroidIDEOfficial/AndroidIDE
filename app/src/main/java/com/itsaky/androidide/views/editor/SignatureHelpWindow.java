@@ -85,9 +85,10 @@ public class SignatureHelpWindow extends SimpleTextWindow {
             LOG.debug ("activeSignature:",activeSignature, "activeParameter:", activeParameter);
             return null;
         }
-        
-        if (activeSignature >= signatures.size ()) {
-            LOG.debug ("Active signature is invalid", "Size is " + signatures.size ());
+    
+        final var count = signatures.size ();
+        if (activeSignature >= count) {
+            LOG.debug ("Active signature is invalid", "Size is " + count);
             return null;
         }
         
@@ -100,10 +101,10 @@ public class SignatureHelpWindow extends SimpleTextWindow {
             return remove;
         });
         
-        for (var i = 0; i<signatures.size (); i++) {
+        for (var i = 0; i< count; i++) {
             final var info = signatures.get (i);
             formatSignature (info, activeParameter, i == activeSignature, sb);
-            if (i != signatures.size () - 1) {
+            if (i != count - 1) {
                 sb.append ('\n');
             }
         }
@@ -123,9 +124,6 @@ public class SignatureHelpWindow extends SimpleTextWindow {
         final var currentIndex = Math.max (0, result.length () - 1);
         String name = signature.getLabel();
         name = name.substring(0, name.indexOf("("));
-    
-        // append spaces at start and end of this line, instead of using extra padding
-        result.insert (currentIndex, "   ");
         
         result.append(name, new ForegroundColorSpan (0xffffffff), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         result.append("(", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -143,8 +141,7 @@ public class SignatureHelpWindow extends SimpleTextWindow {
             }
         }
         result.append(")", new ForegroundColorSpan(0xff4fc3f7), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
-    
-        result.append ("   ");
+        
         if (isCurrentSignature) {
             // set background span to little light color than the text's background
             result.setSpan (new BackgroundColorSpan (0xff373737), currentIndex, result.length (), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);

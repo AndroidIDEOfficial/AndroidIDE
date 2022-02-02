@@ -52,8 +52,8 @@ public abstract class SimpleTextWindow extends EditorPopupWindow {
         super (editor, getFeatureFlags ());
     
         final var context = editor.getContext ();
-        final var dp1 = SizeUtils.dp2px (1);
-        final var dp4 = dp1 * 4;
+        final var dp4 = SizeUtils.dp2px (4);
+        final var dp8 = dp4 * 2;
         
         this.text = new TextView (context);
         this.text.setBackground (createBackground ());
@@ -61,7 +61,7 @@ public abstract class SimpleTextWindow extends EditorPopupWindow {
         this.text.setTextSize (TypedValue.COMPLEX_UNIT_SP, 14);
         this.text.setClickable (false);
         this.text.setFocusable (false);
-        this.text.setPaddingRelative (dp1, dp4, dp1, dp4);
+        this.text.setPaddingRelative (dp8, dp4, dp8, dp4);
         this.text.setLayoutParams (new ViewGroup.LayoutParams (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     
         setContentView (this.text);

@@ -20,7 +20,6 @@ package com.itsaky.androidide.views.editor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.lsp.models.DiagnosticItem;
 
 /**
@@ -40,12 +39,6 @@ public class DiagnosticWindow extends SimpleTextWindow {
      */
     public DiagnosticWindow (@NonNull IDEEditor editor) {
         super (editor);
-    
-        final var context = editor.getContext ();
-        final var dp4 = SizeUtils.dp2px (4);
-        final var dp8 = dp4 * 2;
-        
-        this.text.setPaddingRelative (dp8, dp4, dp8, dp4);
     }
     
     /**
