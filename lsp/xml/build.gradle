@@ -42,11 +42,11 @@ android {
 }
 
 dependencies {
+    implementation common.editor
     implementation common.utilcode
 
     implementation project(':lsp:api')
 
-    compileOnly project(':editor')
     compileOnly project(':lexers')
     compileOnly project(':common')
     compileOnly project(':sdk-info')

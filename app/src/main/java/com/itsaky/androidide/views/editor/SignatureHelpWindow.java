@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.views.editor;
 
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.SpannableStringBuilder;

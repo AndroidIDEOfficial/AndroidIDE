@@ -38,12 +38,11 @@ android {
     }
 }
 dependencies {
+    implementation common.editor
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    // LSP CompletionItem extends Editor's completion item
     compileOnly project(':common')
-    compileOnly project(':editor')
 }
 repositories {
     mavenCentral()
