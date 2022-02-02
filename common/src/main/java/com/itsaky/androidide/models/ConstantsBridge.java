@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  * 
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.androidide.models;
-
-import java.util.List;
 
 public class ConstantsBridge {
     
 	public static boolean EDITOR_PREF_SIZE_CHANGED = false;
+	public static boolean EDITOR_PREF_LIGATURES_CHANGED = false;
 	public static boolean EDITOR_PREF_FLAGS_CHANGED = false;
     public static boolean EDITOR_PREF_DRAW_HEX_CHANGED = false;
     public static boolean CLASS_LOAD_SUCCESS = true;

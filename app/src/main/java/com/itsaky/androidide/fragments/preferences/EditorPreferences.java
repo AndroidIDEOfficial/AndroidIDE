@@ -17,6 +17,19 @@
 **************************************************************************************/
 package com.itsaky.androidide.fragments.preferences;
 
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_AUTO_SAVE;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_DRAW_HEX;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_LINE_BREAK;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_EMPTY_LINE;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_INNER;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_LEADING;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_WS_TRAILING;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_LIGATURES;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_SIZE;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_PRINTABLE_CHARS;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_TAB_SIZE;
+import static com.itsaky.androidide.models.PrefBasedJavaServerSettings.KEY_JAVA_PREF_MATCH_LOWER;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 
@@ -24,6 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
@@ -31,9 +45,6 @@ import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.models.PrefBasedJavaServerSettings;
 import com.itsaky.androidide.utils.DialogUtils;
-
-import static com.itsaky.androidide.managers.PreferenceManager.*;
-import static com.itsaky.androidide.models.PrefBasedJavaServerSettings.*;
 
 public class EditorPreferences extends BasePreferenceFragment {
     
@@ -53,6 +64,7 @@ public class EditorPreferences extends BasePreferenceFragment {
 		final var nonPrintable = new Preference(getContext());
         final var tabSize = new Preference(getContext());
 		final var drawHex = new SwitchPreference(getContext());
+		final var fontLigatures = new SwitchPreference (getContext ());
 		final var autoSave = new SwitchPreference (getContext ());
 		
 		final var javaMatchLower = new SwitchPreference (getContext ());
@@ -79,6 +91,11 @@ public class EditorPreferences extends BasePreferenceFragment {
 		drawHex.setKey(KEY_EDITOR_DRAW_HEX);
 		drawHex.setTitle(R.string.idepref_editor_drawhexcolors_title);
 		drawHex.setSummary(R.string.idepref_editor_drawhexcolors_summary);
+	
+		fontLigatures.setIcon(R.drawable.ic_font_ligatures);
+		fontLigatures.setKey(KEY_EDITOR_FONT_LIGATURES);
+		fontLigatures.setTitle(getString(R.string.idepref_editor_ligatures_title));
+		fontLigatures.setSummary(getString(R.string.idepref_editor_ligatures_summary));
 		
 		autoSave.setIcon (R.drawable.ic_save);
 		autoSave.setKey (KEY_EDITOR_AUTO_SAVE);
@@ -92,6 +109,7 @@ public class EditorPreferences extends BasePreferenceFragment {
 		
 		commonCategory.setTitle (getString(R.string.idepref_editor_category_common));
 		commonCategory.addPreference(fontSize);
+		commonCategory.addPreference (fontLigatures);
 		commonCategory.addPreference(nonPrintable);
 		commonCategory.addPreference(tabSize);
 		commonCategory.addPreference(drawHex);
@@ -103,12 +121,14 @@ public class EditorPreferences extends BasePreferenceFragment {
 		setPreferenceScreen(screen);
 		
 		fontSize.setOnPreferenceClickListener(this::onPreferenceClick);
+		fontLigatures.setOnPreferenceChangeListener (this::onPreferenceChange);
 		nonPrintable.setOnPreferenceClickListener(this::onPreferenceClick);
         tabSize.setOnPreferenceClickListener(this::onPreferenceClick);
 		drawHex.setOnPreferenceChangeListener(this::onPreferenceChange);
 		autoSave.setOnPreferenceChangeListener (this::onPreferenceChange);
 		javaMatchLower.setOnPreferenceChangeListener (this::onPreferenceChange);
 		
+		fontLigatures.setChecked (getPrefManager ().getBoolean (KEY_EDITOR_FONT_LIGATURES, true));
 		drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
 		autoSave.setChecked (getPrefManager ().getBoolean (KEY_EDITOR_AUTO_SAVE, false));
 		javaMatchLower.setChecked (getPrefManager ().getBoolean (KEY_JAVA_PREF_MATCH_LOWER, false));
@@ -120,6 +140,9 @@ public class EditorPreferences extends BasePreferenceFragment {
 		switch (preference.getKey ()) {
 			case KEY_EDITOR_DRAW_HEX:
 				ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = true;
+				break;
+			case KEY_EDITOR_FONT_LIGATURES:
+				ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED = true;
 				break;
 			case KEY_JAVA_PREF_MATCH_LOWER:
 				final var javaServer = StudioApp.getInstance ().getJavaLanguageServer ();

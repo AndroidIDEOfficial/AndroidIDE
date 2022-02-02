@@ -166,7 +166,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         this.configuration = (JavaServerConfiguration) newConfiguration;
         LOG.info ("Java language server configuration changed.");
         LOG.info (this.configuration.getClassPaths ().size (), "class paths were provided in the configuration");
-        
         // Compiler must be recreated on a configuration change
         this.createCompiler = true;
     }

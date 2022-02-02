@@ -364,5 +364,7 @@
     <string name="idepref_editor_autoSave_title">Save before closing files</string>
     <string name="idepref_editor_autoSave_summary">Save files before closing them. This is an EXPERIMENTAL feature. You are expected to save the files yourself.</string>
     <string name="idepref_java_matchLower_summary">If enabled, then typing a lower case or upper case letters will suggest class names as well as scope members.</string>
+    <string name="idepref_editor_ligatures_title">Font ligatures</string>
+    <string name="idepref_editor_ligatures_summary">Enable/disable font ligatures</string>
 
 </resources>

@@ -57,7 +57,6 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
-import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.models.Range;
 
@@ -289,6 +288,7 @@ public class CodeEditorView extends FrameLayout {
     
     private void configureEditorIfNeeded () {
         boolean sizeChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_SIZE_CHANGED;
+        boolean ligaturesChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED;
         boolean flagsChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED;
         boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED;
         final PreferenceManager prefs = StudioApp.getInstance ().getPrefManager ();
@@ -301,6 +301,11 @@ public class CodeEditorView extends FrameLayout {
             
             binding.editor.setTextSize (textSize);
             ConstantsBridge.EDITOR_PREF_SIZE_CHANGED = false;
+        }
+        
+        if (ligaturesChanged) {
+            var enabled = prefs.getBoolean (PreferenceManager.KEY_EDITOR_FONT_LIGATURES, true);
+            binding.editor.setLigatureEnabled (enabled);
         }
         
         if (flagsChanged) {
