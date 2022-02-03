@@ -121,6 +121,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         capabilities.setReferencesAvailable (true);
         capabilities.setSignatureHelpAvailable (true);
         capabilities.setCodeAnalysisAvailable (true);
+        capabilities.setSmartSelectionsEnabled (true);
         
         initialized = true;
     }

@@ -5,25 +5,32 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 package com.itsaky.androidide.views.editor;
 
+import static com.itsaky.androidide.R.color.secondaryColor;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
@@ -53,6 +60,7 @@ import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
@@ -70,29 +78,28 @@ public class IDEEditor extends CodeEditor {
     private DiagnosticWindow mDiagnosticWindow;
     
     @SuppressWarnings("FieldCanBeLocal,unused")
-    private final EditorTextActionMode mActionMode;
+    private ITextActionPresenter mTextActionPresenter;
     
     public static final String KEY_FILE = "editor_file";
     private static final Logger LOG = Logger.instance ("IDEEditor");
     
     public IDEEditor (Context context) {
-        this(context, null);
+        this (context, null);
     }
     
     public IDEEditor (Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this (context, attrs, 0);
     }
     
     public IDEEditor (Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+        this (context, attrs, defStyleAttr, 0);
     }
     
     public IDEEditor (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        
-        this.mActionMode = new EditorTextActionMode (this);
+        super (context, attrs, defStyleAttr, defStyleRes);
         
         setColorScheme (new SchemeAndroidIDE ());
+        setTextActionPresenter (new EditorTextActionMode ());
         subscribeEvent (SelectionChangeEvent.class, (event, unsubscribe) -> handleSelectionChange (event));
         subscribeEvent (ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange (event));
         
@@ -105,6 +112,7 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Set selection to the given range.
+     *
      * @param range The range to select.
      */
     public void setSelection (@NonNull Range range) {
@@ -116,6 +124,7 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Set the selection of this editor to the given position.
+     *
      * @param position The position to select.
      */
     public void setSelection (@NonNull Position position) {
@@ -124,11 +133,12 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Set the file that this editor is currently editing.
+     *
      * @param file The file to set.
      */
     public void setFile (File file) {
         this.file = file;
-    
+        
         if (file != null && mLanguageServer != null) {
             final var text = getText ().toString ();
             final var event = new DocumentOpenEvent (file.toPath (), text, mFileVersion = 0);
@@ -144,6 +154,7 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Get the file that this editor is currently editing.
+     *
      * @return The file instance.
      */
     public File getFile () {
@@ -167,6 +178,7 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Append the given text at the end of the editor's content.
+     *
      * @param text The text to append.
      * @return The line at which the text was appended.
      */
@@ -200,7 +212,7 @@ public class IDEEditor extends CodeEditor {
         if (getFile () == null) {
             return;
         }
-    
+        
         final var text = getText ();
         final var name = getFile ().getName ();
         int line = getCursor ().getLeftLine ();
@@ -270,7 +282,7 @@ public class IDEEditor extends CodeEditor {
      * the range specified in the response will be selected.
      * </p>
      */
-    @SuppressWarnings ("deprecation")
+    @SuppressWarnings("deprecation")
     public void findDefinition () {
         if (getFile () == null) {
             return;
@@ -334,9 +346,10 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Notify the user that no definitions can be found.
+     *
      * @param pd The {@link ProgressDialog} that was shown when requesting the definitions.
      */
-    @SuppressWarnings ("deprecation")
+    @SuppressWarnings("deprecation")
     private void showDefinitionNotFound (final ProgressDialog pd) {
         ThreadUtils.runOnUiThread (() -> {
             StudioApp.getInstance ().toast (R.string.msg_no_definition, Toaster.Type.ERROR);
@@ -347,7 +360,7 @@ public class IDEEditor extends CodeEditor {
     /**
      * If any language server instance is set,
      * finds the references to of the token at the current cursor position.
-     *
+     * <p>
      * If the server returns a valid response, that response is forwarded
      * to the {@link IDELanguageClientImpl}.
      */
@@ -356,8 +369,7 @@ public class IDEEditor extends CodeEditor {
             return;
         }
         
-        @SuppressWarnings ("deprecation")
-        final ProgressDialog pd = ProgressDialog.show (getContext (), null, getContext ().getString (R.string.msg_finding_references));
+        @SuppressWarnings("deprecation") final ProgressDialog pd = ProgressDialog.show (getContext (), null, getContext ().getString (R.string.msg_finding_references));
         
         try {
             final CompletableFuture<ReferenceResult> future = CompletableFuture.supplyAsync (() -> {
@@ -408,6 +420,7 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Notify the user that no references were found for the selected token.
+     *
      * @param pd The {@link ProgressDialog} that was shown when requesting references.
      */
     @SuppressWarnings("deprecation")
@@ -454,6 +467,7 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Dismisses the given dialog on the UI thread.
+     *
      * @param dialog The dialog to dismiss.
      */
     private void dismissOnUiThread (@NonNull final Dialog dialog) {
@@ -497,6 +511,7 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Requests code actions for the given diagnostics to the language server.
+     *
      * @param diagnostics The diagnostics to request code actions for.
      * @return The {@link CodeActionResult} from the server.
      */
@@ -550,6 +565,7 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Get the cursor's position in the form of {@link Position}.
+     *
      * @return The {@link Position} of the cursor.
      */
     public Position getCursorAsLSPPosition () {
@@ -558,6 +574,7 @@ public class IDEEditor extends CodeEditor {
     
     /**
      * Get the cursor's selection range in the form of {@link Range}.
+     *
      * @return The {@link Range} of the cursor.
      */
     public Range getCursorRange () {
@@ -565,6 +582,206 @@ public class IDEEditor extends CodeEditor {
         final var start = new Position (cursor.getLeftLine (), cursor.getLeftColumn ());
         final var end = new Position (cursor.getRightLine (), cursor.getRightColumn ());
         return new Range (start, end);
+    }
+    
+    /**
+     * Set the text action presenter of this editor.
+     *
+     * @param actionPresenter The presenter to set. Must not be <code>null</code>.
+     */
+    public void setTextActionPresenter (@NonNull ITextActionPresenter actionPresenter) {
+        Objects.requireNonNull (actionPresenter, "Cannot set text action presenter to null");
+        this.mTextActionPresenter = actionPresenter;
+        
+        actionPresenter.bindEditor (this);
+        registerActionsTo (actionPresenter);
+    }
+    
+    /**
+     * Get the text action presenter attached with this editor.
+     *
+     * @return The attached text action presenter.
+     */
+    public ITextActionPresenter getTextActionPresenter () {
+        return mTextActionPresenter;
+    }
+    
+    /**
+     * Register the editor's actions to the given action presenter.
+     *
+     * @param actionPresenter The action presenter to register actions to.
+     */
+    public void registerActionsTo (@NonNull ITextActionPresenter actionPresenter) {
+        Objects.requireNonNull (actionPresenter, "Cannot register actions to null text action presenter");
+        
+        var index = -1;
+        
+        TypedArray array = getContext ().getTheme ().obtainStyledAttributes (new int[]{
+                android.R.attr.actionModeSelectAllDrawable,
+                android.R.attr.actionModeCutDrawable,
+                android.R.attr.actionModeCopyDrawable,
+                android.R.attr.actionModePasteDrawable,
+        });
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_expand_selection),
+                        R.string.action_expand_selection,
+                        TextAction.EXPAND_SELECTION,
+                        index++
+                )
+        );
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        array.getDrawable (0),
+                        android.R.string.selectAll,
+                        TextAction.SELECT_ALL,
+                        index++
+                )
+        );
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        array.getDrawable (1),
+                        android.R.string.cut,
+                        TextAction.CUT,
+                        index++
+                )
+        );
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        array.getDrawable (2),
+                        android.R.string.copy,
+                        TextAction.COPY,
+                        index++
+                )
+        );
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        array.getDrawable (3),
+                        android.R.string.paste,
+                        TextAction.PASTE,
+                        index++
+                )
+        );
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_goto_definition),
+                        R.string.menu_navigate_definition,
+                        TextAction.GOTO_DEFINITION,
+                        index++
+                )
+        );
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_find_references),
+                        R.string.menu_navigate_references,
+                        TextAction.FIND_REFERENCES,
+                        index++
+                )
+        );
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_comment_line),
+                        R.string.menu_comment_line,
+                        TextAction.COMMENT_LINE,
+                        index++
+                )
+        );
+        
+        //noinspection UnusedAssignment
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_uncomment_line),
+                        R.string.menu_uncomment_line,
+                        TextAction.UNCOMMENT_LINE,
+                        index++
+                )
+        );
+        
+        
+        array.recycle ();
+    }
+    
+    /**
+     * Called by text action presenters to check if the action with the given ID should be shown or not.
+     *
+     * @param actionId The action ID to check.
+     * @return <code>true</code> if the action should be shown, <code>false</code> otherwise.
+     */
+    public boolean shouldShowTextAction (int actionId) {
+        final var capabilities = mLanguageServer != null ? mLanguageServer.getCapabilities () : null;
+        final var notNull = capabilities != null;
+        final var expand = notNull && capabilities.getSmartSelectionsEnabled ();
+        final var definitions = notNull && capabilities.getDefinitionsAvailable ();
+        final var references = notNull && capabilities.getReferencesAvailable ();
+        final var commentUncomment = getFile () != null
+                && (getFile ().getName ().endsWith (".java")
+                || getFile ().getName ().endsWith (".gradle")
+                || getFile ().getName ().endsWith (".xml"));
+        switch (actionId) {
+            case TextAction.CUT:
+            case TextAction.PASTE:
+                return isEditable ();
+            case TextAction.GOTO_DEFINITION:
+                return definitions;
+            case TextAction.EXPAND_SELECTION:
+                return expand;
+            case TextAction.FIND_REFERENCES:
+                return references;
+            case TextAction.COMMENT_LINE:
+            case TextAction.UNCOMMENT_LINE:
+                return commentUncomment;
+        }
+        
+        return true;
+    }
+    
+    public void performTextAction (@NonNull TextAction action) {
+        Objects.requireNonNull (action, "Cannot perform null text action");
+        
+        switch (action.id) {
+            case TextAction.SELECT_ALL:
+                selectAll ();
+                break;
+            case TextAction.CUT:
+                cutText ();
+                break;
+            case TextAction.COPY:
+                copyText ();
+                break;
+            case TextAction.PASTE:
+                pasteText ();
+                break;
+            case TextAction.GOTO_DEFINITION:
+                findDefinition ();
+                break;
+            case TextAction.FIND_REFERENCES:
+                findReferences ();
+                break;
+            case TextAction.COMMENT_LINE:
+                commentLine ();
+                break;
+            case TextAction.UNCOMMENT_LINE:
+                uncommentLine ();
+                break;
+            case TextAction.EXPAND_SELECTION:
+                expandSelection ();
+                break;
+        }
+    }
+    
+    private Drawable createTextActionDrawable (int icon) {
+        final Drawable d = ContextCompat.getDrawable (getContext (), icon);
+        if (d != null) {
+            d.setColorFilter (ContextCompat.getColor (getContext (), secondaryColor), PorterDuff.Mode.SRC_ATOP);
+        }
+        return d;
     }
     
     private void handleSelectionChange (SelectionChangeEvent event) {
@@ -590,7 +807,9 @@ public class IDEEditor extends CodeEditor {
         }
         
         final var pos = new Position (line, column);
-        int left = 0; int right = diagnostics.size () - 1; int mid;
+        int left = 0;
+        int right = diagnostics.size () - 1;
+        int mid;
         while (left < right) {
             mid = (left + right) / 2;
             var d = diagnostics.get (mid);
@@ -611,6 +830,7 @@ public class IDEEditor extends CodeEditor {
     /**
      * Notify the language server that the content of this file
      * has been changed.
+     *
      * @param event
      */
     private void handleContentChange (ContentChangeEvent event) {
@@ -669,5 +889,100 @@ public class IDEEditor extends CodeEditor {
         }
         
         return mDiagnosticWindow;
+    }
+    
+    /**
+     * A text action presenter presents text actions (cut, copy, paste, etc). <br>
+     * <p>
+     * <strong>The presenter handles its visibility itself.</strong>
+     * </p>
+     *
+     * @author Akash Yadav
+     */
+    public interface ITextActionPresenter {
+        
+        /**
+         * Bind the action presenter with the given editor instance.
+         *
+         * @param editor
+         */
+        void bindEditor (@NonNull IDEEditor editor);
+        
+        /**
+         * Register the text action with this presenter.
+         *
+         * @param action The action to register.
+         */
+        void registerAction (@NonNull TextAction action);
+    }
+    
+    /**
+     * A model class for text actions.
+     *
+     * @author Akash Yadav
+     */
+    public static class TextAction implements Comparable<TextAction> {
+        
+        public static final int EXPAND_SELECTION = 4;
+        public static final int GOTO_DEFINITION = 5;
+        public static final int FIND_REFERENCES = 6;
+        public static final int COMMENT_LINE = 7;
+        public static final int UNCOMMENT_LINE = 8;
+        
+        // common action IDs
+        public static final int PASTE = 3;
+        public static final int COPY = 2;
+        public static final int CUT = 1;
+        public static final int SELECT_ALL = 0;
+        
+        /**
+         * The drawable resource id for this text action.
+         */
+        public Drawable icon;
+        
+        /**
+         * The string resource id for this text action.
+         */
+        @StringRes
+        public int titleId;
+        
+        /**
+         * The ID of this text action;
+         */
+        public final int id;
+        
+        /**
+         * The index at which this action should be placed.
+         */
+        public final int index;
+        
+        public TextAction (Drawable icon, int titleId, int id, int index) {
+            this.icon = icon;
+            this.titleId = titleId;
+            this.id = id;
+            this.index = index;
+        }
+        
+        @Override
+        public boolean equals (Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof TextAction)) {
+                return false;
+            }
+            TextAction that = (TextAction) o;
+            return id == that.id;
+        }
+        
+        @Override
+        public int hashCode () {
+            return Objects.hash (id);
+        }
+        
+        @Override
+        public int compareTo (TextAction o) {
+            return Integer.compare (this.index, o.index);
+        }
     }
 }

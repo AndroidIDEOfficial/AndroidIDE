@@ -14,22 +14,20 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.androidide.views.editor;
 
 import android.annotation.SuppressLint;
-import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.core.content.ContextCompat;
 
-import com.itsaky.androidide.R;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import io.github.rosemoe.sora.event.ClickEvent;
 import io.github.rosemoe.sora.event.LongPressEvent;
@@ -41,12 +39,17 @@ import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
  *
  * @author Akash Yadav
  */
-public class EditorTextActionMode {
+public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
     
-    private final IDEEditor editor;
+    private IDEEditor editor;
     private ActionMode actionMode;
     
-    public EditorTextActionMode (IDEEditor editor) {
+    private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<> ();
+    
+    @Override
+    public void bindEditor (@NonNull IDEEditor editor) {
+        Objects.requireNonNull (editor, "Cannot bind with null editor");
+        
         this.editor = editor;
         
         //  Disable default text action window
@@ -56,7 +59,7 @@ public class EditorTextActionMode {
             final var left = event.getLeft ();
             final var right = event.getRight ();
             if (left.index != right.index) {
-                showAction();
+                showAction ();
             }
         }));
         
@@ -69,6 +72,19 @@ public class EditorTextActionMode {
                 showAction ();
             }
         });
+        
+        clearRegisteredActions ();
+    }
+    
+    @Override
+    public void registerAction (@NonNull IDEEditor.TextAction action) {
+        Objects.requireNonNull (this.editor, "No editor attached!");
+        
+        this.registeredActions.add (action);
+    }
+    
+    public void clearRegisteredActions () {
+        this.registeredActions.clear ();
     }
     
     private void showAction () {
@@ -81,152 +97,74 @@ public class EditorTextActionMode {
             @SuppressLint("RestrictedApi")
             @Override
             public boolean onCreateActionMode (ActionMode mode, Menu menu) {
+                if (editor == null) {
+                    return false;
+                }
+                
                 if (menu instanceof MenuBuilder) {
                     MenuBuilder builder = (MenuBuilder) menu;
-                    builder.setOptionalIconsVisible(true);
+                    builder.setOptionalIconsVisible (true);
                 }
-                mode.setTitle(android.R.string.selectTextMode);
-                TypedArray array = editor.getContext().getTheme().obtainStyledAttributes(new int[]{
-                        android.R.attr.actionModeSelectAllDrawable,
-                        android.R.attr.actionModeCutDrawable,
-                        android.R.attr.actionModeCopyDrawable,
-                        android.R.attr.actionModePasteDrawable,
-                });
-    
-                menu.add (0, 8, 0, R.string.action_expand_selection)
-                        .setShowAsActionFlags (1)
-                        .setIcon (createDrawable (R.drawable.ic_expand_selection));
-    
-                menu.add(0, 0, 0, editor.getContext().getString(android.R.string.selectAll))
-                        .setShowAsActionFlags(1)
-                        .setIcon(array.getDrawable(0));
-    
-                if (editor.isEditable()) {
-                    menu.add(0, 1, 0, editor.getContext().getString(android.R.string.cut))
-                            .setShowAsActionFlags(1)
-                            .setIcon(array.getDrawable(1));
+                
+                mode.setTitle (android.R.string.selectTextMode);
+                
+                for (var action : registeredActions) {
+                    if (editor.shouldShowTextAction (action.id)) {
+                        menu.add (0, action.id, 0, action.titleId)
+                                .setIcon (action.icon)
+                                .setShowAsActionFlags (MenuItem.SHOW_AS_ACTION_IF_ROOM);
+                    }
                 }
-    
-                menu.add(0, 2, 0, editor.getContext().getString(android.R.string.copy))
-                        .setShowAsActionFlags(1)
-                        .setIcon(array.getDrawable(2));
-    
-                if (editor.isEditable()) {
-                    menu.add(0, 3, 0, editor.getContext().getString(android.R.string.paste))
-                            .setShowAsActionFlags(1)
-                            .setIcon(array.getDrawable(3));
-                }
-    
-                menu.add(0, 4, 0, editor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_definition))
-                        .setShowAsActionFlags(1)
-                        .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_goto_definition));
-    
-                menu.add(0, 5, 0, editor.getContext().getString(com.itsaky.androidide.R.string.menu_navigate_references))
-                        .setShowAsActionFlags(1)
-                        .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_find_references));
-    
-                menu.add(0, 6, 0, editor.getContext().getString(com.itsaky.androidide.R.string.menu_comment_line))
-                        .setShowAsActionFlags(1)
-                        .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_comment_line));
-    
-                menu.add(0, 7, 0, editor.getContext().getString(com.itsaky.androidide.R.string.menu_uncomment_line))
-                        .setShowAsActionFlags(1)
-                        .setIcon(createDrawable(com.itsaky.androidide.R.drawable.ic_uncomment_line));
-    
-                array.recycle();
+                
                 return true;
             }
-    
-            private Drawable createDrawable(int icon) {
-                final Drawable d = ContextCompat.getDrawable(editor.getContext(), icon);
-                if (d != null) {
-                    d.setColorFilter(ContextCompat.getColor(editor.getContext(), com.itsaky.androidide.R.color.secondaryColor), PorterDuff.Mode.SRC_ATOP);
-                }
-                return d;
-            }
-    
+            
             @Override
             public boolean onPrepareActionMode (ActionMode mode, Menu menu) {
-                if (editor.getFile() == null) return false;
-    
-                final String name = editor.getFile().getName();
-                final boolean isJava = name.endsWith(".java") || name.endsWith(".gradle");
-                final boolean isXml = name.endsWith(".xml");
-                final MenuItem def = menu.findItem(4);
-                final MenuItem ref = menu.findItem(5);
-                final MenuItem comment = menu.findItem(6);
-                final MenuItem uncomment = menu.findItem(7);
-    
-                comment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
-                uncomment.setEnabled(isJava || isXml).getIcon().setAlpha(isJava || isXml ? 255 : 76);
-    
-                // These menu items may, or may not be added
-                // So we need to check if its null or not
-                // before we perform any further actions
-                if (def != null) {
-                    def.getIcon().setAlpha(isJava ? 255 : 76);
-                    def.setVisible(isJava);
-                }
-    
-                if (ref != null) {
-                    ref.getIcon().setAlpha(isJava ? 255 : 76);
-                    ref.setVisible(isJava);
-                }
-    
-                return true;
+                return editor != null;
             }
-    
+            
             @Override
             public boolean onActionItemClicked (ActionMode mode, MenuItem item) {
-                switch (item.getItemId()) {
-                    case 0:
-                        editor.selectAll();
-                        break;
-                    case 1:
-                        editor.cutText();
-                        break;
-                    case 2:
-                        editor.copyText();
-                        break;
-                    case 3:
-                        editor.pasteText();
-                        break;
-                    case 4:
-                        editor.findDefinition();
-                        break;
-                    case 5:
-                        editor.findReferences();
-                        break;
-                    case 6:
-                        editor.commentLine();
-                        break;
-                    case 7:
-                        editor.uncommentLine();
-                        break;
-                    case 8 :
-                        editor.expandSelection ();
-                        break;
+                
+                if (editor == null) {
+                    return false;
                 }
-    
+                
                 final var id = item.getItemId ();
-                if (id == 0 || id == 8) {
+                final var optional = registeredActions.stream ()
+                        .filter (a -> a.id == id)
+                        .findFirst ();
+                
+                //noinspection SimplifyOptionalCallChains
+                if (!optional.isPresent ()) {
+                    return false;
+                }
+                
+                final var action = optional.get ();
+                editor.performTextAction (action);
+                
+                if (id == IDEEditor.TextAction.SELECT_ALL || id == IDEEditor.TextAction.EXPAND_SELECTION) {
                     return true;
                 }
-    
+                
                 return exit ();
             }
-    
+            
             @Override
             public void onDestroyActionMode (ActionMode mode) {
                 actionMode = null;
-                editor.setSelection (editor.getCursorRange ().getStart ());
+                
+                if (editor != null) {
+                    editor.setSelection (editor.getCursorRange ().getStart ());
+                }
             }
         });
     }
     
     public boolean exit () {
         if (actionMode != null) {
-            actionMode.finish();
+            actionMode.finish ();
             actionMode = null;
             return true;
         }

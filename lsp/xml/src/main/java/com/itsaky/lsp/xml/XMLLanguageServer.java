@@ -20,9 +20,9 @@ package com.itsaky.lsp.xml;
 import androidx.annotation.NonNull;
 
 import com.itsaky.lsp.api.ICodeActionProvider;
-import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDefinitionProvider;
+import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
@@ -33,9 +33,9 @@ import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.ServerCapabilities;
 import com.itsaky.lsp.util.NoCodeActionsProvider;
-import com.itsaky.lsp.util.NoDiagnosticProvider;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 import com.itsaky.lsp.util.NoDefinitionProvider;
+import com.itsaky.lsp.util.NoDiagnosticProvider;
 import com.itsaky.lsp.util.NoDocumentHandler;
 import com.itsaky.lsp.util.NoReferenceProvider;
 import com.itsaky.lsp.util.NoSelectionProvider;
@@ -90,6 +90,7 @@ public class XMLLanguageServer implements ILanguageServer {
         capabilities.setSignatureHelpAvailable (false);
         capabilities.setReferencesAvailable (false);
         capabilities.setDefinitionsAvailable (false);
+        capabilities.setSmartSelectionsEnabled (false);
         
         initialized = true;
     }

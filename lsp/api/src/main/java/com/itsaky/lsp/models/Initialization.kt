@@ -28,9 +28,11 @@ data class ServerCapabilities
     var definitionsAvailable: Boolean,
     var referencesAvailable: Boolean,
     var signatureHelpAvailable: Boolean,
-    var codeAnalysisAvailable: Boolean
+    var codeAnalysisAvailable: Boolean,
+    var smartSelectionsEnabled: Boolean
 ) {
     constructor() : this(false,
+        false,
         false,
         false,
         false,
