@@ -22,9 +22,9 @@ import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ICodeActionProvider;
-import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDefinitionProvider;
+import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
@@ -47,11 +47,11 @@ import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
 import com.itsaky.lsp.models.InitializeParams;
-import com.itsaky.lsp.models.InitializeResult;
+import com.itsaky.lsp.models.ServerCapabilities;
 import com.itsaky.lsp.util.NoCodeActionsProvider;
-import com.itsaky.lsp.util.NoDiagnosticProvider;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 import com.itsaky.lsp.util.NoDefinitionProvider;
+import com.itsaky.lsp.util.NoDiagnosticProvider;
 import com.itsaky.lsp.util.NoReferenceProvider;
 import com.itsaky.lsp.util.NoSelectionProvider;
 import com.itsaky.lsp.util.NoSignatureHelpProvider;
@@ -69,6 +69,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     private boolean createCompiler;
     
     private static final Logger LOG = Logger.instance ("JavaLanguageServer");
+    private ServerCapabilities capabilities;
     
     public JavaLanguageServer () {
         this.initialized = false;
@@ -104,9 +105,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         );
     }
     
-    @NonNull
     @Override
-    public InitializeResult initialize (@NonNull InitializeParams params) throws AlreadyInitializedException {
+    public void initialize (@NonNull InitializeParams params) throws AlreadyInitializedException {
         
         if (initialized) {
             throw new AlreadyInitializedException ();
@@ -114,17 +114,21 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         
         FileStore.setWorkspaceRoots (params.getWorkspaceRoots ());
         
-        final InitializeResult result = new InitializeResult ();
-        result.setCompletionsAvailable (true);
-        result.setCodeActionsAvailable (true);
-        result.setDefinitionsAvailable (true);
-        result.setReferencesAvailable (true);
-        result.setSignatureHelpAvailable (true);
-        result.setCodeAnalysisAvailable (true);
+        capabilities = new ServerCapabilities ();
+        capabilities.setCompletionsAvailable (true);
+        capabilities.setCodeActionsAvailable (true);
+        capabilities.setDefinitionsAvailable (true);
+        capabilities.setReferencesAvailable (true);
+        capabilities.setSignatureHelpAvailable (true);
+        capabilities.setCodeAnalysisAvailable (true);
         
         initialized = true;
-        
-        return result;
+    }
+    
+    @NonNull
+    @Override
+    public ServerCapabilities getCapabilities () {
+        return capabilities;
     }
     
     @Override

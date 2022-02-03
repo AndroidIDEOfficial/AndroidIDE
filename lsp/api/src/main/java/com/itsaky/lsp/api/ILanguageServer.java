@@ -37,8 +37,8 @@ package com.itsaky.lsp.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.lsp.models.InitializeResult;
 import com.itsaky.lsp.models.InitializeParams;
+import com.itsaky.lsp.models.ServerCapabilities;
 
 /**
  * A language server provides API for providing functions related to
@@ -54,11 +54,16 @@ public interface ILanguageServer {
      * language server was already initialized.
      *
      * @param params The params used to initialize the language server.
-     * @return The initialization result.
      * @throws AlreadyInitializedException If the language server was already initialized.
      */
+    void initialize (@NonNull InitializeParams params) throws AlreadyInitializedException;
+    
+    /**
+     * Returns the capabilities that the LSP implementation provides.
+     * @return The capabilities of the server.
+     */
     @NonNull
-    InitializeResult initialize (@NonNull InitializeParams params) throws AlreadyInitializedException;
+    ServerCapabilities getCapabilities ();
     
     /**
      * Called by client to notify the server to shutdown.

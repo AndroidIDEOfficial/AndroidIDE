@@ -31,7 +31,7 @@ import com.itsaky.lsp.api.ISelectionProvider;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.models.InitializeParams;
-import com.itsaky.lsp.models.InitializeResult;
+import com.itsaky.lsp.models.ServerCapabilities;
 import com.itsaky.lsp.util.NoCodeActionsProvider;
 import com.itsaky.lsp.util.NoDiagnosticProvider;
 import com.itsaky.lsp.util.NoCompletionsProvider;
@@ -60,6 +60,7 @@ public class XMLLanguageServer implements ILanguageServer {
     private boolean canProvideCompletions = false;
     
     private final IDocumentHandler documentHandler = new NoDocumentHandler ();
+    private ServerCapabilities capabilities;
     
     public XMLLanguageServer () {
     }
@@ -77,23 +78,26 @@ public class XMLLanguageServer implements ILanguageServer {
         return settings;
     }
     
-    @NonNull
     @Override
-    public InitializeResult initialize (@NonNull InitializeParams params) throws AlreadyInitializedException {
+    public void initialize (@NonNull InitializeParams params) throws AlreadyInitializedException {
         if (initialized) {
             throw new AlreadyInitializedException ();
         }
-        
-        final var result = new InitializeResult ();
-        result.setCompletionsAvailable (true);
-        result.setCodeAnalysisAvailable (true);
-        result.setSignatureHelpAvailable (false);
-        result.setReferencesAvailable (false);
-        result.setDefinitionsAvailable (false);
+    
+        capabilities = new ServerCapabilities ();
+        capabilities.setCompletionsAvailable (true);
+        capabilities.setCodeAnalysisAvailable (true);
+        capabilities.setSignatureHelpAvailable (false);
+        capabilities.setReferencesAvailable (false);
+        capabilities.setDefinitionsAvailable (false);
         
         initialized = true;
-
-        return result;
+    }
+    
+    @NonNull
+    @Override
+    public ServerCapabilities getCapabilities () {
+        return capabilities;
     }
     
     @Override

@@ -21,7 +21,7 @@ import java.nio.file.Path
 
 data class InitializeParams (var workspaceRoots: Set<Path>)
 
-data class InitializeResult
+data class ServerCapabilities
 (
     var completionsAvailable: Boolean,
     var codeActionsAvailable: Boolean,
