@@ -73,7 +73,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         setColor (WHOLE_BACKGROUND, 0xff212121);
         setColor (LINE_NUMBER_BACKGROUND, 0xff212121);
         setColor (LINE_DIVIDER, Color.TRANSPARENT);
-        setColor (LINE_NUMBER, 0xffaaaaaa);
+        setColor (LINE_NUMBER, 0xffaaaaaa );
         setColor (LINE_NUMBER_PANEL, 0xff000000);
         setColor (LINE_NUMBER_PANEL_TEXT, 0xffffffff);
         setColor (TEXT_NORMAL, 0xfff5f5f5);

@@ -77,7 +77,6 @@ public class IDEEditor extends CodeEditor {
     private SignatureHelpWindow mSignatureHelpWindow;
     private DiagnosticWindow mDiagnosticWindow;
     
-    @SuppressWarnings("FieldCanBeLocal,unused")
     private ITextActionPresenter mTextActionPresenter;
     
     public static final String KEY_FILE = "editor_file";
@@ -99,7 +98,7 @@ public class IDEEditor extends CodeEditor {
         super (context, attrs, defStyleAttr, defStyleRes);
         
         setColorScheme (new SchemeAndroidIDE ());
-        setTextActionPresenter (new EditorTextActionMode ());
+        setTextActionPresenter (new EditorTextActionWindow (this));
         subscribeEvent (SelectionChangeEvent.class, (event, unsubscribe) -> handleSelectionChange (event));
         subscribeEvent (ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange (event));
         
