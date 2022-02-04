@@ -21,6 +21,7 @@ import static com.itsaky.inflater.util.Preconditions.assertNotBlank;
 import static com.itsaky.inflater.util.Preconditions.assertNotnull;
 
 import android.content.Context;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,7 +139,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         }
         
         IView root;
-        int style = tag.hasAttr ("style") ? parseFrameworkStyle (tag.attr ("style")) : 0;
+        int style = tag.hasAttr ("style") ? parseFrameworkStyle (tag.attr ("style")) : -1;
         if (!name.contains (".")) {
             root = createFromSimpleName (name, parentGroup, style);
         } else {
@@ -177,20 +178,13 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     }
     
     protected int parseFrameworkStyle (String value) throws InflateException {
-        
         try {
-            if (value.startsWith ("?android:attr/")) {
-                final String name = underscorize (value.substring ("?android:attr/".length ()));
-                return (int) android.R.attr.class.getField (name).get (null);
-            } else if (value.startsWith ("@android:style/")) {
-                final String name = underscorize (value.substring ("@android:style/".length ()));
-                return (int) android.R.style.class.getField (name).get (null);
-            }
+            final String name = underscorize (value.substring (value.indexOf ('/') + 1));
+            return (int) android.R.attr.class.getField (name).get (null);
         } catch (Throwable th) {
-            throw new InflateException (th);
+            LOG.error ("Unable to parse framework style", th);
+            return -1;
         }
-        
-        return 0;
     }
     
     @NonNull
@@ -292,14 +286,14 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         
         // TODO Try to load classes directly from .class files if possible
         try {
-    
+            
             final var androidView = this.widgetInfo.getWidget (name);
             if (androidView == null) {
                 // If this is not an Android view, do not bother to create one
                 throw new NotSupportedException ();
             }
             
-            final View created = createAndroidViewForName (name);
+            final View created = createAndroidViewForName (name, style);
             final BaseView view =
                     created instanceof ViewGroup
                             ? new UiViewGroup (name, (ViewGroup) created)
@@ -318,10 +312,16 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     }
     
     @NonNull
-    protected View createAndroidViewForName (String name) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, java.lang.reflect.InvocationTargetException {
+    protected View createAndroidViewForName (String name, int style) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, java.lang.reflect.InvocationTargetException {
         final Class<? extends View> loaded = Class.forName (name).asSubclass (View.class);
-        final Constructor<? extends View> constructor = loaded.getConstructor (Context.class /*, AttributeSet.class, int.class*/);
-        return constructor.newInstance (contextProvider.getContext ()/*, null, style*/);
+        final Constructor<? extends View> constructor;
+        if (style == -1) {
+            constructor = loaded.getConstructor (Context.class);
+            return constructor.newInstance (contextProvider.getContext ());
+        } else {
+            constructor = loaded.getConstructor (Context.class, AttributeSet.class, int.class);
+            return constructor.newInstance (contextProvider.getContext (), null, style);
+        }
     }
     
     protected IView applyLayoutParams (@NonNull IView view, ViewGroup parent) {
