@@ -25,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
 
+import com.itsaky.androidide.utils.Logger;
+
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -45,6 +47,8 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
     private ActionMode actionMode;
     
     private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<> ();
+    
+    private static final Logger LOG = Logger.instance ("EditorTextActionMode");
     
     @Override
     public void bindEditor (@NonNull IDEEditor editor) {
@@ -141,8 +145,7 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
                     return false;
                 }
                 
-                final var action = optional.get ();
-                editor.performTextAction (action);
+                editor.performTextAction (optional.get ());
                 
                 if (id == IDEEditor.TextAction.SELECT_ALL || id == IDEEditor.TextAction.EXPAND_SELECTION) {
                     return true;

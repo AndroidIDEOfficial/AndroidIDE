@@ -559,7 +559,7 @@ public class IDEEditor extends CodeEditor {
                 return;
             }
             
-            setSelection (range);
+            ThreadUtils.runOnUiThread (() -> setSelection (range));
         }));
     }
     

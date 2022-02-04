@@ -72,6 +72,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.text.Content;
 
@@ -100,7 +101,7 @@ public class CodeEditorView extends FrameLayout {
         this.binding = LayoutCodeEditorBinding.inflate (LayoutInflater.from (context));
         this.binding.editor.setTypefaceText (TypefaceUtils.jetbrainsMono ());
         this.binding.editor.setHighlightCurrentBlock (true);
-        this.binding.editor.getProps().autoCompletionOnComposing = true;
+        this.binding.editor.getProps ().autoCompletionOnComposing = true;
         this.binding.editor.setAutoCompletionItemAdapter (new CompletionListAdapter ());
         this.binding.editor.setDividerWidth (SizeUtils.dp2px (1));
         this.binding.editor.setColorScheme (new SchemeAndroidIDE ());
@@ -111,11 +112,11 @@ public class CodeEditorView extends FrameLayout {
         removeAllViews ();
         addView (this.binding.getRoot ());
         
-        selection.validate();
+        selection.validate ();
         CompletableFuture.runAsync (() -> {
             final var contents = FileIOUtils.readFile2String (file);
             binding.editor.post (() -> {
-                binding.editor.setText (contents, createEditorArgs());
+                binding.editor.setText (contents, createEditorArgs ());
                 postRead ();
                 if (LSPUtils.isEqual (selection.getStart (), selection.getEnd ())) {
                     getEditor ().setSelection (selection.getStart ().getLine (), selection.getStart ().getColumn ());
@@ -129,7 +130,7 @@ public class CodeEditorView extends FrameLayout {
                 }
             });
         });
-    
+        
         configureEditorIfNeeded ();
     }
     
@@ -175,7 +176,7 @@ public class CodeEditorView extends FrameLayout {
         }
         
         final var path = getFile ().toPath ();
-        if (!isModified() && Files.exists (path)) {
+        if (!isModified () && Files.exists (path)) {
             LOG.info (getFile ());
             LOG.info ("File was not modified. Skipping save operation.");
             return false;
@@ -187,7 +188,7 @@ public class CodeEditorView extends FrameLayout {
             Files.write (getFile ().toPath (), lines);
             notifySaved ();
             isModified = false;
-        
+            
             return true;
         } catch (Throwable e) {
             LOG.error ("Failed to save file", getFile (), "\n", e);
@@ -199,7 +200,7 @@ public class CodeEditorView extends FrameLayout {
     private List<CharSequence> getLines (Content text) {
         final var count = text.getLineCount ();
         final var result = new ArrayList<CharSequence> ();
-    
+        
         for (int i = 0; i < count; i++) {
             result.add (text.getLine (i));
         }
