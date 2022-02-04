@@ -86,7 +86,7 @@ public class SignatureHelpWindow extends SimpleTextWindow {
             return null;
         }
     
-        final var count = signatures.size ();
+        var count = signatures.size ();
         if (activeSignature >= count) {
             LOG.debug ("Active signature is invalid", "Size is " + count);
             return null;
@@ -100,7 +100,8 @@ public class SignatureHelpWindow extends SimpleTextWindow {
             }
             return remove;
         });
-        
+    
+        count = signatures.size ();
         for (var i = 0; i< count; i++) {
             final var info = signatures.get (i);
             formatSignature (info, activeParameter, i == activeSignature, sb);
