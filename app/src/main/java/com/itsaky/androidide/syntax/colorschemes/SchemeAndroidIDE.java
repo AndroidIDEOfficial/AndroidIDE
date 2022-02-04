@@ -17,6 +17,8 @@
  */
 package com.itsaky.androidide.syntax.colorschemes;
 
+import android.graphics.Color;
+
 import io.github.rosemoe.sora.lang.styling.TextStyle;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
@@ -31,36 +33,36 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     
     private static int current = EditorColorScheme.END_COLOR_ID;
     
-    public static final int LOG_INFO            = current++;
-    public static final int LOG_DEBUG           = current++;
-    public static final int LOG_ERROR           = current++;
-    public static final int LOG_WARNING         = current++;
-    public static final int DIAGNOSTIC_ERROR    = current++;
-    public static final int DIAGNOSTIC_WARNING  = current++;
-    public static final int DIAGNOSTIC_HINT     = current++;
-    public static final int DIAGNOSTIC_INFO     = current++;
-    public static final int STDERR              = current++;
-    public static final int STDOUT              = current++;
-    public static final int XML_TAG             = current++;
-    public static final int FIELD               = current++;
-    public static final int STATIC_FIELD        = current++;
-    public static final int PACKAGE_NAME        = current++;
-    public static final int ENUM_TYPE           = current++;
-    public static final int INTERFACE           = current++;
-    public static final int ENUM                = current++;
-    public static final int PARAMETER           = current++;
-    public static final int CONSTRUCTOR         = current++;
-    public static final int STATIC_INIT         = current++;
-    public static final int INSTANCE_INIT       = current++;
-    public static final int TYPE_PARAM          = current++;
-    public static final int RESOURCE_VARIABLE   = current++;
-    public static final int EXCEPTION_PARAM     = current++;
-    public static final int METHOD_DECLARATION  = current++;
-    public static final int METHOD_INVOCATION   = current++;
-    public static final int TYPE_NAME           = current++;
-    public static final int LOCAL_VARIABLE      = current++;
-    public static final int TODO_COMMENT        = current++;
-    public static final int FIXME_COMMENT       = current++;
+    public static final int LOG_INFO = current++;
+    public static final int LOG_DEBUG = current++;
+    public static final int LOG_ERROR = current++;
+    public static final int LOG_WARNING = current++;
+    public static final int DIAGNOSTIC_ERROR = current++;
+    public static final int DIAGNOSTIC_WARNING = current++;
+    public static final int DIAGNOSTIC_HINT = current++;
+    public static final int DIAGNOSTIC_INFO = current++;
+    public static final int STDERR = current++;
+    public static final int STDOUT = current++;
+    public static final int XML_TAG = current++;
+    public static final int FIELD = current++;
+    public static final int STATIC_FIELD = current++;
+    public static final int PACKAGE_NAME = current++;
+    public static final int ENUM_TYPE = current++;
+    public static final int INTERFACE = current++;
+    public static final int ENUM = current++;
+    public static final int PARAMETER = current++;
+    public static final int CONSTRUCTOR = current++;
+    public static final int STATIC_INIT = current++;
+    public static final int INSTANCE_INIT = current++;
+    public static final int TYPE_PARAM = current++;
+    public static final int RESOURCE_VARIABLE = current++;
+    public static final int EXCEPTION_PARAM = current++;
+    public static final int METHOD_DECLARATION = current++;
+    public static final int METHOD_INVOCATION = current++;
+    public static final int TYPE_NAME = current++;
+    public static final int LOCAL_VARIABLE = current++;
+    public static final int TODO_COMMENT = current++;
+    public static final int FIXME_COMMENT = current++;
     
     @Override
     public void applyDefault () {
@@ -70,8 +72,8 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         // Apply customized colors
         setColor (WHOLE_BACKGROUND, 0xff212121);
         setColor (LINE_NUMBER_BACKGROUND, 0xff212121);
-        setColor (LINE_DIVIDER, 0xff9e9e9e);
-        setColor (LINE_NUMBER, 0xff424242);
+        setColor (LINE_DIVIDER, Color.TRANSPARENT);
+        setColor (LINE_NUMBER, 0xffaaaaaa);
         setColor (LINE_NUMBER_PANEL, 0xff000000);
         setColor (LINE_NUMBER_PANEL_TEXT, 0xffffffff);
         setColor (TEXT_NORMAL, 0xfff5f5f5);
@@ -128,6 +130,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     
     /**
      * Delegates to {@link TextStyle#makeStyle(int)}
+     *
      * @param id The color id.
      * @return The style flags.
      */
@@ -137,6 +140,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     
     /**
      * Create style for keywords. Convenient method to avoid calling {@link TextStyle#makeStyle(int, int, boolean, boolean, boolean)}
+     *
      * @return The default style for keywords.
      */
     public static long forKeyword () {
@@ -145,6 +149,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     
     /**
      * Create style for string literals. The returned style sets the {@link TextStyle#NO_COMPLETION_BIT}.
+     *
      * @return The style for string literals.
      */
     public static long forString () {
@@ -153,6 +158,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     
     /**
      * Create color style for default comments.
+     *
      * @return The style for {@link #COMMENT}.
      */
     public static long forComment () {
@@ -161,6 +167,7 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     
     /**
      * Create style for the given id without completions.
+     *
      * @param id The id to create style for.
      * @return The style for the id.
      */
