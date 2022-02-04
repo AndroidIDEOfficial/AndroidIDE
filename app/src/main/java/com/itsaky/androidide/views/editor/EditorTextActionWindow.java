@@ -73,6 +73,8 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
      */
     public EditorTextActionWindow (@NonNull CodeEditor editor) {
         super (editor, FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED);
+        
+        getPopup ().setAnimationStyle (R.style.PopupAnimation);
     }
     
     @Override
