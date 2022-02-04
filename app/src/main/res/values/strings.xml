@@ -370,4 +370,8 @@
 
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="title_use_popup_actions">Floating text actions</string>
+    <string name="msg_use_popup_actions">Use PopupWindow for showing text actions</string>
+    <string name="title_use_horizontal_popup">Horizontal text actions</string>
+    <string name="msg_use_horizontal_popup">Make the floating text actions appear horizontally.</string>
 </resources>

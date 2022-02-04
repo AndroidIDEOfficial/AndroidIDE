@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import io.github.rosemoe.sora.event.ClickEvent;
-import io.github.rosemoe.sora.event.LongPressEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
@@ -45,6 +44,7 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
     
     private IDEEditor editor;
     private ActionMode actionMode;
+    private boolean unsubscribeEvents = false;
     
     private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<> ();
     
@@ -60,6 +60,12 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
         this.editor.getComponent (EditorTextActionWindow.class).setEnabled (false);
         
         this.editor.subscribeEvent (SelectionChangeEvent.class, ((event, unsubscribe) -> {
+            
+            if (unsubscribeEvents) {
+                unsubscribe.unsubscribe ();
+                return;
+            }
+            
             final var left = event.getLeft ();
             final var right = event.getRight ();
             if (left.index != right.index) {
@@ -68,13 +74,14 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
         }));
         
         // When click event is received, finish the action mode if it is started
-        this.editor.subscribeEvent (ClickEvent.class, (event, unsubscribe) -> exit ());
-        
-        // Start action mode even if no text is selected
-        this.editor.subscribeEvent (LongPressEvent.class, (event, unsubscribe) -> {
-            if (actionMode == null) {
-                showAction ();
+        this.editor.subscribeEvent (ClickEvent.class, (event, unsubscribe) -> {
+            
+            if (unsubscribeEvents) {
+                unsubscribe.unsubscribe ();
+                return;
             }
+            
+            exit ();
         });
         
         clearRegisteredActions ();
@@ -85,6 +92,19 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
         Objects.requireNonNull (this.editor, "No editor attached!");
         
         this.registeredActions.add (action);
+    }
+    
+    @Override
+    public void destroy () {
+        
+        if (actionMode != null) {
+            exit ();
+        }
+        
+        this.registeredActions.clear ();
+        this.editor = null;
+        this.actionMode = null;
+        this.unsubscribeEvents = true;
     }
     
     public void clearRegisteredActions () {

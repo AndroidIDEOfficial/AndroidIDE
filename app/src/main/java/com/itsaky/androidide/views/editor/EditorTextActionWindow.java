@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.TextActionItemAdapter;
+import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.managers.PreferenceManager;
 
 import java.util.Objects;
 import java.util.Set;
@@ -57,6 +59,7 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
     private final static long DELAY = 200;
     private long mLastScroll;
     private int mLastPosition;
+    private boolean unsubscribeEvents = false;
     
     private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<> ();
     
@@ -80,7 +83,6 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
         this.touchHandler = editor.getEventHandler ();
         this.actionsList = new RecyclerView (editor.getContext ());
         this.actionsList.setLayoutParams (new ViewGroup.LayoutParams (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        this.actionsList.setLayoutManager (new LinearLayoutManager (editor.getContext ()));
         this.actionsList.setBackground (createBackground ());
         this.actionsList.setVerticalFadingEdgeEnabled (true);
         this.actionsList.setFadingEdgeLength ((int) (10 * editor.getDpUnit ()));
@@ -89,8 +91,39 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
         
         setContentView (this.actionsList);
         subscribeToEvents ();
+        applyLayoutManager ();
         
         this.registeredActions.clear ();
+    }
+    
+    @Override
+    public void registerAction (@NonNull IDEEditor.TextAction action) {
+        Objects.requireNonNull (editor, "No editor attached!");
+        
+        this.registeredActions.add (action);
+    }
+    
+    @Override
+    public void destroy () {
+        
+        if (isShowing ()) {
+            dismiss ();
+        }
+        
+        this.registeredActions.clear ();
+        this.editor = null;
+        this.actionsList = null;
+        this.unsubscribeEvents = true;
+    }
+    
+    private void applyLayoutManager () {
+        final var manager = StudioApp.getInstance ().getPrefManager ();
+        final var horizontal = manager.getBoolean (PreferenceManager.KEY_EDITOR_HORIZONTAL_POPUP, false);
+        if (horizontal) {
+            this.actionsList.setLayoutManager (new LinearLayoutManager (this.actionsList.getContext (), LinearLayoutManager.HORIZONTAL, false));
+        } else {
+            this.actionsList.setLayoutManager (new LinearLayoutManager (this.actionsList.getContext ()));
+        }
     }
     
     @NonNull
@@ -103,27 +136,21 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
     }
     
     @Override
-    public void registerAction (@NonNull IDEEditor.TextAction action) {
-        Objects.requireNonNull (editor, "No editor attached!");
-        
-        this.registeredActions.add (action);
-    }
-    
-    @Override
     public void show () {
         Objects.requireNonNull (editor, "No editor attached!");
         
+        final var dp16 = editor.getDpUnit () * 16;
         final var actions = this.registeredActions.stream ()
                 .filter (action -> this.editor.shouldShowTextAction (action.id))
                 .collect (Collectors.toList ());
         this.actionsList.setAdapter (new TextActionItemAdapter (actions, this::performTextAction));
         this.actionsList.measure (
                 View.MeasureSpec.makeMeasureSpec (
-                        editor.getWidth (),
+                        (int) (editor.getWidth () - dp16 * 2), // 16dp margins from start and end
                         View.MeasureSpec.AT_MOST
                 ),
                 View.MeasureSpec.makeMeasureSpec (
-                        (int) (260 * editor.getDpUnit ()), // 260dp at most
+                        (int) ((int) (260 * editor.getDpUnit ()) - dp16 * 2), // 260dp at most and 16dp margins from top and bottom
                         View.MeasureSpec.AT_MOST
                 )
         );
@@ -134,6 +161,11 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
     
     private void subscribeToEvents () {
         this.editor.subscribeEvent (SelectionChangeEvent.class, (event, unsubscribe) -> {
+            if (unsubscribeEvents) {
+                unsubscribe.unsubscribe ();
+                return;
+            }
+            
             if (touchHandler.hasAnyHeldHandle ()) {
                 return;
             }
@@ -160,6 +192,11 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
             }
         });
         this.editor.subscribeEvent (ScrollEvent.class, ((event, unsubscribe) -> {
+            if (unsubscribeEvents) {
+                unsubscribe.unsubscribe ();
+                return;
+            }
+            
             var last = mLastScroll;
             mLastScroll = System.currentTimeMillis ();
             if (mLastScroll - last < DELAY) {
@@ -167,6 +204,12 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
             }
         }));
         this.editor.subscribeEvent (HandleStateChangeEvent.class, ((event, unsubscribe) -> {
+            
+            if (unsubscribeEvents) {
+                unsubscribe.unsubscribe ();
+                return;
+            }
+            
             if (event.isHeld ()) {
                 postDisplay ();
             }

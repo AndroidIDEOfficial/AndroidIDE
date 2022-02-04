@@ -72,7 +72,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.text.Content;
 
@@ -290,6 +289,7 @@ public class CodeEditorView extends FrameLayout {
     private void configureEditorIfNeeded () {
         boolean sizeChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_SIZE_CHANGED;
         boolean ligaturesChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED;
+        boolean popupChanged = isFirstCreate || ConstantsBridge.EDITOR_TEXT_ACTIONS_CHANGED;
         boolean flagsChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED;
         boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED;
         final PreferenceManager prefs = StudioApp.getInstance ().getPrefManager ();
@@ -307,6 +307,7 @@ public class CodeEditorView extends FrameLayout {
         if (ligaturesChanged) {
             var enabled = prefs.getBoolean (PreferenceManager.KEY_EDITOR_FONT_LIGATURES, true);
             binding.editor.setLigatureEnabled (enabled);
+            ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED = false;
         }
         
         if (flagsChanged) {
@@ -333,6 +334,11 @@ public class CodeEditorView extends FrameLayout {
             
             binding.editor.setNonPrintablePaintingFlags (flags);
             ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED = false;
+        }
+        
+        if (popupChanged) {
+            binding.editor.setTextActionPresenter (binding.editor.chooseTextActionPresenter ());
+            ConstantsBridge.EDITOR_TEXT_ACTIONS_CHANGED = false;
         }
         
         if (drawHexChanged) {

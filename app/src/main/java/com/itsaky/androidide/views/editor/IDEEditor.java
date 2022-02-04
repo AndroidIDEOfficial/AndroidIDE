@@ -37,6 +37,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
+import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ILanguageServer;
@@ -57,6 +58,8 @@ import com.itsaky.lsp.models.ShowDocumentParams;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.toaster.Toaster;
+
+import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.util.List;
@@ -98,7 +101,7 @@ public class IDEEditor extends CodeEditor {
         super (context, attrs, defStyleAttr, defStyleRes);
         
         setColorScheme (new SchemeAndroidIDE ());
-        setTextActionPresenter (new EditorTextActionWindow (this));
+        setTextActionPresenter (chooseTextActionPresenter ());
         subscribeEvent (SelectionChangeEvent.class, (event, unsubscribe) -> handleSelectionChange (event));
         subscribeEvent (ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange (event));
         
@@ -107,6 +110,18 @@ public class IDEEditor extends CodeEditor {
                 | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
                 | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
                 | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+    }
+    
+    @NonNull
+    @Contract(" -> new")
+    public ITextActionPresenter chooseTextActionPresenter () {
+        final var prefs = StudioApp.getInstance ().getPrefManager ();
+        final var usePopup = prefs.getBoolean (PreferenceManager.KEY_EDITOR_USE_POPUP, false);
+        if (usePopup) {
+            return new EditorTextActionWindow (this);
+        } else {
+            return new EditorTextActionMode ();
+        }
     }
     
     /**
@@ -567,6 +582,7 @@ public class IDEEditor extends CodeEditor {
      *
      * @return The {@link Position} of the cursor.
      */
+    @SuppressWarnings("unused")
     public Position getCursorAsLSPPosition () {
         return new Position (getCursor ().getLeftLine (), getCursor ().getLeftColumn ());
     }
@@ -590,6 +606,12 @@ public class IDEEditor extends CodeEditor {
      */
     public void setTextActionPresenter (@NonNull ITextActionPresenter actionPresenter) {
         Objects.requireNonNull (actionPresenter, "Cannot set text action presenter to null");
+        
+        if (mTextActionPresenter != null) {
+            mTextActionPresenter.destroy ();
+            mTextActionPresenter = null;
+        }
+        
         this.mTextActionPresenter = actionPresenter;
         
         actionPresenter.bindEditor (this);
@@ -601,6 +623,7 @@ public class IDEEditor extends CodeEditor {
      *
      * @return The attached text action presenter.
      */
+    @SuppressWarnings("unused")
     public ITextActionPresenter getTextActionPresenter () {
         return mTextActionPresenter;
     }
@@ -830,7 +853,7 @@ public class IDEEditor extends CodeEditor {
      * Notify the language server that the content of this file
      * has been changed.
      *
-     * @param event
+     * @param event The content change event.
      */
     private void handleContentChange (ContentChangeEvent event) {
         
@@ -903,7 +926,7 @@ public class IDEEditor extends CodeEditor {
         /**
          * Bind the action presenter with the given editor instance.
          *
-         * @param editor
+         * @param editor The editor to bind with.
          */
         void bindEditor (@NonNull IDEEditor editor);
         
@@ -913,6 +936,12 @@ public class IDEEditor extends CodeEditor {
          * @param action The action to register.
          */
         void registerAction (@NonNull TextAction action);
+    
+        /**
+         * Destroy this action presenter. The presenter should unsubscribe
+         * from any subscribed events and release any held resources.
+         */
+        void destroy ();
     }
     
     /**
