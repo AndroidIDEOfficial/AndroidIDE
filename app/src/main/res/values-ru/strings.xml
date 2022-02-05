@@ -129,8 +129,8 @@
     <string name="group_project">Проект</string>
     <string name="title_close_project">Закрыть этот проект</string>
     <string name="msg_opened_project_does_not_exist">Последний открытый проект не существует!</string>
-    <string name="msg_create_new_project">Создать новый проект</string>
-    <string name="msg_open_existing_project">Открыть существующий проект</string>
+    <string name="msg_create_new_project">Создать проект</string>
+    <string name="msg_open_existing_project">Открыть проект</string>
     <string name="msg_opening_project">Открытие проекта&#8230;</string>
     <string name="msg_invalid_project">Выбранная директория не является проектом Android</string>
     <string name="msg_project_deleted">Проект удалён</string>
