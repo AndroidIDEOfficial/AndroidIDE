@@ -74,6 +74,46 @@
     <string name="please_wait">Пожалуйста, подождите немного &#8230;</string>
     <string name="title_device_not_supported">Устройство не поддерживается</string>
     <string name="msg_device_not_supported">К сожаленю, на данный момент ваше устройство не поддерживается. Приносим свои извинения.\n\nПоддерживаемые ABI: aarch64 и armeabi-v7a</string>
-    
+
+    <!-- Project Builder -->
+    <string name="lint">Lint</string>
+    <string name="lint_debug">lintDebug</string>
+    <string name="lint_release">lintRelease</string>
+    <string name="build">Сборка</string>
+    <string name="build_debug">assembleDebug</string>
+    <string name="build_output">Результат сборки</string>
+    <string name="build_release">assembleRelease</string>
+    <string name="lint_tasks">Сценарии Lint</string>
+    <string name="clean_amp_build">Зачистить и Собрать</string>
+    <string name="clean_project">Зачистка проекта</string>
+    <string name="create_aab">Создать AAB</string>
+    <string name="build_tasks">Сценарии сборки</string>
+    <string name="stop_gradle_daemons">Остановить Daemon\'ы Gradle</string>
+    <string name="quick_run_debug">Быстрая сборка</string>
+    <string name="msg_sync_needed">Файлы Gradle были изменены. Пожалуйста пересоберите проект, чтобы синхронизировать зависимости и конфигурации.</string>
+    <string name="msg_task_begin">========== [%s] TASK_BEGIN: %s ==========</string>
+    <string name="preparing">Подготовка</string>
+    <string name="preparing_first">Выполняется подготовка. Первая сборка может занять 10–15 минут!</string>
+    <string name="msg_gradle_terminated">Процесс Gradle завершился с кодом %1$d</string>
+    <string name="msg_gradlew_installation_failed">Ошибка установки Gradle Wrapper: %s</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper не доступен!\nУстановка версии Gradle по умолчанию. Gradle v7.3 будет скачан, если это необходимо.</string>
+    <string name="msg_getting_daemom_status">Получение статуса Daemon, пожалуйста, подождите&#8230;</string>
+    <string name="msg_daemons_stopped">Daemon\'ы Gradle остановлены</string>
+    <string name="gradle_daemon_status">Статус Gradle Daemon</string>
+    <string name="msg_service_started">Сервис запущен</string>
+    <string name="msg_starting_completion">Запуск сервисов</string>
+    <string name="msg_starting_completion_failed">Не удалось запустить сервисы автодополнения</string>
+    <string name="msg_starting_daemon">Запуск Gradle daemon</string>
+    <string name="title_install_apks">Установить APK файл(ы)</string>
+    <string name="title_clear_output">Очистить выходные файлы</string>
+    <string name="install">Установить</string>
+    <string name="run">Запустить</string>
+    <string name="gradle">Gradle</string>
+    <string name="title_first_build">Первая сборка</string>
+    <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка оюычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, но это полностью зависит от производительности вашего устройства.\n\nПожалуйста, подождите &#8230;</string>
+    <string name="compiling">Компиляция</string>
+
+
+
 
 </resources>
