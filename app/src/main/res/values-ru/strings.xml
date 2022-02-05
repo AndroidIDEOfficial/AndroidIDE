@@ -103,7 +103,7 @@
     <string name="msg_service_started">Сервис запущен</string>
     <string name="msg_starting_completion">Запуск сервисов</string>
     <string name="msg_starting_completion_failed">Не удалось запустить сервисы автодополнения</string>
-    <string name="msg_starting_daemon">Запуск Gradle daemon</string>
+    <string name="msg_starting_daemon">Запуск Gradle Daemon</string>
     <string name="title_install_apks">Установить APK файл(ы)</string>
     <string name="title_clear_output">Очистить выходные файлы</string>
     <string name="install">Установить</string>
@@ -209,7 +209,7 @@
     <string name="copy_path">Копировать путь</string>
     <string name="rename_file">Переименовать</string>
     <string name="delete_file">Удалить</string>
-    <string name="file_options">Опции файла</string>
+    <string name="file_options">Действия с файлом</string>
     <string name="action_closeAll">Закрыть все</string>
     <string name="action_closeOthers">Закрыть остальные</string>
     <string name="action_closeThis">Закрыть этот</string>
@@ -270,7 +270,7 @@
     <string name="title_general">Основное</string>
     <string name="title_tab_size">Размер TAB</string>
     <string name="msg_tab_size">Укажите, сколько пробелов будет напечатано при нажатии TAB.</string>
-    <string name="msg_preferences">Предпочтения</string>
+    <string name="msg_preferences">Настройки</string>
     <string name="msg_failed_get_changelog">Не удалось получить список изменений!</string>
     <string name="pref_changelog">Список изменений</string>
     <string name="msg_editor_font_size">Пожалуйста, выберите размер шрифта по умолчанию для редактора :</string>
@@ -293,7 +293,7 @@
 
     <!-- Layout preview and designer -->
     <string name="msg_cannot_preview_layout">Невозможно осуществить предпросмотр разметки!</string>
-    <string name="title_preview_layout">Предпросмотр Разметки</string>
+    <string name="title_preview_layout">Предпросмотр разметки</string>
     <string name="label_ui_designer_content">Содержание дизайнера Main UI</string>
     <string name="widget_textview">TextView</string>
     <string name="widget_button">Button</string>
@@ -362,7 +362,7 @@
     <string name="msg_files_unsaved">Некоторые файлы не сохранены. Хотите сохранить их перед закрытием? Список несохраненных файлов: \n%s</string>
     <string name="idepref_editor_autoSave_title">Сохранять файлы перед закрытием</string>
     <string name="idepref_editor_autoSave_summary">Сохранение файлов перед закрытием - ЭКСПЕРЕМЕНТАЛЬНАЯ опция. Подразумевается, что вы будете сохранять файлы самостоятельно.</string>
-    <string name="idepref_java_matchLower_summary">Если включено, при печати как строчным, так и верхним регистром, атодополнение будет предлагать как классы, так и переменные / методы.</string>
+    <string name="idepref_java_matchLower_summary">Если включено, при печати как строчным, так и верхним регистром, атодополнение будет предлагать классы, переменные и методы.</string>
     <string name="idepref_editor_ligatures_title">Лигатуры шрифтов</string>
     <string name="idepref_editor_ligatures_summary">Включить / выключить лигатуры шрифтов</string>
 
