@@ -14,7 +14,7 @@
     <string name="about_footer">AndroidIDE %1$s для %2$s</string>
     <string name="about_subtitle">Просто IDE для Android</string>
     <string name="msg_get_package_failed">Ошибка распаковки имени пакета!</string>
-    <string name="msg_share_app">AndroidIDE - это IDE (Integrated Development Environment) для создания Android приложений на вашем Android смартфоне. AndroidIDE поддерживает :\n1. Gradle \n2. OpenJDK 11.0.1. \n3. Продвинутое автодополнение для Java \n4. Автодополнение для XML \n5. Поддкржка Kotlin и многое другое. \n\nСкачайте AndroidIDE здесь: https://androidide.com</string>
+    <string name="msg_share_app">AndroidIDE - это IDE (Integrated Development Environment) для создания Android приложений на вашем Android смартфоне. AndroidIDE поддерживает :\n1. Gradle \n2. OpenJDK 11.0.1. \n3. Продвинутое автодополнение для Java \n4. Автодополнение для XML \n5. Поддержка Kotlin и многое другое. \n\nСкачайте AndroidIDE здесь: https://androidide.com</string>
     <string name="msg_need_help">Если вы столкнулись с какими-либо проблемами при использовании AndroidIDE или при сборке Android приложений, вы можете присоединиться к нашей группе в Telegram и попросить о помощи там.\n\nВы также можете присылать нам свои пожелания и предложения на наш электронный адрес.</string>
     <string name="discuss_amp_help">Обсуждение и помощь</string>
     <string name="title_github">GitHub</string>
@@ -56,7 +56,7 @@
 
     <!-- Build Tools Installation -->
     <string name="title_installation_failed">Установка не удалась</string>
-    <string name="msg_installation_failed">Процесс установки прерван с кодом %1$d. Убедись, что вы скачли оригинальные инструменты сборки.\n\nВы можете попробовать очистить данные AndroidIDE и установить инструменты сборки снова. \n\n%2$s</string>
+    <string name="msg_installation_failed">Процесс установки прерван с кодом %1$d. Убедись, что вы скачали оригинальные инструменты сборки.\n\nВы можете попробовать очистить данные AndroidIDE и установить инструменты сборки снова. \n\n%2$s</string>
     <string name="choose">Выбрать</string>
     <string name="get_ready_for_something_awesome">Приготовьтесь к чему-то замечательному!</string>
     <string name="androidide_build_tools">Инструменты Сборки AndroidIDE</string>
@@ -67,13 +67,13 @@
     <string name="msg_pick_single_file">Пожалуйста, выберите лишь одну директорию</string>
     <string name="msg_file_doesnt_exist">Файл не существует!</string>
     <string name="msg_pick_files">Пожалуйста, выберите файлы!</string>
-    <string name="msg_download_instructions">1. Скачайте инструменты сборки с сайта AndroidIDE.\n2. Переместите скачанные архивы в определённую директорию. \n3. Выберите эту директорию, используя кнопку ниже. \n4. Нажмите кнопку устаноки. \n5. Начнётся процесс установки.\n\nПроцесс установки займет около 5–10 минутв зависимости от производительности вашего устройства. Просим вашего терпения!</string>
+    <string name="msg_download_instructions">1. Скачайте инструменты сборки с сайта AndroidIDE.\n2. Переместите скачанные архивы в определённую директорию. \n3. Выберите эту директорию, используя кнопку ниже. \n4. Нажмите кнопку устаноки. \n5. Начнётся процесс установки.\n\nПроцесс установки займет около 5–10 минут в зависимости от производительности вашего устройства. Просим вашего терпения!</string>
     <string name="msg_installable_files">Файлы для установки\n\n%s</string>
     <string name="title_restart">Пожалуйста, перезапустите приложение</string>
     <string name="msg_restart">Установка успешно завершена. Пожалуйста, перезапустите AndroidIDE.</string>
     <string name="please_wait">Пожалуйста, подождите немного &#8230;</string>
     <string name="title_device_not_supported">Устройство не поддерживается</string>
-    <string name="msg_device_not_supported">К сожаленю, на данный момент ваше устройство не поддерживается. Приносим свои извинения.\n\nПоддерживаемые ABI: aarch64 и armeabi-v7a</string>
+    <string name="msg_device_not_supported">К сожалению, на данный момент ваше устройство не поддерживается. Приносим свои извинения.\n\nПоддерживаемые ABI: aarch64 и armeabi-v7a</string>
 
     <!-- Project Builder -->
     <string name="lint">Lint</string>
@@ -96,7 +96,7 @@
     <string name="preparing_first">Выполняется подготовка. Первая сборка может занять 10–15 минут!</string>
     <string name="msg_gradle_terminated">Процесс Gradle завершился с кодом %1$d</string>
     <string name="msg_gradlew_installation_failed">Ошибка установки Gradle Wrapper: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper не доступен!\nУстановка версии Gradle по умолчанию. Gradle v7.3 будет скачан, если это необходимо.</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper недоступен!\nУстановка версии Gradle по умолчанию. Gradle v7.3 будет скачан, если это необходимо.</string>
     <string name="msg_getting_daemom_status">Получение статуса Daemon, пожалуйста, подождите&#8230;</string>
     <string name="msg_daemons_stopped">Daemon\'ы Gradle остановлены</string>
     <string name="gradle_daemon_status">Статус Gradle Daemon</string>
@@ -110,7 +110,7 @@
     <string name="run">Запустить</string>
     <string name="gradle">Gradle</string>
     <string name="title_first_build">Первая сборка</string>
-    <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка оюычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, но это полностью зависит от производительности вашего устройства.\n\nПожалуйста, подождите &#8230;</string>
+    <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка обычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, но это полностью зависит от производительности вашего устройства.\n\nПожалуйста, подождите &#8230;</string>
     <string name="compiling">Компиляция</string>
 
     <!-- Project -->
@@ -127,7 +127,7 @@
     <string name="msg_confirm_open_project">Хотите отурыть последний проект? Последний рах вы работали над:\n%s</string>
     <string name="msg_init_project_failed">Не удалось инициализировать проект!</string>
     <string name="group_project">Проект</string>
-    <string name="title_close_project">Закруть этот проект</string>
+    <string name="title_close_project">Закрыть этот проект</string>
     <string name="msg_opened_project_does_not_exist">Последний открытый проект не существует!</string>
     <string name="msg_create_new_project">Создать новый проект</string>
     <string name="msg_open_existing_project">Открыть существующий проект</string>
@@ -168,7 +168,7 @@
     <string name="msg_search_modules">Искать в модулях</string>
     <string name="msg_no_modules">Модулей в проекте не найдено</string>
     <string name="hint_find_project_filter">Фильтровать файлы по расширению (необязательно)</string>
-    <string name="msg_find_project_filter">Рзделены при помощи \'|\'</string>
+    <string name="msg_find_project_filter">Разделены при помощи \'|\'</string>
     <string name="msg_empty_search_query">Пожалуйста, введите текст</string>
     <string name="msg_select_search_modules">Выберите модули для поиска</string>
     <string name="msg_searching_project">Поиск в проекте, пожалуйста, подождите&#8230;</string>
@@ -255,7 +255,7 @@
     <string name="idepref_build_editgradleproperties_summary">Редактировать gradle.properties в GRADLE_HOME</string>
     <string name="idepref_editor_fontsize_title">Размер шрифта</string>
     <string name="idepref_editor_fontsize_summary">Размер шрифта редактора</string>
-    <string name="idepref_editor_paintingflags_title">Визуализировать непечатемые символы</string>
+    <string name="idepref_editor_paintingflags_title">Визуализировать непечатаемые символы</string>
     <string name="idepref_editor_paintingflags_summary">Выберите, какие непечатаемые символы будут визуализированы редактором</string>
     <string name="idepref_editor_drawhexcolors_title">Отрисовывать HEX строки цветов</string>
     <string name="idepref_editor_drawhexcolors_summary">Должен ли редактор отрисовывать HEX строки цветов?</string>
@@ -271,17 +271,17 @@
     <string name="title_tab_size">Размер TAB</string>
     <string name="msg_tab_size">Укажите, сколько пробелов будет напечатано при нажатии TAB.</string>
     <string name="msg_preferences">Предпочтения</string>
-    <string name="msg_failed_get_changelog">Не удалось получить список изменеий!</string>
+    <string name="msg_failed_get_changelog">Не удалось получить список изменений!</string>
     <string name="pref_changelog">Список изменений</string>
     <string name="msg_editor_font_size">Пожалуйста, выберите размер шрифта по умолчанию для редактора :</string>
-    <string name="msg_clear_cache">Это удалит директорию кэша, созданную Gradle. Если вы удалите её, следующая сборка может занять больше времени, чем обычно, так как Gradle будет скачивать необходимые файлы снова.\nВАЖНО: Это также удалит AAPT2. Вамнужно будет переустановить его, иначе вы получите ошибку сборки.\n\nУверены, что хотите удалить кэш?</string>
+    <string name="msg_clear_cache">Это удалит директорию кэша, созданную Gradle. Если вы удалите её, следующая сборка может занять больше времени, чем обычно, так как Gradle будет скачивать необходимые файлы снова.\nВАЖНО: Это также удалит AAPT2. Вам нужно будет переустановить его, иначе вы получите ошибку сборки.\n\nУверены, что хотите удалить кэш?</string>
 
     <!-- Error Messages used while Logging -->
-    <string name="err_installation">Ощибка установки</string>
-    <string name="err_completion">Ошибка крмпиляцииr</string>
+    <string name="err_installation">Ошибка установки</string>
+    <string name="err_completion">Ошибка компиляцииr</string>
     <string name="err_no_server_implementation">Не найдено имплементаций LanguageServer.</string>
     <string name="err_init_server">Ошибка инициализации LanguageServer</string>
-    <string name="err_init_sdkinfo">Обшибка инициализации информации о SDK</string>
+    <string name="err_init_sdkinfo">Ошибка инициализации информации о SDK</string>
     <string name="err_cannot_start_file_picker">Не удалось запустить выбор файлов</string>
     <string name="err_cannot_parse_apk_metadata">Ошибка парсинга метадаты APK</string>
     <string name="err_cannot_save_files">Невозможно сохранить файлы</string>
@@ -321,7 +321,7 @@
     <string name="attr_val_wrap_content">wrap_content</string>
     <string name="attr_val_match_parent">match_parent</string>
     <string name="attr_val_other">Другое значение</string>
-    <string name="msg_enter_dimension_value">Ввелите значение размерности</string>
+    <string name="msg_enter_dimension_value">Введите значение размерности</string>
     <string name="msg_applicable_attrs">Применимые атрибуты</string>
     <string name="msg_attr_editor_actions">Действия</string>
     <string name="title_viewaction_delete">Удалить</string>
