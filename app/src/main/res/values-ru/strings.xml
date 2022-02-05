@@ -32,4 +32,26 @@
     <string name="cancel">Отмена</string>
     <string name="get_started">Давайте начнём!</string>
     <string name="nothing_here">Тут ничего &#8230;</string>
+
+    <!-- LSP, Diagnostics & Completions -->
+    <string name="msg_sdk_info_load_failed">Ошибка загрузки информации о SDK</string>
+    <string name="msg_fix_diagnostic">[Быстрое Решение]</string>
+    <string name="msg_no_code_actions">Быстрого Решения не найдено</string>
+    <string name="msg_cannot_perform_fix">Невозможно применить Быстрое Решение</string>
+    <string name="msg_performing_fixes">Применение изменений&#8230;</string>
+    <string name="msg_code_actions">Быстрые Решения</string>
+    <string name="msg_api_info_since">Начиная с API %d</string>
+    <string name="msg_api_info_removed">Удалено в API %d</string>
+    <string name="msg_api_info_deprecated">Устаревшее с API %d</string>
+    <string name="msg_finding_references">Поиск референсов&#8230;</string>
+    <string name="msg_finding_definition">Поиск дефиниций&#8230;</string>
+    <string name="msg_no_definition">Дефиниций не найдено</string>
+    <string name="msg_no_references">Референсов не найдено</string>
+    <string name="menu_navigate_definition">Перейти к дефиниции</string>
+    <string name="menu_navigate_references">Найти все референсы</string>
+    <string name="menu_navigate">Код</string>
+    <string name="menu_comment_line">Закомментировать строку</string>
+    <string name="menu_uncomment_line">Раскомментировать строку</string>
+    <string name="view_diags">Диагностика</string>
+
 </resources>
