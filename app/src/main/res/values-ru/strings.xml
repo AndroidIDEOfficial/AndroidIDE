@@ -245,37 +245,36 @@
     <item name="more" type="string">Ещё</item>
 
     <!-- Preferences -->
-    <string name="title_change_text_size">Editor font size</string>
-    <string name="idepref_about_title">About AndroidIDE</string>
-    <string name="idepref_build_clearCache_title">Clear Gradle caches</string>
-    <string name="idepref_build_clearCache_summary">Clear Gradle caches directory. This will delete all dependencies downloaded by Gradle. Required files will be downloaded again in next build.</string>
-    <string name="idepref_build_customgradlecommands_title">Additional Gradle commands</string>
-    <string name="idepref_build_customgradlecommands_summary">Choose additional commands that will be added while executing every task</string>
-    <string name="idepref_build_editgradleproperties_title">Edit global Gradle properties</string>
-    <string name="idepref_build_editgradleproperties_summary">Edit gradle.properties in GRADLE_HOME</string>
-    <string name="idepref_editor_fontsize_title">Font size</string>
-    <string name="idepref_editor_fontsize_summary">Font size of the editor</string>
-    <string name="idepref_editor_paintingflags_title">Non-printable painting flags</string>
-    <string name="idepref_editor_paintingflags_summary">Choose what non-printable characters should be drawn by the editor</string>
-    <string name="idepref_editor_drawhexcolors_title">Draw hex color strings</string>
-    <string name="idepref_editor_drawhexcolors_summary">Should the editor draw hex color string?</string>
-    <string name="idepref_editor_title">Editor</string>
-    <string name="idepref_build_title">Build &amp; Run</string>
-    <string name="title_open_projects">Open last project</string>
-    <string name="msg_open_projects">If checked, the IDE will remember the last opened project and it will be reopened on next startup.</string>
-    <string name="title_confirm_project_open">Confirm project opening</string>
-    <string name="msg_confirm_project_open">Ask before opening last opened project.</string>
-    <string name="title_default_shell">Use system shell in terminal</string>
-    <string name="msg_default_shell">If checked, \'/system/bin/sh\' will be used in terminal.</string>
-    <string name="title_general">General</string>
-    <string name="title_tab_size">Tab size</string>
-    <string name="msg_tab_size">Specify number of spaces for TAB</string>
-    <string name="msg_preferences">Preferences</string>
-    <string name="msg_failed_get_changelog">Failed to read changelog!</string>
-    <string name="pref_changelog">Changelog</string>
-    <string name="msg_editor_font_size">Please choose default font size of editor :</string>
-    <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\nIMPORTANT: This will also delete AAPT2. You will need to reinstall it otherwise you\'ll end up with a build failure.\n\nAre you sure you want to delete caches?</string>
-
+    <string name="title_change_text_size">Размер шрифта редактора</string>
+    <string name="idepref_about_title">О AndroidIDE</string>
+    <string name="idepref_build_clearCache_title">Очистить кэш Gradle</string>
+    <string name="idepref_build_clearCache_summary">Очистить директорию кэша Gradle. Это удалит все зависимости, скачанные Gradle. Необходимые файлы будут вновь скачаны при следующей сборке.</string>
+    <string name="idepref_build_customgradlecommands_title">Дополнительные команды Gradle</string>
+    <string name="idepref_build_customgradlecommands_summary">Выберите дополнительные команды, которые будут добавлены при выполнении каждого сценария</string>
+    <string name="idepref_build_editgradleproperties_title">Редактировать глобальные параметры Gradle</string>
+    <string name="idepref_build_editgradleproperties_summary">Редактировать gradle.properties в GRADLE_HOME</string>
+    <string name="idepref_editor_fontsize_title">Размер шрифта</string>
+    <string name="idepref_editor_fontsize_summary">Размер шрифта редактора</string>
+    <string name="idepref_editor_paintingflags_title">Визуализировать непечатемые символы</string>
+    <string name="idepref_editor_paintingflags_summary">Выберите, какие непечатаемые символы будут визуализированы редактором</string>
+    <string name="idepref_editor_drawhexcolors_title">Отрисовывать HEX строки цветов</string>
+    <string name="idepref_editor_drawhexcolors_summary">Должен ли редактор отрисовывать HEX строки цветов?</string>
+    <string name="idepref_editor_title">Редактор</string>
+    <string name="idepref_build_title">Сборка и Запуск</string>
+    <string name="title_open_projects">Открывать последний проект</string>
+    <string name="msg_open_projects">Если включено, IDE будет запоминать последний открытый проект и открывать его при последующих запусках</string>
+    <string name="title_confirm_project_open">Подтверждение открытия проекта</string>
+    <string name="msg_confirm_project_open">Спрашивать перед открытием последнего проекта.</string>
+    <string name="title_default_shell">Использовать системный shell в терминале</string>
+    <string name="msg_default_shell">Если включено, \'/system/bin/sh\' будет использовано в терминале.</string>
+    <string name="title_general">Основное</string>
+    <string name="title_tab_size">Размер TAB</string>
+    <string name="msg_tab_size">Укажите, сколько пробелов будет напечатано при нажатии TAB.</string>
+    <string name="msg_preferences">Предпочтения</string>
+    <string name="msg_failed_get_changelog">Не удалось получить список изменеий!</string>
+    <string name="pref_changelog">Список изменений</string>
+    <string name="msg_editor_font_size">Пожалуйста, выберите размер шрифта по умолчанию для редактора :</string>
+    <string name="msg_clear_cache">Это удалит директорию кэша, созданную Gradle. Если вы удалите её, следующая сборка может занять больше времени, чем обычно, так как Gradle будет скачивать необходимые файлы снова.\nВАЖНО: Это также удалит AAPT2. Вамнужно будет переустановить его, иначе вы получите ошибку сборки.\n\nУверены, что хотите удалить кэш?</string>
 
     <!-- Error Messages used while Logging -->
     <string name="err_installation">Installation error</string>
