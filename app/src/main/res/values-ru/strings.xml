@@ -230,19 +230,19 @@
     <string name="msg_storage_granted">Разрешение на взаимодействие получено!</string>
 
     <!-- Code Editor -->
-    <string name="undo">Undo</string>
-    <string name="redo">Redo</string>
-    <item name="paste" type="string">Paste</item>
-    <item name="copy" type="string" tools:override="true">Copy</item>
-    <item name="selectAll" formatted="true" type="string">Select All</item>
-    <item name="cut" type="string">Cut</item>
-    <item name="last" type="string">Last</item>
-    <item name="next" type="string">Next</item>
-    <item name="replace" type="string">Replace</item>
-    <item name="replaceAll" type="string">Replace all</item>
-    <item name="replacement" type="string">Replacement</item>
-    <item name="text_to_search" type="string">Text to search</item>
-    <item name="more" type="string">More</item>
+    <string name="undo">Отмена действия</string>
+    <string name="redo">Повтор действия</string>
+    <item name="paste" type="string">Вставить</item>
+    <item name="copy" type="string" tools:override="true">Копировать</item>
+    <item name="selectAll" formatted="true" type="string">Выбрать все</item>
+    <item name="cut" type="string">Вырезать</item>
+    <item name="last" type="string">Последнее</item>
+    <item name="next" type="string">Следующее</item>
+    <item name="replace" type="string">Заменить</item>
+    <item name="replaceAll" type="string">Заменить все</item>
+    <item name="replacement" type="string">Замена</item>
+    <item name="text_to_search" type="string">Искать текст</item>
+    <item name="more" type="string">Ещё</item>
 
     <!-- Preferences -->
     <string name="title_change_text_size">Editor font size</string>
