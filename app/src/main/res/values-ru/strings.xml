@@ -277,19 +277,19 @@
     <string name="msg_clear_cache">Это удалит директорию кэша, созданную Gradle. Если вы удалите её, следующая сборка может занять больше времени, чем обычно, так как Gradle будет скачивать необходимые файлы снова.\nВАЖНО: Это также удалит AAPT2. Вамнужно будет переустановить его, иначе вы получите ошибку сборки.\n\nУверены, что хотите удалить кэш?</string>
 
     <!-- Error Messages used while Logging -->
-    <string name="err_installation">Installation error</string>
-    <string name="err_completion">Completion error</string>
-    <string name="err_no_server_implementation">No LanguageServer implementation found.</string>
-    <string name="err_init_server">Error initializing language server</string>
-    <string name="err_init_sdkinfo">Unable to initialize SDK Info</string>
-    <string name="err_cannot_start_file_picker">Unable to start file picker</string>
-    <string name="err_cannot_parse_apk_metadata">Failed to parse APK metadata</string>
-    <string name="err_cannot_save_files">Unable to save files</string>
-    <string name="err_cannot_preview_layout">Unable to preview layout</string>
-    <string name="err_cannot_inflate_layout">Unable to inflate layout</string>
-    <string name="err_cannot_start_server">Unable to start Language Server for: %s</string>
-    <string name="err_cannot_write_socket">Failed to write to Socket stream</string>
-    <string name="err_server_disconnected">Language server process unexpectedly exited.</string>
+    <string name="err_installation">Ощибка установки</string>
+    <string name="err_completion">Ошибка крмпиляцииr</string>
+    <string name="err_no_server_implementation">Не найдено имплементаций LanguageServer.</string>
+    <string name="err_init_server">Ошибка инициализации LanguageServer</string>
+    <string name="err_init_sdkinfo">Обшибка инициализации информации о SDK</string>
+    <string name="err_cannot_start_file_picker">Не удалось запустить выбор файлов</string>
+    <string name="err_cannot_parse_apk_metadata">Ошибка парсинга метадаты APK</string>
+    <string name="err_cannot_save_files">Невозможно сохранить файлы</string>
+    <string name="err_cannot_preview_layout">Невозможно воспроизвести предпросмотр разметки</string>
+    <string name="err_cannot_inflate_layout">Ошибка создания (inflate) разметки</string>
+    <string name="err_cannot_start_server">Невозможно запустить LanguageServer: %s</string>
+    <string name="err_cannot_write_socket">Ошибка записи в поток Socket</string>
+    <string name="err_server_disconnected">Процесс LanguageServer непредсказуемо завершился.</string>
 
     <!-- Layout preview and designer -->
     <string name="msg_cannot_preview_layout">Unable to preview layout!</string>
