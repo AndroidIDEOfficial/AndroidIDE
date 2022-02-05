@@ -148,16 +148,16 @@
     <string name="project_exists">Проект с таким именем уже существует!</string>
 
     <!-- Templates -->
-    <string name="template_basic">Basic Project</string>
-    <string name="template_description_basic">A basic project with AppCompat Toolbar and a Floating Action Button</string>
-    <string name="template_description_empty">An empty project with default toolbar. Suitable when you want to do all the basic things yourself.</string>
-    <string name="template_description_navigation_drawer">Project with AppCompat Toolbar, DrawerLayout and NavigationView</string>
-    <string name="template_empty">Empty project</string>
-    <string name="template_navigation_drawer">Navigation drawer project</string>
-    <string name="template_kotlin_basic">Kotlin Basic Project</string>
-    <string name="template_description_kotlin_basic">Kotlin project with Appcompat Toolbar and a Floating Action Button</string>
-    <string name="template_libgdx">LibGDX Game</string>
-    <string name="template_description_libgdx">LibGDX game project set up to render an image as an example.</string>
+    <string name="template_basic">Базовый Проект</string>
+    <string name="template_description_basic">Базовый проект, включающий в себя AppCompat Toolbar и Floating Action Button</string>
+    <string name="template_description_empty">Пустой проект с верхней панелью. Подойдёт, если вы не хотите делать всю базовую рутину самостоятельно.</string>
+    <string name="template_description_navigation_drawer">Проект с AppCompat Toolbar, DrawerLayout и NavigationView</string>
+    <string name="template_empty">Пустой проект</string>
+    <string name="template_navigation_drawer">Проект с Navigation Drawer</string>
+    <string name="template_kotlin_basic">Базовый проект Kotlin</string>
+    <string name="template_description_kotlin_basic">Проект на Kotlin с AppCompat Toolbar и Floating Action Button</string>
+    <string name="template_libgdx">Игра LibGDX</string>
+    <string name="template_description_libgdx">Проект игры LibGDX. Выводит изображение на экран в качестве примера.</string>
 
     <!-- Files -->
     <string name="save">Save</string>
