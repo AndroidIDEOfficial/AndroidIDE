@@ -113,7 +113,267 @@
     <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка оюычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, но это полностью зависит от производительности вашего устройства.\n\nПожалуйста, подождите &#8230;</string>
     <string name="compiling">Компиляция</string>
 
+    <!-- Project -->
+    <string name="create_project">Создать проект</string>
+    <string name="minimum_sdk">Минимальное SDK</string>
+    <string name="target_sdk">Целевое SDK</string>
+    <string name="new_project">Новый проект</string>
+    <string name="package_name">Имя пакета</string>
+    <string name="project_app_name">Имя приложения</string>
+    <string name="invalid_values">Неподходящие значения</string>
+    <string name="msg_no_projects">Похоже, вы ещё не создали ни одного проекта.</string>
+    <string name="msg_create_new_project_greeting">Начните свой новый замечательный проект!</string>
+    <string name="title_confirm_open_project">Открыть последний проект?</string>
+    <string name="msg_confirm_open_project">Хотите отурыть последний проект? Последний рах вы работали над:\n%s</string>
+    <string name="msg_init_project_failed">Не удалось инициализировать проект!</string>
+    <string name="group_project">Проект</string>
+    <string name="title_close_project">Закруть этот проект</string>
+    <string name="msg_opened_project_does_not_exist">Последний открытый проект не существует!</string>
+    <string name="msg_create_new_project">Создать новый проект</string>
+    <string name="msg_open_existing_project">Открыть существующий проект</string>
+    <string name="msg_opening_project">Открытие проекта&#8230;</string>
+    <string name="msg_invalid_project">Выбранная директория не является проектом Android</string>
+    <string name="msg_project_deleted">Проект удалён</string>
+    <string name="msg_project_delete_failed">Не удалось удалить проект!</string>
+    <string name="menu_project_info">Информация о проекте</string>
+    <string name="header_module_info">Информация о модуле</string>
+    <string name="msg_module_count">Модули : %d</string>
+    <string name="msg_task_count">Сценарии : %d</string>
+    <string name="msg_dependency_count">Зависимости : %d</string>
+    <string name="msg_package_name">Пакет : %s</string>
+    <string name="msg_min_sdk">Минимальное SDK : %s</string>
+    <string name="msg_target_sdk">Целевое SDK : %s</string>
+    <string name="title_confirm_project_close">Закрыть проект</string>
+    <string name="msg_confirm_project_close">Уверены, что хотите закрыть этот проект? Все запущенные Daemon\'ы Gradle будут остановлены после закрытия этого проекта.</string>
+    <string name="project_exists">Проект с таким именем уже существует!</string>
 
+    <!-- Templates -->
+    <string name="template_basic">Basic Project</string>
+    <string name="template_description_basic">A basic project with AppCompat Toolbar and a Floating Action Button</string>
+    <string name="template_description_empty">An empty project with default toolbar. Suitable when you want to do all the basic things yourself.</string>
+    <string name="template_description_navigation_drawer">Project with AppCompat Toolbar, DrawerLayout and NavigationView</string>
+    <string name="template_empty">Empty project</string>
+    <string name="template_navigation_drawer">Navigation drawer project</string>
+    <string name="template_kotlin_basic">Kotlin Basic Project</string>
+    <string name="template_description_kotlin_basic">Kotlin project with Appcompat Toolbar and a Floating Action Button</string>
+    <string name="template_libgdx">LibGDX Game</string>
+    <string name="template_description_libgdx">LibGDX game project set up to render an image as an example.</string>
+
+    <!-- Files -->
+    <string name="save">Save</string>
+    <string name="show_files">Files</string>
+    <string name="menu_find">Find</string>
+    <string name="menu_find_file">Find in file</string>
+    <string name="menu_find_project">Find in project</string>
+    <string name="msg_search_modules">Search in modules</string>
+    <string name="msg_no_modules">No modules found in project</string>
+    <string name="hint_find_project_filter">Filter file extensions (optional)</string>
+    <string name="msg_find_project_filter">Separated by \'|\'</string>
+    <string name="msg_empty_search_query">Please enter text</string>
+    <string name="msg_select_search_modules">Select modules to search</string>
+    <string name="msg_searching_project">Finding in project, please wait&#8230;</string>
+    <string name="view_search_results">Search results</string>
+    <string name="copying_files">Copying files</string>
+    <string name="writing_files">Writing files</string>
+    <string name="copying_assets">Copying assets</string>
+    <string name="failed_create_project_dir">Failed to create project dir!</string>
+    <string name="failed_write_file">Failed to write file: %s</string>
+    <string name="asset_copy_failed">Failed to copy template to storage!</string>
+    <string name="cannot_create_temp">Failed to create temporary project directory!</string>
+    <string name="project_created_successfully">Project created successfully!</string>
+    <string name="msg_begin_project_write">Starting writing process</string>
+    <string name="msg_folder_creation_failed">Failed to create folder!</string>
+    <string name="msg_file_creation_failed">Failed to create file!</string>
+    <string name="msg_folder_created">Folder created successfully!</string>
+    <string name="msg_file_created">File created successfully!</string>
+    <string name="msg_folder_exists">Folder already exists!</string>
+    <string name="msg_file_exists">File already exists!</string>
+    <string name="msg_invalid_name">Invalid Name!</string>
+    <string name="text_create">Create</string>
+    <string name="msg_can_contain_slashes">If the path contains File separator (\'/\'), then the required (parent) directories will be created if they don\'t exist.</string>
+    <string name="folder_name">Folder Name</string>
+    <string name="file_name">File Name</string>
+    <string name="new_name">New name</string>
+    <string name="new_file">New file</string>
+    <string name="new_java_class">New Java class</string>
+    <string name="new_xml_resource">New XML resource</string>
+    <string name="new_folder">New folder</string>
+    <string name="title_confirm_delete">Confirm delete</string>
+    <string name="msg_confirm_delete">Are you sure you want to delete:\n%s?</string>
+    <string name="copied">Copied successfully!</string>
+    <string name="msg_rename_file">Enter new name for file/folder.</string>
+    <string name="renamed">Renamed successfully!</string>
+    <string name="rename_failed">Unable to rename file!</string>
+    <string name="deleted">Deleted successfully!</string>
+    <string name="delete_failed">Unable to delete file!</string>
+    <string name="copy_path">Copy path</string>
+    <string name="rename_file">Rename</string>
+    <string name="delete_file">Delete</string>
+    <string name="file_options">File options</string>
+    <string name="action_closeAll">Close all</string>
+    <string name="action_closeOthers">Close others</string>
+    <string name="action_closeThis">Close this</string>
+    <string name="all_saved">All files saved!</string>
+    <string name="msg_newfile_dest">Destination: %s/</string>
+    <string name="restype_drawable">Drawable</string>
+    <string name="restype_layout">Layout</string>
+    <string name="restype_menu">Menu</string>
+    <string name="restype_other">Other</string>
+    <string name="classtype_class">Class</string>
+    <string name="classtype_activity">Activity</string>
+    <string name="classtype_interface">Interface</string>
+    <string name="classtype_enum">Enum</string>
+    <string name="msg_checking_storage_permissions">Checking storage permissions</string>
+    <string name="msg_failed_list_files">Failed to list project files!</string>
+    <string name="msg_failed_save">Failed to save files!</string>
+    <string name="msg_storage_denied">Can\'t proceed without storage permissions</string>
+    <string name="msg_storage_granted">Storage permissions granted!</string>
+
+    <!-- Code Editor -->
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <item name="paste" type="string">Paste</item>
+    <item name="copy" type="string" tools:override="true">Copy</item>
+    <item name="selectAll" formatted="true" type="string">Select All</item>
+    <item name="cut" type="string">Cut</item>
+    <item name="last" type="string">Last</item>
+    <item name="next" type="string">Next</item>
+    <item name="replace" type="string">Replace</item>
+    <item name="replaceAll" type="string">Replace all</item>
+    <item name="replacement" type="string">Replacement</item>
+    <item name="text_to_search" type="string">Text to search</item>
+    <item name="more" type="string">More</item>
+
+    <!-- Preferences -->
+    <string name="title_change_text_size">Editor font size</string>
+    <string name="idepref_about_title">About AndroidIDE</string>
+    <string name="idepref_build_clearCache_title">Clear Gradle caches</string>
+    <string name="idepref_build_clearCache_summary">Clear Gradle caches directory. This will delete all dependencies downloaded by Gradle. Required files will be downloaded again in next build.</string>
+    <string name="idepref_build_customgradlecommands_title">Additional Gradle commands</string>
+    <string name="idepref_build_customgradlecommands_summary">Choose additional commands that will be added while executing every task</string>
+    <string name="idepref_build_editgradleproperties_title">Edit global Gradle properties</string>
+    <string name="idepref_build_editgradleproperties_summary">Edit gradle.properties in GRADLE_HOME</string>
+    <string name="idepref_editor_fontsize_title">Font size</string>
+    <string name="idepref_editor_fontsize_summary">Font size of the editor</string>
+    <string name="idepref_editor_paintingflags_title">Non-printable painting flags</string>
+    <string name="idepref_editor_paintingflags_summary">Choose what non-printable characters should be drawn by the editor</string>
+    <string name="idepref_editor_drawhexcolors_title">Draw hex color strings</string>
+    <string name="idepref_editor_drawhexcolors_summary">Should the editor draw hex color string?</string>
+    <string name="idepref_editor_title">Editor</string>
+    <string name="idepref_build_title">Build &amp; Run</string>
+    <string name="title_open_projects">Open last project</string>
+    <string name="msg_open_projects">If checked, the IDE will remember the last opened project and it will be reopened on next startup.</string>
+    <string name="title_confirm_project_open">Confirm project opening</string>
+    <string name="msg_confirm_project_open">Ask before opening last opened project.</string>
+    <string name="title_default_shell">Use system shell in terminal</string>
+    <string name="msg_default_shell">If checked, \'/system/bin/sh\' will be used in terminal.</string>
+    <string name="title_general">General</string>
+    <string name="title_tab_size">Tab size</string>
+    <string name="msg_tab_size">Specify number of spaces for TAB</string>
+    <string name="msg_preferences">Preferences</string>
+    <string name="msg_failed_get_changelog">Failed to read changelog!</string>
+    <string name="pref_changelog">Changelog</string>
+    <string name="msg_editor_font_size">Please choose default font size of editor :</string>
+    <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\nIMPORTANT: This will also delete AAPT2. You will need to reinstall it otherwise you\'ll end up with a build failure.\n\nAre you sure you want to delete caches?</string>
+
+
+    <!-- Error Messages used while Logging -->
+    <string name="err_installation">Installation error</string>
+    <string name="err_completion">Completion error</string>
+    <string name="err_no_server_implementation">No LanguageServer implementation found.</string>
+    <string name="err_init_server">Error initializing language server</string>
+    <string name="err_init_sdkinfo">Unable to initialize SDK Info</string>
+    <string name="err_cannot_start_file_picker">Unable to start file picker</string>
+    <string name="err_cannot_parse_apk_metadata">Failed to parse APK metadata</string>
+    <string name="err_cannot_save_files">Unable to save files</string>
+    <string name="err_cannot_preview_layout">Unable to preview layout</string>
+    <string name="err_cannot_inflate_layout">Unable to inflate layout</string>
+    <string name="err_cannot_start_server">Unable to start Language Server for: %s</string>
+    <string name="err_cannot_write_socket">Failed to write to Socket stream</string>
+    <string name="err_server_disconnected">Language server process unexpectedly exited.</string>
+
+    <!-- Layout preview and designer -->
+    <string name="msg_cannot_preview_layout">Unable to preview layout!</string>
+    <string name="title_preview_layout">Preview Layout</string>
+    <string name="label_ui_designer_content">Main UI designer content</string>
+    <string name="widget_textview">TextView</string>
+    <string name="widget_button">Button</string>
+    <string name="widget_group_android">Android</string>
+    <string name="widget_checkbox">CheckBox</string>
+    <string name="widget_checked_textview">CheckedTextView</string>
+    <string name="widget_edittext">EditText</string>
+    <string name="widget_image_button">ImageButton</string>
+    <string name="widget_image_view">ImageView</string>
+    <string name="widget_progressbar">ProgressBar</string>
+    <string name="widget_radio_button">RadioButton</string>
+    <string name="widget_seekbar">SeekBar</string>
+    <string name="widget_spinner">Spinner</string>
+    <string name="widget_group_layouts">Layouts</string>
+    <string name="layout_linear">LinearLayout</string>
+    <string name="layout_relative">RelativeLayout</string>
+    <string name="msg_attr_edit_hint">Click on the attribute items to edit.</string>
+    <string name="sym_equal">=</string>
+    <string name="msg_attr_namespace">\'%s\' namespace</string>
+    <string name="msg_unknown_package">Unknown package name</string>
+    <string name="msg_attr_editor_select_view">Select a view to edit its attributes.</string>
+    <string name="msg_attr_editor_no_attrs">No attributes has been added for this view.\nClick on the \'+\' button to add.</string>
+    <string name="msg_enter_attr_value">Enter new value for attribute:</string>
+    <string name="hint_new_attr_value">New value</string>
+    <string name="attr_val_wrap_content">wrap_content</string>
+    <string name="attr_val_match_parent">match_parent</string>
+    <string name="attr_val_other">Other value</string>
+    <string name="msg_enter_dimension_value">Enter dimension value</string>
+    <string name="msg_applicable_attrs">Applicable attributes</string>
+    <string name="msg_attr_editor_actions">Actions</string>
+    <string name="title_viewaction_delete">Delete</string>
+    <string name="msg_viewaction_select_parent">Select parent</string>
+    <string name="msg_no_view_parent">This view does not have a parent</string>
+    <string name="msg_yesno_def_title">Please confirm</string>
+    <string name="msg_yesno_def_message">Are you sure?</string>
+    <string name="msg_view_deletion_failed">Unable to delete the view.</string>
+    <string name="msg_empty_ui_layout">No views have been added. Click to add.</string>
+    <string name="msg_no_attr_format">No attribute format is available for this attribute.</string>
+    <string name="msg_attr_editor_null">Unable to create attribute editor for this attribute</string>
+    <string name="msg_invalid_attr_value">Invalid value</string>
+    <string name="msg_new_str_value">New string value</string>
+    <string name="msg_choose_new_val">Choose new value</string>
+    <string name="msg_select_one_flag">Please check at least one flag.</string>
+    <string name="msg_generate_xml_failed">Failed to generate XML code</string>
+    <string name="title_generating_xml">Generating XML code</string>
+    <string name="title_code_generation_failed">Code generation failed</string>
+    <string name="msg_code_generation_failed">Failed to generate XML code. Would you like to exit anyway?</string>
+    <string name="msg_invalid_designer_result">UI Designer returned invalid result</string>
+    <string name="msg_swipe_up">Swipe up for build output, logs and more.</string>
+    <string name="msg_ide_crashed">AndroidIDE crashed</string>
+    <string name="msg_report_crash">Please open an issue on github with the following stacktrace :</string>
+    <string name="msg_crash_report_hint">Click on the button below to copy log and open issues page.</string>
+    <string name="msg_copy_report_action">Copy and report</string>
+    <string name="msg_reading_bootstrap">Reading bootstrap archive…</string>
+    <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
+    <string name="title_translations">Translations</string>
+    <string name="title_compiler_module_install">Installing compiler module</string>
+    <string name="msg_compiler_module_install">Compiler module is being installed, please wait&#8230;</string>
+    <string name="msg_compiler_module_install_failed">Compiler module installation failed. The error was:\n%s</string>
+    <string name="msg_compiler_module_installed">Compiler module installed successfully!</string>
+    <string name="action_expand_selection">Expand selection</string>
+    <string name="idepref_java_matchLower_title">Match completions in lower case</string>
+    <string name="idepref_editor_category_common">Common</string>
+    <string name="idepref_editor_category_java">Java</string>
+    <string name="title_files_unsaved">Unsaved files</string>
+    <string name="msg_files_unsaved">Some files are not saved. Would you like to save them before closing? Unsaved files are: \n%s</string>
+    <string name="idepref_editor_autoSave_title">Save before closing files</string>
+    <string name="idepref_editor_autoSave_summary">Save files before closing them. This is an EXPERIMENTAL feature. You are expected to save the files yourself.</string>
+    <string name="idepref_java_matchLower_summary">If enabled, then typing a lower case or upper case letters will suggest class names as well as scope members.</string>
+    <string name="idepref_editor_ligatures_title">Font ligatures</string>
+    <string name="idepref_editor_ligatures_summary">Enable/disable font ligatures</string>
+
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="title_use_popup_actions">Floating text actions</string>
+    <string name="msg_use_popup_actions">Use PopupWindow for showing text actions</string>
+    <string name="title_use_horizontal_popup">Horizontal text actions</string>
+    <string name="msg_use_horizontal_popup">Make the floating text actions appear horizontally.</string>
 
 
 </resources>
