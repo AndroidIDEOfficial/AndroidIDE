@@ -523,7 +523,8 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
             // A dimension value which starts with a digit. E.g.: 1dp, 12sp, 123px, etc.
             StringBuilder dimensionVal = new StringBuilder ();
             int index = 0;
-            while (Character.isDigit(c = value.charAt(index))) {
+            while (index < value.length ()
+                    && Character.isDigit(c = value.charAt(index))) {
                 dimensionVal.append (c);
                 index ++;
             }
