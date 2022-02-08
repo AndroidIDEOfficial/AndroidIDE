@@ -335,12 +335,12 @@ public abstract class BaseView implements IView {
         return Objects.hash (attributes, attrAdapters, qualifiedName, view, getParent (), stored, isPlaceholder ());
     }
     
-    private void newLine (@NonNull StringBuilder stringBuilder, int indentCount) {
+    protected void newLine (@NonNull StringBuilder stringBuilder, int indentCount) {
         stringBuilder.append ("\n");
         indent (stringBuilder, indentCount);
     }
     
-    private void indent (StringBuilder sb, int count) {
+    protected void indent (StringBuilder sb, int count) {
         for (var i = 0; i < DEFAULT_INDENTATION_LENGTH * count; i++) {
             sb.append (" ");
         }

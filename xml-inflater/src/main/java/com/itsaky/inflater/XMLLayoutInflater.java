@@ -23,6 +23,7 @@ import static com.itsaky.inflater.util.Preconditions.assertNotnull;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import com.blankj.utilcode.util.ReflectUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.AttrInfo;
@@ -37,6 +39,7 @@ import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
 import com.itsaky.inflater.impl.BaseView;
 import com.itsaky.inflater.impl.ErrorUiView;
+import com.itsaky.inflater.impl.IncludeLayout;
 import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.inflater.impl.UiNamespace;
 import com.itsaky.inflater.impl.UiView;
@@ -135,7 +138,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         final String name = tag.tagName ().trim ();
         
         if (name.equals ("include")) {
-            return createFromInclude (tag.attributes (), parentGroup);
+            return createFromInclude (tag.attributes (), parent);
         }
         
         IView root;
@@ -168,7 +171,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
     protected void addChildren (@NonNull Element tag, IViewGroup parent) {
         if (tag.childrenSize () > 0 && !parent.isPlaceholder ()) {
             for (Element child : tag.children ()) {
-                final BaseView created = (BaseView) onCreateView (child, (ViewGroup) parent.asView (), parent);
+                final IView created = onCreateView (child, (ViewGroup) parent.asView (), parent);
                 if (created != null) {
                     parent.addView (created);
                     created.setParent (parent);
@@ -267,8 +270,59 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         }
     }
     
-    protected IView createFromInclude (Attributes attrs, ViewGroup parent) {
-        throw new UnsupportedOperationException ("Inflating from <include> is not supported yet!");
+    protected IView createFromInclude (Attributes attrs, IViewGroup parent) {
+        
+        if (!attrs.hasKey ("layout")) {
+            throw new InflateException ("<include> tag doesn't have 'layout' attribute.");
+        }
+        
+        final var layout = attrs.get ("layout");
+        Preconditions.assertNotBlank (layout, "'layout' attribute for <include> tag has invalid value." + "layout='" + layout + "'");
+        
+        if (layout.startsWith ("@android:layout/")) {
+            return inflateAndroidLayout (layout.substring ("@android:layout/".length ()), attrs, parent);
+        }
+        
+        final var name = layout.substring ("@layout/".length ());
+        final var file = resFinder.inflateLayout (name);
+        if (file == null) {
+            throw new InflateException ("Layout file '" + name + "' not found");
+        }
+        
+        return inflateLocalIncludeLayout (attrs, parent, name, file);
+    }
+    
+    @NonNull
+    private IncludeLayout inflateLocalIncludeLayout (Attributes attrs, IViewGroup parent, String name, File file) {
+        
+        // DesignerActivity applies drag listeners in 'onInflateView()' call
+        // But, <include> layouts must not be edited here
+        // So, we avoid notifying the listeners
+        super.notify = false;
+        
+        final var view = this.inflate (file, (ViewGroup) parent.asView ());
+        Preconditions.assertNotnull (view, "Failed to inflate '" + name + "'");
+        
+        final var includeLayout = new IncludeLayout (view);
+        
+        applyLayoutParams (includeLayout, (ViewGroup) parent.asView ());
+        addAttributesTo (includeLayout, attrs, parent);
+        
+        // Enable notifications
+        super.notify = true;
+        
+        return includeLayout;
+    }
+    
+    protected IView inflateAndroidLayout (String name, Attributes attrs, @NonNull IViewGroup parent) {
+        final var id = (int) ReflectUtils.reflect (android.R.layout.class).field (name).get ();
+        final var view = LayoutInflater.from (contextProvider.getContext ()).inflate (id, null);
+        final var layout = new IncludeLayout (new UiView (IncludeLayout.TAG, view, false));
+        
+        applyLayoutParams (layout, (ViewGroup) parent.asView ());
+        addAttributesTo (layout, attrs, parent);
+        
+        return layout;
     }
     
     protected IView createFromSimpleName (String name, ViewGroup parent, int style) throws InflateException {
