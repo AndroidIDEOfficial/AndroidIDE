@@ -36,6 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 
 import io.github.rosemoe.sora.lang.completion.CompletionHelper;
 import io.github.rosemoe.sora.text.CharPosition;
@@ -58,7 +59,15 @@ public class CommonCompletionProvider {
         this.server = server;
     }
     
-    public List<CompletionItem> complete(ContentReference content, Path file, CharPosition position) {
+    /**
+     * Computes completion items using the provided language server instance.
+     *
+     * @param content  The reference to the content of the editor.
+     * @param file     The file to compute completions for.
+     * @param position The position of the cursor in the content.
+     * @return The computed completion items. May return an empty list if the there was an error computing the completion items.
+     */
+    public List<CompletionItem> complete (ContentReference content, Path file, CharPosition position, Predicate<Character> prefixMatcher) {
         if (this.future != null && !this.future.isDone ()) {
             try {
                 this.future.cancel (true);
@@ -68,7 +77,7 @@ public class CommonCompletionProvider {
         }
         
         this.future = CompletableFuture.supplyAsync (() -> {
-            final var prefix = CompletionHelper.computePrefix (content, position, this::checkCompletionChar);
+            final var prefix = CompletionHelper.computePrefix (content, position, prefixMatcher::test);
             final var completer = server.getCompletionProvider ();
             
             if (!completer.canComplete (file)) {
@@ -80,7 +89,7 @@ public class CommonCompletionProvider {
             params.setPrefix (prefix);
             return completer.complete (params);
         });
-    
+        
         try {
             return finalizeResults (future.get ().getItems ());
         } catch (Throwable e) {
@@ -89,13 +98,17 @@ public class CommonCompletionProvider {
         }
     }
     
-    private boolean checkCompletionChar (char c) {
+    public static boolean checkJavaCompletionChar (char c) {
         return MyCharacter.isJavaIdentifierPart (c) || c == '.';
+    }
+    
+    public static boolean checkXMLCompletionChar (char c) {
+        return MyCharacter.isJavaIdentifierPart (c) || c == '<' || c == '/';
     }
     
     @NonNull
     @Contract("_ -> param1")
-    private List<CompletionItem> finalizeResults(@NonNull List<CompletionItem> items) {
+    private List<CompletionItem> finalizeResults (@NonNull List<CompletionItem> items) {
         items.sort (RESULT_SORTER);
         return items;
     }
@@ -114,5 +127,5 @@ public class CommonCompletionProvider {
         return s1.compareTo (s2);
     };
     
-    private static final Logger LOG = Logger.instance("CommonCompletionProvider");
+    private static final Logger LOG = Logger.instance ("CommonCompletionProvider");
 }

@@ -22,8 +22,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.language.CommonCompletionProvider;
+import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.Logger;
@@ -117,7 +117,7 @@ public class XMLLanguage extends IDELanguage {
 		
 		final var file = Paths.get (extraArguments.getString (IDEEditor.KEY_FILE));
 		publisher.setUpdateThreshold (0);
-		publisher.addItems (new ArrayList<> (completer.complete (content, file, position)));
+		publisher.addItems (new ArrayList<> (completer.complete (content, file, position, CommonCompletionProvider::checkXMLCompletionChar)));
 	}
 	
 	@Override

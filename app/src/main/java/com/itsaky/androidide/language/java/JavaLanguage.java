@@ -121,7 +121,7 @@ public class JavaLanguage extends IDELanguage {
 		}
 		final var file = Paths.get (extraArguments.getString (IDEEditor.KEY_FILE));
 		publisher.setUpdateThreshold (0);
-		publisher.addItems (new ArrayList<> (completer.complete (content, file, position)));
+		publisher.addItems (new ArrayList<> (completer.complete (content, file, position, CommonCompletionProvider::checkJavaCompletionChar)));
 	}
 	
 	@Override
