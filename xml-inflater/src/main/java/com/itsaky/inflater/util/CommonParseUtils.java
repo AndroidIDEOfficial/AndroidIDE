@@ -21,6 +21,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -72,7 +73,7 @@ public class CommonParseUtils {
     }
     
     protected int parseDimension(final String value, int defaultValue) {
-        if (value == null) {
+        if (value == null || value.isEmpty ()) {
             return defaultValue;
         }
         
@@ -111,6 +112,7 @@ public class CommonParseUtils {
     }
     
     protected int getUnitForDimensionType(@NonNull String dimensionType) {
+        
         switch (dimensionType) {
             case "dp" :
                 return TypedValue.COMPLEX_UNIT_DIP;
@@ -125,6 +127,7 @@ public class CommonParseUtils {
             case "mm" :
                 return TypedValue.COMPLEX_UNIT_MM;
         }
+        
         return TypedValue.COMPLEX_UNIT_DIP;
     }
     

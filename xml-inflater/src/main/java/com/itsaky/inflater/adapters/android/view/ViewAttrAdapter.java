@@ -552,24 +552,6 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
         
         return defaultValue;
     }
-
-    protected int getUnitForDimensionType(String dimensionType) {
-        switch (dimensionType) {
-            case "dp" :
-                return TypedValue.COMPLEX_UNIT_DIP;
-            case "sp" :
-                return TypedValue.COMPLEX_UNIT_SP;
-            case "px" :
-                return TypedValue.COMPLEX_UNIT_PX;
-            case "pt" :
-                return TypedValue.COMPLEX_UNIT_PT;
-            case "in" :
-                return TypedValue.COMPLEX_UNIT_IN;
-            case "mm" :
-                return TypedValue.COMPLEX_UNIT_MM;
-        }
-        return TypedValue.COMPLEX_UNIT_DIP;
-    }
     
     protected boolean isApi26() {
         return true;

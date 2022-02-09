@@ -15,8 +15,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
-
 package com.itsaky.androidide.utils;
 
 import androidx.annotation.Nullable;
