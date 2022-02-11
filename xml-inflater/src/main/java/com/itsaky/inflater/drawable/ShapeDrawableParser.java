@@ -44,14 +44,14 @@ import java.util.Arrays;
  */
 public class ShapeDrawableParser extends IDrawableParser {
     
-    protected ShapeDrawableParser (XmlPullParser parser, IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (parser, resourceFinder, displayMetrics);
+    protected ShapeDrawableParser (XmlPullParser parser, IResourceTable resourceFinder, DisplayMetrics displayMetrics, int minDepth) {
+        super (parser, resourceFinder, displayMetrics, minDepth);
     }
     
     @Nullable
     @Override
     public Drawable parse () throws Exception {
-    
+        
         final var drawable = new GradientDrawable ();
         
         var index = attrIndex ("shape");
@@ -66,7 +66,7 @@ public class ShapeDrawableParser extends IDrawableParser {
             
             index = attrIndex ("thickness");
             drawable.setThickness (index == -1 ? 0 : parseDimension (value (index), 0));
-    
+            
             index = attrIndex ("thicknessRatio");
             drawable.setThicknessRatio (index == -1 ? 1f : Float.parseFloat (value (index)));
         }
@@ -75,7 +75,7 @@ public class ShapeDrawableParser extends IDrawableParser {
         drawable.setUseLevel (index != -1 && parseBoolean (value (index)));
         
         var event = parser.getEventType ();
-        while (event != XmlPullParser.END_DOCUMENT) {
+        while (event != XmlPullParser.END_DOCUMENT && canParse ()) {
             final var name = parser.getName ();
             if (event == XmlPullParser.START_TAG) {
                 switch (name) {
@@ -85,16 +85,16 @@ public class ShapeDrawableParser extends IDrawableParser {
                     case "gradient":
                         parseGradient (drawable);
                         break;
-                    case "padding" :
+                    case "padding":
                         parsePadding (drawable);
                         break;
-                    case "size" :
+                    case "size":
                         parseSize (drawable);
                         break;
-                    case "solid" :
+                    case "solid":
                         parseSolid (drawable);
                         break;
-                    case "stroke" :
+                    case "stroke":
                         parseStroke (drawable);
                         break;
                 }
@@ -108,7 +108,7 @@ public class ShapeDrawableParser extends IDrawableParser {
     private void parseStroke (@NonNull final GradientDrawable drawable) {
         var index = attrIndex ("width");
         var strokeWidth = 0;
-        if (index != - 1) {
+        if (index != -1) {
             drawable.setStroke (strokeWidth = parseDimension (value (index), 0), Color.TRANSPARENT);
         }
         
@@ -158,7 +158,7 @@ public class ShapeDrawableParser extends IDrawableParser {
         
         final var rect = new Rect ();
         if (!drawable.getPadding (rect)) {
-            rect.set (0,0,0,0);
+            rect.set (0, 0, 0, 0);
         }
         
         var changed = false;
@@ -167,19 +167,19 @@ public class ShapeDrawableParser extends IDrawableParser {
             rect.left = parseDimension (value (index), 0);
             changed = true;
         }
-    
+        
         index = attrIndex ("top");
         if (index != -1) {
             rect.top = parseDimension (value (index), 0);
             changed = true;
         }
-    
+        
         index = attrIndex ("right");
         if (index != -1) {
             rect.right = parseDimension (value (index), 0);
             changed = true;
         }
-    
+        
         index = attrIndex ("bottom");
         if (index != -1) {
             rect.bottom = parseDimension (value (index), 0);
@@ -196,26 +196,26 @@ public class ShapeDrawableParser extends IDrawableParser {
         drawable.setOrientation (index == -1 ? GradientDrawable.Orientation.LEFT_RIGHT : parseGradientOrientation (value (index)));
         
         index = attrIndex ("centerX");
-        var center = index == - 1 ? drawable.getGradientCenterX () : Float.parseFloat (value (index));
+        var center = index == -1 ? drawable.getGradientCenterX () : Float.parseFloat (value (index));
         drawable.setGradientCenter (center, drawable.getGradientCenterY ());
-    
+        
         index = attrIndex ("centerY");
-        center = index == - 1 ? drawable.getGradientCenterX () : Float.parseFloat (value (index));
+        center = index == -1 ? drawable.getGradientCenterX () : Float.parseFloat (value (index));
         drawable.setGradientCenter (drawable.getGradientCenterX (), center);
         
-        final var colors = new int [3];
+        final var colors = new int[3];
         var changed = false;
         Arrays.fill (colors, -1);
         
         index = attrIndex ("centerColor");
         if (index != -1) {
-            colors [1] = parseColor (value (index), appContext ());
+            colors[1] = parseColor (value (index), appContext ());
             changed = true;
         }
         
         index = attrIndex ("endColor");
         if (index != -1) {
-            colors [2] = parseColor (value (index), appContext ());
+            colors[2] = parseColor (value (index), appContext ());
             changed = true;
         }
         
@@ -241,11 +241,11 @@ public class ShapeDrawableParser extends IDrawableParser {
     
     private int parseGradientType (String value) {
         switch (value) {
-            case "radial" :
+            case "radial":
                 return GradientDrawable.RADIAL_GRADIENT;
-            case "sweep" :
+            case "sweep":
                 return GradientDrawable.SWEEP_GRADIENT;
-            case "linear" :
+            case "linear":
             default:
                 return GradientDrawable.LINEAR_GRADIENT;
         }
@@ -307,14 +307,14 @@ public class ShapeDrawableParser extends IDrawableParser {
         if (index != -1) {
             radii[2] = radii[3] = parseDimension (value (index), 0);
             changed = true;
-    
+            
         }
         
         index = attrIndex ("bottomLeftRadius");
         if (index != -1) {
             radii[4] = radii[5] = parseDimension (value (index), 0);
             changed = true;
-    
+            
         }
         
         index = attrIndex ("bottomRightRadius");
@@ -331,13 +331,13 @@ public class ShapeDrawableParser extends IDrawableParser {
     @Contract(pure = true)
     private int parseShape (@NonNull String value) {
         switch (value) {
-            case "oval" :
+            case "oval":
                 return GradientDrawable.OVAL;
             case "line":
                 return GradientDrawable.LINE;
-            case "ring" :
+            case "ring":
                 return GradientDrawable.RING;
-            case "rectangle" :
+            case "rectangle":
             default:
                 return GradientDrawable.RECTANGLE;
         }

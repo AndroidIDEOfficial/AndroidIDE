@@ -35,8 +35,8 @@ import org.xmlpull.v1.XmlPullParser;
  */
 public class InsetDrawableParser extends IDrawableParser {
     
-    protected InsetDrawableParser (XmlPullParser parser, IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (parser, resourceFinder, displayMetrics);
+    protected InsetDrawableParser (XmlPullParser parser, IResourceTable resourceFinder, DisplayMetrics displayMetrics, int minDepth) {
+        super (parser, resourceFinder, displayMetrics, minDepth);
     }
     
     @Override

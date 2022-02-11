@@ -55,13 +55,13 @@ public abstract class DrawableParserFactory {
      * is an XML document, then a suitable parser is determined by looking at the root tag of the
      * drawable.
      *
-     * @param context The context. This will be used for obtaining app resources.
-     * @param file The file to parse.
+     * @param context        The context. This will be used for obtaining app resources.
+     * @param file           The file to parse.
      * @param resourceFinder The resource finder. Used for finding references to another resources.
      * @return A new {@link IDrawableParser} instance if the inputs are valid, or {@code null} if there were any
-     *          issues creating the parser.
+     * issues creating the parser.
      * @throws XmlPullParserException Thrown by the {@link XmlPullParser#setInput(Reader)}.
-     * @throws IOException Thrown by {@link XmlPullParser#next()}
+     * @throws IOException            Thrown by {@link XmlPullParser#next()}
      */
     @Nullable
     public static IDrawableParser newParser (@NonNull final Context context, @NonNull final File file, final IResourceTable resourceFinder) throws XmlPullParserException, IOException {
@@ -86,13 +86,13 @@ public abstract class DrawableParserFactory {
     /**
      * Create a new drawable parser for the given xml code.
      *
-     * @param xmlDrawable The XML code. This must be valid.
+     * @param xmlDrawable    The XML code. This must be valid.
      * @param resourceFinder The resource finder. Used for finding references to another resources.
      * @param displayMetrics This will be used by generated parsers to parse dimension vlaues.
      * @return A new {@link IDrawableParser} instance if the inputs are valid, or {@code null} if there were any
-     *          issues creating the parser.
+     * issues creating the parser.
      * @throws XmlPullParserException Thrown by the {@link XmlPullParser#setInput(Reader)}.
-     * @throws IOException Thrown by {@link XmlPullParser#next()}
+     * @throws IOException            Thrown by {@link XmlPullParser#next()}
      */
     @Nullable
     public static IDrawableParser newXmlDrawableParser (String xmlDrawable, IResourceTable resourceFinder, DisplayMetrics displayMetrics) throws XmlPullParserException, IOException {
@@ -106,31 +106,43 @@ public abstract class DrawableParserFactory {
         while (event != XmlPullParser.END_DOCUMENT) {
             if (event == XmlPullParser.START_TAG) {
                 final var name = parser.getName ();
-                switch (name) {
-                    case "shape" :
-                        return new ShapeDrawableParser (parser, resourceFinder, displayMetrics);
-                    case "vector" :
-                        return new NoParser (VectorMasterDrawable.fromXML (xmlDrawable));
-                    default:
-                        return null;
-                }
+                return parserForTag (xmlDrawable, resourceFinder, displayMetrics, parser, name);
             }
             event = parser.next ();
         }
         
         // TODO Implement parsers for these root tags if possible
         //    1. <bitmap>
-        //    2. <nine-patch>
+        //    2. <nine-patch>------ DONE
         //    3. <layer-list>
         //    4. <selector>
         //    5. <level-list>
         //    6. <transition>
-        //    7. <inset>
+        //    7. <inset>----------- DONE
         //    8. <clip>
         //    9. <scale>
         
-        // We don't support parsing of this type of drawable
+        // Cannot parse this type of drawable
         return null;
+    }
+    
+    @Nullable
+    public static IDrawableParser parserForTag (String xmlDrawable, IResourceTable resourceFinder, DisplayMetrics displayMetrics, XmlPullParser parser, @NonNull String name) throws XmlPullParserException {
+        switch (name) {
+            case "shape":
+                return new ShapeDrawableParser (parser, resourceFinder, displayMetrics, IDrawableParser.ANY_DEPTH);
+            case "inset":
+                return new InsetDrawableParser (parser, resourceFinder, displayMetrics, IDrawableParser.ANY_DEPTH);
+            case "layer-list":
+                return new LayerListParser (parser, resourceFinder, displayMetrics, IDrawableParser.ANY_DEPTH);
+            case "vector":
+                if (xmlDrawable != null) {
+                    return new NoParser (VectorMasterDrawable.fromXML (xmlDrawable));
+                }
+                return null;
+            default:
+                return null;
+        }
     }
     
     /**
@@ -141,10 +153,10 @@ public abstract class DrawableParserFactory {
         private final Drawable parsed;
         
         protected NoParser (final Drawable parsed) {
-            super (null, null, null);
+            super (null, null, null, ANY_DEPTH);
             this.parsed = parsed;
         }
-    
+        
         @Override
         public Drawable parse () {
             return parsed;
