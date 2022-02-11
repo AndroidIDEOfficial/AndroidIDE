@@ -1,0 +1,376 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- AndroidIDE -->
+    <string name="app_name">AndroidIDE</string>
+    <string name="license_jdk">AndriudIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь:</string>
+    <string name="title_developers">Разработчики</string>
+    <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
+    <string name="title_open_source_licenses">Лицензирование открытого кода</string>
+    <string name="msg_open_source_licenses">AndroidIDE использует открытые библиотеки. Вы можете найти исходный код и лицензии использованных библиотек, перейдя по ссылкам ниже.</string>
+    <string name="msg_about_licensed_under">Лицензия:ᅠ</string>
+    <string name="about_option_email">Email</string>
+    <string name="about_option_website">Вебсайт</string>
+    <string name="about_footer_alternate">AndroidIDE v\u2022 %s</string>
+    <string name="about_footer">AndroidIDE %1$s для %2$s</string>
+    <string name="about_subtitle">Просто IDE для Android</string>
+    <string name="msg_get_package_failed">Ошибка распаковки имени пакета!</string>
+    <string name="msg_share_app">AndroidIDE - это IDE (Integrated Development Environment) для создания Android приложений на вашем Android смартфоне. AndroidIDE поддерживает :\n1. Gradle \n2. OpenJDK 11.0.1. \n3. Продвинутое автодополнение для Java \n4. Автодополнение для XML \n5. Поддержка Kotlin и многое другое. \n\nСкачайте AndroidIDE здесь: https://androidide.com</string>
+    <string name="msg_need_help">Если вы столкнулись с какими-либо проблемами при использовании AndroidIDE или при сборке Android приложений, вы можете присоединиться к нашей группе в Telegram и попросить о помощи там.\n\nВы также можете присылать нам свои пожелания и предложения на наш электронный адрес.</string>
+    <string name="discuss_amp_help">Обсуждение и помощь</string>
+    <string name="title_github">GitHub</string>
+    <string name="need_help">Нужна помощь?</string>
+    <string name="other">Другое</string>
+    <string name="share_with_friends">Поделиться с Друзьями</string>
+    <string name="ide_preferences">Настройки IDE</string>
+    <string name="discussions_on_telegram">Обсуждение в Telegram</string>
+    <string name="msg_empty_view">Мне нечего вам показать&#8230;</string>
+    <string name="btn_terminal">Терминал</string>
+    <string name="reset">Сброс</string>
+    <string name="app_logs">Лог приложения</string>
+    <string name="ide_logs">Лог IDE</string>
+    <string name="label_splash_image">Splash image</string>
+    <string name="cancel">Отмена</string>
+    <string name="get_started">Давайте начнём!</string>
+    <string name="nothing_here">Тут ничего &#8230;</string>
+
+    <!-- LSP, Diagnostics & Completions -->
+    <string name="msg_sdk_info_load_failed">Ошибка загрузки информации о SDK</string>
+    <string name="msg_fix_diagnostic">[Быстрое Решение]</string>
+    <string name="msg_no_code_actions">Быстрого Решения не найдено</string>
+    <string name="msg_cannot_perform_fix">Невозможно применить Быстрое Решение</string>
+    <string name="msg_performing_fixes">Применение изменений&#8230;</string>
+    <string name="msg_code_actions">Быстрые Решения</string>
+    <string name="msg_api_info_since">Начиная с API %d</string>
+    <string name="msg_api_info_removed">Удалено в API %d</string>
+    <string name="msg_api_info_deprecated">Устаревшее с API %d</string>
+    <string name="msg_finding_references">Поиск референсов&#8230;</string>
+    <string name="msg_finding_definition">Поиск дефиниций&#8230;</string>
+    <string name="msg_no_definition">Дефиниций не найдено</string>
+    <string name="msg_no_references">Референсов не найдено</string>
+    <string name="menu_navigate_definition">Перейти к дефиниции</string>
+    <string name="menu_navigate_references">Найти все референсы</string>
+    <string name="menu_navigate">Код</string>
+    <string name="menu_comment_line">Закомментировать строку</string>
+    <string name="menu_uncomment_line">Раскомментировать строку</string>
+    <string name="view_diags">Диагностика</string>
+
+    <!-- Build Tools Installation -->
+    <string name="title_installation_failed">Установка не удалась</string>
+    <string name="msg_installation_failed">Процесс установки прерван с кодом %1$d. Убедись, что вы скачали оригинальные инструменты сборки.\n\nВы можете попробовать очистить данные AndroidIDE и установить инструменты сборки снова. \n\n%2$s</string>
+    <string name="choose">Выбрать</string>
+    <string name="get_ready_for_something_awesome">Приготовьтесь к чему-то замечательному!</string>
+    <string name="androidide_build_tools">Инструменты Сборки AndroidIDE</string>
+    <string name="install_build_tools_required_b">Установите Инструменты Сборки, необходимые для работы AndroidIDE</string>
+    <string name="choose_directory_which_contain">Выберите директорию, содержащую инструменты сборки.</string>
+    <string name="click_install_button_to_st">Нажмите на кнопку \'установить\', чтобы начать процесс установки.</string>
+    <string name="msg_picked_isnt_dir">Выбранный файл не является директорией!</string>
+    <string name="msg_pick_single_file">Пожалуйста, выберите лишь одну директорию</string>
+    <string name="msg_file_doesnt_exist">Файл не существует!</string>
+    <string name="msg_pick_files">Пожалуйста, выберите файлы!</string>
+    <string name="msg_download_instructions">1. Скачайте инструменты сборки с сайта AndroidIDE.\n2. Переместите скачанные архивы в определённую директорию. \n3. Выберите эту директорию, используя кнопку ниже. \n4. Нажмите кнопку устаноки. \n5. Начнётся процесс установки.\n\nПроцесс установки займет около 5–10 минут в зависимости от производительности вашего устройства. Просим вашего терпения!</string>
+    <string name="msg_installable_files">Файлы для установки\n\n%s</string>
+    <string name="title_restart">Пожалуйста, перезапустите приложение</string>
+    <string name="msg_restart">Установка успешно завершена. Пожалуйста, перезапустите AndroidIDE.</string>
+    <string name="please_wait">Пожалуйста, подождите немного &#8230;</string>
+    <string name="title_device_not_supported">Устройство не поддерживается</string>
+    <string name="msg_device_not_supported">К сожалению, на данный момент ваше устройство не поддерживается. Приносим свои извинения.\n\nПоддерживаемые ABI: aarch64 и armeabi-v7a</string>
+
+    <!-- Project Builder -->
+    <string name="lint">Lint</string>
+    <string name="lint_debug">lintDebug</string>
+    <string name="lint_release">lintRelease</string>
+    <string name="build">Сборка</string>
+    <string name="build_debug">assembleDebug</string>
+    <string name="build_output">Результат сборки</string>
+    <string name="build_release">assembleRelease</string>
+    <string name="lint_tasks">Сценарии Lint</string>
+    <string name="clean_amp_build">Зачистить и Собрать</string>
+    <string name="clean_project">Зачистка проекта</string>
+    <string name="create_aab">Создать AAB</string>
+    <string name="build_tasks">Сценарии сборки</string>
+    <string name="stop_gradle_daemons">Остановить Daemon\'ы Gradle</string>
+    <string name="quick_run_debug">Быстрая сборка</string>
+    <string name="msg_sync_needed">Файлы Gradle были изменены. Пожалуйста пересоберите проект, чтобы синхронизировать зависимости и конфигурации.</string>
+    <string name="msg_task_begin">========== [%s] TASK_BEGIN: %s ==========</string>
+    <string name="preparing">Подготовка</string>
+    <string name="preparing_first">Выполняется подготовка. Первая сборка может занять 10–15 минут!</string>
+    <string name="msg_gradle_terminated">Процесс Gradle завершился с кодом %1$d</string>
+    <string name="msg_gradlew_installation_failed">Ошибка установки Gradle Wrapper: %s</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper недоступен!\nУстановка версии Gradle по умолчанию. Gradle v7.3 будет скачан, если это необходимо.</string>
+    <string name="msg_getting_daemom_status">Получение статуса Daemon, пожалуйста, подождите&#8230;</string>
+    <string name="msg_daemons_stopped">Daemon\'ы Gradle остановлены</string>
+    <string name="gradle_daemon_status">Статус Gradle Daemon</string>
+    <string name="msg_service_started">Сервис запущен</string>
+    <string name="msg_starting_completion">Запуск сервисов</string>
+    <string name="msg_starting_completion_failed">Не удалось запустить сервисы автодополнения</string>
+    <string name="msg_starting_daemon">Запуск Gradle Daemon</string>
+    <string name="title_install_apks">Установить APK файл(ы)</string>
+    <string name="title_clear_output">Очистить выходные файлы</string>
+    <string name="install">Установить</string>
+    <string name="run">Запустить</string>
+    <string name="gradle">Gradle</string>
+    <string name="title_first_build">Первая сборка</string>
+    <string name="msg_first_build">Это первая сборка после установки AndroidIDE. Первая сборка обычно занимает больше времени, так как Gradle скачивает все зависимости и плагины. Этот процесс может занять 10–15 минут, но это полностью зависит от производительности вашего устройства.\n\nПожалуйста, подождите &#8230;</string>
+    <string name="compiling">Компиляция</string>
+
+    <!-- Project -->
+    <string name="create_project">Создать проект</string>
+    <string name="minimum_sdk">Минимальное SDK</string>
+    <string name="target_sdk">Целевое SDK</string>
+    <string name="new_project">Новый проект</string>
+    <string name="package_name">Имя пакета</string>
+    <string name="project_app_name">Имя приложения</string>
+    <string name="invalid_values">Неподходящие значения</string>
+    <string name="msg_no_projects">Похоже, вы ещё не создали ни одного проекта.</string>
+    <string name="msg_create_new_project_greeting">Начните свой новый замечательный проект!</string>
+    <string name="title_confirm_open_project">Открыть последний проект?</string>
+    <string name="msg_confirm_open_project">Хотите отурыть последний проект? Последний рах вы работали над:\n%s</string>
+    <string name="msg_init_project_failed">Не удалось инициализировать проект!</string>
+    <string name="group_project">Проект</string>
+    <string name="title_close_project">Закрыть этот проект</string>
+    <string name="msg_opened_project_does_not_exist">Последний открытый проект не существует!</string>
+    <string name="msg_create_new_project">Создать проект</string>
+    <string name="msg_open_existing_project">Открыть проект</string>
+    <string name="msg_opening_project">Открытие проекта&#8230;</string>
+    <string name="msg_invalid_project">Выбранная директория не является проектом Android</string>
+    <string name="msg_project_deleted">Проект удалён</string>
+    <string name="msg_project_delete_failed">Не удалось удалить проект!</string>
+    <string name="menu_project_info">Информация о проекте</string>
+    <string name="header_module_info">Информация о модуле</string>
+    <string name="msg_module_count">Модули : %d</string>
+    <string name="msg_task_count">Сценарии : %d</string>
+    <string name="msg_dependency_count">Зависимости : %d</string>
+    <string name="msg_package_name">Пакет : %s</string>
+    <string name="msg_min_sdk">Минимальное SDK : %s</string>
+    <string name="msg_target_sdk">Целевое SDK : %s</string>
+    <string name="title_confirm_project_close">Закрыть проект</string>
+    <string name="msg_confirm_project_close">Уверены, что хотите закрыть этот проект? Все запущенные Daemon\'ы Gradle будут остановлены после закрытия этого проекта.</string>
+    <string name="project_exists">Проект с таким именем уже существует!</string>
+
+    <!-- Templates -->
+    <string name="template_basic">Базовый Проект</string>
+    <string name="template_description_basic">Базовый проект, включающий в себя AppCompat Toolbar и Floating Action Button</string>
+    <string name="template_description_empty">Пустой проект с верхней панелью. Подойдёт, если вы не хотите делать всю базовую рутину самостоятельно.</string>
+    <string name="template_description_navigation_drawer">Проект с AppCompat Toolbar, DrawerLayout и NavigationView</string>
+    <string name="template_empty">Пустой проект</string>
+    <string name="template_navigation_drawer">Проект с Navigation Drawer</string>
+    <string name="template_kotlin_basic">Базовый проект Kotlin</string>
+    <string name="template_description_kotlin_basic">Проект на Kotlin с AppCompat Toolbar и Floating Action Button</string>
+    <string name="template_libgdx">Игра LibGDX</string>
+    <string name="template_description_libgdx">Проект игры LibGDX. Выводит изображение на экран в качестве примера.</string>
+
+    <!-- Files -->
+    <string name="save">Сохранить</string>
+    <string name="show_files">Файлы</string>
+    <string name="menu_find">Найти</string>
+    <string name="menu_find_file">Найти в файле</string>
+    <string name="menu_find_project">Найти в проекте</string>
+    <string name="msg_search_modules">Искать в модулях</string>
+    <string name="msg_no_modules">Модулей в проекте не найдено</string>
+    <string name="hint_find_project_filter">Фильтровать файлы по расширению (необязательно)</string>
+    <string name="msg_find_project_filter">Разделены при помощи \'|\'</string>
+    <string name="msg_empty_search_query">Пожалуйста, введите текст</string>
+    <string name="msg_select_search_modules">Выберите модули для поиска</string>
+    <string name="msg_searching_project">Поиск в проекте, пожалуйста, подождите&#8230;</string>
+    <string name="view_search_results">Результаты поиска</string>
+    <string name="copying_files">Копирование файлов</string>
+    <string name="writing_files">Запись файлов</string>
+    <string name="copying_assets">Копирование ассетов</string>
+    <string name="failed_create_project_dir">Не удалось создать директорию проекта!</string>
+    <string name="failed_write_file">Не удалось записать файл: %s</string>
+    <string name="asset_copy_failed">Ошибка копирования проекта в память!</string>
+    <string name="cannot_create_temp">Не удалось создать временную директорию проекта!</string>
+    <string name="project_created_successfully">Проект создан успешно!</string>
+    <string name="msg_begin_project_write">Запуск процесса записи</string>
+    <string name="msg_folder_creation_failed">Не удалось создать папку!</string>
+    <string name="msg_file_creation_failed">Не удалось создать файл!</string>
+    <string name="msg_folder_created">Папка создана успешно!</string>
+    <string name="msg_file_created">Файл создан успешно!</string>
+    <string name="msg_folder_exists">Папка уже существует!</string>
+    <string name="msg_file_exists">Файл уже существует!</string>
+    <string name="msg_invalid_name">Неподходящее имя!</string>
+    <string name="text_create">Создать</string>
+    <string name="msg_can_contain_slashes">Если путь содержит разделительные символы (\'/\'), необходимые (родительские) директории будут созданы, если их ещё не существует.</string>
+    <string name="folder_name">Имя Папки</string>
+    <string name="file_name">Имя Файла</string>
+    <string name="new_name">Новое имя</string>
+    <string name="new_file">Новый файл</string>
+    <string name="new_java_class">Новый Java класс</string>
+    <string name="new_xml_resource">Новый ресурс XML</string>
+    <string name="new_folder">Новая Папка</string>
+    <string name="title_confirm_delete">Подтвердите Удаление</string>
+    <string name="msg_confirm_delete">Уверены, что хотите удалить:\n%s?</string>
+    <string name="copied">Успешно скопировано!</string>
+    <string name="msg_rename_file">Введите новое имя файла/папки.</string>
+    <string name="renamed">Успешно переименовано!</string>
+    <string name="rename_failed">Невозможно переименовать файл!</string>
+    <string name="deleted">Успешно удалено!</string>
+    <string name="delete_failed">Невозможно удалить файл!</string>
+    <string name="copy_path">Копировать путь</string>
+    <string name="rename_file">Переименовать</string>
+    <string name="delete_file">Удалить</string>
+    <string name="file_options">Действия с файлом</string>
+    <string name="action_closeAll">Закрыть все</string>
+    <string name="action_closeOthers">Закрыть остальные</string>
+    <string name="action_closeThis">Закрыть этот</string>
+    <string name="all_saved">Все файлы сохранены!</string>
+    <string name="msg_newfile_dest">Назначение: %s/</string>
+    <string name="restype_drawable">Рисунок</string>
+    <string name="restype_layout">Разметка</string>
+    <string name="restype_menu">Меню</string>
+    <string name="restype_other">Другое</string>
+    <string name="classtype_class">Класс</string>
+    <string name="classtype_activity">Активность</string>
+    <string name="classtype_interface">Интерфейс</string>
+    <string name="classtype_enum">Перечисление (Enum)</string>
+    <string name="msg_checking_storage_permissions">Проверка разрешений на взаимодействие с памятью</string>
+    <string name="msg_failed_list_files">Не удалось получить список проектов!</string>
+    <string name="msg_failed_save">Не удалось сохранить файлы!</string>
+    <string name="msg_storage_denied">Невозможно без разрешения на взаимодействие с памятью</string>
+    <string name="msg_storage_granted">Разрешение на взаимодействие получено!</string>
+
+    <!-- Code Editor -->
+    <string name="undo">Отмена действия</string>
+    <string name="redo">Повтор действия</string>
+    <item name="paste" type="string">Вставить</item>
+    <item name="copy" type="string" tools:override="true">Копировать</item>
+    <item name="selectAll" formatted="true" type="string">Выбрать все</item>
+    <item name="cut" type="string">Вырезать</item>
+    <item name="last" type="string">Последнее</item>
+    <item name="next" type="string">Следующее</item>
+    <item name="replace" type="string">Заменить</item>
+    <item name="replaceAll" type="string">Заменить все</item>
+    <item name="replacement" type="string">Замена</item>
+    <item name="text_to_search" type="string">Искать текст</item>
+    <item name="more" type="string">Ещё</item>
+
+    <!-- Preferences -->
+    <string name="title_change_text_size">Размер шрифта редактора</string>
+    <string name="idepref_about_title">О AndroidIDE</string>
+    <string name="idepref_build_clearCache_title">Очистить кэш Gradle</string>
+    <string name="idepref_build_clearCache_summary">Очистить директорию кэша Gradle. Это удалит все зависимости, скачанные Gradle. Необходимые файлы будут вновь скачаны при следующей сборке.</string>
+    <string name="idepref_build_customgradlecommands_title">Дополнительные команды Gradle</string>
+    <string name="idepref_build_customgradlecommands_summary">Выберите дополнительные команды, которые будут добавлены при выполнении каждого сценария</string>
+    <string name="idepref_build_editgradleproperties_title">Редактировать глобальные параметры Gradle</string>
+    <string name="idepref_build_editgradleproperties_summary">Редактировать gradle.properties в GRADLE_HOME</string>
+    <string name="idepref_editor_fontsize_title">Размер шрифта</string>
+    <string name="idepref_editor_fontsize_summary">Размер шрифта редактора</string>
+    <string name="idepref_editor_paintingflags_title">Визуализировать непечатаемые символы</string>
+    <string name="idepref_editor_paintingflags_summary">Выберите, какие непечатаемые символы будут визуализированы редактором</string>
+    <string name="idepref_editor_drawhexcolors_title">Отрисовывать HEX строки цветов</string>
+    <string name="idepref_editor_drawhexcolors_summary">Должен ли редактор отрисовывать HEX строки цветов?</string>
+    <string name="idepref_editor_title">Редактор</string>
+    <string name="idepref_build_title">Сборка и Запуск</string>
+    <string name="title_open_projects">Открывать последний проект</string>
+    <string name="msg_open_projects">Если включено, IDE будет запоминать последний открытый проект и открывать его при последующих запусках</string>
+    <string name="title_confirm_project_open">Подтверждение открытия проекта</string>
+    <string name="msg_confirm_project_open">Спрашивать перед открытием последнего проекта.</string>
+    <string name="title_default_shell">Использовать системный shell в терминале</string>
+    <string name="msg_default_shell">Если включено, \'/system/bin/sh\' будет использовано в терминале.</string>
+    <string name="title_general">Основное</string>
+    <string name="title_tab_size">Размер TAB</string>
+    <string name="msg_tab_size">Укажите, сколько пробелов будет напечатано при нажатии TAB.</string>
+    <string name="msg_preferences">Настройки</string>
+    <string name="msg_failed_get_changelog">Не удалось получить список изменений!</string>
+    <string name="pref_changelog">Список изменений</string>
+    <string name="msg_editor_font_size">Пожалуйста, выберите размер шрифта по умолчанию для редактора :</string>
+    <string name="msg_clear_cache">Это удалит директорию кэша, созданную Gradle. Если вы удалите её, следующая сборка может занять больше времени, чем обычно, так как Gradle будет скачивать необходимые файлы снова.\nВАЖНО: Это также удалит AAPT2. Вам нужно будет переустановить его, иначе вы получите ошибку сборки.\n\nУверены, что хотите удалить кэш?</string>
+
+    <!-- Error Messages used while Logging -->
+    <string name="err_installation">Ошибка установки</string>
+    <string name="err_completion">Ошибка компиляцииr</string>
+    <string name="err_no_server_implementation">Не найдено имплементаций LanguageServer.</string>
+    <string name="err_init_server">Ошибка инициализации LanguageServer</string>
+    <string name="err_init_sdkinfo">Ошибка инициализации информации о SDK</string>
+    <string name="err_cannot_start_file_picker">Не удалось запустить выбор файлов</string>
+    <string name="err_cannot_parse_apk_metadata">Ошибка парсинга метадаты APK</string>
+    <string name="err_cannot_save_files">Невозможно сохранить файлы</string>
+    <string name="err_cannot_preview_layout">Невозможно воспроизвести предпросмотр разметки</string>
+    <string name="err_cannot_inflate_layout">Ошибка создания (inflate) разметки</string>
+    <string name="err_cannot_start_server">Невозможно запустить LanguageServer: %s</string>
+    <string name="err_cannot_write_socket">Ошибка записи в поток Socket</string>
+    <string name="err_server_disconnected">Процесс LanguageServer непредсказуемо завершился.</string>
+
+    <!-- Layout preview and designer -->
+    <string name="msg_cannot_preview_layout">Невозможно осуществить предпросмотр разметки!</string>
+    <string name="title_preview_layout">Предпросмотр разметки</string>
+    <string name="label_ui_designer_content">Содержание дизайнера Main UI</string>
+    <string name="widget_textview">TextView</string>
+    <string name="widget_button">Button</string>
+    <string name="widget_group_android">Android</string>
+    <string name="widget_checkbox">CheckBox</string>
+    <string name="widget_checked_textview">CheckedTextView</string>
+    <string name="widget_edittext">EditText</string>
+    <string name="widget_image_button">ImageButton</string>
+    <string name="widget_image_view">ImageView</string>
+    <string name="widget_progressbar">ProgressBar</string>
+    <string name="widget_radio_button">RadioButton</string>
+    <string name="widget_seekbar">SeekBar</string>
+    <string name="widget_spinner">Spinner</string>
+    <string name="widget_group_layouts">Layouts</string>
+    <string name="layout_linear">LinearLayout</string>
+    <string name="layout_relative">RelativeLayout</string>
+    <string name="msg_attr_edit_hint">Нажмите на атрибуты, чтобы редактировать.</string>
+    <string name="sym_equal">=</string>
+    <string name="msg_attr_namespace">\'%s\' namespace</string>
+    <string name="msg_unknown_package">Неизвестное имя пакета</string>
+    <string name="msg_attr_editor_select_view">Выберите View, чтобы редактировать его атрибут.</string>
+    <string name="msg_attr_editor_no_attrs">Атрибуты не были добавлены к этому элементу.\nНажмите на кнопку \'+\', чтобы добавить их.</string>
+    <string name="msg_enter_attr_value">Введите значение для атрибута:</string>
+    <string name="hint_new_attr_value">Новое значение</string>
+    <string name="attr_val_wrap_content">wrap_content</string>
+    <string name="attr_val_match_parent">match_parent</string>
+    <string name="attr_val_other">Другое значение</string>
+    <string name="msg_enter_dimension_value">Введите значение размерности</string>
+    <string name="msg_applicable_attrs">Применимые атрибуты</string>
+    <string name="msg_attr_editor_actions">Действия</string>
+    <string name="title_viewaction_delete">Удалить</string>
+    <string name="msg_viewaction_select_parent">Выберите родительский элемент</string>
+    <string name="msg_no_view_parent">Этот элемент не имеет родительских элементов</string>
+    <string name="msg_yesno_def_title">Пожалуйста, подтвердите</string>
+    <string name="msg_yesno_def_message">Вы уверены?</string>
+    <string name="msg_view_deletion_failed">Невозможно удалить элемент.</string>
+    <string name="msg_empty_ui_layout">Элементов добавлено не было. Нажмите, чтобы добавить.</string>
+    <string name="msg_no_attr_format">Нет доступного форматирования для этого атрибута.</string>
+    <string name="msg_attr_editor_null">Невозможно создать редактор для этого атрибута</string>
+    <string name="msg_invalid_attr_value">Неподходящее значение</string>
+    <string name="msg_new_str_value">Новое строковое значение</string>
+    <string name="msg_choose_new_val">Выберите новое значение</string>
+    <string name="msg_select_one_flag">Пожалуйста, отметьте хотя бы один пункт.</string>
+    <string name="msg_generate_xml_failed">Не удалось сгенерировать код XML</string>
+    <string name="title_generating_xml">Генерация кода XML</string>
+    <string name="title_code_generation_failed">Генерация кода не удалась</string>
+    <string name="msg_code_generation_failed">Не удалось сгенерировать код XML. Уверены, что все равно хотите выйти?</string>
+    <string name="msg_invalid_designer_result">Дизайнер Интарфейсов возвратил недопустимое значение</string>
+    <string name="msg_swipe_up">Провведите вверх, для просмотра сообщений сборки, логов и прочего.</string>
+    <string name="msg_ide_crashed">AndroidIDE приостановило работу из-за непридвиденной ошибки</string>
+    <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже :</string>
+    <string name="msg_crash_report_hint">Нажмите на кнопку ниже, чтобы скопировать лог и открыть страницу создания issue.</string>
+    <string name="msg_copy_report_action">Копировать и сообщить</string>
+    <string name="msg_reading_bootstrap">Чтение архива Bootstrap…</string>
+    <string name="msg_bootstrap_installation_error">Установка Bootstrap не удалась, вызвав следующее исключение.</string>
+    <string name="title_translations">Переводчики</string>
+    <string name="title_compiler_module_install">Установка модуля компилятора</string>
+    <string name="msg_compiler_module_install">Установка модуля компилятора в процессе, пожалуйста, подождите&#8230;</string>
+    <string name="msg_compiler_module_install_failed">Установка модуля компилятора не удалась со следующей ошибкой:\n%s</string>
+    <string name="msg_compiler_module_installed">Модуль компилятора успешно установлен!</string>
+    <string name="action_expand_selection">Расширить выделение</string>
+    <string name="idepref_java_matchLower_title">Искать совпадения в строчном регистре</string>
+    <string name="idepref_editor_category_common">Common</string>
+    <string name="idepref_editor_category_java">Java</string>
+    <string name="title_files_unsaved">Несохраненные файлы</string>
+    <string name="msg_files_unsaved">Некоторые файлы не сохранены. Хотите сохранить их перед закрытием? Список несохраненных файлов: \n%s</string>
+    <string name="idepref_editor_autoSave_title">Сохранять файлы перед закрытием</string>
+    <string name="idepref_editor_autoSave_summary">Сохранение файлов перед закрытием - ЭКСПЕРЕМЕНТАЛЬНАЯ опция. Подразумевается, что вы будете сохранять файлы самостоятельно.</string>
+    <string name="idepref_java_matchLower_summary">Если включено, при печати как строчным, так и верхним регистром, атодополнение будет предлагать классы, переменные и методы.</string>
+    <string name="idepref_editor_ligatures_title">Лигатуры шрифтов</string>
+    <string name="idepref_editor_ligatures_summary">Включить / выключить лигатуры шрифтов</string>
+
+
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="title_use_popup_actions">\"Плавающие\" операции с текстом</string>
+    <string name="msg_use_popup_actions">Использовать плавающее окно для отображения дополнительных действий с текстом.</string>
+    <string name="title_use_horizontal_popup">Горизонтальные действия с текстом</string>
+    <string name="msg_use_horizontal_popup">Расположить действия с текстом в плавающем окне горизонтально.</string>
+</resources>
