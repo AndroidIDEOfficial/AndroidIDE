@@ -114,7 +114,7 @@ public abstract class DrawableParserFactory {
         // TODO Implement parsers for these root tags if possible
         //    1. <bitmap>
         //    2. <nine-patch>------ DONE
-        //    3. <layer-list>
+        //    3. <layer-list>------ DONE
         //    4. <selector>
         //    5. <level-list>
         //    6. <transition>
