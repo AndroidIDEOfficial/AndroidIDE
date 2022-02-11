@@ -80,7 +80,7 @@ public class LayerListParser extends IDrawableParser {
                     if (drawable == null) {
                         parseInner = true;
                     } else {
-                        addLayer (layer, drawable, left, top, right, bottom);
+                        addToLayer (layer, drawable, left, top, right, bottom);
                     }
                     
                     if (!parseInner) {
@@ -98,9 +98,9 @@ public class LayerListParser extends IDrawableParser {
                             d = unsupported ();
                         }
     
-                        addLayer (layer, d, left, top, right, bottom);
+                        addToLayer (layer, d, left, top, right, bottom);
                     } else {
-                        addLayer (layer, unsupported (), left, top, right, bottom);
+                        addToLayer (layer, unsupported (), left, top, right, bottom);
                     }
                 }
             }
@@ -110,7 +110,7 @@ public class LayerListParser extends IDrawableParser {
         return layer;
     }
     
-    private void addLayer (LayerDrawable layer, Drawable drawable, int left, int top, int right, int bottom) {
+    private void addToLayer (@NonNull LayerDrawable layer, Drawable drawable, int left, int top, int right, int bottom) {
         final int index = layer.addLayer (drawable);
         layer.setLayerInset (index, left, top, right, bottom);
     }
