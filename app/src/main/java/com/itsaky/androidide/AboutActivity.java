@@ -21,14 +21,15 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.util.Pair;
 
 import com.itsaky.androidide.app.StudioActivity;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivityAboutBinding;
 import com.itsaky.androidide.databinding.LayoutAboutItemsBinding;
 import com.itsaky.androidide.models.License;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,7 +112,8 @@ public class AboutActivity extends StudioActivity {
         list.add (Pair.create ("\u4e2d\u56fd\u4eba",                   "Rosemoe"));              // 中国人
         list.add (Pair.create ("Deutsch",                              "Marvin Stelter"));
         list.add (Pair.create ("\u0939\u093f\u0928\u094d\u0926\u0940", "Premjit Chowdhury"));    // हिन्दी
-        list.add (Pair.create ("Russian",                             "Smooth-E"));
+        list.add (Pair.create ("Russian",                              "Smooth-E"));
+        list.add (Pair.create ("French",                               "Se-Lyan"));
         
         return list;
     }
