@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.ImageUtils;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IResourceTable;
 import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
 
@@ -48,6 +49,8 @@ import java.io.StringReader;
  * @author Akash Yadav
  */
 public abstract class DrawableParserFactory {
+    
+    private static final Logger LOG = Logger.instance ("IDrawableParser");
     
     /**
      * Create a new drawable parser for the given file. If the given file is not an XML Document,
@@ -112,7 +115,7 @@ public abstract class DrawableParserFactory {
         }
         
         // TODO Implement parsers for these root tags if possible
-        //    1. <bitmap>
+        //    1. <bitmap>---------- DONE
         //    2. <nine-patch>------ DONE
         //    3. <layer-list>------ DONE
         //    4. <selector>
@@ -128,21 +131,37 @@ public abstract class DrawableParserFactory {
     
     @Nullable
     public static IDrawableParser parserForTag (String xmlDrawable, IResourceTable resourceFinder, DisplayMetrics displayMetrics, XmlPullParser parser, @NonNull String name) throws XmlPullParserException {
+        Class<? extends IDrawableParser> impl = null;
         switch (name) {
             case "shape":
-                return new ShapeDrawableParser (parser, resourceFinder, displayMetrics, IDrawableParser.ANY_DEPTH);
+                impl = ShapeDrawableParser.class;
+                break;
             case "inset":
-                return new InsetDrawableParser (parser, resourceFinder, displayMetrics, IDrawableParser.ANY_DEPTH);
+                impl = InsetDrawableParser.class;
+                break;
             case "layer-list":
-                return new LayerListParser (parser, resourceFinder, displayMetrics, IDrawableParser.ANY_DEPTH);
+                impl = LayerListParser.class;
+                break;
+            case "bitmap":
+                impl = BitmapDrawableParser.class;
+                break;
             case "vector":
                 if (xmlDrawable != null) {
                     return new NoParser (VectorMasterDrawable.fromXML (xmlDrawable));
                 }
                 return null;
-            default:
-                return null;
         }
+        
+        try {
+            if (impl != null) {
+                final var constructor = impl.getDeclaredConstructor (XmlPullParser.class, IResourceTable.class, DisplayMetrics.class, int.class);
+                return constructor.newInstance (parser, resourceFinder, displayMetrics, IDrawableParser.ANY_DEPTH);
+            }
+        } catch (Throwable th) {
+            LOG.error ("No drawable parser found for tag", name, th);
+        }
+        
+        return null;
     }
     
     /**
