@@ -164,10 +164,6 @@ public class EditorPreferences extends BasePreferenceFragment {
             case KEY_EDITOR_FONT_LIGATURES:
                 ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED = true;
                 break;
-            case KEY_EDITOR_USE_POPUP:
-            case KEY_EDITOR_HORIZONTAL_POPUP:
-                ConstantsBridge.EDITOR_TEXT_ACTIONS_CHANGED = true;
-                break;
             case KEY_JAVA_PREF_MATCH_LOWER:
                 final var javaServer = StudioApp.getInstance ().getJavaLanguageServer ();
                 javaServer.applySettings (PrefBasedJavaServerSettings.getInstance ());
