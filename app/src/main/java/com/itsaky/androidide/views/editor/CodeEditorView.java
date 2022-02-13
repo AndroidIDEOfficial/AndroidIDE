@@ -176,7 +176,7 @@ public class CodeEditorView extends FrameLayout {
         
         final var path = getFile ().toPath ();
         if (!isModified () && Files.exists (path)) {
-            LOG.info (getFile ());
+            LOG.info (getFile ().getName ());
             LOG.info ("File was not modified. Skipping save operation.");
             return false;
         }

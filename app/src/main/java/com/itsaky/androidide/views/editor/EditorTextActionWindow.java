@@ -141,6 +141,10 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
     public void show () {
         Objects.requireNonNull (editor, "No editor attached!");
         
+        if (actionsList.getParent () != null) {
+            ((ViewGroup) actionsList.getParent ()).removeView (actionsList);
+        }
+        
         final var dp16 = editor.getDpUnit () * 16;
         final var actions = this.registeredActions.stream ()
                 .filter (action -> this.editor.shouldShowTextAction (action.id))
@@ -256,13 +260,23 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
         if (!isShowing ()) {
             return;
         }
+        
         dismiss ();
+        
         if (!this.editor.getCursor ().isSelected ()) {
             return;
         }
+        
         this.editor.postDelayed (new Runnable () {
             @Override
             public void run () {
+                if (unsubscribeEvents || editor == null) {
+                    if (isShowing ()) {
+                        dismiss ();
+                    }
+                    return;
+                }
+                
                 if (!touchHandler.hasAnyHeldHandle () && System.currentTimeMillis () - mLastScroll > DELAY
                         && touchHandler.getScroller ().isFinished ()) {
                     displayWindow ();
