@@ -58,11 +58,9 @@ public abstract class IDrawableParser extends CommonParseUtils {
      * than this specified value.
      *
      * @param minDepth The minimum depth of this parser.
-     * @return <code>this</code> instance for chained method calls.
      */
-    public IDrawableParser setMinDepth (int minDepth) {
+    public void setMinDepth (int minDepth) {
         this.minDepth = minDepth;
-        return this;
     }
     
     /**
