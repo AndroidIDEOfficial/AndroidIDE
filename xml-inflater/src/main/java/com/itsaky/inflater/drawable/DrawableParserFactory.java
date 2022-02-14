@@ -122,7 +122,7 @@ public abstract class DrawableParserFactory {
         //    5. <level-list>
         //    6. <transition>
         //    7. <inset>----------- DONE
-        //    8. <clip>
+        //    8. <clip>------------ DONE
         //    9. <scale>----------- DONE
         // Cannot parse this type of drawable
         return null;
@@ -146,6 +146,9 @@ public abstract class DrawableParserFactory {
                 break;
             case "scale" :
                 impl = ScaleDrawableParser.class;
+                break;
+            case "clip" :
+                impl = ClipDrawableParser.class;
                 break;
             case "vector":
                 if (xmlDrawable != null) {
