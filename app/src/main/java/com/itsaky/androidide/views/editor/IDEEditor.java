@@ -475,6 +475,10 @@ public class IDEEditor extends CodeEditor {
         }
     }
     
+    /**
+     * Shows the given signature help in the editor.
+     * @param help The signature help data to show.
+     */
     public void showSignatureHelp (SignatureHelp help) {
         getSignatureHelpWindow ().setupAndDisplay (help);
     }
@@ -764,6 +768,10 @@ public class IDEEditor extends CodeEditor {
         return true;
     }
     
+    /**
+     * Performs the given text action in this editor.
+     * @param action The action to perform.
+     */
     public void performTextAction (@NonNull TextAction action) {
         Objects.requireNonNull (action, "Cannot perform null text action");
         
