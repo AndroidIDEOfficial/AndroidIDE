@@ -64,7 +64,7 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
     }
     
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         final INamespace namespace = attribute.getNamespace();
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();

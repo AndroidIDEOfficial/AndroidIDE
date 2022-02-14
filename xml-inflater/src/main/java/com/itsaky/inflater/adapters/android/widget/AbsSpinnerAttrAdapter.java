@@ -38,7 +38,7 @@ public class AbsSpinnerAttrAdapter extends AdapterViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(@NonNull IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         final var spinner = (AbsSpinner) view;
         final var context = spinner.getContext();
         final var namespace = attribute.getNamespace();

@@ -43,7 +43,7 @@ public class CheckedTextViewAttrAdapter extends TextViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         
         final CheckedTextView text = (CheckedTextView) view;
         final String name = attribute.getAttributeName();

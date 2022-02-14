@@ -46,7 +46,7 @@ public class ViewGroupAttrAdapter extends ViewAttrAdapter {
     }
     
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         
         final ViewGroup group = (ViewGroup) view;
         final String name = attribute.getAttributeName();

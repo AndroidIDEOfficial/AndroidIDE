@@ -44,7 +44,7 @@ public class SeekBarAttrAdapter extends AbsSeekBarAttrAdapter {
     }
 
     @Override
-    public boolean apply(@NonNull IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         final var seek = (SeekBar) view;
         final var context = seek.getContext();
         final var namespace = attribute.getNamespace();

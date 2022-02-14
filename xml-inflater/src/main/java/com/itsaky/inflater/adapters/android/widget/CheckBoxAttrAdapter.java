@@ -40,7 +40,7 @@ public class CheckBoxAttrAdapter extends CompondButtonAttrAdapter {
     }
     
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         
         // No special attributes for CheckBox
         return super.apply(attribute, view);

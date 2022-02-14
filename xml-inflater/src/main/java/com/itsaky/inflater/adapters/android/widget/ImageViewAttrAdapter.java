@@ -47,7 +47,7 @@ public class ImageViewAttrAdapter extends ViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         final ImageView image = (ImageView) view;
         final Context context = image.getContext();
         final DisplayMetrics dm = context.getResources().getDisplayMetrics();

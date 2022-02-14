@@ -43,7 +43,7 @@ public class ImageButtonAttrAdapter extends ImageViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         // No special attributes for ImageButton
         return super.apply(attribute, view);
     }

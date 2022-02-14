@@ -47,7 +47,7 @@ public abstract class AdapterViewAttrAdapter extends ViewGroupAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         // No special attributes for AdapterView
         return super.apply(attribute, view);
     }

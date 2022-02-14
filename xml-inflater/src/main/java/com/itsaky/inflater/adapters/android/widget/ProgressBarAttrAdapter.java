@@ -46,7 +46,7 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         final ProgressBar pb = (ProgressBar) view;
         final Context context = pb.getContext();
         final DisplayMetrics dm = context.getResources().getDisplayMetrics();

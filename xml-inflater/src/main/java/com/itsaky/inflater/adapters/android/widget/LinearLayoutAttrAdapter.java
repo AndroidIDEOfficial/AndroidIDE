@@ -43,7 +43,7 @@ public class LinearLayoutAttrAdapter extends ViewGroupAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         final LinearLayout linear = (LinearLayout) view;
         final String name = attribute.getAttributeName();
         final String value = attribute.getValue();

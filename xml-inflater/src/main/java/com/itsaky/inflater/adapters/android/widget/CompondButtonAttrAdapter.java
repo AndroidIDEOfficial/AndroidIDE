@@ -27,7 +27,7 @@ public class CompondButtonAttrAdapter extends ButtonAttrAdapter {
     }
 
     @Override
-    public boolean apply(IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         final CompoundButton button = (CompoundButton) view;
         final Context context = button.getContext();
         final String name = attribute.getAttributeName();

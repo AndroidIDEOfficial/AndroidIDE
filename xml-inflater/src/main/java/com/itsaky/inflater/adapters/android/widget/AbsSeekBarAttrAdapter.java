@@ -42,7 +42,7 @@ public abstract class AbsSeekBarAttrAdapter extends ProgressBarAttrAdapter {
     }
 
     @Override
-    public boolean apply(@NonNull IAttribute attribute, View view) {
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
         final var seek = (AbsSeekBar) view;
         final var namespace = attribute.getNamespace();
         final var name = attribute.getAttributeName();
