@@ -604,6 +604,56 @@ public class IDEEditor extends CodeEditor {
     }
     
     /**
+     * Validates the range if it is invalid and returns a valid range.
+     * @param range Th range to validate.
+     * @return A new, validated range.
+     */
+    public Range validateRange(@NonNull final Range range) {
+        final var start = range.getStart ();
+        final var end = range.getEnd ();
+        
+        if (start.getLine () < 0) {
+            start.setLine (0);
+        } else if (start.getLine () >= getText ().getLineCount ()) {
+            start.setLine (getText ().getLineCount () - 1);
+        }
+    
+        if (end.getLine () < 0) {
+            end.setLine (0);
+        } else if (end.getLine () >= getText ().getLineCount ()) {
+            end.setLine (getText ().getLineCount () - 1);
+        }
+        
+        if (end.getLine () < start.getLine ()) {
+            var l = end.getLine ();
+            var l2 = start.getLine ();
+            start.setLine (l);
+            end.setLine (l2);
+        }
+        
+        if (start.getColumn () < 0) {
+            start.setColumn (0);
+        } else if (start.getColumn () >= getText ().getColumnCount (start.getLine ())) {
+            start.setColumn (getText ().getColumnCount (start.getLine ()) - 1);
+        }
+    
+        if (end.getColumn () < 0) {
+            end.setColumn (0);
+        } else if (end.getColumn () >= getText ().getColumnCount (end.getLine ())) {
+            end.setColumn (getText ().getColumnCount (end.getLine ()) - 1);
+        }
+        
+        if (end.getColumn () < start.getColumn ()) {
+            final var c = start.getColumn ();
+            final var c2 = end.getColumn ();
+            start.setColumn (c2);
+            end.setColumn (c);
+        }
+        
+        return new Range (start, end);
+    }
+    
+    /**
      * Set the text action presenter of this editor.
      *
      * @param actionPresenter The presenter to set. Must not be <code>null</code>.

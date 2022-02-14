@@ -109,7 +109,6 @@ import com.itsaky.androidide.viewmodel.EditorViewModel;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
-import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
@@ -641,11 +640,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         return mDiagnosticInfoBinding;
     }
     
-    public void openFileAndSelect (File file, Range range) {
-        openFile (file, range);
+    public void openFileAndSelect (File file, Range selection) {
+        openFile (file, selection);
         final var opened = getEditorForFile (file);
         if (opened != null && opened.getEditor () != null) {
-            IDEEditor editor = opened.getEditor ();
+            final var editor = opened.getEditor ();
+            final var range = editor.validateRange (selection);
             editor.post (() -> {
                 if (LSPUtils.isEqual (range.getStart (), range.getEnd ())) {
                     editor.setSelection (range.getStart ().getLine (), range.getEnd ().getColumn ());
