@@ -24,6 +24,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -105,9 +106,7 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
                 view.setContextClickable(parseBoolean(value));
                 break;
             case "defaultFocusHighlightEnabled" :
-                if(Build.VERSION.SDK_INT >= 26) {
-                    view.setDefaultFocusHighlightEnabled(parseBoolean(value));
-                }
+                view.setDefaultFocusHighlightEnabled(parseBoolean(value));
                 break;
             case "drawingCacheQuality" :
                 view.setDrawingCacheQuality(parseDrawingCacheQuality(value));
@@ -241,6 +240,10 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
             handled = handleRelativeLayoutParams ((RelativeLayout.LayoutParams) params, name, value);
         }
         
+        if (!handled && params instanceof FrameLayout.LayoutParams) {
+            handled = handleFrameLayoutParams ((FrameLayout.LayoutParams) params, name, value);
+        }
+        
         if (!handled && params instanceof ViewGroup.MarginLayoutParams) {
             handled = handleMarginParams((ViewGroup.MarginLayoutParams) params, name, value, displayMetrics);
         }
@@ -360,6 +363,18 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
                 handled = false;
                 break;
         }
+        return handled;
+    }
+    
+    protected boolean handleFrameLayoutParams (FrameLayout.LayoutParams params, @NonNull String name, String value) {
+        boolean handled = true;
+    
+        if ("layout_gravity".equals (name)) {
+            params.gravity = parseGravity (value);
+        } else {
+            handled = false;
+        }
+        
         return handled;
     }
     
