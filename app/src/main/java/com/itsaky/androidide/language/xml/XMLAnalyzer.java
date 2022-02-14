@@ -17,11 +17,11 @@
  */
 package com.itsaky.androidide.language.xml;
 
-import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
-import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString;
-import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATOR;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TEXT_SELECTED;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
+import static io.github.rosemoe.sora.widget.schemes.EditorColorScheme.LITERAL;
 
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
@@ -113,7 +113,7 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
                     styles.addCodeBlock (closeBlock);
                     break;
                 case XMLLexer.STRING:
-                    colors.addIfNeeded (line, column, forString ());
+                    colors.addIfNeeded (line, column, LITERAL);
                     break;
                 case XMLLexer.Name:
                     var type = SchemeAndroidIDE.TEXT_NORMAL;
