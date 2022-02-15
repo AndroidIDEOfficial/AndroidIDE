@@ -109,7 +109,7 @@ public class AboutActivity extends StudioActivity {
         final var list = new ArrayList<Pair<String, String>> ();
         
         list.add (Pair.create ("Bahasa Indonesia",                     "Fitrah Nuno Syahbani"));
-        list.add (Pair.create ("\u4e2d\u56fd\u4eba",                   "Rosemoe"));              // 中国人
+        list.add (Pair.create ("\u4e2d\u6587",                         "Rosemoe"));              // 中文
         list.add (Pair.create ("Deutsch",                              "Marvin Stelter"));
         list.add (Pair.create ("\u0939\u093f\u0928\u094d\u0926\u0940", "Premjit Chowdhury"));    // हिन्दी
         list.add (Pair.create ("Russian",                              "Smooth-E"));
