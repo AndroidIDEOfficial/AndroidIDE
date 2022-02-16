@@ -150,6 +150,9 @@ public abstract class DrawableParserFactory {
             case "clip" :
                 impl = ClipDrawableParser.class;
                 break;
+            case "selector" :
+                impl = StateListParser.class;
+                break;
             case "vector":
                 if (xmlDrawable != null) {
                     return new NoParser (VectorMasterDrawable.fromXML (xmlDrawable));
