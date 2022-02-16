@@ -109,7 +109,7 @@ public class CommonParseUtils {
     
     protected int parseInteger (@NonNull String value, int defaultVal) {
         if (value.startsWith ("@integer/")) {
-            return parseInteger (resourceFinder.findInteger (value.substring ("@dimen/".length ())), defaultVal);
+            return parseInteger (resourceFinder.findInteger (value.substring ("@integer/".length ())), defaultVal);
         } else if (value.startsWith ("@android:integer/")) {
             final var name = value.substring ("@android:integer/".length ());
             return frameworkIntegerResource (name, defaultVal);
