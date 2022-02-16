@@ -45,24 +45,15 @@ public class StateListParser extends IDrawableParser {
     @Override
     public Drawable parse () throws Exception {
         var states = new StateListDrawable ();
-        var index = attrIndex ("constantSize");
         
-        //noinspection StatementWithEmptyBody
-        if (index != -1) {
-            // TODO Apply android:constantSize attribute
-            //    The StateListState class in StateListDrawable in package private
-            //    Should we use reflection or define classes in same package to access those?
-        }
+        // --------------------------- NOTE -------------------------
+        // Unsupported attributes :
+        //  1. android:constantSize
+        //  2. android:variablePadding
         
-        index = attrIndex ("dither");
+        var index = attrIndex ("dither");
         if (index != -1) {
             states.setDither (parseBoolean (value (index)));
-        }
-        
-        index = attrIndex ("variablePadding");
-        //noinspection StatementWithEmptyBody
-        if (index != -1) {
-            // TODO Same as android:constantSize
         }
         
         var event = parser.getEventType ();
