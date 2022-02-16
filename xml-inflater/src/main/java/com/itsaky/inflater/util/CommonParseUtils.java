@@ -245,7 +245,7 @@ public class CommonParseUtils {
             final Class<?> typeClass = android.R.class.getClassLoader ().loadClass ("android.R$" + type);
             final Field typeField = typeClass.getDeclaredField (name);
             typeField.setAccessible (true);
-            return (int) typeField.get (null);
+            return typeField.getInt (null);
         } catch (Throwable th) {
             return -1;
         }
