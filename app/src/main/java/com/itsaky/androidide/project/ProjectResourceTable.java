@@ -77,7 +77,57 @@ public class ProjectResourceTable implements IResourceTable {
         
         return value;
     }
-
+    
+    @Override
+    public String findBoolean (@NonNull String name) {
+        final var table = ValuesTableFactory.getTable (resDir);
+    
+        if (table == null) {
+            return name;
+        }
+        
+        final var resource = table.findBoolean (name);
+        if (resource == null) {
+            return name;
+        }
+        
+        final var val = resource.getValue ();
+        if (val.startsWith ("@bool/")) {
+            final var ref = val.substring ("@bool/".length ());
+            if (ref.equals (name)) {
+                // recursive reference
+                return name;
+            }
+        }
+        
+       return val;
+    }
+    
+    @Override
+    public String findInteger (@NonNull String name) {
+        final var table = ValuesTableFactory.getTable (resDir);
+        
+        if (table == null) {
+            return name;
+        }
+        
+        final var resource = table.findInteger (name);
+        if (resource == null) {
+            return name;
+        }
+        
+        final var val = resource.getValue ();
+        if (val.startsWith ("@integer/")) {
+            final var ref = val.substring ("@integer/".length ());
+            if (ref.equals (name)) {
+                // recursive reference
+                return name;
+            }
+        }
+        
+        return val;
+    }
+    
     @Override
     public String findColor(@NonNull String name) {
         final var table = ValuesTableFactory.getTable (resDir);

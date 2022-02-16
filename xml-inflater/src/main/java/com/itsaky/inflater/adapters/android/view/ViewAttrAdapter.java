@@ -485,13 +485,6 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
         }
     }
 
-    protected String parseString(@NonNull String value) {
-        if (value.startsWith("@")) {
-            return parseString(resourceFinder.findString(value.substring("@string/".length())));
-        }
-        return value;
-    }
-
     protected PorterDuff.Mode parsePorterDuffMode(@NonNull String mode) {
         switch (mode) {
             case "add" :

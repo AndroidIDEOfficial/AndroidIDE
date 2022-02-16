@@ -80,9 +80,16 @@ public interface IResourceTable {
     /**
      * Find the boolean value with the given name.
      * @param name The name of the boolean resource.
-     * @return The value of the boolean resource.
+     * @return The string value of the boolean resource.
      */
-    boolean findBoolean (@NonNull String name);
+    String findBoolean (@NonNull String name);
+    
+    /**
+     * Find the integer value with the given name.
+     * @param name The name of the integer resource.
+     * @return The string value of the integer resource.
+     */
+    String findInteger (@NonNull String name);
     
     /**
      * Set the file which is currently being inflated.

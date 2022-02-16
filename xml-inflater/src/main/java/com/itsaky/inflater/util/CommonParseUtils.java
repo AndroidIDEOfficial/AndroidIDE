@@ -59,6 +59,27 @@ public class CommonParseUtils {
         this.displayMetrics = displayMetrics;
     }
     
+    protected String parseString (@NonNull String value) {
+        if (value.startsWith ("@string/")) {
+            return parseString (resourceFinder.findString (value.substring ("@string/".length ())));
+        } else if (value.startsWith ("@android:string/")) {
+            return frameworkStringValue (value.substring ("@android:string/".length ()));
+        } else {
+            return value;
+        }
+    }
+    
+    private String frameworkStringValue (String name) {
+        try {
+            final var klass = android.R.string.class;
+            final var field = klass.getDeclaredField (name);
+            final var id = field.getInt (null);
+            return BaseApplication.getBaseInstance ().getString (id);
+        } catch (Throwable th) {
+            return "";
+        }
+    }
+    
     protected boolean parseBoolean (@NonNull String value) {
         if (!value.startsWith ("@")) {
             if ("true".equals (value)) {
@@ -67,7 +88,7 @@ public class CommonParseUtils {
                 return false;
             }
         } else if (value.startsWith ("@bool/")) {
-            return resourceFinder.findBoolean (value.substring ("@bool/".length ()));
+            return parseBoolean (resourceFinder.findBoolean (value.substring ("@bool/".length ())));
         } else if (value.startsWith ("@android:bool/")) {
             final var name = value.substring ("@android:bool/".length ());
             return frameworkBooleanValue (name);
@@ -86,9 +107,27 @@ public class CommonParseUtils {
         }
     }
     
-    protected int parseInteger (String value, int defaultVal) {
+    protected int parseInteger (@NonNull String value, int defaultVal) {
+        if (value.startsWith ("@integer/")) {
+            return parseInteger (resourceFinder.findInteger (value.substring ("@dimen/".length ())), defaultVal);
+        } else if (value.startsWith ("@android:integer/")) {
+            final var name = value.substring ("@android:integer/".length ());
+            return frameworkIntegerResource (name, defaultVal);
+        } else {
+            try {
+                return Integer.parseInt (value);
+            } catch (Throwable th) {
+                return defaultVal;
+            }
+        }
+    }
+    
+    private int frameworkIntegerResource (String name, int defaultVal) {
         try {
-            return Integer.parseInt (value);
+            final var klass = android.R.integer.class;
+            final var field = klass.getDeclaredField (name);
+            final var id = field.getInt (null);
+            return BaseApplication.getBaseInstance ().getResources ().getInteger (id);
         } catch (Throwable th) {
             return defaultVal;
         }
