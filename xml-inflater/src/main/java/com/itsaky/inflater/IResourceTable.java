@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ */
 package com.itsaky.inflater;
 
 import androidx.annotation.NonNull;
@@ -76,6 +76,13 @@ public interface IResourceTable {
      *   1dp, 12sp, 123px, etc.
      */
     String findDimension (@NonNull String name);
+    
+    /**
+     * Find the boolean value with the given name.
+     * @param name The name of the boolean resource.
+     * @return The value of the boolean resource.
+     */
+    boolean findBoolean (@NonNull String name);
     
     /**
      * Set the file which is currently being inflated.
