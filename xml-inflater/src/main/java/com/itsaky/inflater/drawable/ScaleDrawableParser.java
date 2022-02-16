@@ -42,7 +42,7 @@ public class ScaleDrawableParser extends IDrawableParser {
     }
     
     @Override
-    public Drawable parse () throws Exception {
+    public Drawable parseDrawable () throws Exception {
         var index = attrIndex ("drawable");
         if (index == -1) {
             throw new InflateException ("<scale> drawable must specify android:drawable attribute");

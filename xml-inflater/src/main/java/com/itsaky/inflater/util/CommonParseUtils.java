@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -70,6 +69,14 @@ public class CommonParseUtils {
             // TODO Find resource value in booleans.xml
         }
         return false;
+    }
+    
+    protected int parseInteger(String value, int defaultVal) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Throwable th) {
+            return defaultVal;
+        }
     }
     
     protected int parseDimension(final String value, int defaultValue) {
@@ -186,7 +193,7 @@ public class CommonParseUtils {
                         if (parser == null) {
                             return null;
                         }
-                        return parser.parse();
+                        return parser.parse ();
                     } catch (Exception e) {
                         LOG.error ("Error parsing drawable", e);
                         return null;

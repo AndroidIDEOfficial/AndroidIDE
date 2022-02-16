@@ -40,7 +40,7 @@ public class InsetDrawableParser extends IDrawableParser {
     }
     
     @Override
-    public Drawable parse () throws Exception {
+    public Drawable parseDrawable () throws Exception {
         var index = attrIndex ("drawable");
         if (index == -1) {
             throw new InflateException ("No drawable specified for <inset> drawable");

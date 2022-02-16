@@ -42,7 +42,7 @@ public class ClipDrawableParser extends IDrawableParser {
     }
     
     @Override
-    public Drawable parse () throws Exception {
+    public Drawable parseDrawable () throws Exception {
         var index = attrIndex ("drawable");
         if (index == -1) {
             throw new InflateException ("<clip> drawable must specify android:drawable attribute");

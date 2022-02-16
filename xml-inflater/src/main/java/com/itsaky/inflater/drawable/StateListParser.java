@@ -43,7 +43,7 @@ public class StateListParser extends IDrawableParser {
     }
     
     @Override
-    public Drawable parse () throws Exception {
+    public Drawable parseDrawable () throws Exception {
         var states = new StateListDrawable ();
         
         // --------------------------- NOTE -------------------------

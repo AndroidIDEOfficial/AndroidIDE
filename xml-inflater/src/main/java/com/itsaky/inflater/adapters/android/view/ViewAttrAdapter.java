@@ -419,14 +419,6 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
         return INamespace.ANDROID.equals (namespace);
     }
     
-    protected int parseInteger(String value, int defaultVal) {
-        try {
-            return Integer.parseInt(value);
-        } catch (Throwable th) {
-            return defaultVal;
-        }
-    }
-    
     protected int parseDrawingCacheQuality(@NonNull String value) {
         switch (value) {
             case "high" :

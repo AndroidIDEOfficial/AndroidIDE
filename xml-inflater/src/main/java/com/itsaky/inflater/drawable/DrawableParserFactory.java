@@ -185,7 +185,7 @@ public abstract class DrawableParserFactory {
         }
         
         @Override
-        public Drawable parse () {
+        public Drawable parseDrawable () {
             return parsed;
         }
     }

@@ -50,7 +50,7 @@ public class ShapeDrawableParser extends IDrawableParser {
     
     @Nullable
     @Override
-    public Drawable parse () throws Exception {
+    public Drawable parseDrawable () throws Exception {
         
         final var drawable = new GradientDrawable ();
         

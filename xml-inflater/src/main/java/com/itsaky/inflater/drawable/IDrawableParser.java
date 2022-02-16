@@ -20,6 +20,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
+
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.util.CommonParseUtils;
 
@@ -49,7 +51,42 @@ public abstract class IDrawableParser extends CommonParseUtils {
      * @return The parsed {@link Drawable} or <code>null</code> if the parse was unsuccessful.
      * @throws Exception If any fatal error occurred while parsing the drawable.
      */
-    public abstract Drawable parse () throws Exception;
+    public Drawable parse () throws Exception {
+        var index = attrIndex ("visible");
+        var visible = true;
+        if (index != -1) {
+            visible = parseBoolean (value (index));
+        }
+    
+        var autoMirrored = false;
+        index = attrIndex ("autoMirrored");
+        if (index != -1) {
+            autoMirrored = parseBoolean (value (index));
+        }
+        
+        var level = 0;
+        index = attrIndex ("level");
+        if (index != -1) {
+            level = parseInteger (value (index), 0);
+        }
+        
+        final var drawable = parseDrawable ();
+        
+        if (drawable != null) {
+            drawable.setVisible (visible, false);
+            drawable.setAutoMirrored (autoMirrored);
+            drawable.setLevel (level);
+        }
+        
+        return drawable;
+    }
+    
+    /**
+     * Actual implementation of the parse logic.
+     * @return The parsed drawable. Maybe <code>null</code>.
+     * @throws Exception If any fatal error occurs while parsing the drawable.
+     */
+    protected abstract Drawable parseDrawable () throws Exception;
     
     /**
      * Set the minimum depth that this parser should keep parsing.
@@ -104,18 +141,17 @@ public abstract class IDrawableParser extends CommonParseUtils {
         return this.parser.getDepth () >= minDepth;
     }
     
-    protected boolean isApi26 () {
-        return Build.VERSION.SDK_INT >= 26;
-    }
-    
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.P)
     protected boolean isApi28 () {
         return Build.VERSION.SDK_INT >= 28;
     }
     
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.Q)
     protected boolean isApi29 () {
         return Build.VERSION.SDK_INT >= 29;
     }
     
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.R)
     protected boolean isApi30 () {
         return Build.VERSION.SDK_INT >= 30;
     }

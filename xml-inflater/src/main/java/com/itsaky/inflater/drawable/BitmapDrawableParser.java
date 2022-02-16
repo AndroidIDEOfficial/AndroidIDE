@@ -46,7 +46,7 @@ public class BitmapDrawableParser extends IDrawableParser {
     }
     
     @Override
-    public Drawable parse () throws Exception {
+    public Drawable parseDrawable () throws Exception {
         var index = attrIndex ("src");
         if (index == -1) {
             throw new InflateException ("Invalid <bitmap> drawable. No android:src specified!");
