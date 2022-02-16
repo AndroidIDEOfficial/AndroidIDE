@@ -66,7 +66,8 @@ public class CommonParseUtils {
                 return false;
             }
         } else {
-            // TODO Find resource value in booleans.xml
+            try {
+            }
         }
         return false;
     }

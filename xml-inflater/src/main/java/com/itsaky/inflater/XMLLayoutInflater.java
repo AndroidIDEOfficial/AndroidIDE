@@ -284,7 +284,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
         }
         
         final var name = layout.substring ("@layout/".length ());
-        final var file = resFinder.inflateLayout (name);
+        final var file = resFinder.findLayout (name);
         if (file == null) {
             throw new InflateException ("Layout file '" + name + "' not found");
         }

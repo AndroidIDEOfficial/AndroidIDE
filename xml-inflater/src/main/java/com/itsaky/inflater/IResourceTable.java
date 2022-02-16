@@ -42,7 +42,7 @@ public interface IResourceTable {
      * @param name The name of the layout file
      * @return The found layout resource file
      */
-    File inflateLayout (@NonNull String name);
+    File findLayout (@NonNull String name);
     
     /**
      * Find a string resource. Must be a valid string or {@code null}

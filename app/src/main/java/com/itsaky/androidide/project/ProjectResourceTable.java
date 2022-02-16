@@ -50,7 +50,7 @@ public class ProjectResourceTable implements IResourceTable {
     }
 
     @Override
-    public File inflateLayout(@NonNull String name) {
+    public File findLayout (@NonNull String name) {
         return findFileWithName(this.layout.listFiles(), name);
     }
 
