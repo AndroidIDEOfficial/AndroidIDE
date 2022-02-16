@@ -102,19 +102,24 @@ public class CommonParseUtils {
         char c = value.charAt (0);
         if (Character.isDigit (c)) {
             // A dimension value which starts with a digit. E.g.: 1dp, 12sp, 123px, etc.
-            String dimensionVal = "";
+            StringBuilder dimensionVal = new StringBuilder ();
             int index = 0;
             while (Character.isDigit (c = value.charAt (index))) {
-                dimensionVal += c;
+                dimensionVal.append (c);
                 index++;
             }
             
-            final int dimen = Integer.parseInt (dimensionVal);
+            final int dimen = Integer.parseInt (dimensionVal.toString ());
             final String dimensionType = value.substring (index);
             return (int) TypedValue.applyDimension (getUnitForDimensionType (dimensionType), dimen, displayMetrics);
         } else if (c == '@') {
-            String name = value.substring ("@dimen/".length ());
-            return parseDimension (resourceFinder.findDimension (name), defaultValue);
+            if (value.startsWith ("@android:dimen/")) {
+                final var name = value.substring ("@android:dimen/".length ());
+                return frameworkDimensionValue (name, defaultValue);
+            } else if (value.startsWith ("@dimen/")) {
+                String name = value.substring ("@dimen/".length ());
+                return parseDimension (resourceFinder.findDimension (name), defaultValue);
+            }
         } else if (Character.isLetter (c)) {
             // This could be one of the following :
             // 1. match_parent
@@ -131,6 +136,17 @@ public class CommonParseUtils {
         }
         
         return defaultValue;
+    }
+    
+    private int frameworkDimensionValue (String name, int defValue) {
+        try {
+            final var klass = android.R.dimen.class;
+            final var field = klass.getDeclaredField (name);
+            final var id = field.getInt (null);
+            return (int) BaseApplication.getBaseInstance ().getResources ().getDimension (id);
+        } catch (Throwable th) {
+            return defValue;
+        }
     }
     
     protected int getUnitForDimensionType (@NonNull String dimensionType) {
