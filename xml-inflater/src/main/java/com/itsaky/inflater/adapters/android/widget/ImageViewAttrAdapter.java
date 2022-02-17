@@ -25,6 +25,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
@@ -42,92 +43,92 @@ public class ImageViewAttrAdapter extends ViewAttrAdapter {
     }
     
     @Override
-    public boolean isApplicableTo(View view) {
+    public boolean isApplicableTo (View view) {
         return view instanceof ImageView;
     }
-
+    
     @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    public boolean apply (@NonNull IAttribute attribute, @NonNull View view) {
         final ImageView image = (ImageView) view;
-        final Context context = image.getContext();
-        final DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        final String name = attribute.getAttributeName();
-        final String value = attribute.getValue();
-
-        if (!canHandleNamespace(attribute)) {
+        final Context context = image.getContext ();
+        final DisplayMetrics dm = context.getResources ().getDisplayMetrics ();
+        final String name = attribute.getAttributeName ();
+        final String value = attribute.getValue ();
+        
+        if (!canHandleNamespace (attribute)) {
             return false;
         }
-
+        
         boolean handled = true;
-
+        
         switch (name) {
-            case "adjustViewBounds" :
-                image.setAdjustViewBounds(parseBoolean(value));
+            case "adjustViewBounds":
+                image.setAdjustViewBounds (parseBoolean (value));
                 break;
-            case "baseline" :
-                image.setBaseline(parseDimension(value, 0, dm));
+            case "baseline":
+                image.setBaseline (parseDimension (value, 0, dm));
                 break;
-            case "baselineAlignBottom" :
-                image.setBaselineAlignBottom(parseBoolean(value));
+            case "baselineAlignBottom":
+                image.setBaselineAlignBottom (parseBoolean (value));
                 break;
-            case "cropToPadding" :
-                image.setCropToPadding(parseBoolean(value));
+            case "cropToPadding":
+                image.setCropToPadding (parseBoolean (value));
                 break;
-            case "maxHeight" :
-                image.setMaxHeight(parseDimension(value, 0, dm));
+            case "maxHeight":
+                image.setMaxHeight (parseDimension (value, 0, dm));
                 break;
-            case "maxWidth" :
-                image.setMaxWidth(parseDimension(value, 0, dm));
+            case "maxWidth":
+                image.setMaxWidth (parseDimension (value, 0, dm));
                 break;
-            case "scaleType" :
-                image.setScaleType(parseScaleType(value));
+            case "scaleType":
+                image.setScaleType (parseScaleType (value));
                 break;
-            case "src" :
-                image.setImageDrawable(parseImageResource(value, context));
+            case "src":
+                image.setImageDrawable (parseImageResource (value, context));
                 break;
-            case "tint" :
-                // TODO Parse color state list
+            case "tint":
+                image.setImageTintList (parseColorStateList (value, context));
                 break;
-            case "tintMode" :
-                image.setImageTintMode(parsePorterDuffMode(value));
+            case "tintMode":
+                image.setImageTintMode (parsePorterDuffMode (value));
                 break;
-            default :
+            default:
                 handled = false;
                 break;
         }
-
+        
         if (!handled) {
-            handled = super.apply(attribute, view);
+            handled = super.apply (attribute, view);
         }
-
+        
         return handled;
     }
-
-    private Drawable parseImageResource(String value, Context context) {
-        if (value.startsWith("@drawable/") || value.startsWith("@mipmap/")) {
-            return parseDrawable(value, context);
+    
+    private Drawable parseImageResource (String value, Context context) {
+        if (value.startsWith ("@drawable/") || value.startsWith ("@mipmap/")) {
+            return parseDrawable (value, context);
         }
-        return ContextCompat.getDrawable(context, android.R.drawable.ic_delete);
+        return ContextCompat.getDrawable (context, android.R.drawable.ic_delete);
     }
-
-    private ImageView.ScaleType parseScaleType(String value) {
+    
+    private ImageView.ScaleType parseScaleType (String value) {
         switch (value) {
-            case "center" :
+            case "center":
                 return ImageView.ScaleType.CENTER;
-            case "centerCrop" :
+            case "centerCrop":
                 return ImageView.ScaleType.CENTER_CROP;
-            case "centerInside" :
+            case "centerInside":
                 return ImageView.ScaleType.CENTER_INSIDE;
-            case "fitEnd" :
+            case "fitEnd":
                 return ImageView.ScaleType.FIT_END;
-            case "fitStart" :
+            case "fitStart":
                 return ImageView.ScaleType.FIT_START;
-            case "fitXY" :
+            case "fitXY":
                 return ImageView.ScaleType.FIT_XY;
-            case "matrix" :
+            case "matrix":
                 return ImageView.ScaleType.MATRIX;
-            case "fitCenter" :
-            default :
+            case "fitCenter":
+            default:
                 return ImageView.ScaleType.FIT_CENTER;
         }
     }

@@ -18,6 +18,7 @@
 package com.itsaky.inflater.util;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -37,6 +38,7 @@ import com.itsaky.inflater.drawable.DrawableParserFactory;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -233,6 +235,35 @@ public class CommonParseUtils {
         return Color.parseColor ("#00ffffff");
     }
     
+    protected ColorStateList parseColorStateList (@NonNull String value, Context context) {
+        if (HEX_COLOR.matcher (value).matches ()) {
+            return ColorStateList.valueOf (Color.parseColor (value));
+        } else if (value.startsWith ("@color/")) {
+            final var name = value.substring ("@color/".length ());
+            final var res = resourceFinder.findColor (name);
+            final var color = parseColor (res, context);
+            return ColorStateList.valueOf (color);
+        } else if (value.startsWith ("@android:color/")) {
+            final var name = value.substring ("@android:color/".length ());
+            final var id = findFrameworkResourceId ("color", name);
+            if (id == -1) {
+                return ColorStateList.valueOf (Color.TRANSPARENT);
+            }
+            try {
+                return ContextCompat.getColorStateList (context, id);
+            } catch (Throwable th) {
+                try {
+                    return ColorStateList.valueOf (ContextCompat.getColor (context, id));
+                } catch (Throwable th2) {
+                    LOG.error ("Unable to create color state list for framework resource", name);
+                    return ColorStateList.valueOf (Color.TRANSPARENT);
+                }
+            }
+        }
+        
+        return ColorStateList.valueOf (Color.TRANSPARENT);
+    }
+    
     protected Drawable parseDrawable (String value, final Context ctx) {
         if (HEX_COLOR.matcher (value).matches ()) {
             return drawableForColor (value);
@@ -279,8 +310,7 @@ public class CommonParseUtils {
                     
                 } else if (value.startsWith ("@color/")) {
                     final String color = resourceFinder.findColor (value.substring ("@color/".length ()));
-                    // TODO Check if this color resource is a selector
-                    return parseDrawable (color, ctx);
+                    return new ColorDrawable (parseColor (color, ctx));
                 }
             }
         }
@@ -289,7 +319,8 @@ public class CommonParseUtils {
     
     private int findFrameworkResourceId (String type, String name) {
         try {
-            final Class<?> typeClass = android.R.class.getClassLoader ().loadClass ("android.R$" + type);
+            final Class<?> typeClass = Objects.requireNonNull (android.R.class.getClassLoader (), "Unable to get class loader for loading system resources")
+                    .loadClass ("android.R$" + type);
             final Field typeField = typeClass.getDeclaredField (name);
             typeField.setAccessible (true);
             return typeField.getInt (null);

@@ -60,7 +60,7 @@ public class CheckedTextViewAttrAdapter extends TextViewAttrAdapter {
                 text.setCheckMarkTintMode(parsePorterDuffMode(value));
                 break;
             case "checkMarkTint" :
-                // TODO Parse color state list
+                text.setCheckMarkTintList (parseColorStateList (value, text.getContext ()));
                 break;
             case "checkMark" :
                 // Ignored...

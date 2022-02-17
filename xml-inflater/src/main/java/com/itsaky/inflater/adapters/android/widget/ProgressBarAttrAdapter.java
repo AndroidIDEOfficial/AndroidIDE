@@ -41,99 +41,99 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
     }
     
     @Override
-    public boolean isApplicableTo(View view) {
+    public boolean isApplicableTo (View view) {
         return view instanceof ProgressBar;
     }
-
+    
     @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    public boolean apply (@NonNull IAttribute attribute, @NonNull View view) {
         final ProgressBar pb = (ProgressBar) view;
-        final Context context = pb.getContext();
-        final DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        final String name = attribute.getAttributeName();
-        final String value = attribute.getValue();
+        final Context context = pb.getContext ();
+        final DisplayMetrics dm = context.getResources ().getDisplayMetrics ();
+        final String name = attribute.getAttributeName ();
+        final String value = attribute.getValue ();
         
-        if (!canHandleNamespace(attribute)) {
+        if (!canHandleNamespace (attribute)) {
             return false;
         }
         
         boolean handled = true;
         
         switch (name) {
-            case "indeterminate" :
-                pb.setIndeterminate(parseBoolean(value));
+            case "indeterminate":
+                pb.setIndeterminate (parseBoolean (value));
                 break;
-            case "indeterminateDrawable" :
-                pb.setIndeterminateDrawable(parseDrawable(value, context));
+            case "indeterminateDrawable":
+                pb.setIndeterminateDrawable (parseDrawable (value, context));
                 break;
-            case "indeterminateTint" :
-                // TODO Parse color state list
+            case "indeterminateTint":
+                pb.setIndeterminateTintList (parseColorStateList (value, context));
                 break;
-            case "indeterminateTintMode" :
-                pb.setIndeterminateTintMode(parsePorterDuffMode(value));
+            case "indeterminateTintMode":
+                pb.setIndeterminateTintMode (parsePorterDuffMode (value));
                 break;
-            case "max" :
-                pb.setMax(parseInteger(value, 100));
+            case "max":
+                pb.setMax (parseInteger (value, 100));
                 break;
-            case "maxHeight" :
+            case "maxHeight":
                 if (isApi29 ()) {
-                    pb.setMaxHeight(parseDimension(value, Integer.MAX_VALUE, dm));
+                    pb.setMaxHeight (parseDimension (value, Integer.MAX_VALUE, dm));
                 }
                 break;
-            case "maxWidth" :
+            case "maxWidth":
                 if (isApi29 ()) {
-                    pb.setMaxWidth(parseDimension(value, Integer.MAX_VALUE, dm));
+                    pb.setMaxWidth (parseDimension (value, Integer.MAX_VALUE, dm));
                 }
                 break;
-            case "min" :
-                if (isApi26()) {
-                    pb.setMin(parseInteger(value, 0));
+            case "min":
+                if (isApi26 ()) {
+                    pb.setMin (parseInteger (value, 0));
                 }
                 break;
-            case "minHeight" :
-                if (isApi29()) {
-                    pb.setMinHeight(parseDimension(value, 0, dm));
+            case "minHeight":
+                if (isApi29 ()) {
+                    pb.setMinHeight (parseDimension (value, 0, dm));
                 }
                 break;
-            case "minWidth" :
-                if (isApi29()) {
-                    pb.setMinWidth(parseDimension(value, 0, dm));
+            case "minWidth":
+                if (isApi29 ()) {
+                    pb.setMinWidth (parseDimension (value, 0, dm));
                 }
                 break;
-            case "progress" :
-                pb.setProgress(parseInteger(value, 50));
+            case "progress":
+                pb.setProgress (parseInteger (value, 50));
                 break;
-            case "progressBackgroundTint" :
-                // TODO Parse color state list
+            case "progressBackgroundTint":
+                pb.setProgressBackgroundTintList (parseColorStateList (value, context));
                 break;
-            case "progressBackgroundTintMode" :
-                pb.setProgressBackgroundTintMode(parsePorterDuffMode(value));
+            case "progressBackgroundTintMode":
+                pb.setProgressBackgroundTintMode (parsePorterDuffMode (value));
                 break;
-            case "progressDrawable" :
-                pb.setProgressDrawable(parseDrawable(value, context));
+            case "progressDrawable":
+                pb.setProgressDrawable (parseDrawable (value, context));
                 break;
-            case "progressTint" :
-                // TODO Parse color state list
+            case "progressTint":
+                pb.setProgressTintList (parseColorStateList (value, context));
                 break;
-            case "progressTintMode" :
-                pb.setProgressTintMode(parsePorterDuffMode(value));
+            case "progressTintMode":
+                pb.setProgressTintMode (parsePorterDuffMode (value));
                 break;
-            case "secondaryProgress" :
-                pb.setSecondaryProgress(parseInteger(value, 0));
+            case "secondaryProgress":
+                pb.setSecondaryProgress (parseInteger (value, 0));
                 break;
-            case "secondaryProgressTint" :
-                // TODO Parse color state list
+            case "secondaryProgressTint":
+                pb.setSecondaryProgressTintList (parseColorStateList (value, context));
                 break;
-            case "secondaryProgressTintMode" :
-                pb.setSecondaryProgressTintMode(parsePorterDuffMode(value));
+            case "secondaryProgressTintMode":
+                pb.setSecondaryProgressTintMode (parsePorterDuffMode (value));
                 break;
-            default : 
+            default:
                 handled = false;
                 break;
         }
         
         if (!handled) {
-            handled = super.apply(attribute, view);
+            handled = super.apply (attribute, view);
         }
         
         return handled;

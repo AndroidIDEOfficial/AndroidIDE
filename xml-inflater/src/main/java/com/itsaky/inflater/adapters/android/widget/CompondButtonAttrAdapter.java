@@ -22,42 +22,42 @@ public class CompondButtonAttrAdapter extends ButtonAttrAdapter {
     }
     
     @Override
-    public boolean isApplicableTo(View view) {
+    public boolean isApplicableTo (View view) {
         return view instanceof CompoundButton;
     }
-
+    
     @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    public boolean apply (@NonNull IAttribute attribute, @NonNull View view) {
         final CompoundButton button = (CompoundButton) view;
-        final Context context = button.getContext();
-        final String name = attribute.getAttributeName();
-        final String value = attribute.getValue();
+        final Context context = button.getContext ();
+        final String name = attribute.getAttributeName ();
+        final String value = attribute.getValue ();
         
-        if (!canHandleNamespace(attribute)) {
+        if (!canHandleNamespace (attribute)) {
             return false;
         }
         
         boolean handled = true;
         
         switch (name) {
-            case "buttonTint" :
-                // TODO Parse color state list
+            case "buttonTint":
+                button.setButtonTintList (parseColorStateList (value, context));
                 break;
-            case "button" :
-                button.setButtonDrawable(parseDrawable(value, context));
+            case "button":
+                button.setButtonDrawable (parseDrawable (value, context));
                 break;
-            case "buttonTintMode" :
-                button.setButtonTintMode(parsePorterDuffMode(value));
+            case "buttonTintMode":
+                button.setButtonTintMode (parsePorterDuffMode (value));
                 break;
-            default :
+            default:
                 handled = false;
                 break;
         }
         
         if (!handled) {
-            handled = super.apply(attribute, view);
+            handled = super.apply (attribute, view);
         }
-
+        
         return handled;
     }
 }

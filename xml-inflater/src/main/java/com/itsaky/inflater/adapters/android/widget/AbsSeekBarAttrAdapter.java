@@ -20,7 +20,9 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AbsSeekBar;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
@@ -56,13 +58,13 @@ public abstract class AbsSeekBarAttrAdapter extends ProgressBarAttrAdapter {
 
         switch (name) {
             case "thumbTint" :
-                // TODO Parse color state list
+                seek.setThumbTintList (parseColorStateList (value, seek.getContext ()));
                 break;
             case "thumbTintMode" :
                 seek.setThumbTintMode(parsePorterDuffMode(value));
                 break;
             case "tickMarkTint" :
-                // TODO Parse color state list
+                seek.setTickMarkTintList (parseColorStateList (value, seek.getContext ()));
                 break;
             case "tickMarkTintMode":
                 seek.setTickMarkTintMode(parsePorterDuffMode(value));
