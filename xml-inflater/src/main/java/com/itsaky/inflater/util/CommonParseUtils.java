@@ -71,9 +71,11 @@ public class CommonParseUtils {
     
     private String frameworkStringValue (String name) {
         try {
-            final var klass = android.R.string.class;
-            final var field = klass.getDeclaredField (name);
-            final var id = field.getInt (null);
+            final var id = findFrameworkResourceId ("string", name);
+            if (id == -1) {
+                return "";
+            }
+            
             return BaseApplication.getBaseInstance ().getString (id);
         } catch (Throwable th) {
             return "";
@@ -98,9 +100,11 @@ public class CommonParseUtils {
     
     private boolean frameworkBooleanValue (String name) {
         try {
-            final var klass = android.R.bool.class;
-            final var field = klass.getDeclaredField (name);
-            final var id = field.getInt (null);
+            final var id = findFrameworkResourceId ("boolean", name);
+            if (id == -1) {
+                return false;
+            }
+            
             return BaseApplication.getBaseInstance ().getResources ().getBoolean (id);
         } catch (Throwable th) {
             return false;
@@ -124,9 +128,11 @@ public class CommonParseUtils {
     
     private int frameworkIntegerResource (String name, int defaultVal) {
         try {
-            final var klass = android.R.integer.class;
-            final var field = klass.getDeclaredField (name);
-            final var id = field.getInt (null);
+            final var id = findFrameworkResourceId ("integer", name);
+            if (id == -1) {
+                return defaultVal;
+            }
+            
             return BaseApplication.getBaseInstance ().getResources ().getInteger (id);
         } catch (Throwable th) {
             return defaultVal;
@@ -179,9 +185,11 @@ public class CommonParseUtils {
     
     private int frameworkDimensionValue (String name, int defValue) {
         try {
-            final var klass = android.R.dimen.class;
-            final var field = klass.getDeclaredField (name);
-            final var id = field.getInt (null);
+            final var id = findFrameworkResourceId ("dimen", name);
+            if (id == -1) {
+                return defValue;
+            }
+            
             return (int) BaseApplication.getBaseInstance ().getResources ().getDimension (id);
         } catch (Throwable th) {
             return defValue;
@@ -218,7 +226,7 @@ public class CommonParseUtils {
         } else if (color.startsWith ("@color/")) {
             return parseColor (resourceFinder.findColor (color.substring ("@color/".length ())), ctx);
         } else if (color.startsWith ("@android:color/")) {
-            final int id = findAndroidResId ("color", color.substring ("@android:color/".length ()));
+            final int id = findFrameworkResourceId ("color", color.substring ("@android:color/".length ()));
             return ContextCompat.getColor (ctx, id);
         }
         
@@ -236,7 +244,7 @@ public class CommonParseUtils {
                 final String[] split = typeAndValue.split (Pattern.quote ("/")); // For @android:color/white, it will be ["color", "white"]
                 final String type = split[0];
                 final String typeVal = split[1];
-                final int id = findAndroidResId (type, typeVal);
+                final int id = findFrameworkResourceId (type, typeVal);
                 
                 if (id != -1) {
                     switch (type) {
@@ -279,7 +287,7 @@ public class CommonParseUtils {
         return newTransparentDrawable ();
     }
     
-    private int findAndroidResId (String type, String name) {
+    private int findFrameworkResourceId (String type, String name) {
         try {
             final Class<?> typeClass = android.R.class.getClassLoader ().loadClass ("android.R$" + type);
             final Field typeField = typeClass.getDeclaredField (name);
