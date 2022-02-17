@@ -839,6 +839,8 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             Intent i = IntentUtils.getInstallAppIntent (apk);
             if (i != null) {
                 startActivity (i);
+            } else {
+                getApp ().toast (R.string.msg_apk_install_intent_failed, Toaster.Type.ERROR);
             }
         }
     }

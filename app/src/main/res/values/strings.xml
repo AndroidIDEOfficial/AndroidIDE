@@ -373,4 +373,5 @@
     <string name="msg_use_popup_actions">Use PopupWindow for showing text actions (restart required if changed).</string>
     <string name="title_use_horizontal_popup">Horizontal text actions</string>
     <string name="msg_use_horizontal_popup">Make the floating text actions appear horizontally (restart required if changed).</string>
+    <string name="msg_apk_install_intent_failed">Unable to start intent for installing APK</string>
 </resources>
