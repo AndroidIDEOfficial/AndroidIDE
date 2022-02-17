@@ -86,9 +86,7 @@ public class ProgressBarAttrAdapter extends ViewAttrAdapter {
                 }
                 break;
             case "min":
-                if (isApi26 ()) {
-                    pb.setMin (parseInteger (value, 0));
-                }
+                pb.setMin (parseInteger (value, 0));
                 break;
             case "minHeight":
                 if (isApi29 ()) {

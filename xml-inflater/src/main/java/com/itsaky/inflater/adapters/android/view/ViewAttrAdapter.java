@@ -203,9 +203,7 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
                 view.setTextDirection (parseTextDirection (value));
                 break;
             case "tooltipText":
-                if (isApi26 ()) {
-                    view.setTooltipText (parseString (value));
-                }
+                view.setTooltipText (parseString (value));
                 break;
             case "transformPivotX":
                 view.setPivotX (parseFloat (value));
@@ -551,10 +549,6 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
         }
         
         return defaultValue;
-    }
-    
-    protected boolean isApi26 () {
-        return true;
     }
     
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.P)
