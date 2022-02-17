@@ -141,7 +141,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
             return createFromInclude (tag.attributes (), parent);
         }
         
-        IView root;
+        final IView root;
         int style = tag.hasAttr ("style") ? parseFrameworkStyle (tag.attr ("style")) : -1;
         if (!name.contains (".")) {
             root = createFromSimpleName (name, parentGroup, style);

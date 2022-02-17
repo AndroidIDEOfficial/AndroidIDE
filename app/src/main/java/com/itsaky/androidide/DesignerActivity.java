@@ -86,6 +86,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     private UIWidgetGroup checkedWidgetCategory;
     private IViewGroup inflatedRoot;
     
+    private boolean inflationFailed = false;
     private AttrEditorSheet mEditorSheet;
     
     public static final String KEY_LAYOUT_PATH = "designer_layoutPath";
@@ -177,6 +178,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
             mBinding.layoutContainer.removeAllViews ();
             mBinding.layoutContainer.addView (createErrorText (th));
             LOG.error (getString (R.string.err_cannot_inflate_layout), th);
+            inflationFailed = true;
         }
         
         setupWidgets ();
@@ -191,6 +193,12 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     
     @Override
     public void onBackPressed () {
+        
+        if (inflationFailed) {
+            super.onBackPressed ();
+            return;
+        }
+        
         // When the user presses the back button, set the activity result and finish this activity
         
         final var progress = new ProgressSheet ();
@@ -221,13 +229,13 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
     private void notifyXmlGenerationFailed (Throwable error) {
         final var errorMessage = getString (R.string.msg_generate_xml_failed);
         LOG.error (errorMessage, error);
-    
+        
         DialogUtils.newYesNoDialog (this,
                 getString (R.string.title_code_generation_failed),
                 getString (R.string.msg_code_generation_failed),
                 (dialog1, which) -> finishWithError (),
                 (dialog1, which) -> dialog1.dismiss ())
-            
+                
                 .show ();
     }
     
