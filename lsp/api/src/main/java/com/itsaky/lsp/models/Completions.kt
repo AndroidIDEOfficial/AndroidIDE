@@ -156,7 +156,7 @@ data class CompletionItem(@JvmField var label: String,
     private fun getIdentifierStart (text: CharSequence, end: Int) : Int {
         
         var start = end
-        while (start >= 0) {
+        while (start > 0) {
             if (Character.isJavaIdentifierPart(text[start - 1])) {
                 start --
                 continue
