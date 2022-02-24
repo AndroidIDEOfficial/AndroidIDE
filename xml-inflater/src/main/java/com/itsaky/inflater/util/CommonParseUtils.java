@@ -350,6 +350,7 @@ public class CommonParseUtils {
             typeField.setAccessible (true);
             return typeField.getInt (null);
         } catch (Throwable th) {
+            LOG.error ("Unable to find framework resource.", "type=" + type, "name=" + name);
             return -1;
         }
     }
