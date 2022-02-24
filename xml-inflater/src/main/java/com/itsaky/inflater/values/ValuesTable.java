@@ -1,24 +1,27 @@
 /*
  * This file is part of AndroidIDE.
- * 
+ *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- * 
+ *
  */
 package com.itsaky.inflater.values;
 
+import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.inflater.values.models.ArrayResource;
 import com.itsaky.inflater.values.models.BooleanValue;
 import com.itsaky.inflater.values.models.ColorValue;
 import com.itsaky.inflater.values.models.DimensionValue;
@@ -32,11 +35,10 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
 
 /**
  * Reads and manages values (colors, strings, integers, etc.) for a single module.
@@ -45,7 +47,8 @@ import androidx.annotation.NonNull;
  */
 public class ValuesTable {
     
-    // TODO Parse arrays, styles and styleables
+    // TODO Parse styles and styleables
+    private final Map<String, ArrayResource> arrays;
     private final Map<String, IResourceValue> strings;
     private final Map<String, IResourceValue> colors;
     private final Map<String, IResourceValue> integers;
@@ -53,6 +56,7 @@ public class ValuesTable {
     private final Map<String, IResourceValue> booleans;
     
     private ValuesTable () {
+        this.arrays = new HashMap<> ();
         this.strings = new HashMap<> ();
         this.colors = new HashMap<> ();
         this.integers = new HashMap<> ();
@@ -62,10 +66,11 @@ public class ValuesTable {
     
     /**
      * Finds a resource value of any type.
+     *
      * @param name The name of the resource to find.
      * @return The resource value or {@code null} if there is no resource with the given name.
      */
-    @SuppressWarnings ("unused")
+    @SuppressWarnings("unused")
     public IResourceValue findResource (final String name) {
         IResourceValue value;
         
@@ -73,22 +78,27 @@ public class ValuesTable {
         if (value != null) {
             return value;
         }
-    
+        
         value = findColor (name);
         if (value != null) {
             return value;
         }
-    
+        
         value = findInteger (name);
         if (value != null) {
             return value;
         }
-    
+        
         value = findDimension (name);
         if (value != null) {
             return value;
         }
-    
+        
+        value = findArray (name);
+        if (value != null) {
+            return value;
+        }
+        
         value = findBoolean (name);
         //noinspection RedundantIfStatement
         if (value != null) {
@@ -98,8 +108,13 @@ public class ValuesTable {
         return null;
     }
     
+    public ArrayResource findArray (final String name) {
+        return (ArrayResource) arrays.getOrDefault (name, null);
+    }
+    
     /**
      * Find a string value with the given name.
+     *
      * @param name The name of the string resource.
      * @return The string resource or {@code null} if there is no resource with the given name.
      */
@@ -109,14 +124,17 @@ public class ValuesTable {
     
     /**
      * Find a color value with the given name.
+     *
      * @param name The name of the color resource.
      * @return The color resource or {@code null} if there is no resource with the given name.
      */
     public ColorValue findColor (final String name) {
         return (ColorValue) colors.getOrDefault (name, null);
     }
+    
     /**
      * Find a integer value with the given name.
+     *
      * @param name The name of the integer resource.
      * @return The integer resource or {@code null} if there is no resource with the given name.
      */
@@ -126,6 +144,7 @@ public class ValuesTable {
     
     /**
      * Find a dimension value with the given name.
+     *
      * @param name The name of the dimension resource.
      * @return The dimension resource or {@code null} if there is no resource with the given name.
      */
@@ -135,6 +154,7 @@ public class ValuesTable {
     
     /**
      * Find a boolean value with the given name.
+     *
      * @param name The name of the boolean resource.
      * @return The boolean resource or {@code null} if there is no resource with the given name.
      */
@@ -144,6 +164,7 @@ public class ValuesTable {
     
     /**
      * Reads the contents of the given file and updates this table.
+     *
      * @param file The file to sync with.
      */
     public void syncWithFile (final File file) throws Exception {
@@ -151,7 +172,7 @@ public class ValuesTable {
         final var factory = XmlPullParserFactory.newInstance ();
         final var parser = factory.newPullParser ();
         parser.setInput (new FileInputStream (file), null);
-    
+        
         var event = parser.getEventType ();
         while (event != XmlPullParser.END_DOCUMENT) {
             if (event == XmlPullParser.START_TAG) {
@@ -160,7 +181,7 @@ public class ValuesTable {
                     event = parser.next ();
                     continue;
                 }
-            
+                
                 ValuesTable.readTag (tag, parser, this);
             }
             event = parser.next ();
@@ -183,10 +204,11 @@ public class ValuesTable {
     
     /**
      * Create a new table by reading the files from the given values directory.
+     *
      * @param valuesDirectory The "res/values" directory.
      * @return The values table or {@code null} if the directory is invalid or there are no files in this directory.
      * @throws XmlPullParserException Thrown by {@link XmlPullParserFactory}.
-     * @throws IOException Thrown by {@link XmlPullParser}.
+     * @throws IOException            Thrown by {@link XmlPullParser}.
      */
     public static ValuesTable forDirectory (File valuesDirectory) throws Exception {
         if (valuesDirectory == null) {
@@ -198,7 +220,7 @@ public class ValuesTable {
             LOG.error ("Cannot create values table for directory as it does not exists. Directory:", valuesDirectory);
             return null;
         }
-    
+        
         final var files = valuesDirectory.listFiles (ValuesTable::isValid);
         if (files == null) {
             LOG.error ("No files found in the given values directory");
@@ -237,7 +259,7 @@ public class ValuesTable {
     private static void readTag (String tag, XmlPullParser parser, ValuesTable values) throws Exception {
         
         if ("style".equals (tag)
-        || "declare-styleable".equals (tag)) {
+                || "declare-styleable".equals (tag)) {
             // These tags are not supported yet
             // Skip parsing until we reach next tag with same depth as of this tag
             skip (parser);
@@ -246,7 +268,7 @@ public class ValuesTable {
         
         // TODO Should we check if these tags are specified within <resources>?
         final var name = getName (parser);
-        if (name == null ) {
+        if (name == null) {
             LOG.error (String.format ("A <%s> resource was found with no 'name' attribute", tag));
             return;
         }
@@ -259,20 +281,27 @@ public class ValuesTable {
             }
         }
         
+        // check for array before reading value
+        // because array resources do not have text values
+        if ("array".equals (tag) || tag.endsWith ("-array")) {
+            readArray (parser, values, name);
+            return;
+        }
+        
         // Value must be read after all other required values have been read
         final var value = parser.nextText ();
         IResourceValue resourceValue;
         
         switch (tag) {
-            case "string" :
+            case "string":
                 resourceValue = new StringValue (name, value);
                 values.strings.put (name, resourceValue);
                 break;
-            case "color" :
+            case "color":
                 resourceValue = new ColorValue (name, value);
                 values.colors.put (name, resourceValue);
                 break;
-            case "bool" :
+            case "bool":
                 resourceValue = new BooleanValue (name, value);
                 values.booleans.put (name, resourceValue);
                 break;
@@ -280,7 +309,7 @@ public class ValuesTable {
                 resourceValue = new DimensionValue (name, value);
                 values.dimens.put (name, resourceValue);
                 break;
-            case "integer" :
+            case "integer":
                 resourceValue = new IntegerValue (name, value);
                 values.integers.put (name, resourceValue);
                 break;
@@ -290,13 +319,36 @@ public class ValuesTable {
         }
     }
     
-    private static void skip(@NonNull XmlPullParser parser) throws XmlPullParserException, IOException {
-        if (parser.getEventType() != XmlPullParser.START_TAG) {
-            throw new IllegalStateException();
+    private static void readArray (@NonNull XmlPullParser parser, ValuesTable values, String name) throws XmlPullParserException, IOException {
+        final var minDepth = parser.getDepth ();
+        final var items = new ArrayList<String> ();
+        
+        var event = parser.getEventType ();
+        while ((event = parser.next ()) != XmlPullParser.END_DOCUMENT && parser.getDepth () >= minDepth) {
+            if (event == XmlPullParser.START_TAG) {
+                final var child = parser.getName ();
+                if ("item".equals (child)) {
+                    final var value = parser.nextText ();
+                    items.add (value);
+                }
+            }
+        }
+        
+        final var arr = new String[items.size ()];
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = items.get (i);
+        }
+        
+        values.arrays.put (name, new ArrayResource (name, arr));
+    }
+    
+    private static void skip (@NonNull XmlPullParser parser) throws XmlPullParserException, IOException {
+        if (parser.getEventType () != XmlPullParser.START_TAG) {
+            throw new IllegalStateException ();
         }
         int depth = 1;
         while (depth != 0) {
-            switch (parser.next()) {
+            switch (parser.next ()) {
                 case XmlPullParser.END_TAG:
                     depth--;
                     break;

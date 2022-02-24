@@ -61,6 +61,31 @@ public class CommonParseUtils {
         this.displayMetrics = displayMetrics;
     }
     
+    protected String[] parseArray (final String value) {
+        if (value.startsWith ("@android:array/")) {
+            final var name = value.substring ("@android:array/".length ());
+            return frameworkArrayValue (name);
+        } else if (value.startsWith ("@array/")) {
+            final var name = value.substring ("@array/".length ());
+            return resourceFinder.findArray (name);
+        } else {
+            return new String[]{value};
+        }
+    }
+    
+    private String[] frameworkArrayValue (String name) {
+        try {
+            final var id = findFrameworkResourceId ("array", name);
+            if (id == -1) {
+                return new String[]{name};
+            }
+            
+            return BaseApplication.getBaseInstance ().getResources ().getStringArray (id);
+        } catch (Throwable th) {
+            return new String[0];
+        }
+    }
+    
     protected String parseString (@NonNull String value) {
         if (value.startsWith ("@string/")) {
             return parseString (resourceFinder.findString (value.substring ("@string/".length ())));

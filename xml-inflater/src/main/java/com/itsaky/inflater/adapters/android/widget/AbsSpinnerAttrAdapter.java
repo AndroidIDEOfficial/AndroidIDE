@@ -33,39 +33,40 @@ public class AbsSpinnerAttrAdapter extends AdapterViewAttrAdapter {
     }
     
     @Override
-    public boolean isApplicableTo(View view) {
+    public boolean isApplicableTo (View view) {
         return view instanceof AbsSpinner;
     }
-
+    
     @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    public boolean apply (@NonNull IAttribute attribute, @NonNull View view) {
         final var spinner = (AbsSpinner) view;
-        final var context = spinner.getContext();
-        final var namespace = attribute.getNamespace();
-        final var name = attribute.getAttributeName();
-        final var value = attribute.getValue();
-
+        final var context = spinner.getContext ();
+        final var namespace = attribute.getNamespace ();
+        final var name = attribute.getAttributeName ();
+        final var value = attribute.getValue ();
+        
         boolean handled = true;
-
-        if (!canHandleNamespace(namespace)) {
+        
+        if (!canHandleNamespace (namespace)) {
             return false;
         }
-
+        
         switch (name) {
-            case "entries" :
-                final var adapter = newSimpleAdapter(context, resourceFinder.findArray(value));
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner.setAdapter(adapter);
+            case "entries":
+                final var array = parseArray (value);
+                final var adapter = newSimpleAdapter (context, array);
+                adapter.setDropDownViewResource (android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter (adapter);
                 break;
             default:
                 handled = false;
                 break;
         }
-
-        if (!handled){
-            handled = super.apply(attribute, view);
+        
+        if (!handled) {
+            handled = super.apply (attribute, view);
         }
-
+        
         return handled;
     }
 }
