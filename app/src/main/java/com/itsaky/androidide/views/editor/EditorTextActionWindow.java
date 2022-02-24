@@ -224,7 +224,9 @@ public class EditorTextActionWindow extends EditorPopupWindow implements IDEEdit
     
     private void performTextAction (@NonNull IDEEditor.TextAction action) {
         this.editor.performTextAction (action);
-        dismiss ();
+        if (action.id != IDEEditor.TextAction.SELECT_ALL && action.id != IDEEditor.TextAction.EXPAND_SELECTION) {
+            dismiss ();
+        }
     }
     
     private int selectTop (@NonNull RectF rect) {
