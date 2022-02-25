@@ -144,13 +144,13 @@ public abstract class DrawableParserFactory {
             case "bitmap":
                 impl = BitmapDrawableParser.class;
                 break;
-            case "scale" :
+            case "scale":
                 impl = ScaleDrawableParser.class;
                 break;
-            case "clip" :
+            case "clip":
                 impl = ClipDrawableParser.class;
                 break;
-            case "selector" :
+            case "selector":
                 impl = StateListParser.class;
                 break;
             case "vector":
@@ -182,6 +182,11 @@ public abstract class DrawableParserFactory {
         protected NoParser (final Drawable parsed) {
             super (null, null, null, ANY_DEPTH);
             this.parsed = parsed;
+        }
+        
+        @Override
+        public Drawable parse () throws Exception {
+            return parsed;
         }
         
         @Override

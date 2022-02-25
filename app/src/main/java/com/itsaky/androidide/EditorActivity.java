@@ -282,11 +282,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             
             @Override
             public void onTabUnselected (TabLayout.Tab tab) {
-        
+            
             }
+            
             @Override
             public void onTabReselected (TabLayout.Tab tab) {
-        
+            
             }
         });
         
@@ -338,7 +339,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         super.onResume ();
         
         try {
-            checkForCompilerModule();
+            checkForCompilerModule ();
             dispatchOnResumeToEditors ();
             mFileTreeFragment.listProjectFiles ();
         } catch (Throwable th) {
@@ -762,6 +763,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         getFileOptionsFragment (thisFile).show (getSupportFragmentManager (), TAG_FILE_OPTIONS_FRAGMENT);
     }
     
+    @SuppressWarnings("UnusedReturnValue")
     public boolean saveAll () {
         return saveAll (true);
     }
@@ -821,7 +823,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 result.xmlSaved = modified && isXml;
             }
         }
-    
+        
         var modified = false;
         for (var file : mViewModel.getOpenedFiles ()) {
             var editor = getEditorForFile (file);
@@ -939,7 +941,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             } else {
                 LOG.error ("Cannot save file before close. Editor instance is null");
             }
-    
+            
             mViewModel.removeFile (index);
             mBinding.tabs.removeTabAt (index);
             mBinding.editorContainer.removeViewAt (index);
@@ -953,6 +955,16 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
     }
     
     public void closeAll () {
+        closeAll (null);
+    }
+    
+    /**
+     * Close all opened files. If all the files are saved successfully, then the provided {@link Runnable}
+     * will be called.
+     *
+     * @param onSaved The {@link Runnable} to run when all the files are saved.
+     */
+    public void closeAll (Runnable onSaved) {
         final var count = mViewModel.getOpenedFileCount ();
         final var unsavedFiles = mViewModel.getOpenedFiles ()
                 .stream ()
@@ -970,16 +982,21 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                     LOG.error ("Unable to close file at index:", i);
                 }
             }
-    
+            
             mViewModel.removeAllFiles ();
             mBinding.tabs.removeAllTabs ();
             mBinding.tabs.requestLayout ();
             mBinding.editorContainer.removeAllViews ();
-    
+            
             invalidateOptionsMenu ();
+            
+            
+            if (onSaved != null) {
+                onSaved.run ();
+            }
         } else {
             // There are unsaved files
-            notifyFilesUnsaved (unsavedFiles, this::closeAll);
+            notifyFilesUnsaved (unsavedFiles, () -> closeAll (onSaved));
         }
     }
     
@@ -1022,7 +1039,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
             final var file = mViewModel.getCurrentFile ();
             for (int i = 0; i < mViewModel.getOpenedFileCount (); i++) {
                 final var editor = getEditorAtIndex (i);
-        
+                
                 // Index of files changes as we keep close files
                 // So we compare the files instead of index
                 if (editor != null) {
@@ -1090,12 +1107,12 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         }
     }
     
-    @SuppressWarnings ("deprecation")
+    @SuppressWarnings("deprecation")
     private void checkForCompilerModule () {
         if (!Environment.isCompilerModuleInstalled ()) {
             final var pd = ProgressDialog.show (this,
-                    getString(R.string.title_compiler_module_install),
-                    getString(R.string.msg_compiler_module_install),
+                    getString (R.string.title_compiler_module_install),
+                    getString (R.string.msg_compiler_module_install),
                     true,
                     false);
             
@@ -1107,7 +1124,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                         tmpModule.getAbsolutePath ())) {
                     throw new CompletionException (new RuntimeException ("Unable to copy compiler-module.zip"));
                 }
-    
+                
                 try {
                     ZipUtils.unzipFile (tmpModule, Environment.COMPILER_MODULE);
                 } catch (Throwable e) {
@@ -1117,7 +1134,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                 if (!Environment.isCompilerModuleInstalled ()) {
                     throw new CompletionException (new RuntimeException ("Unknown error"));
                 }
-    
+                
                 try {
                     FileUtils.delete (tmpModule);
                 } catch (Exception e) {
@@ -1135,7 +1152,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
                     return;
                 }
                 
-                getApp ().toast (getString(R.string.msg_compiler_module_installed), Toaster.Type.SUCCESS);
+                getApp ().toast (getString (R.string.msg_compiler_module_installed), Toaster.Type.SUCCESS);
             });
         }
     }
@@ -1144,7 +1161,7 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         final var stacktrace = ThrowableUtils.getFullStackTrace (error);
         final var builder = DialogUtils.newMaterialDialogBuilder (this);
         builder.setTitle (R.string.title_installation_failed);
-        builder.setMessage (getString(R.string.msg_compiler_module_install_failed, stacktrace));
+        builder.setMessage (getString (R.string.msg_compiler_module_install_failed, stacktrace));
         builder.setCancelable (false);
         builder.setPositiveButton (android.R.string.ok, (dialog, which) -> dialog.dismiss ());
         builder.setNegativeButton (R.string.copy, (dialog, which) -> {
@@ -1396,13 +1413,14 @@ public class EditorActivity extends StudioActivity implements FileTreeFragment.F
         
         // Make sure we close files
         // This fill further make sure that file contents are not erased.
-        closeAll ();
-        getApp ().getPrefManager ().setOpenedProject (PreferenceManager.NO_OPENED_PROJECT);
-        getApp ().stopAllDaemons ();
-        
-        if (manualFinish) {
-            finish ();
-        }
+        closeAll (() -> {
+            getApp ().getPrefManager ().setOpenedProject (PreferenceManager.NO_OPENED_PROJECT);
+            getApp ().stopAllDaemons ();
+            
+            if (manualFinish) {
+                finish ();
+            }
+        });
     }
     
     private void confirmProjectClose () {

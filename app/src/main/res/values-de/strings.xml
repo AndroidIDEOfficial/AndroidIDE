@@ -337,7 +337,7 @@
   <string name="msg_bootstrap_installation_error">Die Bootstrap-Installation ist mit der folgenden Ausnahme fehlgeschlagen.</string>
   <string name="title_translations">&#xDC;bersetzungen</string>
   <string name="title_compiler_module_install">Kompilierer Modul wird installiert</string>
-  <string name="msg_compiler_module_install_failed">Installation des Kompilierer Moduls ist Fehlgeschlagen</string>
+  <string name="msg_compiler_module_install_failed">Installation des Kompilierer Moduls ist Fehlgeschlagen\n%s</string>
   <string name="msg_compiler_module_installed">Kompilierer Modul installation erfolgreich abgeschlossen!</string>
   <string name="idepref_editor_category_java">Java</string>
   <string name="title_files_unsaved">Ungespeicherte Dateien</string>
