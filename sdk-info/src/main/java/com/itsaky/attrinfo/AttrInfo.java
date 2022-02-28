@@ -53,7 +53,7 @@ public class AttrInfo {
     public final Map<String, Styleable> styles = new HashMap<> ();
     public final Map<String, Attr> attributes = new HashMap<> ();
     
-    public AttrInfo (final Context context) throws Exception {
+    public AttrInfo (@NonNull final Context context) throws Exception {
         this (context.getResources ());
     }
     
@@ -87,7 +87,7 @@ public class AttrInfo {
         return this.styles.get (name);
     }
     
-    private void parseFromStream (InputStream in) throws Exception {
+    protected void parseFromStream (InputStream in) throws Exception {
         Objects.requireNonNull (in, "Cannot read from null input stream");
         
         Document doc = Jsoup.parse (in, null, "", Parser.xmlParser ());
@@ -96,7 +96,7 @@ public class AttrInfo {
         parseFromResources (resources);
     }
     
-    private void parseFromResources (Element resources) {
+    protected void parseFromResources (Element resources) {
         Objects.requireNonNull (resources, "Cannot parse from null resource element");
         
         this.styles.clear ();
@@ -114,7 +114,7 @@ public class AttrInfo {
     }
     
     @NonNull
-    private Styleable parseStyleable (@NonNull final Element styleable) {
+    protected Styleable parseStyleable (@NonNull final Element styleable) {
         checkName (styleable);
         
         final var name = styleable.attr ("name");
@@ -134,7 +134,7 @@ public class AttrInfo {
     }
     
     @NonNull
-    private Attr parseAttr (@NonNull final Element attr) {
+    protected Attr parseAttr (@NonNull final Element attr) {
         checkName (attr);
         
         final var attribute = new Attr (attr.attr ("name"));
