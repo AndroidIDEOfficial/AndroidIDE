@@ -1,26 +1,27 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- * 
+ *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ **************************************************************************************/
 package com.itsaky.inflater;
+
+import com.itsaky.attrinfo.AttrInfo;
+import com.itsaky.widgets.WidgetInfo;
 
 import java.io.File;
 import java.util.Set;
-import com.itsaky.attrinfo.AttrInfo;
-import com.itsaky.widgets.WidgetInfo;
 
 /**
  * Configuration for {@link ILayoutInflater}
@@ -32,8 +33,8 @@ public class LayoutInflaterConfiguration {
     final WidgetInfo widgetInfo;
     final IResourceTable resFinder;
     final ILayoutInflater.ContextProvider contextProvider;
-
-    public LayoutInflaterConfiguration(Set<File> resDirs, AttrInfo attrInfo, WidgetInfo widgetInfo, IResourceTable resourceProvider, ILayoutInflater.ContextProvider contextProvider) {
+    
+    public LayoutInflaterConfiguration (Set<File> resDirs, AttrInfo attrInfo, WidgetInfo widgetInfo, IResourceTable resourceProvider, ILayoutInflater.ContextProvider contextProvider) {
         this.resDirs = resDirs;
         this.attrInfo = attrInfo;
         this.widgetInfo = widgetInfo;
@@ -77,8 +78,8 @@ public class LayoutInflaterConfiguration {
             return this;
         }
         
-        public LayoutInflaterConfiguration create() {
-            return new LayoutInflaterConfiguration(resDirs, attrInfo, widgetInfo, resourceProvider, provider);
+        public LayoutInflaterConfiguration create () {
+            return new LayoutInflaterConfiguration (resDirs, attrInfo, widgetInfo, resourceProvider, provider);
         }
     }
 }

@@ -60,6 +60,10 @@ public class Attr {
     
     private static final Logger LOG = Logger.instance ("AttrInfo::Attr");
     
+    public Attr (String name) {
+        this (name, true);
+    }
+    
     public Attr (String name, boolean isAndroid) {
         this.name = name;
         this.namespace = isAndroid ? "android" : "app";
@@ -70,6 +74,11 @@ public class Attr {
         return possibleValues != null && possibleValues.size () > 0;
     }
     
+    public boolean hasFormat (int format) {
+        return (this.format & format) != 0;
+    }
+    
+    @NonNull
     @Override
     public String toString () {
         return "Attr [" +

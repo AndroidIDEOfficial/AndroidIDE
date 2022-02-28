@@ -1,20 +1,20 @@
 /*
- * This file is part of AndroidIDE.
+ *  This file is part of AndroidIDE.
  *
- * AndroidIDE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  *
- * AndroidIDE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.attrinfo;
 
 import android.content.Context;
@@ -23,103 +23,207 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.models.Attr;
-
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import com.itsaky.attrinfo.models.Styleable;
+import com.itsaky.sdkinfo.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.jsoup.parser.Parser;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * A parser for parsing <b>attrs.xml</b>. This parser maps the attributes
+ * with the declared styleables.
+ *
+ * @author Akash Yadav
+ */
 public class AttrInfo {
     
-    private final Map<String, Attr> attrs = new HashMap<> ();
+    private final Styleable NO_PARENT;
     
-    private static final Logger LOG = Logger.instance ("AttrInfo");
+    /**
+     * Styles mapped by names;
+     */
+    public final Map<String, Styleable> styles = new HashMap<> ();
+    public final Map<String, Attr> attributes = new HashMap<> ();
     
-    public AttrInfo (@NonNull Context ctx) throws Exception {
-        readAttributes (ctx.getResources ());
+    public AttrInfo (final Context context) throws Exception {
+        this (context.getResources ());
+    }
+    
+    public AttrInfo (final Resources resources) throws Exception {
+        NO_PARENT = new Styleable ("<unknown_parent>");
+        
+        Objects.requireNonNull (resources, "Cannot read from null resources.");
+        
+        final var in = resources.openRawResource (R.raw.attrs);
+        parseFromStream (in);
+    }
+    
+    @Nullable
+    public Attr getAttribute (@NonNull final String name) {
+        var attr = this.attributes.get (name);
+        if (attr == null) {
+            final var a = NO_PARENT.attributes.stream ().filter (aa -> aa.name.equals (name)).findFirst ();
+            attr = a.orElse (null);
+        }
+        
+        return attr;
     }
     
     @NonNull
     public Map<String, Attr> getAttrs () {
-        return this.attrs;
+        return this.attributes;
     }
     
     @Nullable
-    public Attr getAttribute (String name) {
-        return this.attrs.get (name);
+    public Styleable getStyle (@NonNull final String name) {
+        return this.styles.get (name);
     }
     
-    private void readAttributes (@NonNull Resources resources) throws Exception {
-        final InputStream in = resources.openRawResource (com.itsaky.sdkinfo.R.raw.attrs);
+    private void parseFromStream (InputStream in) throws Exception {
+        Objects.requireNonNull (in, "Cannot read from null input stream");
         
-        if (in == null) {
-            throw new IllegalStateException ("attrs.xml: Resource not found.");
+        Document doc = Jsoup.parse (in, null, "", Parser.xmlParser ());
+        final var resources = doc.getElementsByTag ("resources").first ();
+        
+        parseFromResources (resources);
+    }
+    
+    private void parseFromResources (Element resources) {
+        Objects.requireNonNull (resources, "Cannot parse from null resource element");
+        
+        this.styles.clear ();
+        
+        for (int i = 0; i < resources.childrenSize (); i++) {
+            final var child = resources.child (i);
+            if (child.tagName ().equals ("declare-styleable")) {
+                this.styles.put (parseStyleable (child).name, parseStyleable (child));
+            } else if (child.tagName ().equals ("attr")) {
+                NO_PARENT.attributes.add (parseAttr (child));
+            }
         }
         
-        Document doc = Jsoup.parse (in, null, "file://android_res/");
-        Elements attributes = doc.getElementsByTag ("resources").first ().getElementsByTag ("attr");
-        for (Element attribute : attributes) {
-            final var attr = new Attr (attribute.attr ("name"), true);
-            
-            if (attr.name.contains (":")) {
-                String[] split = attr.name.split (":");
-                attr.namespace = split[0];
-                attr.name = split[1];
+        this.styles.put (NO_PARENT.name, NO_PARENT);
+    }
+    
+    @NonNull
+    private Styleable parseStyleable (@NonNull final Element styleable) {
+        checkName (styleable);
+        
+        final var name = styleable.attr ("name");
+        final var style = new Styleable (name);
+        
+        for (int i = 0; i < styleable.childrenSize (); i++) {
+            final var attr = styleable.child (i);
+            if (!attr.tagName ().equals ("attr")) {
+                continue;
             }
             
-            // If there is an implicit declaration od format attribute,
-            // then we parse its values and set the format bits accordingly
-            if (attribute.hasAttr ("format")) {
-                final var format = attribute.attr ("format");
-                attr.format = Attr.formatForName (format);
-                
-                if (format.contains ("boolean")) {
-                    attr.possibleValues.add ("true");
-                    attr.possibleValues.add ("false");
-                }
-            }
-            
-            // If there is no implicit declaration of format or
-            // this attribute has <enum> or <flag> children tags,
-            // then format will be set here along with the possible values
-            Elements enums = attribute.getElementsByTag ("enum");
-            Elements flags = attribute.getElementsByTag ("flag");
-            if (enums.size () > 0) {
-                for (Element e : enums) {
-                    attr.possibleValues.add (e.attr ("name"));
-                }
-                
-                attr.format |= Attr.ENUM;
-            }
-            
-            if (flags.size () > 0) {
-                for (Element e : flags) {
-                    attr.possibleValues.add (e.attr ("name"));
-                }
-                
-                attr.format |= Attr.FLAG;
-            }
-            
-            if (this.attrs.containsKey (attr.name)) {
-                final var present = this.attrs.get (attr.name);
-                if (present != null) {
-                    if (present.hasPossibleValues ()) {
-                        attr.possibleValues.addAll (present.possibleValues);
-                    }
-                    
-                    if (attr.format == 0 && present.format != 0) {
-                        attr.format = present.format;
-                    }
-                }
-            }
-            
-            this.attrs.put (attr.name, attr);
+            final var attribute = parseAttr (attr);
+            style.attributes.add (attribute);
         }
+        
+        return style;
+    }
+    
+    @NonNull
+    private Attr parseAttr (@NonNull final Element attr) {
+        checkName (attr);
+        
+        final var attribute = new Attr (attr.attr ("name"));
+        if (attribute.name.contains (":")) {
+            final var split = attribute.name.split (":", 2);
+            attribute.namespace = split[0];
+            attribute.name = split[1];
+        }
+        
+        if (attr.hasAttr ("format")) {
+            attribute.format = Attr.formatForName (attr.attr ("format"));
+            if (attribute.hasFormat (Attr.BOOLEAN)) {
+                attribute.possibleValues.add ("true");
+                attribute.possibleValues.add ("false");
+            }
+        }
+        
+        final var enums = attr.getElementsByTag ("enum");
+        final var flags = attr.getElementsByTag ("flag");
+        
+        if (enums.size () > 0) {
+            for (var enumEntry : enums) {
+                checkName (enumEntry);
+                attribute.possibleValues.add (enumEntry.attr ("name"));
+            }
+            
+            if (!attribute.hasFormat (Attr.ENUM)) {
+                attribute.format |= Attr.ENUM;
+            }
+        }
+        
+        if (flags.size () > 0) {
+            for (var flagEntry : enums) {
+                checkName (flagEntry);
+                attribute.possibleValues.add (flagEntry.attr ("name"));
+            }
+            
+            if (!attribute.hasFormat (Attr.FLAG)) {
+                attribute.format |= Attr.FLAG;
+            }
+        }
+        
+        if (this.attributes.containsKey (attribute.name)) {
+            final var present = this.attributes.get (attribute.name);
+            if (present != null) {
+                if (present.hasPossibleValues ()) {
+                    attribute.possibleValues.addAll (present.possibleValues);
+                }
+                
+                if (attribute.format == 0 && present.format != 0) {
+                    attribute.format = present.format;
+                }
+            }
+        }
+        
+        this.attributes.put (attribute.name, attribute);
+        
+        return attribute;
+    }
+    
+    private void checkName (@NonNull Element child) {
+        if (!child.hasAttr ("name")) {
+            throw new IllegalStateException ("Element does not have 'name' attribute: " + child);
+        }
+    }
+    
+    @NonNull
+    @Override
+    public String toString () {
+        return "AttrInfoCompat{" +
+                "NO_PARENT=" + NO_PARENT +
+                ", styles=" + styles +
+                '}';
+    }
+    
+    @Override
+    public boolean equals (Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AttrInfo)) {
+            return false;
+        }
+        AttrInfo that = (AttrInfo) o;
+        return Objects.equals (NO_PARENT, that.NO_PARENT) && Objects.equals (styles, that.styles);
+    }
+    
+    @Override
+    public int hashCode () {
+        return Objects.hash (NO_PARENT, styles);
     }
 }
