@@ -24,6 +24,8 @@ package com.itsaky.androidide.fragments.sheets;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,7 +50,7 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		mList.setLayoutManager(new LinearLayoutManager(getContext()));
 		mList.setAdapter(new OptionsSheetAdapter(mOptions, __ -> {

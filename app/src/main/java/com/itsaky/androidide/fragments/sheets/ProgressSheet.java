@@ -32,6 +32,8 @@ import com.itsaky.androidide.utils.Logger;
 
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+
 public class ProgressSheet extends BaseBottomSheetFragment {
 	
 	private LayoutProgressSheetBinding binding;
@@ -50,7 +52,7 @@ public class ProgressSheet extends BaseBottomSheetFragment {
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
+	public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
 		binding.message.setText(message);

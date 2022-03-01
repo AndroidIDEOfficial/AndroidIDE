@@ -42,8 +42,8 @@ import androidx.transition.TransitionManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.adapters.AttributeListAdapter;
 import com.itsaky.androidide.adapters.SimpleIconTextAdapter;
+import com.itsaky.androidide.adapters.XMLAttributeListAdapter;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.colorpicker.ColorPickerView;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetBinding;
@@ -59,14 +59,16 @@ import com.itsaky.toaster.Toaster;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class AttrEditorSheet extends BottomSheetDialogFragment implements SimpleIconTextAdapter.OnBindListener {
+public class AttrEditorSheet extends BottomSheetDialogFragment implements SimpleIconTextAdapter.OnBindListener<IconTextListItem> {
     
     private static final List<IconTextListItem> VIEW_ACTIONS = new ArrayList<> ();
     private static final Logger LOG = Logger.instance ("AttrBottomSheet");
+    private AttributeListSheet mAttrListSheet;
     private IView selectedView;
     private LayoutAttrEditorSheetBinding binding;
     private OnViewDeletionFailedListener mDeletionFailedListener;
@@ -115,7 +117,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         }
         
         binding.widgetName.setText (this.selectedView.getXmlTag ());
-        binding.attrList.setAdapter (new AttributeListAdapter (
+        binding.attrList.setAdapter (new XMLAttributeListAdapter (
                 this.selectedView.getAttributes ()
                         .stream ()
                         .map (XMLAttribute::new)
@@ -195,7 +197,40 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         }
         
         if (position == 0) { // Add attribute
-        
+            var tag = this.selectedView.getXmlTag ();
+            if ("include".equals (tag) || "merge".equals (tag)) {
+                tag = "View";
+            }
+            
+            final var attrs = StudioApp.getInstance ().attrInfo ();
+            final var style = attrs.getStyle (tag);
+            if (style == null) {
+                LOG.error ("Unable to retrieve attributes for tag:", tag);
+                return;
+            }
+            
+            final var attributes = new TreeSet<Attr> (Comparator.comparing (attr -> attr.name));
+            attributes.addAll (style.attributes);
+            
+            final var widget = StudioApp.getInstance ().widgetInfo ().getWidgetBySimpleName (tag);
+            if (widget != null) {
+                for (var superclass : widget.superclasses) {
+                    if ("java.lang.Object".equals (superclass)) {
+                        break;
+                    }
+                    
+                    final var simpleName = superclass.substring (superclass.lastIndexOf (".") + 1);
+                    final var superStyle = attrs.getStyle (simpleName);
+                    if (superStyle != null) {
+                        attributes.addAll (superStyle.attributes);
+                    }
+                }
+            }
+            
+            final var sheet = getAttrListSheet ();
+            sheet.setItems (new ArrayList<> (attributes));
+            sheet.show (getChildFragmentManager (), "attr_list_sheet");
+            
         } else if (position == 1) { // Delete
             DialogUtils.newYesNoDialog (getContext (), (dialog, which) -> {
                 var handled = selectedView.removeFromParent ();
@@ -219,6 +254,16 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             TransitionManager.beginDelayedTransition (binding.getRoot (), new ChangeBounds ());
             setupViewData ();
         }
+    }
+    
+    @NonNull
+    private AttributeListSheet getAttrListSheet () {
+        if (mAttrListSheet == null) {
+            mAttrListSheet = new AttributeListSheet ();
+            mAttrListSheet.setCancelable (true);
+        }
+        
+        return mAttrListSheet;
     }
     
     /**

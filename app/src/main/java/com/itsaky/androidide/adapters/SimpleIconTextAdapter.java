@@ -17,92 +17,44 @@
 
 package com.itsaky.androidide.adapters;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.itsaky.androidide.databinding.LayoutSimpleIconTextBinding;
 import com.itsaky.androidide.models.IconTextListItem;
 
 import java.util.List;
 
 /**
- * A RecyclerView.Adapter which can be used to show a list with an icon and a text.
+ * A simple implementation of {@link IconTextAdapter}.
  *
  * @author Akash Yadav
  */
-public class SimpleIconTextAdapter extends RecyclerView.Adapter<SimpleIconTextAdapter.VH> {
-
+public class SimpleIconTextAdapter extends IconTextAdapter<IconTextListItem> {
+    
     private final List<? extends IconTextListItem> items;
-    private OnBindListener bindListener;
-
-    public SimpleIconTextAdapter(@NonNull List<? extends IconTextListItem> items) {
+    
+    public SimpleIconTextAdapter (List<? extends IconTextListItem> items) {
         this.items = items;
     }
-
-    public SimpleIconTextAdapter setOnBindListener (OnBindListener listener) {
-        this.bindListener = listener;
-        return this;
-    }
-
+    
     @NonNull
     @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new VH (LayoutSimpleIconTextBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull VH holder, int position) {
-        final var binding = holder.binding;
-        final var item = items.get(position);
-
-        if (this.bindListener != null && this.bindListener.onBind(item, holder, position)) {
-            return;
-        }
-
-        final var icon = item.getIconResource();
-
-        if (icon == -1) {
-            binding.icon.setVisibility(View.GONE);
-        } else {
-            binding.icon.setImageResource(icon);
-        }
-
-        binding.text.setText(item.getText());
-
-        if (this.bindListener != null) {
-            this.bindListener.postBind(item, holder, position);
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
-
     public IconTextListItem getItemAt (int index) {
-        return this.items.get(index);
+        return items.get (index);
     }
-
-    public static class VH extends RecyclerView.ViewHolder {
-
-        public final LayoutSimpleIconTextBinding binding;
-
-        public VH(@NonNull LayoutSimpleIconTextBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
-        }
-
+    
+    @Override
+    public int getIconResource (int index) {
+        return getItemAt (index).getIconResource ();
     }
-
-    public static interface OnBindListener {
-        default boolean onBind (IconTextListItem item, VH holder, int position) {
-            return false;
-        }
-        
-        default void postBind (IconTextListItem item, VH holder, int position) {}
+    
+    @NonNull
+    @Override
+    public String getItemText (int index) {
+        return getItemAt (index).getText ();
+    }
+    
+    @Override
+    public int getItemCount () {
+        return items.size ();
     }
 }

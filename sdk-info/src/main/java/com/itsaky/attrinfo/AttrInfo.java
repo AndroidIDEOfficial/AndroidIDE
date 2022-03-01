@@ -50,7 +50,7 @@ public class AttrInfo {
      */
     public final Map<String, Styleable> styles = new HashMap<> ();
     public final Map<String, Attr> attributes = new HashMap<> ();
-    private final Styleable NO_PARENT;
+    public final Styleable NO_PARENT;
     
     public AttrInfo (@NonNull final Context context) throws Exception {
         this (context.getResources ());
@@ -130,8 +130,7 @@ public class AttrInfo {
                 continue;
             }
             
-            final var attribute = parseAttr (attr);
-            style.attributes.add (attribute);
+            style.attributes.add (parseAttr (attr));
         }
         
         return style;
