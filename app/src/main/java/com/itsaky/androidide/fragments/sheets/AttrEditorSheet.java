@@ -215,7 +215,8 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             final var attributes = new TreeSet<Attr> (Comparator.comparing (attr -> attr.name));
             attributes.addAll (style.attributes);
             
-            final var widget = StudioApp.getInstance ().widgetInfo ().getWidgetBySimpleName (tag);
+            final var widgetInfo = StudioApp.getInstance ().widgetInfo ();
+            final var widget = widgetInfo.getWidgetBySimpleName (tag);
             if (widget != null) {
                 for (var superclass : widget.superclasses) {
                     if ("java.lang.Object".equals (superclass)) {
@@ -226,6 +227,36 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
                     final var superStyle = attrs.getStyle (simpleName);
                     if (superStyle != null) {
                         attributes.addAll (superStyle.attributes);
+                    }
+                }
+            }
+            
+            final var parent = this.selectedView.getParent ();
+            if (parent != null) {
+                final var parentTag = parent.getXmlTag ();
+                final var parentWidget = widgetInfo.getWidgetBySimpleName (parentTag);
+                if (parentWidget != null) {
+                    final var parentLayoutParams = attrs.getStyle (parentTag + "_Layout");
+                    if (parentLayoutParams != null) {
+                        attributes.addAll (parentLayoutParams.attributes);
+                    }
+                    
+                    final var paramSuperclasses = widgetInfo.getLayoutParamSuperClasses (parentWidget.name);
+                    if (paramSuperclasses != null) {
+                        for (var superclass : paramSuperclasses) {
+                            if ("java.lang.Object".equals (superclass)) {
+                                continue;
+                            }
+                            
+                            final var split = superclass.split ("\\.");
+                            final var simpleClassName = split[split.length - 2];
+                            var paramName = split[split.length - 1];
+                            paramName = paramName.substring (0, paramName.length () - "Params".length ());
+                            final var superParamEntry = attrs.getStyle (simpleClassName + "_" + paramName);
+                            if (superParamEntry != null) {
+                                attributes.addAll (superParamEntry.attributes);
+                            }
+                        }
                     }
                 }
             }

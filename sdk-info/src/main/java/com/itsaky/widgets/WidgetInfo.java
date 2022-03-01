@@ -64,6 +64,10 @@ public class WidgetInfo {
         return this.widgets.values ();
     }
     
+    public String[] getLayoutParamSuperClasses (final String className) {
+        return this.params.get (className);
+    }
+    
     private void readWidgets (@NonNull final Resources resources) throws IOException {
         final InputStream in = resources.openRawResource (com.itsaky.sdkinfo.R.raw.widgets);
         if (in == null) {
@@ -88,7 +92,8 @@ public class WidgetInfo {
             System.arraycopy (split, 1, superclasses, 0, superclasses.length);
             
             if (code == 'P') {
-                this.params.put (entryName, superclasses);
+                final var className = entryName.substring (0, entryName.lastIndexOf ("."));
+                this.params.put (className, superclasses);
             } else {
                 final var widget = new Widget (entryName, isLayout);
                 widget.superclasses = superclasses;
