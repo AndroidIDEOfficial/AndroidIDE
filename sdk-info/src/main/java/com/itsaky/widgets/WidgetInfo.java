@@ -71,7 +71,8 @@ public class WidgetInfo {
         final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line;
         while((line = reader.readLine()) != null) {
-            final String name = line.split("\\s")[0];
+            final var split = line.split ("\\s");
+            final String name = split[0];
             if(name == null || name.trim().isEmpty()) continue;
 
             final char code = name.charAt(0);
@@ -81,7 +82,10 @@ public class WidgetInfo {
 
             // Don't add layout params
             if(code != 'P') {
-                widgets.put(viewName, new Widget(viewName, isViewGroup));
+                final var widget = new Widget (viewName, isViewGroup);
+                widget.superclasses = new String [split.length - 1];
+                System.arraycopy (split, 1, widget.superclasses, 0, widget.superclasses.length);
+                widgets.put(viewName, widget);
             }
         }
     }
