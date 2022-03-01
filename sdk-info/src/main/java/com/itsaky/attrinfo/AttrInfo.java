@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.attrinfo.models.Styleable;
 import com.itsaky.sdkinfo.R;
+import com.itsaky.xml.INamespace;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -143,7 +144,7 @@ public class AttrInfo {
         final var attribute = new Attr (attr.attr ("name"));
         if (attribute.name.contains (":")) {
             final var split = attribute.name.split (":", 2);
-            attribute.namespacePrefix = split[0];
+            attribute.namespace = INamespace.ANDROID;
             attribute.name = split[1];
         }
         

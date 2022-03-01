@@ -22,6 +22,8 @@ package com.itsaky.inflater;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.itsaky.xml.INamespace;
+
 import java.util.Comparator;
 
 /**

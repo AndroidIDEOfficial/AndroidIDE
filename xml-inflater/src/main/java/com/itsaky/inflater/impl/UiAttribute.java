@@ -20,7 +20,7 @@ package com.itsaky.inflater.impl;
 import androidx.annotation.NonNull;
 
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.INamespace;
+import com.itsaky.xml.INamespace;
 
 import java.util.Objects;
 

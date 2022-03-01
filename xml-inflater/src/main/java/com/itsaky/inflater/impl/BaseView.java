@@ -25,7 +25,7 @@ import androidx.annotation.Nullable;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IAttributeAdapter;
-import com.itsaky.inflater.INamespace;
+import com.itsaky.xml.INamespace;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.IViewGroup;
 

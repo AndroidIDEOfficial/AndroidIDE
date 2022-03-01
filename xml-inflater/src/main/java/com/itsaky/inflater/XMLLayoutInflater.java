@@ -41,12 +41,13 @@ import com.itsaky.inflater.impl.BaseView;
 import com.itsaky.inflater.impl.ErrorUiView;
 import com.itsaky.inflater.impl.IncludeLayout;
 import com.itsaky.inflater.impl.UiAttribute;
-import com.itsaky.inflater.impl.UiNamespace;
+import com.itsaky.xml.impl.UiNamespace;
 import com.itsaky.inflater.impl.UiView;
 import com.itsaky.inflater.impl.UiViewGroup;
 import com.itsaky.inflater.util.Preconditions;
 import com.itsaky.widgets.WidgetInfo;
 import com.itsaky.widgets.models.Widget;
+import com.itsaky.xml.INamespace;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;

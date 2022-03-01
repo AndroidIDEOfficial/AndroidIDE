@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.INamespace;
+import com.itsaky.xml.INamespace;
 import com.itsaky.inflater.impl.UiAttribute;
 
 import org.jetbrains.annotations.Contract;

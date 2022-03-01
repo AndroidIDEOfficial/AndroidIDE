@@ -14,19 +14,19 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.inflater;
+package com.itsaky.xml;
 
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.inflater.impl.UiNamespace;
+import com.itsaky.xml.impl.UiNamespace;
 
 import org.jetbrains.annotations.Contract;
 
 /**
  * Represents a namespace.
+ *
  * @author Akash Yadav
  */
 public interface INamespace extends Parcelable {
@@ -41,21 +41,23 @@ public interface INamespace extends Parcelable {
      */
     INamespace ANDROID = new UiNamespace ("android", "http://schemas.android.com/apk/res/android");
     
+    @NonNull
+    @Contract(value = "_ -> new", pure = true)
+    static INamespace invalid (String name) {
+        return new UiNamespace (name, "");
+    }
+    
     /**
      * Get the prefix (name) of this namespace.
+     *
      * @return The name of the namespace.
      */
     String getName ();
     
     /**
      * Get the uri of this namespace.
+     *
      * @return The uri of this namespace.
      */
-    String getUri();
-    
-    @NonNull
-    @Contract(value = "_ -> new", pure = true)
-    static INamespace invalid (String name) {
-        return new UiNamespace (name, "");
-    }
+    String getUri ();
 }

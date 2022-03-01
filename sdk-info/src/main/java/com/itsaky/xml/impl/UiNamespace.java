@@ -14,14 +14,13 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.inflater.impl;
+package com.itsaky.xml.impl;
 
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.inflater.INamespace;
+import com.itsaky.xml.INamespace;
 
 import org.jetbrains.annotations.Contract;
 

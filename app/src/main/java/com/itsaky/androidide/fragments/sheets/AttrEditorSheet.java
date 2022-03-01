@@ -54,7 +54,6 @@ import com.itsaky.androidide.utils.AttributeDialogs;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.models.Attr;
-import com.itsaky.inflater.INamespace;
 import com.itsaky.inflater.IView;
 import com.itsaky.toaster.Toaster;
 
@@ -293,15 +292,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     @NonNull
     @Contract("_ -> new")
     private List<Attr> filterAppliedAttributes (@NonNull TreeSet<Attr> attributes) {
-        attributes.removeIf (attr -> {
-            var namespace = this.selectedView.findRegisteredNamespace (attr.namespacePrefix);
-            if (namespace == null) {
-                namespace = INamespace.ANDROID;
-            }
-            
-            return this.selectedView.hasAttribute (namespace, attr.name);
-        });
-        
+        attributes.removeIf (attr -> this.selectedView.hasAttribute (attr.namespace, attr.name));
         return new ArrayList<> (attributes);
     }
     

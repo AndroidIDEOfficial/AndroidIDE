@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.xml.INamespace;
 
 import org.jetbrains.annotations.Contract;
 
@@ -50,18 +51,18 @@ public class Attr {
     public static final int FLAG = 1 << 9;
     public static final int UNKNOWN = 1 << 10;
     private static final Logger LOG = Logger.instance ("AttrInfo::Attr");
-    public String namespacePrefix;
+    public INamespace namespace;
     public String name;
     public Set<String> possibleValues;
     public int format;
     
     public Attr (String name) {
-        this (name, true);
+        this (name, INamespace.ANDROID);
     }
     
-    public Attr (String name, boolean isAndroid) {
+    public Attr (String name, INamespace namespace) {
         this.name = name;
-        this.namespacePrefix = isAndroid ? "android" : "app";
+        this.namespace = namespace;
         this.possibleValues = new TreeSet<> ();
     }
     
@@ -118,7 +119,7 @@ public class Attr {
     public String toString () {
         return "Attr [" +
                 "  name: " + name + "\n" +
-                "  namespace: " + namespacePrefix + "\n" +
+                "  namespace: " + namespace + "\n" +
                 "  values: " + TextUtils.join (", ", this.possibleValues) + "\n" +
                 "  format: " + format + "\n" +
                 "]";
@@ -136,13 +137,13 @@ public class Attr {
         
         Attr attr = (Attr) o;
         return format == attr.format
-                && Objects.equals (namespacePrefix, attr.namespacePrefix)
+                && Objects.equals (namespace, attr.namespace)
                 && Objects.equals (name, attr.name)
                 && Objects.equals (possibleValues, attr.possibleValues);
     }
     
     @Override
     public int hashCode () {
-        return Objects.hash (namespacePrefix, name, possibleValues, format);
+        return Objects.hash (namespace, name, possibleValues, format);
     }
 }
