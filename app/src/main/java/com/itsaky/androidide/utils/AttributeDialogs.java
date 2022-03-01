@@ -44,7 +44,8 @@ import java.util.regex.Pattern;
  * <br>
  * TODO Should we merge this into {@link DialogUtils}?
  * TODO An attribute can accept multiple types of values (dimension, enum, reference, etc)
- *     Can we somehow combine the editors according to attribute format?
+ * Can we somehow combine the editors according to attribute format?
+ *
  * @author Akash Yadav
  */
 public class AttributeDialogs {
@@ -63,6 +64,7 @@ public class AttributeDialogs {
     
     /**
      * Initialize this class with the provided context.
+     *
      * @param ctx The context that will be used for creating dialogs.
      * @see #release()
      */
@@ -81,12 +83,12 @@ public class AttributeDialogs {
     
     @NonNull
     public static AlertDialog booleanEditor (OnClickListener listener) {
-        final var items = new String [] {"true", "false"};
+        final var items = new String[]{"true", "false"};
         final var builder = newMaterialDialogBuilder (mContext);
-        builder.setTitle (mContext.getString(R.string.msg_choose_new_val));
+        builder.setTitle (mContext.getString (R.string.msg_choose_new_val));
         builder.setItems (items, (dialog, which) -> {
             dialog.dismiss ();
-            final var val = items [which];
+            final var val = items[which];
             if (listener != null) {
                 listener.onClick (dialog, which, val);
             }
@@ -96,6 +98,7 @@ public class AttributeDialogs {
     
     /**
      * Create a new dialog for editing an attribute with format STRING.
+     *
      * @param listener The listener that will be invoked when the user clicks the
      *                 positive button.
      * @return The newly created dialog instance.
@@ -104,7 +107,7 @@ public class AttributeDialogs {
     public static AlertDialog stringEditor (OnClickListener listener) {
         final var binding = LayoutTextAttrEditorBinding.inflate (LayoutInflater.from (mContext));
         final var builder = newMaterialDialogBuilder (mContext);
-        builder.setTitle (mContext.getString(R.string.msg_new_str_value));
+        builder.setTitle (mContext.getString (R.string.msg_new_str_value));
         builder.setView (binding.getRoot ());
         builder.setPositiveButton (android.R.string.ok, (dialog, which) -> {
             final var newValue = binding.valueField.getEditText ().getText ().toString ().trim ();
@@ -122,14 +125,15 @@ public class AttributeDialogs {
     
     /**
      * Create a new dialog for editing an attribute which accepts dimension values.
-     * @param value The current value of the attribute. Used for determining which item must be selected by default.
+     *
+     * @param value    The current value of the attribute. Used for determining which item must be selected by default.
      * @param listener A listener that will be invoked when the user presses the positive button of the dialog.
      *                 This listener is invoked only when the user passes a valid dimension value.
      * @return The newly created dialog instance. Note that this dialog is not shown by default.
      */
     @NonNull
     public static AlertDialog dimensionEditor (CharSequence value, OnClickListener listener) {
-        final var binding = LayoutDimensionAttrEditorBinding.inflate(LayoutInflater.from (mContext));
+        final var binding = LayoutDimensionAttrEditorBinding.inflate (LayoutInflater.from (mContext));
         binding.choices.setOnCheckedChangeListener ((group, checkedId) -> binding.otherValue.setVisibility (binding.other.isChecked () ? View.VISIBLE : View.GONE));
         
         if (DIMENSION_MATCH.contentEquals (value)) {
@@ -157,10 +161,10 @@ public class AttributeDialogs {
             }
             
             if (val.length () <= 0) {
-                StudioApp.getInstance ().toast (mContext.getString(R.string.msg_invalid_attr_value), Toaster.Type.ERROR);
+                StudioApp.getInstance ().toast (mContext.getString (R.string.msg_invalid_attr_value), Toaster.Type.ERROR);
                 return;
             }
-    
+            
             dialog.dismiss ();
             
             if (listener != null) {
@@ -179,18 +183,19 @@ public class AttributeDialogs {
     }
     
     private static int findIndexOf (@NonNull CharSequence[] values, CharSequence value) {
-        for (int i=0;i<values.length;i++) {
+        for (int i = 0; i < values.length; i++) {
             if (value.equals (values[i])) {
                 return i;
             }
         }
         
-        throw new IndexOutOfBoundsException ("Cannot find index for value: " + value);
+        return -1;
     }
     
     /**
      * Create a new single choice dialog for selecting enum values.
-     * @param values The value entries in the enum declaration.
+     *
+     * @param values   The value entries in the enum declaration.
      * @param selected The item that will be selected when the dialog is shown.
      * @param listener The click listener that will be invoked when an item is selected from the list.
      * @return The newly created dialog instance.
@@ -199,7 +204,7 @@ public class AttributeDialogs {
         final var builder = newMaterialDialogBuilder (mContext);
         builder.setSingleChoiceItems (values, selected, (dialog, which) -> {
             dialog.dismiss ();
-            final var val = values [which].toString ();
+            final var val = values[which].toString ();
             if (listener != null) {
                 listener.onClick (dialog, which, val);
             }
@@ -209,19 +214,20 @@ public class AttributeDialogs {
     
     /**
      * Creates a new attribute editor dialog to edit flag attributes.
-     * @param values The possible values.
-     * @param value The current value of the attribute.
+     *
+     * @param values   The possible values.
+     * @param value    The current value of the attribute.
      * @param listener The listener that will be invoked when the user presses the positive button.
      * @return The newly created dialog instance.
      */
     @NonNull
     public static AlertDialog flagEditor (@NonNull CharSequence[] values, @NonNull CharSequence value, OnClickListener listener) {
-        final var checked = new boolean [values.length];
+        final var checked = new boolean[values.length];
         final var vals = value.toString ().split (Pattern.quote ("|"));
-        for (var i=0;i<values.length;i++) {
+        for (var i = 0; i < values.length; i++) {
             for (var val : vals) {
                 if (val.contentEquals (values[i])) {
-                    checked [i] = true;
+                    checked[i] = true;
                 }
             }
         }
@@ -231,7 +237,8 @@ public class AttributeDialogs {
     
     /**
      * Creates a new attribute editor dialog to edit flag attributes.
-     * @param values The possible values.
+     *
+     * @param values   The possible values.
      * @param selected The values that must be selected by default.
      * @param listener The listener that will be invoked when the user presses the positive button.
      * @return The newly created dialog instance.
@@ -239,7 +246,7 @@ public class AttributeDialogs {
     @NonNull
     public static AlertDialog flagEditor (@NonNull CharSequence[] values, boolean[] selected, OnClickListener listener) {
         final var checked = new ArrayList<CharSequence> ();
-        for (var i=0;i<values.length;i++) {
+        for (var i = 0; i < values.length; i++) {
             if (selected[i]) {
                 checked.add (values[i]);
             }
@@ -254,12 +261,12 @@ public class AttributeDialogs {
         });
         builder.setPositiveButton (android.R.string.ok, (dialog, which) -> {
             if (checked.size () <= 0) {
-                StudioApp.getInstance ().toast (mContext.getString(R.string.msg_select_one_flag), Toaster.Type.ERROR);
+                StudioApp.getInstance ().toast (mContext.getString (R.string.msg_select_one_flag), Toaster.Type.ERROR);
                 return;
             }
             
             final var val = TextUtils.join ("|", checked);
-    
+            
             if (listener != null) {
                 listener.onClick (dialog, which, val);
             }
@@ -276,7 +283,7 @@ public class AttributeDialogs {
         
         final var dialog = builder.create ();
         dialog.getWindow ().setSoftInputMode (WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-    
+        
         view.setOnPickListener ((color, hexCode) -> {
             dialog.dismiss ();
             if (listener != null) {
