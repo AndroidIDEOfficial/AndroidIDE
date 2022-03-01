@@ -143,7 +143,7 @@ public class AttrInfo {
         final var attribute = new Attr (attr.attr ("name"));
         if (attribute.name.contains (":")) {
             final var split = attribute.name.split (":", 2);
-            attribute.namespace = split[0];
+            attribute.namespacePrefix = split[0];
             attribute.name = split[1];
         }
         

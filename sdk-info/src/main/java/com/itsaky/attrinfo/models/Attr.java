@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 package com.itsaky.attrinfo.models;
 
 import android.text.TextUtils;
@@ -51,14 +49,11 @@ public class Attr {
     public static final int ENUM = 1 << 8;
     public static final int FLAG = 1 << 9;
     public static final int UNKNOWN = 1 << 10;
-    
-    public String namespace;
+    private static final Logger LOG = Logger.instance ("AttrInfo::Attr");
+    public String namespacePrefix;
     public String name;
     public Set<String> possibleValues;
-    
     public int format;
-    
-    private static final Logger LOG = Logger.instance ("AttrInfo::Attr");
     
     public Attr (String name) {
         this (name, true);
@@ -66,49 +61,8 @@ public class Attr {
     
     public Attr (String name, boolean isAndroid) {
         this.name = name;
-        this.namespace = isAndroid ? "android" : "app";
+        this.namespacePrefix = isAndroid ? "android" : "app";
         this.possibleValues = new TreeSet<> ();
-    }
-    
-    public boolean hasPossibleValues () {
-        return possibleValues != null && possibleValues.size () > 0;
-    }
-    
-    public boolean hasFormat (int format) {
-        return (this.format & format) != 0;
-    }
-    
-    @NonNull
-    @Override
-    public String toString () {
-        return "Attr [" +
-                "  name: " + name + "\n" +
-                "  namespace: " + namespace + "\n" +
-                "  values: " + TextUtils.join (", ", this.possibleValues) + "\n" +
-                "  format: " + format + "\n" +
-                "]";
-    }
-    
-    @Override
-    public boolean equals (Object o) {
-        if (this == o) {
-            return true;
-        }
-        
-        if (o == null || getClass () != o.getClass ()) {
-            return false;
-        }
-        
-        Attr attr = (Attr) o;
-        return format == attr.format
-                && Objects.equals (namespace, attr.namespace)
-                && Objects.equals (name, attr.name)
-                && Objects.equals (possibleValues, attr.possibleValues);
-    }
-    
-    @Override
-    public int hashCode () {
-        return Objects.hash (namespace, name, possibleValues, format);
     }
     
     public static int formatForName (@NonNull String names) {
@@ -149,5 +103,46 @@ public class Attr {
             default:
                 return UNKNOWN;
         }
+    }
+    
+    public boolean hasPossibleValues () {
+        return possibleValues != null && possibleValues.size () > 0;
+    }
+    
+    public boolean hasFormat (int format) {
+        return (this.format & format) != 0;
+    }
+    
+    @NonNull
+    @Override
+    public String toString () {
+        return "Attr [" +
+                "  name: " + name + "\n" +
+                "  namespace: " + namespacePrefix + "\n" +
+                "  values: " + TextUtils.join (", ", this.possibleValues) + "\n" +
+                "  format: " + format + "\n" +
+                "]";
+    }
+    
+    @Override
+    public boolean equals (Object o) {
+        if (this == o) {
+            return true;
+        }
+        
+        if (o == null || getClass () != o.getClass ()) {
+            return false;
+        }
+        
+        Attr attr = (Attr) o;
+        return format == attr.format
+                && Objects.equals (namespacePrefix, attr.namespacePrefix)
+                && Objects.equals (name, attr.name)
+                && Objects.equals (possibleValues, attr.possibleValues);
+    }
+    
+    @Override
+    public int hashCode () {
+        return Objects.hash (namespacePrefix, name, possibleValues, format);
     }
 }

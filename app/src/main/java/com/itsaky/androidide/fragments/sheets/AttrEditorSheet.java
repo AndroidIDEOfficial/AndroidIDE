@@ -54,8 +54,11 @@ import com.itsaky.androidide.utils.AttributeDialogs;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.models.Attr;
+import com.itsaky.inflater.INamespace;
 import com.itsaky.inflater.IView;
 import com.itsaky.toaster.Toaster;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -228,7 +231,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             }
             
             final var sheet = getAttrListSheet ();
-            sheet.setItems (new ArrayList<> (attributes));
+            sheet.setItems (filterAppliedAttributes (attributes));
             sheet.show (getChildFragmentManager (), "attr_list_sheet");
             
         } else if (position == 1) { // Delete
@@ -254,6 +257,20 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             TransitionManager.beginDelayedTransition (binding.getRoot (), new ChangeBounds ());
             setupViewData ();
         }
+    }
+    
+    @NonNull
+    @Contract("_ -> new")
+    private List<Attr> filterAppliedAttributes (@NonNull TreeSet<Attr> attributes) {
+        attributes.removeIf (attr -> {
+            var namespace = this.selectedView.findRegisteredNamespace (attr.namespacePrefix);
+            if (namespace == null) {
+                namespace = INamespace.ANDROID;
+            }
+            
+            return this.selectedView.hasAttribute (namespace, attr.name);
+        });
+        return new ArrayList<> (attributes);
     }
     
     @NonNull
