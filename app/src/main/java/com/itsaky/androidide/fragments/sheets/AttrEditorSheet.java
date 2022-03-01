@@ -17,14 +17,16 @@
 
 package com.itsaky.androidide.fragments.sheets;
 
+import static com.itsaky.androidide.utils.AttributeDialogs.booleanEditor;
+import static com.itsaky.androidide.utils.AttributeDialogs.colorPicker;
+import static com.itsaky.androidide.utils.AttributeDialogs.enumEditor;
+import static com.itsaky.androidide.utils.AttributeDialogs.flagEditor;
 import static com.itsaky.attrinfo.models.Attr.BOOLEAN;
 import static com.itsaky.attrinfo.models.Attr.COLOR;
 import static com.itsaky.attrinfo.models.Attr.DIMENSION;
 import static com.itsaky.attrinfo.models.Attr.ENUM;
 import static com.itsaky.attrinfo.models.Attr.FLAG;
 import static com.itsaky.attrinfo.models.Attr.STRING;
-
-import static com.itsaky.androidide.utils.AttributeDialogs.*;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -51,24 +53,23 @@ import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.androidide.utils.AttributeDialogs;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.inflater.IView;
 import com.itsaky.toaster.Toaster;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AttrEditorSheet extends BottomSheetDialogFragment implements SimpleIconTextAdapter.OnBindListener {
     
     private static final List<IconTextListItem> VIEW_ACTIONS = new ArrayList<> ();
-    
+    private static final Logger LOG = Logger.instance ("AttrBottomSheet");
     private IView selectedView;
     private LayoutAttrEditorSheetBinding binding;
-    
     private OnViewDeletionFailedListener mDeletionFailedListener;
-    
-    private static final Logger LOG = Logger.instance ("AttrBottomSheet");
     
     @Nullable
     @Override
@@ -80,16 +81,17 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     @Override
     public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
-    
+        
         if (VIEW_ACTIONS.isEmpty ()) {
             Collections.addAll (VIEW_ACTIONS,
+                    IconTextListItem.create (getString (R.string.msg_viewaction_add_attr), R.drawable.ic_add),
                     IconTextListItem.create (getString (R.string.title_viewaction_delete), R.drawable.ic_delete),
                     IconTextListItem.create (getString (R.string.msg_viewaction_select_parent), R.drawable.ic_view_select_parent)
             );
         }
-    
+        
         setupViewData ();
-    
+        
         AttributeDialogs.init (getActivity ());
     }
     
@@ -126,7 +128,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     }
     
     private void onAttrClick (LayoutAttrEditorSheetItemBinding binding, @NonNull XMLAttribute attribute) {
-    
+        
         if (this.selectedView == null) {
             LOG.error ("Cannot edit attributes of a null view.");
             return;
@@ -192,19 +194,21 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             return;
         }
         
-        if (position == 0) { // Delete
+        if (position == 0) { // Add attribute
+        
+        } else if (position == 1) { // Delete
             DialogUtils.newYesNoDialog (getContext (), (dialog, which) -> {
                 var handled = selectedView.removeFromParent ();
                 if (!handled) {
                     handled = mDeletionFailedListener != null && mDeletionFailedListener.onDeletionFailed (this.selectedView);
                 }
                 if (!handled) {
-                    StudioApp.getInstance ().toast (getString(R.string.msg_view_deletion_failed), Toaster.Type.ERROR);
+                    StudioApp.getInstance ().toast (getString (R.string.msg_view_deletion_failed), Toaster.Type.ERROR);
                 } else {
                     dismiss ();
                 }
             }, (dialog, which) -> dialog.dismiss ()).show ();
-        } else if (position == 1) { // Select parent
+        } else if (position == 2) { // Select parent
             if (this.selectedView.getParent () == null) {
                 StudioApp.getInstance ().toast (getString (R.string.msg_no_view_parent), Toaster.Type.ERROR);
                 return;
@@ -220,7 +224,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     /**
      * A listener can be used to get notified when we fail to remove
      * a view from its parent. This is used in {@link com.itsaky.androidide.DesignerActivity DesignerActivity}.
-     *
+     * <p>
      * When the user tries to remove the outermost view of the inflated layout,
      * AttrEditorSheet fails to remove the view from its parent ({@link IView#getParent()} is null for root XML layout).
      * In this case, DesignerActivity check if the view that we were trying to delete is the root layout or not.
@@ -229,7 +233,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
      * @author Akash Yadav
      */
     public interface OnViewDeletionFailedListener {
-    
+        
         /**
          * @param view The view that was not removed from its parent.
          * @return {@code true} if the listener handled the error. {@code false} otherwise.

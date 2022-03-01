@@ -374,4 +374,5 @@
     <string name="title_use_horizontal_popup">Horizontal text actions</string>
     <string name="msg_use_horizontal_popup">Make the floating text actions appear horizontally (restart required if changed).</string>
     <string name="msg_apk_install_intent_failed">Unable to start intent for installing APK</string>
+    <string name="msg_viewaction_add_attr">Add attribute</string>
 </resources>

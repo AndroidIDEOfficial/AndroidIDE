@@ -150,8 +150,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             final String name = scanner.scan(contents);
             if(name != null) {
                 final String attrName = name.contains(":") ? name.substring(name.indexOf(":") + 1) : name;
-                if (attrs.getAttrs().containsKey(attrName)) {
-                    Attr attr = attrs.getAttrs().get(attrName);
+                if (attrs.getAttributes ().containsKey(attrName)) {
+                    Attr attr = attrs.getAttributes ().get(attrName);
                     if(attr != null && attr.hasPossibleValues()) {
                         Set<String> values = attr.possibleValues;
                         for(String value : values) {
@@ -162,7 +162,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                     }
                 }
             } else {
-                for(Map.Entry<String, Attr> entry : attrs.getAttrs().entrySet()) {
+                for(Map.Entry<String, Attr> entry : attrs.getAttributes ().entrySet()) {
                     Attr attr = entry.getValue();
                     if(attr.name.toLowerCase(Locale.US).startsWith(prefix)) {
                         result.getItems ().add(attrAsCompletion(attr));

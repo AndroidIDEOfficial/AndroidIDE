@@ -45,13 +45,12 @@ import java.util.Objects;
  */
 public class AttrInfo {
     
-    private final Styleable NO_PARENT;
-    
     /**
      * Styles mapped by names;
      */
     public final Map<String, Styleable> styles = new HashMap<> ();
     public final Map<String, Attr> attributes = new HashMap<> ();
+    private final Styleable NO_PARENT;
     
     public AttrInfo (@NonNull final Context context) throws Exception {
         this (context.getResources ());
@@ -78,13 +77,18 @@ public class AttrInfo {
     }
     
     @NonNull
-    public Map<String, Attr> getAttrs () {
+    public Map<String, Attr> getAttributes () {
         return this.attributes;
     }
     
     @Nullable
     public Styleable getStyle (@NonNull final String name) {
         return this.styles.get (name);
+    }
+    
+    @NonNull
+    public Map<String, Styleable> getStyles () {
+        return styles;
     }
     
     protected void parseFromStream (InputStream in) throws Exception {
