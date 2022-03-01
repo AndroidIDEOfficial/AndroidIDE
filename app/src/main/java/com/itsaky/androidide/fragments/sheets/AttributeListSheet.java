@@ -18,21 +18,26 @@
 package com.itsaky.androidide.fragments.sheets;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.AttrListAdapter;
+import com.itsaky.androidide.databinding.LayoutAddAttrSheetBinding;
 import com.itsaky.attrinfo.models.Attr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * A bottom sheet dialog for showing a simple list of
@@ -43,23 +48,53 @@ import java.util.List;
  */
 public class AttributeListSheet extends BottomSheetDialogFragment {
     
-    private RecyclerView mList;
+    private LayoutAddAttrSheetBinding binding;
     private List<Attr> mItems;
+    
+    @Override
+    public void onCreate (@Nullable Bundle savedInstanceState) {
+        super.onCreate (savedInstanceState);
+        setStyle (DialogFragment.STYLE_NORMAL, R.style.AppTheme_SheetAboveKeyboard);
+    }
     
     @Nullable
     @Override
     public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mList = new RecyclerView (inflater.getContext ());
-        mList.setLayoutManager (new LinearLayoutManager (inflater.getContext ()));
-        mList.setLayoutParams (new ViewGroup.LayoutParams (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        
-        return mList;
+        this.binding = LayoutAddAttrSheetBinding.inflate (inflater, container, false);
+        return binding.getRoot ();
     }
     
     @Override
     public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
-        mList.setAdapter (new AttrListAdapter (mItems));
+        binding.searchBar.setOnQueryTextListener (new SearchView.OnQueryTextListener () {
+            
+            @Override
+            public boolean onQueryTextSubmit (String query) {
+                return filterAttributes (query.trim ());
+            }
+            
+            @Override
+            public boolean onQueryTextChange (String newText) {
+                return filterAttributes (newText.trim ());
+            }
+        });
+        binding.attrList.setAdapter (new AttrListAdapter (mItems));
+    }
+    
+    private boolean filterAttributes (@NonNull String query) {
+        if (mItems == null || TextUtils.isEmpty (query)) {
+            update ();
+            return true;
+        }
+        
+        final var filtered = this.mItems
+                .stream ()
+                .filter (attr -> attr.name.toLowerCase (Locale.ROOT).contains (query.toLowerCase (Locale.ROOT)))
+                .collect (Collectors.toList ());
+        
+        update (filtered);
+        return true;
     }
     
     public void setItems (@Nullable List<Attr> items) {
@@ -72,8 +107,12 @@ public class AttributeListSheet extends BottomSheetDialogFragment {
     }
     
     public void update () {
-        if (mList != null) {
-            mList.setAdapter (new AttrListAdapter (mItems));
+        update (mItems);
+    }
+    
+    public void update (List<Attr> items) {
+        if (binding != null) {
+            binding.attrList.setAdapter (new AttrListAdapter (items));
         }
     }
 }
