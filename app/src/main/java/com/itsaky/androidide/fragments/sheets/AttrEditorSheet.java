@@ -301,6 +301,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             
             return this.selectedView.hasAttribute (namespace, attr.name);
         });
+        
         return new ArrayList<> (attributes);
     }
     
