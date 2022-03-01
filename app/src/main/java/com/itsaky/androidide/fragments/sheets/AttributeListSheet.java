@@ -37,6 +37,7 @@ import com.itsaky.attrinfo.models.Attr;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
 public class AttributeListSheet extends BottomSheetDialogFragment {
     
     private LayoutAddAttrSheetBinding binding;
+    private Consumer<Attr> clickConsumer;
     private List<Attr> mItems;
     
     @Override
@@ -79,7 +81,7 @@ public class AttributeListSheet extends BottomSheetDialogFragment {
                 return filterAttributes (newText.trim ());
             }
         });
-        binding.attrList.setAdapter (new AttrListAdapter (mItems));
+        binding.attrList.setAdapter (new AttrListAdapter (clickConsumer, mItems));
     }
     
     private boolean filterAttributes (@NonNull String query) {
@@ -106,13 +108,17 @@ public class AttributeListSheet extends BottomSheetDialogFragment {
         update ();
     }
     
+    public void onItemClick (Consumer<Attr> onClick) {
+        this.clickConsumer = onClick;
+    }
+    
     public void update () {
         update (mItems);
     }
     
     public void update (List<Attr> items) {
         if (binding != null) {
-            binding.attrList.setAdapter (new AttrListAdapter (items));
+            binding.attrList.setAdapter (new AttrListAdapter (clickConsumer, items));
         }
     }
 }

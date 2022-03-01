@@ -24,6 +24,7 @@ import com.itsaky.attrinfo.models.Attr;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * An {@link com.itsaky.androidide.adapters.IconTextAdapter} for {@link com.itsaky.attrinfo.models.Attr}.
@@ -32,9 +33,11 @@ import java.util.List;
  */
 public class AttrListAdapter extends IconTextAdapter<Attr> {
     
+    private final Consumer<Attr> clickConsumer;
     private final List<Attr> attrs;
     
-    public AttrListAdapter (List<Attr> attrs) {
+    public AttrListAdapter (Consumer<Attr> clickConsumer, List<Attr> attrs) {
+        this.clickConsumer = clickConsumer;
         if (attrs == null) {
             attrs = new ArrayList<> ();
         }
@@ -62,5 +65,14 @@ public class AttrListAdapter extends IconTextAdapter<Attr> {
     @Override
     public int getItemCount () {
         return attrs.size ();
+    }
+    
+    @Override
+    public void onBindViewHolder (@NonNull VH holder, int position) {
+        super.onBindViewHolder (holder, position);
+        
+        if (clickConsumer != null) {
+            holder.binding.getRoot ().setOnClickListener (v -> clickConsumer.accept (getItemAt (position)));
+        }
     }
 }

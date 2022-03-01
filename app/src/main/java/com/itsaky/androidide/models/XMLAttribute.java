@@ -25,10 +25,12 @@ import androidx.annotation.NonNull;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.xml.INamespace;
 import com.itsaky.inflater.impl.UiAttribute;
+import com.itsaky.xml.INamespace;
 
 import org.jetbrains.annotations.Contract;
+
+import java.util.Objects;
 
 /**
  * A model that is used to show attributes list of a view.
@@ -37,19 +39,32 @@ import org.jetbrains.annotations.Contract;
  */
 public class XMLAttribute extends UiAttribute implements Parcelable {
     
+    public static final Creator<XMLAttribute> CREATOR = new Creator<> () {
+        @NonNull
+        @Contract("_ -> new")
+        @Override
+        public XMLAttribute createFromParcel (Parcel in) {
+            return new XMLAttribute (in);
+        }
+        
+        @NonNull
+        @Contract(value = "_ -> new", pure = true)
+        @Override
+        public XMLAttribute[] newArray (int size) {
+            return new XMLAttribute[size];
+        }
+    };
+    public Attr attr;
     /**
      * Is this attribute applied to any view?
      */
     private boolean isApplied;
-    
     /**
      * Format of this attribute. May be stored here so we don't
      * have to look in {@link com.itsaky.attrinfo.AttrInfo AttrInfo}
      * again and again.
      */
     private int format = -1;
-    
-    private Attr attr;
     
     public XMLAttribute (IAttribute attribute) {
         this (attribute, true);
@@ -68,12 +83,39 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
         this (in.readParcelable (INamespace.class.getClassLoader ()), in.readString (), in.readString (), in.readByte () != 0);
     }
     
-    public void setFormat (int format) {
-        this.format = format;
+    /**
+     * Create a new attribute instance with the android namespace.
+     * {@link #isApplied()} will return true by default.
+     *
+     * @param name  The name of the attribute.
+     * @param value The value of the attribute.
+     * @return A new instance of this class with the provided data.
+     */
+    @NonNull
+    @Contract("_, _ -> new")
+    public static XMLAttribute newAndroidAttribute (String name, String value) {
+        return new XMLAttribute (INamespace.ANDROID, name, value, true);
+    }
+    
+    /**
+     * Create a new attribute instance with the android namespace.
+     * The {@link #isApplied()} will return {@code false} by default.
+     *
+     * @param name The name of the attribute.
+     * @return The new attribute instance.
+     */
+    @NonNull
+    @Contract("_ -> new")
+    public static XMLAttribute newAndroidAttribute (String name) {
+        return new XMLAttribute (INamespace.ANDROID, name, "", false);
     }
     
     public int getFormat () {
         return format;
+    }
+    
+    public void setFormat (int format) {
+        this.format = format;
     }
     
     public int findFormat () {
@@ -99,21 +141,11 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
         return attr;
     }
     
-    public static final Creator<XMLAttribute> CREATOR = new Creator<> () {
-        @NonNull
-        @Contract("_ -> new")
-        @Override
-        public XMLAttribute createFromParcel (Parcel in) {
-            return new XMLAttribute (in);
-        }
-    
-        @NonNull
-        @Contract(value = "_ -> new", pure = true)
-        @Override
-        public XMLAttribute[] newArray (int size) {
-            return new XMLAttribute[size];
-        }
-    };
+    public void setAttr (Attr attr) {
+        Objects.requireNonNull (attr);
+        this.attr = attr;
+        setFormat (attr.format);
+    }
     
     @Override
     public void apply (String value) {
@@ -123,31 +155,6 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
     
     public boolean isApplied () {
         return isApplied;
-    }
-    
-    /**
-     * Create a new attribute instance with the android namespace.
-     * {@link #isApplied()} will return true by default.
-     * @param name The name of the attribute.
-     * @param value The value of the attribute.
-     * @return A new instance of this class with the provided data.
-     */
-    @NonNull
-    @Contract("_, _ -> new")
-    public static XMLAttribute newAndroidAttribute (String name, String value) {
-        return new XMLAttribute (INamespace.ANDROID, name, value, true);
-    }
-    
-    /**
-     * Create a new attribute instance with the android namespace.
-     * The {@link #isApplied()} will return {@code false} by default.
-     * @param name The name of the attribute.
-     * @return The new attribute instance.
-     */
-    @NonNull
-    @Contract("_ -> new")
-    public static XMLAttribute newAndroidAttribute (String name) {
-        return new XMLAttribute (INamespace.ANDROID, name, "", false);
     }
     
     @Override

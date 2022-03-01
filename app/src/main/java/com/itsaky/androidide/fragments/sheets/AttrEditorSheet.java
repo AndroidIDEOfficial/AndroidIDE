@@ -54,7 +54,9 @@ import com.itsaky.androidide.utils.AttributeDialogs;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.models.Attr;
+import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IView;
+import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.toaster.Toaster;
 
 import org.jetbrains.annotations.Contract;
@@ -177,14 +179,24 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         }
     }
     
-    private void applyNewValue (@NonNull XMLAttribute attribute, String newValue) {
-        if (!this.selectedView.updateAttribute (attribute.getNamespace (), attribute.getAttributeName (), newValue)) {
-            StudioApp.getInstance ().toast ("Unable to update this attribute", Toaster.Type.ERROR);
+    private void applyNewValue (@NonNull IAttribute attribute, String newValue) {
+        if (this.selectedView.hasAttribute (attribute.getNamespace (), attribute.getAttributeName ())) {
+            if (!this.selectedView.updateAttribute (attribute.getNamespace (), attribute.getAttributeName (), newValue)) {
+                StudioApp.getInstance ().toast (getString (R.string.msg_attr_not_updated), Toaster.Type.ERROR);
+            } else {
+                // Update the view data
+                // This will make sure that the attributes list has been updated
+                setupViewData ();
+            }
         } else {
-            // Update the view data
-            // This will make sure that the attributes list has been updated
-            setupViewData ();
+            addAttribute (new UiAttribute (attribute.getNamespace (), attribute.getAttributeName (), newValue));
         }
+    }
+    
+    private void addAttribute (@NonNull IAttribute attribute) {
+        this.selectedView.addAttribute (attribute);
+        setupViewData ();
+        StudioApp.getInstance ().toast (getString (R.string.msg_attr_added), Toaster.Type.SUCCESS);
     }
     
     @Override
@@ -300,10 +312,17 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     private AttributeListSheet getAttrListSheet () {
         if (mAttrListSheet == null) {
             mAttrListSheet = new AttributeListSheet ();
+            mAttrListSheet.onItemClick (this::addNewAttribute);
             mAttrListSheet.setCancelable (true);
         }
         
         return mAttrListSheet;
+    }
+    
+    private void addNewAttribute (Attr attr) {
+        final XMLAttribute attribute = new XMLAttribute (attr.namespace, attr.name, "", false);
+        attribute.setAttr (attr);
+        showEditorDialog (attribute);
     }
     
     /**
