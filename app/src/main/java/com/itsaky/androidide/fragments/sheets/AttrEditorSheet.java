@@ -191,6 +191,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         }
         
         if (dialog != null) {
+            dialog.setTitle (String.format ("%s:%s", attribute.getNamespace ().getName (), attribute.getAttributeName ()));
             dialog.show ();
         }
     }
