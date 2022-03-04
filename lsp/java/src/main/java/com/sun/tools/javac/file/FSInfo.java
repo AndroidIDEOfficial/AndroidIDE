@@ -25,6 +25,9 @@
 
 package com.sun.tools.javac.file;
 
+import com.github.marschall.com.sun.nio.zipfs.ZipFileSystemProvider;
+import com.sun.tools.javac.util.Context;
+
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -38,38 +41,34 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import com.github.marschall.com.sun.nio.zipfs.ZipFileSystemProvider;
-import com.sun.tools.javac.util.Context;
-
 /**
  * Get meta-info about files. Default direct (non-caching) implementation.
- * @see CacheFSInfo
  *
- * <p><b>This is NOT part of any supported API.
- * If you write code that depends on this, you do so at your own risk.
- * This code and its internal interfaces are subject to change or
- * deletion without notice.</b>
+ * @see CacheFSInfo
+ *     <p><b>This is NOT part of any supported API. If you write code that depends on this, you do
+ *     so at your own risk. This code and its internal interfaces are subject to change or deletion
+ *     without notice.</b>
  */
 public class FSInfo {
-    
-    /** Get the FSInfo instance for this context.
-     *  @param context the context
-     *  @return the Paths instance for this context
+
+    /**
+     * Get the FSInfo instance for this context.
+     *
+     * @param context the context
+     * @return the Paths instance for this context
      */
     public static FSInfo instance(Context context) {
         FSInfo instance = context.get(FSInfo.class);
-        if (instance == null)
-            instance = new FSInfo();
+        if (instance == null) instance = new FSInfo();
         return instance;
     }
-    
-    protected FSInfo() {
-    }
-    
+
+    protected FSInfo() {}
+
     protected FSInfo(Context context) {
         context.put(FSInfo.class, this);
     }
-    
+
     public Path getCanonicalFile(Path file) {
         try {
             return file.toRealPath();
@@ -77,57 +76,51 @@ public class FSInfo {
             return file.toAbsolutePath().normalize();
         }
     }
-    
+
     public boolean exists(Path file) {
         return Files.exists(file);
     }
-    
+
     public boolean isDirectory(Path file) {
         return Files.isDirectory(file);
     }
-    
+
     public boolean isFile(Path file) {
         return Files.isRegularFile(file);
     }
-    
+
     public List<Path> getJarClassPath(Path file) throws IOException {
         Path parent = file.getParent();
         try (JarFile jarFile = new JarFile(file.toFile())) {
             Manifest man = jarFile.getManifest();
-            if (man == null)
-                return Collections.emptyList();
-            
+            if (man == null) return Collections.emptyList();
+
             Attributes attr = man.getMainAttributes();
-            if (attr == null)
-                return Collections.emptyList();
-            
+            if (attr == null) return Collections.emptyList();
+
             String path = attr.getValue(Attributes.Name.CLASS_PATH);
-            if (path == null)
-                return Collections.emptyList();
-            
+            if (path == null) return Collections.emptyList();
+
             List<Path> list = new ArrayList<>();
-            
-            for (StringTokenizer st = new StringTokenizer(path);
-                 st.hasMoreTokens(); ) {
+
+            for (StringTokenizer st = new StringTokenizer(path); st.hasMoreTokens(); ) {
                 String elt = st.nextToken();
                 Path f = FileSystems.getDefault().getPath(elt);
-                if (!f.isAbsolute() && parent != null)
-                    f = parent.resolve(f).toAbsolutePath();
+                if (!f.isAbsolute() && parent != null) f = parent.resolve(f).toAbsolutePath();
                 list.add(f);
             }
-            
+
             return list;
         }
     }
-    
+
     private FileSystemProvider jarFSProvider;
-    
+
     public synchronized FileSystemProvider getJarFSProvider() {
         if (jarFSProvider != null) {
             return jarFSProvider;
         }
-        
-        return jarFSProvider = new ZipFileSystemProvider ();
+
+        return jarFSProvider = new ZipFileSystemProvider();
     }
-    
 }

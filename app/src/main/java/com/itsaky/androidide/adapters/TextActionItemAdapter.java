@@ -39,61 +39,68 @@ import java.util.function.Consumer;
  * @author Akash Yadav
  */
 public class TextActionItemAdapter extends RecyclerView.Adapter<TextActionItemAdapter.VH> {
-    
+
     private final List<IDEEditor.TextAction> actions;
     private final Consumer<IDEEditor.TextAction> onClick;
     private final boolean isHorizontal;
-    
-    public TextActionItemAdapter (List<IDEEditor.TextAction> actions, Consumer<IDEEditor.TextAction> onClick) {
-        Objects.requireNonNull (actions);
+
+    public TextActionItemAdapter(
+            List<IDEEditor.TextAction> actions, Consumer<IDEEditor.TextAction> onClick) {
+        Objects.requireNonNull(actions);
         this.actions = actions;
         this.onClick = onClick;
-        this.isHorizontal = StudioApp.getInstance ().getPrefManager ().getBoolean (PreferenceManager.KEY_EDITOR_HORIZONTAL_POPUP, false);
+        this.isHorizontal =
+                StudioApp.getInstance()
+                        .getPrefManager()
+                        .getBoolean(PreferenceManager.KEY_EDITOR_HORIZONTAL_POPUP, false);
     }
-    
+
     @NonNull
     @Override
-    public VH onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
-        return new VH (LayoutTextActionItemBinding.inflate (LayoutInflater.from (parent.getContext ()), parent, false));
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new VH(
+                LayoutTextActionItemBinding.inflate(
+                        LayoutInflater.from(parent.getContext()), parent, false));
     }
-    
+
     @Override
-    public void onBindViewHolder (@NonNull VH holder, int position) {
+    public void onBindViewHolder(@NonNull VH holder, int position) {
         final var binding = holder.binding;
-        final var action = actions.get (position);
-        final var button = binding.getRoot ();
-        
+        final var action = actions.get(position);
+        final var button = binding.getRoot();
+
         if (isHorizontal) {
             // If not set to wrap_content, one item will take whole screen width.
-            final var params = button.getLayoutParams ();
+            final var params = button.getLayoutParams();
             params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            button.setLayoutParams (params);
-            
+            button.setLayoutParams(params);
+
             // looks better
-            button.setGravity (Gravity.CENTER);
+            button.setGravity(Gravity.CENTER);
         }
-        
-        button.setText (action.titleId);
-        button.setCompoundDrawablesRelative (action.icon, null, null, null);
-        
-        button.setOnClickListener (v -> {
-            if (onClick != null) {
-                onClick.accept (action);
-            }
-        });
+
+        button.setText(action.titleId);
+        button.setCompoundDrawablesRelative(action.icon, null, null, null);
+
+        button.setOnClickListener(
+                v -> {
+                    if (onClick != null) {
+                        onClick.accept(action);
+                    }
+                });
     }
-    
+
     @Override
-    public int getItemCount () {
-        return actions.size ();
+    public int getItemCount() {
+        return actions.size();
     }
-    
+
     static class VH extends RecyclerView.ViewHolder {
-        
+
         private final LayoutTextActionItemBinding binding;
-        
-        public VH (@NonNull LayoutTextActionItemBinding binding) {
-            super (binding.getRoot ());
+
+        public VH(@NonNull LayoutTextActionItemBinding binding) {
+            super(binding.getRoot());
             this.binding = binding;
         }
     }

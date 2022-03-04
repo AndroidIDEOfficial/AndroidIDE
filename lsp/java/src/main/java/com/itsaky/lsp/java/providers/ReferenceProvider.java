@@ -41,73 +41,74 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 public class ReferenceProvider implements IReferenceProvider {
-    
+
     private final CompilerProvider compiler;
     private Path file;
     private int line, column;
-    
-    public static final List<Location> NOT_SUPPORTED = Collections.emptyList ();
-    
+
+    public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
+
     public ReferenceProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
-    
+
     @NonNull
     @Override
-    public ReferenceResult findReferences (ReferenceParams params) {
-        this.file = params.getFile ();
-        
+    public ReferenceResult findReferences(ReferenceParams params) {
+        this.file = params.getFile();
+
         // 1-based line and column indexes
-        this.line = params.getPosition ().getLine () + 1;
-        this.column = params.getPosition ().getColumn ()+ 1;
-        return new ReferenceResult (find());
+        this.line = params.getPosition().getLine() + 1;
+        this.column = params.getPosition().getColumn() + 1;
+        return new ReferenceResult(find());
     }
-    
+
     public List<Location> find() {
         final SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask (task -> {
-            Element element = NavigationHelper.findElement(task, file, line, column);
-            if (element == null) return NOT_SUPPORTED;
-            if (NavigationHelper.isLocal(element)) {
-                return findReferences(task);
-            }
-            if (NavigationHelper.isType(element)) {
-                TypeElement type = (TypeElement) element;
-                String className = type.getQualifiedName().toString();
-                task.close();
-                return findTypeReferences(className);
-            }
-            if (NavigationHelper.isMember(element)) {
-                TypeElement parentClass = (TypeElement) element.getEnclosingElement();
-                String className = parentClass.getQualifiedName().toString();
-                String memberName = element.getSimpleName().toString();
-                if (memberName.equals("<init>")) {
-                    memberName = parentClass.getSimpleName().toString();
-                }
-                task.close();
-                return findMemberReferences(className, memberName);
-            }
-            return NOT_SUPPORTED;
-        });
+        return synchronizedTask.getWithTask(
+                task -> {
+                    Element element = NavigationHelper.findElement(task, file, line, column);
+                    if (element == null) return NOT_SUPPORTED;
+                    if (NavigationHelper.isLocal(element)) {
+                        return findReferences(task);
+                    }
+                    if (NavigationHelper.isType(element)) {
+                        TypeElement type = (TypeElement) element;
+                        String className = type.getQualifiedName().toString();
+                        task.close();
+                        return findTypeReferences(className);
+                    }
+                    if (NavigationHelper.isMember(element)) {
+                        TypeElement parentClass = (TypeElement) element.getEnclosingElement();
+                        String className = parentClass.getQualifiedName().toString();
+                        String memberName = element.getSimpleName().toString();
+                        if (memberName.equals("<init>")) {
+                            memberName = parentClass.getSimpleName().toString();
+                        }
+                        task.close();
+                        return findMemberReferences(className, memberName);
+                    }
+                    return NOT_SUPPORTED;
+                });
     }
-    
+
     private List<Location> findTypeReferences(String className) {
         Path[] files = compiler.findTypeReferences(className);
-        if (files.length == 0) return Collections.emptyList ();
-        return compiler.compile (files).getWithTask (this::findReferences);
+        if (files.length == 0) return Collections.emptyList();
+        return compiler.compile(files).getWithTask(this::findReferences);
     }
-    
+
     private List<Location> findMemberReferences(String className, String memberName) {
         Path[] files = compiler.findMemberReferences(className, memberName);
-        if (files.length == 0) return Collections.emptyList ();
-        return compiler.compile (files).getWithTask (this::findReferences);
+        if (files.length == 0) return Collections.emptyList();
+        return compiler.compile(files).getWithTask(this::findReferences);
     }
-    
+
     private List<Location> findReferences(CompileTask task) {
         Element element = NavigationHelper.findElement(task, file, line, column);
-        List<TreePath> paths = new ArrayList<> ();
+        List<TreePath> paths = new ArrayList<>();
         for (CompilationUnitTree root : task.roots) {
-            new FindReferences (task.task, element).scan(root, paths);
+            new FindReferences(task.task, element).scan(root, paths);
         }
         List<Location> locations = new ArrayList<>();
         for (TreePath p : paths) {

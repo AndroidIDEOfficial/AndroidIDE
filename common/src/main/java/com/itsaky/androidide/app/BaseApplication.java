@@ -5,12 +5,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
@@ -46,53 +46,59 @@ import java.io.File;
 import java.util.Arrays;
 
 public abstract class BaseApplication extends MultiDexApplication {
-    
+
     private static BaseApplication instance;
     private StudioUtils mUtils;
-	private PreferenceManager mPrefsManager;
-    
+    private PreferenceManager mPrefsManager;
+
     public static final String NOTIFICATION_ID_UPDATE = "17571";
     public static final String NOTIFICATION_ID_DEVS = "17572";
     public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
     public static final String GITHUB_URL = "https://github.com/itsaky/AndroidIDE";
     public static final String WEBSITE = "https://androidide.com";
     public static final String EMAIL = "contact@androidide.com";
-    
+
     @Override
     public void onCreate() {
         instance = this;
-        Environment.init ();
+        Environment.init();
         super.onCreate();
-        
+
         mPrefsManager = new PreferenceManager(this);
         JavaCharacter.initMap();
         ToolsManager.init(this, null);
-    
+
         createNotificationChannels();
     }
-    
+
     @SuppressLint("NewApi")
     private void createNotificationChannels() {
-        NotificationChannel updateChannel = new NotificationChannel(NOTIFICATION_ID_UPDATE, getNotificationChannelNameForId(NOTIFICATION_ID_UPDATE), NotificationManager.IMPORTANCE_HIGH);
+        NotificationChannel updateChannel =
+                new NotificationChannel(
+                        NOTIFICATION_ID_UPDATE,
+                        getNotificationChannelNameForId(NOTIFICATION_ID_UPDATE),
+                        NotificationManager.IMPORTANCE_HIGH);
         updateChannel.enableLights(true);
         updateChannel.enableVibration(true);
         updateChannel.setLightColor(Color.RED);
-        updateChannel.setVibrationPattern(new long[]{10, 50, 10});
+        updateChannel.setVibrationPattern(new long[] {10, 50, 10});
         NotificationManagerCompat.from(this).createNotificationChannel(updateChannel);
 
-        NotificationChannel devsChannels = new NotificationChannel(NOTIFICATION_ID_DEVS, getNotificationChannelNameForId(NOTIFICATION_ID_DEVS), NotificationManager.IMPORTANCE_MIN);
+        NotificationChannel devsChannels =
+                new NotificationChannel(
+                        NOTIFICATION_ID_DEVS,
+                        getNotificationChannelNameForId(NOTIFICATION_ID_DEVS),
+                        NotificationManager.IMPORTANCE_MIN);
         devsChannels.enableLights(true);
         devsChannels.enableVibration(true);
         devsChannels.setLightColor(Color.BLUE);
-        devsChannels.setVibrationPattern(new long[]{10, 50, 10});
+        devsChannels.setVibrationPattern(new long[] {10, 50, 10});
         NotificationManagerCompat.from(this).createNotificationChannel(devsChannels);
     }
 
     public String getNotificationChannelNameForId(@NonNull String id) {
-        if(id.equals(NOTIFICATION_ID_UPDATE))
-            return getUpdateNotificationChannelName();
-        else if(id.equals(NOTIFICATION_ID_DEVS))
-            return getDevNotificationChannelName();
+        if (id.equals(NOTIFICATION_ID_UPDATE)) return getUpdateNotificationChannelName();
+        else if (id.equals(NOTIFICATION_ID_DEVS)) return getDevNotificationChannelName();
         else return "AndroidIDE Notifications";
     }
 
@@ -102,34 +108,38 @@ public abstract class BaseApplication extends MultiDexApplication {
 
     private String getDevNotificationChannelName() {
         return getString(R.string.cms_channel_id_devs);
-	}
-    
-    public static BaseApplication getBaseInstance () {
+    }
+
+    public static BaseApplication getBaseInstance() {
         return instance;
     }
-    
+
     public ShellServer newShell(ShellServer.Callback callback) {
         return newShell(callback, true);
     }
 
     public ShellServer newShell(ShellServer.Callback callback, boolean redirectErrors) {
-        ShellServer shellServer = new ShellServer(callback,
-                "sh",
-                Environment.mkdirIfNotExits(getRootDir()).getAbsolutePath(),
-                Environment.getEnvironment(),
-                redirectErrors);
+        ShellServer shellServer =
+                new ShellServer(
+                        callback,
+                        "sh",
+                        Environment.mkdirIfNotExits(getRootDir()).getAbsolutePath(),
+                        Environment.getEnvironment(),
+                        redirectErrors);
         shellServer.start();
         return shellServer;
     }
 
     public void writeException(Throwable th) {
-        FileUtil.writeFile(new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(), ThrowableUtils.getFullStackTrace(th));
+        FileUtil.writeFile(
+                new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
+                ThrowableUtils.getFullStackTrace(th));
     }
-    
+
     public File getRootDir() {
         return new File(getIDEDataDir(), "framework");
     }
-    
+
     @SuppressLint("SdCardPath")
     public File getIDEDataDir() {
         return Environment.mkdirIfNotExits(new File("/data/data/com.itsaky.androidide/files"));
@@ -140,11 +150,11 @@ public abstract class BaseApplication extends MultiDexApplication {
     public final File getLogSenderDir() {
         return new File(getRootDir(), "logsender");
     }
-    
+
     public final File getTempProjectDir() {
         return Environment.mkdirIfNotExits(new File(Environment.TMP_DIR, "tempProject"));
     }
-    
+
     public boolean isFrameworkInstalled() {
         return getRootDir().exists() && mPrefsManager.isFrameworkInstalled();
     }
@@ -160,17 +170,17 @@ public abstract class BaseApplication extends MultiDexApplication {
     public File[] listProjects() {
         return getProjectsDir().listFiles(File::isDirectory);
     }
-    
-    public static boolean isAbiSupported () {
+
+    public static boolean isAbiSupported() {
         return isAarch64() || isArmv7a();
     }
 
-    public static boolean isAarch64 () {
-        return Arrays.asList (Build.SUPPORTED_ABIS).contains ("arm64-v8a");
+    public static boolean isAarch64() {
+        return Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
     }
 
-    public static boolean isArmv7a () {
-        return Arrays.asList (Build.SUPPORTED_ABIS).contains ("armeabi-v7a");
+    public static boolean isArmv7a() {
+        return Arrays.asList(Build.SUPPORTED_ABIS).contains("armeabi-v7a");
     }
 
     @NonNull
@@ -180,9 +190,9 @@ public abstract class BaseApplication extends MultiDexApplication {
         } else if (BaseApplication.isArmv7a()) {
             return "armeabi-v7a";
         }
-        throw new UnsupportedOperationException ("Device not supported");
+        throw new UnsupportedOperationException("Device not supported");
     }
-    
+
     public StudioUtils getUtils() {
         return mUtils == null ? mUtils = new StudioUtils(this) : mUtils;
     }
@@ -201,8 +211,8 @@ public abstract class BaseApplication extends MultiDexApplication {
 
     public void toastLong(int msg, Toaster.Type type) {
         getUtils().toastLong(msg, type);
-	}
-    
+    }
+
     public void openTelegramGroup() {
         try {
             Intent open = new Intent();
@@ -224,13 +234,13 @@ public abstract class BaseApplication extends MultiDexApplication {
         }
     }
 
-    public void openGitHub () {
+    public void openGitHub() {
         try {
             Intent open = new Intent();
             open.setAction(Intent.ACTION_VIEW);
             open.setData(Uri.parse(BaseApplication.GITHUB_URL));
             open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(open); 
+            startActivity(open);
         } catch (Throwable th) {
             toast(th.getMessage(), Toaster.Type.ERROR);
         }

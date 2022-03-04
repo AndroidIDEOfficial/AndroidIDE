@@ -36,60 +36,70 @@ import com.itsaky.androidide.models.XMLAttribute;
 import java.util.List;
 
 public class XMLAttributeListAdapter extends RecyclerView.Adapter<XMLAttributeListAdapter.VH> {
-    
+
     private final List<XMLAttribute> attributes;
     private final OnClickListener clickListener;
-    
-    public XMLAttributeListAdapter (List<XMLAttribute> attributes, OnClickListener clickListener) {
+
+    public XMLAttributeListAdapter(List<XMLAttribute> attributes, OnClickListener clickListener) {
         this.attributes = attributes;
         this.clickListener = clickListener;
     }
-    
+
     @NonNull
     @Override
-    public VH onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
-        return new VH (LayoutAttrEditorSheetItemBinding.inflate (LayoutInflater.from (parent.getContext ()), parent, false));
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new VH(
+                LayoutAttrEditorSheetItemBinding.inflate(
+                        LayoutInflater.from(parent.getContext()), parent, false));
     }
-    
+
     @Override
-    public void onBindViewHolder (@NonNull VH holder, int position) {
+    public void onBindViewHolder(@NonNull VH holder, int position) {
         final var binding = holder.binding;
-        final var attr = attributes.get (position);
-        final var sb = new SpannableStringBuilder ();
-        sb.append (attr.getAttributeName ());
-        if (attr.isApplied ()) {
-            sb.append (" = ");
-            sb.append (attr.getValue (), new StyleSpan (Typeface.BOLD), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            
-            final var length = attr.getValue ().length ();
-            sb.setSpan (new ForegroundColorSpan (ContextCompat.getColor (binding.text.getContext (), R.color.primaryTextColor)),
-                    sb.length () - length,
-                    sb.length () - 1,
+        final var attr = attributes.get(position);
+        final var sb = new SpannableStringBuilder();
+        sb.append(attr.getAttributeName());
+        if (attr.isApplied()) {
+            sb.append(" = ");
+            sb.append(
+                    attr.getValue(),
+                    new StyleSpan(Typeface.BOLD),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            final var length = attr.getValue().length();
+            sb.setSpan(
+                    new ForegroundColorSpan(
+                            ContextCompat.getColor(
+                                    binding.text.getContext(), R.color.primaryTextColor)),
+                    sb.length() - length,
+                    sb.length() - 1,
                     SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        
-        binding.text.setText (sb);
-        binding.getRoot ().setOnClickListener (v -> {
-            if (this.clickListener != null) {
-                this.clickListener.onClick (binding, attr);
-            }
-        });
+
+        binding.text.setText(sb);
+        binding.getRoot()
+                .setOnClickListener(
+                        v -> {
+                            if (this.clickListener != null) {
+                                this.clickListener.onClick(binding, attr);
+                            }
+                        });
     }
-    
+
     @Override
-    public int getItemCount () {
-        return attributes.size ();
+    public int getItemCount() {
+        return attributes.size();
     }
-    
+
     public interface OnClickListener {
-        void onClick (LayoutAttrEditorSheetItemBinding binding, XMLAttribute attribute);
+        void onClick(LayoutAttrEditorSheetItemBinding binding, XMLAttribute attribute);
     }
-    
+
     static class VH extends RecyclerView.ViewHolder {
         LayoutAttrEditorSheetItemBinding binding;
-        
-        VH (@NonNull LayoutAttrEditorSheetItemBinding binding) {
-            super (binding.getRoot ());
+
+        VH(@NonNull LayoutAttrEditorSheetItemBinding binding) {
+            super(binding.getRoot());
             this.binding = binding;
         }
     }

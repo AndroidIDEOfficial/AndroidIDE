@@ -30,84 +30,84 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.databinding.LayoutSheetBinding;
 
 public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment {
-    
+
     protected Dialog mDialog;
     protected boolean shadowEnabled = true;
     protected boolean titleEnabled = true;
     private LayoutSheetBinding binding;
-    
+
     @NonNull
     @Override
-    public Dialog onCreateDialog (Bundle savedInstanceState) {
-        mDialog = super.onCreateDialog (savedInstanceState);
-        mDialog.setOnShowListener (p1 -> onShow ());
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mDialog = super.onCreateDialog(savedInstanceState);
+        mDialog.setOnShowListener(p1 -> onShow());
         return mDialog;
     }
-    
+
     @Override
-    public View onCreateView (@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = LayoutSheetBinding.inflate (inflater, container, false);
-        return binding.getRoot ();
+    public View onCreateView(
+            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = LayoutSheetBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
-    
+
     @Override
-    public void onViewCreated (@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated (view, savedInstanceState);
-        bind (binding.container);
-        binding.title.setText (getTitle ());
-        binding.title.setOnClickListener (v -> handleTitleClick ());
-        
-        if (shouldHideTitle ()) {
-            binding.getRoot ().removeView (binding.title);
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        bind(binding.container);
+        binding.title.setText(getTitle());
+        binding.title.setOnClickListener(v -> handleTitleClick());
+
+        if (shouldHideTitle()) {
+            binding.getRoot().removeView(binding.title);
         }
-        
+
         if (!shadowEnabled) {
-            binding.shadow.setVisibility (View.GONE);
+            binding.shadow.setVisibility(View.GONE);
         }
     }
-    
-    private void handleTitleClick () {
-        if (isCancelable ()) {
-            dismiss ();
+
+    private void handleTitleClick() {
+        if (isCancelable()) {
+            dismiss();
         }
     }
-    
-    public boolean isShowing () {
-        return mDialog != null && mDialog.isShowing ();
+
+    public boolean isShowing() {
+        return mDialog != null && mDialog.isShowing();
     }
-    
-    protected boolean shouldHideTitle () {
+
+    protected boolean shouldHideTitle() {
         return !titleEnabled;
     }
-    
-    protected String getTitle () {
+
+    protected String getTitle() {
         return "";
     }
-    
-    public BaseBottomSheetFragment setTitle (int title) {
+
+    public BaseBottomSheetFragment setTitle(int title) {
         if (binding != null) {
-            binding.title.setText (title);
+            binding.title.setText(title);
         }
         return this;
     }
-    
-    public BaseBottomSheetFragment setTitle (String title) {
+
+    public BaseBottomSheetFragment setTitle(String title) {
         if (binding != null) {
-            binding.title.setText (title);
+            binding.title.setText(title);
         }
         return this;
     }
-    
-    public void setShowShadow (boolean enabled) {
+
+    public void setShowShadow(boolean enabled) {
         this.shadowEnabled = enabled;
     }
-    
-    public void setShowTitle (boolean enabled) {
+
+    public void setShowTitle(boolean enabled) {
         this.titleEnabled = enabled;
     }
-    
-    protected void onShow () {
-    }
-    
-    protected abstract void bind (LinearLayout container);
+
+    protected void onShow() {}
+
+    protected abstract void bind(LinearLayout container);
 }

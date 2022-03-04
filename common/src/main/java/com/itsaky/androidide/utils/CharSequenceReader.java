@@ -23,51 +23,46 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * {@link Reader} implementation that can read from String, StringBuffer,
- * StringBuilder or CharBuffer.
- * <p>
- * <strong>Note:</strong> Supports {@link #mark(int)} and {@link #reset()}.
- * </p>
+ * {@link Reader} implementation that can read from String, StringBuffer, StringBuilder or
+ * CharBuffer.
+ *
+ * <p><strong>Note:</strong> Supports {@link #mark(int)} and {@link #reset()}.
  *
  * @since 1.4
  */
 public class CharSequenceReader extends Reader implements Serializable {
-    
+
     private static final long serialVersionUID = 3724187752191401220L;
     private final CharSequence charSequence;
     private int idx;
     private int mark;
-    
+
     /**
      * The start index in the character sequence, inclusive.
-     * <p>
-     * When de-serializing a CharSequenceReader that was serialized before
-     * this fields was added, this field will be initialized to 0, which
-     * gives the same behavior as before: start reading from the start.
-     * </p>
+     *
+     * <p>When de-serializing a CharSequenceReader that was serialized before this fields was added,
+     * this field will be initialized to 0, which gives the same behavior as before: start reading
+     * from the start.
      *
      * @see #start()
      * @since 2.7
      */
     private final int start;
-    
+
     /**
      * The end index in the character sequence, exclusive.
-     * <p>
-     * When de-serializing a CharSequenceReader that was serialized before
-     * this fields was added, this field will be initialized to {@code null},
-     * which gives the same behavior as before: stop reading at the
-     * CharSequence's length.
-     * If this field was an int instead, it would be initialized to 0 when the
-     * CharSequenceReader is de-serialized, causing it to not return any
+     *
+     * <p>When de-serializing a CharSequenceReader that was serialized before this fields was added,
+     * this field will be initialized to {@code null}, which gives the same behavior as before: stop
+     * reading at the CharSequence's length. If this field was an int instead, it would be
+     * initialized to 0 when the CharSequenceReader is de-serialized, causing it to not return any
      * characters at all.
-     * </p>
      *
      * @see #end()
      * @since 2.7
      */
     private final Integer end;
-    
+
     /**
      * Constructs a new instance with the specified character sequence.
      *
@@ -76,16 +71,14 @@ public class CharSequenceReader extends Reader implements Serializable {
     public CharSequenceReader(final CharSequence charSequence) {
         this(charSequence, 0);
     }
-    
+
     /**
      * Constructs a new instance with a portion of the specified character sequence.
-     * <p>
-     * The start index is not strictly enforced to be within the bounds of the
-     * character sequence. This allows the character sequence to grow or shrink
-     * in size without risking any {@link IndexOutOfBoundsException} to be thrown.
-     * Instead, if the character sequence grows smaller than the start index, this
-     * instance will act as if all characters have been read.
-     * </p>
+     *
+     * <p>The start index is not strictly enforced to be within the bounds of the character
+     * sequence. This allows the character sequence to grow or shrink in size without risking any
+     * {@link IndexOutOfBoundsException} to be thrown. Instead, if the character sequence grows
+     * smaller than the start index, this instance will act as if all characters have been read.
      *
      * @param charSequence The character sequence, may be {@code null}
      * @param start The start index in the character sequence, inclusive
@@ -95,29 +88,27 @@ public class CharSequenceReader extends Reader implements Serializable {
     public CharSequenceReader(final CharSequence charSequence, final int start) {
         this(charSequence, start, Integer.MAX_VALUE);
     }
-    
+
     /**
      * Constructs a new instance with a portion of the specified character sequence.
-     * <p>
-     * The start and end indexes are not strictly enforced to be within the bounds
-     * of the character sequence. This allows the character sequence to grow or shrink
-     * in size without risking any {@link IndexOutOfBoundsException} to be thrown.
-     * Instead, if the character sequence grows smaller than the start index, this
-     * instance will act as if all characters have been read; if the character sequence
-     * grows smaller than the end, this instance will use the actual character sequence
-     * length.
-     * </p>
+     *
+     * <p>The start and end indexes are not strictly enforced to be within the bounds of the
+     * character sequence. This allows the character sequence to grow or shrink in size without
+     * risking any {@link IndexOutOfBoundsException} to be thrown. Instead, if the character
+     * sequence grows smaller than the start index, this instance will act as if all characters have
+     * been read; if the character sequence grows smaller than the end, this instance will use the
+     * actual character sequence length.
      *
      * @param charSequence The character sequence, may be {@code null}
      * @param start The start index in the character sequence, inclusive
      * @param end The end index in the character sequence, exclusive
-     * @throws IllegalArgumentException if the start index is negative, or if the end index is smaller than the start index
+     * @throws IllegalArgumentException if the start index is negative, or if the end index is
+     *     smaller than the start index
      * @since 2.7
      */
     public CharSequenceReader(final CharSequence charSequence, final int start, final int end) {
         if (start < 0) {
-            throw new IllegalArgumentException(
-                    "Start index is less than zero: " + start);
+            throw new IllegalArgumentException("Start index is less than zero: " + start);
         }
         if (end < start) {
             throw new IllegalArgumentException(
@@ -125,26 +116,25 @@ public class CharSequenceReader extends Reader implements Serializable {
         }
         // Don't check the start and end indexes against the CharSequence,
         // to let it grow and shrink without breaking existing behavior.
-        
+
         this.charSequence = charSequence != null ? charSequence : "";
         this.start = start;
         this.end = end;
-        
+
         this.idx = start;
         this.mark = start;
     }
-    
-    /**
-     * Close resets the file back to the start and removes any marked position.
-     */
+
+    /** Close resets the file back to the start and removes any marked position. */
     @Override
     public void close() {
         idx = start;
         mark = start;
     }
-    
+
     /**
-     * Returns the index in the character sequence to end reading at, taking into account its length.
+     * Returns the index in the character sequence to end reading at, taking into account its
+     * length.
      *
      * @return The end index in the character sequence (exclusive).
      */
@@ -155,7 +145,7 @@ public class CharSequenceReader extends Reader implements Serializable {
          */
         return Math.min(charSequence.length(), end == null ? Integer.MAX_VALUE : end);
     }
-    
+
     /**
      * Mark the current position.
      *
@@ -165,7 +155,7 @@ public class CharSequenceReader extends Reader implements Serializable {
     public void mark(final int readAheadLimit) {
         mark = idx;
     }
-    
+
     /**
      * Mark is supported (returns true).
      *
@@ -175,12 +165,11 @@ public class CharSequenceReader extends Reader implements Serializable {
     public boolean markSupported() {
         return true;
     }
-    
+
     /**
      * Read a single character.
      *
-     * @return the next character from the character sequence
-     * or -1 if the end has been reached.
+     * @return the next character from the character sequence or -1 if the end has been reached.
      */
     @Override
     public int read() {
@@ -189,15 +178,14 @@ public class CharSequenceReader extends Reader implements Serializable {
         }
         return charSequence.charAt(idx++);
     }
-    
+
     /**
      * Read the specified number of characters into the array.
      *
      * @param array The array to store the characters in
      * @param offset The starting position in the array to store
      * @param length The maximum number of characters to read
-     * @return The number of characters read or -1 if there are
-     * no more
+     * @return The number of characters read or -1 if there are no more
      */
     @Override
     public int read(final char[] array, final int offset, final int length) {
@@ -206,10 +194,10 @@ public class CharSequenceReader extends Reader implements Serializable {
         }
         Objects.requireNonNull(array, "array");
         if (length < 0 || offset < 0 || offset + length > array.length) {
-            throw new IndexOutOfBoundsException("Array Size=" + array.length +
-                    ", offset=" + offset + ", length=" + length);
+            throw new IndexOutOfBoundsException(
+                    "Array Size=" + array.length + ", offset=" + offset + ", length=" + length);
         }
-        
+
         if (charSequence instanceof String) {
             final int count = Math.min(length, end() - idx);
             ((String) charSequence).getChars(idx, idx + count, array, offset);
@@ -228,38 +216,38 @@ public class CharSequenceReader extends Reader implements Serializable {
             idx += count;
             return count;
         }
-        
+
         int count = 0;
         for (int i = 0; i < length; i++) {
             final int c = read();
             if (c == -1) {
                 return count;
             }
-            array[offset + i] = (char)c;
+            array[offset + i] = (char) c;
             count++;
         }
         return count;
     }
-    
+
     /**
      * Tells whether this stream is ready to be read.
      *
-     * @return {@code true} if more characters from the character sequence are available, or {@code false} otherwise.
+     * @return {@code true} if more characters from the character sequence are available, or {@code
+     *     false} otherwise.
      */
     @Override
     public boolean ready() {
         return idx < end();
     }
-    
+
     /**
-     * Reset the reader to the last marked position (or the beginning if
-     * mark has not been called).
+     * Reset the reader to the last marked position (or the beginning if mark has not been called).
      */
     @Override
     public void reset() {
         idx = mark;
     }
-    
+
     /**
      * Skip the specified number of characters.
      *
@@ -275,24 +263,24 @@ public class CharSequenceReader extends Reader implements Serializable {
         if (idx >= end()) {
             return 0;
         }
-        final int dest = (int)Math.min(end(), idx + n);
+        final int dest = (int) Math.min(end(), idx + n);
         final int count = dest - idx;
         idx = dest;
         return count;
     }
-    
+
     /**
-     * Returns the index in the character sequence to start reading from, taking into account its length.
+     * Returns the index in the character sequence to start reading from, taking into account its
+     * length.
      *
      * @return The start index in the character sequence (inclusive).
      */
     private int start() {
         return Math.min(charSequence.length(), start);
     }
-    
+
     /**
-     * Return a String representation of the underlying
-     * character sequence.
+     * Return a String representation of the underlying character sequence.
      *
      * @return The contents of the character sequence
      */

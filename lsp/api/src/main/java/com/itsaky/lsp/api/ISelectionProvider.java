@@ -23,22 +23,20 @@ import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.Range;
 
 /**
- * A selection provider provides features such as
- * expanding the current selection.
+ * A selection provider provides features such as expanding the current selection.
  *
  * @author Akash Yadav
  */
 public interface ISelectionProvider {
-    
+
     /**
      * Request sent by client for expanding the current selection.
-     * <p>
-     *     Example: If a statement in a method body is selected,
-     *     the provider returns the range of the method body as the expanded selection.
-     * </p>
+     *
+     * <p>Example: If a statement in a method body is selected, the provider returns the range of
+     * the method body as the expanded selection.
      *
      * @param params The params for expanding the selection.
      * @return The expanded selection range. Or same range as params if cannot be expanded.
      */
-    Range expandSelection (@NonNull ExpandSelectionParams params);
+    Range expandSelection(@NonNull ExpandSelectionParams params);
 }

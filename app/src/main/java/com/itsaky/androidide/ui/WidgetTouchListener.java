@@ -29,17 +29,16 @@ import androidx.annotation.Nullable;
 import com.itsaky.inflater.IView;
 
 /**
- * A touch listener for handling touch events of a view in the
- * UI Designer.
+ * A touch listener for handling touch events of a view in the UI Designer.
  *
- * Some of the views have no effect of setting a click listener
- * or a long click listener (e.g. SeekBar). In order to fix this,
- * we use {@link android.view.GestureDetector} and manually handle
+ * <p>Some of the views have no effect of setting a click listener or a long click listener (e.g.
+ * SeekBar). In order to fix this, we use {@link android.view.GestureDetector} and manually handle
  * click events.
  *
  * @author Akash Yadav
  */
-public class WidgetTouchListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener {
+public class WidgetTouchListener extends GestureDetector.SimpleOnGestureListener
+        implements View.OnTouchListener {
 
     private final GestureDetector mGestureDetector;
     private final OnClickListener clickListener;
@@ -47,9 +46,12 @@ public class WidgetTouchListener extends GestureDetector.SimpleOnGestureListener
 
     private final IView mView;
 
-    public WidgetTouchListener (@NonNull IView view, @Nullable OnClickListener clickListener, @Nullable OnLongClickListener longClickListener) {
+    public WidgetTouchListener(
+            @NonNull IView view,
+            @Nullable OnClickListener clickListener,
+            @Nullable OnLongClickListener longClickListener) {
         this.mView = view;
-        this.mGestureDetector = new GestureDetector (view.asView().getContext(), this);
+        this.mGestureDetector = new GestureDetector(view.asView().getContext(), this);
         this.clickListener = clickListener;
         this.longClickListener = longClickListener;
     }
@@ -77,35 +79,32 @@ public class WidgetTouchListener extends GestureDetector.SimpleOnGestureListener
 
     @Override
     public void onLongPress(MotionEvent e) {
-        
-        if (this.mView.getParent () == null) {
+
+        if (this.mView.getParent() == null) {
             // This is the root layout so this should not be draggable
             return;
         }
-        
-        if (this.longClickListener != null &&
-                this.longClickListener.onLongClick(this.mView)) {
+
+        if (this.longClickListener != null && this.longClickListener.onLongClick(this.mView)) {
             this.mView.asView().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
         }
     }
 
     /**
-     * A listener which is invoked when we detect a single
-     * click event.
+     * A listener which is invoked when we detect a single click event.
      *
      * @author Akash Yadav
      */
     public interface OnClickListener {
-        void onClick (IView view);
+        void onClick(IView view);
     }
 
     /**
-     * A listener which is invoked when we detect a long
-     * click event.
+     * A listener which is invoked when we detect a long click event.
      *
      * @author Akash Yadav
      */
     public interface OnLongClickListener {
-        boolean onLongClick (IView view);
+        boolean onLongClick(IView view);
     }
 }

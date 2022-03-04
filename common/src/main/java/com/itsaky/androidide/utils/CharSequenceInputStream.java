@@ -30,85 +30,94 @@ import java.util.Objects;
 
 /**
  * Implements an {@link InputStream} to read from String, StringBuffer, StringBuilder or CharBuffer.
- * <p>
- * <strong>Note:</strong> Supports {@link #mark(int)} and {@link #reset()}.
- * </p>
+ *
+ * <p><strong>Note:</strong> Supports {@link #mark(int)} and {@link #reset()}.
  *
  * @since 2.2
  */
 public class CharSequenceInputStream extends InputStream {
-    
+
     private static final int BUFFER_SIZE = 2048;
-    
+
     private static final int NO_MARK = -1;
-    
+
     private final CharsetEncoder charsetEncoder;
     private final CharBuffer cBuf;
     private final ByteBuffer bBuf;
-    
+
     private int cBufMark; // position in cBuf
     private int bBufMark; // position in bBuf
-    
+
     /**
      * Constructs a new instance with a buffer size of 2048.
      *
      * @param cs the input character sequence.
      * @param charset the character set name to use.
-     * @throws IllegalArgumentException if the buffer is not large enough to hold a complete character.
+     * @throws IllegalArgumentException if the buffer is not large enough to hold a complete
+     *     character.
      */
     public CharSequenceInputStream(final CharSequence cs, final Charset charset) {
         this(cs, charset, BUFFER_SIZE);
     }
-    
+
     /**
      * Constructs a new instance.
      *
      * @param cs the input character sequence.
      * @param charset the character set name to use, null maps to the default Charset.
      * @param bufferSize the buffer size to use.
-     * @throws IllegalArgumentException if the buffer is not large enough to hold a complete character.
+     * @throws IllegalArgumentException if the buffer is not large enough to hold a complete
+     *     character.
      */
-    public CharSequenceInputStream(final CharSequence cs, final Charset charset, final int bufferSize) {
+    public CharSequenceInputStream(
+            final CharSequence cs, final Charset charset, final int bufferSize) {
         // @formatter:off
-        this.charsetEncoder = toCharset(charset).newEncoder()
-                .onMalformedInput(CodingErrorAction.REPLACE)
-                .onUnmappableCharacter(CodingErrorAction.REPLACE);
+        this.charsetEncoder =
+                toCharset(charset)
+                        .newEncoder()
+                        .onMalformedInput(CodingErrorAction.REPLACE)
+                        .onUnmappableCharacter(CodingErrorAction.REPLACE);
         // @formatter:on
         // Ensure that buffer is long enough to hold a complete character
-        this.bBuf = ByteBuffer.allocate(ReaderInputStream.checkMinBufferSize(charsetEncoder, bufferSize));
+        this.bBuf =
+                ByteBuffer.allocate(
+                        ReaderInputStream.checkMinBufferSize(charsetEncoder, bufferSize));
         this.bBuf.flip();
         this.cBuf = CharBuffer.wrap(cs);
         this.cBufMark = NO_MARK;
         this.bBufMark = NO_MARK;
     }
-    
+
     /**
      * Constructs a new instance with a buffer size of 2048.
      *
      * @param cs the input character sequence.
      * @param charset the character set name to use.
-     * @throws IllegalArgumentException if the buffer is not large enough to hold a complete character.
+     * @throws IllegalArgumentException if the buffer is not large enough to hold a complete
+     *     character.
      */
     public CharSequenceInputStream(final CharSequence cs, final String charset) {
         this(cs, charset, BUFFER_SIZE);
     }
-    
+
     /**
      * Constructs a new instance.
      *
      * @param cs the input character sequence.
      * @param charset the character set name to use, null maps to the default Charset.
      * @param bufferSize the buffer size to use.
-     * @throws IllegalArgumentException if the buffer is not large enough to hold a complete character.
+     * @throws IllegalArgumentException if the buffer is not large enough to hold a complete
+     *     character.
      */
-    public CharSequenceInputStream(final CharSequence cs, final String charset, final int bufferSize) {
+    public CharSequenceInputStream(
+            final CharSequence cs, final String charset, final int bufferSize) {
         this(cs, toCharset(charset), bufferSize);
     }
-    
+
     /**
      * Return an estimate of the number of bytes remaining in the byte stream.
-     * @return the count of bytes that can be read without blocking (or returning EOF).
      *
+     * @return the count of bytes that can be read without blocking (or returning EOF).
      * @throws IOException if an error occurs (probably not possible).
      */
     @Override
@@ -119,17 +128,16 @@ public class CharSequenceInputStream extends InputStream {
         // encoded bytes still available.
         return this.bBuf.remaining() + this.cBuf.remaining();
     }
-    
+
     @Override
     public void close() throws IOException {
         // noop
     }
-    
+
     /**
      * Fills the byte output buffer from the input char buffer.
      *
-     * @throws CharacterCodingException
-     *             an error encoding data.
+     * @throws CharacterCodingException an error encoding data.
      */
     private void fillBuffer() throws CharacterCodingException {
         this.bBuf.compact();
@@ -139,7 +147,7 @@ public class CharSequenceInputStream extends InputStream {
         }
         this.bBuf.flip();
     }
-    
+
     /**
      * Gets the CharsetEncoder.
      *
@@ -148,9 +156,10 @@ public class CharSequenceInputStream extends InputStream {
     CharsetEncoder getCharsetEncoder() {
         return charsetEncoder;
     }
-    
+
     /**
      * {@inheritDoc}
+     *
      * @param readlimit max read limit (ignored).
      */
     @Override
@@ -162,15 +171,15 @@ public class CharSequenceInputStream extends InputStream {
         // It would be nice to be able to use mark & reset on the cbuf and bbuf;
         // however the bbuf is re-used so that won't work
     }
-    
+
     @Override
     public boolean markSupported() {
         return true;
     }
-    
+
     @Override
     public int read() throws IOException {
-        for (;;) {
+        for (; ; ) {
             if (this.bBuf.hasRemaining()) {
                 return this.bBuf.get() & 0xFF;
             }
@@ -180,17 +189,18 @@ public class CharSequenceInputStream extends InputStream {
             }
         }
     }
-    
+
     @Override
     public int read(final byte[] b) throws IOException {
         return read(b, 0, b.length);
     }
-    
+
     @Override
     public int read(final byte[] array, int off, int len) throws IOException {
         Objects.requireNonNull(array, "array");
         if (len < 0 || (off + len) > array.length) {
-            throw new IndexOutOfBoundsException("Array Size=" + array.length + ", offset=" + off + ", length=" + len);
+            throw new IndexOutOfBoundsException(
+                    "Array Size=" + array.length + ", offset=" + off + ", length=" + len);
         }
         if (len == 0) {
             return 0; // must return 0 for zero length read
@@ -215,7 +225,7 @@ public class CharSequenceInputStream extends InputStream {
         }
         return bytesRead == 0 && !this.cBuf.hasRemaining() ? -1 : bytesRead;
     }
-    
+
     @Override
     public synchronized void reset() throws IOException {
         //
@@ -224,9 +234,13 @@ public class CharSequenceInputStream extends InputStream {
         // Since the bbuf is re-used, in general it's necessary to re-encode the data.
         //
         // It should be possible to apply some optimisations however:
-        // + use mark/reset on the cbuf and bbuf. This would only work if the buffer had not been (re)filled since
-        // the mark. The code would have to catch InvalidMarkException - does not seem possible to check if mark is
-        // valid otherwise. + Try saving the state of the cbuf before each fillBuffer; it might be possible to
+        // + use mark/reset on the cbuf and bbuf. This would only work if the buffer had not been
+        // (re)filled since
+        // the mark. The code would have to catch InvalidMarkException - does not seem possible to
+        // check
+        // if mark is
+        // valid otherwise. + Try saving the state of the cbuf before each fillBuffer; it might be
+        // possible to
         // restart from there.
         //
         if (this.cBufMark != NO_MARK) {
@@ -236,22 +250,28 @@ public class CharSequenceInputStream extends InputStream {
                 this.cBuf.rewind();
                 this.bBuf.rewind();
                 this.bBuf.limit(0); // rewind does not clear the buffer
-                while(this.cBuf.position() < this.cBufMark) {
-                    this.bBuf.rewind(); // empty the buffer (we only refill when empty during normal processing)
+                while (this.cBuf.position() < this.cBufMark) {
+                    this.bBuf
+                            .rewind(); // empty the buffer (we only refill when empty during normal
+                                       // processing)
                     this.bBuf.limit(0);
                     fillBuffer();
                 }
             }
             if (this.cBuf.position() != this.cBufMark) {
-                throw new IllegalStateException("Unexpected CharBuffer position: actual=" + cBuf.position() + " " +
-                        "expected=" + this.cBufMark);
+                throw new IllegalStateException(
+                        "Unexpected CharBuffer position: actual="
+                                + cBuf.position()
+                                + " "
+                                + "expected="
+                                + this.cBufMark);
             }
             this.bBuf.position(this.bBufMark);
             this.cBufMark = NO_MARK;
             this.bBufMark = NO_MARK;
         }
     }
-    
+
     @Override
     public long skip(long n) throws IOException {
         //
@@ -266,11 +286,11 @@ public class CharSequenceInputStream extends InputStream {
         }
         return skipped;
     }
-    
+
     static Charset toCharset(final Charset charset) {
         return charset == null ? Charset.defaultCharset() : charset;
     }
-    
+
     static Charset toCharset(final String charsetName) throws UnsupportedCharsetException {
         return charsetName == null ? Charset.defaultCharset() : Charset.forName(charsetName);
     }

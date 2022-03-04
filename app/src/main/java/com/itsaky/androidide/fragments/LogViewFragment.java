@@ -27,51 +27,51 @@ import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.models.LogLine;
 
+import io.github.rosemoe.sora.lang.Language;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import io.github.rosemoe.sora.lang.Language;
-
 public class LogViewFragment extends NonEditableEditorFragment {
-    
-    private final Language language = getLanguage ();
-    private final List<LogLine> unsavedLines = new ArrayList<> ();
-    
+
+    private final Language language = getLanguage();
+    private final List<LogLine> unsavedLines = new ArrayList<>();
+
     @Override
-    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated (view, savedInstanceState);
-        Objects.requireNonNull (getEditor ()).setEditorLanguage (language);
-        
-        if (!unsavedLines.isEmpty ()) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Objects.requireNonNull(getEditor()).setEditorLanguage(language);
+
+        if (!unsavedLines.isEmpty()) {
             for (var line : unsavedLines) {
-                applyToLanguage (line);
-                getEditor ().append (line.toString ().trim () + "\n");
+                applyToLanguage(line);
+                getEditor().append(line.toString().trim() + "\n");
             }
-            unsavedLines.clear ();
+            unsavedLines.clear();
         }
     }
-    
-    public void appendLog (LogLine line) {
-        if (getEditor () == null) {
-            unsavedLines.add (line);
+
+    public void appendLog(LogLine line) {
+        if (getEditor() == null) {
+            unsavedLines.add(line);
             return;
         }
-    
-        applyToLanguage (line);
-    
-        final var lineString = line.toString ();
-        final var msg = lineString.endsWith ("\n") ? lineString : lineString + "\n";
-        ThreadUtils.runOnUiThread (() -> getEditor ().append (msg));
+
+        applyToLanguage(line);
+
+        final var lineString = line.toString();
+        final var msg = lineString.endsWith("\n") ? lineString : lineString + "\n";
+        ThreadUtils.runOnUiThread(() -> getEditor().append(msg));
     }
-    
-    private void applyToLanguage (LogLine line) {
+
+    private void applyToLanguage(LogLine line) {
         if (language instanceof LogLanguageImpl) {
-            ((LogLanguageImpl)this.language).addLine (line);
+            ((LogLanguageImpl) this.language).addLine(line);
         }
     }
-    
-    protected Language getLanguage () {
-        return new LogLanguageImpl ();
+
+    protected Language getLanguage() {
+        return new LogLanguageImpl();
     }
 }

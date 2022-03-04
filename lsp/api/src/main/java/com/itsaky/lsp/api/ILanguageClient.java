@@ -22,27 +22,26 @@ import com.itsaky.lsp.models.ShowDocumentParams;
 import com.itsaky.lsp.models.ShowDocumentResult;
 
 /**
- * A language client handles notifications and events from a
- * {@link ILanguageServer}.
+ * A language client handles notifications and events from a {@link ILanguageServer}.
  *
  * @author Akash Yadav
  */
 public interface ILanguageClient {
-    
+
     /**
      * Publish the diagnostics result (allow the user to see them).
+     *
      * @param result The diagnostic result.
      */
-    void publishDiagnostics (DiagnosticResult result);
-    
+    void publishDiagnostics(DiagnosticResult result);
+
     /**
-     * Notification sent by the language server to tell
-     * the client that it should open the given file and
-     * select the range from the params.
+     * Notification sent by the language server to tell the client that it should open the given
+     * file and select the range from the params.
      *
      * @param params The params for showing the document.
-     * @return The result of the show document request.
-     *      Servers can use this result to perform further action.
+     * @return The result of the show document request. Servers can use this result to perform
+     *     further action.
      */
-    ShowDocumentResult showDocument (ShowDocumentParams params);
+    ShowDocumentResult showDocument(ShowDocumentParams params);
 }

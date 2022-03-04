@@ -36,32 +36,35 @@ import java.util.List;
  * @author Akash Yadav
  */
 public class SemanticHighlightProvider {
-    
-    private static final Comparator<HighlightToken> SORT_BY_START = Comparator.comparing (HighlightToken::getRange);
-    
+
+    private static final Comparator<HighlightToken> SORT_BY_START =
+            Comparator.comparing(HighlightToken::getRange);
+
     @NonNull
-    public static List<HighlightToken> highlight (@NonNull CompileTask task, Path file) {
-        final List<HighlightToken> result = new ArrayList<> ();
+    public static List<HighlightToken> highlight(@NonNull CompileTask task, Path file) {
+        final List<HighlightToken> result = new ArrayList<>();
         CompilationUnitTree root = null;
         for (CompilationUnitTree tree : task.roots) {
-            final Path path = Paths.get (tree.getSourceFile ().toUri ());
-            if (path.equals (file)) {
+            final Path path = Paths.get(tree.getSourceFile().toUri());
+            if (path.equals(file)) {
                 root = tree;
                 break;
             }
         }
-        
+
         if (root == null) {
-            LOG.warn ("Cannot provide semantic highlights. Cannot find compilation unit for the given file.");
+            LOG.warn(
+                    "Cannot provide semantic highlights. Cannot find compilation unit for the given"
+                        + " file.");
             return result;
         }
-        
-        final SemanticHighlighter highlighter = new SemanticHighlighter (task);
-        highlighter.scan (root, result);
-        result.sort (SORT_BY_START);
-        
+
+        final SemanticHighlighter highlighter = new SemanticHighlighter(task);
+        highlighter.scan(root, result);
+        result.sort(SORT_BY_START);
+
         return result;
     }
-    
-    private static final Logger LOG = Logger.instance ("JavaSemanticHighlightProvider");
+
+    private static final Logger LOG = Logger.instance("JavaSemanticHighlightProvider");
 }

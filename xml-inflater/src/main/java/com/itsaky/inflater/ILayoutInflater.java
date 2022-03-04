@@ -1,20 +1,20 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- * 
+ *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ **************************************************************************************/
 package com.itsaky.inflater;
 
 import android.content.Context;
@@ -37,14 +37,12 @@ import java.util.regex.Pattern;
  * @author Akash Yadav
  */
 public abstract class ILayoutInflater {
-    
+
     private static final Pattern XML_DECL = Pattern.compile("<\\?xml.*\\?>");
-    
-    /**
-     * The file whose content is currently being inflated.
-     */
+
+    /** The file whose content is currently being inflated. */
     private File currentlyInflatingFile;
-    
+
     /**
      * Acatual implementation of the layout inflation
      *
@@ -53,40 +51,39 @@ public abstract class ILayoutInflater {
      * @throws InflateException when there was an error inflating the layout
      */
     @NonNull
-    protected abstract IView doInflate (String layout, ViewGroup parent) throws InflateException;
-    
+    protected abstract IView doInflate(String layout, ViewGroup parent) throws InflateException;
+
     /**
      * Reset the {@link ContextProvider} of this inflater
      *
      * @param provider The new {@link ContextProvider}
      */
-    public abstract void resetContextProvider (ContextProvider provider);
-    
+    public abstract void resetContextProvider(ContextProvider provider);
+
     /**
      * Register the inflate listener to this inflater.
-     * <p>
-     * NOTE: Do not register too much listeners as they may affect the inflation time.
-     * </p>
+     *
+     * <p>NOTE: Do not register too much listeners as they may affect the inflation time.
      *
      * @param listener The listener to register.
      */
-    public abstract void registerInflateListener (IInflateListener listener);
-    
+    public abstract void registerInflateListener(IInflateListener listener);
+
     /**
      * Unregister the inflate listener if it is registered.
      *
      * @param listener The listener to unregister
      */
-    public abstract void unregisterListener (IInflateListener listener);
-    
+    public abstract void unregisterListener(IInflateListener listener);
+
     /**
      * Get the resource finder attached to this layout inflater.
      *
      * @return The attached resource finder.
      */
     @NonNull
-    protected abstract IResourceTable requireResourceFinder ();
-    
+    protected abstract IResourceTable requireResourceFinder();
+
     /**
      * Inflate the layout from the given file path
      *
@@ -95,11 +92,11 @@ public abstract class ILayoutInflater {
      * @throws InflateException when there was an error inflating the layout
      */
     @NonNull
-    public IView inflatePath (String path, ViewGroup parent) throws InflateException {
+    public IView inflatePath(String path, ViewGroup parent) throws InflateException {
         Preconditions.assertNotBlank(path, "Layout file path is blank!");
         return inflate(new File(path), parent);
     }
-    
+
     /**
      * Inflate the layout from the given file
      *
@@ -108,29 +105,29 @@ public abstract class ILayoutInflater {
      * @throws InflateException when there was an error inflating the layout
      */
     @NonNull
-    public IView inflate (File file, ViewGroup parent) throws InflateException {
-        
+    public IView inflate(File file, ViewGroup parent) throws InflateException {
+
         Preconditions.assertNotnull(file, "Cannot inflate null file");
-        
+
         // How can we inflate a non existent file?
         if (!file.exists()) {
-            throw new InflateException ("File does not exist!");
+            throw new InflateException("File does not exist!");
         }
-        
+
         if (!file.canRead()) {
-            throw new InflateException ("Cannot read file. Permission denied!");
+            throw new InflateException("Cannot read file. Permission denied!");
         }
-        
+
         // Cannot inflate a non UTF-8 too. This will also be true if the file is empty.
         if (!FileUtils.isUtf8(file)) {
-            throw new InflateException ("File is not UTF-8 or is empty!");
+            throw new InflateException("File is not UTF-8 or is empty!");
         }
-        
-        requireResourceFinder ().setInflatingFile (file);
+
+        requireResourceFinder().setInflatingFile(file);
         this.currentlyInflatingFile = file;
         return inflate(FileIOUtils.readFile2String(file), parent);
     }
-    
+
     /**
      * Inflate the layout from the provided XML layout code
      *
@@ -139,21 +136,21 @@ public abstract class ILayoutInflater {
      * @throws InflateException when there was an error inflating the layout
      */
     @NonNull
-    protected IView inflate (String layout, ViewGroup parent) throws InflateException {
-        
+    protected IView inflate(String layout, ViewGroup parent) throws InflateException {
+
         Preconditions.assertNotBlank(layout, "Layout is blank!");
-        
+
         // Trim the layout code
         layout = layout.trim();
-        
+
         final Matcher matcher = XML_DECL.matcher(layout);
         if (matcher.find()) {
             layout = layout.substring(matcher.end()).trim();
         }
-        
+
         return doInflate(layout, parent);
     }
-    
+
     /**
      * Creates an instance of {@code ILayoutInflater}
      *
@@ -161,30 +158,28 @@ public abstract class ILayoutInflater {
      * @return A new layout inflater instance
      */
     @NonNull
-    public static ILayoutInflater newInstance (LayoutInflaterConfiguration config) {
-        return new XMLLayoutInflater (config);
+    public static ILayoutInflater newInstance(LayoutInflaterConfiguration config) {
+        return new XMLLayoutInflater(config);
     }
-    
+
     /**
      * Get the currently inflating file.
      *
      * @return The file.
      */
     @Nullable
-    protected File getFile () {
+    protected File getFile() {
         return currentlyInflatingFile;
     }
-    
-    /**
-     * Provides a reference to {@link Context}. This will be used to create original view.
-     */
+
+    /** Provides a reference to {@link Context}. This will be used to create original view. */
     public static interface ContextProvider {
-        
+
         /**
          * Provide the context to this inflater.
          *
          * @return The context
          */
-        Context getContext ();
+        Context getContext();
     }
 }

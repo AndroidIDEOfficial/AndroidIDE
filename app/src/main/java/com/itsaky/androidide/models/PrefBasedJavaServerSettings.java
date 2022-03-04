@@ -25,31 +25,32 @@ import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
 
 /**
  * Server settings for the java language server.
+ *
  * @author Akash Yadav
  */
 public class PrefBasedJavaServerSettings extends DefaultJavaServerSettings {
-    
+
     public static final String KEY_JAVA_PREF_MATCH_LOWER = "idepref_editor_java_matchLower";
-    
+
     private static PrefBasedJavaServerSettings instance;
-    
+
     private final PreferenceManager prefs;
-    
-    public PrefBasedJavaServerSettings () {
-        this.prefs = StudioApp.getInstance ().getPrefManager ();
+
+    public PrefBasedJavaServerSettings() {
+        this.prefs = StudioApp.getInstance().getPrefManager();
     }
-    
+
     @NonNull
-    public static PrefBasedJavaServerSettings getInstance () {
+    public static PrefBasedJavaServerSettings getInstance() {
         if (instance == null) {
-            instance = new PrefBasedJavaServerSettings ();
+            instance = new PrefBasedJavaServerSettings();
         }
-        
+
         return instance;
     }
-    
+
     @Override
-    public boolean shouldMatchAllLowerCase () {
-        return prefs.getBoolean (KEY_JAVA_PREF_MATCH_LOWER, false);
+    public boolean shouldMatchAllLowerCase() {
+        return prefs.getBoolean(KEY_JAVA_PREF_MATCH_LOWER, false);
     }
 }

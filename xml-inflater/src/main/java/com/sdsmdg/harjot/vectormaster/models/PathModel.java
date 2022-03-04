@@ -8,7 +8,6 @@ import android.graphics.PathMeasure;
 import android.graphics.RectF;
 
 import com.sdsmdg.harjot.vectormaster.DefaultValues;
-import com.sdsmdg.harjot.vectormaster.VectorMasterView;
 import com.sdsmdg.harjot.vectormaster.utilities.Utils;
 import com.sdsmdg.harjot.vectormaster.utilities.parser.PathParser;
 
@@ -67,12 +66,13 @@ public class PathModel {
 
     public void buildPath(boolean useLegacyParser) {
         if (useLegacyParser) {
-            originalPath = com.sdsmdg.harjot.vectormaster.utilities.legacyparser.PathParser.createPathFromPathData(pathData);
+            originalPath =
+                    com.sdsmdg.harjot.vectormaster.utilities.legacyparser.PathParser
+                            .createPathFromPathData(pathData);
         } else {
             originalPath = PathParser.doPath(pathData);
         }
-        if (originalPath != null)
-            originalPath.setFillType(fillType);
+        if (originalPath != null) originalPath.setFillType(fillType);
 
         path = new Path(originalPath);
     }
@@ -128,7 +128,11 @@ public class PathModel {
                 PathMeasure pathMeasure = new PathMeasure(originalPath, false);
                 float length = pathMeasure.getLength();
                 trimmedPath = new Path();
-                pathMeasure.getSegment((trimPathStart + trimPathOffset) * length, (trimPathEnd + trimPathOffset) * length, trimmedPath, true);
+                pathMeasure.getSegment(
+                        (trimPathStart + trimPathOffset) * length,
+                        (trimPathEnd + trimPathOffset) * length,
+                        trimmedPath,
+                        true);
                 path = new Path(trimmedPath);
                 path.transform(scaleMatrix);
             }
@@ -206,8 +210,7 @@ public class PathModel {
 
     public void setFillType(Path.FillType fillType) {
         this.fillType = fillType;
-        if (originalPath != null)
-            originalPath.setFillType(fillType);
+        if (originalPath != null) originalPath.setFillType(fillType);
     }
 
     public String getPathData() {

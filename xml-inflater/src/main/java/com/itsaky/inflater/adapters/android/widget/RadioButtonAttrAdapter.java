@@ -27,17 +27,17 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
 /**
- * Attribute adapter for handling attributes related to
- * RadioButton.
+ * Attribute adapter for handling attributes related to RadioButton.
  *
  * @author Akash Yadav
  */
 public class RadioButtonAttrAdapter extends CompondButtonAttrAdapter {
-    
-    public RadioButtonAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
+
+    public RadioButtonAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
-    
+
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof RadioButton;

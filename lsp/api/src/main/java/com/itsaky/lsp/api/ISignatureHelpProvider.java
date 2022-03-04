@@ -23,18 +23,19 @@ import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 
 /**
- * A signature help provider provides signature help
- * when typing arguments for a method or constructor call.
+ * A signature help provider provides signature help when typing arguments for a method or
+ * constructor call.
  *
  * @author Akash Yadav
  */
 public interface ISignatureHelpProvider {
-    
+
     /**
      * Provide signature help for the given parameters.
+     *
      * @param params The params for the signature help.
      * @return The signature help.
      */
     @NonNull
-    SignatureHelp provideSignatures (SignatureHelpParams params);
+    SignatureHelp provideSignatures(SignatureHelpParams params);
 }

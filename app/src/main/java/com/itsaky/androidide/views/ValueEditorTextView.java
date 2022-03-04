@@ -36,46 +36,49 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * {@link MaterialAutoCompleteTextView} implementation used for providing suggestions
- * while editing attribute values.
+ * {@link MaterialAutoCompleteTextView} implementation used for providing suggestions while editing
+ * attribute values.
  *
  * @author Akash Yadav
  */
 @SuppressLint("ViewConstructor")
 public class ValueEditorTextView extends MaterialAutoCompleteTextView {
-    
+
     private final IAttribute attribute;
     private final int format;
-    private final Set<IValueSuggestionProvider> mSuggestionProviders = new HashSet<> ();
-    
-    private final TextWatcher watcher = new TextWatcherAdapter () {
-        
-        @Override
-        public void afterTextChanged (@NonNull Editable s) {
-            final var prefix = s.toString ();
-            final var items = new ArrayList<String> ();
-            
-            for (IValueSuggestionProvider provider : mSuggestionProviders) {
-                if (provider.checkFormat (format)) {
-                    items.addAll (provider.suggest (attribute, prefix));
+    private final Set<IValueSuggestionProvider> mSuggestionProviders = new HashSet<>();
+
+    private final TextWatcher watcher =
+            new TextWatcherAdapter() {
+
+                @Override
+                public void afterTextChanged(@NonNull Editable s) {
+                    final var prefix = s.toString();
+                    final var items = new ArrayList<String>();
+
+                    for (IValueSuggestionProvider provider : mSuggestionProviders) {
+                        if (provider.checkFormat(format)) {
+                            items.addAll(provider.suggest(attribute, prefix));
+                        }
+                    }
+
+                    setThreshold(1);
+                    setAdapter(
+                            new ArrayAdapter<>(
+                                    getContext(), android.R.layout.simple_list_item_1, items));
                 }
-            }
-            
-            setThreshold (1);
-            setAdapter (new ArrayAdapter<> (getContext (), android.R.layout.simple_list_item_1, items));
-        }
-    };
-    
-    public ValueEditorTextView (@NonNull Context context, IAttribute attribute, int format) {
-        super (context);
+            };
+
+    public ValueEditorTextView(@NonNull Context context, IAttribute attribute, int format) {
+        super(context);
         this.attribute = attribute;
         this.format = format;
-        
-        addTextChangedListener (this.watcher);
+
+        addTextChangedListener(this.watcher);
     }
-    
-    public void registerSuggestionProvider (IValueSuggestionProvider provider) {
-        Objects.requireNonNull (provider);
-        mSuggestionProviders.add (provider);
+
+    public void registerSuggestionProvider(IValueSuggestionProvider provider) {
+        Objects.requireNonNull(provider);
+        mSuggestionProviders.add(provider);
     }
 }

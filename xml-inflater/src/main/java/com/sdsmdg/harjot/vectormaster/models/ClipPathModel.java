@@ -1,6 +1,5 @@
 package com.sdsmdg.harjot.vectormaster.models;
 
-
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -29,7 +28,9 @@ public class ClipPathModel {
 
     public void buildPath(boolean useLegacyParser) {
         if (useLegacyParser) {
-            originalPath = com.sdsmdg.harjot.vectormaster.utilities.legacyparser.PathParser.createPathFromPathData(pathData);
+            originalPath =
+                    com.sdsmdg.harjot.vectormaster.utilities.legacyparser.PathParser
+                            .createPathFromPathData(pathData);
         } else {
             originalPath = PathParser.doPath(pathData);
         }
@@ -89,5 +90,4 @@ public class ClipPathModel {
         scaleMatrix.setScale(scaleX, scaleY, rectF.left, rectF.top);
         return scaleMatrix;
     }
-
 }

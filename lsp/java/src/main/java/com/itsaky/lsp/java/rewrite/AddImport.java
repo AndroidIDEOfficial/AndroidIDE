@@ -35,20 +35,21 @@ import java.util.Map;
 public class AddImport implements Rewrite {
     final Path file;
     final String className;
-    
+
     public AddImport(Path file, String className) {
         this.file = file;
         this.className = className;
     }
-    
+
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         final ParseTask task = compiler.parse(file);
         Position point = insertPosition(task);
         String text = "import " + className + ";\n";
-        return Collections.singletonMap (file, new TextEdit[]{new TextEdit(new Range (point, point), text)});
+        return Collections.singletonMap(
+                file, new TextEdit[] {new TextEdit(new Range(point, point), text)});
     }
-    
+
     private Position insertPosition(ParseTask task) {
         List<? extends ImportTree> imports = task.root.getImports();
         for (ImportTree i : imports) {
@@ -66,14 +67,14 @@ public class AddImport implements Rewrite {
         }
         return new Position(0, 0);
     }
-    
+
     private Position insertBefore(ParseTask task, Tree i) {
         SourcePositions pos = Trees.instance(task.task).getSourcePositions();
         long offset = pos.getStartPosition(task.root, i);
         int line = (int) task.root.getLineMap().getLineNumber(offset);
         return new Position(line - 1, 0);
     }
-    
+
     private Position insertAfter(ParseTask task, Tree i) {
         SourcePositions pos = Trees.instance(task.task).getSourcePositions();
         long offset = pos.getStartPosition(task.root, i);

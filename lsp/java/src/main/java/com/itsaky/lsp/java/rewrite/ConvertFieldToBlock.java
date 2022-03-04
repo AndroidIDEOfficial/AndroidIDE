@@ -37,12 +37,12 @@ import javax.lang.model.element.Modifier;
 public class ConvertFieldToBlock implements Rewrite {
     final Path file;
     final int position;
-    
+
     public ConvertFieldToBlock(Path file, int position) {
         this.file = file;
         this.position = position;
     }
-    
+
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         ParseTask task = compiler.parse(file);
@@ -61,7 +61,7 @@ public class ConvertFieldToBlock implements Rewrite {
         long end = pos.getStartPosition(task.root, expression);
         int startLine = (int) lines.getLineNumber(start);
         int startColumn = (int) lines.getColumnNumber(start);
-        Position startPos = new Position (startLine - 1, startColumn - 1);
+        Position startPos = new Position(startLine - 1, startColumn - 1);
         int endLine = (int) lines.getLineNumber(end);
         int endColumn = (int) lines.getColumnNumber(end);
         Position endPos = new Position(endLine - 1, endColumn - 1);
@@ -77,6 +77,6 @@ public class ConvertFieldToBlock implements Rewrite {
         Range insertRight = new Range(rightPos, rightPos);
         TextEdit fixRhs = new TextEdit(insertRight, " }");
         TextEdit[] edits = {fixLhs, fixRhs};
-        return Collections.singletonMap (file, edits);
+        return Collections.singletonMap(file, edits);
     }
 }

@@ -6,9 +6,7 @@ import android.widget.TextView;
 
 import com.unnamed.b.atv.model.TreeNode;
 
-/**
- * Created by Bogdan Melnychuk on 2/11/15.
- */
+/** Created by Bogdan Melnychuk on 2/11/15. */
 public class SimpleViewHolder extends TreeNode.BaseNodeViewHolder<Object> {
 
     public SimpleViewHolder(Context context) {
@@ -23,7 +21,5 @@ public class SimpleViewHolder extends TreeNode.BaseNodeViewHolder<Object> {
     }
 
     @Override
-    public void toggle(boolean active) {
-
-    }
+    public void toggle(boolean active) {}
 }

@@ -28,7 +28,7 @@ public interface Rewrite {
     /** Perform a rewrite across the entire codebase. */
     Map<Path, TextEdit[]> rewrite(CompilerProvider compiler);
     /** CANCELLED signals that the rewrite couldn't be completed. */
-    Map<Path, TextEdit[]> CANCELLED = Collections.emptyMap ();
-    
+    Map<Path, TextEdit[]> CANCELLED = Collections.emptyMap();
+
     Rewrite NOT_SUPPORTED = new RewriteNotSupported();
 }

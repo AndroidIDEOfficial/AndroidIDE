@@ -20,7 +20,6 @@ package com.itsaky.androidide.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import org.jetbrains.annotations.Contract;
@@ -30,28 +29,22 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Model class for holding data about a group that will be displayed
- * in Widgets list in UI Designer screen.
+ * Model class for holding data about a group that will be displayed in Widgets list in UI Designer
+ * screen.
  *
- * A UIWidgetGroup contains multiple {@link UIWidget}.
+ * <p>A UIWidgetGroup contains multiple {@link UIWidget}.
  *
  * @author Akash Yadav
  */
 public class UIWidgetGroup implements IconTextListItem, Parcelable {
 
-    /**
-     * Name of this group.
-     */
+    /** Name of this group. */
     private final String name;
 
-    /**
-     * Children of this group.
-     */
+    /** Children of this group. */
     private final List<UIWidget> children;
 
-    /**
-     * Is this group currently selected in the group list?
-     */
+    /** Is this group currently selected in the group list? */
     private boolean selected;
 
     public UIWidgetGroup(String name) {
@@ -66,25 +59,27 @@ public class UIWidgetGroup implements IconTextListItem, Parcelable {
         this.selected = in.readByte() != 0;
     }
 
-    public static final Creator<UIWidgetGroup> CREATOR = new Creator<UIWidgetGroup>() {
+    public static final Creator<UIWidgetGroup> CREATOR =
+            new Creator<UIWidgetGroup>() {
 
-        @NonNull
-        @Contract("_ -> new")
-        @Override
-        public UIWidgetGroup createFromParcel(Parcel in) {
-            return new UIWidgetGroup(in);
-        }
+                @NonNull
+                @Contract("_ -> new")
+                @Override
+                public UIWidgetGroup createFromParcel(Parcel in) {
+                    return new UIWidgetGroup(in);
+                }
 
-        @NonNull
-        @Contract(value = "_ -> new", pure = true)
-        @Override
-        public UIWidgetGroup[] newArray(int size) {
-            return new UIWidgetGroup[size];
-        }
-    };
+                @NonNull
+                @Contract(value = "_ -> new", pure = true)
+                @Override
+                public UIWidgetGroup[] newArray(int size) {
+                    return new UIWidgetGroup[size];
+                }
+            };
 
     /**
      * Get the name of this group.
+     *
      * @return The name of this group.
      */
     public String getName() {
@@ -93,6 +88,7 @@ public class UIWidgetGroup implements IconTextListItem, Parcelable {
 
     /**
      * Get the children of this group.
+     *
      * @return The children.
      */
     @NonNull
@@ -110,12 +106,13 @@ public class UIWidgetGroup implements IconTextListItem, Parcelable {
 
     /**
      * Add this widget to this group. Does nothing if the child is already present.
+     *
      * @param child The child to add.
      * @return This instance for chained method calls.
      */
-    public UIWidgetGroup addChild (UIWidget child) {
+    public UIWidgetGroup addChild(UIWidget child) {
         if (children.contains(child)) {
-            return  this;
+            return this;
         }
         this.children.add(child);
         return this;
@@ -123,11 +120,12 @@ public class UIWidgetGroup implements IconTextListItem, Parcelable {
 
     /**
      * Get the child at the given index.
+     *
      * @param index The index of the child.
      * @return The child at the index.
      * @throws IndexOutOfBoundsException If the given index is not valid.
      */
-    public UIWidget getChild (int index ){
+    public UIWidget getChild(int index) {
         return children.get(index);
     }
 
@@ -136,7 +134,9 @@ public class UIWidgetGroup implements IconTextListItem, Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UIWidgetGroup group = (UIWidgetGroup) o;
-        return isSelected() == group.isSelected() && getName().equals(group.getName()) && getChildren().equals(group.getChildren());
+        return isSelected() == group.isSelected()
+                && getName().equals(group.getName())
+                && getChildren().equals(group.getChildren());
     }
 
     @Override

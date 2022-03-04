@@ -19,23 +19,26 @@ package com.itsaky.lsp.java.compiler;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.lsp.java.compiler.CompileBatch;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
+
 import java.nio.file.Path;
 import java.util.List;
+
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 public class CompileTask implements AutoCloseable {
-    
+
     public final JavacTask task;
     public final List<CompilationUnitTree> roots;
     public final List<Diagnostic<? extends JavaFileObject>> diagnostics;
-    
+
     private final CompileBatch compileBatch;
-    
-    public CompileTask(@NonNull CompileBatch compileBatch, List<Diagnostic<? extends JavaFileObject>> diagnostics) {
+
+    public CompileTask(
+            @NonNull CompileBatch compileBatch,
+            List<Diagnostic<? extends JavaFileObject>> diagnostics) {
         this.compileBatch = compileBatch;
         this.task = compileBatch.task;
         this.roots = compileBatch.roots;
@@ -44,7 +47,7 @@ public class CompileTask implements AutoCloseable {
 
     public CompilationUnitTree root() {
         if (roots.size() != 1) {
-            throw new RuntimeException("No compilation units found. Roots: " + roots.size ());
+            throw new RuntimeException("No compilation units found. Roots: " + roots.size());
         }
         return roots.get(0);
     }
@@ -69,6 +72,6 @@ public class CompileTask implements AutoCloseable {
 
     @Override
     public void close() {
-        compileBatch.close ();
+        compileBatch.close();
     }
 }

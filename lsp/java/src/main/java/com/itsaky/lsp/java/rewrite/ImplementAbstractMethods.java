@@ -20,10 +20,10 @@ package com.itsaky.lsp.java.rewrite;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
+import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.utils.FindHelper;
-import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
@@ -54,60 +54,65 @@ public class ImplementAbstractMethods implements Rewrite {
     final Path file;
     final ClassTree tree;
     final TreePath path;
-    
+
     public ImplementAbstractMethods(final Path file, final ClassTree tree, final TreePath path) {
         Objects.requireNonNull(file);
         Objects.requireNonNull(tree);
         Objects.requireNonNull(path);
-        
+
         this.file = file;
         this.tree = tree;
         this.path = path;
     }
-    
+
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
-        StringJoiner insertText = new StringJoiner ("\n");
+        StringJoiner insertText = new StringJoiner("\n");
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask (task -> {
-            Elements elements = task.task.getElements();
-            Types types = task.task.getTypes();
-            Trees trees = Trees.instance(task.task);
-            TypeElement thisClass = (TypeElement) trees.getElement(this.path);
-            DeclaredType thisType = (DeclaredType) thisClass.asType();
-            ClassTree thisTree = trees.getTree(thisClass);
-            int indent = EditHelper.indent(task.task, task.root(), thisTree) + 4;
-            for (Element member : elements.getAllMembers(thisClass)) {
-                if (member.getKind() == ElementKind.METHOD && member.getModifiers().contains(Modifier.ABSTRACT)) {
-                    ExecutableElement method = (ExecutableElement) member;
-                    MethodTree source = findSource(compiler, task, method);
-                    if (source == null) {
-                        LOG.warn("...couldn't find source for " + method);
+        return synchronizedTask.getWithTask(
+                task -> {
+                    Elements elements = task.task.getElements();
+                    Types types = task.task.getTypes();
+                    Trees trees = Trees.instance(task.task);
+                    TypeElement thisClass = (TypeElement) trees.getElement(this.path);
+                    DeclaredType thisType = (DeclaredType) thisClass.asType();
+                    ClassTree thisTree = trees.getTree(thisClass);
+                    int indent = EditHelper.indent(task.task, task.root(), thisTree) + 4;
+                    for (Element member : elements.getAllMembers(thisClass)) {
+                        if (member.getKind() == ElementKind.METHOD
+                                && member.getModifiers().contains(Modifier.ABSTRACT)) {
+                            ExecutableElement method = (ExecutableElement) member;
+                            MethodTree source = findSource(compiler, task, method);
+                            if (source == null) {
+                                LOG.warn("...couldn't find source for " + method);
+                            }
+                            ExecutableType parameterizedType =
+                                    (ExecutableType) types.asMemberOf(thisType, method);
+                            String text = EditHelper.printMethod(method, parameterizedType, source);
+                            text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
+                            insertText.add(text);
+                        }
                     }
-                    ExecutableType parameterizedType = (ExecutableType) types.asMemberOf(thisType, method);
-                    String text = EditHelper.printMethod(method, parameterizedType, source);
-                    text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
-                    insertText.add(text);
-                }
-            }
-            Position insert = EditHelper.insertAtEndOfClass(task.task, task.root(), thisTree);
-            TextEdit[] edits = {new TextEdit(new Range (insert, insert), insertText + "\n")};
-            return Collections.singletonMap (file, edits);
-        });
+                    Position insert =
+                            EditHelper.insertAtEndOfClass(task.task, task.root(), thisTree);
+                    TextEdit[] edits = {new TextEdit(new Range(insert, insert), insertText + "\n")};
+                    return Collections.singletonMap(file, edits);
+                });
     }
-    
-    private MethodTree findSource(CompilerProvider compiler, CompileTask task, ExecutableElement method) {
+
+    private MethodTree findSource(
+            CompilerProvider compiler, CompileTask task, ExecutableElement method) {
         TypeElement superClass = (TypeElement) method.getEnclosingElement();
         String superClassName = superClass.getQualifiedName().toString();
         String methodName = method.getSimpleName().toString();
         String[] erasedParameterTypes = FindHelper.erasedParameterTypes(task, method);
         Optional<JavaFileObject> sourceFile = compiler.findAnywhere(superClassName);
-        if (!sourceFile.isPresent ()) {
+        if (!sourceFile.isPresent()) {
             return null;
         }
         ParseTask parse = compiler.parse(sourceFile.get());
         return FindHelper.findMethod(parse, superClassName, methodName, erasedParameterTypes);
     }
-    
-    private static final Logger LOG = Logger.instance ("main");
+
+    private static final Logger LOG = Logger.instance("main");
 }

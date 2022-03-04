@@ -17,30 +17,22 @@
 
 package com.itsaky.androidide.project;
 
-import android.os.Build;
 import android.os.FileObserver;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-
-import java.io.File;
-import java.util.List;
-
 /**
- * A file observer that observer files in project directories.
- * Sub classes need to provide the file extensions that they want to get
- * notified about.
+ * A file observer that observer files in project directories. Sub classes need to provide the file
+ * extensions that they want to get notified about.
  *
  * @author Akash Yadav
  */
 public abstract class ProjectFileObserver extends FileObserver {
     // Cannot use constructors that accept java.io.File
     // They were added in API 29
-    public ProjectFileObserver (String path) {
-        this (path, ALL_EVENTS);
+    public ProjectFileObserver(String path) {
+        this(path, ALL_EVENTS);
     }
-    
-    public ProjectFileObserver (String path, int mask) {
-        super (path, mask);
+
+    public ProjectFileObserver(String path, int mask) {
+        super(path, mask);
     }
 }

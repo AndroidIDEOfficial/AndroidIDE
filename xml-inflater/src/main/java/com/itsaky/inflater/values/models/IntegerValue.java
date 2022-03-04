@@ -20,21 +20,23 @@ import androidx.annotation.NonNull;
 
 /**
  * Represents an integer value.
+ *
  * @author Akash Yadav
  */
 public class IntegerValue extends AbstractResourceValue {
-    
-    public IntegerValue (@NonNull String name, @NonNull String value) {
-        super (name, value);
+
+    public IntegerValue(@NonNull String name, @NonNull String value) {
+        super(name, value);
     }
-    
+
     /**
      * Get the value as integer. Or -1 if the value is not an integer.
+     *
      * @return The integer value.
      */
-    public int asInteger () {
+    public int asInteger() {
         try {
-            return Integer.parseInt (getValue ());
+            return Integer.parseInt(getValue());
         } catch (Throwable th) {
             return -1;
         }

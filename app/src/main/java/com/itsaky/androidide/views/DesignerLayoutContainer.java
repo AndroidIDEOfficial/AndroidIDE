@@ -31,58 +31,62 @@ import androidx.annotation.Nullable;
 import com.itsaky.androidide.R;
 
 /**
- * A container used in UI Designer. This view holds the views inflated from an XML layout.
- * When there are no children in this layout, it shows a message.
+ * A container used in UI Designer. This view holds the views inflated from an XML layout. When
+ * there are no children in this layout, it shows a message.
  *
  * @author Akash Yadav
  */
 public class DesignerLayoutContainer extends LinearLayout {
-    
+
     private final TextView mMessage;
-    
-    public DesignerLayoutContainer (Context context) {
-        this (context, null);
+
+    public DesignerLayoutContainer(Context context) {
+        this(context, null);
     }
-    
-    public DesignerLayoutContainer (Context context, @Nullable AttributeSet attrs) {
-        this (context, attrs, 0);
+
+    public DesignerLayoutContainer(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
     }
-    
-    public DesignerLayoutContainer (Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        this (context, attrs, defStyleAttr, 0);
+
+    public DesignerLayoutContainer(
+            Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        this(context, attrs, defStyleAttr, 0);
     }
-    
-    public DesignerLayoutContainer (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super (context, attrs, defStyleAttr, defStyleRes);
-        
-        this.mMessage = new TextView (context);
-        this.mMessage.setText (context.getString(R.string.msg_empty_ui_layout));
-        this.mMessage.setLayoutParams (new LayoutParams (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        this.mMessage.setGravity (Gravity.CENTER);
-        this.mMessage.setTextSize (TypedValue.COMPLEX_UNIT_SP, 16);
+
+    public DesignerLayoutContainer(
+            Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
+
+        this.mMessage = new TextView(context);
+        this.mMessage.setText(context.getString(R.string.msg_empty_ui_layout));
+        this.mMessage.setLayoutParams(
+                new LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        this.mMessage.setGravity(Gravity.CENTER);
+        this.mMessage.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
     }
-    
+
     @Override
-    public void onViewAdded (View child) {
+    public void onViewAdded(View child) {
         if (child != this.mMessage) {
-            removeView (this.mMessage);
+            removeView(this.mMessage);
         } else {
-            super.onViewAdded ( child);
+            super.onViewAdded(child);
         }
     }
-    
+
     @Override
-    public void onViewRemoved (View child) {
-        if (child != this.mMessage && getChildCount () <= 0) {
-            addView (mMessage);
+    public void onViewRemoved(View child) {
+        if (child != this.mMessage && getChildCount() <= 0) {
+            addView(mMessage);
         } else {
-            super.onViewRemoved (child);
+            super.onViewRemoved(child);
         }
     }
-    
+
     // This is needed by XMLLayoutInflater
     @Override
-    protected LayoutParams generateDefaultLayoutParams () {
-        return super.generateDefaultLayoutParams ();
+    protected LayoutParams generateDefaultLayoutParams() {
+        return super.generateDefaultLayoutParams();
     }
 }

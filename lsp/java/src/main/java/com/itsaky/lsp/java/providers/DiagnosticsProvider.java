@@ -60,43 +60,44 @@ import javax.tools.JavaFileObject;
  * @author Akash Yadav
  */
 public class DiagnosticsProvider {
-    
+
     /**
-     * Finds diagnostics from the given task (only the diagnostics for the given file). The task should be
-     * a valid task.
+     * Finds diagnostics from the given task (only the diagnostics for the given file). The task
+     * should be a valid task.
      *
-     * As the file might be too long, the diagnostics list must be sorted so we can quickly
+     * <p>As the file might be too long, the diagnostics list must be sorted so we can quickly
      * binary search the list when needed.
      *
      * @param task The compilation task to get diagnostics from.
      * @param file The file of which the diagnostics must be extracted.
      * @return The list of diagnostics retrieved from the task. Never null.
      */
-    public static List<DiagnosticItem> findDiagnostics (final CompileTask task, final Path file) {
-        final List<DiagnosticItem> result = new ArrayList<> ();
+    public static List<DiagnosticItem> findDiagnostics(final CompileTask task, final Path file) {
+        final List<DiagnosticItem> result = new ArrayList<>();
         CompilationUnitTree root = null;
         for (CompilationUnitTree tree : task.roots) {
-            final Path path = Paths.get (tree.getSourceFile ().toUri ());
-            if (path.equals (file)) {
+            final Path path = Paths.get(tree.getSourceFile().toUri());
+            if (path.equals(file)) {
                 root = tree;
                 break;
             }
         }
-        
+
         if (root == null) {
             // CompilationUnitTree for the file was not found
             // Can't do anything...
             return result;
         }
-        
-        addCompilerErrors (task, root, result);
-        addDiagnosticsByVisiting (task, root, result);
-        
+
+        addCompilerErrors(task, root, result);
+        addDiagnosticsByVisiting(task, root, result);
+
         return result;
     }
-    
-    private static void addDiagnosticsByVisiting (CompileTask task, CompilationUnitTree root, List<DiagnosticItem> result) {
-        Map<TreePath, String> notThrown = new HashMap<> ();
+
+    private static void addDiagnosticsByVisiting(
+            CompileTask task, CompilationUnitTree root, List<DiagnosticItem> result) {
+        Map<TreePath, String> notThrown = new HashMap<>();
         DiagnosticVisitor warnUnused = new DiagnosticVisitor(task.task);
         warnUnused.scan(root, notThrown);
         for (Element unusedEl : warnUnused.notUsed()) {
@@ -106,47 +107,49 @@ public class DiagnosticsProvider {
             result.add(warnNotThrown(task, notThrown.get(location), location));
         }
     }
-    
-    private static void addCompilerErrors (final CompileTask task, final CompilationUnitTree root, final List<DiagnosticItem> result) {
+
+    private static void addCompilerErrors(
+            final CompileTask task,
+            final CompilationUnitTree root,
+            final List<DiagnosticItem> result) {
         for (Diagnostic<? extends JavaFileObject> diagnostic : task.diagnostics) {
-            if (diagnostic.getSource () == null
-            || !diagnostic.getSource ().toUri ().equals (root.getSourceFile ().toUri ())) {
+            if (diagnostic.getSource() == null
+                    || !diagnostic.getSource().toUri().equals(root.getSourceFile().toUri())) {
                 continue;
             }
-            
-            if (diagnostic.getStartPosition () == -1
-            || diagnostic.getEndPosition () == - 1) {
+
+            if (diagnostic.getStartPosition() == -1 || diagnostic.getEndPosition() == -1) {
                 continue;
             }
-            
-            result.add (asDiagnosticItem (diagnostic, root.getLineMap ()));
+
+            result.add(asDiagnosticItem(diagnostic, root.getLineMap()));
         }
     }
-    
+
     @NonNull
-    private static DiagnosticItem warnNotThrown (CompileTask task, String name, TreePath path) {
+    private static DiagnosticItem warnNotThrown(CompileTask task, String name, TreePath path) {
         Trees trees = Trees.instance(task.task);
         SourcePositions pos = trees.getSourcePositions();
         CompilationUnitTree root = path.getCompilationUnit();
-        LineMap lines = root.getLineMap ();
+        LineMap lines = root.getLineMap();
         long start = pos.getStartPosition(root, path.getLeaf());
         long end = pos.getEndPosition(root, path.getLeaf());
         final DiagnosticItem d = new DiagnosticItem();
-        d.setMessage(BaseApplication.getBaseInstance ().getString(R.string.msg_not_thrown, name));
-        d.setRange(new Range (getPosition (start, lines), getPosition (end, lines)));
+        d.setMessage(BaseApplication.getBaseInstance().getString(R.string.msg_not_thrown, name));
+        d.setRange(new Range(getPosition(start, lines), getPosition(end, lines)));
         d.setCode("unused_throws");
         d.setSeverity(DiagnosticSeverity.INFO);
         return d;
     }
-    
+
     @NonNull
-    private static DiagnosticItem warnUnused (CompileTask task, Element unusedEl) {
+    private static DiagnosticItem warnUnused(CompileTask task, Element unusedEl) {
         Trees trees = Trees.instance(task.task);
         TreePath path = trees.getPath(unusedEl);
         if (path == null) {
             throw new RuntimeException(unusedEl + " has no path");
         }
-        
+
         CompilationUnitTree root = path.getCompilationUnit();
         Tree leaf = path.getLeaf();
         SourcePositions pos = trees.getSourcePositions();
@@ -171,10 +174,10 @@ public class DiagnosticsProvider {
             start += matcher.start();
             end = start + name.length();
         }
-        
-        String message = BaseApplication.getBaseInstance ().getString(R.string.msg_not_used, name);
+
+        String message = BaseApplication.getBaseInstance().getString(R.string.msg_not_used, name);
         String code;
-        DiagnosticSeverity severity ;
+        DiagnosticSeverity severity;
         if (leaf instanceof VariableTree) {
             Tree parent = path.getParentPath().getLeaf();
             if (parent instanceof MethodTree) {
@@ -200,47 +203,58 @@ public class DiagnosticsProvider {
             code = "unused_other";
             severity = DiagnosticSeverity.INFO;
         }
-        
-        return asDiagnosticItem (severity, code, message, start, end, root);
+
+        return asDiagnosticItem(severity, code, message, start, end, root);
     }
-    
+
     @NonNull
-    private static DiagnosticItem asDiagnosticItem (DiagnosticSeverity severity, String code, String message, long start, long end, @NonNull CompilationUnitTree root) {
-        final DiagnosticItem item = new DiagnosticItem ();
-        item.setMessage (message);
-        item.setCode (code);
-        item.setSeverity (severity);
-        item.setRange (new Range (getPosition (start, root.getLineMap ()), getPosition (end, root.getLineMap ())));
+    private static DiagnosticItem asDiagnosticItem(
+            DiagnosticSeverity severity,
+            String code,
+            String message,
+            long start,
+            long end,
+            @NonNull CompilationUnitTree root) {
+        final DiagnosticItem item = new DiagnosticItem();
+        item.setMessage(message);
+        item.setCode(code);
+        item.setSeverity(severity);
+        item.setRange(
+                new Range(
+                        getPosition(start, root.getLineMap()),
+                        getPosition(end, root.getLineMap())));
         return item;
     }
-    
+
     @NonNull
-    private static DiagnosticItem asDiagnosticItem (final Diagnostic<? extends JavaFileObject> diagnostic, final LineMap lines) {
-        final DiagnosticItem result = new DiagnosticItem ();
-        result.setRange (getDiagnosticRange (diagnostic, lines));
-        result.setSeverity (severityFor (diagnostic.getKind ()));
-        result.setCode (diagnostic.getCode ());
-        result.setMessage (diagnostic.getMessage (Locale.getDefault ()));
+    private static DiagnosticItem asDiagnosticItem(
+            final Diagnostic<? extends JavaFileObject> diagnostic, final LineMap lines) {
+        final DiagnosticItem result = new DiagnosticItem();
+        result.setRange(getDiagnosticRange(diagnostic, lines));
+        result.setSeverity(severityFor(diagnostic.getKind()));
+        result.setCode(diagnostic.getCode());
+        result.setMessage(diagnostic.getMessage(Locale.getDefault()));
         return result;
     }
-    
+
     @NonNull
-    private static Range getDiagnosticRange (@NonNull Diagnostic<? extends JavaFileObject> diagnostic, LineMap lines) {
-        final Position start = getPosition (diagnostic.getStartPosition (), lines);
-        final Position end = getPosition (diagnostic.getEndPosition (), lines);
-        return new Range (start, end);
+    private static Range getDiagnosticRange(
+            @NonNull Diagnostic<? extends JavaFileObject> diagnostic, LineMap lines) {
+        final Position start = getPosition(diagnostic.getStartPosition(), lines);
+        final Position end = getPosition(diagnostic.getEndPosition(), lines);
+        return new Range(start, end);
     }
-    
+
     @NonNull
-    private static Position getPosition (long position, @NonNull LineMap lines) {
+    private static Position getPosition(long position, @NonNull LineMap lines) {
         // decrement the numbers
         // to convert 1-based indexes to 0-based
-        final int line = (int) (lines.getLineNumber (position) - 1);
-        final int column = (int) (lines.getColumnNumber (position) - 1);
-        return new Position (line, column);
+        final int line = (int) (lines.getLineNumber(position) - 1);
+        final int column = (int) (lines.getColumnNumber(position) - 1);
+        return new Position(line, column);
     }
-    
-    private static DiagnosticSeverity severityFor (javax.tools.Diagnostic.Kind kind) {
+
+    private static DiagnosticSeverity severityFor(javax.tools.Diagnostic.Kind kind) {
         switch (kind) {
             case ERROR:
                 return DiagnosticSeverity.ERROR;

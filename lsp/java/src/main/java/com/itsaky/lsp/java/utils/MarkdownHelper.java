@@ -21,6 +21,13 @@ import com.itsaky.lsp.models.MarkupContent;
 import com.itsaky.lsp.models.MarkupKind;
 import com.sun.source.doctree.DocCommentTree;
 import com.sun.source.doctree.DocTree;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -41,19 +48,14 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class MarkdownHelper {
 
     public static MarkupContent asMarkupContent(DocCommentTree comment) {
         String markdown = asMarkdown(comment);
         MarkupContent content = new MarkupContent();
-        content.setKind (MarkupKind.MARKDOWN);
-        content.setValue (markdown);
+        content.setKind(MarkupKind.MARKDOWN);
+        content.setValue(markdown);
         return content;
     }
 
@@ -81,7 +83,8 @@ public class MarkdownHelper {
         }
     }
 
-    private static void replaceNodes(Document doc, String tagName, Function<String, String> replace) {
+    private static void replaceNodes(
+            Document doc, String tagName, Function<String, String> replace) {
         NodeList nodes = doc.getElementsByTagName(tagName);
         while (nodes.getLength() > 0) {
             Node node = nodes.item(0);
@@ -101,7 +104,8 @@ public class MarkdownHelper {
             StringWriter writer = new StringWriter();
             transformer.transform(new DOMSource(doc), new StreamResult(writer));
             String wrapped = writer.getBuffer().toString();
-            return wrapped.substring("<wrapper>".length(), wrapped.length() - "</wrapper>".length());
+            return wrapped.substring(
+                    "<wrapper>".length(), wrapped.length() - "</wrapper>".length());
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }

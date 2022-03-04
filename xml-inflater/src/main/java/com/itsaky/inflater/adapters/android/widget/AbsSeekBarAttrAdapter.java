@@ -27,17 +27,17 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
 /**
- * Attribute adapter for handling attributes related to
- * AbsSeekBar.
+ * Attribute adapter for handling attributes related to AbsSeekBar.
  *
  * @author Akash Yadav
  */
 public abstract class AbsSeekBarAttrAdapter extends ProgressBarAttrAdapter {
-    
-    public AbsSeekBarAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
+
+    public AbsSeekBarAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
-    
+
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof AbsSeekBar;
@@ -57,14 +57,14 @@ public abstract class AbsSeekBarAttrAdapter extends ProgressBarAttrAdapter {
         boolean handled = true;
 
         switch (name) {
-            case "thumbTint" :
-                seek.setThumbTintList (parseColorStateList (value, seek.getContext ()));
+            case "thumbTint":
+                seek.setThumbTintList(parseColorStateList(value, seek.getContext()));
                 break;
-            case "thumbTintMode" :
+            case "thumbTintMode":
                 seek.setThumbTintMode(parsePorterDuffMode(value));
                 break;
-            case "tickMarkTint" :
-                seek.setTickMarkTintList (parseColorStateList (value, seek.getContext ()));
+            case "tickMarkTint":
+                seek.setTickMarkTintList(parseColorStateList(value, seek.getContext()));
                 break;
             case "tickMarkTintMode":
                 seek.setTickMarkTintMode(parsePorterDuffMode(value));

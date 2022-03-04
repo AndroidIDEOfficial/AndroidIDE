@@ -32,60 +32,57 @@ import java.util.List;
  * @author Akash Yadav
  */
 public class DimensionSuggestionProvider extends BaseSuggestionProvider {
-    
-    /**
-     * The dimension units that will be suggested.
-     */
-    private final List<String> dimensions = new ArrayList<> ();
-    
-    public DimensionSuggestionProvider (File layout) {
-        super (layout);
-        
-        this.dimensions.add ("dp");
-        this.dimensions.add ("sp");
-        this.dimensions.add ("px");
-        this.dimensions.add ("pt");
-        this.dimensions.add ("in");
-        this.dimensions.add ("mm");
+
+    /** The dimension units that will be suggested. */
+    private final List<String> dimensions = new ArrayList<>();
+
+    public DimensionSuggestionProvider(File layout) {
+        super(layout);
+
+        this.dimensions.add("dp");
+        this.dimensions.add("sp");
+        this.dimensions.add("px");
+        this.dimensions.add("pt");
+        this.dimensions.add("in");
+        this.dimensions.add("mm");
     }
-    
+
     @Override
-    public boolean checkFormat (int format) {
+    public boolean checkFormat(int format) {
         return (format & Attr.DIMENSION) != 0;
     }
-    
+
     @Override
-    public @NonNull
-    List<String> suggest (IAttribute attribute, @NonNull String prefix) {
-        final var list = new ArrayList<String> ();
-        if (prefix.length () > 0 && Character.isDigit (prefix.charAt (0))) {
+    public @NonNull List<String> suggest(IAttribute attribute, @NonNull String prefix) {
+        final var list = new ArrayList<String>();
+        if (prefix.length() > 0 && Character.isDigit(prefix.charAt(0))) {
             // Fixed dimension values
             // e.g. 10dp
-            
-            var val = extractDimensionVal (prefix);
+
+            var val = extractDimensionVal(prefix);
             for (var unit : this.dimensions) {
                 final var dimension = val + unit;
-                if (StringUtils.matchesPartialName (dimension, prefix, true)) {
-                    list.add (dimension);
+                if (StringUtils.matchesPartialName(dimension, prefix, true)) {
+                    list.add(dimension);
                 }
             }
         }
-        
+
         return list;
     }
-    
-    private int extractDimensionVal (@NonNull String prefix) {
-        StringBuilder s = new StringBuilder ();
+
+    private int extractDimensionVal(@NonNull String prefix) {
+        StringBuilder s = new StringBuilder();
         var i = 0;
-        while (i < prefix.length ()) {
-            if (Character.isDigit (prefix.charAt (i))) {
-                s.append (prefix.charAt (i));
+        while (i < prefix.length()) {
+            if (Character.isDigit(prefix.charAt(i))) {
+                s.append(prefix.charAt(i));
             } else {
                 break;
             }
             i++;
         }
-        
-        return Integer.parseInt (s.toString ());
+
+        return Integer.parseInt(s.toString());
     }
 }

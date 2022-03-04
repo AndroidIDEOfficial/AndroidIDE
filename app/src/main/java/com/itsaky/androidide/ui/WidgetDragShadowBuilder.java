@@ -24,7 +24,7 @@ public class WidgetDragShadowBuilder extends View.DragShadowBuilder {
 
     private final double TOUCH_Y_OFFSET = 0.3;
 
-    public WidgetDragShadowBuilder (View view) {
+    public WidgetDragShadowBuilder(View view) {
         super(view);
     }
 

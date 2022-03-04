@@ -28,7 +28,7 @@ import com.itsaky.lsp.models.DiagnosticItem;
  * @author Akash Yadav
  */
 public class DiagnosticWindow extends SimpleTextWindow {
-    
+
     /**
      * Create a popup window for editor
      *
@@ -37,26 +37,27 @@ public class DiagnosticWindow extends SimpleTextWindow {
      * @see #FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED
      * @see #FEATURE_HIDE_WHEN_FAST_SCROLL
      */
-    public DiagnosticWindow (@NonNull IDEEditor editor) {
-        super (editor);
+    public DiagnosticWindow(@NonNull IDEEditor editor) {
+        super(editor);
     }
-    
+
     /**
      * Show the given diagnostic item.
+     *
      * @param diagnostic The diagnostic item to show.
      */
-    public void showDiagnostic (@Nullable DiagnosticItem diagnostic) {
+    public void showDiagnostic(@Nullable DiagnosticItem diagnostic) {
         if (diagnostic == null) {
-            if (isShowing ()) {
-                dismiss ();
+            if (isShowing()) {
+                dismiss();
             }
-            
+
             return;
         }
-        
-        final var message = diagnostic.getMessage ();
-        this.text.setText (message);
-        
-        displayWindow ();
+
+        final var message = diagnostic.getMessage();
+        this.text.setText(message);
+
+        displayWindow();
     }
 }

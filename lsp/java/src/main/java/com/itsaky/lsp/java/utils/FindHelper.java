@@ -88,7 +88,7 @@ public class FindHelper {
     }
 
     public static ClassTree findType(ParseTask task, String className) {
-        return new FindTypeDeclarationNamed ().scan(task.root, className);
+        return new FindTypeDeclarationNamed().scan(task.root, className);
     }
 
     public static ExecutableElement findMethod(
@@ -174,13 +174,13 @@ public class FindHelper {
         }
         int startLine = (int) lines.getLineNumber(start);
         int startColumn = (int) lines.getColumnNumber(start);
-        Position startPos = new Position (startLine - 1, startColumn - 1);
+        Position startPos = new Position(startLine - 1, startColumn - 1);
         int endLine = (int) lines.getLineNumber(end);
         int endColumn = (int) lines.getColumnNumber(end);
         Position endPos = new Position(endLine - 1, endColumn - 1);
-        Range range = new Range (startPos, endPos);
+        Range range = new Range(startPos, endPos);
         URI uri = path.getCompilationUnit().getSourceFile().toUri();
-        return new Location(Paths.get (uri), range);
+        return new Location(Paths.get(uri), range);
     }
 
     public static int findNameIn(CompilationUnitTree root, CharSequence name, int start, int end) {

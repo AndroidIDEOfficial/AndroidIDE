@@ -1,6 +1,5 @@
 package com.itsaky.terminal.view.textselection;
 
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Rect;
@@ -34,7 +33,8 @@ public class TextSelectionCursorController implements CursorController {
 
     public TextSelectionCursorController(TerminalView terminalView) {
         this.terminalView = terminalView;
-        mStartHandle = new TextSelectionHandleView(terminalView, this, TextSelectionHandleView.LEFT);
+        mStartHandle =
+                new TextSelectionHandleView(terminalView, this, TextSelectionHandleView.LEFT);
         mEndHandle = new TextSelectionHandleView(terminalView, this, TextSelectionHandleView.RIGHT);
 
         mHandleHeight = Math.max(mStartHandle.getHandleHeight(), mEndHandle.getHandleHeight());
@@ -93,7 +93,11 @@ public class TextSelectionCursorController implements CursorController {
         final boolean eventFromMouse = event.isFromSource(InputDevice.SOURCE_MOUSE);
         // Offset for finger:
         final int SELECT_TEXT_OFFSET_Y = eventFromMouse ? 0 : -40;
-        int cy = (int) ((event.getY() + SELECT_TEXT_OFFSET_Y) / terminalView.mRenderer.getFontLineSpacing()) + terminalView.getTopRow();
+        int cy =
+                (int)
+                                ((event.getY() + SELECT_TEXT_OFFSET_Y)
+                                        / terminalView.mRenderer.getFontLineSpacing())
+                        + terminalView.getTopRow();
 
         mSelX1 = mSelX2 = cx;
         mSelY1 = mSelY2 = cy;
@@ -101,102 +105,128 @@ public class TextSelectionCursorController implements CursorController {
         TerminalBuffer screen = terminalView.mEmulator.getScreen();
         if (!" ".equals(screen.getSelectedText(mSelX1, mSelY1, mSelX1, mSelY1))) {
             // Selecting something other than whitespace. Expand to word.
-            while (mSelX1 > 0 && !"".equals(screen.getSelectedText(mSelX1 - 1, mSelY1, mSelX1 - 1, mSelY1))) {
+            while (mSelX1 > 0
+                    && !"".equals(screen.getSelectedText(mSelX1 - 1, mSelY1, mSelX1 - 1, mSelY1))) {
                 mSelX1--;
             }
-            while (mSelX2 < terminalView.mEmulator.mColumns - 1 && !"".equals(screen.getSelectedText(mSelX2 + 1, mSelY1, mSelX2 + 1, mSelY1))) {
+            while (mSelX2 < terminalView.mEmulator.mColumns - 1
+                    && !"".equals(screen.getSelectedText(mSelX2 + 1, mSelY1, mSelX2 + 1, mSelY1))) {
                 mSelX2++;
             }
         }
     }
-    
+
     public void setActionModeCallBacks() {
-        final ActionMode.Callback callback = new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                int show = MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT;
+        final ActionMode.Callback callback =
+                new ActionMode.Callback() {
+                    @Override
+                    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                        int show =
+                                MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT;
 
-                ClipboardManager clipboard = (ClipboardManager) terminalView.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                menu.add(Menu.NONE, ACTION_COPY, Menu.NONE, R.string.copy_text).setShowAsAction(show);
-                menu.add(Menu.NONE, ACTION_PASTE, Menu.NONE, R.string.paste_text).setEnabled(clipboard.hasPrimaryClip()).setShowAsAction(show);
-                return true;
-            }
+                        ClipboardManager clipboard =
+                                (ClipboardManager)
+                                        terminalView
+                                                .getContext()
+                                                .getSystemService(Context.CLIPBOARD_SERVICE);
+                        menu.add(Menu.NONE, ACTION_COPY, Menu.NONE, R.string.copy_text)
+                                .setShowAsAction(show);
+                        menu.add(Menu.NONE, ACTION_PASTE, Menu.NONE, R.string.paste_text)
+                                .setEnabled(clipboard.hasPrimaryClip())
+                                .setShowAsAction(show);
+                        return true;
+                    }
 
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
+                    @Override
+                    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                        return false;
+                    }
 
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                if (!isActive()) {
-                    // Fix issue where the dialog is pressed while being dismissed.
-                    return true;
-                }
+                    @Override
+                    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                        if (!isActive()) {
+                            // Fix issue where the dialog is pressed while being dismissed.
+                            return true;
+                        }
 
-                switch (item.getItemId()) {
-                    case ACTION_COPY:
-                        String selectedText = terminalView.mEmulator.getSelectedText(mSelX1, mSelY1, mSelX2, mSelY2).trim();
-                        terminalView.mTermSession.onCopyTextToClipboard(selectedText);
-                        terminalView.stopTextSelectionMode();
-                        break;
-                    case ACTION_PASTE:
-                        terminalView.stopTextSelectionMode();
-                        terminalView.mTermSession.onPasteTextFromClipboard();
-                        break;
-                    case ACTION_MORE:
-                        terminalView.stopTextSelectionMode(); //we stop text selection first, otherwise handles will show above popup
-                        terminalView.showContextMenu();
-                        break;
-                }
+                        switch (item.getItemId()) {
+                            case ACTION_COPY:
+                                String selectedText =
+                                        terminalView
+                                                .mEmulator
+                                                .getSelectedText(mSelX1, mSelY1, mSelX2, mSelY2)
+                                                .trim();
+                                terminalView.mTermSession.onCopyTextToClipboard(selectedText);
+                                terminalView.stopTextSelectionMode();
+                                break;
+                            case ACTION_PASTE:
+                                terminalView.stopTextSelectionMode();
+                                terminalView.mTermSession.onPasteTextFromClipboard();
+                                break;
+                            case ACTION_MORE:
+                                terminalView
+                                        .stopTextSelectionMode(); // we stop text selection first,
+                                                                  // otherwise handles
+                                // will show above popup
+                                terminalView.showContextMenu();
+                                break;
+                        }
 
-                return true;
-            }
+                        return true;
+                    }
 
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-            }
+                    @Override
+                    public void onDestroyActionMode(ActionMode mode) {}
+                };
 
-        };
+        mActionMode =
+                terminalView.startActionMode(
+                        new ActionMode.Callback2() {
+                            @Override
+                            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                                return callback.onCreateActionMode(mode, menu);
+                            }
 
-        mActionMode = terminalView.startActionMode(new ActionMode.Callback2() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                return callback.onCreateActionMode(mode, menu);
-            }
+                            @Override
+                            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                                return false;
+                            }
 
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
+                            @Override
+                            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                                return callback.onActionItemClicked(mode, item);
+                            }
 
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                return callback.onActionItemClicked(mode, item);
-            }
+                            @Override
+                            public void onDestroyActionMode(ActionMode mode) {
+                                // Ignore.
+                            }
 
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                // Ignore.
-            }
+                            @Override
+                            public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
+                                int x1 = Math.round(mSelX1 * terminalView.mRenderer.getFontWidth());
+                                int x2 = Math.round(mSelX2 * terminalView.mRenderer.getFontWidth());
+                                int y1 =
+                                        Math.round(
+                                                (mSelY1 - 1 - terminalView.getTopRow())
+                                                        * terminalView.mRenderer
+                                                                .getFontLineSpacing());
+                                int y2 =
+                                        Math.round(
+                                                (mSelY2 + 1 - terminalView.getTopRow())
+                                                        * terminalView.mRenderer
+                                                                .getFontLineSpacing());
 
-            @Override
-            public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
-                int x1 = Math.round(mSelX1 * terminalView.mRenderer.getFontWidth());
-                int x2 = Math.round(mSelX2 * terminalView.mRenderer.getFontWidth());
-                int y1 = Math.round((mSelY1 - 1 - terminalView.getTopRow()) * terminalView.mRenderer.getFontLineSpacing());
-                int y2 = Math.round((mSelY2 + 1 - terminalView.getTopRow()) * terminalView.mRenderer.getFontLineSpacing());
+                                if (x1 > x2) {
+                                    int tmp = x1;
+                                    x1 = x2;
+                                    x2 = tmp;
+                                }
 
-
-                if (x1 > x2) {
-                    int tmp = x1;
-                    x1 = x2;
-                    x2 = tmp;
-                }
-
-                outRect.set(x1, y1 + mHandleHeight, x2, y2 + mHandleHeight);
-            }
-        }, ActionMode.TYPE_FLOATING);
+                                outRect.set(x1, y1 + mHandleHeight, x2, y2 + mHandleHeight);
+                            }
+                        },
+                        ActionMode.TYPE_FLOATING);
     }
 
     @Override
@@ -215,7 +245,6 @@ public class TextSelectionCursorController implements CursorController {
 
             } else if (mSelY1 > terminalView.mEmulator.mRows - 1) {
                 mSelY1 = terminalView.mEmulator.mRows - 1;
-
             }
 
             if (mSelY1 > mSelY2) {
@@ -336,8 +365,7 @@ public class TextSelectionCursorController implements CursorController {
     }
 
     @Override
-    public void onDetached() {
-    }
+    public void onDetached() {}
 
     @Override
     public boolean isActive() {
@@ -372,5 +400,4 @@ public class TextSelectionCursorController implements CursorController {
     public boolean isSelectionEndDragged() {
         return mEndHandle.isDragging();
     }
-
 }

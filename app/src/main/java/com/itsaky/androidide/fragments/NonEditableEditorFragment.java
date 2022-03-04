@@ -34,34 +34,37 @@ import com.itsaky.androidide.views.editor.IDEEditor;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public abstract class NonEditableEditorFragment extends Fragment {
-    
+
     private FragmentNonEditableEditorBinding binding;
-    
+
     @Nullable
     @Override
-    public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.binding = FragmentNonEditableEditorBinding.inflate (inflater, container, false);
-        return binding.getRoot ();
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        this.binding = FragmentNonEditableEditorBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
-    
+
     @Override
-    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated (view, savedInstanceState);
-        
-        final var editor = binding.getRoot ();
-        editor.setEditable (false);
-        editor.setDividerWidth (0);
-        editor.setEditorLanguage (new EmptyLanguage ());
-        editor.setWordwrap (false);
-        editor.setUndoEnabled (false);
-        editor.setTypefaceLineNumber (TypefaceUtils.jetbrainsMono ());
-        editor.setTypefaceText (TypefaceUtils.jetbrainsMono ());
-        editor.setTextSize (12);
-        editor.setColorScheme (new SchemeAndroidIDE ());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final var editor = binding.getRoot();
+        editor.setEditable(false);
+        editor.setDividerWidth(0);
+        editor.setEditorLanguage(new EmptyLanguage());
+        editor.setWordwrap(false);
+        editor.setUndoEnabled(false);
+        editor.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
+        editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
+        editor.setTextSize(12);
+        editor.setColorScheme(new SchemeAndroidIDE());
     }
-    
+
     @Nullable
-    public IDEEditor getEditor () {
+    public IDEEditor getEditor() {
         if (binding == null) {
             return null;
         }

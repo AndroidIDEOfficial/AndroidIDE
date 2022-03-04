@@ -24,55 +24,62 @@ import java.util.Objects;
 
 /**
  * Abstract class for resource value entries.
+ *
  * @author Akash Yadav
  */
 abstract class AbstractResourceValue implements IResourceValue {
-    
+
     private final String name;
     private final String value;
-    
-    public AbstractResourceValue (@NonNull String name, @NonNull String value) {
+
+    public AbstractResourceValue(@NonNull String name, @NonNull String value) {
         this.name = name;
         this.value = value;
     }
-    
+
     @NonNull
     @Override
-    public String getName () {
+    public String getName() {
         return name;
     }
-    
+
     @NonNull
     @Override
-    public String getValue () {
+    public String getValue() {
         return value;
     }
-    
+
     @NonNull
     @Override
-    public String toString () {
-        return getClass ().getSimpleName () + "{" +
-                "name='" + name + '\'' +
-                ", value='" + value + '\'' +
-                '}';
+    public String toString() {
+        return getClass().getSimpleName()
+                + "{"
+                + "name='"
+                + name
+                + '\''
+                + ", value='"
+                + value
+                + '\''
+                + '}';
     }
-    
+
     @Override
-    public boolean equals (Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        
+
         if (!(o instanceof AbstractResourceValue)) {
             return false;
         }
-        
+
         AbstractResourceValue that = (AbstractResourceValue) o;
-        return Objects.equals (getName (), that.getName ()) && Objects.equals (getValue (), that.getValue ());
+        return Objects.equals(getName(), that.getName())
+                && Objects.equals(getValue(), that.getValue());
     }
-    
+
     @Override
-    public int hashCode () {
-        return Objects.hash (getName (), getValue ());
+    public int hashCode() {
+        return Objects.hash(getName(), getValue());
     }
 }

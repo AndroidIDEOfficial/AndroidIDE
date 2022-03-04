@@ -29,32 +29,32 @@ import java.util.List;
  * @author Akash Yadav
  */
 public class SimpleIconTextAdapter extends IconTextAdapter<IconTextListItem> {
-    
+
     private final List<? extends IconTextListItem> items;
-    
-    public SimpleIconTextAdapter (List<? extends IconTextListItem> items) {
+
+    public SimpleIconTextAdapter(List<? extends IconTextListItem> items) {
         this.items = items;
     }
-    
+
     @NonNull
     @Override
-    public IconTextListItem getItemAt (int index) {
-        return items.get (index);
+    public IconTextListItem getItemAt(int index) {
+        return items.get(index);
     }
-    
+
     @Override
-    public int getIconResource (int index) {
-        return getItemAt (index).getIconResource ();
+    public int getIconResource(int index) {
+        return getItemAt(index).getIconResource();
     }
-    
+
     @NonNull
     @Override
-    public String getItemText (int index) {
-        return getItemAt (index).getText ();
+    public String getItemText(int index) {
+        return getItemAt(index).getText();
     }
-    
+
     @Override
-    public int getItemCount () {
-        return items.size ();
+    public int getItemCount() {
+        return items.size();
     }
 }

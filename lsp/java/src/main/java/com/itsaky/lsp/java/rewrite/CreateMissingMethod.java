@@ -20,8 +20,8 @@ package com.itsaky.lsp.java.rewrite;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
-import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
+import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.visitors.FindMethodCallAt;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
@@ -38,111 +38,139 @@ import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.Name;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.Name;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+
 public class CreateMissingMethod implements Rewrite {
     final Path file;
     final int position;
-    
+
     int argCount = -1;
-    
+
     public CreateMissingMethod(Path file, int position) {
         this.file = file;
         this.position = position;
     }
-    
+
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask (task -> {
-            final Trees trees = Trees.instance(task.task);
-            final FindMethodCallAt methodFinder = new FindMethodCallAt (task.task);
-            final MethodInvocationTree call = methodFinder.scan(task.root(), position);
-            if (call == null) {
-                return CANCELLED;
-            }
-        
-            final TreePath path = trees.getPath(task.root(), call);
-            final String returnType = methodFinder.getReturnType();
-            Path sourceFile = file;
-            MethodTree currentMethod = surroundingMethod(path);
-            String insertText = "\n";
-        
-            insertText += printMethodHeader(task, call, returnType, methodFinder.isMemberSelect(), (currentMethod.getModifiers().getFlags().contains(Modifier.STATIC) || methodFinder.isStaticAccess()))  + " {\n" +
-                    "    // TODO: Implement this method\n"     +
-                    "    " + createReturnStatement(returnType) + "\n" +
-                    "}";
-        
-            TextEdit[] edits;
-            if(methodFinder.isMemberSelect()) {
-                // Accessing method from another class
-                final CompilationUnitTree compilationUnit = methodFinder.getEnclosingTreePath().getCompilationUnit();
-                final ClassTree enclosingClass = methodFinder.getEnclosingClass();
-                final int indent = EditHelper.indent(task.task, compilationUnit, enclosingClass) + 4;
-                insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
-                insertText = insertText + "\n";
-                final Position insertPoint = EditHelper.insertAtEndOfClass(task.task, compilationUnit, enclosingClass);
-                edits = new TextEdit[]{new TextEdit(new Range (insertPoint, insertPoint), insertText)};
-                sourceFile = Paths.get (compilationUnit.getSourceFile ().toUri ());
-            } else {
-                ClassTree surroundingClass = surroundingClass(path);
-                int indent = EditHelper.indent(task.task, task.root(), surroundingClass) + 4;
-                insertText = insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces (indent));
-                insertText = insertText + "\n";
-                Position insertPoint = EditHelper.insertAfter(task.task, task.root(), surroundingMethod(path));
-                edits = new TextEdit[]{new TextEdit(new Range(insertPoint, insertPoint), insertText)};
-            }
-        
-            if(file != null) {
-                return Collections.singletonMap (sourceFile, edits);
-            } else {
-                return null;
-            }
-        });
+        return synchronizedTask.getWithTask(
+                task -> {
+                    final Trees trees = Trees.instance(task.task);
+                    final FindMethodCallAt methodFinder = new FindMethodCallAt(task.task);
+                    final MethodInvocationTree call = methodFinder.scan(task.root(), position);
+                    if (call == null) {
+                        return CANCELLED;
+                    }
+
+                    final TreePath path = trees.getPath(task.root(), call);
+                    final String returnType = methodFinder.getReturnType();
+                    Path sourceFile = file;
+                    MethodTree currentMethod = surroundingMethod(path);
+                    String insertText = "\n";
+
+                    insertText +=
+                            printMethodHeader(
+                                            task,
+                                            call,
+                                            returnType,
+                                            methodFinder.isMemberSelect(),
+                                            (currentMethod
+                                                            .getModifiers()
+                                                            .getFlags()
+                                                            .contains(Modifier.STATIC)
+                                                    || methodFinder.isStaticAccess()))
+                                    + " {\n"
+                                    + "    // TODO: Implement this method\n"
+                                    + "    "
+                                    + createReturnStatement(returnType)
+                                    + "\n"
+                                    + "}";
+
+                    TextEdit[] edits;
+                    if (methodFinder.isMemberSelect()) {
+                        // Accessing method from another class
+                        final CompilationUnitTree compilationUnit =
+                                methodFinder.getEnclosingTreePath().getCompilationUnit();
+                        final ClassTree enclosingClass = methodFinder.getEnclosingClass();
+                        final int indent =
+                                EditHelper.indent(task.task, compilationUnit, enclosingClass) + 4;
+                        insertText =
+                                insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
+                        insertText = insertText + "\n";
+                        final Position insertPoint =
+                                EditHelper.insertAtEndOfClass(
+                                        task.task, compilationUnit, enclosingClass);
+                        edits =
+                                new TextEdit[] {
+                                    new TextEdit(new Range(insertPoint, insertPoint), insertText)
+                                };
+                        sourceFile = Paths.get(compilationUnit.getSourceFile().toUri());
+                    } else {
+                        ClassTree surroundingClass = surroundingClass(path);
+                        int indent =
+                                EditHelper.indent(task.task, task.root(), surroundingClass) + 4;
+                        insertText =
+                                insertText.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
+                        insertText = insertText + "\n";
+                        Position insertPoint =
+                                EditHelper.insertAfter(
+                                        task.task, task.root(), surroundingMethod(path));
+                        edits =
+                                new TextEdit[] {
+                                    new TextEdit(new Range(insertPoint, insertPoint), insertText)
+                                };
+                    }
+
+                    if (file != null) {
+                        return Collections.singletonMap(sourceFile, edits);
+                    } else {
+                        return null;
+                    }
+                });
     }
-    
+
     private String createReturnStatement(String returnType) {
-        if(returnType == null) return "";
+        if (returnType == null) return "";
         String value;
         switch (returnType) {
-            case "int" :
-            case "byte" :
-            case "short" :
-            case "long" :
-            case "char" :
+            case "int":
+            case "byte":
+            case "short":
+            case "long":
+            case "char":
                 value = "0";
                 break;
-            case "float" :
+            case "float":
                 value = "0f";
                 break;
-            case "double" :
+            case "double":
                 value = "0.0";
                 break;
-            case "boolean" :
+            case "boolean":
                 value = "false";
                 break;
-    
-            // Finding type of variable declaration may result in an error
-            // We should then simply return empty return type
-            case "(ERROR)" :
+
+                // Finding type of variable declaration may result in an error
+                // We should then simply return empty return type
+            case "(ERROR)":
                 return ""; // Directly return empty string
-            default :
+            default:
                 value = "null";
                 break;
-            
         }
         return String.format("return %s;", value);
     }
-    
+
     private ClassTree surroundingClass(TreePath call) {
         while (call != null) {
             if (call.getLeaf() instanceof ClassTree) {
@@ -152,7 +180,7 @@ public class CreateMissingMethod implements Rewrite {
         }
         throw new RuntimeException("No surrounding class");
     }
-    
+
     private MethodTree surroundingMethod(TreePath call) {
         while (call != null) {
             if (call.getLeaf() instanceof MethodTree) {
@@ -162,8 +190,13 @@ public class CreateMissingMethod implements Rewrite {
         }
         throw new RuntimeException("No surrounding method");
     }
-    
-    private String printMethodHeader(CompileTask task, MethodInvocationTree call, String type, boolean isMemeberSelect, boolean isStatic) {
+
+    private String printMethodHeader(
+            CompileTask task,
+            MethodInvocationTree call,
+            String type,
+            boolean isMemeberSelect,
+            boolean isStatic) {
         String methodName = extractMethodName(call.getMethodSelect());
         String returnType = type == null || "(ERROR)".equals(type) ? "void" : type;
         LOG.info("Creating missing method with return type: " + returnType);
@@ -172,23 +205,23 @@ public class CreateMissingMethod implements Rewrite {
         }
         String parameters = printParameters(task, call);
         String modifiers = isMemeberSelect ? "public" : "private";
-        if(isStatic)
-            modifiers += " static";
+        if (isStatic) modifiers += " static";
         return modifiers + " " + returnType + " " + methodName + "(" + parameters + ")";
     }
-    
+
     private String printParameters(CompileTask task, MethodInvocationTree call) {
         Trees trees = Trees.instance(task.task);
         StringJoiner join = new StringJoiner(", ");
         for (int i = 0; i < call.getArguments().size(); i++) {
-            TypeMirror type = trees.getTypeMirror(trees.getPath(task.root(), call.getArguments().get(i)));
+            TypeMirror type =
+                    trees.getTypeMirror(trees.getPath(task.root(), call.getArguments().get(i)));
             String name = guessParameterName(call.getArguments().get(i), type);
             String argType = EditHelper.printType(type);
             join.add(String.format("final %s %s", argType, name));
         }
         return join.toString();
     }
-    
+
     private String extractMethodName(ExpressionTree method) {
         if (method instanceof IdentifierTree) {
             IdentifierTree id = (IdentifierTree) method;
@@ -200,22 +233,22 @@ public class CreateMissingMethod implements Rewrite {
             return "extractedMethod";
         }
     }
-    
+
     private String guessParameterName(Tree argument, TypeMirror type) {
         String fromTree = guessParameterNameFromTree(argument);
         if (!fromTree.isEmpty()) {
             return fromTree;
         }
-        
+
         String fromType = guessParameterNameFromType(type);
         if (!fromType.isEmpty()) {
             return fromType;
         }
-        
+
         argCount++;
         return "param" + argCount;
     }
-    
+
     private String guessParameterNameFromTree(Tree argument) {
         if (argument instanceof IdentifierTree) {
             IdentifierTree id = (IdentifierTree) argument;
@@ -230,7 +263,7 @@ public class CreateMissingMethod implements Rewrite {
             return "";
         }
     }
-    
+
     private String guessParameterNameFromType(TypeMirror type) {
         if (type instanceof DeclaredType) {
             DeclaredType declared = (DeclaredType) type;
@@ -240,6 +273,6 @@ public class CreateMissingMethod implements Rewrite {
             return "";
         }
     }
-    
-    private static final Logger LOG = Logger.instance ("main");
+
+    private static final Logger LOG = Logger.instance("main");
 }

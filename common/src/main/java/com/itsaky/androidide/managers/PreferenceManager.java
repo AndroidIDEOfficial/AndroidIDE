@@ -1,20 +1,20 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- * 
+ *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ **************************************************************************************/
 package com.itsaky.androidide.managers;
 
 import android.annotation.SuppressLint;
@@ -24,15 +24,15 @@ import android.content.SharedPreferences;
 public class PreferenceManager {
 
     private final SharedPreferences prefs;
-    
+
     public static final String KEY_FRAMEWORK_DOWNLOADED = "framework_downloaded";
     public static final String KEY_FRAMEWORK_INSTALLED = "framework_installed";
     public static final String KEY_IS_FIRST_PROJECT_BUILD = "project_isFirstBuild";
-    
+
     public static final String KEY_OPEN_PROJECTS = "idepref_general_autoOpenProjects";
     public static final String KEY_CONFIRM_PROJECT_OPEN = "idepref_general_confirmProjectOpen";
     public static final String KEY_TERMINAL_USE_SYSTEM_SHELL = "idepref_general_terminalShell";
-    
+
     public static final String KEY_EDITOR_FLAG_WS_LEADING = "idepref_editor_wsLeading";
     public static final String KEY_EDITOR_FLAG_WS_TRAILING = "idepref_editor_wsTrailing";
     public static final String KEY_EDITOR_FLAG_WS_INNER = "idepref_editor_wsInner";
@@ -44,15 +44,15 @@ public class PreferenceManager {
     public static final String KEY_EDITOR_TAB_SIZE = "idepref_editor_tabSize";
     public static final String KEY_EDITOR_AUTO_SAVE = "idepref_editor_autoSave";
     public static final String KEY_EDITOR_FONT_LIGATURES = "idepref_editor_fontLigatures";
-    public static final String KEY_EDITOR_USE_POPUP  = "idepref_editor_usePopup";
+    public static final String KEY_EDITOR_USE_POPUP = "idepref_editor_usePopup";
     public static final String KEY_EDITOR_HORIZONTAL_POPUP = "idepref_editor_horizontalPopup";
-    
+
     public static final String KEY_GRADLE_CMD_STACK_TRACE = "idepref_gradleCmd_stacktrace";
     public static final String KEY_GRADLE_CMD_DEBUG = "idepref_gradleCmd_debug";
     public static final String KEY_GRADLE_CMD_SCAN = "idepref_gradleCmd_scan";
     public static final String KEY_GRADLE_CMD_INFO = "idepref_gradleCmd_info";
     public static final String KEY_GRADLE_CMD_WARNING_MODE = "idepref_gradleCmd_warningMode";
-    
+
     public static final String KEY_LAST_OPENED_PROJECT = "ide_last_project";
     public static final String NO_OPENED_PROJECT = "<NO_OPENED_PROJECT>";
 
@@ -60,7 +60,7 @@ public class PreferenceManager {
     public PreferenceManager(Context ctx) {
         this.prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
     }
-    
+
     public PreferenceManager putInt(String key, int val) {
         prefs.edit().putInt(key, val).apply();
         return this;
@@ -133,7 +133,7 @@ public class PreferenceManager {
         return isFrameworkDownloaded() && getBoolean(KEY_FRAMEWORK_INSTALLED);
     }
 
-    public boolean isStackTraceEnabled () {
+    public boolean isStackTraceEnabled() {
         return getBoolean(KEY_GRADLE_CMD_STACK_TRACE);
     }
 
@@ -172,15 +172,15 @@ public class PreferenceManager {
     public PreferenceManager setGradleWarningEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLE_CMD_WARNING_MODE, enabled);
     }
-    
+
     public int getEditorTabSize() {
         return getInt(KEY_EDITOR_TAB_SIZE, 4);
     }
-    
+
     public boolean autoOpenProject() {
         return getBoolean(KEY_OPEN_PROJECTS, true);
     }
-    
+
     public boolean confirmProjectOpen() {
         return getBoolean(KEY_CONFIRM_PROJECT_OPEN, false);
     }

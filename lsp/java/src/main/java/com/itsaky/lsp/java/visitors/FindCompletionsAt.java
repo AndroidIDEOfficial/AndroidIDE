@@ -33,109 +33,111 @@ import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
 
 public class FindCompletionsAt extends TreePathScanner<TreePath, Long> {
-    
+
     private final JavacTask task;
     private CompilationUnitTree root;
-    
-    public FindCompletionsAt (JavacTask task) {
+
+    public FindCompletionsAt(JavacTask task) {
         this.task = task;
     }
-    
+
     @Override
-    public TreePath visitCompilationUnit (CompilationUnitTree t, Long find) {
+    public TreePath visitCompilationUnit(CompilationUnitTree t, Long find) {
         root = t;
-        return reduce (super.visitCompilationUnit (t, find), getCurrentPath ());
+        return reduce(super.visitCompilationUnit(t, find), getCurrentPath());
     }
-    
+
     @Override
-    public TreePath visitIdentifier (IdentifierTree t, Long find) {
-        SourcePositions pos = Trees.instance (task).getSourcePositions ();
-        long start = pos.getStartPosition (root, t);
-        long end = pos.getEndPosition (root, t);
+    public TreePath visitIdentifier(IdentifierTree t, Long find) {
+        SourcePositions pos = Trees.instance(task).getSourcePositions();
+        long start = pos.getStartPosition(root, t);
+        long end = pos.getEndPosition(root, t);
         if (start <= find && find <= end) {
-            return getCurrentPath ();
+            return getCurrentPath();
         }
-        return super.visitIdentifier (t, find);
+        return super.visitIdentifier(t, find);
     }
-    
+
     @Override
-    public TreePath visitMemberSelect (MemberSelectTree t, Long find) {
-        SourcePositions pos = Trees.instance (task).getSourcePositions ();
-        long start = pos.getEndPosition (root, t.getExpression ()) + 1;
-        long end = pos.getEndPosition (root, t);
+    public TreePath visitMemberSelect(MemberSelectTree t, Long find) {
+        SourcePositions pos = Trees.instance(task).getSourcePositions();
+        long start = pos.getEndPosition(root, t.getExpression()) + 1;
+        long end = pos.getEndPosition(root, t);
         if (start <= find && find <= end) {
-            return getCurrentPath ();
+            return getCurrentPath();
         }
-        return super.visitMemberSelect (t, find);
+        return super.visitMemberSelect(t, find);
     }
-    
+
     @Override
-    public TreePath visitMemberReference (MemberReferenceTree t, Long find) {
-        SourcePositions pos = Trees.instance (task).getSourcePositions ();
-        long start = pos.getEndPosition (root, t.getQualifierExpression ()) + 2;
-        long end = pos.getEndPosition (root, t);
+    public TreePath visitMemberReference(MemberReferenceTree t, Long find) {
+        SourcePositions pos = Trees.instance(task).getSourcePositions();
+        long start = pos.getEndPosition(root, t.getQualifierExpression()) + 2;
+        long end = pos.getEndPosition(root, t);
         if (start <= find && find <= end) {
-            return getCurrentPath ();
+            return getCurrentPath();
         }
-        return super.visitMemberReference (t, find);
+        return super.visitMemberReference(t, find);
     }
-    
+
     @Override
-    public TreePath visitCase (CaseTree t, Long find) {
-        SourcePositions pos = Trees.instance (task).getSourcePositions ();
-        
+    public TreePath visitCase(CaseTree t, Long find) {
+        SourcePositions pos = Trees.instance(task).getSourcePositions();
+
         // check if the cursor is in the case expression
         // default statements have null expression
-        // In case of an identifier tree, we have to check for both, variables and switch constants in CompletionProvider
-        if (t.getExpression () != null && !(t.getExpression () instanceof IdentifierTree)) {
-            long start = pos.getStartPosition (root, t.getExpression ());
-            long end = pos.getEndPosition (root, t.getExpression ());
+        // In case of an identifier tree, we have to check for both, variables and switch constants
+        // in
+        // CompletionProvider
+        if (t.getExpression() != null && !(t.getExpression() instanceof IdentifierTree)) {
+            long start = pos.getStartPosition(root, t.getExpression());
+            long end = pos.getEndPosition(root, t.getExpression());
             if (start <= find && find <= end) {
-                return new TreePath (getCurrentPath (), t.getExpression ());
+                return new TreePath(getCurrentPath(), t.getExpression());
             }
         }
-        
-        long start = pos.getStartPosition (root, t) + "case".length ();
-        long end = pos.getEndPosition (root, t.getExpression ());
+
+        long start = pos.getStartPosition(root, t) + "case".length();
+        long end = pos.getEndPosition(root, t.getExpression());
         if (start <= find && find <= end) {
-            return getCurrentPath ().getParentPath ();
+            return getCurrentPath().getParentPath();
         }
-        
-        return super.visitCase (t, find);
+
+        return super.visitCase(t, find);
     }
-    
+
     @Override
-    public TreePath visitImport (ImportTree t, Long find) {
-        SourcePositions pos = Trees.instance (task).getSourcePositions ();
-        long start = pos.getStartPosition (root, t.getQualifiedIdentifier ());
-        long end = pos.getEndPosition (root, t.getQualifiedIdentifier ());
+    public TreePath visitImport(ImportTree t, Long find) {
+        SourcePositions pos = Trees.instance(task).getSourcePositions();
+        long start = pos.getStartPosition(root, t.getQualifiedIdentifier());
+        long end = pos.getEndPosition(root, t.getQualifiedIdentifier());
         if (start <= find && find <= end) {
-            return getCurrentPath ();
+            return getCurrentPath();
         }
-        return super.visitImport (t, find);
+        return super.visitImport(t, find);
     }
-    
+
     @Override
-    public TreePath visitErroneous (ErroneousTree t, Long find) {
-        if (t.getErrorTrees () == null) {
+    public TreePath visitErroneous(ErroneousTree t, Long find) {
+        if (t.getErrorTrees() == null) {
             return null;
         }
-        for (Tree e : t.getErrorTrees ()) {
-            TreePath found = scan (e, find);
+        for (Tree e : t.getErrorTrees()) {
+            TreePath found = scan(e, find);
             if (found != null) {
                 return found;
             }
         }
         return null;
     }
-    
+
     @Override
-    public TreePath reduce (TreePath a, TreePath b) {
+    public TreePath reduce(TreePath a, TreePath b) {
         if (a != null) {
             return a;
         }
         return b;
     }
-    
-    private static final Logger LOG = Logger.instance ("FindCompletionsAt");
+
+    private static final Logger LOG = Logger.instance("FindCompletionsAt");
 }

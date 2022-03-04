@@ -18,26 +18,24 @@
 package com.itsaky.inflater;
 
 /**
- * Exception thrown by inflaters and drawable parsers to
- * indicate that the a specific view or tag is not
- * supported.
+ * Exception thrown by inflaters and drawable parsers to indicate that the a specific view or tag is
+ * not supported.
  *
  * @author Akash Yadav
  */
 public class NotSupportedException extends UnsupportedOperationException {
-    
-    public NotSupportedException () {
+
+    public NotSupportedException() {}
+
+    public NotSupportedException(String message) {
+        super(message);
     }
-    
-    public NotSupportedException (String message) {
-        super (message);
+
+    public NotSupportedException(String message, Throwable cause) {
+        super(message, cause);
     }
-    
-    public NotSupportedException (String message, Throwable cause) {
-        super (message, cause);
-    }
-    
-    public NotSupportedException (Throwable cause) {
-        super (cause);
+
+    public NotSupportedException(Throwable cause) {
+        super(cause);
     }
 }

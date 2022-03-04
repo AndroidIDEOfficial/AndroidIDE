@@ -35,49 +35,55 @@ import com.itsaky.androidide.views.EmptyView;
 import java.util.ArrayList;
 
 public class DiagnosticsListFragment extends Fragment {
-    
+
     private RecyclerView list;
     private EmptyView emptyView;
-    
+
     private DiagnosticsAdapter unsavedAdapter;
-    
+
     @Nullable
     @Override
-    public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle savedInstanceState) {
-        final var container = new LinearLayout (inflater.getContext ());
-        container.setOrientation (LinearLayout.VERTICAL);
-        container.setLayoutParams (new ViewGroup.LayoutParams (-1, -1));
-        
-        this.list = new RecyclerView (inflater.getContext ());
-        this.emptyView = new EmptyView (inflater.getContext ());
-        
-        container.addView (list, new LinearLayout.LayoutParams (-1, -1));
-        container.addView (emptyView, new LinearLayout.LayoutParams (-1, -1));
-        
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup parent,
+            @Nullable Bundle savedInstanceState) {
+        final var container = new LinearLayout(inflater.getContext());
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+
+        this.list = new RecyclerView(inflater.getContext());
+        this.emptyView = new EmptyView(inflater.getContext());
+
+        container.addView(list, new LinearLayout.LayoutParams(-1, -1));
+        container.addView(emptyView, new LinearLayout.LayoutParams(-1, -1));
+
         return container;
     }
-    
+
     @Override
-    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated (view, savedInstanceState);
-        
-        list.setLayoutManager (new LinearLayoutManager (list.getContext ()));
-        list.setAdapter (unsavedAdapter != null ? unsavedAdapter : new DiagnosticsAdapter (new ArrayList<> (), null));
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        list.setLayoutManager(new LinearLayoutManager(list.getContext()));
+        list.setAdapter(
+                unsavedAdapter != null
+                        ? unsavedAdapter
+                        : new DiagnosticsAdapter(new ArrayList<>(), null));
         unsavedAdapter = null;
     }
-    
-    public void setAdapter (@NonNull DiagnosticsAdapter adapter) {
+
+    public void setAdapter(@NonNull DiagnosticsAdapter adapter) {
         if (list != null) {
-            list.setAdapter (adapter);
+            list.setAdapter(adapter);
         } else {
             unsavedAdapter = adapter;
         }
     }
-    
-    public void handleResultVisibility (boolean error) {
+
+    public void handleResultVisibility(boolean error) {
         if (emptyView != null && list != null) {
-            emptyView.setVisibility (error ? View.VISIBLE : View.GONE);
-            list.setVisibility (error ? View.GONE : View.VISIBLE);
+            emptyView.setVisibility(error ? View.VISIBLE : View.GONE);
+            list.setVisibility(error ? View.GONE : View.VISIBLE);
         }
     }
 }

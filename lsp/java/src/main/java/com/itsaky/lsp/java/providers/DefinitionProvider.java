@@ -51,75 +51,77 @@ public class DefinitionProvider implements IDefinitionProvider {
     private final CompilerProvider compiler;
     private Path file;
     private int line, column;
-    
-    public static final List<Location> NOT_SUPPORTED = Collections.emptyList ();
-    
-    private static final Logger LOG = Logger.instance ("JavaDefinitionProvider");
-    
+
+    public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
+
+    private static final Logger LOG = Logger.instance("JavaDefinitionProvider");
+
     public DefinitionProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
-    
+
     @NonNull
     @Override
-    public DefinitionResult findDefinitions (DefinitionParams params) {
-        this.file = params.getFile ();
-        
+    public DefinitionResult findDefinitions(DefinitionParams params) {
+        this.file = params.getFile();
+
         // 1-based line and column index
-        this.line = params.getPosition ().getLine () + 1;
-        this.column = params.getPosition ().getColumn () + 1;
-        final List<Location> locations = find ();
-        
-        LOG.debug ("Found", locations.size (), "definitions...");
-        return new DefinitionResult (locations);
+        this.line = params.getPosition().getLine() + 1;
+        this.column = params.getPosition().getColumn() + 1;
+        final List<Location> locations = find();
+
+        LOG.debug("Found", locations.size(), "definitions...");
+        return new DefinitionResult(locations);
     }
-    
+
     public List<Location> find() {
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask (task -> {
-            Element element = NavigationHelper.findElement(task, file, line, column);
-            if (element == null) {
-                LOG.error ("Cannot find element at line:", line, "and column:", column);
-                return NOT_SUPPORTED;
-            }
-        
-            if (element.asType().getKind() == TypeKind.ERROR) {
-                task.close();
-                LOG.debug ("Find definition of error element:", element);
-                return findError(element);
-            }
-            // TODO instead of checking isLocal, just try to resolve the location, fall back to searching
-            if (NavigationHelper.isLocal(element)) {
-                LOG.debug ("Find definition of local element:", element);
-                return findDefinitions(task, element);
-            }
-            String className = className(element);
-            if (className.isEmpty()) {
-                LOG.error ("No class name found for element:", element);
-                return NOT_SUPPORTED;
-            }
-            Optional<JavaFileObject> otherFile = compiler.findAnywhere(className);
-            if (!otherFile.isPresent ()) {
-                LOG.error ("Cannot find source file for class:", className);
-                return Collections.emptyList ();
-            }
-        
-            if (otherFile.get().toUri().equals(file.toUri())) {
-                return findDefinitions(task, element);
-            }
-            task.close();
-        
-            return findRemoteDefinitions(otherFile.get());
-        });
-    
+        return synchronizedTask.getWithTask(
+                task -> {
+                    Element element = NavigationHelper.findElement(task, file, line, column);
+                    if (element == null) {
+                        LOG.error("Cannot find element at line:", line, "and column:", column);
+                        return NOT_SUPPORTED;
+                    }
+
+                    if (element.asType().getKind() == TypeKind.ERROR) {
+                        task.close();
+                        LOG.debug("Find definition of error element:", element);
+                        return findError(element);
+                    }
+                    // TODO instead of checking isLocal, just try to resolve the location, fall back
+                    // to
+                    // searching
+                    if (NavigationHelper.isLocal(element)) {
+                        LOG.debug("Find definition of local element:", element);
+                        return findDefinitions(task, element);
+                    }
+                    String className = className(element);
+                    if (className.isEmpty()) {
+                        LOG.error("No class name found for element:", element);
+                        return NOT_SUPPORTED;
+                    }
+                    Optional<JavaFileObject> otherFile = compiler.findAnywhere(className);
+                    if (!otherFile.isPresent()) {
+                        LOG.error("Cannot find source file for class:", className);
+                        return Collections.emptyList();
+                    }
+
+                    if (otherFile.get().toUri().equals(file.toUri())) {
+                        return findDefinitions(task, element);
+                    }
+                    task.close();
+
+                    return findRemoteDefinitions(otherFile.get());
+                });
     }
-    
+
     private List<Location> findError(Element element) {
         Name name = element.getSimpleName();
         if (name == null) {
             return NOT_SUPPORTED;
         }
-        
+
         Element parent = element.getEnclosingElement();
         if (!(parent instanceof TypeElement)) return NOT_SUPPORTED;
         TypeElement type = (TypeElement) parent;
@@ -127,39 +129,40 @@ public class DefinitionProvider implements IDefinitionProvider {
         String memberName = name.toString();
         return findAllMembers(className, memberName);
     }
-    
+
     private List<Location> findAllMembers(String className, String memberName) {
         Optional<JavaFileObject> otherFile = compiler.findAnywhere(className);
-        if (!otherFile.isPresent ()) {
-            LOG.error ("Cannot find source file for class:", className);
-            return Collections.emptyList ();
+        if (!otherFile.isPresent()) {
+            LOG.error("Cannot find source file for class:", className);
+            return Collections.emptyList();
         }
-        
-        SourceFileObject fileAsSource = new SourceFileObject (file);
-        List<JavaFileObject> sources = Arrays.asList (fileAsSource, otherFile.get());
-        if (otherFile.get().toUri ().equals(file.toUri())) {
-            sources = Collections.singletonList (fileAsSource);
+
+        SourceFileObject fileAsSource = new SourceFileObject(file);
+        List<JavaFileObject> sources = Arrays.asList(fileAsSource, otherFile.get());
+        if (otherFile.get().toUri().equals(file.toUri())) {
+            sources = Collections.singletonList(fileAsSource);
         }
-        
-        List<Location> locations = new ArrayList<> ();
+
+        List<Location> locations = new ArrayList<>();
         SynchronizedTask synchronizedTask = compiler.compile(sources);
-        synchronizedTask.runWithTask (task -> {
-            Trees trees = Trees.instance(task.task);
-            Elements elements = task.task.getElements();
-            TypeElement parentClass = elements.getTypeElement(className);
-            for (Element member : elements.getAllMembers(parentClass)) {
-                if (!member.getSimpleName().contentEquals(memberName)) continue;
-                TreePath path = trees.getPath(member);
-                if (path == null) {
-                    continue;
-                }
-                Location location = FindHelper.location(task, path, memberName);
-                locations.add(location);
-            }
-        });
+        synchronizedTask.runWithTask(
+                task -> {
+                    Trees trees = Trees.instance(task.task);
+                    Elements elements = task.task.getElements();
+                    TypeElement parentClass = elements.getTypeElement(className);
+                    for (Element member : elements.getAllMembers(parentClass)) {
+                        if (!member.getSimpleName().contentEquals(memberName)) continue;
+                        TreePath path = trees.getPath(member);
+                        if (path == null) {
+                            continue;
+                        }
+                        Location location = FindHelper.location(task, path, memberName);
+                        locations.add(location);
+                    }
+                });
         return locations;
     }
-    
+
     private String className(Element element) {
         while (element != null) {
             if (element instanceof TypeElement) {
@@ -170,25 +173,28 @@ public class DefinitionProvider implements IDefinitionProvider {
         }
         return "";
     }
-    
+
     private List<Location> findRemoteDefinitions(JavaFileObject otherFile) {
-        SynchronizedTask synchronizedTask = compiler.compile(Arrays.asList (new SourceFileObject(file), otherFile));
-        return synchronizedTask.getWithTask (task -> {
-            Element element = NavigationHelper.findElement(task, file, line, column);
-            return findDefinitions(task, element);
-        });
+        SynchronizedTask synchronizedTask =
+                compiler.compile(Arrays.asList(new SourceFileObject(file), otherFile));
+        return synchronizedTask.getWithTask(
+                task -> {
+                    Element element = NavigationHelper.findElement(task, file, line, column);
+                    return findDefinitions(task, element);
+                });
     }
-    
+
     private List<Location> findDefinitions(CompileTask task, Element element) {
         Trees trees = Trees.instance(task.task);
         TreePath path = trees.getPath(element);
         if (path == null) {
-            LOG.error ("TreePath of element is null. Cannot find definition.", "Element is", element);
-            return Collections.emptyList ();
+            LOG.error(
+                    "TreePath of element is null. Cannot find definition.", "Element is", element);
+            return Collections.emptyList();
         }
-        
+
         Name name = element.getSimpleName();
         if (name.contentEquals("<init>")) name = element.getEnclosingElement().getSimpleName();
-        return Collections.singletonList (FindHelper.location(task, path, name));
+        return Collections.singletonList(FindHelper.location(task, path, name));
     }
 }

@@ -51,7 +51,7 @@ public class PathParser {
             } else if (cmd == 'm') { // implied command
                 cmd = 'l';
             } else { // implied command
-                //ignore
+                // ignore
             }
             p.computeBounds(r, true);
             // Log.d(TAG, "  " + cmd + " " + r);
@@ -59,179 +59,189 @@ public class PathParser {
             boolean wasCurve = false;
             switch (cmd) {
                 case 'M':
-                case 'm': {
-                    float x = ph.nextFloat();
-                    float y = ph.nextFloat();
-                    if (cmd == 'm') {
-                        p.rMoveTo(x, y);
-                        lastX += x;
-                        lastY += y;
-                    } else {
-                        p.moveTo(x, y);
-                        lastX = x;
-                        lastY = y;
-                    }
-                    contourInitialX = lastX;
-                    contourInitialY = lastY;
-                    break;
-                }
-                case 'Z':
-                case 'z': {
-                    /// p.lineTo(contourInitialX, contourInitialY);
-                    p.close();
-                    lastX = contourInitialX;
-                    lastY = contourInitialY;
-                    break;
-                }
-                case 'L':
-                case 'l': {
-                    float x = ph.nextFloat();
-                    float y = ph.nextFloat();
-                    if (cmd == 'l') {
-                        if ((prevCmd == 'M' || prevCmd == 'm') && x == 0 && y == 0) {
-                            p.addCircle(x, y, 1f, Path.Direction.CW);
-                        } else {
-                            p.rLineTo(x, y);
+                case 'm':
+                    {
+                        float x = ph.nextFloat();
+                        float y = ph.nextFloat();
+                        if (cmd == 'm') {
+                            p.rMoveTo(x, y);
                             lastX += x;
                             lastY += y;
-                        }
-                    } else {
-                        if ((prevCmd == 'M' || prevCmd == 'm') && x == lastX && y == lastY) {
-                            p.addCircle(x, y, 1f, Path.Direction.CW);
                         } else {
-                            p.lineTo(x, y);
+                            p.moveTo(x, y);
                             lastX = x;
                             lastY = y;
                         }
+                        contourInitialX = lastX;
+                        contourInitialY = lastY;
+                        break;
                     }
-                    break;
-                }
+                case 'Z':
+                case 'z':
+                    {
+                        /// p.lineTo(contourInitialX, contourInitialY);
+                        p.close();
+                        lastX = contourInitialX;
+                        lastY = contourInitialY;
+                        break;
+                    }
+                case 'L':
+                case 'l':
+                    {
+                        float x = ph.nextFloat();
+                        float y = ph.nextFloat();
+                        if (cmd == 'l') {
+                            if ((prevCmd == 'M' || prevCmd == 'm') && x == 0 && y == 0) {
+                                p.addCircle(x, y, 1f, Path.Direction.CW);
+                            } else {
+                                p.rLineTo(x, y);
+                                lastX += x;
+                                lastY += y;
+                            }
+                        } else {
+                            if ((prevCmd == 'M' || prevCmd == 'm') && x == lastX && y == lastY) {
+                                p.addCircle(x, y, 1f, Path.Direction.CW);
+                            } else {
+                                p.lineTo(x, y);
+                                lastX = x;
+                                lastY = y;
+                            }
+                        }
+                        break;
+                    }
                 case 'H':
-                case 'h': {
-                    float x = ph.nextFloat();
-                    if (cmd == 'h') {
-                        p.rLineTo(x, 0);
-                        lastX += x;
-                    } else {
-                        p.lineTo(x, lastY);
-                        lastX = x;
+                case 'h':
+                    {
+                        float x = ph.nextFloat();
+                        if (cmd == 'h') {
+                            p.rLineTo(x, 0);
+                            lastX += x;
+                        } else {
+                            p.lineTo(x, lastY);
+                            lastX = x;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case 'V':
-                case 'v': {
-                    float y = ph.nextFloat();
-                    if (cmd == 'v') {
-                        p.rLineTo(0, y);
-                        lastY += y;
-                    } else {
-                        p.lineTo(lastX, y);
-                        lastY = y;
+                case 'v':
+                    {
+                        float y = ph.nextFloat();
+                        if (cmd == 'v') {
+                            p.rLineTo(0, y);
+                            lastY += y;
+                        } else {
+                            p.lineTo(lastX, y);
+                            lastY = y;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case 'C':
-                case 'c': {
-                    wasCurve = true;
-                    float x1 = ph.nextFloat();
-                    float y1 = ph.nextFloat();
-                    float x2 = ph.nextFloat();
-                    float y2 = ph.nextFloat();
-                    float x = ph.nextFloat();
-                    float y = ph.nextFloat();
-                    if (cmd == 'c') {
-                        x1 += lastX;
-                        x2 += lastX;
-                        x += lastX;
-                        y1 += lastY;
-                        y2 += lastY;
-                        y += lastY;
+                case 'c':
+                    {
+                        wasCurve = true;
+                        float x1 = ph.nextFloat();
+                        float y1 = ph.nextFloat();
+                        float x2 = ph.nextFloat();
+                        float y2 = ph.nextFloat();
+                        float x = ph.nextFloat();
+                        float y = ph.nextFloat();
+                        if (cmd == 'c') {
+                            x1 += lastX;
+                            x2 += lastX;
+                            x += lastX;
+                            y1 += lastY;
+                            y2 += lastY;
+                            y += lastY;
+                        }
+                        p.cubicTo(x1, y1, x2, y2, x, y);
+                        lastX1 = x2;
+                        lastY1 = y2;
+                        lastX = x;
+                        lastY = y;
+                        break;
                     }
-                    p.cubicTo(x1, y1, x2, y2, x, y);
-                    lastX1 = x2;
-                    lastY1 = y2;
-                    lastX = x;
-                    lastY = y;
-                    break;
-                }
                 case 'S':
-                case 's': {
-                    wasCurve = true;
-                    float x2 = ph.nextFloat();
-                    float y2 = ph.nextFloat();
-                    float x = ph.nextFloat();
-                    float y = ph.nextFloat();
-                    if (cmd == 's') {
-                        x2 += lastX;
-                        x += lastX;
-                        y2 += lastY;
-                        y += lastY;
+                case 's':
+                    {
+                        wasCurve = true;
+                        float x2 = ph.nextFloat();
+                        float y2 = ph.nextFloat();
+                        float x = ph.nextFloat();
+                        float y = ph.nextFloat();
+                        if (cmd == 's') {
+                            x2 += lastX;
+                            x += lastX;
+                            y2 += lastY;
+                            y += lastY;
+                        }
+                        float x1 = 2 * lastX - lastX1;
+                        float y1 = 2 * lastY - lastY1;
+                        p.cubicTo(x1, y1, x2, y2, x, y);
+                        lastX1 = x2;
+                        lastY1 = y2;
+                        lastX = x;
+                        lastY = y;
+                        break;
                     }
-                    float x1 = 2 * lastX - lastX1;
-                    float y1 = 2 * lastY - lastY1;
-                    p.cubicTo(x1, y1, x2, y2, x, y);
-                    lastX1 = x2;
-                    lastY1 = y2;
-                    lastX = x;
-                    lastY = y;
-                    break;
-                }
                 case 'A':
-                case 'a': {
-                    float rx = ph.nextFloat();
-                    float ry = ph.nextFloat();
-                    float theta = ph.nextFloat();
-                    int largeArc = (int) ph.nextFloat();
-                    int sweepArc = (int) ph.nextFloat();
-                    float x = ph.nextFloat();
-                    float y = ph.nextFloat();
-                    if (cmd == 'a') {
-                        x += lastX;
-                        y += lastY;
+                case 'a':
+                    {
+                        float rx = ph.nextFloat();
+                        float ry = ph.nextFloat();
+                        float theta = ph.nextFloat();
+                        int largeArc = (int) ph.nextFloat();
+                        int sweepArc = (int) ph.nextFloat();
+                        float x = ph.nextFloat();
+                        float y = ph.nextFloat();
+                        if (cmd == 'a') {
+                            x += lastX;
+                            y += lastY;
+                        }
+                        drawArc(p, lastX, lastY, x, y, rx, ry, theta, largeArc == 1, sweepArc == 1);
+                        lastX = x;
+                        lastY = y;
+                        break;
                     }
-                    drawArc(p, lastX, lastY, x, y, rx, ry, theta, largeArc == 1, sweepArc == 1);
-                    lastX = x;
-                    lastY = y;
-                    break;
-                }
                 case 'T':
-                case 't': {
-                    wasCurve = true;
-                    float x = ph.nextFloat();
-                    float y = ph.nextFloat();
-                    if (cmd == 't') {
-                        x += lastX;
-                        y += lastY;
+                case 't':
+                    {
+                        wasCurve = true;
+                        float x = ph.nextFloat();
+                        float y = ph.nextFloat();
+                        if (cmd == 't') {
+                            x += lastX;
+                            y += lastY;
+                        }
+                        float x1 = 2 * lastX - lastX1;
+                        float y1 = 2 * lastY - lastY1;
+                        p.cubicTo(lastX, lastY, x1, y1, x, y);
+                        lastX = x;
+                        lastY = y;
+                        lastX1 = x1;
+                        lastY1 = y1;
+                        break;
                     }
-                    float x1 = 2 * lastX - lastX1;
-                    float y1 = 2 * lastY - lastY1;
-                    p.cubicTo(lastX, lastY, x1, y1, x, y);
-                    lastX = x;
-                    lastY = y;
-                    lastX1 = x1;
-                    lastY1 = y1;
-                    break;
-                }
                 case 'Q':
-                case 'q': {
-                    wasCurve = true;
-                    float x1 = ph.nextFloat();
-                    float y1 = ph.nextFloat();
-                    float x = ph.nextFloat();
-                    float y = ph.nextFloat();
-                    if (cmd == 'q') {
-                        x += lastX;
-                        y += lastY;
-                        x1 += lastX;
-                        y1 += lastY;
+                case 'q':
+                    {
+                        wasCurve = true;
+                        float x1 = ph.nextFloat();
+                        float y1 = ph.nextFloat();
+                        float x = ph.nextFloat();
+                        float y = ph.nextFloat();
+                        if (cmd == 'q') {
+                            x += lastX;
+                            y += lastY;
+                            x1 += lastX;
+                            y1 += lastY;
+                        }
+                        p.cubicTo(lastX, lastY, x1, y1, x, y);
+                        lastX1 = x1;
+                        lastY1 = y1;
+                        lastX = x;
+                        lastY = y;
+                        break;
                     }
-                    p.cubicTo(lastX, lastY, x1, y1, x, y);
-                    lastX1 = x1;
-                    lastY1 = y1;
-                    lastX = x;
-                    lastY = y;
-                    break;
-                }
                 default:
                     Log.w(TAG, "Invalid path command: " + cmd);
                     ph.advance();
@@ -250,8 +260,17 @@ public class PathParser {
      * Elliptical arc implementation based on the SVG specification notes
      * Adapted from the Batik library (Apache-2 license) by SAU
      */
-    private static void drawArc(Path path, double x0, double y0, double x, double y, double rx,
-                                double ry, double angle, boolean largeArcFlag, boolean sweepFlag) {
+    private static void drawArc(
+            Path path,
+            double x0,
+            double y0,
+            double x,
+            double y,
+            double rx,
+            double ry,
+            double angle,
+            boolean largeArcFlag,
+            boolean sweepFlag) {
         double dx2 = (x0 - x) / 2.0;
         double dy2 = (y0 - y) / 2.0;
         angle = Math.toRadians(angle % 360.0);
@@ -279,8 +298,7 @@ public class PathParser {
 
         // Step 2 : Compute (cx1, cy1)
         double sign = (largeArcFlag == sweepFlag) ? -1 : 1;
-        double sq = ((Prx * Pry) - (Prx * Py1) - (Pry * Px1))
-                / ((Prx * Py1) + (Pry * Px1));
+        double sq = ((Prx * Pry) - (Prx * Py1) - (Pry * Px1)) / ((Prx * Py1) + (Pry * Px1));
         sq = (sq < 0) ? 0 : sq;
         double coef = (sign * Math.sqrt(sq));
         double cx1 = coef * ((rx * y1) / ry);
@@ -317,8 +335,9 @@ public class PathParser {
         angleExtent %= 360f;
         angleStart %= 360f;
 
-        RectF oval = new RectF((float) (cx - rx), (float) (cy - ry), (float) (cx + rx), (float) (cy + ry));
+        RectF oval =
+                new RectF(
+                        (float) (cx - rx), (float) (cy - ry), (float) (cx + rx), (float) (cy + ry));
         path.addArc(oval, (float) angleStart, (float) angleExtent);
     }
-
 }

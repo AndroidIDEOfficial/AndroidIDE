@@ -43,11 +43,12 @@ import java.util.regex.Pattern;
  * @author Akash Yadav
  */
 public class TextViewAttrAdapter extends ViewAttrAdapter {
-    
-    public TextViewAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
+
+    public TextViewAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
-    
+
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof TextView;
@@ -63,93 +64,106 @@ public class TextViewAttrAdapter extends ViewAttrAdapter {
         final Context ctx = view.getContext();
         final Drawable[] drawables = text.getCompoundDrawables();
         final Drawable[] drawablesRelative = text.getCompoundDrawablesRelative();
-        
+
         if (!canHandleNamespace(attribute)) {
             return false;
         }
-        
+
         boolean handled = true;
         switch (name) {
-            case "autoLink" :
+            case "autoLink":
                 text.setAutoLinkMask(parseAutoLinkMask(value));
                 break;
-            case "drawableLeft" :
-                text.setCompoundDrawables(parseDrawable(value, ctx), drawables[1], drawables[2], drawables[3]);
+            case "drawableLeft":
+                text.setCompoundDrawables(
+                        parseDrawable(value, ctx), drawables[1], drawables[2], drawables[3]);
                 break;
-            case "drawableTop" :
-                text.setCompoundDrawables(drawables[0], parseDrawable(value, ctx), drawables[2], drawables[3]);
+            case "drawableTop":
+                text.setCompoundDrawables(
+                        drawables[0], parseDrawable(value, ctx), drawables[2], drawables[3]);
                 break;
-            case "drawableRight" :
-                text.setCompoundDrawables(drawables[0], drawables[1], parseDrawable(value, ctx), drawables[3]);
+            case "drawableRight":
+                text.setCompoundDrawables(
+                        drawables[0], drawables[1], parseDrawable(value, ctx), drawables[3]);
                 break;
-            case "drawableBottom" :
-                text.setCompoundDrawables(drawables[0], drawables[1], drawables[2], parseDrawable(value, ctx));
+            case "drawableBottom":
+                text.setCompoundDrawables(
+                        drawables[0], drawables[1], drawables[2], parseDrawable(value, ctx));
                 break;
-            case "drawableStart" :
-                text.setCompoundDrawables(parseDrawable(value, ctx), drawablesRelative[1], drawablesRelative[2], drawablesRelative[3]);
+            case "drawableStart":
+                text.setCompoundDrawables(
+                        parseDrawable(value, ctx),
+                        drawablesRelative[1],
+                        drawablesRelative[2],
+                        drawablesRelative[3]);
                 break;
-            case "drawableEnd" :
-                text.setCompoundDrawables(drawablesRelative[0], drawablesRelative[1], parseDrawable(value, ctx), drawablesRelative[3]);
+            case "drawableEnd":
+                text.setCompoundDrawables(
+                        drawablesRelative[0],
+                        drawablesRelative[1],
+                        parseDrawable(value, ctx),
+                        drawablesRelative[3]);
                 break;
-            case "drawablePadding" :
+            case "drawablePadding":
                 text.setCompoundDrawablePadding(parseDimension(value, 0, dm));
                 break;
-            case "ellipsize" :
+            case "ellipsize":
                 text.setEllipsize(parseEllipsize(value));
                 break;
-            case "gravity" :
+            case "gravity":
                 text.setGravity(parseGravity(value));
                 break;
-            case "hint" :
+            case "hint":
                 text.setHint(parseString(value));
                 break;
-            case "letterSpacing" :
+            case "letterSpacing":
                 text.setLetterSpacing(parseFloat(value));
                 break;
-            case "lineHeight" :
+            case "lineHeight":
                 text.setLines(parseInteger(value, Integer.MAX_VALUE));
                 break;
-            case "linksClickable" :
+            case "linksClickable":
                 text.setLinksClickable(parseBoolean(value));
                 break;
-            case "marqueeRepeatLimit" :
+            case "marqueeRepeatLimit":
                 text.setMarqueeRepeatLimit(parseInteger(value, Integer.MAX_VALUE));
                 break;
-            case "maxLines" :
+            case "maxLines":
                 text.setMaxLines(parseInteger(value, Integer.MAX_VALUE));
                 break;
-            case "minLines" :
+            case "minLines":
                 text.setMinLines(parseInteger(value, 1));
                 break;
-            case "singleLine" :
+            case "singleLine":
                 text.setSingleLine(parseBoolean(value));
                 break;
-            case "text" :
+            case "text":
                 text.setText(parseString(value));
                 break;
-            case "textAllCaps" :
+            case "textAllCaps":
                 text.setAllCaps(parseBoolean(value));
                 break;
-            case "textColor" :
+            case "textColor":
                 text.setTextColor(parseColor(value, ctx));
                 break;
-            case "textColorHint" :
+            case "textColorHint":
                 text.setHintTextColor(parseColor(value, ctx));
                 break;
-            case "textSize" :
-                text.setTextSize(TypedValue.COMPLEX_UNIT_PX, parseDimension(value, SizeUtils.sp2px(14), dm));
+            case "textSize":
+                text.setTextSize(
+                        TypedValue.COMPLEX_UNIT_PX, parseDimension(value, SizeUtils.sp2px(14), dm));
                 break;
-            case "textStyle" :
+            case "textStyle":
                 text.setTypeface(text.getTypeface(), parseTextStyle(value));
                 break;
-            case "typeface" :
+            case "typeface":
                 text.setTypeface(parseTypeface(value));
                 break;
-            default :
+            default:
                 handled = false;
                 break;
         }
-        
+
         if (!handled) {
             handled = super.apply(attribute, view);
         }
@@ -168,42 +182,42 @@ public class TextViewAttrAdapter extends ViewAttrAdapter {
 
     protected int textStyleFor(@NonNull String split) {
         switch (split) {
-            case "bold" :
+            case "bold":
                 return Typeface.BOLD;
-            case "italic" :
+            case "italic":
                 return Typeface.ITALIC;
-            case "normal" :
-            default :
+            case "normal":
+            default:
                 return Typeface.NORMAL;
         }
     }
 
     protected Typeface parseTypeface(@NonNull String value) {
         switch (value) {
-            case "sans" :
+            case "sans":
                 return Typeface.SANS_SERIF;
-            case "serif" :
+            case "serif":
                 return Typeface.SERIF;
-            case "monospace" :
+            case "monospace":
                 return Typeface.MONOSPACE;
-            case "normal" :
-            default :
+            case "normal":
+            default:
                 return Typeface.DEFAULT;
         }
     }
-    
+
     protected TextUtils.TruncateAt parseEllipsize(@NonNull String value) {
         switch (value) {
-            case "end" :
+            case "end":
                 return TextUtils.TruncateAt.END;
-            case "start" :
+            case "start":
                 return TextUtils.TruncateAt.START;
-            case "marquee" :
+            case "marquee":
                 return TextUtils.TruncateAt.MARQUEE;
-            case "middle" :
+            case "middle":
                 return TextUtils.TruncateAt.MIDDLE;
-            case "none" :
-            default :
+            case "none":
+            default:
                 return null;
         }
     }
@@ -212,26 +226,26 @@ public class TextViewAttrAdapter extends ViewAttrAdapter {
         final String[] splits = value.split(Pattern.quote("|"));
         int mask = 0;
         for (String split : splits) {
-            mask |= autoLinkMaskFor (split);
+            mask |= autoLinkMaskFor(split);
         }
         return mask;
     }
 
     protected int autoLinkMaskFor(@NonNull String mask) {
         switch (mask) {
-            case "all" :
+            case "all":
                 return Linkify.ALL;
-            case "web" :
+            case "web":
                 return Linkify.WEB_URLS;
-            case "phone" :
+            case "phone":
                 return Linkify.PHONE_NUMBERS;
-            case "map" :
+            case "map":
                 return Linkify.MAP_ADDRESSES;
-            case "email" :
+            case "email":
                 return Linkify.EMAIL_ADDRESSES;
-            case "none" :
-            default :
-            return 0;
+            case "none":
+            default:
+                return 0;
         }
     }
 }

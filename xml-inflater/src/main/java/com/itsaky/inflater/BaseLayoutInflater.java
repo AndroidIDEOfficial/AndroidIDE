@@ -21,53 +21,53 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class BaseLayoutInflater extends ILayoutInflater {
-    
-    private final Set<IInflateListener> inflateListeners = new HashSet<> ();
+
+    private final Set<IInflateListener> inflateListeners = new HashSet<>();
     protected boolean notify = true;
-    
+
     @Override
-    public void registerInflateListener (IInflateListener listener) {
-        inflateListeners.add (listener);
+    public void registerInflateListener(IInflateListener listener) {
+        inflateListeners.add(listener);
     }
-    
+
     @Override
-    public void unregisterListener (IInflateListener listener) {
-        inflateListeners.remove (listener);
+    public void unregisterListener(IInflateListener listener) {
+        inflateListeners.remove(listener);
     }
-    
-    protected void preInflate () {
+
+    protected void preInflate() {
         if (notify) {
             for (IInflateListener listener : inflateListeners) {
-                listener.onBeginInflate ();
+                listener.onBeginInflate();
             }
         }
     }
-    
-    protected void postApplyAttribute (IAttribute attr, IView view) {
+
+    protected void postApplyAttribute(IAttribute attr, IView view) {
         if (notify) {
             for (IInflateListener listener : inflateListeners) {
-                listener.onApplyAttribute (attr, view);
+                listener.onApplyAttribute(attr, view);
             }
         }
     }
-    
-    protected void postCreateView (IView view) {
+
+    protected void postCreateView(IView view) {
         if (notify) {
             for (IInflateListener listener : inflateListeners) {
-                listener.onInflateView (view, view.getParent ());
+                listener.onInflateView(view, view.getParent());
             }
         }
     }
-    
-    protected void postInflate (IView root) {
+
+    protected void postInflate(IView root) {
         if (notify) {
             for (IInflateListener listener : inflateListeners) {
-                listener.onFinishInflate (root);
+                listener.onFinishInflate(root);
             }
         }
     }
-    
-    protected Set<IInflateListener> getInflateListeners () {
+
+    protected Set<IInflateListener> getInflateListeners() {
         return this.inflateListeners;
     }
 }

@@ -5,12 +5,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -32,7 +32,7 @@ import com.itsaky.androidide.views.editor.IDEEditor;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public class TextSheetFragment extends BaseBottomSheetFragment {
-    
+
     private SpannableStringBuilder outputBuilder;
     private IDEEditor editor;
     private boolean textSelectable;
@@ -49,7 +49,7 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
         container.setPaddingRelative(0, 0, 0, 0);
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, 0);
         p.weight = 1.0f;
-        if(e.getParent() != null && e.getParent() instanceof ViewGroup) {
+        if (e.getParent() != null && e.getParent() instanceof ViewGroup) {
             ((ViewGroup) e.getParent()).removeView(e);
         }
         container.addView(getEditor(), p);
@@ -65,10 +65,9 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
         super.onShow();
         editor.setText(getOutputBuilder());
     }
-    
+
     private void scrollToBottom() {
-        if(getActivity() != null)
-        getActivity().runOnUiThread(() -> editor.goToEnd());
+        if (getActivity() != null) getActivity().runOnUiThread(() -> editor.goToEnd());
     }
 
     public TextSheetFragment setTitleText(int res) {
@@ -86,26 +85,33 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
     }
 
     public void append(String text, int spanColor, boolean appendLine) {
-        if(text != null && text.trim().length() > 0) {
-            appendInternal(appendLine && !text.endsWith("\n") ? text.concat("\n") : text, spanColor);
+        if (text != null && text.trim().length() > 0) {
+            appendInternal(
+                    appendLine && !text.endsWith("\n") ? text.concat("\n") : text, spanColor);
         }
     }
 
     private void appendInternal(String text, int spanColor) {
         SpannableString str = new SpannableString(text);
-        str.setSpan(new ForegroundColorSpan(spanColor == -1 ? Color.WHITE : spanColor), 0, text.length(), SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+        str.setSpan(
+                new ForegroundColorSpan(spanColor == -1 ? Color.WHITE : spanColor),
+                0,
+                text.length(),
+                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
         getOutputBuilder().append(str);
-        if(mDialog != null && mDialog.isShowing()) {
+        if (mDialog != null && mDialog.isShowing()) {
             setToEditor(str);
         }
     }
 
     private void setToEditor(SpannableString line) {
-        if(getActivity() != null) 
-        getActivity().runOnUiThread(() -> {
-            editor.append(line);
-            scrollToBottom();
-        });
+        if (getActivity() != null)
+            getActivity()
+                    .runOnUiThread(
+                            () -> {
+                                editor.append(line);
+                                scrollToBottom();
+                            });
     }
 
     private IDEEditor getEditor() {
@@ -113,10 +119,10 @@ public class TextSheetFragment extends BaseBottomSheetFragment {
     }
 
     private IDEEditor createEditor() {
-        editor = new IDEEditor (getContext());
+        editor = new IDEEditor(getContext());
         editor.setEditable(false);
         editor.setDividerWidth(0);
-        editor.setEditorLanguage(new EmptyLanguage ());
+        editor.setEditorLanguage(new EmptyLanguage());
         editor.setWordwrap(false);
         editor.setUndoEnabled(false);
         editor.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());

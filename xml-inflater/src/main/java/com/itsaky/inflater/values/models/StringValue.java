@@ -18,16 +18,14 @@ package com.itsaky.inflater.values.models;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.inflater.values.models.AbstractResourceValue;
-
 /**
  * Represents a string value.
  *
  * @author Akash Yadav
  */
 public class StringValue extends AbstractResourceValue {
-    
-    public StringValue (@NonNull String name, @NonNull String value) {
-        super (name, value);
+
+    public StringValue(@NonNull String name, @NonNull String value) {
+        super(name, value);
     }
 }

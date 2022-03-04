@@ -26,8 +26,7 @@ import androidx.annotation.DrawableRes;
 import java.util.Objects;
 
 /**
- * Holds data about the widget item in widgets list shown in
- * UI Designer screen.
+ * Holds data about the widget item in widgets list shown in UI Designer screen.
  *
  * @author Akash Yadav
  */
@@ -38,7 +37,7 @@ public class UIWidget implements IconTextListItem, Parcelable {
 
     private final String clazz;
 
-    private UIWidget (Parcel in) {
+    private UIWidget(Parcel in) {
         this.name = in.readString();
         this.icon = in.readInt();
         this.clazz = in.readString();
@@ -50,17 +49,18 @@ public class UIWidget implements IconTextListItem, Parcelable {
         this.clazz = clazz.getName();
     }
 
-    public static final Creator<UIWidget> CREATOR = new Creator<UIWidget>() {
-        @Override
-        public UIWidget createFromParcel(Parcel in) {
-            return new UIWidget(in);
-        }
+    public static final Creator<UIWidget> CREATOR =
+            new Creator<UIWidget>() {
+                @Override
+                public UIWidget createFromParcel(Parcel in) {
+                    return new UIWidget(in);
+                }
 
-        @Override
-        public UIWidget[] newArray(int size) {
-            return new UIWidget[size];
-        }
-    };
+                @Override
+                public UIWidget[] newArray(int size) {
+                    return new UIWidget[size];
+                }
+            };
 
     public String getName() {
         return name;
@@ -75,7 +75,9 @@ public class UIWidget implements IconTextListItem, Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UIWidget widget = (UIWidget) o;
-        return getIcon() == widget.getIcon() && getName().equals(widget.getName()) && clazz.equals(widget.clazz);
+        return getIcon() == widget.getIcon()
+                && getName().equals(widget.getName())
+                && clazz.equals(widget.clazz);
     }
 
     @Override
@@ -85,15 +87,16 @@ public class UIWidget implements IconTextListItem, Parcelable {
 
     /**
      * Get the class of this widget.
+     *
      * @return The class that this widget represents
-     * @throws ClassNotFoundException If there is no class with this widget's class name.
-     *          However, this will never be thrown.
+     * @throws ClassNotFoundException If there is no class with this widget's class name. However,
+     *     this will never be thrown.
      */
-    public Class<? extends View> asClass () throws ClassNotFoundException {
+    public Class<? extends View> asClass() throws ClassNotFoundException {
         return getClass().getClassLoader().loadClass(this.clazz).asSubclass(View.class);
     }
 
-    public String getWidgetClassName () {
+    public String getWidgetClassName() {
         return this.clazz;
     }
 
