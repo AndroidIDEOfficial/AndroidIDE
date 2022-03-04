@@ -1,13 +1,15 @@
-name: Format
+name: Format Code
 
 on:
   push:
     branches: [ main ]
-
+    
 jobs:
-
   formatting:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: axel-op/googlejavaformat-action@v3
+        with:
+          commitMessage: Format code
+          args: "--aosp --replace"
