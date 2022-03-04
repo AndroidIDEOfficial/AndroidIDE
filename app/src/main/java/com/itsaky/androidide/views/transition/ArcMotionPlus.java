@@ -14,33 +14,34 @@
  * limitations under the License.
  *
  */
- 
+
 package com.itsaky.androidide.views.transition;
 
 /**
- * A PathMotion that generates a curved path along an arc on an imaginary circle containing
- * the two points. The two points reside on the circle and a line between them describes
- * a chord for the circle that is symmetrical. i.e the angle between the chord and the tangent to
- * each point will be the same.
- * <p>
- * A perpendicular line from the midpoint of the line between the two points will intersect
- * the center of the circle. Everything about the line from the center of the circle to the midpoint
- * of the chord is symmetrical.
- * </p>
+ * A PathMotion that generates a curved path along an arc on an imaginary circle containing the two
+ * points. The two points reside on the circle and a line between them describes a chord for the
+ * circle that is symmetrical. i.e the angle between the chord and the tangent to each point will be
+ * the same.
  *
- * <p>This may be used in XML as an element inside a transition.</p>
+ * <p>A perpendicular line from the midpoint of the line between the two points will intersect the
+ * center of the circle. Everything about the line from the center of the circle to the midpoint of
+ * the chord is symmetrical.
+ *
+ * <p>This may be used in XML as an element inside a transition.
+ *
  * <pre>{@code
  * <changeBounds>
  *   <pathMotion class="com.oeri.arcmotionplus.ArcMotionPlus"
  *              app:arcAngle="90"
  *              app:reflect="true"
  *              />
- * </changeBounds>}
- * </pre>
+ * </changeBounds>
+ * }</pre>
  */
 import android.content.Context;
 import android.graphics.Path;
 import android.util.AttributeSet;
+
 import androidx.transition.PathMotion;
 
 public class ArcMotionPlus extends PathMotion {
@@ -51,7 +52,7 @@ public class ArcMotionPlus extends PathMotion {
     private boolean isReflectedArc = DEFAULT_REFLECT;
     private float arcAngle = DEFAULT_ARC_ANGLE;
 
-    public ArcMotionPlus() { }
+    public ArcMotionPlus() {}
 
     public ArcMotionPlus(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -59,7 +60,8 @@ public class ArcMotionPlus extends PathMotion {
 
     /**
      * Returns if we are reflecting the arc
-     * <p>The default value is false.</p>
+     *
+     * <p>The default value is false.
      *
      * @return Is the arc reflected
      */
@@ -69,7 +71,8 @@ public class ArcMotionPlus extends PathMotion {
 
     /**
      * Sets whether we should reflect the arc about the line drawn between the start and end points
-     * <p>The default value is false.</p>
+     *
+     * <p>The default value is false.
      *
      * @param isReflectedArc Is the arc reflected about the line between start and end points
      */
@@ -77,32 +80,29 @@ public class ArcMotionPlus extends PathMotion {
         this.isReflectedArc = isReflectedArc;
     }
 
-
     /**
-     * Returns the arc angle that describes the curve. The larger the angle the more
-     * pronounce the curve will be. Min value is 1, Max value si 179
-     * <p>The default value is 90.</p>
+     * Returns the arc angle that describes the curve. The larger the angle the more pronounce the
+     * curve will be. Min value is 1, Max value si 179
      *
-     * @return The angle of the arc on a circle describing the Path
-     *         between two points.
+     * <p>The default value is 90.
+     *
+     * @return The angle of the arc on a circle describing the Path between two points.
      */
     public float getArcAngle() {
         return arcAngle;
     }
 
-
     /**
-     * Sets the arc angle that describes the curve. The larger the angle the more
-     * pronounce the curve will be. Min value is 1, Max value si 179
-     * <p>The default value is 90.</p>
+     * Sets the arc angle that describes the curve. The larger the angle the more pronounce the
+     * curve will be. Min value is 1, Max value si 179
      *
+     * <p>The default value is 90.
      *
-     * @param angle The  angle of the arc on a circle describing the Path
-     *                       between two points.
+     * @param angle The angle of the arc on a circle describing the Path between two points.
      */
     public ArcMotionPlus setArcAngle(float angle) {
         arcAngle = angle;
-		return this;
+        return this;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class ArcMotionPlus extends PathMotion {
 
         CubicBezierArc cubicBezierArc = new CubicBezierArc(arcAngle, startX, startY, endX, endY);
 
-        if(isReflectedArc) {
+        if (isReflectedArc) {
             controlP1X = cubicBezierArc.getReflectedControlPoint1().x;
             controlP1Y = cubicBezierArc.getReflectedControlPoint1().y;
             controlP2X = cubicBezierArc.getReflectedControlPoint2().x;

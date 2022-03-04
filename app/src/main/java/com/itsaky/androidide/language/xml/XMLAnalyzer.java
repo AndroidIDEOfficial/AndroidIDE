@@ -21,12 +21,18 @@ import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATO
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TEXT_SELECTED;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
+
 import static io.github.rosemoe.sora.widget.schemes.EditorColorScheme.LITERAL;
 
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
+
+import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
+import io.github.rosemoe.sora.lang.styling.CodeBlock;
+import io.github.rosemoe.sora.lang.styling.MappedSpans;
+import io.github.rosemoe.sora.lang.styling.Styles;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -35,65 +41,61 @@ import org.antlr.v4.runtime.Token;
 import java.io.IOException;
 import java.util.Stack;
 
-import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
-import io.github.rosemoe.sora.lang.styling.CodeBlock;
-import io.github.rosemoe.sora.lang.styling.MappedSpans;
-import io.github.rosemoe.sora.lang.styling.Styles;
-
 /**
  * Simple analyzer implementation for the XML files.
+ *
  * @author Akash Yadav
  */
 public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
-    
-    private static final Logger LOG = Logger.instance ("XMLAnalyzer");
-    
+
+    private static final Logger LOG = Logger.instance("XMLAnalyzer");
+
     @Override
-    protected Styles analyze (StringBuilder text, Delegate<Void> delegate) {
-        final var styles = new Styles ();
-        final var colors = new MappedSpans.Builder ();
-        
+    protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {
+        final var styles = new Styles();
+        final var colors = new MappedSpans.Builder();
+
         CodePointCharStream stream;
         try {
-            stream = CharStreams.fromReader (new CharSequenceReader (text));
+            stream = CharStreams.fromReader(new CharSequenceReader(text));
         } catch (IOException e) {
-            LOG.error ("Unable to create stream for analyze", e);
+            LOG.error("Unable to create stream for analyze", e);
             return styles;
         }
-        
-        XMLLexer lexer = new XMLLexer (stream);
+
+        XMLLexer lexer = new XMLLexer(stream);
         Token token;
         int previous = 0;
         int line, column, lastLine = 1;
         var first = true;
-        
-        final var stack = new Stack<CodeBlock> ();
-        
-        while (!delegate.isCancelled ()) {
-            token = lexer.nextToken ();
+
+        final var stack = new Stack<CodeBlock>();
+
+        while (!delegate.isCancelled()) {
+            token = lexer.nextToken();
             if (token == null) {
                 break;
             }
-            
-            if (token.getType () == XMLLexer.EOF) {
-                lastLine = token.getLine () - 1;
+
+            if (token.getType() == XMLLexer.EOF) {
+                lastLine = token.getLine() - 1;
                 break;
             }
-            
-            line = token.getLine () - 1;
-            column = token.getCharPositionInLine ();
+
+            line = token.getLine() - 1;
+            column = token.getCharPositionInLine();
             lastLine = line;
-            
-            switch (token.getType ()) {
+
+            switch (token.getType()) {
                 case XMLLexer.S:
                 case XMLLexer.SEA_WS:
                     if (first) {
-                        colors.addNormalIfNull ();
+                        colors.addNormalIfNull();
                     }
-                    
+
                     break;
                 case XMLLexer.COMMENT:
-                    colors.addIfNeeded (line, column, forComment ());
+                    colors.addIfNeeded(line, column, forComment());
                     break;
                 case XMLLexer.OPEN:
                 case XMLLexer.OPEN_SLASH:
@@ -103,52 +105,52 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
                 case XMLLexer.EQUALS:
                 case XMLLexer.COLON:
                 case XMLLexer.XMLDeclOpen:
-                    colors.addIfNeeded (line, column, get (OPERATOR));
+                    colors.addIfNeeded(line, column, get(OPERATOR));
                     break;
                 case XMLLexer.SLASH_CLOSE:
-                    colors.addIfNeeded (line, column, get (OPERATOR));
-                    final var closeBlock = stack.pop ();
+                    colors.addIfNeeded(line, column, get(OPERATOR));
+                    final var closeBlock = stack.pop();
                     closeBlock.endLine = line;
                     closeBlock.endColumn = column;
-                    styles.addCodeBlock (closeBlock);
+                    styles.addCodeBlock(closeBlock);
                     break;
                 case XMLLexer.STRING:
-                    colors.addIfNeeded (line, column, LITERAL);
+                    colors.addIfNeeded(line, column, LITERAL);
                     break;
                 case XMLLexer.Name:
                     var type = SchemeAndroidIDE.TEXT_NORMAL;
                     if (previous == XMLLexer.OPEN) {
                         type = SchemeAndroidIDE.XML_TAG;
-                        final var block = styles.obtainNewBlock ();
+                        final var block = styles.obtainNewBlock();
                         block.startLine = line;
                         block.startColumn = column;
-                        stack.push (block);
+                        stack.push(block);
                     }
-                    
+
                     if (previous == XMLLexer.OPEN_SLASH) {
                         type = SchemeAndroidIDE.XML_TAG;
-                        final var block = stack.pop ();
+                        final var block = stack.pop();
                         block.endLine = line;
                         block.endColumn = column;
-                        styles.addCodeBlock (block);
+                        styles.addCodeBlock(block);
                     }
-                    
-                    colors.addIfNeeded (line, column, get (type));
+
+                    colors.addIfNeeded(line, column, get(type));
                     break;
                 case XMLLexer.TEXT:
                 default:
-                    colors.addIfNeeded (line, column, get (TEXT_SELECTED));
+                    colors.addIfNeeded(line, column, get(TEXT_SELECTED));
                     break;
             }
             first = false;
-            if (token.getType () != XMLLexer.SEA_WS) {
-                previous = token.getType ();
+            if (token.getType() != XMLLexer.SEA_WS) {
+                previous = token.getType();
             }
         }
-        colors.determine (lastLine);
-        
-        styles.spans = colors.build ();
-        
+        colors.determine(lastLine);
+
+        styles.spans = colors.build();
+
         return styles;
     }
 }

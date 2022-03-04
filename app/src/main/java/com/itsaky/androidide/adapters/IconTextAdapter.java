@@ -31,45 +31,47 @@ import com.itsaky.androidide.databinding.LayoutSimpleIconTextBinding;
  *
  * @author Akash Yadav
  */
-public abstract class IconTextAdapter <E> extends RecyclerView.Adapter<IconTextAdapter.VH> {
-    
+public abstract class IconTextAdapter<E> extends RecyclerView.Adapter<IconTextAdapter.VH> {
+
     private OnBindListener<E> bindListener;
-    
-    public IconTextAdapter<E> setOnBindListener (OnBindListener<E> listener) {
+
+    public IconTextAdapter<E> setOnBindListener(OnBindListener<E> listener) {
         this.bindListener = listener;
         return this;
     }
-    
+
     @NonNull
     @Override
-    public VH onCreateViewHolder (@NonNull ViewGroup parent, int viewType) {
-        return new VH (LayoutSimpleIconTextBinding.inflate (LayoutInflater.from (parent.getContext ()), parent, false));
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new VH(
+                LayoutSimpleIconTextBinding.inflate(
+                        LayoutInflater.from(parent.getContext()), parent, false));
     }
-    
+
     @Override
-    public void onBindViewHolder (@NonNull VH holder, int position) {
+    public void onBindViewHolder(@NonNull VH holder, int position) {
         final var binding = holder.binding;
-        final var item = getItemAt (position);
-        
-        if (this.bindListener != null && this.bindListener.onBind (item, holder, position)) {
+        final var item = getItemAt(position);
+
+        if (this.bindListener != null && this.bindListener.onBind(item, holder, position)) {
             return;
         }
-        
-        final var icon = getIconResource (position);
-        
+
+        final var icon = getIconResource(position);
+
         if (icon == -1) {
-            binding.icon.setVisibility (View.GONE);
+            binding.icon.setVisibility(View.GONE);
         } else {
-            binding.icon.setImageResource (icon);
+            binding.icon.setImageResource(icon);
         }
-        
-        binding.text.setText (getItemText (position));
-        
+
+        binding.text.setText(getItemText(position));
+
         if (this.bindListener != null) {
-            this.bindListener.postBind (item, holder, position);
+            this.bindListener.postBind(item, holder, position);
         }
     }
-    
+
     /**
      * Get the list item at the given position.
      *
@@ -77,16 +79,16 @@ public abstract class IconTextAdapter <E> extends RecyclerView.Adapter<IconTextA
      * @return The item at the given index. Must not be <code>null</code>.
      */
     @NonNull
-    public abstract E getItemAt (int index);
-    
+    public abstract E getItemAt(int index);
+
     /**
      * Get the icon resource ID of the item the given index.
      *
      * @param index The index of the item.
      * @return The icon resource id or <b>-1</b> to hide the icon.
      */
-    public abstract int getIconResource (int index);
-    
+    public abstract int getIconResource(int index);
+
     /**
      * Get the title of the item at the given index.
      *
@@ -94,25 +96,23 @@ public abstract class IconTextAdapter <E> extends RecyclerView.Adapter<IconTextA
      * @return The title of the item.
      */
     @NonNull
-    public abstract String getItemText (int index);
-    
-    public interface OnBindListener <T> {
-        default boolean onBind (T item, VH holder, int position) {
+    public abstract String getItemText(int index);
+
+    public interface OnBindListener<T> {
+        default boolean onBind(T item, VH holder, int position) {
             return false;
         }
-        
-        default void postBind (T item, VH holder, int position) {
-        }
+
+        default void postBind(T item, VH holder, int position) {}
     }
-    
+
     public static class VH extends RecyclerView.ViewHolder {
-        
+
         public final LayoutSimpleIconTextBinding binding;
-        
-        public VH (@NonNull LayoutSimpleIconTextBinding binding) {
-            super (binding.getRoot ());
+
+        public VH(@NonNull LayoutSimpleIconTextBinding binding) {
+            super(binding.getRoot());
             this.binding = binding;
         }
-        
     }
 }

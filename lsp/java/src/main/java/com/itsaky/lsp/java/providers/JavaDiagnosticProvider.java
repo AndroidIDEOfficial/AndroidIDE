@@ -35,31 +35,29 @@ import java.util.List;
  * @author Akash Yadav
  */
 public class JavaDiagnosticProvider implements IDiagnosticProvider {
-    
+
     private final CompilerProvider compiler;
-    
-    public JavaDiagnosticProvider (CompilerProvider compiler) {
+
+    public JavaDiagnosticProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
-    
+
     @NonNull
     @Override
-    public List<DiagnosticItem> analyze (@NonNull Path file) {
-        final SynchronizedTask synchronizedTask = compiler.compile (file);
-        return synchronizedTask.getWithTask (task -> {
-            if (!isTaskValid (task)) {
-                // Do not use Collections.emptyList ()
-                return new ArrayList<> ();
-            }
-            
-            return DiagnosticsProvider.findDiagnostics (task, file);
-        });
+    public List<DiagnosticItem> analyze(@NonNull Path file) {
+        final SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask(
+                task -> {
+                    if (!isTaskValid(task)) {
+                        // Do not use Collections.emptyList ()
+                        return new ArrayList<>();
+                    }
+
+                    return DiagnosticsProvider.findDiagnostics(task, file);
+                });
     }
-    
-    private static boolean isTaskValid (CompileTask task) {
-        return task != null
-                && task.task != null
-                && task.roots != null
-                && task.roots.size () > 0;
+
+    private static boolean isTaskValid(CompileTask task) {
+        return task != null && task.task != null && task.roots != null && task.roots.size() > 0;
     }
 }

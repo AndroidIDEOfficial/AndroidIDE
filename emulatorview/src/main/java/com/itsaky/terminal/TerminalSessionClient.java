@@ -2,8 +2,8 @@ package com.itsaky.terminal;
 
 /**
  * The interface for communication between {@link TerminalSession} and its client. It is used to
- * send callbacks to the client when {@link TerminalSession} changes or for sending other
- * back data to the client like logs.
+ * send callbacks to the client when {@link TerminalSession} changes or for sending other back data
+ * to the client like logs.
  */
 public interface TerminalSessionClient {
 
@@ -23,11 +23,7 @@ public interface TerminalSessionClient {
 
     void onTerminalCursorStateChange(boolean state);
 
-
-
     Integer getTerminalCursorStyle();
-
-
 
     void logError(String tag, String message);
 
@@ -42,5 +38,4 @@ public interface TerminalSessionClient {
     void logStackTraceWithMessage(String tag, String message, Exception e);
 
     void logStackTrace(String tag, Exception e);
-
 }

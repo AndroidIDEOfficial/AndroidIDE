@@ -27,17 +27,17 @@ import com.sun.source.util.Trees;
 public class FindVariableAtCursor extends TreeScanner<VariableTree, Integer> {
     private final SourcePositions pos;
     private CompilationUnitTree root;
-    
-    public FindVariableAtCursor (JavacTask task) {
+
+    public FindVariableAtCursor(JavacTask task) {
         pos = Trees.instance(task).getSourcePositions();
     }
-    
+
     @Override
     public VariableTree visitCompilationUnit(CompilationUnitTree t, Integer find) {
         root = t;
         return super.visitCompilationUnit(t, find);
     }
-    
+
     @Override
     public VariableTree visitVariable(VariableTree t, Integer find) {
         VariableTree smaller = super.visitVariable(t, find);
@@ -49,7 +49,7 @@ public class FindVariableAtCursor extends TreeScanner<VariableTree, Integer> {
         }
         return null;
     }
-    
+
     @Override
     public VariableTree reduce(VariableTree r1, VariableTree r2) {
         if (r1 != null) return r1;

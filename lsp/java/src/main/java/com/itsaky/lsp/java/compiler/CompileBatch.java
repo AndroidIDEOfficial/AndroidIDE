@@ -43,123 +43,125 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 public class CompileBatch implements AutoCloseable {
-    
+
     final JavaCompilerService parent;
     final ReusableCompiler.Borrow borrow;
-    /**
-     * Indicates the task that requested the compilation is finished with it.
-     */
+    /** Indicates the task that requested the compilation is finished with it. */
     boolean closed;
-    
+
     final JavacTask task;
     final List<CompilationUnitTree> roots;
-    
-    private static final Logger LOG = Logger.instance ("CompileBatch");
-    
-    CompileBatch (JavaCompilerService parent, Collection<? extends JavaFileObject> files) {
+
+    private static final Logger LOG = Logger.instance("CompileBatch");
+
+    CompileBatch(JavaCompilerService parent, Collection<? extends JavaFileObject> files) {
         this.parent = parent;
-        borrow = batchTask (parent, files);
+        borrow = batchTask(parent, files);
         task = borrow.task;
-        roots = new ArrayList<> ();
-        
+        roots = new ArrayList<>();
+
         // Compile all roots
         try {
-            for (CompilationUnitTree t : borrow.task.parse ()) {
-                roots.add (t);
+            for (CompilationUnitTree t : borrow.task.parse()) {
+                roots.add(t);
             }
             // The results of borrow.task.analyze() are unreliable when errors are present
             // You can get at `Element` values using `Trees`
-            borrow.task.analyze ();
+            borrow.task.analyze();
         } catch (IOException e) {
-            throw new RuntimeException (e);
+            throw new RuntimeException(e);
         }
     }
-    
+
     /**
-     * If the compilation failed because javac didn't find some package-private files in source files with different
-     * names, list those source files.
+     * If the compilation failed because javac didn't find some package-private files in source
+     * files with different names, list those source files.
      */
-    Set<Path> needsAdditionalSources () {
+    Set<Path> needsAdditionalSources() {
         // Check for "class not found errors" that refer to package private classes
-        Set<Path> addFiles = new HashSet<Path> ();
+        Set<Path> addFiles = new HashSet<Path>();
         for (Diagnostic err : parent.diagnostics) {
-            if (!err.getCode ().equals ("compiler.err.cant.resolve.location")) {
+            if (!err.getCode().equals("compiler.err.cant.resolve.location")) {
                 continue;
             }
-            if (!isValidFileRange (err)) {
+            if (!isValidFileRange(err)) {
                 continue;
             }
-            String className = errorText (err);
-            String packageName = packageName (err);
-            Path location = findPackagePrivateClass (packageName, className);
+            String className = errorText(err);
+            String packageName = packageName(err);
+            Path location = findPackagePrivateClass(packageName, className);
             if (location != FILE_NOT_FOUND) {
-                addFiles.add (location);
+                addFiles.add(location);
             }
         }
         return addFiles;
     }
-    
-    private String errorText (javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
-        Path file = Paths.get (err.getSource ().toUri ());
-        CharSequence contents = FileStore.contents (file);
-        int begin = (int) err.getStartPosition ();
-        int end = (int) err.getEndPosition ();
-        return substring (contents, begin, end);
+
+    private String errorText(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
+        Path file = Paths.get(err.getSource().toUri());
+        CharSequence contents = FileStore.contents(file);
+        int begin = (int) err.getStartPosition();
+        int end = (int) err.getEndPosition();
+        return substring(contents, begin, end);
     }
-    
-    private String packageName (javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
-        Path file = Paths.get (err.getSource ().toUri ());
-        return FileStore.packageName (file);
+
+    private String packageName(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
+        Path file = Paths.get(err.getSource().toUri());
+        return FileStore.packageName(file);
     }
-    
-    private static final Path FILE_NOT_FOUND = Paths.get ("");
-    
-    private Path findPackagePrivateClass (String packageName, String className) {
-        for (Path file : FileStore.list (packageName)) {
-            Parser parse = Parser.parseFile (file);
-            for (Name candidate : parse.packagePrivateClasses ()) {
-                if (candidate.contentEquals (className)) {
+
+    private static final Path FILE_NOT_FOUND = Paths.get("");
+
+    private Path findPackagePrivateClass(String packageName, String className) {
+        for (Path file : FileStore.list(packageName)) {
+            Parser parse = Parser.parseFile(file);
+            for (Name candidate : parse.packagePrivateClasses()) {
+                if (candidate.contentEquals(className)) {
                     return file;
                 }
             }
         }
         return FILE_NOT_FOUND;
     }
-    
+
     @Override
-    public void close () {
+    public void close() {
         closed = true;
     }
-    
-    private static ReusableCompiler.Borrow batchTask (JavaCompilerService parent, Collection<? extends JavaFileObject> sources) {
-        
-        parent.diagnostics.clear ();
-        final Iterable<String> options = options (parent.classPath);
-    
-        return parent.compiler.getTask (parent.fileManager,
+
+    private static ReusableCompiler.Borrow batchTask(
+            JavaCompilerService parent, Collection<? extends JavaFileObject> sources) {
+
+        parent.diagnostics.clear();
+        final Iterable<String> options = options(parent.classPath);
+
+        return parent.compiler.getTask(
+                parent.fileManager,
                 parent.diagnostics::add,
                 options,
-                Collections.emptyList (),
+                Collections.emptyList(),
                 sources);
     }
-    
+
     /**
      * Combine source path or class path entries using the system separator, for example ':' in unix
      */
-    private static String joinPath (Collection<Path> classOrSourcePath) {
-        return classOrSourcePath.stream ().map (Path::toString).collect (Collectors.joining (File.pathSeparator));
+    private static String joinPath(Collection<Path> classOrSourcePath) {
+        return classOrSourcePath.stream()
+                .map(Path::toString)
+                .collect(Collectors.joining(File.pathSeparator));
     }
-    
-    private static List<String> options (Set<Path> classPath) {
-        List<String> list = new ArrayList<String> ();
-        
-        Collections.addAll (list, "-classpath", joinPath (classPath));
-        Collections.addAll (list, "-source", "11", "-target", "11");
-        Collections.addAll (list, "--system", Environment.COMPILER_MODULE.getAbsolutePath ());
-        Collections.addAll (list, "-proc:none");
-        Collections.addAll (list, "-g");
-        
-        Collections.addAll (
+
+    private static List<String> options(Set<Path> classPath) {
+        List<String> list = new ArrayList<String>();
+
+        Collections.addAll(list, "-classpath", joinPath(classPath));
+        Collections.addAll(list, "-source", "11", "-target", "11");
+        Collections.addAll(list, "--system", Environment.COMPILER_MODULE.getAbsolutePath());
+        Collections.addAll(list, "-proc:none");
+        Collections.addAll(list, "-g");
+
+        Collections.addAll(
                 list,
                 "-Xlint:cast",
                 "-Xlint:deprecation",
@@ -170,13 +172,13 @@ public class CompileBatch implements AutoCloseable {
                 "-Xlint:unchecked",
                 "-Xlint:varargs",
                 "-Xlint:static");
-        
+
         return list;
     }
-    
-    private boolean isValidFileRange (javax.tools.Diagnostic<? extends JavaFileObject> d) {
-        return d.getSource ().toUri ().getScheme ().equals ("file")
-                && d.getStartPosition () >= 0
-                && d.getEndPosition () >= 0;
+
+    private boolean isValidFileRange(javax.tools.Diagnostic<? extends JavaFileObject> d) {
+        return d.getSource().toUri().getScheme().equals("file")
+                && d.getStartPosition() >= 0
+                && d.getEndPosition() >= 0;
     }
 }

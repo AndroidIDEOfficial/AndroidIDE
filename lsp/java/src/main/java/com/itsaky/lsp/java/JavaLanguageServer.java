@@ -59,215 +59,214 @@ import com.itsaky.lsp.util.NoSignatureHelpProvider;
 import java.util.Collections;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
-    
+
     private ILanguageClient client;
     private IServerSettings settings;
     private JavaCompilerService compiler;
-    
+
     private JavaServerConfiguration configuration;
     private boolean initialized;
     private boolean createCompiler;
-    
-    private static final Logger LOG = Logger.instance ("JavaLanguageServer");
+
+    private static final Logger LOG = Logger.instance("JavaLanguageServer");
     private ServerCapabilities capabilities;
-    
-    public JavaLanguageServer () {
+
+    public JavaLanguageServer() {
         this.initialized = false;
         this.createCompiler = true;
-        this.configuration = new JavaServerConfiguration ();
-        
-        applySettings (getSettings ());
+        this.configuration = new JavaServerConfiguration();
+
+        applySettings(getSettings());
     }
-    
-    private JavaCompilerService getCompiler () {
+
+    private JavaCompilerService getCompiler() {
         if (createCompiler) {
-            LOG.info ("Creating new compiler instance...");
-            compiler = createCompiler ();
+            LOG.info("Creating new compiler instance...");
+            compiler = createCompiler();
             createCompiler = false;
         }
-        
+
         return compiler;
     }
-    
-    public IServerSettings getSettings () {
+
+    public IServerSettings getSettings() {
         if (settings == null) {
-            settings = new DefaultJavaServerSettings ();
+            settings = new DefaultJavaServerSettings();
         }
-        
+
         return settings;
     }
-    
+
     @NonNull
-    private JavaCompilerService createCompiler () {
-        return new JavaCompilerService (
-                configuration.getClassPaths (),
-                Collections.emptySet ()
-        );
+    private JavaCompilerService createCompiler() {
+        return new JavaCompilerService(configuration.getClassPaths(), Collections.emptySet());
     }
-    
+
     @Override
-    public void initialize (@NonNull InitializeParams params) throws AlreadyInitializedException {
-        
+    public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
+
         if (initialized) {
-            throw new AlreadyInitializedException ();
+            throw new AlreadyInitializedException();
         }
-        
-        FileStore.setWorkspaceRoots (params.getWorkspaceRoots ());
-        
-        capabilities = new ServerCapabilities ();
-        capabilities.setCompletionsAvailable (true);
-        capabilities.setCodeActionsAvailable (true);
-        capabilities.setDefinitionsAvailable (true);
-        capabilities.setReferencesAvailable (true);
-        capabilities.setSignatureHelpAvailable (true);
-        capabilities.setCodeAnalysisAvailable (true);
-        capabilities.setSmartSelectionsEnabled (true);
-        
+
+        FileStore.setWorkspaceRoots(params.getWorkspaceRoots());
+
+        capabilities = new ServerCapabilities();
+        capabilities.setCompletionsAvailable(true);
+        capabilities.setCodeActionsAvailable(true);
+        capabilities.setDefinitionsAvailable(true);
+        capabilities.setReferencesAvailable(true);
+        capabilities.setSignatureHelpAvailable(true);
+        capabilities.setCodeAnalysisAvailable(true);
+        capabilities.setSmartSelectionsEnabled(true);
+
         initialized = true;
     }
-    
+
     @NonNull
     @Override
-    public ServerCapabilities getCapabilities () {
+    public ServerCapabilities getCapabilities() {
         return capabilities;
     }
-    
+
     @Override
-    public void shutdown () {
+    public void shutdown() {
         if (compiler != null) {
-            compiler.close ();
+            compiler.close();
             compiler = null;
             createCompiler = true;
         }
-        
-        FileStore.shutdown ();
+
+        FileStore.shutdown();
         initialized = false;
     }
-    
+
     @Override
-    public void connectClient (@Nullable ILanguageClient client) {
+    public void connectClient(@Nullable ILanguageClient client) {
         this.client = client;
     }
-    
+
     @Nullable
     @Override
-    public ILanguageClient getClient () {
+    public ILanguageClient getClient() {
         return this.client;
     }
-    
+
     @Override
-    public void applySettings (@Nullable IServerSettings settings) {
+    public void applySettings(@Nullable IServerSettings settings) {
         this.settings = settings;
     }
-    
+
     @Override
-    public void configurationChanged (Object newConfiguration) {
+    public void configurationChanged(Object newConfiguration) {
         if (!(newConfiguration instanceof JavaServerConfiguration)) {
-            LOG.error ("Invalid configuration passed to server.", newConfiguration);
-            LOG.error ("Configuration change event will be ignored.");
+            LOG.error("Invalid configuration passed to server.", newConfiguration);
+            LOG.error("Configuration change event will be ignored.");
             return;
         }
-        
+
         this.configuration = (JavaServerConfiguration) newConfiguration;
-        LOG.info ("Java language server configuration changed.");
-        LOG.info (this.configuration.getClassPaths ().size (), "class paths were provided in the configuration");
+        LOG.info("Java language server configuration changed.");
+        LOG.info(
+                this.configuration.getClassPaths().size(),
+                "class paths were provided in the configuration");
         // Compiler must be recreated on a configuration change
         this.createCompiler = true;
     }
-    
+
     @NonNull
     @Override
-    public ICompletionProvider getCompletionProvider () {
-        if (!settings.completionsEnabled ()) {
-            return new NoCompletionsProvider ();
+    public ICompletionProvider getCompletionProvider() {
+        if (!settings.completionsEnabled()) {
+            return new NoCompletionsProvider();
         }
-        
-        return new CompletionProvider (getCompiler (), this.settings);
+
+        return new CompletionProvider(getCompiler(), this.settings);
     }
-    
+
     @NonNull
     @Override
-    public ICodeActionProvider getCodeActionProvider () {
-        if (!settings.codeActionsEnabled ()) {
-            return new NoCodeActionsProvider ();
+    public ICodeActionProvider getCodeActionProvider() {
+        if (!settings.codeActionsEnabled()) {
+            return new NoCodeActionsProvider();
         }
-        
-        return new CodeActionProvider (getCompiler ());
+
+        return new CodeActionProvider(getCompiler());
     }
-    
+
     @NonNull
     @Override
-    public IReferenceProvider getReferenceProvider () {
-        if (!settings.referencesEnabled ()) {
-            return new NoReferenceProvider ();
+    public IReferenceProvider getReferenceProvider() {
+        if (!settings.referencesEnabled()) {
+            return new NoReferenceProvider();
         }
-        
-        return new ReferenceProvider (getCompiler ());
+
+        return new ReferenceProvider(getCompiler());
     }
-    
+
     @NonNull
     @Override
-    public IDefinitionProvider getDefinitionProvider () {
-        if (!settings.definitionsEnabled ()) {
-            return new NoDefinitionProvider ();
+    public IDefinitionProvider getDefinitionProvider() {
+        if (!settings.definitionsEnabled()) {
+            return new NoDefinitionProvider();
         }
-        
-        return new DefinitionProvider (getCompiler ());
+
+        return new DefinitionProvider(getCompiler());
     }
-    
+
     @NonNull
     @Override
-    public ISelectionProvider getSelectionProvider () {
-        if (!settings.smartSelectionsEnabled ()) {
-            return new NoSelectionProvider ();
+    public ISelectionProvider getSelectionProvider() {
+        if (!settings.smartSelectionsEnabled()) {
+            return new NoSelectionProvider();
         }
-        
-        return new JavaSelectionProvider (getCompiler ());
+
+        return new JavaSelectionProvider(getCompiler());
     }
-    
+
     @NonNull
     @Override
-    public ISignatureHelpProvider getSignatureHelpProvider () {
-        if (!settings.signatureHelpEnabled ()) {
-            return new NoSignatureHelpProvider ();
+    public ISignatureHelpProvider getSignatureHelpProvider() {
+        if (!settings.signatureHelpEnabled()) {
+            return new NoSignatureHelpProvider();
         }
-        
-        return new SignatureProvider (getCompiler ());
+
+        return new SignatureProvider(getCompiler());
     }
-    
+
     @NonNull
     @Override
-    public IDocumentHandler getDocumentHandler () {
+    public IDocumentHandler getDocumentHandler() {
         return this;
     }
-    
+
     @NonNull
     @Override
-    public IDiagnosticProvider getCodeAnalyzer () {
-        if (!settings.codeAnalysisEnabled ()) {
-            return new NoDiagnosticProvider ();
+    public IDiagnosticProvider getCodeAnalyzer() {
+        if (!settings.codeAnalysisEnabled()) {
+            return new NoDiagnosticProvider();
         }
-        
-        return new JavaDiagnosticProvider (getCompiler ());
+
+        return new JavaDiagnosticProvider(getCompiler());
     }
-    
+
     @Override
-    public void onFileOpened (DocumentOpenEvent event) {
-        FileStore.open (event);
+    public void onFileOpened(DocumentOpenEvent event) {
+        FileStore.open(event);
     }
-    
+
     @Override
-    public void onContentChange (DocumentChangeEvent event) {
-        FileStore.change (event);
+    public void onContentChange(DocumentChangeEvent event) {
+        FileStore.change(event);
     }
-    
+
     @Override
-    public void onFileSaved (DocumentSaveEvent event) {
+    public void onFileSaved(DocumentSaveEvent event) {
         // TODO Run a lint check (or a simple compilation)
     }
-    
+
     @Override
-    public void onFileClosed (DocumentCloseEvent event) {
-        FileStore.close (event);
+    public void onFileClosed(DocumentCloseEvent event) {
+        FileStore.close(event);
     }
 }

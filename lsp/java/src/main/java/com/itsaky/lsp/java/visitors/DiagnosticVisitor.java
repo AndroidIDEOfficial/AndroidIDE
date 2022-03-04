@@ -51,21 +51,22 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> {
-    
+
     // Copied from TreePathScanner
     // We need to be able to call scan(path, _) recursively
     private TreePath path;
-    private Map<String, TreePath> declaredExceptions = new HashMap<> ();
-    private Set<String> observedExceptions = new HashSet<> ();
-    
+    private Map<String, TreePath> declaredExceptions = new HashMap<>();
+    private Set<String> observedExceptions = new HashSet<>();
+
     private final Trees trees;
-    private final Map<Element, TreePath> privateDeclarations = new HashMap<>(), localVariables = new HashMap<>();
+    private final Map<Element, TreePath> privateDeclarations = new HashMap<>(),
+            localVariables = new HashMap<>();
     private final Set<Element> used = new HashSet<>();
-    
+
     public DiagnosticVisitor(JavacTask task) {
         this.trees = Trees.instance(task);
     }
-    
+
     private void scanPath(TreePath path) {
         TreePath prev = this.path;
         this.path = path;
@@ -75,21 +76,21 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
             this.path = prev; // So we can call scan(path, _) recursively
         }
     }
-    
+
     @Override
     public Void scan(Tree tree, Map<TreePath, String> p) {
         if (tree == null) return null;
-        
+
         TreePath prev = path;
         path = new TreePath(path, tree);
-        
+
         try {
             return tree.accept(this, p);
         } finally {
             path = prev;
         }
     }
-    
+
     public Set<Element> notUsed() {
         Set<Element> unused = new HashSet<>();
         unused.addAll(privateDeclarations.keySet());
@@ -102,15 +103,15 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         unused.removeIf(i -> i.toString().equals("<error>"));
         return unused;
     }
-    
+
     private void foundPrivateDeclaration() {
         privateDeclarations.put(trees.getElement(path), path);
     }
-    
+
     private void foundLocalVariable() {
         localVariables.put(trees.getElement(path), path);
     }
-    
+
     private void foundReference() {
         Element toEl = trees.getElement(path);
         if (toEl == null) {
@@ -122,13 +123,13 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         }
         sweep(toEl);
     }
-    
+
     private void foundPseudoReference(Element toEl) {
         Element parent = toEl.getEnclosingElement();
         if (!(parent instanceof TypeElement)) {
             return;
         }
-        
+
         Name memberName = toEl.getSimpleName();
         TypeElement type = (TypeElement) parent;
         for (Element member : type.getEnclosedElements()) {
@@ -137,7 +138,7 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
             }
         }
     }
-    
+
     private void sweep(Element toEl) {
         boolean firstUse = used.add(toEl);
         boolean notScanned = firstUse && privateDeclarations.containsKey(toEl);
@@ -145,7 +146,7 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
             scanPath(privateDeclarations.get(toEl));
         }
     }
-    
+
     private boolean isReachable(TreePath path) {
         // Check if t is reachable because it's public
         Tree t = path.getLeaf();
@@ -175,7 +176,7 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         Element el = trees.getElement(path);
         return used.contains(el);
     }
-    
+
     private boolean isLocalVariable(TreePath path) {
         Tree.Kind kind = path.getLeaf().getKind();
         if (kind != Tree.Kind.VARIABLE) {
@@ -187,13 +188,13 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         }
         if (parent == Tree.Kind.METHOD) {
             MethodTree method = (MethodTree) path.getParentPath().getLeaf();
-            return method.getBody () != null;
+            return method.getBody() != null;
         }
         return true;
     }
-    
+
     private Map<String, TreePath> declared(MethodTree t) {
-        Map<String, TreePath> names = new HashMap<> ();
+        Map<String, TreePath> names = new HashMap<>();
         for (ExpressionTree e : t.getThrows()) {
             TreePath path = new TreePath(this.path, e);
             Element to = trees.getElement(path);
@@ -204,12 +205,12 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         }
         return names;
     }
-    
+
     @Override
     public Void visitCompilationUnit(CompilationUnitTree t, Map<TreePath, String> notThrown) {
         return super.visitCompilationUnit(t, notThrown);
     }
-    
+
     @Override
     public Void visitVariable(VariableTree t, Map<TreePath, String> notThrown) {
         if (isLocalVariable(path)) {
@@ -222,7 +223,7 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         }
         return null;
     }
-    
+
     @Override
     public Void visitMethod(MethodTree t, Map<TreePath, String> notThrown) {
         // Create a new method scope
@@ -240,13 +241,13 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         }
         declaredExceptions = pushDeclared;
         observedExceptions = pushObserved;
-        
+
         if (!isReachable(path)) {
             foundPrivateDeclaration();
         }
         return null;
     }
-    
+
     @Override
     public Void visitClass(ClassTree t, Map<TreePath, String> notThrown) {
         if (isReachable(path)) {
@@ -256,31 +257,31 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         }
         return null;
     }
-    
+
     @Override
     public Void visitIdentifier(IdentifierTree t, Map<TreePath, String> notThrown) {
         foundReference();
         return super.visitIdentifier(t, notThrown);
     }
-    
+
     @Override
     public Void visitMemberSelect(MemberSelectTree t, Map<TreePath, String> notThrown) {
         foundReference();
         return super.visitMemberSelect(t, notThrown);
     }
-    
+
     @Override
     public Void visitMemberReference(MemberReferenceTree t, Map<TreePath, String> notThrown) {
         foundReference();
         return super.visitMemberReference(t, notThrown);
     }
-    
+
     @Override
     public Void visitNewClass(NewClassTree t, Map<TreePath, String> notThrown) {
         foundReference();
         return super.visitNewClass(t, notThrown);
     }
-    
+
     @Override
     public Void visitThrow(ThrowTree t, Map<TreePath, String> notThrown) {
         TreePath path = new TreePath(this.path, t.getExpression());
@@ -288,7 +289,7 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         addThrown(type);
         return super.visitThrow(t, notThrown);
     }
-    
+
     @Override
     public Void visitMethodInvocation(MethodInvocationTree t, Map<TreePath, String> notThrown) {
         Element target = trees.getElement(this.path);
@@ -300,7 +301,7 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         }
         return super.visitMethodInvocation(t, notThrown);
     }
-    
+
     private void addThrown(TypeMirror type) {
         if (type instanceof DeclaredType) {
             DeclaredType declared = (DeclaredType) type;
@@ -309,6 +310,6 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
             observedExceptions.add(name);
         }
     }
-    
-    private static final Logger LOG = Logger.instance ("main");
+
+    private static final Logger LOG = Logger.instance("main");
 }

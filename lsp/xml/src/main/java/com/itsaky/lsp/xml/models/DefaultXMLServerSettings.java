@@ -22,5 +22,4 @@ import com.itsaky.lsp.util.DefaultServerSettings;
 /**
  * @author Akash Yadav
  */
-public class DefaultXMLServerSettings extends DefaultServerSettings {
-}
+public class DefaultXMLServerSettings extends DefaultServerSettings {}

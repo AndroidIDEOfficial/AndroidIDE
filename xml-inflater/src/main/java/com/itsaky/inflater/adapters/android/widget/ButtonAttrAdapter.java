@@ -29,17 +29,18 @@ import com.itsaky.inflater.IResourceTable;
 /**
  * Adapter for handling attributes related to Button.
  *
- * However, {@code android.widget.Button} has no special attributes.
- * This adpater simply inherits from {@link TextViewAttrAdapter}.
+ * <p>However, {@code android.widget.Button} has no special attributes. This adpater simply inherits
+ * from {@link TextViewAttrAdapter}.
  *
  * @author Akash Yadav
  */
 public class ButtonAttrAdapter extends TextViewAttrAdapter {
-    
-    public ButtonAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
+
+    public ButtonAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
-    
+
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof Button;

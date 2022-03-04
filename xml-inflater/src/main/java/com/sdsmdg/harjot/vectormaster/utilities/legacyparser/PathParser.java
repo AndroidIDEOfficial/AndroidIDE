@@ -17,34 +17,31 @@
 package com.sdsmdg.harjot.vectormaster.utilities.legacyparser;
 
 import android.graphics.Path;
-import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.Logger;
 
 import java.util.ArrayList;
 
-/**
- * This class is a duplicate of the PathParser.java in androidx.core.graphics package.
- */
+/** This class is a duplicate of the PathParser.java in androidx.core.graphics package. */
 public class PathParser {
-    
-    private static final Logger LOG = Logger.instance ("PathParser");
-    
+
+    private static final Logger LOG = Logger.instance("PathParser");
+
     // Copy from Arrays.copyOfRange() which is only available from API level 9.
     /**
-     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to
-     * end (exclusive). The original order of elements is preserved.
-     * If {@code end} is greater than {@code original.length}, the result is padded
-     * with the value {@code 0.0f}.
+     * Copies elements from {@code original} into a new array, from indexes start (inclusive) to end
+     * (exclusive). The original order of elements is preserved. If {@code end} is greater than
+     * {@code original.length}, the result is padded with the value {@code 0.0f}.
      *
      * @param original the original array
-     * @param start    the start index, inclusive
-     * @param end      the end index, exclusive
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
      * @return the new array
      * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
-     * @throws IllegalArgumentException       if {@code start > end}
-     * @throws NullPointerException           if {@code original == null}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
      */
     static float[] copyOfRange(float[] original, int start, int end) {
         if (start > end) {
@@ -119,11 +116,11 @@ public class PathParser {
     }
     /**
      * @param nodesFrom The source path represented in an array of PathDataNode
-     * @param nodesTo   The target path represented in an array of PathDataNode
+     * @param nodesTo The target path represented in an array of PathDataNode
      * @return whether the <code>nodesFrom</code> can morph into <code>nodesTo</code>
      */
-    public static boolean canMorph(@Nullable PathDataNode[] nodesFrom,
-                                   @Nullable PathDataNode[] nodesTo) {
+    public static boolean canMorph(
+            @Nullable PathDataNode[] nodesFrom, @Nullable PathDataNode[] nodesTo) {
         if (nodesFrom == null || nodesTo == null) {
             return false;
         }
@@ -139,8 +136,8 @@ public class PathParser {
         return true;
     }
     /**
-     * Update the target's data to match the source.
-     * Before calling this, make sure canMorph(target, source) is true.
+     * Update the target's data to match the source. Before calling this, make sure canMorph(target,
+     * source) is true.
      *
      * @param target The target path represented in an array of PathDataNode
      * @param source The source path represented in an array of PathDataNode
@@ -154,6 +151,7 @@ public class PathParser {
             }
         }
     }
+
     private static int nextStart(String s, int end) {
         char c;
         while (end < s.length()) {
@@ -163,27 +161,29 @@ public class PathParser {
             // Therefore, when searching for next command, we should ignore 'e'
             // and 'E'.
             if ((((c - 'A') * (c - 'Z') <= 0) || ((c - 'a') * (c - 'z') <= 0))
-                    && c != 'e' && c != 'E') {
+                    && c != 'e'
+                    && c != 'E') {
                 return end;
             }
             end++;
         }
         return end;
     }
+
     private static void addNode(ArrayList<PathDataNode> list, char cmd, float[] val) {
         list.add(new PathDataNode(cmd, val));
     }
+
     private static class ExtractFloatResult {
         // We need to return the position of the next separator and whether the
         // next float starts with a '-' or a '.'.
         int mEndPosition;
         boolean mEndWithNegOrDot;
-        ExtractFloatResult() {
-        }
+
+        ExtractFloatResult() {}
     }
     /**
-     * Parse the floats in the string.
-     * This is an optimized version of parseFloat(s.split(",|\\s"));
+     * Parse the floats in the string. This is an optimized version of parseFloat(s.split(",|\\s"));
      *
      * @param s the string containing a command and list of floats
      * @return array of floats
@@ -206,8 +206,7 @@ public class PathParser {
                 extract(s, startPosition, result);
                 endPosition = result.mEndPosition;
                 if (startPosition < endPosition) {
-                    results[count++] = Float.parseFloat(
-                            s.substring(startPosition, endPosition));
+                    results[count++] = Float.parseFloat(s.substring(startPosition, endPosition));
                 }
                 if (result.mEndWithNegOrDot) {
                     // Keep the '-' or '.' sign with next number.
@@ -224,10 +223,10 @@ public class PathParser {
     /**
      * Calculate the position of the next comma or space or negative sign
      *
-     * @param s      the string to search
-     * @param start  the position to start searching
-     * @param result the result of the extraction, including the position of the
-     *               the starting position of next number, whether it is ending with a '-'.
+     * @param s the string to search
+     * @param start the position to start searching
+     * @param result the result of the extraction, including the position of the the starting
+     *     position of next number, whether it is ending with a '-'.
      */
     private static void extract(String s, int start, ExtractFloatResult result) {
         // Now looking for ' ', ',', '.' or '-' from the start.
@@ -285,15 +284,16 @@ public class PathParser {
      * @return whether it's possible to interpolate between the two arrays of PathDataNodes
      * @see {@link #canMorph(PathDataNode[], PathDataNode[])}
      */
-    public static boolean interpolatePathDataNodes(PathDataNode[] target, PathDataNode[] from,
-                                                   PathDataNode[] to, float fraction) {
+    public static boolean interpolatePathDataNodes(
+            PathDataNode[] target, PathDataNode[] from, PathDataNode[] to, float fraction) {
         if (target == null || from == null || to == null) {
-            throw new IllegalArgumentException("The nodes to be interpolated and resulting nodes"
-                    + " cannot be null");
+            throw new IllegalArgumentException(
+                    "The nodes to be interpolated and resulting nodes" + " cannot be null");
         }
         if (target.length != from.length || from.length != to.length) {
-            throw new IllegalArgumentException("The nodes to be interpolated and resulting nodes"
-                    + " must have the same length");
+            throw new IllegalArgumentException(
+                    "The nodes to be interpolated and resulting nodes"
+                            + " must have the same length");
         }
         if (!canMorph(from, to)) {
             return false;
@@ -305,23 +305,20 @@ public class PathParser {
         return true;
     }
     /**
-     * Each PathDataNode represents one command in the "d" attribute of the svg
-     * file.
-     * An array of PathDataNode can represent the whole "d" attribute.
+     * Each PathDataNode represents one command in the "d" attribute of the svg file. An array of
+     * PathDataNode can represent the whole "d" attribute.
      */
     public static class PathDataNode {
-        /**
-         * @hide
-         */
+        /** @hide */
         public char mType;
-        /**
-         * @hide
-         */
+        /** @hide */
         public float[] mParams;
+
         PathDataNode(char type, float[] params) {
             this.mType = type;
             this.mParams = params;
         }
+
         PathDataNode(PathDataNode n) {
             mType = n.mType;
             mParams = copyOfRange(n.mParams, 0, n.mParams.length);
@@ -341,24 +338,24 @@ public class PathParser {
             }
         }
         /**
-         * The current PathDataNode will be interpolated between the
-         * <code>nodeFrom</code> and <code>nodeTo</code> according to the
-         * <code>fraction</code>.
+         * The current PathDataNode will be interpolated between the <code>nodeFrom</code> and
+         * <code>
+         * nodeTo</code> according to the <code>fraction</code>.
          *
          * @param nodeFrom The start value as a PathDataNode.
-         * @param nodeTo   The end value as a PathDataNode
+         * @param nodeTo The end value as a PathDataNode
          * @param fraction The fraction to interpolate.
          */
-        public void interpolatePathDataNode(PathDataNode nodeFrom, PathDataNode nodeTo,
-                                            float fraction) {
+        public void interpolatePathDataNode(
+                PathDataNode nodeFrom, PathDataNode nodeTo, float fraction) {
             mType = nodeFrom.mType;
             for (int i = 0; i < nodeFrom.mParams.length; i++) {
-                mParams[i] = nodeFrom.mParams[i] * (1 - fraction)
-                        + nodeTo.mParams[i] * fraction;
+                mParams[i] = nodeFrom.mParams[i] * (1 - fraction) + nodeTo.mParams[i] * fraction;
             }
         }
-        private static void addCommand(Path path, float[] current,
-                                       char previousCmd, char cmd, float[] val) {
+
+        private static void addCommand(
+                Path path, float[] current, char previousCmd, char cmd, float[] val) {
             int incr = 2;
             float currentX = current[0];
             float currentY = current[1];
@@ -467,16 +464,26 @@ public class PathParser {
                         currentY = val[k + 0];
                         break;
                     case 'c': // curveto - Draws a cubic Bézier curve (relative)
-                        path.rCubicTo(val[k + 0], val[k + 1], val[k + 2], val[k + 3],
-                                val[k + 4], val[k + 5]);
+                        path.rCubicTo(
+                                val[k + 0],
+                                val[k + 1],
+                                val[k + 2],
+                                val[k + 3],
+                                val[k + 4],
+                                val[k + 5]);
                         ctrlPointX = currentX + val[k + 2];
                         ctrlPointY = currentY + val[k + 3];
                         currentX += val[k + 4];
                         currentY += val[k + 5];
                         break;
                     case 'C': // curveto - Draws a cubic Bézier curve
-                        path.cubicTo(val[k + 0], val[k + 1], val[k + 2], val[k + 3],
-                                val[k + 4], val[k + 5]);
+                        path.cubicTo(
+                                val[k + 0],
+                                val[k + 1],
+                                val[k + 2],
+                                val[k + 3],
+                                val[k + 4],
+                                val[k + 5]);
                         currentX = val[k + 4];
                         currentY = val[k + 5];
                         ctrlPointX = val[k + 2];
@@ -485,14 +492,20 @@ public class PathParser {
                     case 's': // smooth curveto - Draws a cubic Bézier curve (reflective cp)
                         reflectiveCtrlPointX = 0;
                         reflectiveCtrlPointY = 0;
-                        if (previousCmd == 'c' || previousCmd == 's'
-                                || previousCmd == 'C' || previousCmd == 'S') {
+                        if (previousCmd == 'c'
+                                || previousCmd == 's'
+                                || previousCmd == 'C'
+                                || previousCmd == 'S') {
                             reflectiveCtrlPointX = currentX - ctrlPointX;
                             reflectiveCtrlPointY = currentY - ctrlPointY;
                         }
-                        path.rCubicTo(reflectiveCtrlPointX, reflectiveCtrlPointY,
-                                val[k + 0], val[k + 1],
-                                val[k + 2], val[k + 3]);
+                        path.rCubicTo(
+                                reflectiveCtrlPointX,
+                                reflectiveCtrlPointY,
+                                val[k + 0],
+                                val[k + 1],
+                                val[k + 2],
+                                val[k + 3]);
                         ctrlPointX = currentX + val[k + 0];
                         ctrlPointY = currentY + val[k + 1];
                         currentX += val[k + 2];
@@ -501,13 +514,20 @@ public class PathParser {
                     case 'S': // shorthand/smooth curveto Draws a cubic Bézier curve(reflective cp)
                         reflectiveCtrlPointX = currentX;
                         reflectiveCtrlPointY = currentY;
-                        if (previousCmd == 'c' || previousCmd == 's'
-                                || previousCmd == 'C' || previousCmd == 'S') {
+                        if (previousCmd == 'c'
+                                || previousCmd == 's'
+                                || previousCmd == 'C'
+                                || previousCmd == 'S') {
                             reflectiveCtrlPointX = 2 * currentX - ctrlPointX;
                             reflectiveCtrlPointY = 2 * currentY - ctrlPointY;
                         }
-                        path.cubicTo(reflectiveCtrlPointX, reflectiveCtrlPointY,
-                                val[k + 0], val[k + 1], val[k + 2], val[k + 3]);
+                        path.cubicTo(
+                                reflectiveCtrlPointX,
+                                reflectiveCtrlPointY,
+                                val[k + 0],
+                                val[k + 1],
+                                val[k + 2],
+                                val[k + 3]);
                         ctrlPointX = val[k + 0];
                         ctrlPointY = val[k + 1];
                         currentX = val[k + 2];
@@ -530,13 +550,15 @@ public class PathParser {
                     case 't': // Draws a quadratic Bézier curve(reflective control point)(relative)
                         reflectiveCtrlPointX = 0;
                         reflectiveCtrlPointY = 0;
-                        if (previousCmd == 'q' || previousCmd == 't'
-                                || previousCmd == 'Q' || previousCmd == 'T') {
+                        if (previousCmd == 'q'
+                                || previousCmd == 't'
+                                || previousCmd == 'Q'
+                                || previousCmd == 'T') {
                             reflectiveCtrlPointX = currentX - ctrlPointX;
                             reflectiveCtrlPointY = currentY - ctrlPointY;
                         }
-                        path.rQuadTo(reflectiveCtrlPointX, reflectiveCtrlPointY,
-                                val[k + 0], val[k + 1]);
+                        path.rQuadTo(
+                                reflectiveCtrlPointX, reflectiveCtrlPointY, val[k + 0], val[k + 1]);
                         ctrlPointX = currentX + reflectiveCtrlPointX;
                         ctrlPointY = currentY + reflectiveCtrlPointY;
                         currentX += val[k + 0];
@@ -545,13 +567,15 @@ public class PathParser {
                     case 'T': // Draws a quadratic Bézier curve (reflective control point)
                         reflectiveCtrlPointX = currentX;
                         reflectiveCtrlPointY = currentY;
-                        if (previousCmd == 'q' || previousCmd == 't'
-                                || previousCmd == 'Q' || previousCmd == 'T') {
+                        if (previousCmd == 'q'
+                                || previousCmd == 't'
+                                || previousCmd == 'Q'
+                                || previousCmd == 'T') {
                             reflectiveCtrlPointX = 2 * currentX - ctrlPointX;
                             reflectiveCtrlPointY = 2 * currentY - ctrlPointY;
                         }
-                        path.quadTo(reflectiveCtrlPointX, reflectiveCtrlPointY,
-                                val[k + 0], val[k + 1]);
+                        path.quadTo(
+                                reflectiveCtrlPointX, reflectiveCtrlPointY, val[k + 0], val[k + 1]);
                         ctrlPointX = reflectiveCtrlPointX;
                         ctrlPointY = reflectiveCtrlPointY;
                         currentX = val[k + 0];
@@ -559,7 +583,8 @@ public class PathParser {
                         break;
                     case 'a': // Draws an elliptical arc
                         // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)
-                        drawArc(path,
+                        drawArc(
+                                path,
                                 currentX,
                                 currentY,
                                 val[k + 5] + currentX,
@@ -575,7 +600,8 @@ public class PathParser {
                         ctrlPointY = currentY;
                         break;
                     case 'A': // Draws an elliptical arc
-                        drawArc(path,
+                        drawArc(
+                                path,
                                 currentX,
                                 currentY,
                                 val[k + 5],
@@ -600,16 +626,18 @@ public class PathParser {
             current[4] = currentSegmentStartX;
             current[5] = currentSegmentStartY;
         }
-        private static void drawArc(Path p,
-                                    float x0,
-                                    float y0,
-                                    float x1,
-                                    float y1,
-                                    float a,
-                                    float b,
-                                    float theta,
-                                    boolean isMoreThanHalf,
-                                    boolean isPositiveArc) {
+
+        private static void drawArc(
+                Path p,
+                float x0,
+                float y0,
+                float x1,
+                float y1,
+                float a,
+                float b,
+                float theta,
+                boolean isMoreThanHalf,
+                boolean isPositiveArc) {
             /* Convert rotation angle from degrees to radians */
             double thetaD = Math.toRadians(theta);
             /* Pre-compute rotation matrix entries */
@@ -629,15 +657,24 @@ public class PathParser {
             /* Solve for intersecting unit circles */
             double dsq = dx * dx + dy * dy;
             if (dsq == 0.0) {
-                LOG.warn ("Points are coincident");
+                LOG.warn("Points are coincident");
                 return; /* Points are coincident */
             }
             double disc = 1.0 / dsq - 1.0 / 4.0;
             if (disc < 0.0) {
                 LOG.warn("Points are too far apart " + dsq);
                 float adjust = (float) (Math.sqrt(dsq) / 1.99999);
-                drawArc(p, x0, y0, x1, y1, a * adjust,
-                        b * adjust, theta, isMoreThanHalf, isPositiveArc);
+                drawArc(
+                        p,
+                        x0,
+                        y0,
+                        x1,
+                        y1,
+                        a * adjust,
+                        b * adjust,
+                        theta,
+                        isMoreThanHalf,
+                        isPositiveArc);
                 return; /* Points are too far apart */
             }
             double s = Math.sqrt(disc);
@@ -672,27 +709,28 @@ public class PathParser {
         /**
          * Converts an arc to cubic Bezier segments and records them in p.
          *
-         * @param p     The target for the cubic Bezier segments
-         * @param cx    The x coordinate center of the ellipse
-         * @param cy    The y coordinate center of the ellipse
-         * @param a     The radius of the ellipse in the horizontal direction
-         * @param b     The radius of the ellipse in the vertical direction
-         * @param e1x   E(eta1) x coordinate of the starting point of the arc
-         * @param e1y   E(eta2) y coordinate of the starting point of the arc
+         * @param p The target for the cubic Bezier segments
+         * @param cx The x coordinate center of the ellipse
+         * @param cy The y coordinate center of the ellipse
+         * @param a The radius of the ellipse in the horizontal direction
+         * @param b The radius of the ellipse in the vertical direction
+         * @param e1x E(eta1) x coordinate of the starting point of the arc
+         * @param e1y E(eta2) y coordinate of the starting point of the arc
          * @param theta The angle that the ellipse bounding rectangle makes with horizontal plane
          * @param start The start angle of the arc on the ellipse
          * @param sweep The angle (positive or negative) of the sweep of the arc on the ellipse
          */
-        private static void arcToBezier(Path p,
-                                        double cx,
-                                        double cy,
-                                        double a,
-                                        double b,
-                                        double e1x,
-                                        double e1y,
-                                        double theta,
-                                        double start,
-                                        double sweep) {
+        private static void arcToBezier(
+                Path p,
+                double cx,
+                double cy,
+                double a,
+                double b,
+                double e1x,
+                double e1y,
+                double theta,
+                double start,
+                double sweep) {
             // Taken from equations at: http://spaceroots.org/documents/ellipse/node8.html
             // and http://www.spaceroots.org/documents/ellipse/node22.html
             // Maximum of 45 degrees per cubic Bezier segment
@@ -722,7 +760,8 @@ public class PathParser {
                 double q2y = e2y - alpha * ep2y;
                 // Adding this no-op call to workaround a proguard related issue.
                 p.rLineTo(0, 0);
-                p.cubicTo((float) q1x,
+                p.cubicTo(
+                        (float) q1x,
                         (float) q1y,
                         (float) q2x,
                         (float) q2y,
@@ -736,6 +775,6 @@ public class PathParser {
             }
         }
     }
-    private PathParser() {
-    }
+
+    private PathParser() {}
 }

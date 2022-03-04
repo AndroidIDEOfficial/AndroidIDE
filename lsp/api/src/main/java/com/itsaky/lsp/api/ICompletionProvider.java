@@ -36,8 +36,8 @@ package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.CompletionParams;
+import com.itsaky.lsp.models.CompletionResult;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,13 +48,13 @@ import java.nio.file.Path;
  * @author Akash Yadav
  */
 public interface ICompletionProvider {
-    
-    CompletionResult EMPTY = new CompletionResult ();
-    
-    default boolean canComplete (Path file) {
-        return file != null && Files.exists (file) && !Files.isDirectory (file);
+
+    CompletionResult EMPTY = new CompletionResult();
+
+    default boolean canComplete(Path file) {
+        return file != null && Files.exists(file) && !Files.isDirectory(file);
     }
-    
+
     /**
      * Compute completions using the given params and return the given completion result.
      *
@@ -62,5 +62,5 @@ public interface ICompletionProvider {
      * @return The completion result. Must not be null.
      */
     @NonNull
-    CompletionResult complete (CompletionParams params);
+    CompletionResult complete(CompletionParams params);
 }

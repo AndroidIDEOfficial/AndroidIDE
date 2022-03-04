@@ -28,12 +28,13 @@ import com.itsaky.lsp.models.DefinitionResult;
  * @author Akash Yadav
  */
 public interface IDefinitionProvider {
-    
+
     /**
      * Find the definitions of the token at the given position.
+     *
      * @param params The params for finding the definition
      * @return The result of the definition search. Must not be null.
      */
     @NonNull
-    DefinitionResult findDefinitions (DefinitionParams params);
+    DefinitionResult findDefinitions(DefinitionParams params);
 }

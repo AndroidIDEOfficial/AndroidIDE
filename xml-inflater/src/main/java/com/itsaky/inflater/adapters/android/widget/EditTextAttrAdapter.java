@@ -27,11 +27,12 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
 public class EditTextAttrAdapter extends TextViewAttrAdapter {
-    
-    public EditTextAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
+
+    public EditTextAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
-    
+
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof EditText;
@@ -42,5 +43,4 @@ public class EditTextAttrAdapter extends TextViewAttrAdapter {
         // No special attributes for EditText
         return super.apply(attribute, view);
     }
-    
 }

@@ -30,27 +30,27 @@ import org.xmlpull.v1.XmlPullParserFactory;
  * @author Akash Yadav
  */
 public class XmlUtils {
-    
+
     private static final XmlPullParserFactory parserFactory;
-    private static final Logger LOG = Logger.instance ("XmlUtils");
-    
+    private static final Logger LOG = Logger.instance("XmlUtils");
+
     static {
         try {
-            parserFactory = XmlPullParserFactory.newInstance ();
+            parserFactory = XmlPullParserFactory.newInstance();
         } catch (XmlPullParserException e) {
-            LOG.error ("Unable to create pull parser factory");
-            throw new RuntimeException (e);
+            LOG.error("Unable to create pull parser factory");
+            throw new RuntimeException(e);
         }
     }
-    
-    public static XmlPullParser newParser () throws XmlPullParserException {
-        return parserFactory.newPullParser ();
+
+    public static XmlPullParser newParser() throws XmlPullParserException {
+        return parserFactory.newPullParser();
     }
-    
+
     @NonNull
-    public static XmlPullParser newParser (CharSequence contents) throws XmlPullParserException {
-        final var parser = parserFactory.newPullParser ();
-        parser.setInput (new CharSequenceReader (contents));
+    public static XmlPullParser newParser(CharSequence contents) throws XmlPullParserException {
+        final var parser = parserFactory.newPullParser();
+        parser.setInput(new CharSequenceReader(contents));
         return parser;
     }
 }

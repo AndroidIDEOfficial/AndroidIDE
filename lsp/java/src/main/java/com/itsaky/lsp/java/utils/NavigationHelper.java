@@ -46,13 +46,13 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 
 public class NavigationHelper {
-    
+
     public static Element findElement(CompileTask task, Path file, int line, int column) {
         Trees trees = Trees.instance(task.task);
         for (CompilationUnitTree root : task.roots) {
             if (root.getSourceFile().toUri().equals(file.toUri())) {
                 long cursor = root.getLineMap().getPosition(line, column);
-                TreePath path = new FindNameAt (task).scan(root, cursor);
+                TreePath path = new FindNameAt(task).scan(root, cursor);
                 if (path == null) {
                     return null;
                 }
@@ -61,7 +61,7 @@ public class NavigationHelper {
         }
         throw new RuntimeException("file not found");
     }
-    
+
     public static boolean isLocal(Element element) {
         if (element.getModifiers().contains(Modifier.PRIVATE)) {
             return true;
@@ -76,7 +76,7 @@ public class NavigationHelper {
                 return false;
         }
     }
-    
+
     public static boolean isMember(Element element) {
         switch (element.getKind()) {
             case ENUM_CONSTANT:
@@ -88,7 +88,7 @@ public class NavigationHelper {
                 return false;
         }
     }
-    
+
     public static boolean isType(Element element) {
         switch (element.getKind()) {
             case ANNOTATION_TYPE:

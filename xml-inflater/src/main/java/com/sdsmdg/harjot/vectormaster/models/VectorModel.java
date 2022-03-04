@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Path;
-import android.graphics.Region;
 
 import com.sdsmdg.harjot.vectormaster.enums.TintMode;
 
@@ -50,11 +49,17 @@ public class VectorModel {
         for (PathModel pathModel : pathModels) {
             if (pathModel.isFillAndStroke()) {
                 pathModel.makeFillPaint();
-                canvas.drawPath(pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY), pathModel.getPathPaint());
+                canvas.drawPath(
+                        pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY),
+                        pathModel.getPathPaint());
                 pathModel.makeStrokePaint();
-                canvas.drawPath(pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY), pathModel.getPathPaint());
+                canvas.drawPath(
+                        pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY),
+                        pathModel.getPathPaint());
             } else {
-                canvas.drawPath(pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY), pathModel.getPathPaint());
+                canvas.drawPath(
+                        pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY),
+                        pathModel.getPathPaint());
             }
         }
     }

@@ -29,40 +29,46 @@ import com.itsaky.androidide.models.UIWidgetGroup;
 
 import java.util.List;
 
-public class WidgetGroupItemAdapter extends SimpleIconTextAdapter implements SimpleIconTextAdapter.OnBindListener<IconTextListItem> {
-    
+public class WidgetGroupItemAdapter extends SimpleIconTextAdapter
+        implements SimpleIconTextAdapter.OnBindListener<IconTextListItem> {
+
     private final OnGroupClickListener clickListener;
-    
-    public WidgetGroupItemAdapter (@NonNull List<UIWidgetGroup> groups, @Nullable OnGroupClickListener clickListener) {
-        super (groups);
+
+    public WidgetGroupItemAdapter(
+            @NonNull List<UIWidgetGroup> groups, @Nullable OnGroupClickListener clickListener) {
+        super(groups);
         this.clickListener = clickListener;
-        
-        super.setOnBindListener (this);
+
+        super.setOnBindListener(this);
     }
-    
+
     @Override
-    public boolean onBind (IconTextListItem item, VH holder, int position) {
+    public boolean onBind(IconTextListItem item, VH holder, int position) {
         // Ignored
         return false;
     }
-    
+
     @Override
-    public void postBind (IconTextListItem item, @NonNull VH holder, int position) {
+    public void postBind(IconTextListItem item, @NonNull VH holder, int position) {
         final var binding = holder.binding;
         final var group = (UIWidgetGroup) item;
-        
-        if (group.isSelected ()) {
-            binding.getRoot ().setBackground (ContextCompat.getDrawable (binding.getRoot ().getContext (), R.drawable.bg_widget_group_selected));
+
+        if (group.isSelected()) {
+            binding.getRoot()
+                    .setBackground(
+                            ContextCompat.getDrawable(
+                                    binding.getRoot().getContext(),
+                                    R.drawable.bg_widget_group_selected));
         } else {
-            binding.getRoot ().setBackgroundColor (Color.TRANSPARENT);
+            binding.getRoot().setBackgroundColor(Color.TRANSPARENT);
         }
-        
+
         if (this.clickListener != null) {
-            binding.getRoot ().setOnClickListener (v -> this.clickListener.onGroupClick (group));
+            binding.getRoot().setOnClickListener(v -> this.clickListener.onGroupClick(group));
         }
     }
-    
+
     public interface OnGroupClickListener {
-        void onGroupClick (UIWidgetGroup group);
+        void onGroupClick(UIWidgetGroup group);
     }
 }

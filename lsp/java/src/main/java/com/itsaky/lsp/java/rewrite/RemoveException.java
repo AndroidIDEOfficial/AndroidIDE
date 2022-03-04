@@ -18,8 +18,8 @@
 package com.itsaky.lsp.java.rewrite;
 
 import com.itsaky.lsp.java.compiler.CompilerProvider;
-import com.itsaky.lsp.java.utils.FindHelper;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
+import com.itsaky.lsp.java.utils.FindHelper;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
@@ -47,38 +47,46 @@ public class RemoveException implements Rewrite {
     final String className, methodName;
     final String[] erasedParameterTypes;
     final String exceptionType;
-    
-    public RemoveException(String className, String methodName, String[] erasedParameterTypes, String exceptionType) {
+
+    public RemoveException(
+            String className,
+            String methodName,
+            String[] erasedParameterTypes,
+            String exceptionType) {
         this.className = className;
         this.methodName = methodName;
         this.erasedParameterTypes = erasedParameterTypes;
         this.exceptionType = exceptionType;
     }
-    
+
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         Path file = compiler.findTypeDeclaration(className);
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask (task -> {
-            ExecutableElement methodElement = FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
-            MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
-            if (methodTree.getThrows().size() == 1) {
-                TextEdit delete = removeEntireThrows(task.task, task.root(), methodTree);
-                if (delete == TextEdit.NONE) {
-                    return CANCELLED;
-                }
-            
-                TextEdit[] edits = {delete};
-                return Collections.singletonMap (file, edits);
-            }
-            TextEdit[] edits = {removeSingleException(task.task, task.root(), methodTree)};
-            return Collections.singletonMap (file, edits);
-        });
+        return synchronizedTask.getWithTask(
+                task -> {
+                    ExecutableElement methodElement =
+                            FindHelper.findMethod(
+                                    task, className, methodName, erasedParameterTypes);
+                    MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
+                    if (methodTree.getThrows().size() == 1) {
+                        TextEdit delete = removeEntireThrows(task.task, task.root(), methodTree);
+                        if (delete == TextEdit.NONE) {
+                            return CANCELLED;
+                        }
+
+                        TextEdit[] edits = {delete};
+                        return Collections.singletonMap(file, edits);
+                    }
+                    TextEdit[] edits = {removeSingleException(task.task, task.root(), methodTree)};
+                    return Collections.singletonMap(file, edits);
+                });
     }
-    
+
     private static final Pattern THROWS = Pattern.compile("\\s*\\bthrows\\b");
-    
-    private TextEdit removeEntireThrows(JavacTask task, CompilationUnitTree root, MethodTree method) {
+
+    private TextEdit removeEntireThrows(
+            JavacTask task, CompilationUnitTree root, MethodTree method) {
         Trees trees = Trees.instance(task);
         SourcePositions pos = trees.getSourcePositions();
         int startMethod = (int) pos.getStartPosition(root, method);
@@ -88,12 +96,12 @@ public class RemoveException implements Rewrite {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        
+
         Matcher matcher = THROWS.matcher(contents);
         if (!matcher.find(startMethod)) {
             return TextEdit.NONE;
         }
-        
+
         LineMap lines = root.getLineMap();
         int start = matcher.start();
         int startLine = (int) lines.getLineNumber(start);
@@ -104,15 +112,16 @@ public class RemoveException implements Rewrite {
         int endLine = (int) lines.getLineNumber(end);
         int endColumn = (int) lines.getColumnNumber(end);
         Position endPos = new Position(endLine - 1, endColumn - 1);
-        return new TextEdit(new Range (startPos, endPos), "");
+        return new TextEdit(new Range(startPos, endPos), "");
     }
-    
-    private TextEdit removeSingleException(JavacTask task, CompilationUnitTree root, MethodTree method) {
+
+    private TextEdit removeSingleException(
+            JavacTask task, CompilationUnitTree root, MethodTree method) {
         int i = findNamedException(task, root, method);
         if (i == -1) {
             return TextEdit.NONE;
         }
-        
+
         Trees trees = Trees.instance(task);
         SourcePositions pos = trees.getSourcePositions();
         ExpressionTree exn = method.getThrows().get(i);
@@ -123,7 +132,7 @@ public class RemoveException implements Rewrite {
         } else {
             start = removeLeadingComma(root, start);
         }
-        
+
         LineMap lines = root.getLineMap();
         int startLine = (int) lines.getLineNumber(start);
         int startColumn = (int) lines.getColumnNumber(start);
@@ -133,7 +142,7 @@ public class RemoveException implements Rewrite {
         Position endPos = new Position(endLine - 1, endColumn - 1);
         return new TextEdit(new Range(startPos, endPos), "");
     }
-    
+
     private int findNamedException(JavacTask task, CompilationUnitTree root, MethodTree method) {
         Trees trees = Trees.instance(task);
         for (int i = 0; i < method.getThrows().size(); i++) {
@@ -147,7 +156,7 @@ public class RemoveException implements Rewrite {
         }
         return -1;
     }
-    
+
     private int removeLeadingComma(CompilationUnitTree root, long start) {
         CharSequence contents = contents(root);
         for (int i = (int) start; i > 0; i--) {
@@ -157,7 +166,7 @@ public class RemoveException implements Rewrite {
         }
         return -1;
     }
-    
+
     private int removeTrailingComma(CompilationUnitTree root, long end) {
         CharSequence contents = contents(root);
         for (int i = (int) end; i < contents.length(); i++) {
@@ -171,7 +180,7 @@ public class RemoveException implements Rewrite {
         }
         return -1;
     }
-    
+
     private CharSequence contents(CompilationUnitTree root) {
         try {
             return root.getSourceFile().getCharContent(true);

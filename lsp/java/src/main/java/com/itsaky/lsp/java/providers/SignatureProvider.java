@@ -22,12 +22,12 @@ import androidx.annotation.NonNull;
 import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
+import com.itsaky.lsp.java.compiler.SynchronizedTask;
+import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.utils.FindHelper;
 import com.itsaky.lsp.java.utils.MarkdownHelper;
-import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.utils.ScopeHelper;
 import com.itsaky.lsp.java.utils.ShortTypePrinter;
-import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.visitors.FindInvocationAt;
 import com.itsaky.lsp.models.ParameterInformation;
 import com.itsaky.lsp.models.SignatureHelp;
@@ -74,65 +74,69 @@ public class SignatureProvider implements ISignatureHelpProvider {
 
     private final CompilerProvider compiler;
 
-    public static final SignatureHelp NOT_SUPPORTED = new SignatureHelp(Collections.emptyList (), -1, -1);
-    
+    public static final SignatureHelp NOT_SUPPORTED =
+            new SignatureHelp(Collections.emptyList(), -1, -1);
+
     public SignatureProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
-    
+
     @NonNull
     @Override
-    public SignatureHelp provideSignatures (SignatureHelpParams params) {
-        return signatureHelp (params.getFile (),
-                params.getPosition ().getLine (),
-                params.getPosition ().getColumn ());
+    public SignatureHelp provideSignatures(SignatureHelpParams params) {
+        return signatureHelp(
+                params.getFile(), params.getPosition().getLine(), params.getPosition().getColumn());
     }
-    
+
     public SignatureHelp signatureHelp(Path file, int l, int c) {
-        
+
         // 1-based line and column index
         final int line = l + 1;
         final int column = c + 1;
-        
+
         // TODO prune
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask (task -> {
-            long cursor = task.root().getLineMap().getPosition(line, column);
-            TreePath path = new FindInvocationAt (task.task).scan(task.root(), cursor);
-            if (path == null) return NOT_SUPPORTED;
-            if (path.getLeaf() instanceof MethodInvocationTree) {
-                MethodInvocationTree invoke = (MethodInvocationTree) path.getLeaf();
-                List<ExecutableElement> overloads = methodOverloads(task, invoke);
-                List<SignatureInformation> signatures = new ArrayList<> ();
-                for (ExecutableElement method : overloads) {
-                    SignatureInformation info = info(method);
-                    addSourceInfo(task, method, info);
-                    addFancyLabel(info);
-                    signatures.add(info);
-                }
-                int activeSignature = activeSignature(task, path, invoke.getArguments(), overloads);
-                int activeParameter = activeParameter(task, invoke.getArguments(), cursor);
-                return new SignatureHelp(signatures, activeSignature, activeParameter);
-            }
-            if (path.getLeaf() instanceof NewClassTree) {
-                NewClassTree invoke = (NewClassTree) path.getLeaf();
-                List<ExecutableElement> overloads = constructorOverloads(task, invoke);
-                List<SignatureInformation> signatures = new ArrayList<> ();
-                for (ExecutableElement method : overloads) {
-                    SignatureInformation info = info(method);
-                    addSourceInfo(task, method, info);
-                    addFancyLabel(info);
-                    signatures.add(info);
-                }
-                int activeSignature = activeSignature(task, path, invoke.getArguments(), overloads);
-                int activeParameter = activeParameter(task, invoke.getArguments(), cursor);
-                return new SignatureHelp (signatures, activeSignature, activeParameter);
-            }
-            return NOT_SUPPORTED;
-        });
+        return synchronizedTask.getWithTask(
+                task -> {
+                    long cursor = task.root().getLineMap().getPosition(line, column);
+                    TreePath path = new FindInvocationAt(task.task).scan(task.root(), cursor);
+                    if (path == null) return NOT_SUPPORTED;
+                    if (path.getLeaf() instanceof MethodInvocationTree) {
+                        MethodInvocationTree invoke = (MethodInvocationTree) path.getLeaf();
+                        List<ExecutableElement> overloads = methodOverloads(task, invoke);
+                        List<SignatureInformation> signatures = new ArrayList<>();
+                        for (ExecutableElement method : overloads) {
+                            SignatureInformation info = info(method);
+                            addSourceInfo(task, method, info);
+                            addFancyLabel(info);
+                            signatures.add(info);
+                        }
+                        int activeSignature =
+                                activeSignature(task, path, invoke.getArguments(), overloads);
+                        int activeParameter = activeParameter(task, invoke.getArguments(), cursor);
+                        return new SignatureHelp(signatures, activeSignature, activeParameter);
+                    }
+                    if (path.getLeaf() instanceof NewClassTree) {
+                        NewClassTree invoke = (NewClassTree) path.getLeaf();
+                        List<ExecutableElement> overloads = constructorOverloads(task, invoke);
+                        List<SignatureInformation> signatures = new ArrayList<>();
+                        for (ExecutableElement method : overloads) {
+                            SignatureInformation info = info(method);
+                            addSourceInfo(task, method, info);
+                            addFancyLabel(info);
+                            signatures.add(info);
+                        }
+                        int activeSignature =
+                                activeSignature(task, path, invoke.getArguments(), overloads);
+                        int activeParameter = activeParameter(task, invoke.getArguments(), cursor);
+                        return new SignatureHelp(signatures, activeSignature, activeParameter);
+                    }
+                    return NOT_SUPPORTED;
+                });
     }
 
-    private List<ExecutableElement> methodOverloads(CompileTask task, @NonNull MethodInvocationTree method) {
+    private List<ExecutableElement> methodOverloads(
+            CompileTask task, @NonNull MethodInvocationTree method) {
         if (method.getMethodSelect() instanceof IdentifierTree) {
             IdentifierTree id = (IdentifierTree) method.getMethodSelect();
             return scopeOverloads(task, id);
@@ -145,11 +149,12 @@ public class SignatureProvider implements ISignatureHelpProvider {
     }
 
     @NonNull
-    private List<ExecutableElement> scopeOverloads(@NonNull CompileTask task, IdentifierTree method) {
+    private List<ExecutableElement> scopeOverloads(
+            @NonNull CompileTask task, IdentifierTree method) {
         Trees trees = Trees.instance(task.task);
         TreePath path = trees.getPath(task.root(), method);
         Scope scope = trees.getScope(path);
-        List<ExecutableElement> list = new ArrayList<> ();
+        List<ExecutableElement> list = new ArrayList<>();
         Predicate<CharSequence> filter = name -> method.getName().contentEquals(name);
         // TODO add static imports
         for (Element member : ScopeHelper.scopeMembers(task, scope, filter)) {
@@ -161,18 +166,19 @@ public class SignatureProvider implements ISignatureHelpProvider {
     }
 
     @NonNull
-    private List<ExecutableElement> memberOverloads(@NonNull CompileTask task, @NonNull MemberSelectTree method) {
+    private List<ExecutableElement> memberOverloads(
+            @NonNull CompileTask task, @NonNull MemberSelectTree method) {
         Trees trees = Trees.instance(task.task);
         TreePath path = trees.getPath(task.root(), method.getExpression());
         boolean isStatic = trees.getElement(path) instanceof TypeElement;
         Scope scope = trees.getScope(path);
         TypeElement type = typeElement(trees.getTypeMirror(path));
-        
+
         if (type == null) {
-            return Collections.emptyList ();
+            return Collections.emptyList();
         }
-        
-        List<ExecutableElement> list = new ArrayList<> ();
+
+        List<ExecutableElement> list = new ArrayList<>();
         for (Element member : task.task.getElements().getAllMembers(type)) {
             if (member.getKind() != ElementKind.METHOD) continue;
             if (!member.getSimpleName().contentEquals(method.getIdentifier())) continue;
@@ -196,12 +202,13 @@ public class SignatureProvider implements ISignatureHelpProvider {
     }
 
     @NonNull
-    private List<ExecutableElement> constructorOverloads(@NonNull CompileTask task, @NonNull NewClassTree method) {
+    private List<ExecutableElement> constructorOverloads(
+            @NonNull CompileTask task, @NonNull NewClassTree method) {
         Trees trees = Trees.instance(task.task);
         TreePath path = trees.getPath(task.root(), method.getIdentifier());
         Scope scope = trees.getScope(path);
         TypeElement type = (TypeElement) trees.getElement(path);
-        List<ExecutableElement> list = new ArrayList<> ();
+        List<ExecutableElement> list = new ArrayList<>();
         for (Element member : task.task.getElements().getAllMembers(type)) {
             if (member.getKind() != ElementKind.CONSTRUCTOR) continue;
             if (!trees.isAccessible(scope, member, (DeclaredType) type.asType())) continue;
@@ -213,17 +220,17 @@ public class SignatureProvider implements ISignatureHelpProvider {
     @NonNull
     private SignatureInformation info(@NonNull ExecutableElement method) {
         SignatureInformation info = new SignatureInformation();
-        info.setLabel (method.getSimpleName ().toString ());
+        info.setLabel(method.getSimpleName().toString());
         if (method.getKind() == ElementKind.CONSTRUCTOR) {
-            info.setLabel (method.getEnclosingElement ().getSimpleName ().toString ());
+            info.setLabel(method.getEnclosingElement().getSimpleName().toString());
         }
-        info.setParameters (parameters (method));
+        info.setParameters(parameters(method));
         return info;
     }
 
     @NonNull
     private List<ParameterInformation> parameters(@NonNull ExecutableElement method) {
-        List<ParameterInformation> list = new ArrayList<> ();
+        List<ParameterInformation> list = new ArrayList<>();
         for (VariableElement p : method.getParameters()) {
             list.add(parameter(p));
         }
@@ -233,54 +240,58 @@ public class SignatureProvider implements ISignatureHelpProvider {
     @NonNull
     private ParameterInformation parameter(@NonNull VariableElement p) {
         ParameterInformation info = new ParameterInformation();
-        info.setLabel (ShortTypePrinter.NO_PACKAGE.print (p.asType ()));
+        info.setLabel(ShortTypePrinter.NO_PACKAGE.print(p.asType()));
         return info;
     }
 
-    private void
-    addSourceInfo(CompileTask task, @NonNull ExecutableElement method, SignatureInformation info) {
+    private void addSourceInfo(
+            CompileTask task, @NonNull ExecutableElement method, SignatureInformation info) {
         TypeElement type = (TypeElement) method.getEnclosingElement();
         String className = type.getQualifiedName().toString();
         String methodName = method.getSimpleName().toString();
         String[] erasedParameterTypes = FindHelper.erasedParameterTypes(task, method);
         Optional<JavaFileObject> file = compiler.findAnywhere(className);
-        
-        if (!file.isPresent ()) {
+
+        if (!file.isPresent()) {
             return;
         }
-        
+
         ParseTask parse = compiler.parse(file.get());
-        MethodTree source = FindHelper.findMethod(parse, className, methodName, erasedParameterTypes);
+        MethodTree source =
+                FindHelper.findMethod(parse, className, methodName, erasedParameterTypes);
         TreePath path = Trees.instance(task.task).getPath(parse.root, source);
         DocCommentTree docTree = DocTrees.instance(task.task).getDocCommentTree(path);
-        
+
         if (docTree != null) {
-            info.setDocumentation (MarkdownHelper.asMarkupContent (docTree));
+            info.setDocumentation(MarkdownHelper.asMarkupContent(docTree));
         }
-        
-        info.setParameters (parametersFromSource (source));
+
+        info.setParameters(parametersFromSource(source));
     }
 
     private void addFancyLabel(@NonNull SignatureInformation info) {
         StringJoiner join = new StringJoiner(", ");
-        for (ParameterInformation p : info.getParameters ()) {
-            join.add(p.getLabel ());
+        for (ParameterInformation p : info.getParameters()) {
+            join.add(p.getLabel());
         }
-        info.setLabel (info.getLabel () + "(" + join + ")");
+        info.setLabel(info.getLabel() + "(" + join + ")");
     }
 
     @NonNull
     private List<ParameterInformation> parametersFromSource(MethodTree source) {
-        List<ParameterInformation> list = new ArrayList<> ();
+        List<ParameterInformation> list = new ArrayList<>();
         for (VariableTree p : source.getParameters()) {
-            ParameterInformation info = new ParameterInformation ();
-            info.setLabel (p.getType () + " " + p.getName ());
+            ParameterInformation info = new ParameterInformation();
+            info.setLabel(p.getType() + " " + p.getName());
             list.add(info);
         }
         return list;
     }
 
-    private int activeParameter(@NonNull CompileTask task, @NonNull List<? extends ExpressionTree> arguments, long cursor) {
+    private int activeParameter(
+            @NonNull CompileTask task,
+            @NonNull List<? extends ExpressionTree> arguments,
+            long cursor) {
         SourcePositions pos = Trees.instance(task.task).getSourcePositions();
         CompilationUnitTree root = task.root();
         for (int i = 0; i < arguments.size(); i++) {
@@ -313,7 +324,8 @@ public class SignatureProvider implements ISignatureHelpProvider {
         if (arguments.size() > overload.getParameters().size()) return false;
         for (int i = 0; i < arguments.size(); i++) {
             ExpressionTree argument = arguments.get(i);
-            TypeMirror argumentType = Trees.instance(task.task).getTypeMirror(new TreePath(invocation, argument));
+            TypeMirror argumentType =
+                    Trees.instance(task.task).getTypeMirror(new TreePath(invocation, argument));
             TypeMirror parameterType = overload.getParameters().get(i).asType();
             if (!isCompatible(task, argumentType, parameterType)) return false;
         }

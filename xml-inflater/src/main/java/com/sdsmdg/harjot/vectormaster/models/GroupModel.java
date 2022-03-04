@@ -1,6 +1,5 @@
 package com.sdsmdg.harjot.vectormaster.models;
 
-
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 
@@ -50,11 +49,17 @@ public class GroupModel {
         for (PathModel pathModel : pathModels) {
             if (pathModel.isFillAndStroke()) {
                 pathModel.makeFillPaint();
-                canvas.drawPath(pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY), pathModel.getPathPaint());
+                canvas.drawPath(
+                        pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY),
+                        pathModel.getPathPaint());
                 pathModel.makeStrokePaint();
-                canvas.drawPath(pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY), pathModel.getPathPaint());
+                canvas.drawPath(
+                        pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY),
+                        pathModel.getPathPaint());
             } else {
-                canvas.drawPath(pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY), pathModel.getPathPaint());
+                canvas.drawPath(
+                        pathModel.getScaledAndOffsetPath(offsetX, offsetY, scaleX, scaleY),
+                        pathModel.getPathPaint());
             }
         }
     }
@@ -134,8 +139,7 @@ public class GroupModel {
                 return grpModel;
             } else {
                 grpModel = groupModel.getGroupModelByName(name);
-                if (grpModel != null)
-                    return grpModel;
+                if (grpModel != null) return grpModel;
             }
         }
         return grpModel;
@@ -150,8 +154,7 @@ public class GroupModel {
         }
         for (GroupModel groupModel : groupModels) {
             pModel = groupModel.getPathModelByName(name);
-            if (pModel != null && Utils.isEqual(pModel.getName(), name))
-                return pModel;
+            if (pModel != null && Utils.isEqual(pModel.getName(), name)) return pModel;
         }
         return pModel;
     }
@@ -165,8 +168,7 @@ public class GroupModel {
         }
         for (GroupModel groupModel : getGroupModels()) {
             cModel = groupModel.getClipPathModelByName(name);
-            if (cModel != null && Utils.isEqual(cModel.getName(), name))
-                return cModel;
+            if (cModel != null && Utils.isEqual(cModel.getName(), name)) return cModel;
         }
         return cModel;
     }

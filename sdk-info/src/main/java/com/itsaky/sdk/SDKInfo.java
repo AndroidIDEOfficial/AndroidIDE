@@ -36,27 +36,27 @@ import java.util.Objects;
  * @author Akash Yadav
  */
 public class SDKInfo {
-    
-    public AttrInfo getAttrInfo () {
+
+    public AttrInfo getAttrInfo() {
         return attrInfo;
     }
-    
-    public ApiInfo getApiInfo () {
+
+    public ApiInfo getApiInfo() {
         return apiInfo;
     }
-    
-    public WidgetInfo getWidgetInfo () {
+
+    public WidgetInfo getWidgetInfo() {
         return widgetInfo;
     }
-    
+
     private final AttrInfo attrInfo;
     private final ApiInfo apiInfo;
     private final WidgetInfo widgetInfo;
-    
-    public SDKInfo (@NonNull final Context context) throws Exception {
-        Objects.requireNonNull (context);
-        this.apiInfo = new ApiInfo (context);
-        this.attrInfo = new AttrInfo (context);
-        this.widgetInfo = new WidgetInfo (context);
+
+    public SDKInfo(@NonNull final Context context) throws Exception {
+        Objects.requireNonNull(context);
+        this.apiInfo = new ApiInfo(context);
+        this.attrInfo = new AttrInfo(context);
+        this.widgetInfo = new WidgetInfo(context);
     }
 }

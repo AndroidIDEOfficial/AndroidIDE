@@ -24,7 +24,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 class RewriteNotSupported implements Rewrite {
-    
+
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         return CANCELLED;

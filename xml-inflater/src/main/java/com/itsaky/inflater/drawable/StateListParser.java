@@ -32,95 +32,103 @@ import java.util.ArrayList;
 
 /**
  * Parser for parsing &lt;selector&gt; drawables.
+ *
  * @author Akash Yadav
  */
 public class StateListParser extends IDrawableParser {
-    
-    private static final Logger LOG = Logger.instance ("StateListParser");
-    
-    protected StateListParser (XmlPullParser parser, IResourceTable resourceFinder, DisplayMetrics displayMetrics, int minDepth) {
-        super (parser, resourceFinder, displayMetrics, minDepth);
+
+    private static final Logger LOG = Logger.instance("StateListParser");
+
+    protected StateListParser(
+            XmlPullParser parser,
+            IResourceTable resourceFinder,
+            DisplayMetrics displayMetrics,
+            int minDepth) {
+        super(parser, resourceFinder, displayMetrics, minDepth);
     }
-    
+
     @Override
-    public Drawable parseDrawable () throws Exception {
-        var states = new StateListDrawable ();
-        
+    public Drawable parseDrawable() throws Exception {
+        var states = new StateListDrawable();
+
         // --------------------------- NOTE -------------------------
         // Unsupported attributes :
         //  1. android:constantSize
         //  2. android:variablePadding
-        
-        var index = attrIndex ("dither");
+
+        var index = attrIndex("dither");
         if (index != -1) {
-            states.setDither (parseBoolean (value (index)));
+            states.setDither(parseBoolean(value(index)));
         }
-        
-        var event = parser.getEventType ();
-        while ((event = parser.next ()) != XmlPullParser.END_DOCUMENT) {
+
+        var event = parser.getEventType();
+        while ((event = parser.next()) != XmlPullParser.END_DOCUMENT) {
             if (event == XmlPullParser.START_TAG) {
-                var name = parser.getName ();
-                if ("item".equals (name)) {
-                    index = attrIndex ("drawable");
+                var name = parser.getName();
+                if ("item".equals(name)) {
+                    index = attrIndex("drawable");
                     if (index == -1) {
-                        throw new InflateException ("<selector> item does not define android:drawable");
+                        throw new InflateException(
+                                "<selector> item does not define android:drawable");
                     }
-                    final var drawable = parseDrawable (value (index), BaseApplication.getBaseInstance ());
+                    final var drawable =
+                            parseDrawable(value(index), BaseApplication.getBaseInstance());
                     if (drawable == null) {
-                        throw new InflateException ("Unable to parse drawable for android:drawable attribute");
+                        throw new InflateException(
+                                "Unable to parse drawable for android:drawable attribute");
                     }
-                    
-                    addStates (states, drawable);
+
+                    addStates(states, drawable);
                 }
             }
         }
-        
+
         return states;
     }
-    
+
     /**
-     * Add all the defined states of the current tag in <code>parser</code>
-     * to the given state list drawable.
+     * Add all the defined states of the current tag in <code>parser</code> to the given state list
+     * drawable.
      *
      * @param states The drawable to add states to.
      * @param drawable The drawable associated with the defined states;
      */
-    private void addStates (StateListDrawable states, Drawable drawable) {
-        final var stateList = new ArrayList<Integer> ();
-        final var count = parser.getAttributeCount ();
+    private void addStates(StateListDrawable states, Drawable drawable) {
+        final var stateList = new ArrayList<Integer>();
+        final var count = parser.getAttributeCount();
         for (int i = 0; i < count; i++) {
-            var name = parser.getAttributeName (i);
-            var value = parser.getAttributeValue (i);
-            if (!name.startsWith ("state_")) {
+            var name = parser.getAttributeName(i);
+            var value = parser.getAttributeValue(i);
+            if (!name.startsWith("state_")) {
                 continue;
             }
-            
-            var state = reflectState (name);
-            
-            final var isEnabled = parseBoolean (value);
+
+            var state = reflectState(name);
+
+            final var isEnabled = parseBoolean(value);
             if (!isEnabled) {
                 // android:state_[state_name]="false"
                 state = -state;
             }
-            
-            stateList.add (state);
+
+            stateList.add(state);
         }
-        
-        final var arr = new int [stateList.size ()];
-        for (int i = 0; i < stateList.size (); i++) {
-            arr [i] = stateList.get (i);
+
+        final var arr = new int[stateList.size()];
+        for (int i = 0; i < stateList.size(); i++) {
+            arr[i] = stateList.get(i);
         }
-        
-        states.addState (arr, drawable);
+
+        states.addState(arr, drawable);
     }
-    
-    private int reflectState (String name) {
+
+    private int reflectState(String name) {
         try {
             final var clazz = android.R.attr.class;
-            final var field = clazz.getDeclaredField (name);
-            return field.getInt (null);
+            final var field = clazz.getDeclaredField(name);
+            return field.getInt(null);
         } catch (Throwable th) {
-            LOG.error ("Unable to get state ID with name:", name);
+            LOG.error("Unable to get state ID with name:", name);
             return -1;
         }
     }

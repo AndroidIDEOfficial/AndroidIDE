@@ -13,79 +13,97 @@ import java.util.stream.Collectors;
 
 public class VirtualKeyButton {
 
-    /** The key name for the name of the extra key if using a dict to define the extra key. {key: name, ...} */
+    /**
+     * The key name for the name of the extra key if using a dict to define the extra key. {key:
+     * name, ...}
+     */
     public static final String KEY_KEY_NAME = "key";
 
-    /** The key name for the macro value of the extra key if using a dict to define the extra key. {macro: value, ...} */
+    /**
+     * The key name for the macro value of the extra key if using a dict to define the extra key.
+     * {macro: value, ...}
+     */
     public static final String KEY_MACRO = "macro";
 
-    /** The key name for the alternate display name of the extra key if using a dict to define the extra key. {display: name, ...} */
+    /**
+     * The key name for the alternate display name of the extra key if using a dict to define the
+     * extra key. {display: name, ...}
+     */
     public static final String KEY_DISPLAY_NAME = "display";
 
-    /** The key name for the nested dict to define popup extra key info if using a dict to define the extra key. {popup: {key: name, ...}, ...} */
+    /**
+     * The key name for the nested dict to define popup extra key info if using a dict to define the
+     * extra key. {popup: {key: name, ...}, ...}
+     */
     public static final String KEY_POPUP = "popup";
 
-
     /**
-     * The key that will be sent to the terminal, either a control character, like defined in
-     * {@link VirtualKeysConstants#PRIMARY_KEY_CODES_FOR_STRINGS} (LEFT, RIGHT, PGUP...) or some text.
+     * The key that will be sent to the terminal, either a control character, like defined in {@link
+     * VirtualKeysConstants#PRIMARY_KEY_CODES_FOR_STRINGS} (LEFT, RIGHT, PGUP...) or some text.
      */
     private final String key;
 
-    /**
-     * If the key is a macro, i.e. a sequence of keys separated by space.
-     */
+    /** If the key is a macro, i.e. a sequence of keys separated by space. */
     private final boolean macro;
 
-    /**
-     * The text that will be displayed on the button.
-     */
+    /** The text that will be displayed on the button. */
     private final String display;
 
     /**
-     * The {@link VirtualKeyButton} containing the information of the popup button (triggered by swipe up).
+     * The {@link VirtualKeyButton} containing the information of the popup button (triggered by
+     * swipe up).
      */
-    @Nullable
-    private final VirtualKeyButton popup;
-
+    @Nullable private final VirtualKeyButton popup;
 
     /**
      * Initialize a {@link VirtualKeyButton}.
      *
-     * @param config The {@link JSONObject} containing the info to create the {@link VirtualKeyButton}.
-     * @param extraKeyDisplayMap The {@link VirtualKeysConstants.VirtualKeyDisplayMap} that defines the
-     *                           display text mapping for the keys if a custom value is not defined
-     *                           by {@link #KEY_DISPLAY_NAME}.
-     * @param extraKeyAliasMap The {@link VirtualKeysConstants.VirtualKeyDisplayMap} that defines the
-     *                           aliases for the actual key names.
+     * @param config The {@link JSONObject} containing the info to create the {@link
+     *     VirtualKeyButton}.
+     * @param extraKeyDisplayMap The {@link VirtualKeysConstants.VirtualKeyDisplayMap} that defines
+     *     the display text mapping for the keys if a custom value is not defined by {@link
+     *     #KEY_DISPLAY_NAME}.
+     * @param extraKeyAliasMap The {@link VirtualKeysConstants.VirtualKeyDisplayMap} that defines
+     *     the aliases for the actual key names.
      */
-    public VirtualKeyButton(@NonNull JSONObject config,
-                          @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyDisplayMap,
-                          @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyAliasMap) throws JSONException {
+    public VirtualKeyButton(
+            @NonNull JSONObject config,
+            @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyDisplayMap,
+            @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyAliasMap)
+            throws JSONException {
         this(config, null, extraKeyDisplayMap, extraKeyAliasMap);
     }
 
     /**
      * Initialize a {@link VirtualKeyButton}.
      *
-     * @param config The {@link JSONObject} containing the info to create the {@link VirtualKeyButton}.
+     * @param config The {@link JSONObject} containing the info to create the {@link
+     *     VirtualKeyButton}.
      * @param popup The {@link VirtualKeyButton} optional {@link #popup} button.
-     * @param extraKeyDisplayMap The {@link VirtualKeysConstants.VirtualKeyDisplayMap} that defines the
-     *                           display text mapping for the keys if a custom value is not defined
-     *                           by {@link #KEY_DISPLAY_NAME}.
-     * @param extraKeyAliasMap The {@link VirtualKeysConstants.VirtualKeyDisplayMap} that defines the
-     *                           aliases for the actual key names.
+     * @param extraKeyDisplayMap The {@link VirtualKeysConstants.VirtualKeyDisplayMap} that defines
+     *     the display text mapping for the keys if a custom value is not defined by {@link
+     *     #KEY_DISPLAY_NAME}.
+     * @param extraKeyAliasMap The {@link VirtualKeysConstants.VirtualKeyDisplayMap} that defines
+     *     the aliases for the actual key names.
      */
-    public VirtualKeyButton(@NonNull JSONObject config, @Nullable VirtualKeyButton popup,
-                          @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyDisplayMap,
-                          @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyAliasMap) throws JSONException {
+    public VirtualKeyButton(
+            @NonNull JSONObject config,
+            @Nullable VirtualKeyButton popup,
+            @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyDisplayMap,
+            @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyAliasMap)
+            throws JSONException {
         String keyFromConfig = getStringFromJson(config, KEY_KEY_NAME);
         String macroFromConfig = getStringFromJson(config, KEY_MACRO);
         String[] keys;
         if (keyFromConfig != null && macroFromConfig != null) {
-            throw new JSONException("Both key and macro can't be set for the same key. key: \"" + keyFromConfig + "\", macro: \"" + macroFromConfig + "\"");
+            throw new JSONException(
+                    "Both key and macro can't be set for the same key. key: \""
+                            + keyFromConfig
+                            + "\", macro: \""
+                            + macroFromConfig
+                            + "\"");
         } else if (keyFromConfig != null) {
-            keys = new String[]{keyFromConfig};
+            keys = new String[] {keyFromConfig};
             this.macro = false;
         } else if (macroFromConfig != null) {
             keys = macroFromConfig.split(" ");
@@ -104,9 +122,10 @@ public class VirtualKeyButton {
         if (displayFromConfig != null) {
             this.display = displayFromConfig;
         } else {
-            this.display = Arrays.stream(keys)
-                .map(key -> extraKeyDisplayMap.get(key, key))
-                .collect(Collectors.joining(" "));
+            this.display =
+                    Arrays.stream(keys)
+                            .map(key -> extraKeyDisplayMap.get(key, key))
+                            .collect(Collectors.joining(" "));
         }
 
         this.popup = popup;
@@ -141,11 +160,9 @@ public class VirtualKeyButton {
         return popup;
     }
 
-    /**
-     * Replace the alias with its actual key name if found in extraKeyAliasMap.
-     */
-    public static String replaceAlias(@NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyAliasMap, String key) {
+    /** Replace the alias with its actual key name if found in extraKeyAliasMap. */
+    public static String replaceAlias(
+            @NonNull VirtualKeysConstants.VirtualKeyDisplayMap extraKeyAliasMap, String key) {
         return extraKeyAliasMap.get(key, key);
     }
-
 }

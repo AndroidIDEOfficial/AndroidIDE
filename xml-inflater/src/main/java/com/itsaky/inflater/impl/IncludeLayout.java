@@ -25,17 +25,17 @@ import com.itsaky.inflater.IView;
  * @author Akash Yadav
  */
 public class IncludeLayout extends BaseView {
-    
+
     public static final String TAG = "include";
     private final IView view;
-    
-    public IncludeLayout (IView view) {
-        super (TAG, view.asView (), false);
+
+    public IncludeLayout(IView view) {
+        super(TAG, view.asView(), false);
         this.view = view;
     }
-    
+
     @Override
-    public String getXmlTag () {
+    public String getXmlTag() {
         return TAG;
     }
 }

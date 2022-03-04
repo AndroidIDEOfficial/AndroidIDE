@@ -11,11 +11,29 @@ public class Utils {
         int color = Color.TRANSPARENT;
 
         if (value.length() == 4) {
-            color = Color.parseColor("#" + value.charAt(1) + value.charAt(1) + value.charAt(2) + value.charAt(2) + value.charAt(3) + value.charAt(3));
+            color =
+                    Color.parseColor(
+                            "#"
+                                    + value.charAt(1)
+                                    + value.charAt(1)
+                                    + value.charAt(2)
+                                    + value.charAt(2)
+                                    + value.charAt(3)
+                                    + value.charAt(3));
         } else if (value.length() == 7 || value.length() == 9) {
             color = Color.parseColor(value);
         } else if (value.length() == 2) {
-            color = Color.parseColor("#" + value.charAt(1) + value.charAt(1) + value.charAt(1) + value.charAt(1) + value.charAt(1) + value.charAt(1) + value.charAt(1) + value.charAt(1));
+            color =
+                    Color.parseColor(
+                            "#"
+                                    + value.charAt(1)
+                                    + value.charAt(1)
+                                    + value.charAt(1)
+                                    + value.charAt(1)
+                                    + value.charAt(1)
+                                    + value.charAt(1)
+                                    + value.charAt(1)
+                                    + value.charAt(1));
         }
 
         return color;
@@ -73,14 +91,11 @@ public class Utils {
     }
 
     public static float getFloatFromDimensionString(String value) {
-        if (value.contains("dip"))
-            return Float.parseFloat(value.substring(0, value.length() - 3));
-        else
-            return Float.parseFloat(value.substring(0, value.length() - 2));
+        if (value.contains("dip")) return Float.parseFloat(value.substring(0, value.length() - 3));
+        else return Float.parseFloat(value.substring(0, value.length() - 2));
     }
 
     public static boolean isEqual(Object a, Object b) {
         return a == null && b == null || !(a == null || b == null) && a.equals(b);
     }
-
 }

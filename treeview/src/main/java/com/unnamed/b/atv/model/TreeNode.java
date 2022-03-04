@@ -3,9 +3,11 @@ package com.unnamed.b.atv.model;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.unnamed.b.atv.R;
 import com.unnamed.b.atv.view.AndroidTreeView;
 import com.unnamed.b.atv.view.TreeNodeWrapperView;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,11 +15,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Created by Bogdan Melnychuk on 2/10/15.
- */
+/** Created by Bogdan Melnychuk on 2/10/15. */
 public class TreeNode {
-	
+
     public static final String NODES_ID_SEPARATOR = ":";
 
     private int mId;
@@ -32,10 +32,10 @@ public class TreeNode {
     private File mValue;
     private boolean mExpanded;
 
-	public static TreeNode root() {
+    public static TreeNode root() {
         return root(null);
     }
-	
+
     public static TreeNode root(File value) {
         TreeNode root = new TreeNode(value);
         root.setSelectable(false);
@@ -55,8 +55,8 @@ public class TreeNode {
         childNode.mParent = this;
         childNode.mId = generateId();
         children.add(childNode);
-		Collections.sort(children, new SortFileName());
-		Collections.sort(children, new SortFolder());
+        Collections.sort(children, new SortFileName());
+        Collections.sort(children, new SortFolder());
         return this;
     }
 
@@ -73,14 +73,14 @@ public class TreeNode {
         }
         return this;
     }
-	
-	public TreeNode childAt(int index) {
-		return children == null ? null : children.get(index);
-	}
-	
-	public void deleteAllChildren() {
-		children.clear();
-	}
+
+    public TreeNode childAt(int index) {
+        return children == null ? null : children.get(index);
+    }
+
+    public void deleteAllChildren() {
+        children.clear();
+    }
 
     public int deleteChild(TreeNode child) {
         for (int i = 0; i < children.size(); i++) {
@@ -93,13 +93,15 @@ public class TreeNode {
     }
 
     public List<TreeNode> getChildren() {
-        return children == null ? Collections.synchronizedList(new ArrayList<TreeNode>()) : children;
+        return children == null
+                ? Collections.synchronizedList(new ArrayList<TreeNode>())
+                : children;
     }
 
     public int size() {
         return children == null ? 0 : children.size();
     }
-	
+
     public TreeNode getParent() {
         return mParent;
     }
@@ -111,11 +113,11 @@ public class TreeNode {
     public boolean isLeaf() {
         return size() == 0;
     }
-	
-	public TreeNode setValue(File file) {
-		this.mValue = file;
-		return this;
-	}
+
+    public TreeNode setValue(File file) {
+        this.mValue = file;
+        return this;
+    }
 
     public File getValue() {
         return mValue;
@@ -158,7 +160,6 @@ public class TreeNode {
         }
         return path.toString();
     }
-
 
     public int getLevel() {
         int level = 0;
@@ -239,7 +240,7 @@ public class TreeNode {
         boolean onLongClick(TreeNode node, Object value);
     }
 
-    public static abstract class BaseNodeViewHolder<E> {
+    public abstract static class BaseNodeViewHolder<E> {
         protected AndroidTreeView tView;
         protected TreeNode mNode;
         private View mView;
@@ -255,7 +256,8 @@ public class TreeNode {
                 return mView;
             }
             final View nodeView = getNodeView();
-            final TreeNodeWrapperView nodeWrapperView = new TreeNodeWrapperView(nodeView.getContext(), getContainerStyle());
+            final TreeNodeWrapperView nodeWrapperView =
+                    new TreeNodeWrapperView(nodeView.getContext(), getContainerStyle());
             nodeWrapperView.insertNodeView(nodeView);
             mView = nodeWrapperView;
 
@@ -290,7 +292,6 @@ public class TreeNode {
             return containerStyle;
         }
 
-
         public abstract View createNodeView(TreeNode node, E value);
 
         public void toggle(boolean active) {
@@ -301,25 +302,22 @@ public class TreeNode {
             // empty
         }
     }
-	
-	public class SortFileName implements Comparator<TreeNode> {
-		@Override
-		public int compare(TreeNode f1, TreeNode f2) {
-			return f1.getValue().getName().compareTo(f2.getValue().getName());
-		}
-	}
 
-	public class SortFolder implements Comparator<TreeNode> {
-		@Override
-		public int compare(TreeNode p1, TreeNode p2) {
-			File f1 = p1.getValue();
-			File f2 = p2.getValue();
-			if (f1.isDirectory() == f2.isDirectory())
-				return 0;
-			else if (f1.isDirectory() && !f2.isDirectory())
-				return -1;
-			else
-				return 1;
-		}
-	}
+    public class SortFileName implements Comparator<TreeNode> {
+        @Override
+        public int compare(TreeNode f1, TreeNode f2) {
+            return f1.getValue().getName().compareTo(f2.getValue().getName());
+        }
+    }
+
+    public class SortFolder implements Comparator<TreeNode> {
+        @Override
+        public int compare(TreeNode p1, TreeNode p2) {
+            File f1 = p1.getValue();
+            File f2 = p2.getValue();
+            if (f1.isDirectory() == f2.isDirectory()) return 0;
+            else if (f1.isDirectory() && !f2.isDirectory()) return -1;
+            else return 1;
+        }
+    }
 }

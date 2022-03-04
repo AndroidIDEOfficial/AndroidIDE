@@ -32,22 +32,26 @@ import java.util.Locale;
 import java.util.Set;
 
 public class ScanClassPath {
-    
+
     public static Set<String> classPathTopLevelClasses(Set<Path> classPath) {
-        LOG.info(String.format(Locale.getDefault (), "Searching for top-level classes in %d classpath locations", classPath.size()));
+        LOG.info(
+                String.format(
+                        Locale.getDefault(),
+                        "Searching for top-level classes in %d classpath locations",
+                        classPath.size()));
 
         URL[] urls = classPath.stream().map(ScanClassPath::toUrl).toArray(URL[]::new);
         ClassLoader classLoader = new URLClassLoader(urls, null);
-        
+
         ClassPath scanner;
-        
+
         try {
             scanner = ClassPath.from(classLoader);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        
-        Set<String> classes = new HashSet<> ();
+
+        Set<String> classes = new HashSet<>();
         for (ClassPath.ClassInfo c : scanner.getTopLevelClasses()) {
             classes.add(c.getName());
         }
@@ -65,5 +69,5 @@ public class ScanClassPath {
         }
     }
 
-    private static final Logger LOG = Logger.instance ("ScanClassPath");
+    private static final Logger LOG = Logger.instance("ScanClassPath");
 }

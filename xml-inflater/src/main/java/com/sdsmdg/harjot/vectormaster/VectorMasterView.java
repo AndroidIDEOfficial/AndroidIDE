@@ -34,7 +34,6 @@ public class VectorMasterView extends View {
     XmlPullParser xpp;
     private Matrix scaleMatrix;
     int width = 0, height = 0;
-
     private float scaleRatio, strokeRatio;
 
     public VectorMasterView(Context context) {
@@ -70,7 +69,6 @@ public class VectorMasterView extends View {
         a.recycle();
 
         buildVectorModel();
-
     }
 
     void buildVectorModel() {
@@ -97,104 +95,201 @@ public class VectorMasterView extends View {
                     case XmlPullParser.START_TAG:
                         if (name.equals("vector")) {
                             tempPosition = getAttrPosition(xpp, "viewportWidth");
-                            vectorModel.setViewportWidth((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.VECTOR_VIEWPORT_WIDTH);
+                            vectorModel.setViewportWidth(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.VECTOR_VIEWPORT_WIDTH);
 
                             tempPosition = getAttrPosition(xpp, "viewportHeight");
-                            vectorModel.setViewportHeight((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.VECTOR_VIEWPORT_HEIGHT);
+                            vectorModel.setViewportHeight(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.VECTOR_VIEWPORT_HEIGHT);
 
                             tempPosition = getAttrPosition(xpp, "alpha");
-                            vectorModel.setAlpha((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.VECTOR_ALPHA);
+                            vectorModel.setAlpha(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.VECTOR_ALPHA);
 
                             tempPosition = getAttrPosition(xpp, "name");
-                            vectorModel.setName((tempPosition != -1) ? xpp.getAttributeValue(tempPosition) : null);
+                            vectorModel.setName(
+                                    (tempPosition != -1)
+                                            ? xpp.getAttributeValue(tempPosition)
+                                            : null);
 
                             tempPosition = getAttrPosition(xpp, "width");
-                            vectorModel.setWidth((tempPosition != -1) ? Utils.getFloatFromDimensionString(xpp.getAttributeValue(tempPosition)) : DefaultValues.VECTOR_WIDTH);
+                            vectorModel.setWidth(
+                                    (tempPosition != -1)
+                                            ? Utils.getFloatFromDimensionString(
+                                                    xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.VECTOR_WIDTH);
 
                             tempPosition = getAttrPosition(xpp, "height");
-                            vectorModel.setHeight((tempPosition != -1) ? Utils.getFloatFromDimensionString(xpp.getAttributeValue(tempPosition)) : DefaultValues.VECTOR_HEIGHT);
+                            vectorModel.setHeight(
+                                    (tempPosition != -1)
+                                            ? Utils.getFloatFromDimensionString(
+                                                    xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.VECTOR_HEIGHT);
                         } else if (name.equals("path")) {
                             pathModel = new PathModel();
 
                             tempPosition = getAttrPosition(xpp, "name");
-                            pathModel.setName((tempPosition != -1) ? xpp.getAttributeValue(tempPosition) : null);
+                            pathModel.setName(
+                                    (tempPosition != -1)
+                                            ? xpp.getAttributeValue(tempPosition)
+                                            : null);
 
                             tempPosition = getAttrPosition(xpp, "fillAlpha");
-                            pathModel.setFillAlpha((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_FILL_ALPHA);
+                            pathModel.setFillAlpha(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_FILL_ALPHA);
 
                             tempPosition = getAttrPosition(xpp, "fillColor");
-                            pathModel.setFillColor((tempPosition != -1) ? Utils.getColorFromString(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_FILL_COLOR);
+                            pathModel.setFillColor(
+                                    (tempPosition != -1)
+                                            ? Utils.getColorFromString(
+                                                    xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_FILL_COLOR);
 
                             tempPosition = getAttrPosition(xpp, "fillType");
-                            pathModel.setFillType((tempPosition != -1) ? Utils.getFillTypeFromString(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_FILL_TYPE);
+                            pathModel.setFillType(
+                                    (tempPosition != -1)
+                                            ? Utils.getFillTypeFromString(
+                                                    xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_FILL_TYPE);
 
                             tempPosition = getAttrPosition(xpp, "pathData");
-                            pathModel.setPathData((tempPosition != -1) ? xpp.getAttributeValue(tempPosition) : null);
+                            pathModel.setPathData(
+                                    (tempPosition != -1)
+                                            ? xpp.getAttributeValue(tempPosition)
+                                            : null);
 
                             tempPosition = getAttrPosition(xpp, "strokeAlpha");
-                            pathModel.setStrokeAlpha((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_STROKE_ALPHA);
+                            pathModel.setStrokeAlpha(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_STROKE_ALPHA);
 
                             tempPosition = getAttrPosition(xpp, "strokeColor");
-                            pathModel.setStrokeColor((tempPosition != -1) ? Utils.getColorFromString(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_STROKE_COLOR);
+                            pathModel.setStrokeColor(
+                                    (tempPosition != -1)
+                                            ? Utils.getColorFromString(
+                                                    xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_STROKE_COLOR);
 
                             tempPosition = getAttrPosition(xpp, "strokeLineCap");
-                            pathModel.setStrokeLineCap((tempPosition != -1) ? Utils.getLineCapFromString(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_STROKE_LINE_CAP);
+                            pathModel.setStrokeLineCap(
+                                    (tempPosition != -1)
+                                            ? Utils.getLineCapFromString(
+                                                    xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_STROKE_LINE_CAP);
 
                             tempPosition = getAttrPosition(xpp, "strokeLineJoin");
-                            pathModel.setStrokeLineJoin((tempPosition != -1) ? Utils.getLineJoinFromString(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_STROKE_LINE_JOIN);
+                            pathModel.setStrokeLineJoin(
+                                    (tempPosition != -1)
+                                            ? Utils.getLineJoinFromString(
+                                                    xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_STROKE_LINE_JOIN);
 
                             tempPosition = getAttrPosition(xpp, "strokeMiterLimit");
-                            pathModel.setStrokeMiterLimit((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_STROKE_MITER_LIMIT);
+                            pathModel.setStrokeMiterLimit(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_STROKE_MITER_LIMIT);
 
                             tempPosition = getAttrPosition(xpp, "strokeWidth");
-                            pathModel.setStrokeWidth((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_STROKE_WIDTH);
+                            pathModel.setStrokeWidth(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_STROKE_WIDTH);
 
                             tempPosition = getAttrPosition(xpp, "trimPathEnd");
-                            pathModel.setTrimPathEnd((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_TRIM_PATH_END);
+                            pathModel.setTrimPathEnd(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_TRIM_PATH_END);
 
                             tempPosition = getAttrPosition(xpp, "trimPathOffset");
-                            pathModel.setTrimPathOffset((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_TRIM_PATH_OFFSET);
+                            pathModel.setTrimPathOffset(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_TRIM_PATH_OFFSET);
 
                             tempPosition = getAttrPosition(xpp, "trimPathStart");
-                            pathModel.setTrimPathStart((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.PATH_TRIM_PATH_START);
+                            pathModel.setTrimPathStart(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.PATH_TRIM_PATH_START);
 
                             pathModel.buildPath(useLegacyParser);
                         } else if (name.equals("group")) {
                             groupModel = new GroupModel();
 
                             tempPosition = getAttrPosition(xpp, "name");
-                            groupModel.setName((tempPosition != -1) ? xpp.getAttributeValue(tempPosition) : null);
+                            groupModel.setName(
+                                    (tempPosition != -1)
+                                            ? xpp.getAttributeValue(tempPosition)
+                                            : null);
 
                             tempPosition = getAttrPosition(xpp, "pivotX");
-                            groupModel.setPivotX((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.GROUP_PIVOT_X);
+                            groupModel.setPivotX(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.GROUP_PIVOT_X);
 
                             tempPosition = getAttrPosition(xpp, "pivotY");
-                            groupModel.setPivotY((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.GROUP_PIVOT_Y);
+                            groupModel.setPivotY(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.GROUP_PIVOT_Y);
 
                             tempPosition = getAttrPosition(xpp, "rotation");
-                            groupModel.setRotation((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.GROUP_ROTATION);
+                            groupModel.setRotation(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.GROUP_ROTATION);
 
                             tempPosition = getAttrPosition(xpp, "scaleX");
-                            groupModel.setScaleX((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.GROUP_SCALE_X);
+                            groupModel.setScaleX(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.GROUP_SCALE_X);
 
                             tempPosition = getAttrPosition(xpp, "scaleY");
-                            groupModel.setScaleY((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.GROUP_SCALE_Y);
+                            groupModel.setScaleY(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.GROUP_SCALE_Y);
 
                             tempPosition = getAttrPosition(xpp, "translateX");
-                            groupModel.setTranslateX((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.GROUP_TRANSLATE_X);
+                            groupModel.setTranslateX(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.GROUP_TRANSLATE_X);
 
                             tempPosition = getAttrPosition(xpp, "translateY");
-                            groupModel.setTranslateY((tempPosition != -1) ? Float.parseFloat(xpp.getAttributeValue(tempPosition)) : DefaultValues.GROUP_TRANSLATE_Y);
+                            groupModel.setTranslateY(
+                                    (tempPosition != -1)
+                                            ? Float.parseFloat(xpp.getAttributeValue(tempPosition))
+                                            : DefaultValues.GROUP_TRANSLATE_Y);
 
                             groupModelStack.push(groupModel);
                         } else if (name.equals("clip-path")) {
                             clipPathModel = new ClipPathModel();
 
                             tempPosition = getAttrPosition(xpp, "name");
-                            clipPathModel.setName((tempPosition != -1) ? xpp.getAttributeValue(tempPosition) : null);
+                            clipPathModel.setName(
+                                    (tempPosition != -1)
+                                            ? xpp.getAttributeValue(tempPosition)
+                                            : null);
 
                             tempPosition = getAttrPosition(xpp, "pathData");
-                            clipPathModel.setPathData((tempPosition != -1) ? xpp.getAttributeValue(tempPosition) : null);
+                            clipPathModel.setPathData(
+                                    (tempPosition != -1)
+                                            ? xpp.getAttributeValue(tempPosition)
+                                            : null);
 
                             clipPathModel.buildPath(useLegacyParser);
                         }
@@ -233,7 +328,6 @@ public class VectorMasterView extends View {
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
-
     }
 
     int getAttrPosition(XmlPullParser xpp, String attrName) {
@@ -280,14 +374,15 @@ public class VectorMasterView extends View {
         setAlpha(vectorModel.getAlpha());
 
         vectorModel.drawPaths(canvas);
-
     }
 
     void buildScaleMatrix() {
 
         scaleMatrix = new Matrix();
 
-        scaleMatrix.postTranslate(width / 2 - vectorModel.getViewportWidth() / 2, height / 2 - vectorModel.getViewportHeight() / 2);
+        scaleMatrix.postTranslate(
+                width / 2 - vectorModel.getViewportWidth() / 2,
+                height / 2 - vectorModel.getViewportHeight() / 2);
 
         float widthRatio = width / vectorModel.getViewportWidth();
         float heightRatio = height / vectorModel.getViewportHeight();
@@ -321,8 +416,7 @@ public class VectorMasterView extends View {
                 return groupModel;
             } else {
                 gModel = groupModel.getGroupModelByName(name);
-                if (gModel != null)
-                    return gModel;
+                if (gModel != null) return gModel;
             }
         }
         return null;
@@ -337,8 +431,7 @@ public class VectorMasterView extends View {
         }
         for (GroupModel groupModel : vectorModel.getGroupModels()) {
             pModel = groupModel.getPathModelByName(name);
-            if (pModel != null && Utils.isEqual(pModel.getName(), name))
-                return pModel;
+            if (pModel != null && Utils.isEqual(pModel.getName(), name)) return pModel;
         }
         return pModel;
     }
@@ -352,8 +445,7 @@ public class VectorMasterView extends View {
         }
         for (GroupModel groupModel : vectorModel.getGroupModels()) {
             cModel = groupModel.getClipPathModelByName(name);
-            if (cModel != null && Utils.isEqual(cModel.getName(), name))
-                return cModel;
+            if (cModel != null && Utils.isEqual(cModel.getName(), name)) return cModel;
         }
         return cModel;
     }

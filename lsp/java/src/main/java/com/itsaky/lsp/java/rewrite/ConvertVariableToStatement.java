@@ -37,12 +37,12 @@ import java.util.Map;
 public class ConvertVariableToStatement implements Rewrite {
     final Path file;
     final int position;
-    
+
     public ConvertVariableToStatement(Path file, int position) {
         this.file = file;
         this.position = position;
     }
-    
+
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         final ParseTask task = compiler.parse(file);
@@ -71,16 +71,16 @@ public class ConvertVariableToStatement implements Rewrite {
         Range delete = new Range(startPos, endPos);
         TextEdit edit = new TextEdit(delete, "");
         TextEdit[] edits = {edit};
-        return Collections.singletonMap (file, edits);
+        return Collections.singletonMap(file, edits);
     }
-    
+
     static VariableTree findVariable(ParseTask task, int position) {
-        return new FindVariableAtCursor (task.task).scan(task.root, position);
+        return new FindVariableAtCursor(task.task).scan(task.root, position);
     }
-    
+
     /** https://docs.oracle.com/javase/specs/jls/se13/html/jls-14.html#jls-14.8 */
     static boolean isExpressionStatement(Tree t) {
-        if(t == null) return false;
+        if (t == null) return false;
         switch (t.getKind()) {
             case ASSIGNMENT:
             case PREFIX_INCREMENT:

@@ -27,17 +27,17 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
 /**
- * Attribute adapter for handling attributes related to
- * SeekBar.
+ * Attribute adapter for handling attributes related to SeekBar.
  *
  * @author Akash Yadav
  */
 public class SeekBarAttrAdapter extends AbsSeekBarAttrAdapter {
-    
-    public SeekBarAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
+
+    public SeekBarAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
-    
+
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof SeekBar;
@@ -66,6 +66,5 @@ public class SeekBarAttrAdapter extends AbsSeekBarAttrAdapter {
         }
 
         return handled;
-
     }
 }

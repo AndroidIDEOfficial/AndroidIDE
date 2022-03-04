@@ -26,11 +26,6 @@ import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-
-import java.io.StringReader;
-
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -41,25 +36,30 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+
+import java.io.StringReader;
+
 public class GroovyLanguage extends IDELanguage {
-    
+
     private final GroovyAnalyzer analyzer;
     private final GroovyAutoComplete completer;
-    
-    private static final Logger LOG = Logger.instance ("GroovyLanguage");
-    
-    public GroovyLanguage () {
-        analyzer = new GroovyAnalyzer ();
-        completer = new GroovyAutoComplete ();
+
+    private static final Logger LOG = Logger.instance("GroovyLanguage");
+
+    public GroovyLanguage() {
+        analyzer = new GroovyAnalyzer();
+        completer = new GroovyAutoComplete();
     }
-    
-    public int getIndentAdvance (String p1) {
+
+    public int getIndentAdvance(String p1) {
         try {
-            GroovyLexer lexer = new GroovyLexer (CharStreams.fromReader (new StringReader (p1)));
+            GroovyLexer lexer = new GroovyLexer(CharStreams.fromReader(new StringReader(p1)));
             Token token = null;
             int advance = 0;
-            while (((token = lexer.nextToken ()) != null && token.getType () != token.EOF)) {
-                switch (token.getType ()) {
+            while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+                switch (token.getType()) {
                     case GroovyLexer.LBRACE:
                         advance++;
                         break;
@@ -68,48 +68,50 @@ public class GroovyLanguage extends IDELanguage {
                         break;
                 }
             }
-            advance = Math.max (0, advance);
-            return advance * getTabSize ();
+            advance = Math.max(0, advance);
+            return advance * getTabSize();
         } catch (Throwable e) {
-            LOG.error ("Failed to calculate indent advance", e);
+            LOG.error("Failed to calculate indent advance", e);
         }
         return 0;
     }
-    
+
     @Override
-    public SymbolPairMatch getSymbolPairs () {
-        return new SymbolPairMatch.DefaultSymbolPairs ();
+    public SymbolPairMatch getSymbolPairs() {
+        return new SymbolPairMatch.DefaultSymbolPairs();
     }
-    
+
     @NonNull
     @Override
-    public AnalyzeManager getAnalyzeManager () {
+    public AnalyzeManager getAnalyzeManager() {
         return analyzer;
     }
-    
+
     @Override
-    public int getInterruptionLevel () {
+    public int getInterruptionLevel() {
         return INTERRUPTION_LEVEL_STRONG;
     }
-    
+
     @Override
-    public void requireAutoComplete (
+    public void requireAutoComplete(
             @NonNull ContentReference content,
             @NonNull CharPosition position,
             @NonNull CompletionPublisher publisher,
-            @NonNull Bundle extraArguments) throws CompletionCancelledException {
-        
-        completer.complete (content, position, publisher, extraArguments);
+            @NonNull Bundle extraArguments)
+            throws CompletionCancelledException {
+
+        completer.complete(content, position, publisher, extraArguments);
     }
-    
+
     @Override
-    public int getIndentAdvance (@NonNull ContentReference content, int line, int column) {
+    public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {
         try {
-            GroovyLexer lexer = new GroovyLexer (CharStreams.fromReader (new CharSequenceReader (content)));
+            GroovyLexer lexer =
+                    new GroovyLexer(CharStreams.fromReader(new CharSequenceReader(content)));
             Token token;
             int advance = 0;
-            while (((token = lexer.nextToken ()) != null && token.getType () != token.EOF)) {
-                switch (token.getType ()) {
+            while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+                switch (token.getType()) {
                     case GroovyLexer.LBRACE:
                         advance++;
                         break;
@@ -118,49 +120,56 @@ public class GroovyLanguage extends IDELanguage {
                         break;
                 }
             }
-            advance = Math.max (0, advance);
-            return advance * getTabSize ();
+            advance = Math.max(0, advance);
+            return advance * getTabSize();
         } catch (Throwable e) {
-            LOG.error ("Failed to calculate indent advance", e);
+            LOG.error("Failed to calculate indent advance", e);
         }
         return 0;
     }
-    
+
     @Override
-    public CharSequence format (CharSequence content) {
+    public CharSequence format(CharSequence content) {
         return content;
     }
-    
-    private final NewlineHandler[] newlineHandlers = new NewlineHandler[]{new BraceHandler ()};
-    
+
+    private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
+
     @Override
-    public NewlineHandler[] getNewlineHandlers () {
+    public NewlineHandler[] getNewlineHandlers() {
         return newlineHandlers;
     }
-    
+
     @Override
-    public void destroy () {
-    
-    }
-    
+    public void destroy() {}
+
     class BraceHandler implements NewlineHandler {
-    
+
         @Override
-        public boolean matchesRequirement (String beforeText, String afterText) {
-            beforeText = beforeText.trim ();
-            afterText = afterText.trim ();
-            return beforeText.endsWith ("{") && afterText.startsWith ("}");
+        public boolean matchesRequirement(String beforeText, String afterText) {
+            beforeText = beforeText.trim();
+            afterText = afterText.trim();
+            return beforeText.endsWith("{") && afterText.startsWith("}");
         }
-        
+
         @Override
-        public NewlineHandleResult handleNewline (String beforeText, String afterText, int tabSize) {
-            int count = TextUtils.countLeadingSpaceCount (beforeText, tabSize);
-            int advanceBefore = getIndentAdvance (beforeText);
-            int advanceAfter = getIndentAdvance (afterText);
+        public NewlineHandleResult handleNewline(String beforeText, String afterText, int tabSize) {
+            int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
+            int advanceBefore = getIndentAdvance(beforeText);
+            int advanceAfter = getIndentAdvance(afterText);
             String text;
-            StringBuilder sb = new StringBuilder ("\n").append (TextUtils.createIndent (count + advanceBefore, tabSize, useTab ())).append ('\n').append (text = TextUtils.createIndent (count + advanceAfter, tabSize, useTab ()));
-            int shiftLeft = text.length () + 1;
-            return new NewlineHandleResult (sb, shiftLeft);
+            StringBuilder sb =
+                    new StringBuilder("\n")
+                            .append(
+                                    TextUtils.createIndent(
+                                            count + advanceBefore, tabSize, useTab()))
+                            .append('\n')
+                            .append(
+                                    text =
+                                            TextUtils.createIndent(
+                                                    count + advanceAfter, tabSize, useTab()));
+            int shiftLeft = text.length() + 1;
+            return new NewlineHandleResult(sb, shiftLeft);
         }
     }
 }

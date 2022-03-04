@@ -26,17 +26,17 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
 /**
- * Attribute handler for handling attributes related to
- * ImageButton.
+ * Attribute handler for handling attributes related to ImageButton.
  *
  * @author Akash Yadav
  */
 public class ImageButtonAttrAdapter extends ImageViewAttrAdapter {
-    
-    public ImageButtonAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
+
+    public ImageButtonAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
-    
+
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof ImageButton;

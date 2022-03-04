@@ -1,42 +1,43 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- * 
+ *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ **************************************************************************************/
 package com.itsaky.androidide.models;
 
-import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class ApkMetadata {
-    
+
     @SerializedName("version")
     private int version;
-    
+
     @SerializedName("artifactType")
     private ArtifactType artifactType;
-    
+
     @SerializedName("applicationId")
     private String applicationId;
-    
+
     @SerializedName("variantName")
     private String variantName;
-    
+
     @SerializedName("elements")
     private List<Element> elements;
-    
+
     @SerializedName("elementType")
     private String elementType;
 
@@ -89,128 +90,141 @@ public class ApkMetadata {
     }
 
     public static class ArtifactType {
-        
+
         public static String TYPE_APK = "APK";
-        
+
         @SerializedName("type")
         private String type;
-        
+
         @SerializedName("kind")
         private String kind;
-        
+
         public void setType(String type) {
             this.type = type;
         }
-        
+
         public void setKind(String kind) {
             this.kind = kind;
         }
-        
+
         public String getType() {
             return type;
         }
-        
+
         public String getKind() {
             return kind;
         }
-        
+
         @Override
         public String toString() {
-            return "["+getClass().getCanonicalName()+"]"
-             + "\ntype=" + type
-             + ",\nkind=" + kind;
+            return "[" + getClass().getCanonicalName() + "]" + "\ntype=" + type + ",\nkind=" + kind;
         }
     }
 
     public static class Element {
-        
+
         @SerializedName("type")
         private String type;
-        
+
         @SerializedName("filters")
         private List<Object> filters;
-        
+
         @SerializedName("attributes")
         private List<Object> attributes;
-        
+
         @SerializedName("versionCode")
         private int versionCode;
-        
+
         @SerializedName("versionName")
         private String versionName;
-        
+
         @SerializedName("outputFile")
         private String outputFile;
-        
+
         public void setType(String type) {
             this.type = type;
         }
-        
+
         public void setFilters(List<Object> filters) {
             this.filters = filters;
         }
-        
+
         public void setAttributes(List<Object> attributes) {
             this.attributes = attributes;
         }
-        
+
         public void setVersionCode(int versionCode) {
             this.versionCode = versionCode;
         }
-        
+
         public void setVersionName(String versionName) {
             this.versionName = versionName;
         }
-        
+
         public void setOutputFile(String outputFile) {
             this.outputFile = outputFile;
         }
-        
+
         public String getType() {
             return type;
         }
-        
+
         public List<Object> getFilters() {
             return filters;
         }
-        
+
         public List<Object> getAttributes() {
             return attributes;
         }
-        
+
         public int getVersionCode() {
             return versionCode;
         }
-        
+
         public String getVersionName() {
             return versionName;
         }
-        
+
         public String getOutputFile() {
             return outputFile;
         }
-        
+
         @Override
         public String toString() {
-            return "["+getClass().getCanonicalName()+"]"
-             + "\ntype=" + type
-             + ",\nfilters=" + filters
-             + ",\nattributes=" + attributes
-             + ",\nversionCode=" + versionCode
-             + ",\nversionName=" + versionName
-             + ",\noutputFile=" + outputFile;
+            return "["
+                    + getClass().getCanonicalName()
+                    + "]"
+                    + "\ntype="
+                    + type
+                    + ",\nfilters="
+                    + filters
+                    + ",\nattributes="
+                    + attributes
+                    + ",\nversionCode="
+                    + versionCode
+                    + ",\nversionName="
+                    + versionName
+                    + ",\noutputFile="
+                    + outputFile;
         }
     }
 
     @Override
     public String toString() {
-        return "["+getClass().getCanonicalName()+"]"
-         + "\nversion=" + version
-         + ",\nartifactType=" + artifactType
-         + ",\napplicationId=" + applicationId
-         + ",\nvariantName=" + variantName
-         + ",\nelements=" + elements
-         + ",\nelementType=" + elementType;
+        return "["
+                + getClass().getCanonicalName()
+                + "]"
+                + "\nversion="
+                + version
+                + ",\nartifactType="
+                + artifactType
+                + ",\napplicationId="
+                + applicationId
+                + ",\nvariantName="
+                + variantName
+                + ",\nelements="
+                + elements
+                + ",\nelementType="
+                + elementType;
     }
-
 }

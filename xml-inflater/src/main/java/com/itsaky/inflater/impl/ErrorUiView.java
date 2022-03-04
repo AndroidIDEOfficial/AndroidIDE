@@ -31,29 +31,27 @@ import com.itsaky.inflater.IView;
 import org.jetbrains.annotations.Contract;
 
 /**
- * A view which is used to show views that cannot be inflated.
- * This view will preserve the attributes and the children
- * if the view is a view group;
+ * A view which is used to show views that cannot be inflated. This view will preserve the
+ * attributes and the children if the view is a view group;
  *
  * @author Akash Yadav
  */
 public class ErrorUiView extends UiViewGroup {
-    
-    private ErrorUiView (String qualifiedName, ViewGroup view) {
-        super (qualifiedName, view);
+
+    private ErrorUiView(String qualifiedName, ViewGroup view) {
+        super(qualifiedName, view);
     }
-    
-    private ErrorUiView (String qualifiedName, ViewGroup view, boolean isPlaceholder) {
-        super (qualifiedName, view, isPlaceholder);
+
+    private ErrorUiView(String qualifiedName, ViewGroup view, boolean isPlaceholder) {
+        super(qualifiedName, view, isPlaceholder);
     }
-    
+
     /**
-     * Create a new error view for the given qualified name of the view
-     * that was not inflated correctly.
+     * Create a new error view for the given qualified name of the view that was not inflated
+     * correctly.
      *
-     * We add a text directly in this view. Any other views that will
-     * be added to this group will have visibility {@link View#GONE}
-     * by default.
+     * <p>We add a text directly in this view. Any other views that will be added to this group will
+     * have visibility {@link View#GONE} by default.
      *
      * @param context The context that will be used to create the view.
      * @param name The qualified name of the view that was not inflated.
@@ -62,41 +60,47 @@ public class ErrorUiView extends UiViewGroup {
      */
     @NonNull
     @Contract("_, _, _ -> new")
-    public static IView create (@NonNull final Context context, @NonNull final String name, @NonNull final String message) {
-        final var container = new LinearLayout (context);
-        final var error = new TextView (context);
-        error.setText (message);
-        error.setLayoutParams (new ViewGroup.LayoutParams (-2, -2));
-        error.setTextColor (ContextCompat.getColor (context, android.R.color.black));
-        error.setBackgroundColor (ContextCompat.getColor (context, android.R.color.white));
-        
-        container.setOrientation (LinearLayout.HORIZONTAL);
-        container.addView (error, new LinearLayout.LayoutParams (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        
-        return new ErrorUiView (name, container, true);
+    public static IView create(
+            @NonNull final Context context,
+            @NonNull final String name,
+            @NonNull final String message) {
+        final var container = new LinearLayout(context);
+        final var error = new TextView(context);
+        error.setText(message);
+        error.setLayoutParams(new ViewGroup.LayoutParams(-2, -2));
+        error.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+        error.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
+
+        container.setOrientation(LinearLayout.HORIZONTAL);
+        container.addView(
+                error,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        return new ErrorUiView(name, container, true);
     }
-    
+
     @Override
-    public void addView (IView view, int index) {
-        super.addView (view, index);
-        view.asView ().setVisibility (View.GONE);
+    public void addView(IView view, int index) {
+        super.addView(view, index);
+        view.asView().setVisibility(View.GONE);
     }
-    
+
     @Override
-    public int getChildCount () {
-        return super.getChildCount () - 1;
+    public int getChildCount() {
+        return super.getChildCount() - 1;
     }
-    
+
     @Override
-    public String getXmlTag () {
+    public String getXmlTag() {
         // This might be a custom view or something
         // So return the qualified name of the view
         return this.qualifiedName;
     }
-    
+
     @NonNull
     @Override
-    public String generateCode (int indentCount) {
-        return super.generateCode (indentCount);
+    public String generateCode(int indentCount) {
+        return super.generateCode(indentCount);
     }
 }

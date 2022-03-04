@@ -23,63 +23,65 @@ import com.itsaky.widgets.WidgetInfo;
 import java.io.File;
 import java.util.Set;
 
-/**
- * Configuration for {@link ILayoutInflater}
- */
+/** Configuration for {@link ILayoutInflater} */
 public class LayoutInflaterConfiguration {
-    
+
     final Set<File> resDirs;
     final AttrInfo attrInfo;
     final WidgetInfo widgetInfo;
     final IResourceTable resFinder;
     final ILayoutInflater.ContextProvider contextProvider;
-    
-    public LayoutInflaterConfiguration (Set<File> resDirs, AttrInfo attrInfo, WidgetInfo widgetInfo, IResourceTable resourceProvider, ILayoutInflater.ContextProvider contextProvider) {
+
+    public LayoutInflaterConfiguration(
+            Set<File> resDirs,
+            AttrInfo attrInfo,
+            WidgetInfo widgetInfo,
+            IResourceTable resourceProvider,
+            ILayoutInflater.ContextProvider contextProvider) {
         this.resDirs = resDirs;
         this.attrInfo = attrInfo;
         this.widgetInfo = widgetInfo;
         this.resFinder = resourceProvider;
         this.contextProvider = contextProvider;
     }
-    
-    /**
-     * A class that builds a {@link LayoutInflaterConfiguration}
-     */
+
+    /** A class that builds a {@link LayoutInflaterConfiguration} */
     public static class Builder {
-        
+
         private Set<File> resDirs;
         private AttrInfo attrInfo;
         private WidgetInfo widgetInfo;
         private IResourceTable resourceProvider;
         private ILayoutInflater.ContextProvider provider;
-        
-        public Builder setResourceDirectories (Set<File> dirs) {
+
+        public Builder setResourceDirectories(Set<File> dirs) {
             this.resDirs = dirs;
             return this;
         }
-        
-        public Builder setAttrInfo (AttrInfo info) {
+
+        public Builder setAttrInfo(AttrInfo info) {
             this.attrInfo = info;
             return this;
         }
-        
-        public Builder setWidgetInfo (WidgetInfo info) {
+
+        public Builder setWidgetInfo(WidgetInfo info) {
             this.widgetInfo = info;
             return this;
         }
-        
-        public Builder setResourceFinder (IResourceTable provider) {
+
+        public Builder setResourceFinder(IResourceTable provider) {
             this.resourceProvider = provider;
             return this;
         }
-        
-        public Builder setContextProvider (ILayoutInflater.ContextProvider provider) {
+
+        public Builder setContextProvider(ILayoutInflater.ContextProvider provider) {
             this.provider = provider;
             return this;
         }
-        
-        public LayoutInflaterConfiguration create () {
-            return new LayoutInflaterConfiguration (resDirs, attrInfo, widgetInfo, resourceProvider, provider);
+
+        public LayoutInflaterConfiguration create() {
+            return new LayoutInflaterConfiguration(
+                    resDirs, attrInfo, widgetInfo, resourceProvider, provider);
         }
     }
 }

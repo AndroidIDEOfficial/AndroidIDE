@@ -18,7 +18,6 @@
 package com.itsaky.androidide.utils;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -31,36 +30,37 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.itsaky.androidide.databinding.LayoutEditorBottomSheetBinding;
 
 public class EditorBottomSheetBehavior<V extends View> extends BottomSheetBehavior<V> {
-    
+
     private LayoutEditorBottomSheetBinding binding;
-    private static final Logger LOG = Logger.instance ("EditorBottomSheetBehavior");
-    
-    public EditorBottomSheetBehavior (Context context, AttributeSet attributeSet) {
+    private static final Logger LOG = Logger.instance("EditorBottomSheetBehavior");
+
+    public EditorBottomSheetBehavior(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
     }
-    
-    public void setBinding (LayoutEditorBottomSheetBinding binding) {
+
+    public void setBinding(LayoutEditorBottomSheetBinding binding) {
         this.binding = binding;
     }
-    
+
     @Override
-    public boolean onInterceptTouchEvent (@NonNull CoordinatorLayout parent, @NonNull V child, @NonNull MotionEvent event) {
+    public boolean onInterceptTouchEvent(
+            @NonNull CoordinatorLayout parent, @NonNull V child, @NonNull MotionEvent event) {
         if (binding != null) {
-            final var rect = getPagerRect ();
-            if (rect.contains (event.getX (), event.getY ())) {
+            final var rect = getPagerRect();
+            if (rect.contains(event.getX(), event.getY())) {
                 return false;
             }
         }
-        return super.onInterceptTouchEvent (parent, child, event);
+        return super.onInterceptTouchEvent(parent, child, event);
     }
-    
+
     @NonNull
-    private RectF getPagerRect () {
-        final var rect = new RectF ();
-        rect.left = binding.pager.getX ();
-        rect.top = binding.pager.getY ();
-        rect.right = rect.left + binding.pager.getWidth ();
-        rect.bottom = rect.top + binding.pager.getHeight ();
+    private RectF getPagerRect() {
+        final var rect = new RectF();
+        rect.left = binding.pager.getX();
+        rect.top = binding.pager.getY();
+        rect.right = rect.left + binding.pager.getWidth();
+        rect.bottom = rect.top + binding.pager.getHeight();
         return rect;
     }
 }

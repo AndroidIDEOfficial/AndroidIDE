@@ -1,44 +1,39 @@
 /************************************************************************************
  * This file is part of AndroidIDE.
- * 
+ *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * AndroidIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
-**************************************************************************************/
+ **************************************************************************************/
 package com.itsaky.androidide.utils;
 
 import java.util.Arrays;
 
 /**
- * @author Rose
- * Get whether Identifier part/start quickly
+ * @author Rose Get whether Identifier part/start quickly
  */
 public class JavaCharacter {
 
-    /**
-     * Compressed bit set for isJavaIdentifierStart()
-     */
+    /** Compressed bit set for isJavaIdentifierStart() */
     private static int[] state_start;
 
-    /**
-     * Compressed bit set for isJavaIdentifierPart()
-     */
+    /** Compressed bit set for isJavaIdentifierPart() */
     private static int[] state_part;
 
     /**
      * Get bit in compressed bit set
      *
-     * @param values   Compressed bit set
+     * @param values Compressed bit set
      * @param bitIndex Target index
      * @return Boolean value at the index
      */
@@ -49,16 +44,14 @@ public class JavaCharacter {
     /**
      * Make the given position's bit true
      *
-     * @param values   Compressed bit set
+     * @param values Compressed bit set
      * @param bitIndex Index of bit
      */
     private static void set(int[] values, int bitIndex) {
         values[bitIndex / 32] |= (1 << (bitIndex % 32));
     }
 
-    /**
-     * Init maps
-     */
+    /** Init maps */
     public static void initMap() {
         if (state_start != null) {
             return;
@@ -94,7 +87,4 @@ public class JavaCharacter {
     public static boolean isJavaIdentifierStart(int key) {
         return get(state_start, key);
     }
-
 }
-
-

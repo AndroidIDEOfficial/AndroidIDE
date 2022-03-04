@@ -27,17 +27,17 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
 /**
- * Attribute adapter for handling attributes related to
- * Spinner.
+ * Attribute adapter for handling attributes related to Spinner.
  *
  * @author Akash Yadav
  */
 public class SpinnerAttrAdapter extends AbsSpinnerAttrAdapter {
-    
-    public SpinnerAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
+
+    public SpinnerAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
-    
+
     @Override
     public boolean isApplicableTo(View view) {
         return view instanceof Spinner;
@@ -68,10 +68,10 @@ public class SpinnerAttrAdapter extends AbsSpinnerAttrAdapter {
             case "dropDownWidth":
                 spinner.setDropDownWidth(parseDimension(value, 0, dm));
                 break;
-            case "gravity" :
+            case "gravity":
                 spinner.setGravity(parseGravity(value));
                 break;
-            case "popupBackground" :
+            case "popupBackground":
                 spinner.setPopupBackgroundDrawable(parseDrawable(value, context));
                 break;
             default:

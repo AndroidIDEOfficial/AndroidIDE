@@ -1,12 +1,10 @@
 package com.itsaky.lsp.java.utils;
 
-import com.sun.source.tree.VariableTree;
-
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.*;
 import javax.lang.model.util.AbstractTypeVisitor8;
@@ -16,64 +14,68 @@ public class ShortTypePrinter extends AbstractTypeVisitor8<String, Void> {
     // TODO reduce usage of DEFAULT in favor of context-specific "suppress my own package" printer
     public static final ShortTypePrinter DEFAULT = new ShortTypePrinter("");
     public static final ShortTypePrinter NO_PACKAGE = new ShortTypePrinter("*");
-    
+
     private final String packageContext;
-    
+
     private ShortTypePrinter(String packageContext) {
         this.packageContext = packageContext;
     }
-    
+
     public String print(TypeMirror type) {
         return type.accept(new ShortTypePrinter(packageContext), null);
     }
-    
+
     @Override
     public String visitIntersection(IntersectionType t, Void aVoid) {
         return t.getBounds().stream().map(this::print).collect(Collectors.joining(" & "));
     }
-    
+
     @Override
     public String visitUnion(UnionType t, Void aVoid) {
         return t.getAlternatives().stream().map(this::print).collect(Collectors.joining(" | "));
     }
-    
+
     @Override
     public String visitPrimitive(PrimitiveType t, Void aVoid) {
         return t.toString();
     }
-    
+
     @Override
     public String visitNull(NullType t, Void aVoid) {
         return t.toString();
     }
-    
+
     @Override
     public String visitArray(ArrayType t, Void aVoid) {
         return print(t.getComponentType()) + "[]";
     }
-    
+
     @Override
     public String visitDeclared(DeclaredType t, Void aVoid) {
         String result = t.asElement().toString();
-        
+
         if (!t.getTypeArguments().isEmpty()) {
-            String params = t.getTypeArguments().stream().map(this::print).collect(Collectors.joining(", "));
-            
+            String params =
+                    t.getTypeArguments().stream()
+                            .map(this::print)
+                            .collect(Collectors.joining(", "));
+
             result += "<" + params + ">";
         }
-        
+
         if (packageContext.equals("*")) return result.substring(result.lastIndexOf('.') + 1);
         else if (result.startsWith("java.lang")) return result.substring("java.lang.".length());
         else if (result.startsWith("java.util")) return result.substring("java.util.".length());
-        else if (result.startsWith(packageContext)) return result.substring(packageContext.length());
+        else if (result.startsWith(packageContext))
+            return result.substring(packageContext.length());
         else return result;
     }
-    
+
     @Override
     public String visitError(ErrorType t, Void aVoid) {
         return "_";
     }
-    
+
     @Override
     public String visitTypeVariable(TypeVariable t, Void aVoid) {
         String result = t.asElement().toString();
@@ -81,35 +83,36 @@ public class ShortTypePrinter extends AbstractTypeVisitor8<String, Void> {
         // NOTE this can create infinite recursion
         // if (!upper.toString().equals("java.lang.Object"))
         //     result += " extends " + print(upper);
-        
+
         return result;
     }
-    
+
     @Override
     public String visitWildcard(WildcardType t, Void aVoid) {
         String result = "?";
-        
+
         if (t.getSuperBound() != null) result += " super " + print(t.getSuperBound());
-        
+
         if (t.getExtendsBound() != null) result += " extends " + print(t.getExtendsBound());
-        
+
         return result;
     }
-    
+
     @Override
     public String visitExecutable(ExecutableType t, Void aVoid) {
         return t.toString();
     }
-    
+
     @Override
     public String visitNoType(NoType t, Void aVoid) {
         return t.toString();
     }
-    
+
     public static boolean missingParamNames(ExecutableElement e) {
-        return e.getParameters().stream().allMatch(p -> p.getSimpleName().toString().matches("arg\\d+"));
+        return e.getParameters().stream()
+                .allMatch(p -> p.getSimpleName().toString().matches("arg\\d+"));
     }
-    
+
     private String printArguments(ExecutableElement e) {
         StringJoiner result = new StringJoiner(", ");
         boolean missingParamNames = missingParamNames(e);
@@ -123,7 +126,7 @@ public class ShortTypePrinter extends AbstractTypeVisitor8<String, Void> {
         }
         return result.toString();
     }
-    
+
     String printMethod(ExecutableElement m) {
         if (m.getSimpleName().contentEquals("<init>")) {
             return m.getEnclosingElement().getSimpleName() + "(" + printArguments(m) + ")";

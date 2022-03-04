@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:id="@+id/symbol"
-	android:layout_width="32dp"
-	android:layout_height="40dp"
-	android:singleLine="true"
-	android:gravity="center"
-	android:textColor="@color/symbolInput_text"
-	android:background="@color/symbolInput_background"
-	style="@style/Widget.MaterialComponents.Button.TextButton"/>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/symbol"
+    android:layout_width="32dp"
+    android:layout_height="40dp"
+    android:singleLine="true"
+    android:gravity="center"
+    android:textColor="@color/symbolInput_text"
+    android:background="@color/symbolInput_background"
+    style="@style/Widget.MaterialComponents.Button.TextButton" />
