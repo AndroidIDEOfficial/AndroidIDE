@@ -18,25 +18,23 @@
 package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.lsp.models.DiagnosticItem;
-
 import java.nio.file.Path;
 import java.util.List;
 
 /**
- * A code analyzer analyzes the code and provides
- * diagnostics and semantic highlighting.
+ * A code analyzer analyzes the code and provides diagnostics and semantic highlighting.
  *
  * @author Akash Yadav
  */
 public interface IDiagnosticProvider {
-    
-    /**
-     * Analyze the file given in the params.
-     * @param params The params for code analysis.
-     * @return The result of the analysis containing diagnostics and semantic highlighting.
-     */
-    @NonNull
-    List<DiagnosticItem> analyze (Path file);
+
+  /**
+   * Analyze the file given in the params.
+   *
+   * @param params The params for code analysis.
+   * @return The result of the analysis containing diagnostics and semantic highlighting.
+   */
+  @NonNull
+  List<DiagnosticItem> analyze(Path file);
 }

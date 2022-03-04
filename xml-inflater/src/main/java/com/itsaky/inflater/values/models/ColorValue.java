@@ -17,10 +17,7 @@
 package com.itsaky.inflater.values.models;
 
 import android.graphics.Color;
-
 import androidx.annotation.NonNull;
-
-import com.itsaky.inflater.values.models.AbstractResourceValue;
 
 /**
  * Represents a color resource value.
@@ -28,22 +25,21 @@ import com.itsaky.inflater.values.models.AbstractResourceValue;
  * @author Akash Yadav
  */
 public class ColorValue extends AbstractResourceValue {
-    
-    public ColorValue (@NonNull String name, @NonNull String value) {
-        super (name, value);
+
+  public ColorValue(@NonNull String name, @NonNull String value) {
+    super(name, value);
+  }
+
+  /**
+   * Parse the value of this color resource and get the int color.
+   *
+   * @return The int color value or -1 if this is not a valid color.
+   */
+  public int parseColor() {
+    try {
+      return Color.parseColor(getValue());
+    } catch (Throwable th) {
+      return -1;
     }
-    
-    /**
-     * Parse the value of this color resource and
-     * get the int color.
-     *
-     * @return The int color value or -1 if this is not a valid color.
-     */
-    public int parseColor () {
-        try {
-            return Color.parseColor (getValue ());
-        } catch (Throwable th) {
-            return -1;
-        }
-    }
+  }
 }

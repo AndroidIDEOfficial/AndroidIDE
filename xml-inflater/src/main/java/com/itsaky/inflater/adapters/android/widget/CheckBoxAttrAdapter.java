@@ -19,30 +19,27 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.CheckBox;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
-/**
- * Attribute handler for handling attributes related to CheckBox
- */
+/** Attribute handler for handling attributes related to CheckBox */
 public class CheckBoxAttrAdapter extends CompondButtonAttrAdapter {
-    
-    public CheckBoxAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
-    }
-    
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof CheckBox;
-    }
-    
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        
-        // No special attributes for CheckBox
-        return super.apply(attribute, view);
-    }
+
+  public CheckBoxAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof CheckBox;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+
+    // No special attributes for CheckBox
+    return super.apply(attribute, view);
+  }
 }

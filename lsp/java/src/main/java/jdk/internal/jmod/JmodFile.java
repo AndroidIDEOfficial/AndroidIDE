@@ -39,202 +39,176 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-/**
- * Helper class to read JMOD file
- */
+/** Helper class to read JMOD file */
 public class JmodFile implements AutoCloseable {
-    // jmod magic number and version number
-    private static final int JMOD_MAJOR_VERSION = 0x01;
-    private static final int JMOD_MINOR_VERSION = 0x00;
-    private static final byte[] JMOD_MAGIC_NUMBER = {
-            0x4A, 0x4D, /* JM */
-            JMOD_MAJOR_VERSION, JMOD_MINOR_VERSION, /* version 1.0 */
-    };
-    
-    public static void checkMagic(Path file) throws IOException {
-        try (InputStream in = Files.newInputStream(file);
-             BufferedInputStream bis = new BufferedInputStream(in)) {
-            // validate the header
-            byte[] magic = new byte[4];
-            bis.read(magic);
-            if (magic[0] != JMOD_MAGIC_NUMBER[0] ||
-                    magic[1] != JMOD_MAGIC_NUMBER[1]) {
-                throw new IOException("Invalid JMOD file: " + file.toString());
-            }
-            if (magic[2] > JMOD_MAJOR_VERSION ||
-                    (magic[2] == JMOD_MAJOR_VERSION && magic[3] > JMOD_MINOR_VERSION)) {
-                throw new IOException("Unsupported jmod version: " +
-                        magic[2] + "." + magic[3] + " in " + file.toString());
-            }
-        }
+  // jmod magic number and version number
+  private static final int JMOD_MAJOR_VERSION = 0x01;
+  private static final int JMOD_MINOR_VERSION = 0x00;
+  private static final byte[] JMOD_MAGIC_NUMBER = {
+    0x4A, 0x4D, /* JM */ JMOD_MAJOR_VERSION, JMOD_MINOR_VERSION, /* version 1.0 */
+  };
+
+  public static void checkMagic(Path file) throws IOException {
+    try (InputStream in = Files.newInputStream(file);
+        BufferedInputStream bis = new BufferedInputStream(in)) {
+      // validate the header
+      byte[] magic = new byte[4];
+      bis.read(magic);
+      if (magic[0] != JMOD_MAGIC_NUMBER[0] || magic[1] != JMOD_MAGIC_NUMBER[1]) {
+        throw new IOException("Invalid JMOD file: " + file.toString());
+      }
+      if (magic[2] > JMOD_MAJOR_VERSION
+          || (magic[2] == JMOD_MAJOR_VERSION && magic[3] > JMOD_MINOR_VERSION)) {
+        throw new IOException(
+            "Unsupported jmod version: " + magic[2] + "." + magic[3] + " in " + file.toString());
+      }
     }
-    
-    /**
-     * JMOD sections
-     */
-    public static enum Section {
-        CLASSES("classes"),
-        CONFIG("conf"),
-        HEADER_FILES("include"),
-        LEGAL_NOTICES("legal"),
-        MAN_PAGES("man"),
-        NATIVE_LIBS("lib"),
-        NATIVE_CMDS("bin");
-        
-        private final String jmodDir;
-        private Section(String jmodDir) {
-            this.jmodDir = jmodDir;
-        }
-        
-        /**
-         * Returns the directory name in the JMOD file corresponding to
-         * this section
-         */
-        public String jmodDir() { return jmodDir; }
+  }
+
+  /** JMOD sections */
+  public static enum Section {
+    CLASSES("classes"),
+    CONFIG("conf"),
+    HEADER_FILES("include"),
+    LEGAL_NOTICES("legal"),
+    MAN_PAGES("man"),
+    NATIVE_LIBS("lib"),
+    NATIVE_CMDS("bin");
+
+    private final String jmodDir;
+
+    private Section(String jmodDir) {
+      this.jmodDir = jmodDir;
     }
-    
-    /**
-     * JMOD file entry.
-     *
-     * Each entry corresponds to a ZipEntry whose name is:
-     *   Section::jmodDir + '/' + name
-     */
-    public static class Entry {
-        private final ZipEntry zipEntry;
-        private final Section section;
-        private final String name;
-        
-        private Entry(ZipEntry e) {
-            String name = e.getName();
-            int i = name.indexOf('/');
-            if (i <= 1) {
-                throw new RuntimeException("invalid jmod entry: " + name);
-            }
-            
-            this.zipEntry = e;
-            this.section = section(name.substring(0, i));
-            this.name = name.substring(i+1);
-        }
-        
-        /**
-         * Returns the section of this entry.
-         */
-        public Section section() {
-            return section;
-        }
-        
-        /**
-         * Returns the name of this entry.
-         */
-        public String name() {
-            return name;
-        }
-        
-        /**
-         * Returns true if the entry is a directory in the JMOD file.
-         */
-        public boolean isDirectory() {
-            return zipEntry.isDirectory();
-        }
-        
-        /**
-         * Returns the size of this entry.
-         */
-        public long size() {
-            return zipEntry.getSize();
-        }
-        
-        public ZipEntry zipEntry() {
-            return zipEntry;
-        }
-        
-        @Override
-        public String toString() {
-            return section.jmodDir() + "/" + name;
-        }
-        
-        /*
-         * A map from the jmodDir name to Section
-         */
-        static final Map<String, Section> NAME_TO_SECTION =
-                Arrays.stream(Section.values())
-                        .collect(Collectors.toMap(Section::jmodDir, Function.identity()));
-        
-        static Section section(String name) {
-            if (!NAME_TO_SECTION.containsKey(name)) {
-                throw new IllegalArgumentException("invalid section: " + name);
-                
-            }
-            return NAME_TO_SECTION.get(name);
-        }
-        
+
+    /** Returns the directory name in the JMOD file corresponding to this section */
+    public String jmodDir() {
+      return jmodDir;
     }
-    
-    private final Path file;
-    private final ZipFile zipfile;
-    
-    /**
-     * Constructs a {@code JmodFile} from a given path.
-     */
-    public JmodFile(Path file) throws IOException {
-        checkMagic(file);
-        this.file = file;
-        this.zipfile = new ZipFile(file.toFile());
+  }
+
+  /**
+   * JMOD file entry.
+   *
+   * <p>Each entry corresponds to a ZipEntry whose name is: Section::jmodDir + '/' + name
+   */
+  public static class Entry {
+    private final ZipEntry zipEntry;
+    private final Section section;
+    private final String name;
+
+    private Entry(ZipEntry e) {
+      String name = e.getName();
+      int i = name.indexOf('/');
+      if (i <= 1) {
+        throw new RuntimeException("invalid jmod entry: " + name);
+      }
+
+      this.zipEntry = e;
+      this.section = section(name.substring(0, i));
+      this.name = name.substring(i + 1);
     }
-    
-    public static void writeMagicNumber(OutputStream os) throws IOException {
-        os.write(JMOD_MAGIC_NUMBER);
+
+    /** Returns the section of this entry. */
+    public Section section() {
+      return section;
     }
-    
-    /**
-     * Returns the {@code Entry} for a resource in a JMOD file section
-     * or {@code null} if not found.
-     */
-    public Entry getEntry(Section section, String name) {
-        String entry = section.jmodDir() + "/" + name;
-        ZipEntry ze = zipfile.getEntry(entry);
-        return (ze != null) ? new Entry(ze) : null;
+
+    /** Returns the name of this entry. */
+    public String name() {
+      return name;
     }
-    
-    /**
-     * Opens an {@code InputStream} for reading the named entry of the given
-     * section in this JMOD file.
-     *
-     * @throws IOException if the named entry is not found, or I/O error
-     *         occurs when reading it
-     */
-    public InputStream getInputStream(Section section, String name)
-            throws IOException
-    {
-        String entry = section.jmodDir() + "/" + name;
-        ZipEntry e = zipfile.getEntry(entry);
-        if (e == null) {
-            throw new IOException(name + " not found: " + file);
-        }
-        return zipfile.getInputStream(e);
+
+    /** Returns true if the entry is a directory in the JMOD file. */
+    public boolean isDirectory() {
+      return zipEntry.isDirectory();
     }
-    
-    /**
-     * Opens an {@code InputStream} for reading an entry in the JMOD file.
-     *
-     * @throws IOException if an I/O error occurs
-     */
-    public InputStream getInputStream(Entry entry) throws IOException {
-        return zipfile.getInputStream(entry.zipEntry());
+
+    /** Returns the size of this entry. */
+    public long size() {
+      return zipEntry.getSize();
     }
-    
-    /**
-     * Returns a stream of entries in this JMOD file.
-     */
-    public Stream<Entry> stream() {
-        return zipfile.stream()
-                .map(Entry::new);
+
+    public ZipEntry zipEntry() {
+      return zipEntry;
     }
-    
+
     @Override
-    public void close() throws IOException {
-        if (zipfile != null) {
-            zipfile.close();
-        }
+    public String toString() {
+      return section.jmodDir() + "/" + name;
     }
+
+    /*
+     * A map from the jmodDir name to Section
+     */
+    static final Map<String, Section> NAME_TO_SECTION =
+        Arrays.stream(Section.values())
+            .collect(Collectors.toMap(Section::jmodDir, Function.identity()));
+
+    static Section section(String name) {
+      if (!NAME_TO_SECTION.containsKey(name)) {
+        throw new IllegalArgumentException("invalid section: " + name);
+      }
+      return NAME_TO_SECTION.get(name);
+    }
+  }
+
+  private final Path file;
+  private final ZipFile zipfile;
+
+  /** Constructs a {@code JmodFile} from a given path. */
+  public JmodFile(Path file) throws IOException {
+    checkMagic(file);
+    this.file = file;
+    this.zipfile = new ZipFile(file.toFile());
+  }
+
+  public static void writeMagicNumber(OutputStream os) throws IOException {
+    os.write(JMOD_MAGIC_NUMBER);
+  }
+
+  /**
+   * Returns the {@code Entry} for a resource in a JMOD file section or {@code null} if not found.
+   */
+  public Entry getEntry(Section section, String name) {
+    String entry = section.jmodDir() + "/" + name;
+    ZipEntry ze = zipfile.getEntry(entry);
+    return (ze != null) ? new Entry(ze) : null;
+  }
+
+  /**
+   * Opens an {@code InputStream} for reading the named entry of the given section in this JMOD
+   * file.
+   *
+   * @throws IOException if the named entry is not found, or I/O error occurs when reading it
+   */
+  public InputStream getInputStream(Section section, String name) throws IOException {
+    String entry = section.jmodDir() + "/" + name;
+    ZipEntry e = zipfile.getEntry(entry);
+    if (e == null) {
+      throw new IOException(name + " not found: " + file);
+    }
+    return zipfile.getInputStream(e);
+  }
+
+  /**
+   * Opens an {@code InputStream} for reading an entry in the JMOD file.
+   *
+   * @throws IOException if an I/O error occurs
+   */
+  public InputStream getInputStream(Entry entry) throws IOException {
+    return zipfile.getInputStream(entry.zipEntry());
+  }
+
+  /** Returns a stream of entries in this JMOD file. */
+  public Stream<Entry> stream() {
+    return zipfile.stream().map(Entry::new);
+  }
+
+  @Override
+  public void close() throws IOException {
+    if (zipfile != null) {
+      zipfile.close();
+    }
+  }
 }

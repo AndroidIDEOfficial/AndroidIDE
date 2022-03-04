@@ -19,7 +19,6 @@ package com.itsaky.lsp.java;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ICodeActionProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
@@ -55,219 +54,217 @@ import com.itsaky.lsp.util.NoDiagnosticProvider;
 import com.itsaky.lsp.util.NoReferenceProvider;
 import com.itsaky.lsp.util.NoSelectionProvider;
 import com.itsaky.lsp.util.NoSignatureHelpProvider;
-
 import java.util.Collections;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
-    
-    private ILanguageClient client;
-    private IServerSettings settings;
-    private JavaCompilerService compiler;
-    
-    private JavaServerConfiguration configuration;
-    private boolean initialized;
-    private boolean createCompiler;
-    
-    private static final Logger LOG = Logger.instance ("JavaLanguageServer");
-    private ServerCapabilities capabilities;
-    
-    public JavaLanguageServer () {
-        this.initialized = false;
-        this.createCompiler = true;
-        this.configuration = new JavaServerConfiguration ();
-        
-        applySettings (getSettings ());
+
+  private ILanguageClient client;
+  private IServerSettings settings;
+  private JavaCompilerService compiler;
+
+  private JavaServerConfiguration configuration;
+  private boolean initialized;
+  private boolean createCompiler;
+
+  private static final Logger LOG = Logger.instance("JavaLanguageServer");
+  private ServerCapabilities capabilities;
+
+  public JavaLanguageServer() {
+    this.initialized = false;
+    this.createCompiler = true;
+    this.configuration = new JavaServerConfiguration();
+
+    applySettings(getSettings());
+  }
+
+  private JavaCompilerService getCompiler() {
+    if (createCompiler) {
+      LOG.info("Creating new compiler instance...");
+      compiler = createCompiler();
+      createCompiler = false;
     }
-    
-    private JavaCompilerService getCompiler () {
-        if (createCompiler) {
-            LOG.info ("Creating new compiler instance...");
-            compiler = createCompiler ();
-            createCompiler = false;
-        }
-        
-        return compiler;
+
+    return compiler;
+  }
+
+  public IServerSettings getSettings() {
+    if (settings == null) {
+      settings = new DefaultJavaServerSettings();
     }
-    
-    public IServerSettings getSettings () {
-        if (settings == null) {
-            settings = new DefaultJavaServerSettings ();
-        }
-        
-        return settings;
+
+    return settings;
+  }
+
+  @NonNull
+  private JavaCompilerService createCompiler() {
+    return new JavaCompilerService(configuration.getClassPaths(), Collections.emptySet());
+  }
+
+  @Override
+  public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
+
+    if (initialized) {
+      throw new AlreadyInitializedException();
     }
-    
-    @NonNull
-    private JavaCompilerService createCompiler () {
-        return new JavaCompilerService (
-                configuration.getClassPaths (),
-                Collections.emptySet ()
-        );
+
+    FileStore.setWorkspaceRoots(params.getWorkspaceRoots());
+
+    capabilities = new ServerCapabilities();
+    capabilities.setCompletionsAvailable(true);
+    capabilities.setCodeActionsAvailable(true);
+    capabilities.setDefinitionsAvailable(true);
+    capabilities.setReferencesAvailable(true);
+    capabilities.setSignatureHelpAvailable(true);
+    capabilities.setCodeAnalysisAvailable(true);
+    capabilities.setSmartSelectionsEnabled(true);
+
+    initialized = true;
+  }
+
+  @NonNull
+  @Override
+  public ServerCapabilities getCapabilities() {
+    return capabilities;
+  }
+
+  @Override
+  public void shutdown() {
+    if (compiler != null) {
+      compiler.close();
+      compiler = null;
+      createCompiler = true;
     }
-    
-    @Override
-    public void initialize (@NonNull InitializeParams params) throws AlreadyInitializedException {
-        
-        if (initialized) {
-            throw new AlreadyInitializedException ();
-        }
-        
-        FileStore.setWorkspaceRoots (params.getWorkspaceRoots ());
-        
-        capabilities = new ServerCapabilities ();
-        capabilities.setCompletionsAvailable (true);
-        capabilities.setCodeActionsAvailable (true);
-        capabilities.setDefinitionsAvailable (true);
-        capabilities.setReferencesAvailable (true);
-        capabilities.setSignatureHelpAvailable (true);
-        capabilities.setCodeAnalysisAvailable (true);
-        capabilities.setSmartSelectionsEnabled (true);
-        
-        initialized = true;
+
+    FileStore.shutdown();
+    initialized = false;
+  }
+
+  @Override
+  public void connectClient(@Nullable ILanguageClient client) {
+    this.client = client;
+  }
+
+  @Nullable
+  @Override
+  public ILanguageClient getClient() {
+    return this.client;
+  }
+
+  @Override
+  public void applySettings(@Nullable IServerSettings settings) {
+    this.settings = settings;
+  }
+
+  @Override
+  public void configurationChanged(Object newConfiguration) {
+    if (!(newConfiguration instanceof JavaServerConfiguration)) {
+      LOG.error("Invalid configuration passed to server.", newConfiguration);
+      LOG.error("Configuration change event will be ignored.");
+      return;
     }
-    
-    @NonNull
-    @Override
-    public ServerCapabilities getCapabilities () {
-        return capabilities;
+
+    this.configuration = (JavaServerConfiguration) newConfiguration;
+    LOG.info("Java language server configuration changed.");
+    LOG.info(
+        this.configuration.getClassPaths().size(),
+        "class paths were provided in the configuration");
+    // Compiler must be recreated on a configuration change
+    this.createCompiler = true;
+  }
+
+  @NonNull
+  @Override
+  public ICompletionProvider getCompletionProvider() {
+    if (!settings.completionsEnabled()) {
+      return new NoCompletionsProvider();
     }
-    
-    @Override
-    public void shutdown () {
-        if (compiler != null) {
-            compiler.close ();
-            compiler = null;
-            createCompiler = true;
-        }
-        
-        FileStore.shutdown ();
-        initialized = false;
+
+    return new CompletionProvider(getCompiler(), this.settings);
+  }
+
+  @NonNull
+  @Override
+  public ICodeActionProvider getCodeActionProvider() {
+    if (!settings.codeActionsEnabled()) {
+      return new NoCodeActionsProvider();
     }
-    
-    @Override
-    public void connectClient (@Nullable ILanguageClient client) {
-        this.client = client;
+
+    return new CodeActionProvider(getCompiler());
+  }
+
+  @NonNull
+  @Override
+  public IReferenceProvider getReferenceProvider() {
+    if (!settings.referencesEnabled()) {
+      return new NoReferenceProvider();
     }
-    
-    @Nullable
-    @Override
-    public ILanguageClient getClient () {
-        return this.client;
+
+    return new ReferenceProvider(getCompiler());
+  }
+
+  @NonNull
+  @Override
+  public IDefinitionProvider getDefinitionProvider() {
+    if (!settings.definitionsEnabled()) {
+      return new NoDefinitionProvider();
     }
-    
-    @Override
-    public void applySettings (@Nullable IServerSettings settings) {
-        this.settings = settings;
+
+    return new DefinitionProvider(getCompiler());
+  }
+
+  @NonNull
+  @Override
+  public ISelectionProvider getSelectionProvider() {
+    if (!settings.smartSelectionsEnabled()) {
+      return new NoSelectionProvider();
     }
-    
-    @Override
-    public void configurationChanged (Object newConfiguration) {
-        if (!(newConfiguration instanceof JavaServerConfiguration)) {
-            LOG.error ("Invalid configuration passed to server.", newConfiguration);
-            LOG.error ("Configuration change event will be ignored.");
-            return;
-        }
-        
-        this.configuration = (JavaServerConfiguration) newConfiguration;
-        LOG.info ("Java language server configuration changed.");
-        LOG.info (this.configuration.getClassPaths ().size (), "class paths were provided in the configuration");
-        // Compiler must be recreated on a configuration change
-        this.createCompiler = true;
+
+    return new JavaSelectionProvider(getCompiler());
+  }
+
+  @NonNull
+  @Override
+  public ISignatureHelpProvider getSignatureHelpProvider() {
+    if (!settings.signatureHelpEnabled()) {
+      return new NoSignatureHelpProvider();
     }
-    
-    @NonNull
-    @Override
-    public ICompletionProvider getCompletionProvider () {
-        if (!settings.completionsEnabled ()) {
-            return new NoCompletionsProvider ();
-        }
-        
-        return new CompletionProvider (getCompiler (), this.settings);
+
+    return new SignatureProvider(getCompiler());
+  }
+
+  @NonNull
+  @Override
+  public IDocumentHandler getDocumentHandler() {
+    return this;
+  }
+
+  @NonNull
+  @Override
+  public IDiagnosticProvider getCodeAnalyzer() {
+    if (!settings.codeAnalysisEnabled()) {
+      return new NoDiagnosticProvider();
     }
-    
-    @NonNull
-    @Override
-    public ICodeActionProvider getCodeActionProvider () {
-        if (!settings.codeActionsEnabled ()) {
-            return new NoCodeActionsProvider ();
-        }
-        
-        return new CodeActionProvider (getCompiler ());
-    }
-    
-    @NonNull
-    @Override
-    public IReferenceProvider getReferenceProvider () {
-        if (!settings.referencesEnabled ()) {
-            return new NoReferenceProvider ();
-        }
-        
-        return new ReferenceProvider (getCompiler ());
-    }
-    
-    @NonNull
-    @Override
-    public IDefinitionProvider getDefinitionProvider () {
-        if (!settings.definitionsEnabled ()) {
-            return new NoDefinitionProvider ();
-        }
-        
-        return new DefinitionProvider (getCompiler ());
-    }
-    
-    @NonNull
-    @Override
-    public ISelectionProvider getSelectionProvider () {
-        if (!settings.smartSelectionsEnabled ()) {
-            return new NoSelectionProvider ();
-        }
-        
-        return new JavaSelectionProvider (getCompiler ());
-    }
-    
-    @NonNull
-    @Override
-    public ISignatureHelpProvider getSignatureHelpProvider () {
-        if (!settings.signatureHelpEnabled ()) {
-            return new NoSignatureHelpProvider ();
-        }
-        
-        return new SignatureProvider (getCompiler ());
-    }
-    
-    @NonNull
-    @Override
-    public IDocumentHandler getDocumentHandler () {
-        return this;
-    }
-    
-    @NonNull
-    @Override
-    public IDiagnosticProvider getCodeAnalyzer () {
-        if (!settings.codeAnalysisEnabled ()) {
-            return new NoDiagnosticProvider ();
-        }
-        
-        return new JavaDiagnosticProvider (getCompiler ());
-    }
-    
-    @Override
-    public void onFileOpened (DocumentOpenEvent event) {
-        FileStore.open (event);
-    }
-    
-    @Override
-    public void onContentChange (DocumentChangeEvent event) {
-        FileStore.change (event);
-    }
-    
-    @Override
-    public void onFileSaved (DocumentSaveEvent event) {
-        // TODO Run a lint check (or a simple compilation)
-    }
-    
-    @Override
-    public void onFileClosed (DocumentCloseEvent event) {
-        FileStore.close (event);
-    }
+
+    return new JavaDiagnosticProvider(getCompiler());
+  }
+
+  @Override
+  public void onFileOpened(DocumentOpenEvent event) {
+    FileStore.open(event);
+  }
+
+  @Override
+  public void onContentChange(DocumentChangeEvent event) {
+    FileStore.change(event);
+  }
+
+  @Override
+  public void onFileSaved(DocumentSaveEvent event) {
+    // TODO Run a lint check (or a simple compilation)
+  }
+
+  @Override
+  public void onFileClosed(DocumentCloseEvent event) {
+    FileStore.close(event);
+  }
 }

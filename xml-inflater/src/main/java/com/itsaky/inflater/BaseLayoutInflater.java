@@ -21,53 +21,53 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class BaseLayoutInflater extends ILayoutInflater {
-    
-    private final Set<IInflateListener> inflateListeners = new HashSet<> ();
-    protected boolean notify = true;
-    
-    @Override
-    public void registerInflateListener (IInflateListener listener) {
-        inflateListeners.add (listener);
+
+  private final Set<IInflateListener> inflateListeners = new HashSet<>();
+  protected boolean notify = true;
+
+  @Override
+  public void registerInflateListener(IInflateListener listener) {
+    inflateListeners.add(listener);
+  }
+
+  @Override
+  public void unregisterListener(IInflateListener listener) {
+    inflateListeners.remove(listener);
+  }
+
+  protected void preInflate() {
+    if (notify) {
+      for (IInflateListener listener : inflateListeners) {
+        listener.onBeginInflate();
+      }
     }
-    
-    @Override
-    public void unregisterListener (IInflateListener listener) {
-        inflateListeners.remove (listener);
+  }
+
+  protected void postApplyAttribute(IAttribute attr, IView view) {
+    if (notify) {
+      for (IInflateListener listener : inflateListeners) {
+        listener.onApplyAttribute(attr, view);
+      }
     }
-    
-    protected void preInflate () {
-        if (notify) {
-            for (IInflateListener listener : inflateListeners) {
-                listener.onBeginInflate ();
-            }
-        }
+  }
+
+  protected void postCreateView(IView view) {
+    if (notify) {
+      for (IInflateListener listener : inflateListeners) {
+        listener.onInflateView(view, view.getParent());
+      }
     }
-    
-    protected void postApplyAttribute (IAttribute attr, IView view) {
-        if (notify) {
-            for (IInflateListener listener : inflateListeners) {
-                listener.onApplyAttribute (attr, view);
-            }
-        }
+  }
+
+  protected void postInflate(IView root) {
+    if (notify) {
+      for (IInflateListener listener : inflateListeners) {
+        listener.onFinishInflate(root);
+      }
     }
-    
-    protected void postCreateView (IView view) {
-        if (notify) {
-            for (IInflateListener listener : inflateListeners) {
-                listener.onInflateView (view, view.getParent ());
-            }
-        }
-    }
-    
-    protected void postInflate (IView root) {
-        if (notify) {
-            for (IInflateListener listener : inflateListeners) {
-                listener.onFinishInflate (root);
-            }
-        }
-    }
-    
-    protected Set<IInflateListener> getInflateListeners () {
-        return this.inflateListeners;
-    }
+  }
+
+  protected Set<IInflateListener> getInflateListeners() {
+    return this.inflateListeners;
+  }
 }

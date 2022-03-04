@@ -89,6 +89,7 @@ public class TypeName {
 
   /** The name of this type if it is a keyword, or null. */
   private final String keyword;
+
   public final List<AnnotationSpec> annotations;
 
   /** Lazily-initialized toString of this type name. */
@@ -192,18 +193,21 @@ public class TypeName {
     throw new UnsupportedOperationException("cannot unbox " + this);
   }
 
-  @Override public final boolean equals(Object o) {
+  @Override
+  public final boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
   }
 
-  @Override public final int hashCode() {
+  @Override
+  public final int hashCode() {
     return toString().hashCode();
   }
 
-  @Override public final String toString() {
+  @Override
+  public final String toString() {
     String result = cachedString;
     if (result == null) {
       try {
@@ -237,85 +241,94 @@ public class TypeName {
     return out;
   }
 
-
   /** Returns a type name equivalent to {@code mirror}. */
   public static TypeName get(TypeMirror mirror) {
     return get(mirror, new LinkedHashMap<>());
   }
 
-  static TypeName get(TypeMirror mirror,
-      final Map<TypeParameterElement, TypeVariableName> typeVariables) {
-    return mirror.accept(new SimpleTypeVisitor8<TypeName, Void>() {
-      @Override public TypeName visitPrimitive(PrimitiveType t, Void p) {
-        switch (t.getKind()) {
-          case BOOLEAN:
-            return TypeName.BOOLEAN;
-          case BYTE:
-            return TypeName.BYTE;
-          case SHORT:
-            return TypeName.SHORT;
-          case INT:
-            return TypeName.INT;
-          case LONG:
-            return TypeName.LONG;
-          case CHAR:
-            return TypeName.CHAR;
-          case FLOAT:
-            return TypeName.FLOAT;
-          case DOUBLE:
-            return TypeName.DOUBLE;
-          default:
-            throw new AssertionError();
-        }
-      }
+  static TypeName get(
+      TypeMirror mirror, final Map<TypeParameterElement, TypeVariableName> typeVariables) {
+    return mirror.accept(
+        new SimpleTypeVisitor8<TypeName, Void>() {
+          @Override
+          public TypeName visitPrimitive(PrimitiveType t, Void p) {
+            switch (t.getKind()) {
+              case BOOLEAN:
+                return TypeName.BOOLEAN;
+              case BYTE:
+                return TypeName.BYTE;
+              case SHORT:
+                return TypeName.SHORT;
+              case INT:
+                return TypeName.INT;
+              case LONG:
+                return TypeName.LONG;
+              case CHAR:
+                return TypeName.CHAR;
+              case FLOAT:
+                return TypeName.FLOAT;
+              case DOUBLE:
+                return TypeName.DOUBLE;
+              default:
+                throw new AssertionError();
+            }
+          }
 
-      @Override public TypeName visitDeclared(DeclaredType t, Void p) {
-        ClassName rawType = ClassName.get((TypeElement) t.asElement());
-        TypeMirror enclosingType = t.getEnclosingType();
-        TypeName enclosing =
-            (enclosingType.getKind() != TypeKind.NONE)
-                    && !t.asElement().getModifiers().contains(Modifier.STATIC)
-                ? enclosingType.accept(this, null)
-                : null;
-        if (t.getTypeArguments().isEmpty() && !(enclosing instanceof ParameterizedTypeName)) {
-          return rawType;
-        }
+          @Override
+          public TypeName visitDeclared(DeclaredType t, Void p) {
+            ClassName rawType = ClassName.get((TypeElement) t.asElement());
+            TypeMirror enclosingType = t.getEnclosingType();
+            TypeName enclosing =
+                (enclosingType.getKind() != TypeKind.NONE)
+                        && !t.asElement().getModifiers().contains(Modifier.STATIC)
+                    ? enclosingType.accept(this, null)
+                    : null;
+            if (t.getTypeArguments().isEmpty() && !(enclosing instanceof ParameterizedTypeName)) {
+              return rawType;
+            }
 
-        List<TypeName> typeArgumentNames = new ArrayList<>();
-        for (TypeMirror mirror : t.getTypeArguments()) {
-          typeArgumentNames.add(get(mirror, typeVariables));
-        }
-        return enclosing instanceof ParameterizedTypeName
-            ? ((ParameterizedTypeName) enclosing).nestedClass(
-            rawType.simpleName(), typeArgumentNames)
-            : new ParameterizedTypeName(null, rawType, typeArgumentNames);
-      }
+            List<TypeName> typeArgumentNames = new ArrayList<>();
+            for (TypeMirror mirror : t.getTypeArguments()) {
+              typeArgumentNames.add(get(mirror, typeVariables));
+            }
+            return enclosing instanceof ParameterizedTypeName
+                ? ((ParameterizedTypeName) enclosing)
+                    .nestedClass(rawType.simpleName(), typeArgumentNames)
+                : new ParameterizedTypeName(null, rawType, typeArgumentNames);
+          }
 
-      @Override public TypeName visitError(ErrorType t, Void p) {
-        return visitDeclared(t, p);
-      }
+          @Override
+          public TypeName visitError(ErrorType t, Void p) {
+            return visitDeclared(t, p);
+          }
 
-      @Override public ArrayTypeName visitArray(ArrayType t, Void p) {
-        return ArrayTypeName.get(t, typeVariables);
-      }
+          @Override
+          public ArrayTypeName visitArray(ArrayType t, Void p) {
+            return ArrayTypeName.get(t, typeVariables);
+          }
 
-      @Override public TypeName visitTypeVariable(javax.lang.model.type.TypeVariable t, Void p) {
-        return TypeVariableName.get(t, typeVariables);
-      }
+          @Override
+          public TypeName visitTypeVariable(javax.lang.model.type.TypeVariable t, Void p) {
+            return TypeVariableName.get(t, typeVariables);
+          }
 
-      @Override public TypeName visitWildcard(javax.lang.model.type.WildcardType t, Void p) {
-        return WildcardTypeName.get(t, typeVariables);
-      }
+          @Override
+          public TypeName visitWildcard(javax.lang.model.type.WildcardType t, Void p) {
+            return WildcardTypeName.get(t, typeVariables);
+          }
 
-      @Override public TypeName visitNoType(NoType t, Void p) {
-        if (t.getKind() == TypeKind.VOID) return TypeName.VOID;
-        return super.visitUnknown(t, p);
-      }
+          @Override
+          public TypeName visitNoType(NoType t, Void p) {
+            if (t.getKind() == TypeKind.VOID) return TypeName.VOID;
+            return super.visitUnknown(t, p);
+          }
 
-      @Override protected TypeName defaultAction(TypeMirror e, Void p) {
-        throw new IllegalArgumentException("Unexpected type mirror: " + e);
-      }
-    }, null);
+          @Override
+          protected TypeName defaultAction(TypeMirror e, Void p) {
+            throw new IllegalArgumentException("Unexpected type mirror: " + e);
+          }
+        },
+        null);
   }
 
   /** Returns a type name equivalent to {@code type}. */
@@ -370,16 +383,11 @@ public class TypeName {
 
   /** Returns the array component of {@code type}, or null if {@code type} is not an array. */
   static TypeName arrayComponent(TypeName type) {
-    return type instanceof ArrayTypeName
-        ? ((ArrayTypeName) type).componentType
-        : null;
+    return type instanceof ArrayTypeName ? ((ArrayTypeName) type).componentType : null;
   }
 
   /** Returns {@code type} as an array, or null if {@code type} is not an array. */
   static ArrayTypeName asArray(TypeName type) {
-    return type instanceof ArrayTypeName
-        ? ((ArrayTypeName) type)
-        : null;
+    return type instanceof ArrayTypeName ? ((ArrayTypeName) type) : null;
   }
-
 }

@@ -15,6 +15,8 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkNotNull;
+
 import java.io.IOException;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
@@ -24,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.ArrayType;
-
-import static com.squareup.javapoet.Util.checkNotNull;
 
 public final class ArrayTypeName extends TypeName {
   public final TypeName componentType;
@@ -39,15 +39,18 @@ public final class ArrayTypeName extends TypeName {
     this.componentType = checkNotNull(componentType, "rawType == null");
   }
 
-  @Override public ArrayTypeName annotated(List<AnnotationSpec> annotations) {
+  @Override
+  public ArrayTypeName annotated(List<AnnotationSpec> annotations) {
     return new ArrayTypeName(componentType, concatAnnotations(annotations));
   }
 
-  @Override public TypeName withoutAnnotations() {
+  @Override
+  public TypeName withoutAnnotations() {
     return new ArrayTypeName(componentType);
   }
 
-  @Override CodeWriter emit(CodeWriter out) throws IOException {
+  @Override
+  CodeWriter emit(CodeWriter out) throws IOException {
     return emit(out, false);
   }
 
@@ -74,9 +77,8 @@ public final class ArrayTypeName extends TypeName {
       return out.emit(varargs ? "..." : "[]");
     }
     out.emit("[]");
-    return TypeName.asArray(componentType) .emitBrackets(out, varargs);
+    return TypeName.asArray(componentType).emitBrackets(out, varargs);
   }
-
 
   /** Returns an array type whose elements are all instances of {@code componentType}. */
   public static ArrayTypeName of(TypeName componentType) {

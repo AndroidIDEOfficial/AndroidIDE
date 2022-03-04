@@ -18,7 +18,6 @@
 package com.itsaky.attrinfo.models;
 
 import androidx.annotation.NonNull;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -29,41 +28,38 @@ import java.util.Set;
  * @author Akash Yadav
  */
 public class Styleable {
-    
-    public final String name;
-    public final Set<Attr> attributes = new HashSet<> ();
-    
-    public Styleable (String name) {
-        if (name == null || name.trim ().length () <= 0) {
-            throw new IllegalArgumentException ("Invalid name specified for declared styleable");
-        }
-        
-        this.name = name.trim ();
+
+  public final String name;
+  public final Set<Attr> attributes = new HashSet<>();
+
+  public Styleable(String name) {
+    if (name == null || name.trim().length() <= 0) {
+      throw new IllegalArgumentException("Invalid name specified for declared styleable");
     }
-    
-    @Override
-    public boolean equals (Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Styleable)) {
-            return false;
-        }
-        Styleable styleable = (Styleable) o;
-        return Objects.equals (name, styleable.name) && Objects.equals (attributes, styleable.attributes);
+
+    this.name = name.trim();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-    
-    @Override
-    public int hashCode () {
-        return Objects.hash (name, attributes);
+    if (!(o instanceof Styleable)) {
+      return false;
     }
-    
-    @NonNull
-    @Override
-    public String toString () {
-        return "Styleable{" +
-                "name='" + name + '\'' +
-                ", attributes=" + attributes +
-                '}';
-    }
+    Styleable styleable = (Styleable) o;
+    return Objects.equals(name, styleable.name) && Objects.equals(attributes, styleable.attributes);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, attributes);
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    return "Styleable{" + "name='" + name + '\'' + ", attributes=" + attributes + '}';
+  }
 }

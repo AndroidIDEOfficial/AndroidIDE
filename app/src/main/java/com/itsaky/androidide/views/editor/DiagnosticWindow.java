@@ -19,7 +19,6 @@ package com.itsaky.androidide.views.editor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.lsp.models.DiagnosticItem;
 
 /**
@@ -28,35 +27,36 @@ import com.itsaky.lsp.models.DiagnosticItem;
  * @author Akash Yadav
  */
 public class DiagnosticWindow extends SimpleTextWindow {
-    
-    /**
-     * Create a popup window for editor
-     *
-     * @param editor The editor
-     * @see #FEATURE_SCROLL_AS_CONTENT
-     * @see #FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED
-     * @see #FEATURE_HIDE_WHEN_FAST_SCROLL
-     */
-    public DiagnosticWindow (@NonNull IDEEditor editor) {
-        super (editor);
+
+  /**
+   * Create a popup window for editor
+   *
+   * @param editor The editor
+   * @see #FEATURE_SCROLL_AS_CONTENT
+   * @see #FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED
+   * @see #FEATURE_HIDE_WHEN_FAST_SCROLL
+   */
+  public DiagnosticWindow(@NonNull IDEEditor editor) {
+    super(editor);
+  }
+
+  /**
+   * Show the given diagnostic item.
+   *
+   * @param diagnostic The diagnostic item to show.
+   */
+  public void showDiagnostic(@Nullable DiagnosticItem diagnostic) {
+    if (diagnostic == null) {
+      if (isShowing()) {
+        dismiss();
+      }
+
+      return;
     }
-    
-    /**
-     * Show the given diagnostic item.
-     * @param diagnostic The diagnostic item to show.
-     */
-    public void showDiagnostic (@Nullable DiagnosticItem diagnostic) {
-        if (diagnostic == null) {
-            if (isShowing ()) {
-                dismiss ();
-            }
-            
-            return;
-        }
-        
-        final var message = diagnostic.getMessage ();
-        this.text.setText (message);
-        
-        displayWindow ();
-    }
+
+    final var message = diagnostic.getMessage();
+    this.text.setText(message);
+
+    displayWindow();
+  }
 }

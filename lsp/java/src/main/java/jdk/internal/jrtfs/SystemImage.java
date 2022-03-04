@@ -25,7 +25,6 @@
 package jdk.internal.jrtfs;
 
 import com.itsaky.androidide.utils.Environment;
-
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
@@ -34,82 +33,86 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-
 import jdk.internal.jimage.ImageReader;
 import jdk.internal.jimage.ImageReader.Node;
 
 /**
  * @implNote This class needs to maintain JDK 8 source compatibility.
- *
- * It is used internally in the JDK to implement jimage/jrtfs access,
- * but also compiled and delivered as part of the jrtfs.jar to support access
- * to the jimage file provided by the shipped JDK by tools running on JDK 8.
+ *     <p>It is used internally in the JDK to implement jimage/jrtfs access, but also compiled and
+ *     delivered as part of the jrtfs.jar to support access to the jimage file provided by the
+ *     shipped JDK by tools running on JDK 8.
  */
 abstract class SystemImage {
-    
-    abstract Node findNode(String path) throws IOException;
-    abstract byte[] getResource(Node node) throws IOException;
-    abstract void close() throws IOException;
-    
-    static SystemImage open() throws IOException {
-        
-        // Initialize the fields
-        // Make sure that they are up to date with com.itsaky.androidide.utils.Environment
-        init ();
-        
-        if (modulesImageExists) {
-            // open a .jimage and build directory structure
-            final ImageReader image = ImageReader.open(moduleImageFile);
-            image.getRootDirectory();
-            return new SystemImage() {
-                @Override
-                Node findNode(String path) throws IOException {
-                    return image.findNode(path);
-                }
-                @Override
-                byte[] getResource(Node node) throws IOException {
-                    return image.getResource(node);
-                }
-                @Override
-                void close() throws IOException {
-                    image.close();
-                }
-            };
+
+  abstract Node findNode(String path) throws IOException;
+
+  abstract byte[] getResource(Node node) throws IOException;
+
+  abstract void close() throws IOException;
+
+  static SystemImage open() throws IOException {
+
+    // Initialize the fields
+    // Make sure that they are up to date with com.itsaky.androidide.utils.Environment
+    init();
+
+    if (modulesImageExists) {
+      // open a .jimage and build directory structure
+      final ImageReader image = ImageReader.open(moduleImageFile);
+      image.getRootDirectory();
+      return new SystemImage() {
+        @Override
+        Node findNode(String path) throws IOException {
+          return image.findNode(path);
         }
-        if (Files.notExists(explodedModulesDir))
-            throw new FileSystemNotFoundException(explodedModulesDir.toString());
-        return new ExplodedImage(explodedModulesDir);
+
+        @Override
+        byte[] getResource(Node node) throws IOException {
+          return image.getResource(node);
+        }
+
+        @Override
+        void close() throws IOException {
+          image.close();
+        }
+      };
     }
-    
-    static String RUNTIME_HOME;
-    // "modules" jimage file Path
-    static Path moduleImageFile;
-    // "modules" jimage exists or not?
-    static boolean modulesImageExists;
-    // <JAVA_HOME>/modules directory Path
-    static Path explodedModulesDir;
-    
-    static {
-        init ();
-    }
-    
-    public static void init () {
-        PrivilegedAction<String> pa = SystemImage::findHome;
-        RUNTIME_HOME = AccessController.doPrivileged(pa);
-    
-        FileSystem fs = FileSystems.getDefault();
-        moduleImageFile = fs.getPath(RUNTIME_HOME, "lib", "modules");
-        explodedModulesDir = fs.getPath(RUNTIME_HOME, "modules");
-        
-        modulesImageExists = AccessController.doPrivileged((PrivilegedAction<Boolean>) () -> Files.isRegularFile(moduleImageFile));
-    }
-    
-    /**
-     * Returns the appropriate JDK home for this usage of the FileSystemProvider.
-     * When the CodeSource is null (null loader) then jrt:/ is the current runtime,
-     * otherwise the JDK home is located relative to jrt-fs.jar.
-     */
-    private static String findHome() {
-        return Environment.COMPILER_MODULE.getAbsolutePath ();
-    }
+    if (Files.notExists(explodedModulesDir))
+      throw new FileSystemNotFoundException(explodedModulesDir.toString());
+    return new ExplodedImage(explodedModulesDir);
+  }
+
+  static String RUNTIME_HOME;
+  // "modules" jimage file Path
+  static Path moduleImageFile;
+  // "modules" jimage exists or not?
+  static boolean modulesImageExists;
+  // <JAVA_HOME>/modules directory Path
+  static Path explodedModulesDir;
+
+  static {
+    init();
+  }
+
+  public static void init() {
+    PrivilegedAction<String> pa = SystemImage::findHome;
+    RUNTIME_HOME = AccessController.doPrivileged(pa);
+
+    FileSystem fs = FileSystems.getDefault();
+    moduleImageFile = fs.getPath(RUNTIME_HOME, "lib", "modules");
+    explodedModulesDir = fs.getPath(RUNTIME_HOME, "modules");
+
+    modulesImageExists =
+        AccessController.doPrivileged(
+            (PrivilegedAction<Boolean>) () -> Files.isRegularFile(moduleImageFile));
+  }
+
+  /**
+   * Returns the appropriate JDK home for this usage of the FileSystemProvider. When the CodeSource
+   * is null (null loader) then jrt:/ is the current runtime, otherwise the JDK home is located
+   * relative to jrt-fs.jar.
+   */
+  private static String findHome() {
+    return Environment.COMPILER_MODULE.getAbsolutePath();
+  }
 }

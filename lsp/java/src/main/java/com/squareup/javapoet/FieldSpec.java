@@ -15,6 +15,10 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static com.squareup.javapoet.Util.checkState;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -23,10 +27,6 @@ import java.util.List;
 import java.util.Set;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
-
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
-import static com.squareup.javapoet.Util.checkState;
 
 /** A generated field declaration. */
 public final class FieldSpec {
@@ -43,9 +43,8 @@ public final class FieldSpec {
     this.javadoc = builder.javadoc.build();
     this.annotations = Util.immutableList(builder.annotations);
     this.modifiers = Util.immutableSet(builder.modifiers);
-    this.initializer = (builder.initializer == null)
-        ? CodeBlock.builder().build()
-        : builder.initializer;
+    this.initializer =
+        (builder.initializer == null) ? CodeBlock.builder().build() : builder.initializer;
   }
 
   public boolean hasModifier(Modifier modifier) {
@@ -64,18 +63,21 @@ public final class FieldSpec {
     codeWriter.emit(";\n");
   }
 
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return toString().hashCode();
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     StringBuilder out = new StringBuilder();
     try {
       CodeWriter codeWriter = new CodeWriter(out);
@@ -89,8 +91,7 @@ public final class FieldSpec {
   public static Builder builder(TypeName type, String name, Modifier... modifiers) {
     checkNotNull(type, "type == null");
     checkArgument(SourceVersion.isName(name), "not a valid name: %s", name);
-    return new Builder(type, name)
-        .addModifiers(modifiers);
+    return new Builder(type, name).addModifiers(modifiers);
   }
 
   public static Builder builder(Type type, String name, Modifier... modifiers) {

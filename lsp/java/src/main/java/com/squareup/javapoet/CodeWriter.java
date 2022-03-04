@@ -15,6 +15,12 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static com.squareup.javapoet.Util.checkState;
+import static com.squareup.javapoet.Util.stringLiteralWithDoubleQuotes;
+import static java.lang.String.join;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,12 +37,6 @@ import java.util.regex.Pattern;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
-import static com.squareup.javapoet.Util.checkState;
-import static com.squareup.javapoet.Util.stringLiteralWithDoubleQuotes;
-import static java.lang.String.join;
-
 /**
  * Converts a {@link JavaFile} to a string suitable to both human- and javac-consumption. This
  * honors imports, indentation, and deferred variable names.
@@ -44,6 +44,7 @@ import static java.lang.String.join;
 final class CodeWriter {
   /** Sentinel value that indicates that no user-provided package has been set. */
   private static final String NO_PACKAGE = new String();
+
   private static final Pattern LINE_BREAKING_PATTERN = Pattern.compile("\\R");
 
   private final String indent;
@@ -78,7 +79,8 @@ final class CodeWriter {
     this(out, indent, Collections.emptyMap(), staticImports, alwaysQualify);
   }
 
-  CodeWriter(Appendable out,
+  CodeWriter(
+      Appendable out,
       String indent,
       Map<String, ClassName> importedTypes,
       Set<String> staticImports,
@@ -247,9 +249,7 @@ final class CodeWriter {
         case "$S":
           String string = (String) codeBlock.args.get(a++);
           // Emit null as a literal null: no quotes.
-          emitAndIndent(string != null
-              ? stringLiteralWithDoubleQuotes(string, indent)
-              : "null");
+          emitAndIndent(string != null ? stringLiteralWithDoubleQuotes(string, indent) : "null");
           break;
 
         case "$T":
@@ -389,8 +389,8 @@ final class CodeWriter {
 
       if (resolved != null && Objects.equals(resolved.canonicalName, c.canonicalName)) {
         int suffixOffset = c.simpleNames().size() - 1;
-        return join(".", className.simpleNames().subList(
-            suffixOffset, className.simpleNames().size()));
+        return join(
+            ".", className.simpleNames().subList(suffixOffset, className.simpleNames().size()));
       }
     }
 

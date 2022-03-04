@@ -19,150 +19,147 @@ package com.itsaky.androidide.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-
-import org.jetbrains.annotations.Contract;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.jetbrains.annotations.Contract;
 
 /**
- * Model class for holding data about a group that will be displayed
- * in Widgets list in UI Designer screen.
+ * Model class for holding data about a group that will be displayed in Widgets list in UI Designer
+ * screen.
  *
- * A UIWidgetGroup contains multiple {@link UIWidget}.
+ * <p>A UIWidgetGroup contains multiple {@link UIWidget}.
  *
  * @author Akash Yadav
  */
 public class UIWidgetGroup implements IconTextListItem, Parcelable {
 
-    /**
-     * Name of this group.
-     */
-    private final String name;
+  /** Name of this group. */
+  private final String name;
 
-    /**
-     * Children of this group.
-     */
-    private final List<UIWidget> children;
+  /** Children of this group. */
+  private final List<UIWidget> children;
 
-    /**
-     * Is this group currently selected in the group list?
-     */
-    private boolean selected;
+  /** Is this group currently selected in the group list? */
+  private boolean selected;
 
-    public UIWidgetGroup(String name) {
-        this.name = name;
-        this.selected = false;
-        this.children = new ArrayList<>();
-    }
+  public UIWidgetGroup(String name) {
+    this.name = name;
+    this.selected = false;
+    this.children = new ArrayList<>();
+  }
 
-    protected UIWidgetGroup(@NonNull Parcel in) {
-        this.name = in.readString();
-        this.children = in.createTypedArrayList(UIWidget.CREATOR);
-        this.selected = in.readByte() != 0;
-    }
+  protected UIWidgetGroup(@NonNull Parcel in) {
+    this.name = in.readString();
+    this.children = in.createTypedArrayList(UIWidget.CREATOR);
+    this.selected = in.readByte() != 0;
+  }
 
-    public static final Creator<UIWidgetGroup> CREATOR = new Creator<UIWidgetGroup>() {
+  public static final Creator<UIWidgetGroup> CREATOR =
+      new Creator<UIWidgetGroup>() {
 
         @NonNull
         @Contract("_ -> new")
         @Override
         public UIWidgetGroup createFromParcel(Parcel in) {
-            return new UIWidgetGroup(in);
+          return new UIWidgetGroup(in);
         }
 
         @NonNull
         @Contract(value = "_ -> new", pure = true)
         @Override
         public UIWidgetGroup[] newArray(int size) {
-            return new UIWidgetGroup[size];
+          return new UIWidgetGroup[size];
         }
-    };
+      };
 
-    /**
-     * Get the name of this group.
-     * @return The name of this group.
-     */
-    public String getName() {
-        return name;
-    }
+  /**
+   * Get the name of this group.
+   *
+   * @return The name of this group.
+   */
+  public String getName() {
+    return name;
+  }
 
-    /**
-     * Get the children of this group.
-     * @return The children.
-     */
-    @NonNull
-    public List<UIWidget> getChildren() {
-        return children;
-    }
+  /**
+   * Get the children of this group.
+   *
+   * @return The children.
+   */
+  @NonNull
+  public List<UIWidget> getChildren() {
+    return children;
+  }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
+  public void setSelected(boolean selected) {
+    this.selected = selected;
+  }
 
-    public boolean isSelected() {
-        return selected;
-    }
+  public boolean isSelected() {
+    return selected;
+  }
 
-    /**
-     * Add this widget to this group. Does nothing if the child is already present.
-     * @param child The child to add.
-     * @return This instance for chained method calls.
-     */
-    public UIWidgetGroup addChild (UIWidget child) {
-        if (children.contains(child)) {
-            return  this;
-        }
-        this.children.add(child);
-        return this;
+  /**
+   * Add this widget to this group. Does nothing if the child is already present.
+   *
+   * @param child The child to add.
+   * @return This instance for chained method calls.
+   */
+  public UIWidgetGroup addChild(UIWidget child) {
+    if (children.contains(child)) {
+      return this;
     }
+    this.children.add(child);
+    return this;
+  }
 
-    /**
-     * Get the child at the given index.
-     * @param index The index of the child.
-     * @return The child at the index.
-     * @throws IndexOutOfBoundsException If the given index is not valid.
-     */
-    public UIWidget getChild (int index ){
-        return children.get(index);
-    }
+  /**
+   * Get the child at the given index.
+   *
+   * @param index The index of the child.
+   * @return The child at the index.
+   * @throws IndexOutOfBoundsException If the given index is not valid.
+   */
+  public UIWidget getChild(int index) {
+    return children.get(index);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UIWidgetGroup group = (UIWidgetGroup) o;
-        return isSelected() == group.isSelected() && getName().equals(group.getName()) && getChildren().equals(group.getChildren());
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    UIWidgetGroup group = (UIWidgetGroup) o;
+    return isSelected() == group.isSelected()
+        && getName().equals(group.getName())
+        && getChildren().equals(group.getChildren());
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getName(), getChildren(), isSelected());
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(getName(), getChildren(), isSelected());
+  }
 
-    @Override
-    public String getText() {
-        return getName();
-    }
+  @Override
+  public String getText() {
+    return getName();
+  }
 
-    @Override
-    public int getIconResource() {
-        return -1;
-    }
+  @Override
+  public int getIconResource() {
+    return -1;
+  }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+  @Override
+  public int describeContents() {
+    return 0;
+  }
 
-    @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeTypedList(children);
-        dest.writeByte((byte) (selected ? 1 : 0));
-    }
+  @Override
+  public void writeToParcel(@NonNull Parcel dest, int flags) {
+    dest.writeString(name);
+    dest.writeTypedList(children);
+    dest.writeByte((byte) (selected ? 1 : 0));
+  }
 }

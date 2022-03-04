@@ -19,14 +19,13 @@ package com.itsaky.lsp.java.rewrite;
 
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.models.TextEdit;
-
 import java.nio.file.Path;
 import java.util.Map;
 
 class RewriteNotSupported implements Rewrite {
-    
-    @Override
-    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
-        return CANCELLED;
-    }
+
+  @Override
+  public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
+    return CANCELLED;
+  }
 }

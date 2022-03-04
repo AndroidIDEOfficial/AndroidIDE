@@ -15,6 +15,8 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,8 +28,6 @@ import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
-
-import static com.squareup.javapoet.Util.checkArgument;
 
 /**
  * A fragment of a .java file, potentially containing declarations, statements, and documentation.
@@ -50,15 +50,15 @@ import static com.squareup.javapoet.Util.checkArgument;
  *       that. For example, {@code 6" sandwich} is emitted {@code "6\" sandwich"}.
  *   <li>{@code $T} emits a <em>type</em> reference. Types will be imported if possible. Arguments
  *       for types may be {@linkplain Class classes}, {@linkplain javax.lang.model.type.TypeMirror
-,*       type mirrors}, and {@linkplain javax.lang.model.element.Element elements}.
+ *       ,* type mirrors}, and {@linkplain javax.lang.model.element.Element elements}.
  *   <li>{@code $$} emits a dollar sign.
  *   <li>{@code $W} emits a space or a newline, depending on its position on the line. This prefers
  *       to wrap lines before 100 columns.
  *   <li>{@code $Z} acts as a zero-width space. This prefers to wrap lines before 100 columns.
  *   <li>{@code $>} increases the indentation level.
  *   <li>{@code $<} decreases the indentation level.
- *   <li>{@code $[} begins a statement. For multiline statements, every line after the first line
- *       is double-indented.
+ *   <li>{@code $[} begins a statement. For multiline statements, every line after the first line is
+ *       double-indented.
  *   <li>{@code $]} ends a statement.
  * </ul>
  */
@@ -69,6 +69,7 @@ public final class CodeBlock {
 
   /** A heterogeneous list containing string literals and value placeholders. */
   final List<String> formatParts;
+
   final List<Object> args;
 
   private CodeBlock(Builder builder) {
@@ -80,18 +81,21 @@ public final class CodeBlock {
     return formatParts.isEmpty();
   }
 
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return toString().hashCode();
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     StringBuilder out = new StringBuilder();
     try {
       new CodeWriter(out).emit(this);
@@ -140,8 +144,8 @@ public final class CodeBlock {
         CodeBlockJoiner::add,
         CodeBlockJoiner::merge,
         joiner -> {
-            builder.add(CodeBlock.of("$N", suffix));
-            return joiner.join();
+          builder.add(CodeBlock.of("$N", suffix));
+          return joiner.join();
         });
   }
 
@@ -160,8 +164,7 @@ public final class CodeBlock {
     final List<String> formatParts = new ArrayList<>();
     final List<Object> args = new ArrayList<>();
 
-    private Builder() {
-    }
+    private Builder() {}
 
     public boolean isEmpty() {
       return formatParts.isEmpty();
@@ -182,8 +185,10 @@ public final class CodeBlock {
       int p = 0;
 
       for (String argument : arguments.keySet()) {
-        checkArgument(LOWERCASE.matcher(argument).matches(),
-            "argument '%s' must start with a lowercase character", argument);
+        checkArgument(
+            LOWERCASE.matcher(argument).matches(),
+            "argument '%s' must start with a lowercase character",
+            argument);
       }
 
       while (p < format.length()) {
@@ -206,16 +211,20 @@ public final class CodeBlock {
         }
         if (matcher != null && matcher.lookingAt()) {
           String argumentName = matcher.group("argumentName");
-          checkArgument(arguments.containsKey(argumentName), "Missing named argument for $%s",
-              argumentName);
+          checkArgument(
+              arguments.containsKey(argumentName), "Missing named argument for $%s", argumentName);
           char formatChar = matcher.group("typeChar").charAt(0);
           addArgument(format, formatChar, arguments.get(argumentName));
           formatParts.add("$" + formatChar);
           p += matcher.regionEnd();
         } else {
           checkArgument(p < format.length() - 1, "dangling $ at end");
-          checkArgument(isNoArgPlaceholder(format.charAt(p + 1)),
-              "unknown format $%s at %s in '%s'", format.charAt(p + 1), p + 1, format);
+          checkArgument(
+              isNoArgPlaceholder(format.charAt(p + 1)),
+              "unknown format $%s at %s in '%s'",
+              format.charAt(p + 1),
+              p + 1,
+              format);
           formatParts.add(format.substring(p, p + 2));
           p += 2;
         }
@@ -284,9 +293,12 @@ public final class CodeBlock {
           relativeParameterCount++;
         }
 
-        checkArgument(index >= 0 && index < args.length,
+        checkArgument(
+            index >= 0 && index < args.length,
             "index %d for '%s' not in range (received %s arguments)",
-            index + 1, format.substring(indexStart - 1, indexEnd + 1), args.length);
+            index + 1,
+            format.substring(indexStart - 1, indexEnd + 1),
+            args.length);
         checkArgument(!hasIndexed || !hasRelative, "cannot mix indexed and positional parameters");
 
         addArgument(format, c, args[index]);
@@ -295,8 +307,11 @@ public final class CodeBlock {
       }
 
       if (hasRelative) {
-        checkArgument(relativeParameterCount >= args.length,
-            "unused arguments: expected %s, received %s", relativeParameterCount, args.length);
+        checkArgument(
+            relativeParameterCount >= args.length,
+            "unused arguments: expected %s, received %s",
+            relativeParameterCount,
+            args.length);
       }
       if (hasIndexed) {
         List<String> unused = new ArrayList<>();
@@ -330,8 +345,7 @@ public final class CodeBlock {
           this.args.add(argToType(arg));
           break;
         default:
-          throw new IllegalArgumentException(
-              String.format("invalid format string: '%s'", format));
+          throw new IllegalArgumentException(String.format("invalid format string: '%s'", format));
       }
     }
 
@@ -362,7 +376,7 @@ public final class CodeBlock {
 
     /**
      * @param controlFlow the control flow construct and its code, such as "if (foo == 5)".
-     * Shouldn't contain braces or newline characters.
+     *     Shouldn't contain braces or newline characters.
      */
     public Builder beginControlFlow(String controlFlow, Object... args) {
       add(controlFlow + " {\n", args);
@@ -388,8 +402,8 @@ public final class CodeBlock {
     }
 
     /**
-     * @param controlFlow the optional control flow construct and its code, such as
-     *     "while(foo == 20)". Only used for "do/while" control flows.
+     * @param controlFlow the optional control flow construct and its code, such as "while(foo ==
+     *     20)". Only used for "do/while" control flows.
      */
     public Builder endControlFlow(String controlFlow, Object... args) {
       unindent();

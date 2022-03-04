@@ -22,114 +22,112 @@ import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
 
 /**
- * Attribute handler for handling attributes related to
- * ImageButton.
+ * Attribute handler for handling attributes related to ImageButton.
  *
  * @author Akash Yadav
  */
 public class ImageViewAttrAdapter extends ViewAttrAdapter {
-    
-    public ImageViewAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
+
+  public ImageViewAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof ImageView;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    final ImageView image = (ImageView) view;
+    final Context context = image.getContext();
+    final DisplayMetrics dm = context.getResources().getDisplayMetrics();
+    final String name = attribute.getAttributeName();
+    final String value = attribute.getValue();
+
+    if (!canHandleNamespace(attribute)) {
+      return false;
     }
-    
-    @Override
-    public boolean isApplicableTo (View view) {
-        return view instanceof ImageView;
+
+    boolean handled = true;
+
+    switch (name) {
+      case "adjustViewBounds":
+        image.setAdjustViewBounds(parseBoolean(value));
+        break;
+      case "baseline":
+        image.setBaseline(parseDimension(value, 0, dm));
+        break;
+      case "baselineAlignBottom":
+        image.setBaselineAlignBottom(parseBoolean(value));
+        break;
+      case "cropToPadding":
+        image.setCropToPadding(parseBoolean(value));
+        break;
+      case "maxHeight":
+        image.setMaxHeight(parseDimension(value, 0, dm));
+        break;
+      case "maxWidth":
+        image.setMaxWidth(parseDimension(value, 0, dm));
+        break;
+      case "scaleType":
+        image.setScaleType(parseScaleType(value));
+        break;
+      case "src":
+        image.setImageDrawable(parseImageResource(value, context));
+        break;
+      case "tint":
+        image.setImageTintList(parseColorStateList(value, context));
+        break;
+      case "tintMode":
+        image.setImageTintMode(parsePorterDuffMode(value));
+        break;
+      default:
+        handled = false;
+        break;
     }
-    
-    @Override
-    public boolean apply (@NonNull IAttribute attribute, @NonNull View view) {
-        final ImageView image = (ImageView) view;
-        final Context context = image.getContext ();
-        final DisplayMetrics dm = context.getResources ().getDisplayMetrics ();
-        final String name = attribute.getAttributeName ();
-        final String value = attribute.getValue ();
-        
-        if (!canHandleNamespace (attribute)) {
-            return false;
-        }
-        
-        boolean handled = true;
-        
-        switch (name) {
-            case "adjustViewBounds":
-                image.setAdjustViewBounds (parseBoolean (value));
-                break;
-            case "baseline":
-                image.setBaseline (parseDimension (value, 0, dm));
-                break;
-            case "baselineAlignBottom":
-                image.setBaselineAlignBottom (parseBoolean (value));
-                break;
-            case "cropToPadding":
-                image.setCropToPadding (parseBoolean (value));
-                break;
-            case "maxHeight":
-                image.setMaxHeight (parseDimension (value, 0, dm));
-                break;
-            case "maxWidth":
-                image.setMaxWidth (parseDimension (value, 0, dm));
-                break;
-            case "scaleType":
-                image.setScaleType (parseScaleType (value));
-                break;
-            case "src":
-                image.setImageDrawable (parseImageResource (value, context));
-                break;
-            case "tint":
-                image.setImageTintList (parseColorStateList (value, context));
-                break;
-            case "tintMode":
-                image.setImageTintMode (parsePorterDuffMode (value));
-                break;
-            default:
-                handled = false;
-                break;
-        }
-        
-        if (!handled) {
-            handled = super.apply (attribute, view);
-        }
-        
-        return handled;
+
+    if (!handled) {
+      handled = super.apply(attribute, view);
     }
-    
-    private Drawable parseImageResource (String value, Context context) {
-        if (value.startsWith ("@drawable/") || value.startsWith ("@mipmap/")) {
-            return parseDrawable (value, context);
-        }
-        return ContextCompat.getDrawable (context, android.R.drawable.ic_delete);
+
+    return handled;
+  }
+
+  private Drawable parseImageResource(String value, Context context) {
+    if (value.startsWith("@drawable/") || value.startsWith("@mipmap/")) {
+      return parseDrawable(value, context);
     }
-    
-    private ImageView.ScaleType parseScaleType (String value) {
-        switch (value) {
-            case "center":
-                return ImageView.ScaleType.CENTER;
-            case "centerCrop":
-                return ImageView.ScaleType.CENTER_CROP;
-            case "centerInside":
-                return ImageView.ScaleType.CENTER_INSIDE;
-            case "fitEnd":
-                return ImageView.ScaleType.FIT_END;
-            case "fitStart":
-                return ImageView.ScaleType.FIT_START;
-            case "fitXY":
-                return ImageView.ScaleType.FIT_XY;
-            case "matrix":
-                return ImageView.ScaleType.MATRIX;
-            case "fitCenter":
-            default:
-                return ImageView.ScaleType.FIT_CENTER;
-        }
+    return ContextCompat.getDrawable(context, android.R.drawable.ic_delete);
+  }
+
+  private ImageView.ScaleType parseScaleType(String value) {
+    switch (value) {
+      case "center":
+        return ImageView.ScaleType.CENTER;
+      case "centerCrop":
+        return ImageView.ScaleType.CENTER_CROP;
+      case "centerInside":
+        return ImageView.ScaleType.CENTER_INSIDE;
+      case "fitEnd":
+        return ImageView.ScaleType.FIT_END;
+      case "fitStart":
+        return ImageView.ScaleType.FIT_START;
+      case "fitXY":
+        return ImageView.ScaleType.FIT_XY;
+      case "matrix":
+        return ImageView.ScaleType.MATRIX;
+      case "fitCenter":
+      default:
+        return ImageView.ScaleType.FIT_CENTER;
     }
+  }
 }

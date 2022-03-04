@@ -20,32 +20,30 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.RadioButton;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
 /**
- * Attribute adapter for handling attributes related to
- * RadioButton.
+ * Attribute adapter for handling attributes related to RadioButton.
  *
  * @author Akash Yadav
  */
 public class RadioButtonAttrAdapter extends CompondButtonAttrAdapter {
-    
-    public RadioButtonAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
-    }
-    
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof RadioButton;
-    }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        // No special attributes for RadioButton
-        return super.apply(attribute, view);
-    }
+  public RadioButtonAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof RadioButton;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    // No special attributes for RadioButton
+    return super.apply(attribute, view);
+  }
 }

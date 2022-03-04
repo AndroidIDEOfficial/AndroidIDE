@@ -15,6 +15,9 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,9 +28,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.SimpleElementVisitor8;
-
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
 
 /** A fully-qualified class name for top-level and member classes. */
 public final class ClassName extends TypeName implements Comparable<ClassName> {
@@ -54,31 +54,37 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
     this(packageName, enclosingClassName, simpleName, Collections.emptyList());
   }
 
-  private ClassName(String packageName, ClassName enclosingClassName, String simpleName,
+  private ClassName(
+      String packageName,
+      ClassName enclosingClassName,
+      String simpleName,
       List<AnnotationSpec> annotations) {
     super(annotations);
     this.packageName = Objects.requireNonNull(packageName, "packageName == null");
     this.enclosingClassName = enclosingClassName;
     this.simpleName = simpleName;
-    this.canonicalName = enclosingClassName != null
-        ? (enclosingClassName.canonicalName + '.' + simpleName)
-        : (packageName.isEmpty() ? simpleName : packageName + '.' + simpleName);
+    this.canonicalName =
+        enclosingClassName != null
+            ? (enclosingClassName.canonicalName + '.' + simpleName)
+            : (packageName.isEmpty() ? simpleName : packageName + '.' + simpleName);
   }
 
-  @Override public ClassName annotated(List<AnnotationSpec> annotations) {
-    return new ClassName(packageName, enclosingClassName, simpleName,
-        concatAnnotations(annotations));
+  @Override
+  public ClassName annotated(List<AnnotationSpec> annotations) {
+    return new ClassName(
+        packageName, enclosingClassName, simpleName, concatAnnotations(annotations));
   }
 
-  @Override public ClassName withoutAnnotations() {
+  @Override
+  public ClassName withoutAnnotations() {
     if (!isAnnotated()) return this;
-    ClassName resultEnclosingClassName = enclosingClassName != null
-        ? enclosingClassName.withoutAnnotations()
-        : null;
+    ClassName resultEnclosingClassName =
+        enclosingClassName != null ? enclosingClassName.withoutAnnotations() : null;
     return new ClassName(packageName, resultEnclosingClassName, simpleName);
   }
 
-  @Override public boolean isAnnotated() {
+  @Override
+  public boolean isAnnotated() {
     return super.isAnnotated() || (enclosingClassName != null && enclosingClassName.isAnnotated());
   }
 
@@ -152,9 +158,9 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
   }
 
   /**
-   * Returns the full class name of this class.
-   * Like {@code "java.util.Map.Entry"} for {@link Map.Entry}.
-   * */
+   * Returns the full class name of this class. Like {@code "java.util.Map.Entry"} for {@link
+   * Map.Entry}.
+   */
   public String canonicalName() {
     return canonicalName;
   }
@@ -185,11 +191,11 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
 
   /**
    * Returns a new {@link ClassName} instance for the given fully-qualified class name string. This
-   * method assumes that the input is ASCII and follows typical Java style (lowercase package
-   * names, UpperCamelCase class names) and may produce incorrect results or throw
-   * {@link IllegalArgumentException} otherwise. For that reason, {@link #get(Class)} and
-   * {@link #get(Class)} should be preferred as they can correctly create {@link ClassName}
-   * instances without such restrictions.
+   * method assumes that the input is ASCII and follows typical Java style (lowercase package names,
+   * UpperCamelCase class names) and may produce incorrect results or throw {@link
+   * IllegalArgumentException} otherwise. For that reason, {@link #get(Class)} and {@link
+   * #get(Class)} should be preferred as they can correctly create {@link ClassName} instances
+   * without such restrictions.
    */
   public static ClassName bestGuess(String classNameString) {
     // Add the package name, like "java.util.concurrent", or "" for no package.
@@ -203,8 +209,10 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
     // Add class names like "Map" and "Entry".
     ClassName className = null;
     for (String simpleName : classNameString.substring(p).split("\\.", -1)) {
-      checkArgument(!simpleName.isEmpty() && Character.isUpperCase(simpleName.codePointAt(0)),
-          "couldn't make a guess for %s", classNameString);
+      checkArgument(
+          !simpleName.isEmpty() && Character.isUpperCase(simpleName.codePointAt(0)),
+          "couldn't make a guess for %s",
+          classNameString);
       className = new ClassName(packageName, className, simpleName);
     }
 
@@ -228,30 +236,41 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
     checkNotNull(element, "element == null");
     String simpleName = element.getSimpleName().toString();
 
-    return element.getEnclosingElement().accept(new SimpleElementVisitor8<ClassName, Void>() {
-      @Override public ClassName visitPackage(PackageElement packageElement, Void p) {
-        return new ClassName(packageElement.getQualifiedName().toString(), null, simpleName);
-      }
+    return element
+        .getEnclosingElement()
+        .accept(
+            new SimpleElementVisitor8<ClassName, Void>() {
+              @Override
+              public ClassName visitPackage(PackageElement packageElement, Void p) {
+                return new ClassName(
+                    packageElement.getQualifiedName().toString(), null, simpleName);
+              }
 
-      @Override public ClassName visitType(TypeElement enclosingClass, Void p) {
-        return ClassName.get(enclosingClass).nestedClass(simpleName);
-      }
+              @Override
+              public ClassName visitType(TypeElement enclosingClass, Void p) {
+                return ClassName.get(enclosingClass).nestedClass(simpleName);
+              }
 
-      @Override public ClassName visitUnknown(Element unknown, Void p) {
-        return get("", simpleName);
-      }
+              @Override
+              public ClassName visitUnknown(Element unknown, Void p) {
+                return get("", simpleName);
+              }
 
-      @Override public ClassName defaultAction(Element enclosingElement, Void p) {
-        throw new IllegalArgumentException("Unexpected type nesting: " + element);
-      }
-    }, null);
+              @Override
+              public ClassName defaultAction(Element enclosingElement, Void p) {
+                throw new IllegalArgumentException("Unexpected type nesting: " + element);
+              }
+            },
+            null);
   }
 
-  @Override public int compareTo(ClassName o) {
+  @Override
+  public int compareTo(ClassName o) {
     return canonicalName.compareTo(o.canonicalName);
   }
 
-  @Override CodeWriter emit(CodeWriter out) throws IOException {
+  @Override
+  CodeWriter emit(CodeWriter out) throws IOException {
     boolean charsEmitted = false;
     for (ClassName className : enclosingClasses()) {
       String simpleName;

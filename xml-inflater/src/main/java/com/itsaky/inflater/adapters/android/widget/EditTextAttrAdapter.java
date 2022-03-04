@@ -20,27 +20,25 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
 public class EditTextAttrAdapter extends TextViewAttrAdapter {
-    
-    public EditTextAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
-    }
-    
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof EditText;
-    }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        // No special attributes for EditText
-        return super.apply(attribute, view);
-    }
-    
+  public EditTextAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof EditText;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    // No special attributes for EditText
+    return super.apply(attribute, view);
+  }
 }

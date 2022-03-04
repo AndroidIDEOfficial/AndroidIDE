@@ -17,19 +17,19 @@
 
 package com.itsaky.lsp.api;
 
-import androidx.annotation.NonNull;
 
 /**
- * Base class for service providers which can be configured using
- * {@link IServerSettings}.
+ * Base class for service providers which can be configured using {@link IServerSettings}.
  *
  * @author Akash Yadav
  */
 public interface ConfigurableServiceProvider {
-    
-    /**
-     * Apply the given settings to this service provider.
-     * @param settings The settings to apply. If {@code null}, {@link com.itsaky.lsp.util.DefaultServerSettings} should be used.
-     */
-    void applySettings (IServerSettings settings);
+
+  /**
+   * Apply the given settings to this service provider.
+   *
+   * @param settings The settings to apply. If {@code null}, {@link
+   *     com.itsaky.lsp.util.DefaultServerSettings} should be used.
+   */
+  void applySettings(IServerSettings settings);
 }

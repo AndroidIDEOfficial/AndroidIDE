@@ -15,9 +15,9 @@
  */
 package com.squareup.javapoet;
 
-import java.io.IOException;
-
 import static com.squareup.javapoet.Util.checkNotNull;
+
+import java.io.IOException;
 
 /**
  * Implements soft line wrapping on an appendable. To use, append characters using {@link #append}
@@ -52,7 +52,9 @@ final class LineWrapper {
     this.columnLimit = columnLimit;
   }
 
-  /** @return the last emitted char or {@link Character#MIN_VALUE} if nothing emitted yet. */
+  /**
+   * @return the last emitted char or {@link Character#MIN_VALUE} if nothing emitted yet.
+   */
   char lastChar() {
     return out.lastChar;
   }
@@ -79,9 +81,7 @@ final class LineWrapper {
 
     out.append(s);
     int lastNewline = s.lastIndexOf('\n');
-    column = lastNewline != -1
-        ? s.length() - lastNewline - 1
-        : column + s.length();
+    column = lastNewline != -1 ? s.length() - lastNewline - 1 : column + s.length();
   }
 
   /** Emit either a space or a newline character. */
@@ -137,7 +137,9 @@ final class LineWrapper {
   }
 
   private enum FlushType {
-    WRAP, SPACE, EMPTY;
+    WRAP,
+    SPACE,
+    EMPTY;
   }
 
   /** A delegating {@link Appendable} that records info about the chars passing through it. */
@@ -150,7 +152,8 @@ final class LineWrapper {
       this.delegate = delegate;
     }
 
-    @Override public Appendable append(CharSequence csq) throws IOException {
+    @Override
+    public Appendable append(CharSequence csq) throws IOException {
       int length = csq.length();
       if (length != 0) {
         lastChar = csq.charAt(length - 1);
@@ -158,12 +161,14 @@ final class LineWrapper {
       return delegate.append(csq);
     }
 
-    @Override public Appendable append(CharSequence csq, int start, int end) throws IOException {
+    @Override
+    public Appendable append(CharSequence csq, int start, int end) throws IOException {
       CharSequence sub = csq.subSequence(start, end);
       return append(sub);
     }
 
-    @Override public Appendable append(char c) throws IOException {
+    @Override
+    public Appendable append(char c) throws IOException {
       lastChar = c;
       return delegate.append(c);
     }

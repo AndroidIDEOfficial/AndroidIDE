@@ -21,7 +21,7 @@ import com.itsaky.lsp.util.DefaultServerSettings;
 
 /**
  * Default settings for the java language server.
+ *
  * @author Akash Yadav
  */
-public class DefaultJavaServerSettings extends DefaultServerSettings {
-}
+public class DefaultJavaServerSettings extends DefaultServerSettings {}

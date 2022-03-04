@@ -15,6 +15,9 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -23,13 +26,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
-
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
 
 public final class TypeVariableName extends TypeName {
   public final String name;
@@ -49,11 +48,13 @@ public final class TypeVariableName extends TypeName {
     }
   }
 
-  @Override public TypeVariableName annotated(List<AnnotationSpec> annotations) {
+  @Override
+  public TypeVariableName annotated(List<AnnotationSpec> annotations) {
     return new TypeVariableName(name, bounds, annotations);
   }
 
-  @Override public TypeName withoutAnnotations() {
+  @Override
+  public TypeName withoutAnnotations() {
     return new TypeVariableName(name, bounds);
   }
 
@@ -79,7 +80,8 @@ public final class TypeVariableName extends TypeName {
     return new TypeVariableName(name, Collections.unmodifiableList(boundsNoObject));
   }
 
-  @Override CodeWriter emit(CodeWriter out) throws IOException {
+  @Override
+  CodeWriter emit(CodeWriter out) throws IOException {
     emitAnnotations(out);
     return out.emitAndIndent(name);
   }
@@ -149,9 +151,11 @@ public final class TypeVariableName extends TypeName {
     return get(type, new LinkedHashMap<>());
   }
 
-  /** @see #get(java.lang.reflect.TypeVariable, Map) */
-  static TypeVariableName get(java.lang.reflect.TypeVariable<?> type,
-      Map<Type, TypeVariableName> map) {
+  /**
+   * @see #get(java.lang.reflect.TypeVariable, Map)
+   */
+  static TypeVariableName get(
+      java.lang.reflect.TypeVariable<?> type, Map<Type, TypeVariableName> map) {
     TypeVariableName result = map.get(type);
     if (result == null) {
       List<TypeName> bounds = new ArrayList<>();

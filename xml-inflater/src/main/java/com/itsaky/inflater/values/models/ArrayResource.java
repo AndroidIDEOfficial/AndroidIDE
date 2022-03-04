@@ -19,57 +19,57 @@ package com.itsaky.inflater.values.models;
 
 import android.graphics.Color;
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 
 /**
  * An array resource. Can be any of the following :
+ *
  * <ul>
- *     <li>&lt;integer-array&gt;</li>
- *     <li>&lt;string-array&gt;</li>
- *     <li>&lt;array&gt;</li>
+ *   <li>&lt;integer-array&gt;
+ *   <li>&lt;string-array&gt;
+ *   <li>&lt;array&gt;
  * </ul>
  *
  * @author Akash Yadav
  */
 public class ArrayResource extends AbstractResourceValue {
-    
-    private final String[] values;
-    
-    public ArrayResource (@NonNull String name, @NonNull String[] values) {
-        super (name, TextUtils.join (", ", values));
-        this.values = values;
+
+  private final String[] values;
+
+  public ArrayResource(@NonNull String name, @NonNull String[] values) {
+    super(name, TextUtils.join(", ", values));
+    this.values = values;
+  }
+
+  public String[] getValues() {
+    return values;
+  }
+
+  public int[] getIntValues() {
+    final var ints = new int[values.length];
+    for (int i = 0; i < ints.length; i++) {
+      var value = values[i];
+      if (value == null || value.trim().length() == 0) {
+        value = "0";
+      }
+
+      ints[i] = Integer.parseInt(value);
     }
-    
-    public String[] getValues () {
-        return values;
+
+    return ints;
+  }
+
+  public int[] getColorValues() {
+    final var colors = new int[this.values.length];
+    for (int i = 0; i < colors.length; i++) {
+      var val = values[i];
+      if (val == null || val.trim().length() == 0) {
+        val = "#ffffff";
+      }
+
+      colors[i] = Color.parseColor(val);
     }
-    
-    public int[] getIntValues () {
-        final var ints = new int[values.length];
-        for (int i = 0; i < ints.length; i++) {
-            var value = values[i];
-            if (value == null || value.trim ().length () == 0) {
-                value = "0";
-            }
-            
-            ints[i] = Integer.parseInt (value);
-        }
-        
-        return ints;
-    }
-    
-    public int[] getColorValues () {
-        final var colors = new int[this.values.length];
-        for (int i = 0; i < colors.length; i++) {
-            var val = values[i];
-            if (val == null || val.trim ().length () == 0) {
-                val = "#ffffff";
-            }
-            
-            colors[i] = Color.parseColor (val);
-        }
-        
-        return colors;
-    }
+
+    return colors;
+  }
 }

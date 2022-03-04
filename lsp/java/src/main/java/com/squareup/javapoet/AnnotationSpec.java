@@ -15,6 +15,10 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.characterLiteralWithoutSingleQuotes;
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -35,10 +39,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
-
-import static com.squareup.javapoet.Util.characterLiteralWithoutSingleQuotes;
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
 
 /** A generated annotation on a declaration. */
 public final class AnnotationSpec {
@@ -72,8 +72,8 @@ public final class AnnotationSpec {
       //   )
       codeWriter.emit("@$T(" + whitespace, type);
       codeWriter.indent(2);
-      for (Iterator<Map.Entry<String, List<CodeBlock>>> i
-          = members.entrySet().iterator(); i.hasNext(); ) {
+      for (Iterator<Map.Entry<String, List<CodeBlock>>> i = members.entrySet().iterator();
+          i.hasNext(); ) {
         Map.Entry<String, List<CodeBlock>> entry = i.next();
         codeWriter.emit("$L = ", entry.getKey());
         emitAnnotationValues(codeWriter, whitespace, memberSeparator, entry.getValue());
@@ -84,8 +84,9 @@ public final class AnnotationSpec {
     }
   }
 
-  private void emitAnnotationValues(CodeWriter codeWriter, String whitespace,
-      String memberSeparator, List<CodeBlock> values) throws IOException {
+  private void emitAnnotationValues(
+      CodeWriter codeWriter, String whitespace, String memberSeparator, List<CodeBlock> values)
+      throws IOException {
     if (values.size() == 1) {
       codeWriter.indent(2);
       codeWriter.emit(values.get(0));
@@ -168,18 +169,21 @@ public final class AnnotationSpec {
     return builder;
   }
 
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return toString().hashCode();
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     StringBuilder out = new StringBuilder();
     try {
       CodeWriter codeWriter = new CodeWriter(out);
@@ -211,8 +215,8 @@ public final class AnnotationSpec {
 
     /**
      * Delegates to {@link #addMember(String, String, Object...)}, with parameter {@code format}
-     * depending on the given {@code value} object. Falls back to {@code "$L"} literal format if
-     * the class of the given {@code value} object is not supported.
+     * depending on the given {@code value} object. Falls back to {@code "$L"} literal format if the
+     * class of the given {@code value} object is not supported.
      */
     Builder addMemberForValue(String memberName, Object value) {
       checkNotNull(memberName, "memberName == null");
@@ -245,9 +249,7 @@ public final class AnnotationSpec {
     }
   }
 
-  /**
-   * Annotation value visitor adding members to the given builder instance.
-   */
+  /** Annotation value visitor adding members to the given builder instance. */
   private static class Visitor extends SimpleAnnotationValueVisitor8<Builder, String> {
     final Builder builder;
 
@@ -256,23 +258,28 @@ public final class AnnotationSpec {
       this.builder = builder;
     }
 
-    @Override protected Builder defaultAction(Object o, String name) {
+    @Override
+    protected Builder defaultAction(Object o, String name) {
       return builder.addMemberForValue(name, o);
     }
 
-    @Override public Builder visitAnnotation(AnnotationMirror a, String name) {
+    @Override
+    public Builder visitAnnotation(AnnotationMirror a, String name) {
       return builder.addMember(name, "$L", get(a));
     }
 
-    @Override public Builder visitEnumConstant(VariableElement c, String name) {
+    @Override
+    public Builder visitEnumConstant(VariableElement c, String name) {
       return builder.addMember(name, "$T.$L", c.asType(), c.getSimpleName());
     }
 
-    @Override public Builder visitType(TypeMirror t, String name) {
+    @Override
+    public Builder visitType(TypeMirror t, String name) {
       return builder.addMember(name, "$T.class", t);
     }
 
-    @Override public Builder visitArray(List<? extends AnnotationValue> values, String name) {
+    @Override
+    public Builder visitArray(List<? extends AnnotationValue> values, String name) {
       for (AnnotationValue value : values) {
         value.accept(this, name);
       }

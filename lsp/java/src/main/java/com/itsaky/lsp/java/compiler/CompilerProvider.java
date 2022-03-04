@@ -18,40 +18,38 @@
 package com.itsaky.lsp.java.compiler;
 
 import com.itsaky.lsp.java.parser.ParseTask;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.tools.JavaFileObject;
 
 public interface CompilerProvider {
-    Set<String> imports();
+  Set<String> imports();
 
-    List<String> publicTopLevelTypes();
+  List<String> publicTopLevelTypes();
 
-    List<String> packagePrivateTopLevelTypes(String packageName);
+  List<String> packagePrivateTopLevelTypes(String packageName);
 
-    Iterable<Path> search(String query);
+  Iterable<Path> search(String query);
 
-    Optional<JavaFileObject> findAnywhere(String className);
+  Optional<JavaFileObject> findAnywhere(String className);
 
-    Path findTypeDeclaration(String className);
+  Path findTypeDeclaration(String className);
 
-    Path[] findTypeReferences(String className);
+  Path[] findTypeReferences(String className);
 
-    Path[] findMemberReferences(String className, String memberName);
+  Path[] findMemberReferences(String className, String memberName);
 
-    ParseTask parse(Path file);
+  ParseTask parse(Path file);
 
-    ParseTask parse(JavaFileObject file);
+  ParseTask parse(JavaFileObject file);
 
-    SynchronizedTask compile(Path... files);
+  SynchronizedTask compile(Path... files);
 
-    SynchronizedTask compile(Collection<? extends JavaFileObject> sources);
+  SynchronizedTask compile(Collection<? extends JavaFileObject> sources);
 
-    Path NOT_FOUND = Paths.get("");
+  Path NOT_FOUND = Paths.get("");
 }

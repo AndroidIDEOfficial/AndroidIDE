@@ -19,32 +19,30 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageButton;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
 /**
- * Attribute handler for handling attributes related to
- * ImageButton.
+ * Attribute handler for handling attributes related to ImageButton.
  *
  * @author Akash Yadav
  */
 public class ImageButtonAttrAdapter extends ImageViewAttrAdapter {
-    
-    public ImageButtonAttrAdapter (@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super (resourceFinder, displayMetrics);
-    }
-    
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof ImageButton;
-    }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        // No special attributes for ImageButton
-        return super.apply(attribute, view);
-    }
+  public ImageButtonAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof ImageButton;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    // No special attributes for ImageButton
+    return super.apply(attribute, view);
+  }
 }

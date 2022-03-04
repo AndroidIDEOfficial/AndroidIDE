@@ -19,16 +19,15 @@ package com.itsaky.lsp.java.rewrite;
 
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.models.TextEdit;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
 public interface Rewrite {
-    /** Perform a rewrite across the entire codebase. */
-    Map<Path, TextEdit[]> rewrite(CompilerProvider compiler);
-    /** CANCELLED signals that the rewrite couldn't be completed. */
-    Map<Path, TextEdit[]> CANCELLED = Collections.emptyMap ();
-    
-    Rewrite NOT_SUPPORTED = new RewriteNotSupported();
+  /** Perform a rewrite across the entire codebase. */
+  Map<Path, TextEdit[]> rewrite(CompilerProvider compiler);
+  /** CANCELLED signals that the rewrite couldn't be completed. */
+  Map<Path, TextEdit[]> CANCELLED = Collections.emptyMap();
+
+  Rewrite NOT_SUPPORTED = new RewriteNotSupported();
 }

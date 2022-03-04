@@ -20,11 +20,12 @@ import androidx.annotation.NonNull;
 
 /**
  * Represents a dimension value.
+ *
  * @author Akash Yadav
  */
 public class DimensionValue extends AbstractResourceValue {
-    
-    public DimensionValue (@NonNull String name, @NonNull String value) {
-        super (name, value);
-    }
+
+  public DimensionValue(@NonNull String name, @NonNull String value) {
+    super(name, value);
+  }
 }

@@ -36,142 +36,142 @@ package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.ServerCapabilities;
 
 /**
- * A language server provides API for providing functions related to
- * a specific file type.
+ * A language server provides API for providing functions related to a specific file type.
  *
  * @author Akash Yadav
  */
 public interface ILanguageServer {
-    
-    /**
-     * Initialize this language server with the given params.
-     * Subclasses are expected to throw {@link AlreadyInitializedException} if the
-     * language server was already initialized.
-     *
-     * @param params The params used to initialize the language server.
-     * @throws AlreadyInitializedException If the language server was already initialized.
-     */
-    void initialize (@NonNull InitializeParams params) throws AlreadyInitializedException;
-    
-    /**
-     * Returns the capabilities that the LSP implementation provides.
-     * @return The capabilities of the server.
-     */
-    @NonNull
-    ServerCapabilities getCapabilities ();
-    
-    /**
-     * Called by client to notify the server to shutdown.
-     * Language servers must release all the resources in use.
-     *
-     * After this is called, clients must re-initialize the server.
-     */
-    void shutdown ();
-    
-    /**
-     * Set the client to whom notifications and events must be sent.
-     * @param client The client to set.
-     */
-    void connectClient (@Nullable ILanguageClient client);
-    
-    /**
-     * Get the instance of the language client connected to this server.
-     * @return The language client.
-     */
-    @Nullable
-    ILanguageClient getClient ();
-    
-    /**
-     * Apply settings to the language server. Its up to the language server how it
-     * applies these settings to the language service providers.
-     *
-     * @param settings The new settings to use. Pass {@code null} to use default settings.
-     */
-    void applySettings (@Nullable IServerSettings settings);
-    
-    /**
-     * Notify the language server that the project's configuration was changed.
-     * Language servers decide what type of object they want to receive as
-     * configuration.
-     *
-     * @param newConfiguration The new configuration object. Only a specific type of
-     *                         object might be accepted by observers.
-     */
-    void configurationChanged (Object newConfiguration);
-    
-    /**
-     * Get the completion provider associated with this language server.
-     * Should never be null.
-     *
-     * @return The completion provider.
-     */
-    @NonNull
-    ICompletionProvider getCompletionProvider ();
-    
-    /**
-     * Get the code action provider associated with this language server.
-     * Must not be null.
-     *
-     * @return The code action provider.
-     */
-    @NonNull
-    ICodeActionProvider getCodeActionProvider ();
-    
-    /**
-     * Get the reference provider associated with this language server.
-     * @return The reference provider instance.
-     */
-    @NonNull
-    IReferenceProvider getReferenceProvider ();
-    
-    /**
-     * Get the definition provider associated with this language server.
-     * @return The definition provider.
-     */
-    @NonNull
-    IDefinitionProvider getDefinitionProvider();
-    
-    /**
-     * Get the selection provider associated with this language server.
-     *
-     * @return The selection provider instance.
-     */
-    @NonNull
-    ISelectionProvider getSelectionProvider ();
-    
-    /**
-     * Get the signature help provider associated with this language server.
-     * @return The signature help provider.
-     */
-    @NonNull
-    ISignatureHelpProvider getSignatureHelpProvider();
-    
-    /**
-     * The document handler associated with this language server instance.
-     *
-     * @return The document handler. Must not be null.
-     */
-    @NonNull
-    IDocumentHandler getDocumentHandler ();
-    
-    /**
-     * Get the code analyzer associated with this language server.
-     * @return The code analyzer.
-     */
-    @NonNull
-    IDiagnosticProvider getCodeAnalyzer ();
-    
-    /**
-     * Thrown to indicate that a language server received an initialize notification
-     * but was already initialized.
-     *
-     * @author Akash Yadav
-     */
-    class AlreadyInitializedException extends IllegalStateException {
-    }
+
+  /**
+   * Initialize this language server with the given params. Subclasses are expected to throw {@link
+   * AlreadyInitializedException} if the language server was already initialized.
+   *
+   * @param params The params used to initialize the language server.
+   * @throws AlreadyInitializedException If the language server was already initialized.
+   */
+  void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException;
+
+  /**
+   * Returns the capabilities that the LSP implementation provides.
+   *
+   * @return The capabilities of the server.
+   */
+  @NonNull
+  ServerCapabilities getCapabilities();
+
+  /**
+   * Called by client to notify the server to shutdown. Language servers must release all the
+   * resources in use.
+   *
+   * <p>After this is called, clients must re-initialize the server.
+   */
+  void shutdown();
+
+  /**
+   * Set the client to whom notifications and events must be sent.
+   *
+   * @param client The client to set.
+   */
+  void connectClient(@Nullable ILanguageClient client);
+
+  /**
+   * Get the instance of the language client connected to this server.
+   *
+   * @return The language client.
+   */
+  @Nullable
+  ILanguageClient getClient();
+
+  /**
+   * Apply settings to the language server. Its up to the language server how it applies these
+   * settings to the language service providers.
+   *
+   * @param settings The new settings to use. Pass {@code null} to use default settings.
+   */
+  void applySettings(@Nullable IServerSettings settings);
+
+  /**
+   * Notify the language server that the project's configuration was changed. Language servers
+   * decide what type of object they want to receive as configuration.
+   *
+   * @param newConfiguration The new configuration object. Only a specific type of object might be
+   *     accepted by observers.
+   */
+  void configurationChanged(Object newConfiguration);
+
+  /**
+   * Get the completion provider associated with this language server. Should never be null.
+   *
+   * @return The completion provider.
+   */
+  @NonNull
+  ICompletionProvider getCompletionProvider();
+
+  /**
+   * Get the code action provider associated with this language server. Must not be null.
+   *
+   * @return The code action provider.
+   */
+  @NonNull
+  ICodeActionProvider getCodeActionProvider();
+
+  /**
+   * Get the reference provider associated with this language server.
+   *
+   * @return The reference provider instance.
+   */
+  @NonNull
+  IReferenceProvider getReferenceProvider();
+
+  /**
+   * Get the definition provider associated with this language server.
+   *
+   * @return The definition provider.
+   */
+  @NonNull
+  IDefinitionProvider getDefinitionProvider();
+
+  /**
+   * Get the selection provider associated with this language server.
+   *
+   * @return The selection provider instance.
+   */
+  @NonNull
+  ISelectionProvider getSelectionProvider();
+
+  /**
+   * Get the signature help provider associated with this language server.
+   *
+   * @return The signature help provider.
+   */
+  @NonNull
+  ISignatureHelpProvider getSignatureHelpProvider();
+
+  /**
+   * The document handler associated with this language server instance.
+   *
+   * @return The document handler. Must not be null.
+   */
+  @NonNull
+  IDocumentHandler getDocumentHandler();
+
+  /**
+   * Get the code analyzer associated with this language server.
+   *
+   * @return The code analyzer.
+   */
+  @NonNull
+  IDiagnosticProvider getCodeAnalyzer();
+
+  /**
+   * Thrown to indicate that a language server received an initialize notification but was already
+   * initialized.
+   *
+   * @author Akash Yadav
+   */
+  class AlreadyInitializedException extends IllegalStateException {}
 }

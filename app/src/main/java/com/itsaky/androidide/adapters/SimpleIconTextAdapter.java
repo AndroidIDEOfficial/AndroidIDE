@@ -18,9 +18,7 @@
 package com.itsaky.androidide.adapters;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.models.IconTextListItem;
-
 import java.util.List;
 
 /**
@@ -29,32 +27,32 @@ import java.util.List;
  * @author Akash Yadav
  */
 public class SimpleIconTextAdapter extends IconTextAdapter<IconTextListItem> {
-    
-    private final List<? extends IconTextListItem> items;
-    
-    public SimpleIconTextAdapter (List<? extends IconTextListItem> items) {
-        this.items = items;
-    }
-    
-    @NonNull
-    @Override
-    public IconTextListItem getItemAt (int index) {
-        return items.get (index);
-    }
-    
-    @Override
-    public int getIconResource (int index) {
-        return getItemAt (index).getIconResource ();
-    }
-    
-    @NonNull
-    @Override
-    public String getItemText (int index) {
-        return getItemAt (index).getText ();
-    }
-    
-    @Override
-    public int getItemCount () {
-        return items.size ();
-    }
+
+  private final List<? extends IconTextListItem> items;
+
+  public SimpleIconTextAdapter(List<? extends IconTextListItem> items) {
+    this.items = items;
+  }
+
+  @NonNull
+  @Override
+  public IconTextListItem getItemAt(int index) {
+    return items.get(index);
+  }
+
+  @Override
+  public int getIconResource(int index) {
+    return getItemAt(index).getIconResource();
+  }
+
+  @NonNull
+  @Override
+  public String getItemText(int index) {
+    return getItemAt(index).getText();
+  }
+
+  @Override
+  public int getItemCount() {
+    return items.size();
+  }
 }

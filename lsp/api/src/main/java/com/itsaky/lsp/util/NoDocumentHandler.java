@@ -27,23 +27,15 @@ import com.itsaky.lsp.models.DocumentSaveEvent;
  * @author Akash Yadav
  */
 public class NoDocumentHandler implements IDocumentHandler {
-    @Override
-    public void onFileOpened (DocumentOpenEvent event) {
-    
-    }
-    
-    @Override
-    public void onContentChange (DocumentChangeEvent event) {
-    
-    }
-    
-    @Override
-    public void onFileSaved (DocumentSaveEvent event) {
-    
-    }
-    
-    @Override
-    public void onFileClosed (DocumentCloseEvent event) {
-    
-    }
+  @Override
+  public void onFileOpened(DocumentOpenEvent event) {}
+
+  @Override
+  public void onContentChange(DocumentChangeEvent event) {}
+
+  @Override
+  public void onFileSaved(DocumentSaveEvent event) {}
+
+  @Override
+  public void onFileClosed(DocumentCloseEvent event) {}
 }

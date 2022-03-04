@@ -15,6 +15,8 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -26,8 +28,6 @@ import java.util.Map;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeMirror;
 
-import static com.squareup.javapoet.Util.checkArgument;
-
 public final class WildcardTypeName extends TypeName {
   public final List<TypeName> upperBounds;
   public final List<TypeName> lowerBounds;
@@ -36,32 +36,35 @@ public final class WildcardTypeName extends TypeName {
     this(upperBounds, lowerBounds, new ArrayList<>());
   }
 
-  private WildcardTypeName(List<TypeName> upperBounds, List<TypeName> lowerBounds,
-      List<AnnotationSpec> annotations) {
+  private WildcardTypeName(
+      List<TypeName> upperBounds, List<TypeName> lowerBounds, List<AnnotationSpec> annotations) {
     super(annotations);
     this.upperBounds = Util.immutableList(upperBounds);
     this.lowerBounds = Util.immutableList(lowerBounds);
 
     checkArgument(this.upperBounds.size() == 1, "unexpected extends bounds: %s", upperBounds);
     for (TypeName upperBound : this.upperBounds) {
-      checkArgument(!upperBound.isPrimitive() && upperBound != VOID,
-          "invalid upper bound: %s", upperBound);
+      checkArgument(
+          !upperBound.isPrimitive() && upperBound != VOID, "invalid upper bound: %s", upperBound);
     }
     for (TypeName lowerBound : this.lowerBounds) {
-      checkArgument(!lowerBound.isPrimitive() && lowerBound != VOID,
-          "invalid lower bound: %s", lowerBound);
+      checkArgument(
+          !lowerBound.isPrimitive() && lowerBound != VOID, "invalid lower bound: %s", lowerBound);
     }
   }
 
-  @Override public WildcardTypeName annotated(List<AnnotationSpec> annotations) {
+  @Override
+  public WildcardTypeName annotated(List<AnnotationSpec> annotations) {
     return new WildcardTypeName(upperBounds, lowerBounds, concatAnnotations(annotations));
   }
 
-  @Override public TypeName withoutAnnotations() {
+  @Override
+  public TypeName withoutAnnotations() {
     return new WildcardTypeName(upperBounds, lowerBounds);
   }
 
-  @Override CodeWriter emit(CodeWriter out) throws IOException {
+  @Override
+  CodeWriter emit(CodeWriter out) throws IOException {
     if (lowerBounds.size() == 1) {
       return out.emit("? super $T", lowerBounds.get(0));
     }
@@ -73,8 +76,8 @@ public final class WildcardTypeName extends TypeName {
   /**
    * Returns a type that represents an unknown type that extends {@code bound}. For example, if
    * {@code bound} is {@code CharSequence.class}, this returns {@code ? extends CharSequence}. If
-   * {@code bound} is {@code Object.class}, this returns {@code ?}, which is shorthand for {@code
-   * ? extends Object}.
+   * {@code bound} is {@code Object.class}, this returns {@code ?}, which is shorthand for {@code ?
+   * extends Object}.
    */
   public static WildcardTypeName subtypeOf(TypeName upperBound) {
     return new WildcardTypeName(Collections.singletonList(upperBound), Collections.emptyList());
@@ -89,8 +92,8 @@ public final class WildcardTypeName extends TypeName {
    * bound} is {@code String.class}, this returns {@code ? super String}.
    */
   public static WildcardTypeName supertypeOf(TypeName lowerBound) {
-    return new WildcardTypeName(Collections.singletonList(OBJECT),
-        Collections.singletonList(lowerBound));
+    return new WildcardTypeName(
+        Collections.singletonList(OBJECT), Collections.singletonList(lowerBound));
   }
 
   public static WildcardTypeName supertypeOf(Type lowerBound) {
@@ -123,7 +126,6 @@ public final class WildcardTypeName extends TypeName {
 
   static TypeName get(WildcardType wildcardName, Map<Type, TypeVariableName> map) {
     return new WildcardTypeName(
-        list(wildcardName.getUpperBounds(), map),
-        list(wildcardName.getLowerBounds(), map));
+        list(wildcardName.getUpperBounds(), map), list(wildcardName.getLowerBounds(), map));
   }
 }

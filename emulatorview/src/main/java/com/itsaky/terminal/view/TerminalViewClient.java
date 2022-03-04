@@ -4,80 +4,64 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-
 import com.itsaky.terminal.TerminalSession;
 
 /**
- * The interface for communication between {@link TerminalView} and its client. It allows for getting
- * various  configuration options from the client and for sending back data to the client like logs,
- * key events, both hardware and IME (which makes it different from that available with
- * {@link View#setOnKeyListener(View.OnKeyListener)}, etc. It must be set for the
- * {@link TerminalView} through {@link TerminalView#setTerminalViewClient(TerminalViewClient)}.
+ * The interface for communication between {@link TerminalView} and its client. It allows for
+ * getting various configuration options from the client and for sending back data to the client
+ * like logs, key events, both hardware and IME (which makes it different from that available with
+ * {@link View#setOnKeyListener(View.OnKeyListener)}, etc. It must be set for the {@link
+ * TerminalView} through {@link TerminalView#setTerminalViewClient(TerminalViewClient)}.
  */
 public interface TerminalViewClient {
 
-    /**
-     * Callback function on scale events according to {@link ScaleGestureDetector#getScaleFactor()}.
-     */
-    float onScale(float scale);
+  /**
+   * Callback function on scale events according to {@link ScaleGestureDetector#getScaleFactor()}.
+   */
+  float onScale(float scale);
 
+  /** On a single tap on the terminal if terminal mouse reporting not enabled. */
+  void onSingleTapUp(MotionEvent e);
 
+  boolean shouldBackButtonBeMappedToEscape();
 
-    /**
-     * On a single tap on the terminal if terminal mouse reporting not enabled.
-     */
-    void onSingleTapUp(MotionEvent e);
+  boolean shouldEnforceCharBasedInput();
 
-    boolean shouldBackButtonBeMappedToEscape();
+  boolean shouldUseCtrlSpaceWorkaround();
 
-    boolean shouldEnforceCharBasedInput();
+  boolean isTerminalViewSelected();
 
-    boolean shouldUseCtrlSpaceWorkaround();
+  void copyModeChanged(boolean copyMode);
 
-    boolean isTerminalViewSelected();
+  boolean onKeyDown(int keyCode, KeyEvent e, TerminalSession session);
 
+  boolean onKeyUp(int keyCode, KeyEvent e);
 
+  boolean onLongPress(MotionEvent event);
 
-    void copyModeChanged(boolean copyMode);
+  boolean readControlKey();
 
+  boolean readAltKey();
 
+  boolean readShiftKey();
 
-    boolean onKeyDown(int keyCode, KeyEvent e, TerminalSession session);
+  boolean readFnKey();
 
-    boolean onKeyUp(int keyCode, KeyEvent e);
+  boolean onCodePoint(int codePoint, boolean ctrlDown, TerminalSession session);
 
-    boolean onLongPress(MotionEvent event);
+  void onEmulatorSet();
 
+  void logError(String tag, String message);
 
+  void logWarn(String tag, String message);
 
-    boolean readControlKey();
+  void logInfo(String tag, String message);
 
-    boolean readAltKey();
+  void logDebug(String tag, String message);
 
-    boolean readShiftKey();
+  void logVerbose(String tag, String message);
 
-    boolean readFnKey();
+  void logStackTraceWithMessage(String tag, String message, Exception e);
 
-
-
-    boolean onCodePoint(int codePoint, boolean ctrlDown, TerminalSession session);
-
-
-    void onEmulatorSet();
-
-
-    void logError(String tag, String message);
-
-    void logWarn(String tag, String message);
-
-    void logInfo(String tag, String message);
-
-    void logDebug(String tag, String message);
-
-    void logVerbose(String tag, String message);
-
-    void logStackTraceWithMessage(String tag, String message, Exception e);
-
-    void logStackTrace(String tag, Exception e);
-
+  void logStackTrace(String tag, Exception e);
 }

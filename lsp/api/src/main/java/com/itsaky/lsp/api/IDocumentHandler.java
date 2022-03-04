@@ -28,41 +28,37 @@ import com.itsaky.lsp.models.DocumentSaveEvent;
  * @author Akash Yadav
  */
 public interface IDocumentHandler {
-    
-    /**
-     * Notification sent to this handler to notify the file open event.
-     * This event tells the document handler that the client is now
-     * handling the contents of this file.
-     *
-     * @param event The document open event data.
-     */
-    void onFileOpened (DocumentOpenEvent event);
-    
-    /**
-     * Notify the language server that file's content has been changed.
-     * Handler implementations should update the contents and last modified timestamp
-     * of this file.
-     *
-     * @param event The document change event data.
-     */
-    void onContentChange (DocumentChangeEvent event);
-    
-    /**
-     * Notify the document handler that the given file's contents were saved.
-     * Document handlers can optionally run a lint check and provide diagnostics
-     * for the file.
-     *
-     * @param event The document save event data.
-     */
-    void onFileSaved (DocumentSaveEvent event);
-    
-    /**
-     * Notify the document handler that the given file was closed and the client
-     * is no longer handling this file.
-     * Document handlers should remove any caches or data stored about this file and optionally
-     * clear the diagnostics of this file.
-     *
-     * @param event The document close event data.
-     */
-    void onFileClosed (DocumentCloseEvent event);
+
+  /**
+   * Notification sent to this handler to notify the file open event. This event tells the document
+   * handler that the client is now handling the contents of this file.
+   *
+   * @param event The document open event data.
+   */
+  void onFileOpened(DocumentOpenEvent event);
+
+  /**
+   * Notify the language server that file's content has been changed. Handler implementations should
+   * update the contents and last modified timestamp of this file.
+   *
+   * @param event The document change event data.
+   */
+  void onContentChange(DocumentChangeEvent event);
+
+  /**
+   * Notify the document handler that the given file's contents were saved. Document handlers can
+   * optionally run a lint check and provide diagnostics for the file.
+   *
+   * @param event The document save event data.
+   */
+  void onFileSaved(DocumentSaveEvent event);
+
+  /**
+   * Notify the document handler that the given file was closed and the client is no longer handling
+   * this file. Document handlers should remove any caches or data stored about this file and
+   * optionally clear the diagnostics of this file.
+   *
+   * @param event The document close event data.
+   */
+  void onFileClosed(DocumentCloseEvent event);
 }

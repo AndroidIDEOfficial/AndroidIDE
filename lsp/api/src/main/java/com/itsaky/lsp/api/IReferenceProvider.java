@@ -18,7 +18,6 @@
 package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.lsp.models.ReferenceParams;
 import com.itsaky.lsp.models.ReferenceResult;
 
@@ -28,14 +27,13 @@ import com.itsaky.lsp.models.ReferenceResult;
  * @author Akash Yadav
  */
 public interface IReferenceProvider {
-    
-    /**
-     * Find references to the token at position given in the params
-     * and return the reference results.
-     *
-     * @param params The params for finding references.
-     * @return The reference result.
-     */
-    @NonNull
-    ReferenceResult findReferences (ReferenceParams params);
+
+  /**
+   * Find references to the token at position given in the params and return the reference results.
+   *
+   * @param params The params for finding references.
+   * @return The reference result.
+   */
+  @NonNull
+  ReferenceResult findReferences(ReferenceParams params);
 }

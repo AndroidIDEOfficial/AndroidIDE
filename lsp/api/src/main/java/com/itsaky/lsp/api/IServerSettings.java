@@ -18,67 +18,67 @@
 package com.itsaky.lsp.api;
 
 /**
- * Settings contain preferences for the language server.
- * Clients can use settings to enable/disable specific features
- * of a server.
+ * Settings contain preferences for the language server. Clients can use settings to enable/disable
+ * specific features of a server.
  *
  * @author Akash Yadav
  */
 public interface IServerSettings {
-    
-    /**
-     * Called by language server to check if the completions are enabled.
-     * If not enabled, the server should not was time and memory computing
-     * completions.
-     *
-     * @return {@code true} if enabled, {@code false} otherwise.
-     */
-    boolean completionsEnabled ();
-    
-    /**
-     * Called by the language server to check if the code actions are enabled.
-     * @return {@code true} if enabled, {@code false} otherwise.
-     */
-    boolean codeActionsEnabled ();
-    
-    /**
-     * Called by language server to check if
-     * smart selections are enabled or not.
-     *
-     * @return {@code true} if enabled, {@code false} otherwise.
-     */
-    boolean smartSelectionsEnabled ();
-    
-    /**
-     * Called by the language server to check if the signature
-     * help is enabled.
-     * @return {@code true} if enabled, {@code false} otherwise.
-     */
-    boolean signatureHelpEnabled ();
-    
-    /**
-     * Called by the language server to check if finding references is enabled.
-     * @return {@code true} if enabled, {@code false} otherwise.
-     */
-    boolean referencesEnabled ();
-    
-    /**
-     * Called by the language server to check if finding definitions is enabled.
-     * @return {@code true} if enabled, {@code false} otherwise.
-     */
-    boolean definitionsEnabled ();
-    
-    /**
-     * Called by the language server to check if code analysis is enabled.
-     * @return {@code true} if enabled, {@code false} otherwise.
-     */
-    boolean codeAnalysisEnabled ();
-    
-    /**
-     * Called by the completions provider to check if
-     * it should match partial names in all lowercase.
-     *
-     * @return {@code true} if enabled, {@code false} otherwise.
-     */
-    boolean shouldMatchAllLowerCase ();
+
+  /**
+   * Called by language server to check if the completions are enabled. If not enabled, the server
+   * should not was time and memory computing completions.
+   *
+   * @return {@code true} if enabled, {@code false} otherwise.
+   */
+  boolean completionsEnabled();
+
+  /**
+   * Called by the language server to check if the code actions are enabled.
+   *
+   * @return {@code true} if enabled, {@code false} otherwise.
+   */
+  boolean codeActionsEnabled();
+
+  /**
+   * Called by language server to check if smart selections are enabled or not.
+   *
+   * @return {@code true} if enabled, {@code false} otherwise.
+   */
+  boolean smartSelectionsEnabled();
+
+  /**
+   * Called by the language server to check if the signature help is enabled.
+   *
+   * @return {@code true} if enabled, {@code false} otherwise.
+   */
+  boolean signatureHelpEnabled();
+
+  /**
+   * Called by the language server to check if finding references is enabled.
+   *
+   * @return {@code true} if enabled, {@code false} otherwise.
+   */
+  boolean referencesEnabled();
+
+  /**
+   * Called by the language server to check if finding definitions is enabled.
+   *
+   * @return {@code true} if enabled, {@code false} otherwise.
+   */
+  boolean definitionsEnabled();
+
+  /**
+   * Called by the language server to check if code analysis is enabled.
+   *
+   * @return {@code true} if enabled, {@code false} otherwise.
+   */
+  boolean codeAnalysisEnabled();
+
+  /**
+   * Called by the completions provider to check if it should match partial names in all lowercase.
+   *
+   * @return {@code true} if enabled, {@code false} otherwise.
+   */
+  boolean shouldMatchAllLowerCase();
 }
