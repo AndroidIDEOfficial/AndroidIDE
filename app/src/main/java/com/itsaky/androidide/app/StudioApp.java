@@ -44,17 +44,18 @@ import java.util.Set;
 
 public class StudioApp extends BaseApplication {
     
+    private static final Logger LOG = Logger.instance ("StudioApp");
     private static StudioApp instance;
     private static SDKInfo sdkInfo;
-    
     private final ILanguageServer mJavaLanguageServer = new JavaLanguageServer ();
     private final ILanguageServer mXMLLanguageServer = new XMLLanguageServer ();
-    
-    private IResourceTable mResFinder;
+    private IResourceTable mResTable;
     private ILayoutInflater mLayoutInflater;
     private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
     
-    private static final Logger LOG = Logger.instance ("StudioApp");
+    public static StudioApp getInstance () {
+        return instance;
+    }
     
     @Override
     public void onCreate () {
@@ -106,7 +107,7 @@ public class StudioApp extends BaseApplication {
         return new LayoutInflaterConfiguration.Builder ()
                 .setAttrInfo (this.attrInfo ())
                 .setWidgetInfo (this.widgetInfo ())
-                .setResourceFinder (mResFinder == null ? mResFinder = new ProjectResourceTable () : mResFinder)
+                .setResourceFinder (mResTable == null ? mResTable = new ProjectResourceTable () : mResTable)
                 .setResourceDirectories (resDirs)
                 .setContextProvider (contextProvider)
                 .create ();
@@ -116,8 +117,8 @@ public class StudioApp extends BaseApplication {
         return mLayoutInflater;
     }
     
-    public IResourceTable getResFinder () {
-        return this.mResFinder;
+    public IResourceTable getResourceTable () {
+        return this.mResTable;
     }
     
     /**
@@ -148,9 +149,5 @@ public class StudioApp extends BaseApplication {
     
     public WidgetInfo widgetInfo () {
         return sdkInfo.getWidgetInfo ();
-    }
-    
-    public static StudioApp getInstance () {
-        return instance;
     }
 }

@@ -17,19 +17,22 @@
 
 package com.itsaky.androidide.ui.edit;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
-import com.itsaky.inflater.IView;
+
+import java.util.List;
 
 /**
- * An attribute edit handler handles add/update
- * of an attribute for a view.
+ * An attribute value provider provides suggestions
+ * while editing an attribute value.
  *
  * @author Akash Yadav
  */
-public interface IAttrEditHandler {
+public interface IValueSuggestionProvider {
     
     /**
-     * Check if the given format is supported by this handler.
+     * Check if the given format is supported by this provider.
      *
      * @param format The formats to check.
      * @return <code>true</code> if the given formats contain a supported format, <code>false</code> otherwise.
@@ -37,14 +40,12 @@ public interface IAttrEditHandler {
     boolean checkFormat (int format);
     
     /**
-     * Handle the attribute addition/update.
-     * The handler is responsible for making sure that
-     * the attribute is reflected on the view. Also,
-     * for attribute addition, the handler should check
-     * for duplicate entries.
+     * Provide suggestions for the given attribute.
      *
-     * @param view      The view to which the attribute must be added/updated.
-     * @param attribute The attribute to add/update.
+     * @param attribute The attribute to provide suggestions for.
+     * @param prefix    The prefix (partial identifier) to filter the suggestions.
+     * @return The suggestion items. Must not be <code>null</code>.
      */
-    void handle (IView view, IAttribute attribute);
+    @NonNull
+    List<String> suggest (IAttribute attribute, String prefix);
 }

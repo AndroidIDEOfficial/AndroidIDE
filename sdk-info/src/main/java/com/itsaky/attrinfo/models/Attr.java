@@ -26,6 +26,7 @@ import com.itsaky.xml.INamespace;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -104,6 +105,55 @@ public class Attr {
             default:
                 return UNKNOWN;
         }
+    }
+    
+    public static String createFormatText (int format) {
+        final var formats = new ArrayList<String> ();
+        if ((format & REFERENCE) != 0) {
+            formats.add ("reference");
+        }
+        
+        if ((format & COLOR) != 0) {
+            formats.add ("color");
+        }
+        
+        if ((format & BOOLEAN) != 0) {
+            formats.add ("boolean");
+        }
+        
+        if ((format & DIMENSION) != 0) {
+            formats.add ("dimension");
+        }
+        
+        if ((format & FLOAT) != 0) {
+            formats.add ("float");
+        }
+        
+        if ((format & INTEGER) != 0) {
+            formats.add ("integer");
+        }
+        
+        if ((format & FRACTION) != 0) {
+            formats.add ("fraction");
+        }
+        
+        if ((format & STRING) != 0) {
+            formats.add ("string");
+        }
+        
+        if ((format & ENUM) != 0) {
+            formats.add ("enum");
+        }
+        
+        if ((format & FLAG) != 0) {
+            formats.add ("flag");
+        }
+        
+        if (formats.isEmpty ()) {
+            formats.add ("unknown");
+        }
+        
+        return TextUtils.join ("|", formats);
     }
     
     public boolean hasPossibleValues () {

@@ -37,7 +37,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -61,10 +60,12 @@ import com.itsaky.toaster.Toaster;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -74,6 +75,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     private static final Logger LOG = Logger.instance ("AttrBottomSheet");
     private AttributeListSheet mAttrListSheet;
     private IView selectedView;
+    private File layout;
     private LayoutAttrEditorSheetBinding binding;
     private OnViewDeletionFailedListener mDeletionFailedListener;
     
@@ -96,9 +98,11 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             );
         }
         
+        binding.valueEditorLayout.closeButton.setOnClickListener (v -> hideValueEditorLayout ());
+        
         setupViewData ();
         
-        AttributeDialogs.init (getActivity ());
+        AttributeDialogs.init (requireActivity ());
     }
     
     @Override
@@ -109,6 +113,13 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
     
     public AttrEditorSheet setDeletionFailedListener (OnViewDeletionFailedListener listener) {
         this.mDeletionFailedListener = listener;
+        return this;
+    }
+    
+    public AttrEditorSheet setLayout (File layout) {
+        Objects.requireNonNull (layout);
+        
+        this.layout = layout;
         return this;
     }
     
@@ -148,6 +159,11 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         }
         
         showEditorDialog (attribute);
+    }
+    
+    private void hideValueEditorLayout () {
+        TransitionManager.beginDelayedTransition (binding.getRoot ());
+        binding.valueEditorLayout.getRoot ().setVisibility (View.GONE);
     }
     
     private void showEditorDialog (@NonNull XMLAttribute attribute) {
@@ -296,7 +312,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
             
             this.selectedView = this.selectedView.getParent ();
             
-            TransitionManager.beginDelayedTransition (binding.getRoot (), new ChangeBounds ());
+            TransitionManager.beginDelayedTransition (binding.getRoot ());
             setupViewData ();
         }
     }
@@ -319,7 +335,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment implements Simple
         return mAttrListSheet;
     }
     
-    private void addNewAttribute (Attr attr) {
+    private void addNewAttribute (@NonNull Attr attr) {
         final XMLAttribute attribute = new XMLAttribute (attr.namespace, attr.name, "", false);
         attribute.setAttr (attr);
         showEditorDialog (attribute);

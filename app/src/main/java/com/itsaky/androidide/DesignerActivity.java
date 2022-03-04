@@ -82,23 +82,19 @@ import java.util.concurrent.ExecutionException;
 
 public class DesignerActivity extends StudioActivity implements WidgetItemAdapter.OnDragStartListener {
     
-    private ActivityDesignerBinding mBinding;
-    private UIWidgetGroup checkedWidgetCategory;
-    private IViewGroup inflatedRoot;
-    
-    private boolean inflationFailed = false;
-    private AttrEditorSheet mEditorSheet;
-    
     public static final String KEY_LAYOUT_PATH = "designer_layoutPath";
     public static final String KEY_GENERATED_CODE = "designer_xmlCode";
     public static final String DRAGGING_WIDGET_TAG = "DRAGGING_WIDGET";
     public static final String DRAGGING_WIDGET_MIME = "application/ide_widget";
-    
     private static final Logger LOG = Logger.instance ("DesignerActivity");
-    
     private final boolean isTablet = DeviceUtils.isTablet ();
     private final List<UIWidgetGroup> widgetGroups = new ArrayList<> ();
-    
+    private ActivityDesignerBinding mBinding;
+    private UIWidgetGroup checkedWidgetCategory;
+    private IViewGroup inflatedRoot;
+    private File layout;
+    private boolean inflationFailed = false;
+    private AttrEditorSheet mEditorSheet;
     // This will make sure to apply listeners, background and data to view that are inflated from XML.
     private final IInflateListener mInflateListener = new IInflateListener () {
         
@@ -163,6 +159,8 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         getSupportActionBar ().setTitle (name);
         
         try {
+            this.layout = new File (path);
+            
             final ILayoutInflater inflater = getApp ().getLayoutInflater ();
             inflater.resetContextProvider (newContextProvider ());
             inflater.registerInflateListener (this.mInflateListener);
@@ -403,6 +401,7 @@ public class DesignerActivity extends StudioActivity implements WidgetItemAdapte
         return this.mEditorSheet == null
                 ? mEditorSheet = new AttrEditorSheet ()
                 .setDeletionFailedListener (this::onViewDeletionFailed)
+                .setLayout (this.layout)
                 : mEditorSheet;
     }
     
