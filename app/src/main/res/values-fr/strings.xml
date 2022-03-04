@@ -1,22 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-
-
     <!-- AndroidIDE -->
 
     <string name="app_name">AndroidIDE</string>
 
-    <string name="licence_jdk">AndroidIDE utilise une version modifiée du JDK d\'ont la licence est sous GNU General Public licence v2.0. Le code source et la licence du JDK sont disponibles ici : </string>
+    <string name="license_jdk">AndroidIDE utilise une version modifiée du JDK d\'ont la licence est sous GNU General Public licence v2.0. Le code source et la licence du JDK sont disponibles ici : </string>
 
     <string name="title_developers">Développeurs</string>
 
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
 
-    <string name="title_open_source_licences">licence Open Source</string>
+    <string name="title_open_source_licenses">licence Open Source</string>
 
-    <string name="msg_open_source_licences">AndroidIDE utilise des librairies open sources. vous pouvez trouver la source et les licences des librairies utilisées en cliquant sur les liens suivant ci-dessous.</string>
+    <string name="msg_open_source_licenses">AndroidIDE utilise des librairies open sources. vous pouvez trouver la source et les licences des librairies utilisées en cliquant sur les liens suivant ci-dessous.</string>
 
-    <string name="msg_about_licenced_under">licence sous:&#x20;</string>
+    <string name="msg_about_licensed_under">licence sous:&#x20;</string>
 
     <string name="about_option_email">Émail</string>
 
@@ -67,7 +65,6 @@
     <string name="nothing_here">Rien ici &#8230;</string>
 
 
-
     <!-- LSP, Diagnostics & Completions -->
 
     <string name="msg_sdk_info_load_failed">Impossible de charger les informations du SDK</string>
@@ -109,7 +106,6 @@
     <string name="view_diags">Diagnostiques</string>
 
 
-
     <!-- Build Tools Installation -->
 
     <string name="title_installation_failed">Erreur lors de l\'installation</string>
@@ -149,7 +145,6 @@
     <string name="title_device_not_supported">Appareil non compatible</string>
 
     <string name="msg_device_not_supported">Malheureusement, votre appareil n\'est pas supporté pour le moment, nous sommes désolés pour le problème occasionné.\n\nCPU ABIs supportés: aarch64 et armeabi-v7a</string>
-
 
 
     <!-- Project Builder -->
@@ -227,7 +222,6 @@
     <string name="compiling">Compilation</string>
 
 
-
     <!-- Project -->
 
     <string name="create_project">Créer un projet</string>
@@ -244,7 +238,7 @@
 
     <string name="invalid_values">Champs Invalides</string>
 
-    <string name="msg_no_projects">Mmmmm...Il semblerait que vous n\'ayez créé aucun projet.</string>
+    <string name="msg_no_projects">Mmmmm…Il semblerait que vous n\'ayez créé aucun projet.</string>
 
     <string name="msg_create_new_project_greeting">Libérez vos talents de développeur ! Créer un projet et commencez à créer votre propre application</string>
 
@@ -295,7 +289,6 @@
     <string name="project_exists">Un projet avec ce nom exist déjà !</string>
 
 
-
     <!-- Templates -->
 
     <string name="template_basic">Projet simple</string>
@@ -309,7 +302,6 @@
     <string name="template_empty">Projet vide</string>
 
     <string name="template_navigation_drawer">Projet navigation drawer</string>
-
 
 
     <!-- Files -->
@@ -451,7 +443,6 @@
     <string name="msg_storage_granted">Permissions du stockage données</string>
 
 
-
     <!-- Code Editor -->
 
     <string name="undo">défaire</string>
@@ -479,7 +470,6 @@
     <item name="text_to_search" type="string">Texte à chercher</item>
 
     <item name="more" type="string">Plus</item>
-
 
 
     <!-- Preferences -->
@@ -545,9 +535,6 @@
     <string name="msg_clear_cache">Cela supprimera le cache des dossiers de Gradle. Si vous le supprimer, la prochaine compilation peut prendre un peu plus de temps que la normale car Gradle téléchargera à nouveau les fichiers requis.\nIMPORTANT: cela supprimera également AAPT2. vous devrez donc le réinstaller, ou sinon vous obtiendrez une erreur de compilation.\n\Êtes vous sûres de vouloir supprimer le cache ?</string>
 
 
-
-
-
     <!-- Error Messages used while Logging -->
 
     <string name="err_installation">Erreur d\'installation</string>
@@ -575,7 +562,6 @@
     <string name="err_cannot_write_socket">Failed to write to Socket stream</string>
 
     <string name="err_server_disconnected">Le processus du serveur s\'est déconnectée accidentellement.</string>
-
 
 
     <!-- Layout preview and designer -->
@@ -666,8 +652,6 @@
 
     <string name="msg_new_str_value">Nouvelle valeur string</string>
 
-    <string name="msg_add_namespace_decl">Ajouter \'%1$s\' namespace declaration</string>
-
     <string name="msg_choose_new_val">Choissisez une nouvelle valeur</string>
 
     <string name="msg_select_one_flag">Please check at least one flag.</string>
@@ -697,7 +681,5 @@
     <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
 
     <string name="title_translations">Traduction</string>
-
-
 
 </resources>

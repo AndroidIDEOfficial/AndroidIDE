@@ -3,8 +3,6 @@
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
     <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
-    <string name="title_developers">Developers</string>
-    <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
     <string name="title_open_source_licenses">Open source licenses</string>
     <string name="msg_open_source_licenses">AndroidIDE uses open source libraries. You can find the source and the license of the libraries used by clicking on below links.</string>
     <string name="msg_about_licensed_under">Licensed under: </string>
@@ -29,14 +27,10 @@
     <string name="app_logs">App Logs</string>
     <string name="ide_logs">IDE Logs</string>
     <string name="label_splash_image">Splash image</string>
-    <string name="cancel">Cancel</string>
     <string name="get_started">Get started</string>
     <string name="nothing_here">Nothing here &#8230;</string>
 
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_sdk_info_load_failed">Failed to load SDK information</string>
-    <string name="msg_fix_diagnostic">[QuickFix]</string>
-    <string name="msg_no_code_actions">No quickfix found</string>
     <string name="msg_cannot_perform_fix">Unable to perform quick fix</string>
     <string name="msg_performing_fixes">Performing fixes&#8230;</string>
     <string name="msg_code_actions">Quickfixes</string>
@@ -102,7 +96,6 @@
     <string name="gradle_daemon_status">Gradle daemon status</string>
     <string name="msg_service_started">Service Started</string>
     <string name="msg_starting_completion">Starting services</string>
-    <string name="msg_starting_completion_failed">Failed to start Completion Services</string>
     <string name="msg_starting_daemon">Starting a Gradle daemon</string>
     <string name="title_install_apks">Install APK(s)</string>
     <string name="title_clear_output">Clear output</string>
@@ -135,14 +128,6 @@
     <string name="msg_invalid_project">Picked directory is not an Android project</string>
     <string name="msg_project_deleted">Project deleted</string>
     <string name="msg_project_delete_failed">Failed to delete project!</string>
-    <string name="menu_project_info">Project info</string>
-    <string name="header_module_info">Module info</string>
-    <string name="msg_module_count">Modules : %d</string>
-    <string name="msg_task_count">Tasks : %d</string>
-    <string name="msg_dependency_count">Dependencies : %d</string>
-    <string name="msg_package_name">Package : %s</string>
-    <string name="msg_min_sdk">Min SDK : %s</string>
-    <string name="msg_target_sdk">Target SDK : %s</string>
     <string name="title_confirm_project_close">Close project</string>
     <string name="msg_confirm_project_close">Are you sure you want to close this project? All started Gradle daemons will be stopped after this project is closed.</string>
     <string name="project_exists">A project with same name already exists!</string>
@@ -158,10 +143,9 @@
     <string name="template_description_kotlin_basic">Kotlin project with Appcompat Toolbar and a Floating Action Button</string>
     <string name="template_libgdx">LibGDX Game</string>
     <string name="template_description_libgdx">LibGDX game project set up to render an image as an example.</string>
-    
+
     <!-- Files -->
     <string name="save">Save</string>
-    <string name="show_files">Files</string>
     <string name="menu_find">Find</string>
     <string name="menu_find_file">Find in file</string>
     <string name="menu_find_project">Find in project</string>
@@ -225,24 +209,14 @@
     <string name="classtype_enum">Enum</string>
     <string name="msg_checking_storage_permissions">Checking storage permissions</string>
     <string name="msg_failed_list_files">Failed to list project files!</string>
-    <string name="msg_failed_save">Failed to save files!</string>
     <string name="msg_storage_denied">Can\'t proceed without storage permissions</string>
     <string name="msg_storage_granted">Storage permissions granted!</string>
 
     <!-- Code Editor -->
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
-    <item name="paste" type="string">Paste</item>
     <item name="copy" type="string" tools:override="true">Copy</item>
-    <item name="selectAll" formatted="true" type="string">Select All</item>
-    <item name="cut" type="string">Cut</item>
-    <item name="last" type="string">Last</item>
-    <item name="next" type="string">Next</item>
-    <item name="replace" type="string">Replace</item>
-    <item name="replaceAll" type="string">Replace all</item>
-    <item name="replacement" type="string">Replacement</item>
     <item name="text_to_search" type="string">Text to search</item>
-    <item name="more" type="string">More</item>
 
     <!-- Preferences -->
     <string name="title_change_text_size">Editor font size</string>
@@ -251,8 +225,6 @@
     <string name="idepref_build_clearCache_summary">Clear Gradle caches directory. This will delete all dependencies downloaded by Gradle. Required files will be downloaded again in next build.</string>
     <string name="idepref_build_customgradlecommands_title">Additional Gradle commands</string>
     <string name="idepref_build_customgradlecommands_summary">Choose additional commands that will be added while executing every task</string>
-    <string name="idepref_build_editgradleproperties_title">Edit global Gradle properties</string>
-    <string name="idepref_build_editgradleproperties_summary">Edit gradle.properties in GRADLE_HOME</string>
     <string name="idepref_editor_fontsize_title">Font size</string>
     <string name="idepref_editor_fontsize_summary">Font size of the editor</string>
     <string name="idepref_editor_paintingflags_title">Non-printable painting flags</string>
@@ -279,18 +251,11 @@
 
     <!-- Error Messages used while Logging -->
     <string name="err_installation">Installation error</string>
-    <string name="err_completion">Completion error</string>
-    <string name="err_no_server_implementation">No LanguageServer implementation found.</string>
-    <string name="err_init_server">Error initializing language server</string>
     <string name="err_init_sdkinfo">Unable to initialize SDK Info</string>
     <string name="err_cannot_start_file_picker">Unable to start file picker</string>
     <string name="err_cannot_parse_apk_metadata">Failed to parse APK metadata</string>
-    <string name="err_cannot_save_files">Unable to save files</string>
     <string name="err_cannot_preview_layout">Unable to preview layout</string>
     <string name="err_cannot_inflate_layout">Unable to inflate layout</string>
-    <string name="err_cannot_start_server">Unable to start Language Server for: %s</string>
-    <string name="err_cannot_write_socket">Failed to write to Socket stream</string>
-    <string name="err_server_disconnected">Language server process unexpectedly exited.</string>
 
     <!-- Layout preview and designer -->
     <string name="msg_cannot_preview_layout">Unable to preview layout!</string>
@@ -311,18 +276,9 @@
     <string name="widget_group_layouts">Layouts</string>
     <string name="layout_linear">LinearLayout</string>
     <string name="layout_relative">RelativeLayout</string>
-    <string name="msg_attr_edit_hint">Click on the attribute items to edit.</string>
-    <string name="sym_equal">=</string>
-    <string name="msg_attr_namespace">\'%s\' namespace</string>
-    <string name="msg_unknown_package">Unknown package name</string>
-    <string name="msg_attr_editor_select_view">Select a view to edit its attributes.</string>
-    <string name="msg_attr_editor_no_attrs">No attributes has been added for this view.\nClick on the \'+\' button to add.</string>
-    <string name="msg_enter_attr_value">Enter new value for attribute:</string>
-    <string name="hint_new_attr_value">New value</string>
     <string name="attr_val_wrap_content">wrap_content</string>
     <string name="attr_val_match_parent">match_parent</string>
     <string name="attr_val_other">Other value</string>
-    <string name="msg_enter_dimension_value">Enter dimension value</string>
     <string name="msg_applicable_attrs">Applicable attributes</string>
     <string name="msg_attr_editor_actions">Actions</string>
     <string name="title_viewaction_delete">Delete</string>
@@ -333,7 +289,7 @@
     <string name="msg_view_deletion_failed">Unable to delete the view.</string>
     <string name="msg_empty_ui_layout">No views have been added. Click to add.</string>
     <string name="msg_no_attr_format">No attribute format is available for this attribute.</string>
-    <string name="msg_attr_editor_null">Unable to create attribute editor for this attribute</string>
+    <string name="hint_new_attr_value">New value</string>
     <string name="msg_invalid_attr_value">Invalid value</string>
     <string name="msg_new_str_value">New string value</string>
     <string name="msg_choose_new_val">Choose new value</string>
