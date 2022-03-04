@@ -292,10 +292,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         item.setInsertText(String.format("xmlns:%1$s=\"%2$s\"", name, value));
         item.setKind(CompletionItemKind.SNIPPET);
         item.setSortText(
-                "1000"
-                        + item
-                                .getLabel()); // This item is expected to be at the last of the
-                                              // completion list
+                "1000" + item.getLabel()); // This item is expected to be at the last of the
+        // completion list
         return item;
     }
 

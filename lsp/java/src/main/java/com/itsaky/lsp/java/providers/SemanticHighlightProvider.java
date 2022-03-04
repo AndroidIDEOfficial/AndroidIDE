@@ -55,7 +55,7 @@ public class SemanticHighlightProvider {
         if (root == null) {
             LOG.warn(
                     "Cannot provide semantic highlights. Cannot find compilation unit for the given"
-                        + " file.");
+                            + " file.");
             return result;
         }
 

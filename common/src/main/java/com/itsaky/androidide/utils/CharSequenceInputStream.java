@@ -251,9 +251,8 @@ public class CharSequenceInputStream extends InputStream {
                 this.bBuf.rewind();
                 this.bBuf.limit(0); // rewind does not clear the buffer
                 while (this.cBuf.position() < this.cBufMark) {
-                    this.bBuf
-                            .rewind(); // empty the buffer (we only refill when empty during normal
-                                       // processing)
+                    this.bBuf.rewind(); // empty the buffer (we only refill when empty during normal
+                    // processing)
                     this.bBuf.limit(0);
                     fillBuffer();
                 }

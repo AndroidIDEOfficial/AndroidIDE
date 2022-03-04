@@ -166,7 +166,7 @@ public class TextSelectionCursorController implements CursorController {
                             case ACTION_MORE:
                                 terminalView
                                         .stopTextSelectionMode(); // we stop text selection first,
-                                                                  // otherwise handles
+                                // otherwise handles
                                 // will show above popup
                                 terminalView.showContextMenu();
                                 break;
