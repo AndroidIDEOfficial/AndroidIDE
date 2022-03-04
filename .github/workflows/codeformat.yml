@@ -3,19 +3,11 @@ name: Format
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
 
   formatting:
     runs-on: ubuntu-latest
     steps:
-      - if: github.event_name != 'pull_request'
-        uses: actions/checkout@v2
-      - if: github.event_name == 'pull_request'
-        uses: actions/checkout@v2
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: actions/checkout@v2
       - uses: axel-op/googlejavaformat-action@v3
