@@ -18,90 +18,93 @@
 package com.itsaky.inflater.impl;
 
 import android.view.ViewGroup;
+
 import androidx.annotation.Nullable;
+
 import com.itsaky.inflater.IView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class UiViewGroup extends BaseViewGroup {
 
-  private final ViewGroup viewGroup;
-  private final List<IView> children;
+    private final ViewGroup viewGroup;
+    private final List<IView> children;
 
-  public UiViewGroup(String qualifiedName, ViewGroup view) {
-    this(qualifiedName, view, false);
-  }
-
-  public UiViewGroup(String qualifiedName, ViewGroup view, boolean isPlaceholder) {
-    super(qualifiedName, view, isPlaceholder);
-
-    this.viewGroup = view;
-    this.children = new ArrayList<>();
-  }
-
-  @Override
-  public void addView(IView view) {
-    addView(view, getChildCount());
-  }
-
-  @Override
-  public void addView(IView view, int index) {
-    super.addView(view, index);
-    this.viewGroup.addView(view.asView(), index);
-    this.children.add(index, view);
-
-    view.setParent(this);
-    onViewAdded(view);
-  }
-
-  @Override
-  public void removeView(int index) {
-    final IView view = children.get(index);
-    removeView(view);
-  }
-
-  @Override
-  public void removeView(@Nullable IView view) {
-    if (view == null) {
-      LOG.warn("Null view passed to IViewGroup.removeView(IView). Ignoring.");
-      return;
+    public UiViewGroup(String qualifiedName, ViewGroup view) {
+        this(qualifiedName, view, false);
     }
 
-    this.viewGroup.removeView(view.asView());
-    this.children.remove(view);
+    public UiViewGroup(String qualifiedName, ViewGroup view, boolean isPlaceholder) {
+        super(qualifiedName, view, isPlaceholder);
 
-    view.setParent(null);
-    onViewRemoved(view);
-  }
-
-  @Override
-  public void removeAll() {
-    for (var child : this.children) {
-      // Remove each view individually
-      // This will make sure that we set the parent of the children to null
-      // and call #onViewRemoved (IView)
-      removeView(child);
+        this.viewGroup = view;
+        this.children = new ArrayList<>();
     }
-  }
 
-  @Override
-  public void forEachChild(Consumer<IView> consumer) {
-    this.children.stream().forEach(consumer);
-  }
+    @Override
+    public void addView(IView view) {
+        addView(view, getChildCount());
+    }
 
-  @Override
-  public int getChildCount() {
-    return this.viewGroup.getChildCount();
-  }
+    @Override
+    public void addView(IView view, int index) {
+        super.addView(view, index);
+        this.viewGroup.addView(view.asView(), index);
+        this.children.add(index, view);
 
-  @Override
-  public List<IView> getChildren() {
-    return this.children;
-  }
+        view.setParent(this);
+        onViewAdded(view);
+    }
 
-  @Override
-  public IView getChildAt(int index) {
-    return children.get(index);
-  }
+    @Override
+    public void removeView(int index) {
+        final IView view = children.get(index);
+        removeView(view);
+    }
+
+    @Override
+    public void removeView(@Nullable IView view) {
+        if (view == null) {
+            LOG.warn("Null view passed to IViewGroup.removeView(IView). Ignoring.");
+            return;
+        }
+
+        this.viewGroup.removeView(view.asView());
+        this.children.remove(view);
+
+        view.setParent(null);
+        onViewRemoved(view);
+    }
+
+    @Override
+    public void removeAll() {
+        for (var child : this.children) {
+            // Remove each view individually
+            // This will make sure that we set the parent of the children to null
+            // and call #onViewRemoved (IView)
+            removeView(child);
+        }
+    }
+
+    @Override
+    public void forEachChild(Consumer<IView> consumer) {
+        this.children.stream().forEach(consumer);
+    }
+
+    @Override
+    public int getChildCount() {
+        return this.viewGroup.getChildCount();
+    }
+
+    @Override
+    public List<IView> getChildren() {
+        return this.children;
+    }
+
+    @Override
+    public IView getChildAt(int index) {
+        return children.get(index);
+    }
 }

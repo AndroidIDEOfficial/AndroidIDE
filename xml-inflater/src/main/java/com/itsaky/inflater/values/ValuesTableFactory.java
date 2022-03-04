@@ -17,6 +17,7 @@
 package com.itsaky.inflater.values;
 
 import com.itsaky.androidide.utils.Logger;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;
@@ -31,103 +32,104 @@ import java.util.regex.Pattern;
  */
 public class ValuesTableFactory {
 
-  private static final Map<File, ValuesTable> valueTables = new HashMap<>();
-  private static final Logger LOG = Logger.instance("ValuesTableFactory");
+    private static final Map<File, ValuesTable> valueTables = new HashMap<>();
+    private static final Logger LOG = Logger.instance("ValuesTableFactory");
 
-  public static ValuesTable getTable(final File resDir) {
-    return valueTables.getOrDefault(resDir, null);
-  }
-
-  /**
-   * Setup this ValuesTableFactory with the given "res" directories.
-   *
-   * @param resDirs The resource directories.
-   */
-  public static void setupWithResDirectories(File... resDirs) {
-
-    if (resDirs == null || resDirs.length <= 0) {
-      LOG.error("Cannot create value tables. No directories were specified.");
-      return;
+    public static ValuesTable getTable(final File resDir) {
+        return valueTables.getOrDefault(resDir, null);
     }
 
-    valueTables.clear();
+    /**
+     * Setup this ValuesTableFactory with the given "res" directories.
+     *
+     * @param resDirs The resource directories.
+     */
+    public static void setupWithResDirectories(File... resDirs) {
 
-    final var start = System.currentTimeMillis();
-    for (var res : resDirs) {
-      if (res == null || !res.exists()) {
-        continue;
-      }
+        if (resDirs == null || resDirs.length <= 0) {
+            LOG.error("Cannot create value tables. No directories were specified.");
+            return;
+        }
 
-      final var table = createTable(res);
-      if (table == null) {
-        continue;
-      }
+        valueTables.clear();
 
-      valueTables.put(res, table);
+        final var start = System.currentTimeMillis();
+        for (var res : resDirs) {
+            if (res == null || !res.exists()) {
+                continue;
+            }
+
+            final var table = createTable(res);
+            if (table == null) {
+                continue;
+            }
+
+            valueTables.put(res, table);
+        }
+
+        LOG.debug(
+                String.format(
+                        Locale.getDefault(),
+                        "Created value tables for %d resource directories in %d ms",
+                        resDirs.length,
+                        (System.currentTimeMillis() - start)));
     }
 
-    LOG.debug(
-        String.format(
-            Locale.getDefault(),
-            "Created value tables for %d resource directories in %d ms",
-            resDirs.length,
-            (System.currentTimeMillis() - start)));
-  }
+    /**
+     * Notify that the given file's contents were changed and the corresponding table must be
+     * updated with new values.
+     *
+     * @param file The file that was changed.
+     */
+    public static void syncWithFile(final File file) {
+        if (file == null) {
+            LOG.error("Cannot update value tables. Given file is null.");
+            return;
+        }
 
-  /**
-   * Notify that the given file's contents were changed and the corresponding table must be updated
-   * with new values.
-   *
-   * @param file The file that was changed.
-   */
-  public static void syncWithFile(final File file) {
-    if (file == null) {
-      LOG.error("Cannot update value tables. Given file is null.");
-      return;
+        final var pattern = Pattern.compile(".*/src/.*/res/values/(\\w|_)+\\.xml");
+        if (!pattern.matcher(file.getAbsolutePath()).matches()) {
+            // This file is not a values resource file.
+            return;
+        }
+
+        final var resDir =
+                Objects.requireNonNull(file.getParentFile()) /* values dir */
+                        .getParentFile() /* res dir*/;
+        var table = valueTables.getOrDefault(resDir, null);
+        if (table == null) {
+            table = createTable(resDir);
+            if (table != null) {
+                valueTables.put(resDir, table);
+            }
+            return;
+        }
+
+        try {
+            table.syncWithFile(file);
+        } catch (Throwable e) {
+            LOG.error("Failed to sync values table", e);
+        }
     }
 
-    final var pattern = Pattern.compile(".*/src/.*/res/values/(\\w|_)+\\.xml");
-    if (!pattern.matcher(file.getAbsolutePath()).matches()) {
-      // This file is not a values resource file.
-      return;
+    private static ValuesTable createTable(File res) {
+        try {
+            final var values = new File(res, "values");
+            if (!values.exists()) {
+                return null;
+            }
+
+            var table = ValuesTable.forDirectory(values);
+            if (table == null) {
+                throw new ParseException();
+            }
+
+            return table;
+        } catch (Throwable e) {
+            LOG.error("Failed to create values table", e);
+            return null;
+        }
     }
 
-    final var resDir =
-        Objects.requireNonNull(file.getParentFile()) /* values dir */.getParentFile() /* res dir*/;
-    var table = valueTables.getOrDefault(resDir, null);
-    if (table == null) {
-      table = createTable(resDir);
-      if (table != null) {
-        valueTables.put(resDir, table);
-      }
-      return;
-    }
-
-    try {
-      table.syncWithFile(file);
-    } catch (Throwable e) {
-      LOG.error("Failed to sync values table", e);
-    }
-  }
-
-  private static ValuesTable createTable(File res) {
-    try {
-      final var values = new File(res, "values");
-      if (!values.exists()) {
-        return null;
-      }
-
-      var table = ValuesTable.forDirectory(values);
-      if (table == null) {
-        throw new ParseException();
-      }
-
-      return table;
-    } catch (Throwable e) {
-      LOG.error("Failed to create values table", e);
-      return null;
-    }
-  }
-
-  static class ParseException extends RuntimeException {}
+    static class ParseException extends RuntimeException {}
 }

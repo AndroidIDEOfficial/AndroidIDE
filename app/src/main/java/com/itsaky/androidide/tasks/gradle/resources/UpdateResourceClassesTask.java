@@ -22,60 +22,61 @@ package com.itsaky.androidide.tasks.gradle.resources;
 
 import com.itsaky.androidide.tasks.BaseGradleTask;
 import com.itsaky.androidide.tasks.GradleTask;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class UpdateResourceClassesTask extends BaseGradleTask {
 
-  private final boolean viewBinding;
+    private final boolean viewBinding;
 
-  public UpdateResourceClassesTask(boolean viewBinding) {
-    this.viewBinding = viewBinding;
-  }
-
-  @Override
-  public boolean affectsGeneratedSources() {
-    return true;
-  }
-
-  @Override
-  public String getName() {
-    return "Update resource classes";
-  }
-
-  @Override
-  public String getCommands() {
-    String command = "";
-    if (viewBinding) {
-      command = new DatabindingGenBaseClassesDebug().getCommands();
-      command += " ";
+    public UpdateResourceClassesTask(boolean viewBinding) {
+        this.viewBinding = viewBinding;
     }
-    command += new ProcessDebugResources().getCommands();
-    return command;
-  }
 
-  @Override
-  public List<String> getTasks() {
-    List<String> tasks = new ArrayList<>();
-    if (viewBinding) {
-      tasks.addAll(new DatabindingGenBaseClassesDebug().getTasks());
+    @Override
+    public boolean affectsGeneratedSources() {
+        return true;
     }
-    tasks.addAll(new ProcessDebugResources().getTasks());
-    return tasks;
-  }
 
-  @Override
-  public int getTaskID() {
-    return TASK_UPDATE_RESOURCE_CLASSES;
-  }
+    @Override
+    public String getName() {
+        return "Update resource classes";
+    }
 
-  @Override
-  public boolean canOutput() {
-    return true;
-  }
+    @Override
+    public String getCommands() {
+        String command = "";
+        if (viewBinding) {
+            command = new DatabindingGenBaseClassesDebug().getCommands();
+            command += " ";
+        }
+        command += new ProcessDebugResources().getCommands();
+        return command;
+    }
 
-  @Override
-  public GradleTask.Type getType() {
-    return Type.BUILD;
-  }
+    @Override
+    public List<String> getTasks() {
+        List<String> tasks = new ArrayList<>();
+        if (viewBinding) {
+            tasks.addAll(new DatabindingGenBaseClassesDebug().getTasks());
+        }
+        tasks.addAll(new ProcessDebugResources().getTasks());
+        return tasks;
+    }
+
+    @Override
+    public int getTaskID() {
+        return TASK_UPDATE_RESOURCE_CLASSES;
+    }
+
+    @Override
+    public boolean canOutput() {
+        return true;
+    }
+
+    @Override
+    public GradleTask.Type getType() {
+        return Type.BUILD;
+    }
 }

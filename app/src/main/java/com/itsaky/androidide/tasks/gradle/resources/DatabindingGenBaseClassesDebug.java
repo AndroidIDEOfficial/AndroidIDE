@@ -21,43 +21,44 @@
 package com.itsaky.androidide.tasks.gradle.resources;
 
 import com.itsaky.androidide.tasks.BaseGradleTask;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class DatabindingGenBaseClassesDebug extends BaseGradleTask {
 
-  @Override
-  public boolean affectsGeneratedSources() {
-    return true;
-  }
+    @Override
+    public boolean affectsGeneratedSources() {
+        return true;
+    }
 
-  @Override
-  public String getName() {
-    return "Generate databinding classes";
-  }
+    @Override
+    public String getName() {
+        return "Generate databinding classes";
+    }
 
-  @Override
-  public String getCommands() {
-    return "databindingGenBaseClassesDebug";
-  }
+    @Override
+    public String getCommands() {
+        return "databindingGenBaseClassesDebug";
+    }
 
-  @Override
-  public List<String> getTasks() {
-    return Arrays.asList(getCommands());
-  }
+    @Override
+    public List<String> getTasks() {
+        return Arrays.asList(getCommands());
+    }
 
-  @Override
-  public int getTaskID() {
-    return DATABINDING_GEN_BASE_CLASSES_DEBUG;
-  }
+    @Override
+    public int getTaskID() {
+        return DATABINDING_GEN_BASE_CLASSES_DEBUG;
+    }
 
-  @Override
-  public boolean canOutput() {
-    return true;
-  }
+    @Override
+    public boolean canOutput() {
+        return true;
+    }
 
-  @Override
-  public Type getType() {
-    return Type.BUILD;
-  }
+    @Override
+    public Type getType() {
+        return Type.BUILD;
+    }
 }

@@ -18,6 +18,7 @@
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ISelectionProvider;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -33,31 +34,31 @@ import com.sun.source.tree.CompilationUnitTree;
  */
 public class JavaSelectionProvider implements ISelectionProvider {
 
-  private final CompilerProvider compiler;
+    private final CompilerProvider compiler;
 
-  private static final Logger LOG = Logger.instance("JavaSelectionProvider");
+    private static final Logger LOG = Logger.instance("JavaSelectionProvider");
 
-  public JavaSelectionProvider(CompilerProvider compiler) {
-    this.compiler = compiler;
-  }
+    public JavaSelectionProvider(CompilerProvider compiler) {
+        this.compiler = compiler;
+    }
 
-  @Override
-  public Range expandSelection(@NonNull ExpandSelectionParams params) {
-    return compiler
-        .compile(params.getFile())
-        .getWithTask(
-            task -> {
-              final CompilationUnitTree root = task.root(params.getFile());
-              final FindBiggerRange rangeFinder = new FindBiggerRange(task.task, root);
-              final Range range = rangeFinder.scan(root, params.getSelection());
+    @Override
+    public Range expandSelection(@NonNull ExpandSelectionParams params) {
+        return compiler.compile(params.getFile())
+                .getWithTask(
+                        task -> {
+                            final CompilationUnitTree root = task.root(params.getFile());
+                            final FindBiggerRange rangeFinder =
+                                    new FindBiggerRange(task.task, root);
+                            final Range range = rangeFinder.scan(root, params.getSelection());
 
-              if (range != null) {
-                LOG.debug("Expanding selection to range", range);
-                return range;
-              }
+                            if (range != null) {
+                                LOG.debug("Expanding selection to range", range);
+                                return range;
+                            }
 
-              LOG.debug("Unable to expand selection");
-              return params.getSelection();
-            });
-  }
+                            LOG.debug("Unable to expand selection");
+                            return params.getSelection();
+                        });
+    }
 }

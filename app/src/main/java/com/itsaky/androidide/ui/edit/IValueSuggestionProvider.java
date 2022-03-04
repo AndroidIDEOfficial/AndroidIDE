@@ -18,7 +18,9 @@
 package com.itsaky.androidide.ui.edit;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
+
 import java.util.List;
 
 /**
@@ -28,22 +30,22 @@ import java.util.List;
  */
 public interface IValueSuggestionProvider {
 
-  /**
-   * Check if the given format is supported by this provider.
-   *
-   * @param format The formats to check.
-   * @return <code>true</code> if the given formats contain a supported format, <code>false</code>
-   *     otherwise.
-   */
-  boolean checkFormat(int format);
+    /**
+     * Check if the given format is supported by this provider.
+     *
+     * @param format The formats to check.
+     * @return <code>true</code> if the given formats contain a supported format, <code>false</code>
+     *     otherwise.
+     */
+    boolean checkFormat(int format);
 
-  /**
-   * Provide suggestions for the given attribute.
-   *
-   * @param attribute The attribute to provide suggestions for.
-   * @param prefix The prefix (partial identifier) to filter the suggestions.
-   * @return The suggestion items. Must not be <code>null</code>.
-   */
-  @NonNull
-  List<String> suggest(IAttribute attribute, String prefix);
+    /**
+     * Provide suggestions for the given attribute.
+     *
+     * @param attribute The attribute to provide suggestions for.
+     * @param prefix The prefix (partial identifier) to filter the suggestions.
+     * @return The suggestion items. Must not be <code>null</code>.
+     */
+    @NonNull
+    List<String> suggest(IAttribute attribute, String prefix);
 }

@@ -18,6 +18,7 @@
 package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.Range;
 
@@ -28,14 +29,14 @@ import com.itsaky.lsp.models.Range;
  */
 public interface ISelectionProvider {
 
-  /**
-   * Request sent by client for expanding the current selection.
-   *
-   * <p>Example: If a statement in a method body is selected, the provider returns the range of the
-   * method body as the expanded selection.
-   *
-   * @param params The params for expanding the selection.
-   * @return The expanded selection range. Or same range as params if cannot be expanded.
-   */
-  Range expandSelection(@NonNull ExpandSelectionParams params);
+    /**
+     * Request sent by client for expanding the current selection.
+     *
+     * <p>Example: If a statement in a method body is selected, the provider returns the range of
+     * the method body as the expanded selection.
+     *
+     * @param params The params for expanding the selection.
+     * @return The expanded selection range. Or same range as params if cannot be expanded.
+     */
+    Range expandSelection(@NonNull ExpandSelectionParams params);
 }

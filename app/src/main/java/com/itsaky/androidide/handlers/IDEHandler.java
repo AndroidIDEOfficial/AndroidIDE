@@ -28,56 +28,56 @@ import com.itsaky.androidide.utils.Logger;
  */
 public abstract class IDEHandler {
 
-  protected static final Logger LOG = Logger.instance();
+    protected static final Logger LOG = Logger.instance();
 
-  protected Provider provider;
+    protected Provider provider;
 
-  public IDEHandler(Provider provider) {
-    this.provider = provider;
-  }
+    public IDEHandler(Provider provider) {
+        this.provider = provider;
+    }
 
-  protected void throwNPE() {
-    throw new NullPointerException();
-  }
+    protected void throwNPE() {
+        throw new NullPointerException();
+    }
 
-  protected EditorActivity activity() {
-    return provider.provideEditorActivity();
-  }
+    protected EditorActivity activity() {
+        return provider.provideEditorActivity();
+    }
 
-  protected AndroidProject androidProject() {
-    return provider.provideAndroidProject();
-  }
+    protected AndroidProject androidProject() {
+        return provider.provideAndroidProject();
+    }
 
-  protected IDEProject ideProject() {
-    return provider.provideIDEProject();
-  }
+    protected IDEProject ideProject() {
+        return provider.provideIDEProject();
+    }
 
-  public abstract void start();
+    public abstract void start();
 
-  public abstract void stop();
+    public abstract void stop();
 
-  /** An interface to communicate between a handler and its client */
-  public interface Provider {
+    /** An interface to communicate between a handler and its client */
+    public interface Provider {
 
-    /**
-     * Called by handler to get a reference to {@link EditorActivity}
-     *
-     * @throws NullPointerException is this is required
-     */
-    EditorActivity provideEditorActivity();
+        /**
+         * Called by handler to get a reference to {@link EditorActivity}
+         *
+         * @throws NullPointerException is this is required
+         */
+        EditorActivity provideEditorActivity();
 
-    /**
-     * Called by handler to get a reference of the current {@link AndroidProject}
-     *
-     * @throws NullPointerException is this is required
-     */
-    AndroidProject provideAndroidProject();
+        /**
+         * Called by handler to get a reference of the current {@link AndroidProject}
+         *
+         * @throws NullPointerException is this is required
+         */
+        AndroidProject provideAndroidProject();
 
-    /**
-     * Called by handler to get a reference of the current {@link IDEProject}
-     *
-     * @throws NullPointerException is this is required
-     */
-    IDEProject provideIDEProject();
-  }
+        /**
+         * Called by handler to get a reference of the current {@link IDEProject}
+         *
+         * @throws NullPointerException is this is required
+         */
+        IDEProject provideIDEProject();
+    }
 }

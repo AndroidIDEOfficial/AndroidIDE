@@ -28,5 +28,5 @@ import android.text.SpannableStringBuilder;
  * an EditorLanguage instead
  */
 public interface Highlighter {
-  SpannableStringBuilder highlight(String code, String match) throws Exception;
+    SpannableStringBuilder highlight(String code, String match) throws Exception;
 }

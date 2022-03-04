@@ -29,45 +29,45 @@ import java.util.Set;
  */
 public class JavaServerConfiguration {
 
-  private Set<Path> classPaths;
+    private Set<Path> classPaths;
 
-  public JavaServerConfiguration() {
-    this(Collections.emptySet());
-  }
-
-  public JavaServerConfiguration(Set<Path> classPaths) {
-    this.classPaths = classPaths;
-  }
-
-  public Set<Path> getClassPaths() {
-    return classPaths;
-  }
-
-  public JavaServerConfiguration setClassPaths(Set<Path> classPaths) {
-    this.classPaths = classPaths;
-    return this;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+    public JavaServerConfiguration() {
+        this(Collections.emptySet());
     }
 
-    JavaServerConfiguration that = (JavaServerConfiguration) o;
-    return Objects.equals(getClassPaths(), that.getClassPaths());
-  }
+    public JavaServerConfiguration(Set<Path> classPaths) {
+        this.classPaths = classPaths;
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(getClassPaths());
-  }
+    public Set<Path> getClassPaths() {
+        return classPaths;
+    }
 
-  @Override
-  public String toString() {
-    return "JavaServerConfiguration{" + "classPaths=" + classPaths + '}';
-  }
+    public JavaServerConfiguration setClassPaths(Set<Path> classPaths) {
+        this.classPaths = classPaths;
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        JavaServerConfiguration that = (JavaServerConfiguration) o;
+        return Objects.equals(getClassPaths(), that.getClassPaths());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClassPaths());
+    }
+
+    @Override
+    public String toString() {
+        return "JavaServerConfiguration{" + "classPaths=" + classPaths + '}';
+    }
 }

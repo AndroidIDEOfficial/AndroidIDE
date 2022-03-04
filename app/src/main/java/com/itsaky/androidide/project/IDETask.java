@@ -22,23 +22,23 @@ import com.google.gson.annotations.SerializedName;
 /** Represents a Gradle task */
 public class IDETask {
 
-  /** Name of this task */
-  @SerializedName("name")
-  public String name;
+    /** Name of this task */
+    @SerializedName("name")
+    public String name;
 
-  /** Description of this task */
-  @SerializedName("description")
-  public String description;
+    /** Description of this task */
+    @SerializedName("description")
+    public String description;
 
-  /** Name of the group that this task belongs to */
-  @SerializedName("group")
-  public String group;
+    /** Name of the group that this task belongs to */
+    @SerializedName("group")
+    public String group;
 
-  /**
-   * Path of this task
-   *
-   * <p>For example, ':app:assembleDebug', ':app:build'
-   */
-  @SerializedName("path")
-  public String path;
+    /**
+     * Path of this task
+     *
+     * <p>For example, ':app:assembleDebug', ':app:build'
+     */
+    @SerializedName("path")
+    public String path;
 }

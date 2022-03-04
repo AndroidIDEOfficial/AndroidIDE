@@ -18,6 +18,7 @@
 package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 
@@ -29,12 +30,12 @@ import com.itsaky.lsp.models.SignatureHelpParams;
  */
 public interface ISignatureHelpProvider {
 
-  /**
-   * Provide signature help for the given parameters.
-   *
-   * @param params The params for the signature help.
-   * @return The signature help.
-   */
-  @NonNull
-  SignatureHelp provideSignatures(SignatureHelpParams params);
+    /**
+     * Provide signature help for the given parameters.
+     *
+     * @param params The params for the signature help.
+     * @return The signature help.
+     */
+    @NonNull
+    SignatureHelp provideSignatures(SignatureHelpParams params);
 }

@@ -26,58 +26,59 @@ import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class AddImport implements Rewrite {
-  final Path file;
-  final String className;
+    final Path file;
+    final String className;
 
-  public AddImport(Path file, String className) {
-    this.file = file;
-    this.className = className;
-  }
-
-  @Override
-  public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
-    final ParseTask task = compiler.parse(file);
-    Position point = insertPosition(task);
-    String text = "import " + className + ";\n";
-    return Collections.singletonMap(
-        file, new TextEdit[] {new TextEdit(new Range(point, point), text)});
-  }
-
-  private Position insertPosition(ParseTask task) {
-    List<? extends ImportTree> imports = task.root.getImports();
-    for (ImportTree i : imports) {
-      String next = i.getQualifiedIdentifier().toString();
-      if (className.compareTo(next) < 0) {
-        return insertBefore(task, i);
-      }
+    public AddImport(Path file, String className) {
+        this.file = file;
+        this.className = className;
     }
-    if (!imports.isEmpty()) {
-      Tree last = imports.get(imports.size() - 1);
-      return insertAfter(task, last);
-    }
-    if (task.root.getPackage() != null) {
-      return insertAfter(task, task.root.getPackage());
-    }
-    return new Position(0, 0);
-  }
 
-  private Position insertBefore(ParseTask task, Tree i) {
-    SourcePositions pos = Trees.instance(task.task).getSourcePositions();
-    long offset = pos.getStartPosition(task.root, i);
-    int line = (int) task.root.getLineMap().getLineNumber(offset);
-    return new Position(line - 1, 0);
-  }
+    @Override
+    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
+        final ParseTask task = compiler.parse(file);
+        Position point = insertPosition(task);
+        String text = "import " + className + ";\n";
+        return Collections.singletonMap(
+                file, new TextEdit[] {new TextEdit(new Range(point, point), text)});
+    }
 
-  private Position insertAfter(ParseTask task, Tree i) {
-    SourcePositions pos = Trees.instance(task.task).getSourcePositions();
-    long offset = pos.getStartPosition(task.root, i);
-    int line = (int) task.root.getLineMap().getLineNumber(offset);
-    return new Position(line, 0);
-  }
+    private Position insertPosition(ParseTask task) {
+        List<? extends ImportTree> imports = task.root.getImports();
+        for (ImportTree i : imports) {
+            String next = i.getQualifiedIdentifier().toString();
+            if (className.compareTo(next) < 0) {
+                return insertBefore(task, i);
+            }
+        }
+        if (!imports.isEmpty()) {
+            Tree last = imports.get(imports.size() - 1);
+            return insertAfter(task, last);
+        }
+        if (task.root.getPackage() != null) {
+            return insertAfter(task, task.root.getPackage());
+        }
+        return new Position(0, 0);
+    }
+
+    private Position insertBefore(ParseTask task, Tree i) {
+        SourcePositions pos = Trees.instance(task.task).getSourcePositions();
+        long offset = pos.getStartPosition(task.root, i);
+        int line = (int) task.root.getLineMap().getLineNumber(offset);
+        return new Position(line - 1, 0);
+    }
+
+    private Position insertAfter(ParseTask task, Tree i) {
+        SourcePositions pos = Trees.instance(task.task).getSourcePositions();
+        long offset = pos.getStartPosition(task.root, i);
+        int line = (int) task.root.getLineMap().getLineNumber(offset);
+        return new Position(line, 0);
+    }
 }

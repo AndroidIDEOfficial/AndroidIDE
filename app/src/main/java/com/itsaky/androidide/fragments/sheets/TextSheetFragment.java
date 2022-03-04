@@ -22,112 +22,116 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.editor.IDEEditor;
+
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public class TextSheetFragment extends BaseBottomSheetFragment {
 
-  private SpannableStringBuilder outputBuilder;
-  private IDEEditor editor;
-  private boolean textSelectable;
+    private SpannableStringBuilder outputBuilder;
+    private IDEEditor editor;
+    private boolean textSelectable;
 
-  public TextSheetFragment setTextSelectable(boolean textSelectable) {
-    this.textSelectable = textSelectable;
-    return this;
-  }
-
-  @Override
-  protected void bind(@NonNull LinearLayout container) {
-    final IDEEditor e = getEditor();
-    container.setPadding(0, 0, 0, 0);
-    container.setPaddingRelative(0, 0, 0, 0);
-    LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, 0);
-    p.weight = 1.0f;
-    if (e.getParent() != null && e.getParent() instanceof ViewGroup) {
-      ((ViewGroup) e.getParent()).removeView(e);
+    public TextSheetFragment setTextSelectable(boolean textSelectable) {
+        this.textSelectable = textSelectable;
+        return this;
     }
-    container.addView(getEditor(), p);
-  }
 
-  @Override
-  protected String getTitle() {
-    return getString(R.string.build_output);
-  }
-
-  @Override
-  protected void onShow() {
-    super.onShow();
-    editor.setText(getOutputBuilder());
-  }
-
-  private void scrollToBottom() {
-    if (getActivity() != null) getActivity().runOnUiThread(() -> editor.goToEnd());
-  }
-
-  public TextSheetFragment setTitleText(int res) {
-    super.setTitle(res);
-    return this;
-  }
-
-  public TextSheetFragment setTitleText(String res) {
-    super.setTitle(res);
-    return this;
-  }
-
-  public void append(String text) {
-    append(text, -1, true);
-  }
-
-  public void append(String text, int spanColor, boolean appendLine) {
-    if (text != null && text.trim().length() > 0) {
-      appendInternal(appendLine && !text.endsWith("\n") ? text.concat("\n") : text, spanColor);
+    @Override
+    protected void bind(@NonNull LinearLayout container) {
+        final IDEEditor e = getEditor();
+        container.setPadding(0, 0, 0, 0);
+        container.setPaddingRelative(0, 0, 0, 0);
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, 0);
+        p.weight = 1.0f;
+        if (e.getParent() != null && e.getParent() instanceof ViewGroup) {
+            ((ViewGroup) e.getParent()).removeView(e);
+        }
+        container.addView(getEditor(), p);
     }
-  }
 
-  private void appendInternal(String text, int spanColor) {
-    SpannableString str = new SpannableString(text);
-    str.setSpan(
-        new ForegroundColorSpan(spanColor == -1 ? Color.WHITE : spanColor),
-        0,
-        text.length(),
-        SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
-    getOutputBuilder().append(str);
-    if (mDialog != null && mDialog.isShowing()) {
-      setToEditor(str);
+    @Override
+    protected String getTitle() {
+        return getString(R.string.build_output);
     }
-  }
 
-  private void setToEditor(SpannableString line) {
-    if (getActivity() != null)
-      getActivity()
-          .runOnUiThread(
-              () -> {
-                editor.append(line);
-                scrollToBottom();
-              });
-  }
+    @Override
+    protected void onShow() {
+        super.onShow();
+        editor.setText(getOutputBuilder());
+    }
 
-  private IDEEditor getEditor() {
-    return editor == null ? createEditor() : editor;
-  }
+    private void scrollToBottom() {
+        if (getActivity() != null) getActivity().runOnUiThread(() -> editor.goToEnd());
+    }
 
-  private IDEEditor createEditor() {
-    editor = new IDEEditor(getContext());
-    editor.setEditable(false);
-    editor.setDividerWidth(0);
-    editor.setEditorLanguage(new EmptyLanguage());
-    editor.setWordwrap(false);
-    editor.setUndoEnabled(false);
-    editor.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
-    editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
-    editor.setTextSize(12);
-    return editor;
-  }
+    public TextSheetFragment setTitleText(int res) {
+        super.setTitle(res);
+        return this;
+    }
 
-  private SpannableStringBuilder getOutputBuilder() {
-    return outputBuilder == null ? outputBuilder = new SpannableStringBuilder() : outputBuilder;
-  }
+    public TextSheetFragment setTitleText(String res) {
+        super.setTitle(res);
+        return this;
+    }
+
+    public void append(String text) {
+        append(text, -1, true);
+    }
+
+    public void append(String text, int spanColor, boolean appendLine) {
+        if (text != null && text.trim().length() > 0) {
+            appendInternal(
+                    appendLine && !text.endsWith("\n") ? text.concat("\n") : text, spanColor);
+        }
+    }
+
+    private void appendInternal(String text, int spanColor) {
+        SpannableString str = new SpannableString(text);
+        str.setSpan(
+                new ForegroundColorSpan(spanColor == -1 ? Color.WHITE : spanColor),
+                0,
+                text.length(),
+                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+        getOutputBuilder().append(str);
+        if (mDialog != null && mDialog.isShowing()) {
+            setToEditor(str);
+        }
+    }
+
+    private void setToEditor(SpannableString line) {
+        if (getActivity() != null)
+            getActivity()
+                    .runOnUiThread(
+                            () -> {
+                                editor.append(line);
+                                scrollToBottom();
+                            });
+    }
+
+    private IDEEditor getEditor() {
+        return editor == null ? createEditor() : editor;
+    }
+
+    private IDEEditor createEditor() {
+        editor = new IDEEditor(getContext());
+        editor.setEditable(false);
+        editor.setDividerWidth(0);
+        editor.setEditorLanguage(new EmptyLanguage());
+        editor.setWordwrap(false);
+        editor.setUndoEnabled(false);
+        editor.setTypefaceLineNumber(TypefaceUtils.jetbrainsMono());
+        editor.setTypefaceText(TypefaceUtils.jetbrainsMono());
+        editor.setTextSize(12);
+        return editor;
+    }
+
+    private SpannableStringBuilder getOutputBuilder() {
+        return outputBuilder == null ? outputBuilder = new SpannableStringBuilder() : outputBuilder;
+    }
 }

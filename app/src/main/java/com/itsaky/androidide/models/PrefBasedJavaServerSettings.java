@@ -18,6 +18,7 @@
 package com.itsaky.androidide.models;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
@@ -29,27 +30,27 @@ import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
  */
 public class PrefBasedJavaServerSettings extends DefaultJavaServerSettings {
 
-  public static final String KEY_JAVA_PREF_MATCH_LOWER = "idepref_editor_java_matchLower";
+    public static final String KEY_JAVA_PREF_MATCH_LOWER = "idepref_editor_java_matchLower";
 
-  private static PrefBasedJavaServerSettings instance;
+    private static PrefBasedJavaServerSettings instance;
 
-  private final PreferenceManager prefs;
+    private final PreferenceManager prefs;
 
-  public PrefBasedJavaServerSettings() {
-    this.prefs = StudioApp.getInstance().getPrefManager();
-  }
-
-  @NonNull
-  public static PrefBasedJavaServerSettings getInstance() {
-    if (instance == null) {
-      instance = new PrefBasedJavaServerSettings();
+    public PrefBasedJavaServerSettings() {
+        this.prefs = StudioApp.getInstance().getPrefManager();
     }
 
-    return instance;
-  }
+    @NonNull
+    public static PrefBasedJavaServerSettings getInstance() {
+        if (instance == null) {
+            instance = new PrefBasedJavaServerSettings();
+        }
 
-  @Override
-  public boolean shouldMatchAllLowerCase() {
-    return prefs.getBoolean(KEY_JAVA_PREF_MATCH_LOWER, false);
-  }
+        return instance;
+    }
+
+    @Override
+    public boolean shouldMatchAllLowerCase() {
+        return prefs.getBoolean(KEY_JAVA_PREF_MATCH_LOWER, false);
+    }
 }

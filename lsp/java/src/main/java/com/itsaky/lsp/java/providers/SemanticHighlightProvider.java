@@ -17,11 +17,13 @@
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.visitors.SemanticHighlighter;
 import com.itsaky.lsp.models.HighlightToken;
 import com.sun.source.tree.CompilationUnitTree;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -35,33 +37,34 @@ import java.util.List;
  */
 public class SemanticHighlightProvider {
 
-  private static final Comparator<HighlightToken> SORT_BY_START =
-      Comparator.comparing(HighlightToken::getRange);
+    private static final Comparator<HighlightToken> SORT_BY_START =
+            Comparator.comparing(HighlightToken::getRange);
 
-  @NonNull
-  public static List<HighlightToken> highlight(@NonNull CompileTask task, Path file) {
-    final List<HighlightToken> result = new ArrayList<>();
-    CompilationUnitTree root = null;
-    for (CompilationUnitTree tree : task.roots) {
-      final Path path = Paths.get(tree.getSourceFile().toUri());
-      if (path.equals(file)) {
-        root = tree;
-        break;
-      }
+    @NonNull
+    public static List<HighlightToken> highlight(@NonNull CompileTask task, Path file) {
+        final List<HighlightToken> result = new ArrayList<>();
+        CompilationUnitTree root = null;
+        for (CompilationUnitTree tree : task.roots) {
+            final Path path = Paths.get(tree.getSourceFile().toUri());
+            if (path.equals(file)) {
+                root = tree;
+                break;
+            }
+        }
+
+        if (root == null) {
+            LOG.warn(
+                    "Cannot provide semantic highlights. Cannot find compilation unit for the given"
+                        + " file.");
+            return result;
+        }
+
+        final SemanticHighlighter highlighter = new SemanticHighlighter(task);
+        highlighter.scan(root, result);
+        result.sort(SORT_BY_START);
+
+        return result;
     }
 
-    if (root == null) {
-      LOG.warn(
-          "Cannot provide semantic highlights. Cannot find compilation unit for the given file.");
-      return result;
-    }
-
-    final SemanticHighlighter highlighter = new SemanticHighlighter(task);
-    highlighter.scan(root, result);
-    result.sort(SORT_BY_START);
-
-    return result;
-  }
-
-  private static final Logger LOG = Logger.instance("JavaSemanticHighlightProvider");
+    private static final Logger LOG = Logger.instance("JavaSemanticHighlightProvider");
 }

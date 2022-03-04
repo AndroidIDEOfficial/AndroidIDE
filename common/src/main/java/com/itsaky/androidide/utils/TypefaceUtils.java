@@ -18,22 +18,23 @@
 package com.itsaky.androidide.utils;
 
 import android.graphics.Typeface;
+
 import com.itsaky.androidide.app.BaseApplication;
 
 public class TypefaceUtils {
 
-  public static Typeface quicksand() {
-    return Typeface.createFromAsset(
-        BaseApplication.getBaseInstance().getAssets(), "fonts/quicksand.ttf");
-  }
+    public static Typeface quicksand() {
+        return Typeface.createFromAsset(
+                BaseApplication.getBaseInstance().getAssets(), "fonts/quicksand.ttf");
+    }
 
-  public static Typeface jetbrainsMono() {
-    return Typeface.createFromAsset(
-        BaseApplication.getBaseInstance().getAssets(), "fonts/jetbrains-mono.ttf");
-  }
+    public static Typeface jetbrainsMono() {
+        return Typeface.createFromAsset(
+                BaseApplication.getBaseInstance().getAssets(), "fonts/jetbrains-mono.ttf");
+    }
 
-  public static Typeface josefinSans() {
-    return Typeface.createFromAsset(
-        BaseApplication.getBaseInstance().getAssets(), "fonts/josefin-sans.ttf");
-  }
+    public static Typeface josefinSans() {
+        return Typeface.createFromAsset(
+                BaseApplication.getBaseInstance().getAssets(), "fonts/josefin-sans.ttf");
+    }
 }

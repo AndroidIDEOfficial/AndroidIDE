@@ -17,8 +17,11 @@
 package com.itsaky.xml;
 
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.xml.impl.UiNamespace;
+
 import org.jetbrains.annotations.Contract;
 
 /**
@@ -28,29 +31,29 @@ import org.jetbrains.annotations.Contract;
  */
 public interface INamespace extends Parcelable {
 
-  /** Used to represent the namespace declarator (xmlns) (don't know what else to call it). */
-  INamespace DECLARATOR = new UiNamespace("xmlns", "<namespace declarator>");
+    /** Used to represent the namespace declarator (xmlns) (don't know what else to call it). */
+    INamespace DECLARATOR = new UiNamespace("xmlns", "<namespace declarator>");
 
-  /** The android namespace. */
-  INamespace ANDROID = new UiNamespace("android", "http://schemas.android.com/apk/res/android");
+    /** The android namespace. */
+    INamespace ANDROID = new UiNamespace("android", "http://schemas.android.com/apk/res/android");
 
-  @NonNull
-  @Contract(value = "_ -> new", pure = true)
-  static INamespace invalid(String name) {
-    return new UiNamespace(name, "");
-  }
+    @NonNull
+    @Contract(value = "_ -> new", pure = true)
+    static INamespace invalid(String name) {
+        return new UiNamespace(name, "");
+    }
 
-  /**
-   * Get the prefix (name) of this namespace.
-   *
-   * @return The name of the namespace.
-   */
-  String getName();
+    /**
+     * Get the prefix (name) of this namespace.
+     *
+     * @return The name of the namespace.
+     */
+    String getName();
 
-  /**
-   * Get the uri of this namespace.
-   *
-   * @return The uri of this namespace.
-   */
-  String getUri();
+    /**
+     * Get the uri of this namespace.
+     *
+     * @return The uri of this namespace.
+     */
+    String getUri();
 }

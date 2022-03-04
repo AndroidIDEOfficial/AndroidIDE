@@ -77,261 +77,261 @@ import java.util.Objects;
  * @since 2.0
  */
 public class ReaderInputStream extends InputStream {
-  private static final int DEFAULT_BUFFER_SIZE = 1024;
+    private static final int DEFAULT_BUFFER_SIZE = 1024;
 
-  static int checkMinBufferSize(final CharsetEncoder charsetEncoder, final int bufferSize) {
-    final float minRequired = minBufferSize(charsetEncoder);
-    if (bufferSize < minRequired) {
-      throw new IllegalArgumentException(
-          String.format(
-              "Buffer size %,d must be at least %s for a CharsetEncoder %s.",
-              bufferSize, minRequired, charsetEncoder.charset().displayName()));
+    static int checkMinBufferSize(final CharsetEncoder charsetEncoder, final int bufferSize) {
+        final float minRequired = minBufferSize(charsetEncoder);
+        if (bufferSize < minRequired) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Buffer size %,d must be at least %s for a CharsetEncoder %s.",
+                            bufferSize, minRequired, charsetEncoder.charset().displayName()));
+        }
+        return bufferSize;
     }
-    return bufferSize;
-  }
 
-  static float minBufferSize(final CharsetEncoder charsetEncoder) {
-    return charsetEncoder.maxBytesPerChar() * 2;
-  }
-
-  private final Reader reader;
-
-  private final CharsetEncoder charsetEncoder;
-
-  /**
-   * CharBuffer used as input for the decoder. It should be reasonably large as we read data from
-   * the underlying Reader into this buffer.
-   */
-  private final CharBuffer encoderIn;
-  /**
-   * ByteBuffer used as output for the decoder. This buffer can be small as it is only used to
-   * transfer data from the decoder to the buffer provided by the caller.
-   */
-  private final ByteBuffer encoderOut;
-
-  private CoderResult lastCoderResult;
-
-  private boolean endOfInput;
-
-  /**
-   * Constructs a new {@link ReaderInputStream} that uses the default character encoding with a
-   * default input buffer size of {@value #DEFAULT_BUFFER_SIZE} characters.
-   *
-   * @param reader the target {@link Reader}
-   * @deprecated 2.5 use {@link #ReaderInputStream(Reader, Charset)} instead
-   */
-  @Deprecated
-  public ReaderInputStream(final Reader reader) {
-    this(reader, Charset.defaultCharset());
-  }
-
-  /**
-   * Constructs a new {@link ReaderInputStream} with a default input buffer size of {@value
-   * #DEFAULT_BUFFER_SIZE} characters.
-   *
-   * @param reader the target {@link Reader}
-   * @param charset the charset encoding
-   */
-  public ReaderInputStream(final Reader reader, final Charset charset) {
-    this(reader, charset, DEFAULT_BUFFER_SIZE);
-  }
-
-  /**
-   * Constructs a new {@link ReaderInputStream}.
-   *
-   * @param reader the target {@link Reader}.
-   * @param charset the charset encoding.
-   * @param bufferSize the size of the input buffer in number of characters.
-   */
-  public ReaderInputStream(final Reader reader, final Charset charset, final int bufferSize) {
-    // @formatter:off
-    this(
-        reader,
-        toCharset(charset)
-            .newEncoder()
-            .onMalformedInput(CodingErrorAction.REPLACE)
-            .onUnmappableCharacter(CodingErrorAction.REPLACE),
-        bufferSize);
-    // @formatter:on
-  }
-
-  /**
-   * Constructs a new {@link ReaderInputStream}.
-   *
-   * @param reader the target {@link Reader}
-   * @param charsetEncoder the charset encoder
-   * @since 2.1
-   */
-  public ReaderInputStream(final Reader reader, final CharsetEncoder charsetEncoder) {
-    this(reader, charsetEncoder, DEFAULT_BUFFER_SIZE);
-  }
-
-  /**
-   * Constructs a new {@link ReaderInputStream}.
-   *
-   * @param reader the target {@link Reader}
-   * @param charsetEncoder the charset encoder, null defauls to the default Charset encoder.
-   * @param bufferSize the size of the input buffer in number of characters
-   * @since 2.1
-   */
-  public ReaderInputStream(
-      final Reader reader, final CharsetEncoder charsetEncoder, final int bufferSize) {
-    this.reader = reader;
-    this.charsetEncoder = toCharsetEncoder(charsetEncoder);
-    this.encoderIn = CharBuffer.allocate(checkMinBufferSize(this.charsetEncoder, bufferSize));
-    this.encoderIn.flip();
-    this.encoderOut = ByteBuffer.allocate(128);
-    this.encoderOut.flip();
-  }
-
-  /**
-   * Constructs a new {@link ReaderInputStream} with a default input buffer size of {@value
-   * #DEFAULT_BUFFER_SIZE} characters.
-   *
-   * @param reader the target {@link Reader}
-   * @param charsetName the name of the charset encoding
-   */
-  public ReaderInputStream(final Reader reader, final String charsetName) {
-    this(reader, charsetName, DEFAULT_BUFFER_SIZE);
-  }
-
-  /**
-   * Constructs a new {@link ReaderInputStream}.
-   *
-   * @param reader the target {@link Reader}
-   * @param charsetName the name of the charset encoding, null maps to the default Charset.
-   * @param bufferSize the size of the input buffer in number of characters
-   */
-  public ReaderInputStream(final Reader reader, final String charsetName, final int bufferSize) {
-    this(reader, toCharset(charsetName), bufferSize);
-  }
-
-  /**
-   * Close the stream. This method will cause the underlying {@link Reader} to be closed.
-   *
-   * @throws IOException if an I/O error occurs.
-   */
-  @Override
-  public void close() throws IOException {
-    reader.close();
-  }
-
-  /**
-   * Fills the internal char buffer from the reader.
-   *
-   * @throws IOException If an I/O error occurs
-   */
-  private void fillBuffer() throws IOException {
-    if (!endOfInput && (lastCoderResult == null || lastCoderResult.isUnderflow())) {
-      encoderIn.compact();
-      final int position = encoderIn.position();
-      // We don't use Reader#read(CharBuffer) here because it is more efficient
-      // to write directly to the underlying char array (the default implementation
-      // copies data to a temporary char array).
-      final int c = reader.read(encoderIn.array(), position, encoderIn.remaining());
-      if (c == -1) {
-        endOfInput = true;
-      } else {
-        encoderIn.position(position + c);
-      }
-      encoderIn.flip();
+    static float minBufferSize(final CharsetEncoder charsetEncoder) {
+        return charsetEncoder.maxBytesPerChar() * 2;
     }
-    encoderOut.compact();
-    lastCoderResult = charsetEncoder.encode(encoderIn, encoderOut, endOfInput);
-    if (endOfInput) {
-      lastCoderResult = charsetEncoder.flush(encoderOut);
+
+    private final Reader reader;
+
+    private final CharsetEncoder charsetEncoder;
+
+    /**
+     * CharBuffer used as input for the decoder. It should be reasonably large as we read data from
+     * the underlying Reader into this buffer.
+     */
+    private final CharBuffer encoderIn;
+    /**
+     * ByteBuffer used as output for the decoder. This buffer can be small as it is only used to
+     * transfer data from the decoder to the buffer provided by the caller.
+     */
+    private final ByteBuffer encoderOut;
+
+    private CoderResult lastCoderResult;
+
+    private boolean endOfInput;
+
+    /**
+     * Constructs a new {@link ReaderInputStream} that uses the default character encoding with a
+     * default input buffer size of {@value #DEFAULT_BUFFER_SIZE} characters.
+     *
+     * @param reader the target {@link Reader}
+     * @deprecated 2.5 use {@link #ReaderInputStream(Reader, Charset)} instead
+     */
+    @Deprecated
+    public ReaderInputStream(final Reader reader) {
+        this(reader, Charset.defaultCharset());
     }
-    if (lastCoderResult.isError()) {
-      lastCoderResult.throwException();
+
+    /**
+     * Constructs a new {@link ReaderInputStream} with a default input buffer size of {@value
+     * #DEFAULT_BUFFER_SIZE} characters.
+     *
+     * @param reader the target {@link Reader}
+     * @param charset the charset encoding
+     */
+    public ReaderInputStream(final Reader reader, final Charset charset) {
+        this(reader, charset, DEFAULT_BUFFER_SIZE);
     }
-    encoderOut.flip();
-  }
 
-  /**
-   * Gets the CharsetEncoder.
-   *
-   * @return the CharsetEncoder.
-   */
-  CharsetEncoder getCharsetEncoder() {
-    return charsetEncoder;
-  }
-
-  /**
-   * Read a single byte.
-   *
-   * @return either the byte read or {@code -1} if the end of the stream has been reached
-   * @throws IOException if an I/O error occurs.
-   */
-  @Override
-  public int read() throws IOException {
-    for (; ; ) {
-      if (encoderOut.hasRemaining()) {
-        return encoderOut.get() & 0xFF;
-      }
-      fillBuffer();
-      if (endOfInput && !encoderOut.hasRemaining()) {
-        return -1;
-      }
+    /**
+     * Constructs a new {@link ReaderInputStream}.
+     *
+     * @param reader the target {@link Reader}.
+     * @param charset the charset encoding.
+     * @param bufferSize the size of the input buffer in number of characters.
+     */
+    public ReaderInputStream(final Reader reader, final Charset charset, final int bufferSize) {
+        // @formatter:off
+        this(
+                reader,
+                toCharset(charset)
+                        .newEncoder()
+                        .onMalformedInput(CodingErrorAction.REPLACE)
+                        .onUnmappableCharacter(CodingErrorAction.REPLACE),
+                bufferSize);
+        // @formatter:on
     }
-  }
 
-  /**
-   * Read the specified number of bytes into an array.
-   *
-   * @param b the byte array to read into
-   * @return the number of bytes read or {@code -1} if the end of the stream has been reached
-   * @throws IOException if an I/O error occurs.
-   */
-  @Override
-  public int read(final byte[] b) throws IOException {
-    return read(b, 0, b.length);
-  }
-
-  /**
-   * Read the specified number of bytes into an array.
-   *
-   * @param array the byte array to read into
-   * @param off the offset to start reading bytes into
-   * @param len the number of bytes to read
-   * @return the number of bytes read or {@code -1} if the end of the stream has been reached
-   * @throws IOException if an I/O error occurs.
-   */
-  @Override
-  public int read(final byte[] array, int off, int len) throws IOException {
-    Objects.requireNonNull(array, "array");
-    if (len < 0 || off < 0 || (off + len) > array.length) {
-      throw new IndexOutOfBoundsException(
-          "Array size=" + array.length + ", offset=" + off + ", length=" + len);
+    /**
+     * Constructs a new {@link ReaderInputStream}.
+     *
+     * @param reader the target {@link Reader}
+     * @param charsetEncoder the charset encoder
+     * @since 2.1
+     */
+    public ReaderInputStream(final Reader reader, final CharsetEncoder charsetEncoder) {
+        this(reader, charsetEncoder, DEFAULT_BUFFER_SIZE);
     }
-    int read = 0;
-    if (len == 0) {
-      return 0; // Always return 0 if len == 0
+
+    /**
+     * Constructs a new {@link ReaderInputStream}.
+     *
+     * @param reader the target {@link Reader}
+     * @param charsetEncoder the charset encoder, null defauls to the default Charset encoder.
+     * @param bufferSize the size of the input buffer in number of characters
+     * @since 2.1
+     */
+    public ReaderInputStream(
+            final Reader reader, final CharsetEncoder charsetEncoder, final int bufferSize) {
+        this.reader = reader;
+        this.charsetEncoder = toCharsetEncoder(charsetEncoder);
+        this.encoderIn = CharBuffer.allocate(checkMinBufferSize(this.charsetEncoder, bufferSize));
+        this.encoderIn.flip();
+        this.encoderOut = ByteBuffer.allocate(128);
+        this.encoderOut.flip();
     }
-    while (len > 0) {
-      if (encoderOut.hasRemaining()) { // Data from the last read not fully copied
-        final int c = Math.min(encoderOut.remaining(), len);
-        encoderOut.get(array, off, c);
-        off += c;
-        len -= c;
-        read += c;
-      } else if (endOfInput) { // Already reach EOF in the last read
-        break;
-      } else { // Read again
-        fillBuffer();
-      }
+
+    /**
+     * Constructs a new {@link ReaderInputStream} with a default input buffer size of {@value
+     * #DEFAULT_BUFFER_SIZE} characters.
+     *
+     * @param reader the target {@link Reader}
+     * @param charsetName the name of the charset encoding
+     */
+    public ReaderInputStream(final Reader reader, final String charsetName) {
+        this(reader, charsetName, DEFAULT_BUFFER_SIZE);
     }
-    return read == 0 && endOfInput ? -1 : read;
-  }
 
-  static Charset toCharset(final Charset charset) {
-    return charset == null ? Charset.defaultCharset() : charset;
-  }
+    /**
+     * Constructs a new {@link ReaderInputStream}.
+     *
+     * @param reader the target {@link Reader}
+     * @param charsetName the name of the charset encoding, null maps to the default Charset.
+     * @param bufferSize the size of the input buffer in number of characters
+     */
+    public ReaderInputStream(final Reader reader, final String charsetName, final int bufferSize) {
+        this(reader, toCharset(charsetName), bufferSize);
+    }
 
-  static Charset toCharset(final String charsetName) throws UnsupportedCharsetException {
-    return charsetName == null ? Charset.defaultCharset() : Charset.forName(charsetName);
-  }
+    /**
+     * Close the stream. This method will cause the underlying {@link Reader} to be closed.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
+    public void close() throws IOException {
+        reader.close();
+    }
 
-  static CharsetEncoder toCharsetEncoder(CharsetEncoder charsetEncoder) {
-    return charsetEncoder != null ? charsetEncoder : Charset.defaultCharset().newEncoder();
-  }
+    /**
+     * Fills the internal char buffer from the reader.
+     *
+     * @throws IOException If an I/O error occurs
+     */
+    private void fillBuffer() throws IOException {
+        if (!endOfInput && (lastCoderResult == null || lastCoderResult.isUnderflow())) {
+            encoderIn.compact();
+            final int position = encoderIn.position();
+            // We don't use Reader#read(CharBuffer) here because it is more efficient
+            // to write directly to the underlying char array (the default implementation
+            // copies data to a temporary char array).
+            final int c = reader.read(encoderIn.array(), position, encoderIn.remaining());
+            if (c == -1) {
+                endOfInput = true;
+            } else {
+                encoderIn.position(position + c);
+            }
+            encoderIn.flip();
+        }
+        encoderOut.compact();
+        lastCoderResult = charsetEncoder.encode(encoderIn, encoderOut, endOfInput);
+        if (endOfInput) {
+            lastCoderResult = charsetEncoder.flush(encoderOut);
+        }
+        if (lastCoderResult.isError()) {
+            lastCoderResult.throwException();
+        }
+        encoderOut.flip();
+    }
+
+    /**
+     * Gets the CharsetEncoder.
+     *
+     * @return the CharsetEncoder.
+     */
+    CharsetEncoder getCharsetEncoder() {
+        return charsetEncoder;
+    }
+
+    /**
+     * Read a single byte.
+     *
+     * @return either the byte read or {@code -1} if the end of the stream has been reached
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
+    public int read() throws IOException {
+        for (; ; ) {
+            if (encoderOut.hasRemaining()) {
+                return encoderOut.get() & 0xFF;
+            }
+            fillBuffer();
+            if (endOfInput && !encoderOut.hasRemaining()) {
+                return -1;
+            }
+        }
+    }
+
+    /**
+     * Read the specified number of bytes into an array.
+     *
+     * @param b the byte array to read into
+     * @return the number of bytes read or {@code -1} if the end of the stream has been reached
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
+    public int read(final byte[] b) throws IOException {
+        return read(b, 0, b.length);
+    }
+
+    /**
+     * Read the specified number of bytes into an array.
+     *
+     * @param array the byte array to read into
+     * @param off the offset to start reading bytes into
+     * @param len the number of bytes to read
+     * @return the number of bytes read or {@code -1} if the end of the stream has been reached
+     * @throws IOException if an I/O error occurs.
+     */
+    @Override
+    public int read(final byte[] array, int off, int len) throws IOException {
+        Objects.requireNonNull(array, "array");
+        if (len < 0 || off < 0 || (off + len) > array.length) {
+            throw new IndexOutOfBoundsException(
+                    "Array size=" + array.length + ", offset=" + off + ", length=" + len);
+        }
+        int read = 0;
+        if (len == 0) {
+            return 0; // Always return 0 if len == 0
+        }
+        while (len > 0) {
+            if (encoderOut.hasRemaining()) { // Data from the last read not fully copied
+                final int c = Math.min(encoderOut.remaining(), len);
+                encoderOut.get(array, off, c);
+                off += c;
+                len -= c;
+                read += c;
+            } else if (endOfInput) { // Already reach EOF in the last read
+                break;
+            } else { // Read again
+                fillBuffer();
+            }
+        }
+        return read == 0 && endOfInput ? -1 : read;
+    }
+
+    static Charset toCharset(final Charset charset) {
+        return charset == null ? Charset.defaultCharset() : charset;
+    }
+
+    static Charset toCharset(final String charsetName) throws UnsupportedCharsetException {
+        return charsetName == null ? Charset.defaultCharset() : Charset.forName(charsetName);
+    }
+
+    static CharsetEncoder toCharsetEncoder(CharsetEncoder charsetEncoder) {
+        return charsetEncoder != null ? charsetEncoder : Charset.defaultCharset().newEncoder();
+    }
 }

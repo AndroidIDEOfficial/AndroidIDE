@@ -19,7 +19,9 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.RelativeLayout;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
@@ -31,45 +33,45 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  */
 public class RelativeLayoutAttrAdapter extends ViewGroupAttrAdapter {
 
-  public RelativeLayoutAttrAdapter(
-      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-    super(resourceFinder, displayMetrics);
-  }
-
-  @Override
-  public boolean isApplicableTo(View view) {
-    return view instanceof RelativeLayout;
-  }
-
-  @Override
-  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-
-    final RelativeLayout relative = (RelativeLayout) view;
-    final String name = attribute.getAttributeName();
-    final String value = attribute.getValue();
-
-    if (!canHandleNamespace(attribute)) {
-      return false;
+    public RelativeLayoutAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
 
-    boolean handled = true;
-
-    switch (name) {
-      case "gravity":
-        relative.setGravity(parseGravity(value));
-        break;
-      case "ignoreGravity":
-        relative.setIgnoreGravity(parseId(value));
-        break;
-      default:
-        handled = false;
-        break;
+    @Override
+    public boolean isApplicableTo(View view) {
+        return view instanceof RelativeLayout;
     }
 
-    if (!handled) {
-      handled = super.apply(attribute, view);
-    }
+    @Override
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
 
-    return handled;
-  }
+        final RelativeLayout relative = (RelativeLayout) view;
+        final String name = attribute.getAttributeName();
+        final String value = attribute.getValue();
+
+        if (!canHandleNamespace(attribute)) {
+            return false;
+        }
+
+        boolean handled = true;
+
+        switch (name) {
+            case "gravity":
+                relative.setGravity(parseGravity(value));
+                break;
+            case "ignoreGravity":
+                relative.setIgnoreGravity(parseId(value));
+                break;
+            default:
+                handled = false;
+                break;
+        }
+
+        if (!handled) {
+            handled = super.apply(attribute, view);
+        }
+
+        return handled;
+    }
 }

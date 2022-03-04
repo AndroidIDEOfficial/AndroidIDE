@@ -18,8 +18,10 @@
 package com.itsaky.androidide.adapters;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.R;
 import com.itsaky.attrinfo.models.Attr;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -32,46 +34,48 @@ import java.util.function.Consumer;
  */
 public class AttrListAdapter extends IconTextAdapter<Attr> {
 
-  private final Consumer<Attr> clickConsumer;
-  private final List<Attr> attrs;
+    private final Consumer<Attr> clickConsumer;
+    private final List<Attr> attrs;
 
-  public AttrListAdapter(Consumer<Attr> clickConsumer, List<Attr> attrs) {
-    this.clickConsumer = clickConsumer;
-    if (attrs == null) {
-      attrs = new ArrayList<>();
+    public AttrListAdapter(Consumer<Attr> clickConsumer, List<Attr> attrs) {
+        this.clickConsumer = clickConsumer;
+        if (attrs == null) {
+            attrs = new ArrayList<>();
+        }
+
+        this.attrs = attrs;
     }
 
-    this.attrs = attrs;
-  }
-
-  @NonNull
-  @Override
-  public Attr getItemAt(int index) {
-    return attrs.get(index);
-  }
-
-  @Override
-  public int getIconResource(int index) {
-    return R.drawable.ic_xml_attribute;
-  }
-
-  @NonNull
-  @Override
-  public String getItemText(int index) {
-    return getItemAt(index).name;
-  }
-
-  @Override
-  public int getItemCount() {
-    return attrs.size();
-  }
-
-  @Override
-  public void onBindViewHolder(@NonNull VH holder, int position) {
-    super.onBindViewHolder(holder, position);
-
-    if (clickConsumer != null) {
-      holder.binding.getRoot().setOnClickListener(v -> clickConsumer.accept(getItemAt(position)));
+    @NonNull
+    @Override
+    public Attr getItemAt(int index) {
+        return attrs.get(index);
     }
-  }
+
+    @Override
+    public int getIconResource(int index) {
+        return R.drawable.ic_xml_attribute;
+    }
+
+    @NonNull
+    @Override
+    public String getItemText(int index) {
+        return getItemAt(index).name;
+    }
+
+    @Override
+    public int getItemCount() {
+        return attrs.size();
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull VH holder, int position) {
+        super.onBindViewHolder(holder, position);
+
+        if (clickConsumer != null) {
+            holder.binding
+                    .getRoot()
+                    .setOnClickListener(v -> clickConsumer.accept(getItemAt(position)));
+        }
+    }
 }

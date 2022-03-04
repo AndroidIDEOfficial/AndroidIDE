@@ -19,7 +19,9 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
@@ -31,66 +33,66 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  */
 public class LinearLayoutAttrAdapter extends ViewGroupAttrAdapter {
 
-  public LinearLayoutAttrAdapter(
-      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-    super(resourceFinder, displayMetrics);
-  }
-
-  @Override
-  public boolean isApplicableTo(View view) {
-    return view instanceof LinearLayout;
-  }
-
-  @Override
-  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-    final LinearLayout linear = (LinearLayout) view;
-    final String name = attribute.getAttributeName();
-    final String value = attribute.getValue();
-
-    if (!canHandleNamespace(attribute)) {
-      return false;
+    public LinearLayoutAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
 
-    boolean handled = true;
-
-    switch (name) {
-      case "baselineAligned":
-        linear.setBaselineAligned(parseBoolean(value));
-        break;
-      case "baselineAlignedChildIndex":
-        linear.setBaselineAlignedChildIndex(parseInteger(value, linear.getChildCount()));
-        break;
-      case "gravity":
-        linear.setGravity(parseGravity(value));
-        break;
-      case "measureWithLargestChild":
-        linear.setMeasureWithLargestChildEnabled(parseBoolean(value));
-        break;
-      case "orientation":
-        linear.setOrientation(parseOrientation(value));
-        break;
-      case "weightSum":
-        linear.setWeightSum(parseFloat(value));
-        break;
-      default:
-        handled = false;
-        break;
+    @Override
+    public boolean isApplicableTo(View view) {
+        return view instanceof LinearLayout;
     }
 
-    if (!handled) {
-      handled = super.apply(attribute, view);
+    @Override
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+        final LinearLayout linear = (LinearLayout) view;
+        final String name = attribute.getAttributeName();
+        final String value = attribute.getValue();
+
+        if (!canHandleNamespace(attribute)) {
+            return false;
+        }
+
+        boolean handled = true;
+
+        switch (name) {
+            case "baselineAligned":
+                linear.setBaselineAligned(parseBoolean(value));
+                break;
+            case "baselineAlignedChildIndex":
+                linear.setBaselineAlignedChildIndex(parseInteger(value, linear.getChildCount()));
+                break;
+            case "gravity":
+                linear.setGravity(parseGravity(value));
+                break;
+            case "measureWithLargestChild":
+                linear.setMeasureWithLargestChildEnabled(parseBoolean(value));
+                break;
+            case "orientation":
+                linear.setOrientation(parseOrientation(value));
+                break;
+            case "weightSum":
+                linear.setWeightSum(parseFloat(value));
+                break;
+            default:
+                handled = false;
+                break;
+        }
+
+        if (!handled) {
+            handled = super.apply(attribute, view);
+        }
+
+        return handled;
     }
 
-    return handled;
-  }
-
-  protected int parseOrientation(@NonNull String value) {
-    switch (value) {
-      case "vertical":
-        return LinearLayout.VERTICAL;
-      case "horizontal":
-      default:
-        return LinearLayout.HORIZONTAL;
+    protected int parseOrientation(@NonNull String value) {
+        switch (value) {
+            case "vertical":
+                return LinearLayout.VERTICAL;
+            case "horizontal":
+            default:
+                return LinearLayout.HORIZONTAL;
+        }
     }
-  }
 }

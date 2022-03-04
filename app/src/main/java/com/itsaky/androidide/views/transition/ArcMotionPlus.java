@@ -41,92 +41,93 @@ package com.itsaky.androidide.views.transition;
 import android.content.Context;
 import android.graphics.Path;
 import android.util.AttributeSet;
+
 import androidx.transition.PathMotion;
 
 public class ArcMotionPlus extends PathMotion {
 
-  private static final float DEFAULT_ARC_ANGLE = 90f;
-  private static final boolean DEFAULT_REFLECT = false;
+    private static final float DEFAULT_ARC_ANGLE = 90f;
+    private static final boolean DEFAULT_REFLECT = false;
 
-  private boolean isReflectedArc = DEFAULT_REFLECT;
-  private float arcAngle = DEFAULT_ARC_ANGLE;
+    private boolean isReflectedArc = DEFAULT_REFLECT;
+    private float arcAngle = DEFAULT_ARC_ANGLE;
 
-  public ArcMotionPlus() {}
+    public ArcMotionPlus() {}
 
-  public ArcMotionPlus(Context context, AttributeSet attrs) {
-    super(context, attrs);
-  }
-
-  /**
-   * Returns if we are reflecting the arc
-   *
-   * <p>The default value is false.
-   *
-   * @return Is the arc reflected
-   */
-  public boolean isReflectedArc() {
-    return isReflectedArc;
-  }
-
-  /**
-   * Sets whether we should reflect the arc about the line drawn between the start and end points
-   *
-   * <p>The default value is false.
-   *
-   * @param isReflectedArc Is the arc reflected about the line between start and end points
-   */
-  public void setReflectedArc(boolean isReflectedArc) {
-    this.isReflectedArc = isReflectedArc;
-  }
-
-  /**
-   * Returns the arc angle that describes the curve. The larger the angle the more pronounce the
-   * curve will be. Min value is 1, Max value si 179
-   *
-   * <p>The default value is 90.
-   *
-   * @return The angle of the arc on a circle describing the Path between two points.
-   */
-  public float getArcAngle() {
-    return arcAngle;
-  }
-
-  /**
-   * Sets the arc angle that describes the curve. The larger the angle the more pronounce the curve
-   * will be. Min value is 1, Max value si 179
-   *
-   * <p>The default value is 90.
-   *
-   * @param angle The angle of the arc on a circle describing the Path between two points.
-   */
-  public ArcMotionPlus setArcAngle(float angle) {
-    arcAngle = angle;
-    return this;
-  }
-
-  @Override
-  public Path getPath(float startX, float startY, float endX, float endY) {
-    float controlP1X, controlP1Y, controlP2X, controlP2Y;
-
-    Path path = new Path();
-    path.moveTo(startX, startY);
-
-    CubicBezierArc cubicBezierArc = new CubicBezierArc(arcAngle, startX, startY, endX, endY);
-
-    if (isReflectedArc) {
-      controlP1X = cubicBezierArc.getReflectedControlPoint1().x;
-      controlP1Y = cubicBezierArc.getReflectedControlPoint1().y;
-      controlP2X = cubicBezierArc.getReflectedControlPoint2().x;
-      controlP2Y = cubicBezierArc.getReflectedControlPoint2().y;
-
-    } else {
-      controlP1X = cubicBezierArc.getControlPoint1().x;
-      controlP1Y = cubicBezierArc.getControlPoint1().y;
-      controlP2X = cubicBezierArc.getControlPoint2().x;
-      controlP2Y = cubicBezierArc.getControlPoint2().y;
+    public ArcMotionPlus(Context context, AttributeSet attrs) {
+        super(context, attrs);
     }
 
-    path.cubicTo(controlP1X, controlP1Y, controlP2X, controlP2Y, endX, endY);
-    return path;
-  }
+    /**
+     * Returns if we are reflecting the arc
+     *
+     * <p>The default value is false.
+     *
+     * @return Is the arc reflected
+     */
+    public boolean isReflectedArc() {
+        return isReflectedArc;
+    }
+
+    /**
+     * Sets whether we should reflect the arc about the line drawn between the start and end points
+     *
+     * <p>The default value is false.
+     *
+     * @param isReflectedArc Is the arc reflected about the line between start and end points
+     */
+    public void setReflectedArc(boolean isReflectedArc) {
+        this.isReflectedArc = isReflectedArc;
+    }
+
+    /**
+     * Returns the arc angle that describes the curve. The larger the angle the more pronounce the
+     * curve will be. Min value is 1, Max value si 179
+     *
+     * <p>The default value is 90.
+     *
+     * @return The angle of the arc on a circle describing the Path between two points.
+     */
+    public float getArcAngle() {
+        return arcAngle;
+    }
+
+    /**
+     * Sets the arc angle that describes the curve. The larger the angle the more pronounce the
+     * curve will be. Min value is 1, Max value si 179
+     *
+     * <p>The default value is 90.
+     *
+     * @param angle The angle of the arc on a circle describing the Path between two points.
+     */
+    public ArcMotionPlus setArcAngle(float angle) {
+        arcAngle = angle;
+        return this;
+    }
+
+    @Override
+    public Path getPath(float startX, float startY, float endX, float endY) {
+        float controlP1X, controlP1Y, controlP2X, controlP2Y;
+
+        Path path = new Path();
+        path.moveTo(startX, startY);
+
+        CubicBezierArc cubicBezierArc = new CubicBezierArc(arcAngle, startX, startY, endX, endY);
+
+        if (isReflectedArc) {
+            controlP1X = cubicBezierArc.getReflectedControlPoint1().x;
+            controlP1Y = cubicBezierArc.getReflectedControlPoint1().y;
+            controlP2X = cubicBezierArc.getReflectedControlPoint2().x;
+            controlP2Y = cubicBezierArc.getReflectedControlPoint2().y;
+
+        } else {
+            controlP1X = cubicBezierArc.getControlPoint1().x;
+            controlP1Y = cubicBezierArc.getControlPoint1().y;
+            controlP2X = cubicBezierArc.getControlPoint2().x;
+            controlP2Y = cubicBezierArc.getControlPoint2().y;
+        }
+
+        path.cubicTo(controlP1X, controlP1Y, controlP2X, controlP2Y, endX, endY);
+        return path;
+    }
 }

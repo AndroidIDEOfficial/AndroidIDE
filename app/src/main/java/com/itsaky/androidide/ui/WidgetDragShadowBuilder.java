@@ -22,21 +22,21 @@ import android.view.View;
 
 public class WidgetDragShadowBuilder extends View.DragShadowBuilder {
 
-  private final double TOUCH_Y_OFFSET = 0.3;
+    private final double TOUCH_Y_OFFSET = 0.3;
 
-  public WidgetDragShadowBuilder(View view) {
-    super(view);
-  }
-
-  @Override
-  public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
-    if (getView() != null) {
-      final var width = getView().getWidth();
-      final var height = getView().getHeight();
-      outShadowSize.set(width, height);
-      outShadowTouchPoint.set(width / 2, height + (int) (height * TOUCH_Y_OFFSET));
-    } else {
-      super.onProvideShadowMetrics(outShadowSize, outShadowTouchPoint);
+    public WidgetDragShadowBuilder(View view) {
+        super(view);
     }
-  }
+
+    @Override
+    public void onProvideShadowMetrics(Point outShadowSize, Point outShadowTouchPoint) {
+        if (getView() != null) {
+            final var width = getView().getWidth();
+            final var height = getView().getHeight();
+            outShadowSize.set(width, height);
+            outShadowTouchPoint.set(width / 2, height + (int) (height * TOUCH_Y_OFFSET));
+        } else {
+            super.onProvideShadowMetrics(outShadowSize, outShadowTouchPoint);
+        }
+    }
 }

@@ -18,11 +18,13 @@
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.models.DiagnosticItem;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,28 +36,28 @@ import java.util.List;
  */
 public class JavaDiagnosticProvider implements IDiagnosticProvider {
 
-  private final CompilerProvider compiler;
+    private final CompilerProvider compiler;
 
-  public JavaDiagnosticProvider(CompilerProvider compiler) {
-    this.compiler = compiler;
-  }
+    public JavaDiagnosticProvider(CompilerProvider compiler) {
+        this.compiler = compiler;
+    }
 
-  @NonNull
-  @Override
-  public List<DiagnosticItem> analyze(@NonNull Path file) {
-    final SynchronizedTask synchronizedTask = compiler.compile(file);
-    return synchronizedTask.getWithTask(
-        task -> {
-          if (!isTaskValid(task)) {
-            // Do not use Collections.emptyList ()
-            return new ArrayList<>();
-          }
+    @NonNull
+    @Override
+    public List<DiagnosticItem> analyze(@NonNull Path file) {
+        final SynchronizedTask synchronizedTask = compiler.compile(file);
+        return synchronizedTask.getWithTask(
+                task -> {
+                    if (!isTaskValid(task)) {
+                        // Do not use Collections.emptyList ()
+                        return new ArrayList<>();
+                    }
 
-          return DiagnosticsProvider.findDiagnostics(task, file);
-        });
-  }
+                    return DiagnosticsProvider.findDiagnostics(task, file);
+                });
+    }
 
-  private static boolean isTaskValid(CompileTask task) {
-    return task != null && task.task != null && task.roots != null && task.roots.size() > 0;
-  }
+    private static boolean isTaskValid(CompileTask task) {
+        return task != null && task.task != null && task.roots != null && task.roots.size() > 0;
+    }
 }

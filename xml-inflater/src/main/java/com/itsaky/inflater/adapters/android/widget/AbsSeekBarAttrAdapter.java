@@ -20,7 +20,9 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AbsSeekBar;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
@@ -31,51 +33,51 @@ import com.itsaky.inflater.IResourceTable;
  */
 public abstract class AbsSeekBarAttrAdapter extends ProgressBarAttrAdapter {
 
-  public AbsSeekBarAttrAdapter(
-      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-    super(resourceFinder, displayMetrics);
-  }
-
-  @Override
-  public boolean isApplicableTo(View view) {
-    return view instanceof AbsSeekBar;
-  }
-
-  @Override
-  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-    final var seek = (AbsSeekBar) view;
-    final var namespace = attribute.getNamespace();
-    final var name = attribute.getAttributeName();
-    final var value = attribute.getValue();
-
-    if (!canHandleNamespace(namespace)) {
-      return false;
+    public AbsSeekBarAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
 
-    boolean handled = true;
-
-    switch (name) {
-      case "thumbTint":
-        seek.setThumbTintList(parseColorStateList(value, seek.getContext()));
-        break;
-      case "thumbTintMode":
-        seek.setThumbTintMode(parsePorterDuffMode(value));
-        break;
-      case "tickMarkTint":
-        seek.setTickMarkTintList(parseColorStateList(value, seek.getContext()));
-        break;
-      case "tickMarkTintMode":
-        seek.setTickMarkTintMode(parsePorterDuffMode(value));
-        break;
-      default:
-        handled = false;
-        break;
+    @Override
+    public boolean isApplicableTo(View view) {
+        return view instanceof AbsSeekBar;
     }
 
-    if (!handled) {
-      handled = super.apply(attribute, view);
-    }
+    @Override
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+        final var seek = (AbsSeekBar) view;
+        final var namespace = attribute.getNamespace();
+        final var name = attribute.getAttributeName();
+        final var value = attribute.getValue();
 
-    return handled;
-  }
+        if (!canHandleNamespace(namespace)) {
+            return false;
+        }
+
+        boolean handled = true;
+
+        switch (name) {
+            case "thumbTint":
+                seek.setThumbTintList(parseColorStateList(value, seek.getContext()));
+                break;
+            case "thumbTintMode":
+                seek.setThumbTintMode(parsePorterDuffMode(value));
+                break;
+            case "tickMarkTint":
+                seek.setTickMarkTintList(parseColorStateList(value, seek.getContext()));
+                break;
+            case "tickMarkTintMode":
+                seek.setTickMarkTintMode(parsePorterDuffMode(value));
+                break;
+            default:
+                handled = false;
+                break;
+        }
+
+        if (!handled) {
+            handled = super.apply(attribute, view);
+        }
+
+        return handled;
+    }
 }

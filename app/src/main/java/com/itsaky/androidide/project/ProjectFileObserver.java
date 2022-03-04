@@ -26,13 +26,13 @@ import android.os.FileObserver;
  * @author Akash Yadav
  */
 public abstract class ProjectFileObserver extends FileObserver {
-  // Cannot use constructors that accept java.io.File
-  // They were added in API 29
-  public ProjectFileObserver(String path) {
-    this(path, ALL_EVENTS);
-  }
+    // Cannot use constructors that accept java.io.File
+    // They were added in API 29
+    public ProjectFileObserver(String path) {
+        this(path, ALL_EVENTS);
+    }
 
-  public ProjectFileObserver(String path, int mask) {
-    super(path, mask);
-  }
+    public ProjectFileObserver(String path, int mask) {
+        super(path, mask);
+    }
 }

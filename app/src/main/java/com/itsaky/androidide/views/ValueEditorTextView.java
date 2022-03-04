@@ -22,11 +22,14 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.ui.edit.IValueSuggestionProvider;
 import com.itsaky.androidide.utils.TextWatcherAdapter;
 import com.itsaky.inflater.IAttribute;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
@@ -41,39 +44,41 @@ import java.util.Set;
 @SuppressLint("ViewConstructor")
 public class ValueEditorTextView extends MaterialAutoCompleteTextView {
 
-  private final IAttribute attribute;
-  private final int format;
-  private final Set<IValueSuggestionProvider> mSuggestionProviders = new HashSet<>();
+    private final IAttribute attribute;
+    private final int format;
+    private final Set<IValueSuggestionProvider> mSuggestionProviders = new HashSet<>();
 
-  private final TextWatcher watcher =
-      new TextWatcherAdapter() {
+    private final TextWatcher watcher =
+            new TextWatcherAdapter() {
 
-        @Override
-        public void afterTextChanged(@NonNull Editable s) {
-          final var prefix = s.toString();
-          final var items = new ArrayList<String>();
+                @Override
+                public void afterTextChanged(@NonNull Editable s) {
+                    final var prefix = s.toString();
+                    final var items = new ArrayList<String>();
 
-          for (IValueSuggestionProvider provider : mSuggestionProviders) {
-            if (provider.checkFormat(format)) {
-              items.addAll(provider.suggest(attribute, prefix));
-            }
-          }
+                    for (IValueSuggestionProvider provider : mSuggestionProviders) {
+                        if (provider.checkFormat(format)) {
+                            items.addAll(provider.suggest(attribute, prefix));
+                        }
+                    }
 
-          setThreshold(1);
-          setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, items));
-        }
-      };
+                    setThreshold(1);
+                    setAdapter(
+                            new ArrayAdapter<>(
+                                    getContext(), android.R.layout.simple_list_item_1, items));
+                }
+            };
 
-  public ValueEditorTextView(@NonNull Context context, IAttribute attribute, int format) {
-    super(context);
-    this.attribute = attribute;
-    this.format = format;
+    public ValueEditorTextView(@NonNull Context context, IAttribute attribute, int format) {
+        super(context);
+        this.attribute = attribute;
+        this.format = format;
 
-    addTextChangedListener(this.watcher);
-  }
+        addTextChangedListener(this.watcher);
+    }
 
-  public void registerSuggestionProvider(IValueSuggestionProvider provider) {
-    Objects.requireNonNull(provider);
-    mSuggestionProviders.add(provider);
-  }
+    public void registerSuggestionProvider(IValueSuggestionProvider provider) {
+        Objects.requireNonNull(provider);
+        mSuggestionProviders.add(provider);
+    }
 }

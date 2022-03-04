@@ -18,82 +18,83 @@
 package com.itsaky.inflater;
 
 import androidx.annotation.NonNull;
+
 import java.io.File;
 
 /** Finds values in resources of a project */
 public interface IResourceTable {
 
-  /**
-   * Find the path of the drawable with the provided name
-   *
-   * <p>This method will be called if the value of attribute starts with '@drawable/'
-   *
-   * @param name The name of the drawable
-   * @return The drawable resource.
-   */
-  File findDrawable(@NonNull String name);
+    /**
+     * Find the path of the drawable with the provided name
+     *
+     * <p>This method will be called if the value of attribute starts with '@drawable/'
+     *
+     * @param name The name of the drawable
+     * @return The drawable resource.
+     */
+    File findDrawable(@NonNull String name);
 
-  /**
-   * Find the layout file with the specified name.
-   *
-   * @param name The name of the layout file
-   * @return The found layout resource file
-   */
-  File findLayout(@NonNull String name);
+    /**
+     * Find the layout file with the specified name.
+     *
+     * @param name The name of the layout file
+     * @return The found layout resource file
+     */
+    File findLayout(@NonNull String name);
 
-  /**
-   * Find a string resource. Must be a valid string or {@code null}
-   *
-   * @param name The name of the resource
-   * @return Value of the resource
-   */
-  String findString(@NonNull String name);
+    /**
+     * Find a string resource. Must be a valid string or {@code null}
+     *
+     * @param name The name of the resource
+     * @return Value of the resource
+     */
+    String findString(@NonNull String name);
 
-  /**
-   * Find a color resource. The returned value must be a valid color value or {@code -1}
-   *
-   * @param name The name of the resource
-   * @return Value of the resource
-   */
-  String findColor(@NonNull String name);
+    /**
+     * Find a color resource. The returned value must be a valid color value or {@code -1}
+     *
+     * @param name The name of the resource
+     * @return Value of the resource
+     */
+    String findColor(@NonNull String name);
 
-  /**
-   * Find an array resource. Must be a valid array or {@code null}
-   *
-   * @param name The name of the resource
-   * @return Value of the resource
-   */
-  String[] findArray(@NonNull String name);
+    /**
+     * Find an array resource. Must be a valid array or {@code null}
+     *
+     * @param name The name of the resource
+     * @return Value of the resource
+     */
+    String[] findArray(@NonNull String name);
 
-  /**
-   * Find the dimension value with the given name.
-   *
-   * @param name The name of the dimension resource
-   * @return The String representation of the dimension. It could one of the following format : 1dp,
-   *     12sp, 123px, etc.
-   */
-  String findDimension(@NonNull String name);
+    /**
+     * Find the dimension value with the given name.
+     *
+     * @param name The name of the dimension resource
+     * @return The String representation of the dimension. It could one of the following format :
+     *     1dp, 12sp, 123px, etc.
+     */
+    String findDimension(@NonNull String name);
 
-  /**
-   * Find the boolean value with the given name.
-   *
-   * @param name The name of the boolean resource.
-   * @return The string value of the boolean resource.
-   */
-  String findBoolean(@NonNull String name);
+    /**
+     * Find the boolean value with the given name.
+     *
+     * @param name The name of the boolean resource.
+     * @return The string value of the boolean resource.
+     */
+    String findBoolean(@NonNull String name);
 
-  /**
-   * Find the integer value with the given name.
-   *
-   * @param name The name of the integer resource.
-   * @return The string value of the integer resource.
-   */
-  String findInteger(@NonNull String name);
+    /**
+     * Find the integer value with the given name.
+     *
+     * @param name The name of the integer resource.
+     * @return The string value of the integer resource.
+     */
+    String findInteger(@NonNull String name);
 
-  /**
-   * Set the file which is currently being inflated.
-   *
-   * @param file The file.
-   */
-  void setInflatingFile(@NonNull File file);
+    /**
+     * Set the file which is currently being inflated.
+     *
+     * @param file The file.
+     */
+    void setInflatingFile(@NonNull File file);
 }

@@ -18,6 +18,7 @@
 package com.itsaky.lsp.xml;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.api.ICodeActionProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDefinitionProvider;
@@ -42,6 +43,7 @@ import com.itsaky.lsp.util.NoSignatureHelpProvider;
 import com.itsaky.lsp.xml.models.DefaultXMLServerSettings;
 import com.itsaky.lsp.xml.providers.CompletionProvider;
 import com.itsaky.sdk.SDKInfo;
+
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -51,125 +53,125 @@ import org.jetbrains.annotations.Nullable;
  */
 public class XMLLanguageServer implements ILanguageServer {
 
-  private SDKInfo sdkInfo;
+    private SDKInfo sdkInfo;
 
-  private ILanguageClient client;
-  private IServerSettings settings;
-  private boolean initialized = false;
-  private boolean canProvideCompletions = false;
+    private ILanguageClient client;
+    private IServerSettings settings;
+    private boolean initialized = false;
+    private boolean canProvideCompletions = false;
 
-  private final IDocumentHandler documentHandler = new NoDocumentHandler();
-  private ServerCapabilities capabilities;
+    private final IDocumentHandler documentHandler = new NoDocumentHandler();
+    private ServerCapabilities capabilities;
 
-  public XMLLanguageServer() {}
+    public XMLLanguageServer() {}
 
-  public void setupSDK(@NonNull final SDKInfo info) {
-    this.sdkInfo = info;
-    this.canProvideCompletions = true;
-  }
-
-  @NonNull
-  public IServerSettings getSettings() {
-    if (settings == null) {
-      settings = new DefaultXMLServerSettings();
-    }
-    return settings;
-  }
-
-  @Override
-  public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
-    if (initialized) {
-      throw new AlreadyInitializedException();
+    public void setupSDK(@NonNull final SDKInfo info) {
+        this.sdkInfo = info;
+        this.canProvideCompletions = true;
     }
 
-    capabilities = new ServerCapabilities();
-    capabilities.setCompletionsAvailable(true);
-    capabilities.setCodeAnalysisAvailable(true);
-    capabilities.setSignatureHelpAvailable(false);
-    capabilities.setReferencesAvailable(false);
-    capabilities.setDefinitionsAvailable(false);
-    capabilities.setSmartSelectionsEnabled(false);
-
-    initialized = true;
-  }
-
-  @NonNull
-  @Override
-  public ServerCapabilities getCapabilities() {
-    return capabilities;
-  }
-
-  @Override
-  public void shutdown() {}
-
-  @Override
-  public void connectClient(ILanguageClient client) {
-    this.client = client;
-  }
-
-  @Nullable
-  @Override
-  public ILanguageClient getClient() {
-    return this.client;
-  }
-
-  @Override
-  public void applySettings(IServerSettings settings) {
-    this.settings = settings;
-  }
-
-  @Override
-  public void configurationChanged(Object newConfiguration) {}
-
-  @NonNull
-  @Override
-  public ICompletionProvider getCompletionProvider() {
-    if (!getSettings().completionsEnabled() || !canProvideCompletions) {
-      return new NoCompletionsProvider();
+    @NonNull
+    public IServerSettings getSettings() {
+        if (settings == null) {
+            settings = new DefaultXMLServerSettings();
+        }
+        return settings;
     }
 
-    return new CompletionProvider(this.sdkInfo, this.getSettings());
-  }
+    @Override
+    public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
+        if (initialized) {
+            throw new AlreadyInitializedException();
+        }
 
-  @NonNull
-  @Override
-  public ICodeActionProvider getCodeActionProvider() {
-    return new NoCodeActionsProvider();
-  }
+        capabilities = new ServerCapabilities();
+        capabilities.setCompletionsAvailable(true);
+        capabilities.setCodeAnalysisAvailable(true);
+        capabilities.setSignatureHelpAvailable(false);
+        capabilities.setReferencesAvailable(false);
+        capabilities.setDefinitionsAvailable(false);
+        capabilities.setSmartSelectionsEnabled(false);
 
-  @NonNull
-  @Override
-  public IReferenceProvider getReferenceProvider() {
-    return new NoReferenceProvider();
-  }
+        initialized = true;
+    }
 
-  @NonNull
-  @Override
-  public IDefinitionProvider getDefinitionProvider() {
-    return new NoDefinitionProvider();
-  }
+    @NonNull
+    @Override
+    public ServerCapabilities getCapabilities() {
+        return capabilities;
+    }
 
-  @NonNull
-  @Override
-  public ISelectionProvider getSelectionProvider() {
-    return new NoSelectionProvider();
-  }
+    @Override
+    public void shutdown() {}
 
-  @NonNull
-  @Override
-  public ISignatureHelpProvider getSignatureHelpProvider() {
-    return new NoSignatureHelpProvider();
-  }
+    @Override
+    public void connectClient(ILanguageClient client) {
+        this.client = client;
+    }
 
-  @NonNull
-  @Override
-  public IDocumentHandler getDocumentHandler() {
-    return this.documentHandler;
-  }
+    @Nullable
+    @Override
+    public ILanguageClient getClient() {
+        return this.client;
+    }
 
-  @NonNull
-  @Override
-  public IDiagnosticProvider getCodeAnalyzer() {
-    return new NoDiagnosticProvider();
-  }
+    @Override
+    public void applySettings(IServerSettings settings) {
+        this.settings = settings;
+    }
+
+    @Override
+    public void configurationChanged(Object newConfiguration) {}
+
+    @NonNull
+    @Override
+    public ICompletionProvider getCompletionProvider() {
+        if (!getSettings().completionsEnabled() || !canProvideCompletions) {
+            return new NoCompletionsProvider();
+        }
+
+        return new CompletionProvider(this.sdkInfo, this.getSettings());
+    }
+
+    @NonNull
+    @Override
+    public ICodeActionProvider getCodeActionProvider() {
+        return new NoCodeActionsProvider();
+    }
+
+    @NonNull
+    @Override
+    public IReferenceProvider getReferenceProvider() {
+        return new NoReferenceProvider();
+    }
+
+    @NonNull
+    @Override
+    public IDefinitionProvider getDefinitionProvider() {
+        return new NoDefinitionProvider();
+    }
+
+    @NonNull
+    @Override
+    public ISelectionProvider getSelectionProvider() {
+        return new NoSelectionProvider();
+    }
+
+    @NonNull
+    @Override
+    public ISignatureHelpProvider getSignatureHelpProvider() {
+        return new NoSignatureHelpProvider();
+    }
+
+    @NonNull
+    @Override
+    public IDocumentHandler getDocumentHandler() {
+        return this.documentHandler;
+    }
+
+    @NonNull
+    @Override
+    public IDiagnosticProvider getCodeAnalyzer() {
+        return new NoDiagnosticProvider();
+    }
 }

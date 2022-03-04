@@ -26,20 +26,20 @@ import androidx.annotation.NonNull;
  */
 public interface IResourceValue {
 
-  /**
-   * Get the unique identifier (name) of this resource. Defined by "name" attribute in resource
-   * value entries in xml files.
-   *
-   * @return The name of this value.
-   */
-  @NonNull
-  String getName();
+    /**
+     * Get the unique identifier (name) of this resource. Defined by "name" attribute in resource
+     * value entries in xml files.
+     *
+     * @return The name of this value.
+     */
+    @NonNull
+    String getName();
 
-  /**
-   * Get the value of this resource entry.
-   *
-   * @return The value of this resource.
-   */
-  @NonNull
-  String getValue();
+    /**
+     * Get the value of this resource entry.
+     *
+     * @return The value of this resource.
+     */
+    @NonNull
+    String getValue();
 }

@@ -21,9 +21,12 @@ import android.animation.LayoutTransition;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
+
 import org.jetbrains.annotations.Contract;
 
 /**
@@ -33,76 +36,76 @@ import org.jetbrains.annotations.Contract;
  */
 public class ViewGroupAttrAdapter extends ViewAttrAdapter {
 
-  public ViewGroupAttrAdapter(
-      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-    super(resourceFinder, displayMetrics);
-  }
-
-  @Override
-  public boolean isApplicableTo(View view) {
-    return view instanceof ViewGroup;
-  }
-
-  @Override
-  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-
-    final ViewGroup group = (ViewGroup) view;
-    final String name = attribute.getAttributeName();
-    final String value = attribute.getValue();
-
-    if (!canHandleNamespace(attribute)) {
-      return false;
+    public ViewGroupAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
 
-    boolean handled = true;
-    switch (name) {
-      case "animateLayoutChanges":
-        group.setLayoutTransition(new LayoutTransition());
-        break;
-      case "clipChildren":
-        group.setClipChildren(parseBoolean(value));
-        break;
-      case "clipToPadding":
-        group.setClipToPadding(parseBoolean(value));
-        break;
-      case "descendantFocusability":
-        group.setDescendantFocusability(parseDescendantsFocusability(value));
-        break;
-      case "layoutMode":
-        group.setLayoutMode(parseLayoutMode(value));
-        break;
-      default:
-        handled = false;
-        break;
+    @Override
+    public boolean isApplicableTo(View view) {
+        return view instanceof ViewGroup;
     }
 
-    if (!handled) {
-      handled = super.apply(attribute, view);
+    @Override
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+
+        final ViewGroup group = (ViewGroup) view;
+        final String name = attribute.getAttributeName();
+        final String value = attribute.getValue();
+
+        if (!canHandleNamespace(attribute)) {
+            return false;
+        }
+
+        boolean handled = true;
+        switch (name) {
+            case "animateLayoutChanges":
+                group.setLayoutTransition(new LayoutTransition());
+                break;
+            case "clipChildren":
+                group.setClipChildren(parseBoolean(value));
+                break;
+            case "clipToPadding":
+                group.setClipToPadding(parseBoolean(value));
+                break;
+            case "descendantFocusability":
+                group.setDescendantFocusability(parseDescendantsFocusability(value));
+                break;
+            case "layoutMode":
+                group.setLayoutMode(parseLayoutMode(value));
+                break;
+            default:
+                handled = false;
+                break;
+        }
+
+        if (!handled) {
+            handled = super.apply(attribute, view);
+        }
+
+        return handled;
     }
 
-    return handled;
-  }
-
-  @Contract(pure = true)
-  private int parseLayoutMode(String value) {
-    switch (value) {
-      case "opticalBounds":
-        return ViewGroup.LAYOUT_MODE_OPTICAL_BOUNDS;
-      case "clipBounds":
-      default:
-        return ViewGroup.LAYOUT_MODE_CLIP_BOUNDS;
+    @Contract(pure = true)
+    private int parseLayoutMode(String value) {
+        switch (value) {
+            case "opticalBounds":
+                return ViewGroup.LAYOUT_MODE_OPTICAL_BOUNDS;
+            case "clipBounds":
+            default:
+                return ViewGroup.LAYOUT_MODE_CLIP_BOUNDS;
+        }
     }
-  }
 
-  protected int parseDescendantsFocusability(@NonNull String value) {
-    switch (value) {
-      case "beforeDescendants":
-        return ViewGroup.FOCUS_BEFORE_DESCENDANTS;
-      case "blocksDescendants":
-        return ViewGroup.FOCUS_BLOCK_DESCENDANTS;
-      case "afterDescendants":
-      default:
-        return ViewGroup.FOCUS_AFTER_DESCENDANTS;
+    protected int parseDescendantsFocusability(@NonNull String value) {
+        switch (value) {
+            case "beforeDescendants":
+                return ViewGroup.FOCUS_BEFORE_DESCENDANTS;
+            case "blocksDescendants":
+                return ViewGroup.FOCUS_BLOCK_DESCENDANTS;
+            case "afterDescendants":
+            default:
+                return ViewGroup.FOCUS_AFTER_DESCENDANTS;
+        }
     }
-  }
 }

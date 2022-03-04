@@ -18,6 +18,7 @@
 package com.itsaky.androidide.managers;
 
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
@@ -25,119 +26,122 @@ import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.io.IOException;
-import org.jetbrains.annotations.Contract;
 
 public class ToolsManager {
 
-  private static PreferenceManager prefs;
+    private static PreferenceManager prefs;
 
-  public static final int LOG_SENDER_VERSION = 2;
+    public static final int LOG_SENDER_VERSION = 2;
 
-  public static final String KEY_LOG_SENDER_VERSION = "tools_logsenderVersion";
+    public static final String KEY_LOG_SENDER_VERSION = "tools_logsenderVersion";
 
-  public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
-  public static String COMMON_ASSET_DATA_DIR = "data/common";
+    public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
+    public static String COMMON_ASSET_DATA_DIR = "data/common";
 
-  public static void init(@NonNull BaseApplication app, Runnable onFinish) {
-    prefs = app.getPrefManager();
+    public static void init(@NonNull BaseApplication app, Runnable onFinish) {
+        prefs = app.getPrefManager();
 
-    copyBusyboxIfNeeded();
-    extractLogsenderIfNeeded();
-    extractLibHooks();
-    extractGradlePlugin();
-    writeInitScript();
-    rewriteProjectData();
+        copyBusyboxIfNeeded();
+        extractLogsenderIfNeeded();
+        extractLibHooks();
+        extractGradlePlugin();
+        writeInitScript();
+        rewriteProjectData();
 
-    if (onFinish != null) {
-      onFinish.run();
-    }
-  }
-
-  private static void extractGradlePlugin() {
-    final var repoDir = new File(Environment.ANDROIDIDE_HOME, "repo");
-    FileUtils.createOrExistsDir(repoDir);
-
-    final var zip = new File(Environment.TMP_DIR, "gradle-plugin.zip");
-    if (zip.exists()) {
-      FileUtils.delete(zip);
+        if (onFinish != null) {
+            onFinish.run();
+        }
     }
 
-    ResourceUtils.copyFileFromAssets(getCommonAsset("gradle-plugin.zip"), zip.getAbsolutePath());
-    try {
-      ZipUtils.unzipFile(zip, repoDir);
-    } catch (Throwable e) {
-      LOG.error("Unable to extract gradle plugin zip file");
-    }
-  }
+    private static void extractGradlePlugin() {
+        final var repoDir = new File(Environment.ANDROIDIDE_HOME, "repo");
+        FileUtils.createOrExistsDir(repoDir);
 
-  public static void extractLibHooks() {
-    if (!Environment.LIB_HOOK.exists()) {
-      ResourceUtils.copyFileFromAssets(
-          getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
-    }
+        final var zip = new File(Environment.TMP_DIR, "gradle-plugin.zip");
+        if (zip.exists()) {
+            FileUtils.delete(zip);
+        }
 
-    if (!Environment.LIB_HOOK2.exists()) {
-      ResourceUtils.copyFileFromAssets(
-          getArchSpecificAsset("libhook2.so"), Environment.LIB_HOOK2.getAbsolutePath());
-    }
-  }
-
-  private static void rewriteProjectData() {
-    FileIOUtils.writeFileFromString(Environment.PROJECT_DATA_FILE, "/**********************/");
-  }
-
-  private static void copyBusyboxIfNeeded() {
-    File exec = Environment.BUSYBOX;
-    if (exec.exists()) return;
-    Environment.mkdirIfNotExits(exec.getParentFile());
-    ResourceUtils.copyFileFromAssets(getArchSpecificAsset("busybox"), exec.getAbsolutePath());
-    if (!exec.canExecute()) {
-      if (!exec.setExecutable(true)) {
-        LOG.error("Cannot set busybox executable permissions.");
-      }
-    }
-  }
-
-  private static void writeInitScript() {
-    if (Environment.INIT_SCRIPT.exists()) {
-      FileUtils.delete(Environment.INIT_SCRIPT);
-    }
-    FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, readInitScript());
-  }
-
-  @NonNull
-  private static String readInitScript() {
-    return ResourceUtils.readAssets2String(getCommonAsset("androidide.init.gradle"));
-  }
-
-  private static void extractLogsenderIfNeeded() {
-    try {
-      final boolean isOld = LOG_SENDER_VERSION > prefs.getInt(KEY_LOG_SENDER_VERSION, 0);
-      if (isOld) {
-        final File logsenderZip = new File(Environment.TMP_DIR, "logsender.zip");
         ResourceUtils.copyFileFromAssets(
-            getCommonAsset("logsender.zip"), logsenderZip.getAbsolutePath());
-        ZipUtils.unzipFile(logsenderZip, Environment.HOME);
-        prefs.putInt(KEY_LOG_SENDER_VERSION, LOG_SENDER_VERSION);
-      }
-    } catch (IOException e) {
-      LOG.error("Error extracting log sender", e);
+                getCommonAsset("gradle-plugin.zip"), zip.getAbsolutePath());
+        try {
+            ZipUtils.unzipFile(zip, repoDir);
+        } catch (Throwable e) {
+            LOG.error("Unable to extract gradle plugin zip file");
+        }
     }
-  }
 
-  @NonNull
-  @Contract(pure = true)
-  public static String getArchSpecificAsset(String name) {
-    return ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name;
-  }
+    public static void extractLibHooks() {
+        if (!Environment.LIB_HOOK.exists()) {
+            ResourceUtils.copyFileFromAssets(
+                    getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
+        }
 
-  @NonNull
-  @Contract(pure = true)
-  public static String getCommonAsset(String name) {
-    return COMMON_ASSET_DATA_DIR + "/" + name;
-  }
+        if (!Environment.LIB_HOOK2.exists()) {
+            ResourceUtils.copyFileFromAssets(
+                    getArchSpecificAsset("libhook2.so"), Environment.LIB_HOOK2.getAbsolutePath());
+        }
+    }
 
-  private static final Logger LOG = Logger.instance("ToolsManager");
+    private static void rewriteProjectData() {
+        FileIOUtils.writeFileFromString(Environment.PROJECT_DATA_FILE, "/**********************/");
+    }
+
+    private static void copyBusyboxIfNeeded() {
+        File exec = Environment.BUSYBOX;
+        if (exec.exists()) return;
+        Environment.mkdirIfNotExits(exec.getParentFile());
+        ResourceUtils.copyFileFromAssets(getArchSpecificAsset("busybox"), exec.getAbsolutePath());
+        if (!exec.canExecute()) {
+            if (!exec.setExecutable(true)) {
+                LOG.error("Cannot set busybox executable permissions.");
+            }
+        }
+    }
+
+    private static void writeInitScript() {
+        if (Environment.INIT_SCRIPT.exists()) {
+            FileUtils.delete(Environment.INIT_SCRIPT);
+        }
+        FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, readInitScript());
+    }
+
+    @NonNull
+    private static String readInitScript() {
+        return ResourceUtils.readAssets2String(getCommonAsset("androidide.init.gradle"));
+    }
+
+    private static void extractLogsenderIfNeeded() {
+        try {
+            final boolean isOld = LOG_SENDER_VERSION > prefs.getInt(KEY_LOG_SENDER_VERSION, 0);
+            if (isOld) {
+                final File logsenderZip = new File(Environment.TMP_DIR, "logsender.zip");
+                ResourceUtils.copyFileFromAssets(
+                        getCommonAsset("logsender.zip"), logsenderZip.getAbsolutePath());
+                ZipUtils.unzipFile(logsenderZip, Environment.HOME);
+                prefs.putInt(KEY_LOG_SENDER_VERSION, LOG_SENDER_VERSION);
+            }
+        } catch (IOException e) {
+            LOG.error("Error extracting log sender", e);
+        }
+    }
+
+    @NonNull
+    @Contract(pure = true)
+    public static String getArchSpecificAsset(String name) {
+        return ARCH_SPECIFIC_ASSET_DATA_DIR + "/" + name;
+    }
+
+    @NonNull
+    @Contract(pure = true)
+    public static String getCommonAsset(String name) {
+        return COMMON_ASSET_DATA_DIR + "/" + name;
+    }
+
+    private static final Logger LOG = Logger.instance("ToolsManager");
 }

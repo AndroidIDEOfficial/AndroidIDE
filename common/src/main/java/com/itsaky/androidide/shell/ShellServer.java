@@ -20,7 +20,9 @@
 package com.itsaky.androidide.shell;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.Logger;
+
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
@@ -34,128 +36,128 @@ import java.util.Map;
 
 public class ShellServer extends Thread {
 
-  private final Callback callback;
-  private BufferedReader output;
-  private Process process;
+    private final Callback callback;
+    private BufferedReader output;
+    private Process process;
 
-  private static final Logger LOG = Logger.instance("ShellServer");
+    private static final Logger LOG = Logger.instance("ShellServer");
 
-  public ShellServer(
-      Callback callback,
-      String command,
-      String dirPath,
-      Map<String, String> env,
-      boolean redirectErrors) {
-    this.callback = callback;
+    public ShellServer(
+            Callback callback,
+            String command,
+            String dirPath,
+            Map<String, String> env,
+            boolean redirectErrors) {
+        this.callback = callback;
 
-    ProcessBuilder processBuilder = new ProcessBuilder(command);
-    processBuilder.directory(new File(dirPath));
-    processBuilder.redirectErrorStream(redirectErrors);
-    processBuilder.environment().putAll(env);
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.directory(new File(dirPath));
+        processBuilder.redirectErrorStream(redirectErrors);
+        processBuilder.environment().putAll(env);
 
-    try {
-      this.process = processBuilder.start();
-      this.output = new BufferedReader(new InputStreamReader(process.getInputStream()));
-    } catch (Throwable th) {
-      if (callback != null) {
-        String out = getFullStackTrace(th).concat("\n");
-        callback.output(out);
-      }
-    }
-  }
-
-  public InputStream getProcessInputStream() {
-    return process.getInputStream();
-  }
-
-  public OutputStream getProcessOutputStream() {
-    return process.getOutputStream();
-  }
-
-  public void append(String str) {
-    append(str, true);
-  }
-
-  public void bgAppend(String str) {
-    append(str, false);
-  }
-
-  public void append(String str, boolean z) {
-    if (z) {
-      try {
-        if (str.endsWith("\n")) {
-          output(str);
-        } else {
-          output(str.concat("\n"));
+        try {
+            this.process = processBuilder.start();
+            this.output = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        } catch (Throwable th) {
+            if (callback != null) {
+                String out = getFullStackTrace(th).concat("\n");
+                callback.output(out);
+            }
         }
-      } catch (Throwable th) {
-        output(th.toString().concat("\n"));
-        return;
-      }
     }
-    try {
-      this.process.getOutputStream().write(str.concat("\n").getBytes());
-      this.process.getOutputStream().flush();
-    } catch (Throwable e) {
-      LOG.error("Unable to write to shell server", e);
+
+    public InputStream getProcessInputStream() {
+        return process.getInputStream();
     }
-  }
 
-  public void append(@NonNull String... strArr) {
-    for (String append : strArr) {
-      append(append);
+    public OutputStream getProcessOutputStream() {
+        return process.getOutputStream();
     }
-  }
 
-  public void exit() {
-    append("exit");
-  }
-
-  public void output(String str) {
-    if (this.callback != null) {
-      this.callback.output(str);
+    public void append(String str) {
+        append(str, true);
     }
-  }
 
-  @Override
-  public void run() {
-    while (true) {
-      try {
-        String readLine = this.output.readLine();
-        if (readLine == null) {
-          break;
+    public void bgAppend(String str) {
+        append(str, false);
+    }
+
+    public void append(String str, boolean z) {
+        if (z) {
+            try {
+                if (str.endsWith("\n")) {
+                    output(str);
+                } else {
+                    output(str.concat("\n"));
+                }
+            } catch (Throwable th) {
+                output(th.toString().concat("\n"));
+                return;
+            }
         }
-        output(readLine.concat("\n"));
-      } catch (Throwable th) {
-        output(th.toString().concat("\n"));
-      }
+        try {
+            this.process.getOutputStream().write(str.concat("\n").getBytes());
+            this.process.getOutputStream().flush();
+        } catch (Throwable e) {
+            LOG.error("Unable to write to shell server", e);
+        }
     }
-    closeIOQuietly(
-        this.output,
-        this.process.getInputStream(),
-        this.process.getErrorStream(),
-        this.process.getOutputStream());
-    this.process.destroy();
-  }
 
-  @NonNull
-  private String getFullStackTrace(@NonNull Throwable th) {
-    StringWriter sw = new StringWriter();
-    th.printStackTrace(new PrintWriter(sw));
-    return sw.toString();
-  }
-
-  private void closeIOQuietly(@NonNull Closeable... toClose) {
-    for (Closeable c : toClose) {
-      try {
-        c.close();
-      } catch (IOException e) {
-        // ignored
-      }
+    public void append(@NonNull String... strArr) {
+        for (String append : strArr) {
+            append(append);
+        }
     }
-  }
 
-  public interface Callback {
-    void output(String charSequence);
-  }
+    public void exit() {
+        append("exit");
+    }
+
+    public void output(String str) {
+        if (this.callback != null) {
+            this.callback.output(str);
+        }
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                String readLine = this.output.readLine();
+                if (readLine == null) {
+                    break;
+                }
+                output(readLine.concat("\n"));
+            } catch (Throwable th) {
+                output(th.toString().concat("\n"));
+            }
+        }
+        closeIOQuietly(
+                this.output,
+                this.process.getInputStream(),
+                this.process.getErrorStream(),
+                this.process.getOutputStream());
+        this.process.destroy();
+    }
+
+    @NonNull
+    private String getFullStackTrace(@NonNull Throwable th) {
+        StringWriter sw = new StringWriter();
+        th.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
+    }
+
+    private void closeIOQuietly(@NonNull Closeable... toClose) {
+        for (Closeable c : toClose) {
+            try {
+                c.close();
+            } catch (IOException e) {
+                // ignored
+            }
+        }
+    }
+
+    public interface Callback {
+        void output(String charSequence);
+    }
 }

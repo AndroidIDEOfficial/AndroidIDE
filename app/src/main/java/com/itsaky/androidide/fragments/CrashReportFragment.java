@@ -27,9 +27,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
@@ -37,116 +39,118 @@ import com.itsaky.androidide.databinding.LayoutCrashReportBinding;
 
 public class CrashReportFragment extends Fragment {
 
-  private LayoutCrashReportBinding binding;
-  private boolean closeAppOnClick = true;
+    private LayoutCrashReportBinding binding;
+    private boolean closeAppOnClick = true;
 
-  public static final String KEY_TITLE = "crash_title";
-  public static final String KEY_MESSAGE = "crash_message";
-  public static final String KEY_TRACE = "crash_trace";
+    public static final String KEY_TITLE = "crash_title";
+    public static final String KEY_MESSAGE = "crash_message";
+    public static final String KEY_TRACE = "crash_trace";
 
-  @NonNull
-  public static CrashReportFragment newInstance(@NonNull final String trace) {
-    return CrashReportFragment.newInstance(null, null, trace);
-  }
-
-  @NonNull
-  public static CrashReportFragment newInstance(
-      @Nullable final String title, @Nullable final String message, @NonNull final String trace) {
-    final var frag = new CrashReportFragment();
-    final var args = new Bundle();
-
-    args.putString(KEY_TRACE, trace);
-
-    if (title != null) {
-      args.putString(KEY_TITLE, title);
+    @NonNull
+    public static CrashReportFragment newInstance(@NonNull final String trace) {
+        return CrashReportFragment.newInstance(null, null, trace);
     }
 
-    if (message != null) {
-      args.putString(KEY_MESSAGE, message);
+    @NonNull
+    public static CrashReportFragment newInstance(
+            @Nullable final String title,
+            @Nullable final String message,
+            @NonNull final String trace) {
+        final var frag = new CrashReportFragment();
+        final var args = new Bundle();
+
+        args.putString(KEY_TRACE, trace);
+
+        if (title != null) {
+            args.putString(KEY_TITLE, title);
+        }
+
+        if (message != null) {
+            args.putString(KEY_MESSAGE, message);
+        }
+
+        frag.setArguments(args);
+        return frag;
     }
 
-    frag.setArguments(args);
-    return frag;
-  }
-
-  public CrashReportFragment setCloseAppOnClick(boolean closeAppOnClick) {
-    this.closeAppOnClick = closeAppOnClick;
-    return this;
-  }
-
-  @Nullable
-  @Override
-  public View onCreateView(
-      @NonNull LayoutInflater inflater,
-      @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
-    return (binding = LayoutCrashReportBinding.inflate(inflater, container, false)).getRoot();
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-
-    final var args = requireArguments();
-    var title = getString(R.string.msg_ide_crashed);
-    var message = getString(R.string.msg_report_crash);
-    var trace = "";
-    if (args.containsKey(KEY_TITLE)) {
-      title = args.getString(KEY_TITLE);
+    public CrashReportFragment setCloseAppOnClick(boolean closeAppOnClick) {
+        this.closeAppOnClick = closeAppOnClick;
+        return this;
     }
 
-    if (args.containsKey(KEY_MESSAGE)) {
-      message = args.getString(KEY_MESSAGE);
+    @Nullable
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        return (binding = LayoutCrashReportBinding.inflate(inflater, container, false)).getRoot();
     }
 
-    if (args.containsKey(KEY_TRACE)) {
-      trace = args.getString(KEY_TRACE);
-      trace = buildReportText(trace);
-    } else {
-      trace = "No stack strace was provided for the report";
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        final var args = requireArguments();
+        var title = getString(R.string.msg_ide_crashed);
+        var message = getString(R.string.msg_report_crash);
+        var trace = "";
+        if (args.containsKey(KEY_TITLE)) {
+            title = args.getString(KEY_TITLE);
+        }
+
+        if (args.containsKey(KEY_MESSAGE)) {
+            message = args.getString(KEY_MESSAGE);
+        }
+
+        if (args.containsKey(KEY_TRACE)) {
+            trace = args.getString(KEY_TRACE);
+            trace = buildReportText(trace);
+        } else {
+            trace = "No stack strace was provided for the report";
+        }
+
+        binding.crashTitle.setText(title);
+        binding.crashSubtitle.setText(message);
+        binding.logText.setText(trace);
+
+        final var report = trace;
+        binding.closeButton.setOnClickListener(
+                v -> {
+                    if (closeAppOnClick) {
+                        requireActivity().finishAffinity();
+                    } else {
+                        requireActivity().finish();
+                    }
+                });
+        binding.reportButton.setOnClickListener(v -> reportTrace(report));
     }
 
-    binding.crashTitle.setText(title);
-    binding.crashSubtitle.setText(message);
-    binding.logText.setText(trace);
+    private void reportTrace(String report) {
+        ClipboardUtils.copyText("AndroidIDE CrashLog", report);
 
-    final var report = trace;
-    binding.closeButton.setOnClickListener(
-        v -> {
-          if (closeAppOnClick) {
-            requireActivity().finishAffinity();
-          } else {
-            requireActivity().finish();
-          }
-        });
-    binding.reportButton.setOnClickListener(v -> reportTrace(report));
-  }
+        final var url = BaseApplication.GITHUB_URL.concat("/issues");
+        final var intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 
-  private void reportTrace(String report) {
-    ClipboardUtils.copyText("AndroidIDE CrashLog", report);
-
-    final var url = BaseApplication.GITHUB_URL.concat("/issues");
-    final var intent = new Intent();
-    intent.setAction(Intent.ACTION_VIEW);
-    intent.setData(Uri.parse(url));
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    startActivity(intent);
-  }
-
-  @NonNull
-  private String buildReportText(String trace) {
-    return "AndroidIDE crash report\n"
-        + "Manufacturer: "
-        + getManufacturer()
-        + "\n"
-        + "Device: "
-        + getModel()
-        + "\n"
-        + "App version: "
-        + getAppVersionName()
-        + " ("
-        + getAppVersionCode()
-        + ")\n\n Stacktrace: \n"
-        + trace;
-  }
+    @NonNull
+    private String buildReportText(String trace) {
+        return "AndroidIDE crash report\n"
+                + "Manufacturer: "
+                + getManufacturer()
+                + "\n"
+                + "Device: "
+                + getModel()
+                + "\n"
+                + "App version: "
+                + getAppVersionName()
+                + " ("
+                + getAppVersionCode()
+                + ")\n\n Stacktrace: \n"
+                + trace;
+    }
 }

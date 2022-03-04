@@ -26,103 +26,105 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.databinding.LayoutProgressSheetBinding;
 import com.itsaky.androidide.utils.Logger;
 
 public class ProgressSheet extends BaseBottomSheetFragment {
 
-  private LayoutProgressSheetBinding binding;
-  private Drawable drawable = null;
-  private String message = "";
-  private String subMessage = "";
-  private boolean subMessageEnabled = false;
-  private boolean welcomTextEnabled = false;
+    private LayoutProgressSheetBinding binding;
+    private Drawable drawable = null;
+    private String message = "";
+    private String subMessage = "";
+    private boolean subMessageEnabled = false;
+    private boolean welcomTextEnabled = false;
 
-  private final Logger LOG = Logger.instance("ProgressSheet");
+    private final Logger LOG = Logger.instance("ProgressSheet");
 
-  @Override
-  protected void bind(LinearLayout container) {
-    binding = LayoutProgressSheetBinding.inflate(LayoutInflater.from(getContext()));
-    container.addView(binding.getRoot());
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-
-    binding.message.setText(message);
-    if (subMessageEnabled) {
-      binding.subMessage.setText(subMessage);
-      binding.subMessage.setVisibility(View.VISIBLE);
-      RelativeLayout.LayoutParams p =
-          (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
-      try {
-        p.removeRule(RelativeLayout.CENTER_VERTICAL);
-      } catch (Throwable th) {
-        LOG.error("Unable to remove center_vertical rule.", th);
-      }
-      binding.message.setLayoutParams(p);
-    } else {
-      binding.subMessage.setVisibility(View.GONE);
-      RelativeLayout.LayoutParams p =
-          (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
-      try {
-        p.addRule(RelativeLayout.CENTER_VERTICAL);
-      } catch (Throwable th) {
-        LOG.error("Unable to remove center_vertical rule.", th);
-      }
-      binding.message.setLayoutParams(p);
+    @Override
+    protected void bind(LinearLayout container) {
+        binding = LayoutProgressSheetBinding.inflate(LayoutInflater.from(getContext()));
+        container.addView(binding.getRoot());
     }
 
-    if (!welcomTextEnabled) {
-      binding.welcomeText.setVisibility(View.GONE);
-    }
-  }
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-  @Override
-  protected boolean shouldHideTitle() {
-    return true;
-  }
+        binding.message.setText(message);
+        if (subMessageEnabled) {
+            binding.subMessage.setText(subMessage);
+            binding.subMessage.setVisibility(View.VISIBLE);
+            RelativeLayout.LayoutParams p =
+                    (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
+            try {
+                p.removeRule(RelativeLayout.CENTER_VERTICAL);
+            } catch (Throwable th) {
+                LOG.error("Unable to remove center_vertical rule.", th);
+            }
+            binding.message.setLayoutParams(p);
+        } else {
+            binding.subMessage.setVisibility(View.GONE);
+            RelativeLayout.LayoutParams p =
+                    (RelativeLayout.LayoutParams) binding.message.getLayoutParams();
+            try {
+                p.addRule(RelativeLayout.CENTER_VERTICAL);
+            } catch (Throwable th) {
+                LOG.error("Unable to remove center_vertical rule.", th);
+            }
+            binding.message.setLayoutParams(p);
+        }
 
-  public ProgressSheet setWelcomeTextEnabled(boolean enabled) {
-    this.welcomTextEnabled = enabled;
-    return this;
-  }
-
-  public ProgressSheet setSubMessageEnabled(boolean enabled) {
-    this.subMessageEnabled = enabled;
-    return this;
-  }
-
-  public ProgressSheet setSubMessage(String msg) {
-    this.subMessage = msg;
-    if (isShowing()) {
-      binding.subMessage.setText(msg);
-    }
-    return this;
-  }
-
-  public ProgressSheet setMessage(String message) {
-    this.message = message;
-    if (isShowing()) {
-      binding.message.setText(message);
-    }
-
-    return this;
-  }
-
-  public ProgressSheet setProgressDrawable(Drawable drawable) {
-    this.drawable = drawable;
-    if (isShowing()) {
-      binding.progress.setIndeterminateDrawable(drawable);
+        if (!welcomTextEnabled) {
+            binding.welcomeText.setVisibility(View.GONE);
+        }
     }
 
-    return this;
-  }
+    @Override
+    protected boolean shouldHideTitle() {
+        return true;
+    }
 
-  @Override
-  public void dismiss() {
-    if (isShowing()) super.dismiss();
-  }
+    public ProgressSheet setWelcomeTextEnabled(boolean enabled) {
+        this.welcomTextEnabled = enabled;
+        return this;
+    }
+
+    public ProgressSheet setSubMessageEnabled(boolean enabled) {
+        this.subMessageEnabled = enabled;
+        return this;
+    }
+
+    public ProgressSheet setSubMessage(String msg) {
+        this.subMessage = msg;
+        if (isShowing()) {
+            binding.subMessage.setText(msg);
+        }
+        return this;
+    }
+
+    public ProgressSheet setMessage(String message) {
+        this.message = message;
+        if (isShowing()) {
+            binding.message.setText(message);
+        }
+
+        return this;
+    }
+
+    public ProgressSheet setProgressDrawable(Drawable drawable) {
+        this.drawable = drawable;
+        if (isShowing()) {
+            binding.progress.setIndeterminateDrawable(drawable);
+        }
+
+        return this;
+    }
+
+    @Override
+    public void dismiss() {
+        if (isShowing()) super.dismiss();
+    }
 }

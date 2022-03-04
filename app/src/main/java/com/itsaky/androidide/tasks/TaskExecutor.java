@@ -22,60 +22,62 @@ package com.itsaky.androidide.tasks;
 
 import android.os.Handler;
 import android.os.Looper;
+
 import com.itsaky.androidide.utils.Logger;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class TaskExecutor {
 
-  private final Executor executor = Executors.newSingleThreadExecutor();
-  private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Executor executor = Executors.newSingleThreadExecutor();
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
-  private final Logger LOG = Logger.instance("TaskExecutor");
+    private final Logger LOG = Logger.instance("TaskExecutor");
 
-  public interface Callback<R> {
-    void complete(R result);
-  }
+    public interface Callback<R> {
+        void complete(R result);
+    }
 
-  public interface CallbackWithError<R> {
-    void complete(R result, Throwable error);
-  }
+    public interface CallbackWithError<R> {
+        void complete(R result, Throwable error);
+    }
 
-  public <R> void executeAsync(Callable<R> callable, Callback<R> callback) {
-    executor.execute(
-        () -> {
-          try {
-            final R result = callable.call();
-            handler.post(
+    public <R> void executeAsync(Callable<R> callable, Callback<R> callback) {
+        executor.execute(
                 () -> {
-                  callback.complete(result);
+                    try {
+                        final R result = callable.call();
+                        handler.post(
+                                () -> {
+                                    callback.complete(result);
+                                });
+                    } catch (Throwable th) {
+                        LOG.error("Callable task was not able to finish", th);
+                    }
                 });
-          } catch (Throwable th) {
-            LOG.error("Callable task was not able to finish", th);
-          }
-        });
-  }
+    }
 
-  public <R> void executeAsyncProvideError(Callable<R> callable, CallbackWithError<R> callback) {
-    executor.execute(
-        () -> {
-          Throwable error = null;
-          R result = null;
+    public <R> void executeAsyncProvideError(Callable<R> callable, CallbackWithError<R> callback) {
+        executor.execute(
+                () -> {
+                    Throwable error = null;
+                    R result = null;
 
-          try {
-            result = callable.call();
-          } catch (Throwable th) {
-            LOG.error("Callable task was not able to finish", th);
-            error = th;
-          }
-          final R resultCopied = result;
-          final Throwable errorCopied = error;
+                    try {
+                        result = callable.call();
+                    } catch (Throwable th) {
+                        LOG.error("Callable task was not able to finish", th);
+                        error = th;
+                    }
+                    final R resultCopied = result;
+                    final Throwable errorCopied = error;
 
-          handler.post(
-              () -> {
-                callback.complete(resultCopied, errorCopied);
-              });
-        });
-  }
+                    handler.post(
+                            () -> {
+                                callback.complete(resultCopied, errorCopied);
+                            });
+                });
+    }
 }

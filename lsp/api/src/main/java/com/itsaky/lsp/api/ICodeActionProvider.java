@@ -35,6 +35,7 @@
 package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.models.CodeActionParams;
 import com.itsaky.lsp.models.CodeActionResult;
 
@@ -45,13 +46,13 @@ import com.itsaky.lsp.models.CodeActionResult;
  */
 public interface ICodeActionProvider {
 
-  /**
-   * Provide code actions for the given params. If both diagnostics and cursor position is provided,
-   * code actions for diagnostics must be provided.
-   *
-   * @param params The params.
-   * @return The code action result. Should not be null.
-   */
-  @NonNull
-  CodeActionResult codeActions(@NonNull CodeActionParams params);
+    /**
+     * Provide code actions for the given params. If both diagnostics and cursor position is
+     * provided, code actions for diagnostics must be provided.
+     *
+     * @param params The params.
+     * @return The code action result. Should not be null.
+     */
+    @NonNull
+    CodeActionResult codeActions(@NonNull CodeActionParams params);
 }

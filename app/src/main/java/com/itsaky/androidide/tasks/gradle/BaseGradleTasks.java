@@ -35,15 +35,15 @@ import com.itsaky.androidide.tasks.gradle.resources.ProcessDebugResources;
 
 public class BaseGradleTasks {
 
-  public static final BaseGradleTask BUILD = new Build(),
-      ASSEMBLE_DEBUG = new AssembleDebug(),
-      ASSEMBLE_RELEASE = new AssembleRelease(),
-      BUNDLE = new Bundle(),
-      CLEAN = new Clean(),
-      CLEAN_BUILD = new CleanBuild(),
-      LINT = new Lint(),
-      LINT_DEBUG = new LintDebug(),
-      LINT_RELEASE = new LintRelease(),
-      PROCESS_DEBUG_RESOURCES = new ProcessDebugResources(),
-      INITIALIZE_IDE_PROJECT = new InitializeIDEProject();
+    public static final BaseGradleTask BUILD = new Build(),
+            ASSEMBLE_DEBUG = new AssembleDebug(),
+            ASSEMBLE_RELEASE = new AssembleRelease(),
+            BUNDLE = new Bundle(),
+            CLEAN = new Clean(),
+            CLEAN_BUILD = new CleanBuild(),
+            LINT = new Lint(),
+            LINT_DEBUG = new LintDebug(),
+            LINT_RELEASE = new LintRelease(),
+            PROCESS_DEBUG_RESOURCES = new ProcessDebugResources(),
+            INITIALIZE_IDE_PROJECT = new InitializeIDEProject();
 }

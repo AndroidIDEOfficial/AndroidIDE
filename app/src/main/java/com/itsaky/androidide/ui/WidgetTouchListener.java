@@ -22,8 +22,10 @@ import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.inflater.IView;
 
 /**
@@ -36,73 +38,73 @@ import com.itsaky.inflater.IView;
  * @author Akash Yadav
  */
 public class WidgetTouchListener extends GestureDetector.SimpleOnGestureListener
-    implements View.OnTouchListener {
+        implements View.OnTouchListener {
 
-  private final GestureDetector mGestureDetector;
-  private final OnClickListener clickListener;
-  private final OnLongClickListener longClickListener;
+    private final GestureDetector mGestureDetector;
+    private final OnClickListener clickListener;
+    private final OnLongClickListener longClickListener;
 
-  private final IView mView;
+    private final IView mView;
 
-  public WidgetTouchListener(
-      @NonNull IView view,
-      @Nullable OnClickListener clickListener,
-      @Nullable OnLongClickListener longClickListener) {
-    this.mView = view;
-    this.mGestureDetector = new GestureDetector(view.asView().getContext(), this);
-    this.clickListener = clickListener;
-    this.longClickListener = longClickListener;
-  }
-
-  @SuppressLint("ClickableViewAccessibility")
-  @Override
-  public boolean onTouch(View view, @NonNull MotionEvent motionEvent) {
-    return mGestureDetector.onTouchEvent(motionEvent);
-  }
-
-  @Override
-  public boolean onDown(MotionEvent e) {
-    return true; // We would like to get notified about further events.
-  }
-
-  // TODO Should we use onSingleTapConfirmed instead?
-  @Override
-  public boolean onSingleTapUp(MotionEvent e) {
-    if (this.clickListener != null) {
-      this.clickListener.onClick(this.mView);
+    public WidgetTouchListener(
+            @NonNull IView view,
+            @Nullable OnClickListener clickListener,
+            @Nullable OnLongClickListener longClickListener) {
+        this.mView = view;
+        this.mGestureDetector = new GestureDetector(view.asView().getContext(), this);
+        this.clickListener = clickListener;
+        this.longClickListener = longClickListener;
     }
 
-    return true;
-  }
-
-  @Override
-  public void onLongPress(MotionEvent e) {
-
-    if (this.mView.getParent() == null) {
-      // This is the root layout so this should not be draggable
-      return;
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouch(View view, @NonNull MotionEvent motionEvent) {
+        return mGestureDetector.onTouchEvent(motionEvent);
     }
 
-    if (this.longClickListener != null && this.longClickListener.onLongClick(this.mView)) {
-      this.mView.asView().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return true; // We would like to get notified about further events.
     }
-  }
 
-  /**
-   * A listener which is invoked when we detect a single click event.
-   *
-   * @author Akash Yadav
-   */
-  public interface OnClickListener {
-    void onClick(IView view);
-  }
+    // TODO Should we use onSingleTapConfirmed instead?
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        if (this.clickListener != null) {
+            this.clickListener.onClick(this.mView);
+        }
 
-  /**
-   * A listener which is invoked when we detect a long click event.
-   *
-   * @author Akash Yadav
-   */
-  public interface OnLongClickListener {
-    boolean onLongClick(IView view);
-  }
+        return true;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+        if (this.mView.getParent() == null) {
+            // This is the root layout so this should not be draggable
+            return;
+        }
+
+        if (this.longClickListener != null && this.longClickListener.onLongClick(this.mView)) {
+            this.mView.asView().performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+        }
+    }
+
+    /**
+     * A listener which is invoked when we detect a single click event.
+     *
+     * @author Akash Yadav
+     */
+    public interface OnClickListener {
+        void onClick(IView view);
+    }
+
+    /**
+     * A listener which is invoked when we detect a long click event.
+     *
+     * @author Akash Yadav
+     */
+    public interface OnLongClickListener {
+        boolean onLongClick(IView view);
+    }
 }

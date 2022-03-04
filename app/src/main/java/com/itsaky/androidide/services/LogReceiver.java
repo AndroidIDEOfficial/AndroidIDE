@@ -23,44 +23,45 @@ package com.itsaky.androidide.services;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.utils.Logger;
 
 public class LogReceiver extends BroadcastReceiver {
 
-  private LogListener listener;
+    private LogListener listener;
 
-  public static final String APPEND_LOG = "com.itsaky.androidide.logs.APPEND_LOG";
-  public static final String EXTRA_LINE = "log_line";
+    public static final String APPEND_LOG = "com.itsaky.androidide.logs.APPEND_LOG";
+    public static final String EXTRA_LINE = "log_line";
 
-  private final Logger LOG = Logger.instance("LogReceiver");
+    private final Logger LOG = Logger.instance("LogReceiver");
 
-  public LogReceiver setLogListener(LogListener listener) {
-    this.listener = listener;
-    return this;
-  }
-
-  @Override
-  public void onReceive(Context context, Intent intent) {
-    if (intent.getAction().equals(APPEND_LOG) && intent.hasExtra(EXTRA_LINE)) {
-      String line = intent.getStringExtra(EXTRA_LINE);
-      if (line == null) return;
-      try {
-        sendLogLine(line);
-      } catch (Throwable th) {
-        LOG.error("Unable to parse log line from app.", th);
-      }
+    public LogReceiver setLogListener(LogListener listener) {
+        this.listener = listener;
+        return this;
     }
-  }
 
-  private void sendLogLine(String line) {
-    final var log = LogLine.forLogString(line);
-    if (listener != null) {
-      listener.appendLogLine(log);
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent.getAction().equals(APPEND_LOG) && intent.hasExtra(EXTRA_LINE)) {
+            String line = intent.getStringExtra(EXTRA_LINE);
+            if (line == null) return;
+            try {
+                sendLogLine(line);
+            } catch (Throwable th) {
+                LOG.error("Unable to parse log line from app.", th);
+            }
+        }
     }
-  }
 
-  public interface LogListener {
-    void appendLogLine(LogLine line);
-  }
+    private void sendLogLine(String line) {
+        final var log = LogLine.forLogString(line);
+        if (listener != null) {
+            listener.appendLogLine(log);
+        }
+    }
+
+    public interface LogListener {
+        void appendLogLine(LogLine line);
+    }
 }

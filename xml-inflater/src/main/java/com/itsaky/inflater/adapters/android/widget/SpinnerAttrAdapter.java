@@ -20,7 +20,9 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Spinner;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 
@@ -31,55 +33,56 @@ import com.itsaky.inflater.IResourceTable;
  */
 public class SpinnerAttrAdapter extends AbsSpinnerAttrAdapter {
 
-  public SpinnerAttrAdapter(@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-    super(resourceFinder, displayMetrics);
-  }
-
-  @Override
-  public boolean isApplicableTo(View view) {
-    return view instanceof Spinner;
-  }
-
-  @Override
-  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-    final var spinner = (Spinner) view;
-    final var context = spinner.getContext();
-    final var dm = context.getResources().getDisplayMetrics();
-    final var namespace = attribute.getNamespace();
-    final var name = attribute.getAttributeName();
-    final var value = attribute.getValue();
-
-    if (!canHandleNamespace(namespace)) {
-      return false;
+    public SpinnerAttrAdapter(
+            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+        super(resourceFinder, displayMetrics);
     }
 
-    boolean handled = true;
-
-    switch (name) {
-      case "dropDownHorizontalOffset":
-        spinner.setDropDownHorizontalOffset(parseDimension(value, 0, dm));
-        break;
-      case "dropDownVerticalOffset":
-        spinner.setDropDownVerticalOffset(parseDimension(value, 0, dm));
-        break;
-      case "dropDownWidth":
-        spinner.setDropDownWidth(parseDimension(value, 0, dm));
-        break;
-      case "gravity":
-        spinner.setGravity(parseGravity(value));
-        break;
-      case "popupBackground":
-        spinner.setPopupBackgroundDrawable(parseDrawable(value, context));
-        break;
-      default:
-        handled = false;
-        break;
+    @Override
+    public boolean isApplicableTo(View view) {
+        return view instanceof Spinner;
     }
 
-    if (!handled) {
-      handled = super.apply(attribute, view);
-    }
+    @Override
+    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+        final var spinner = (Spinner) view;
+        final var context = spinner.getContext();
+        final var dm = context.getResources().getDisplayMetrics();
+        final var namespace = attribute.getNamespace();
+        final var name = attribute.getAttributeName();
+        final var value = attribute.getValue();
 
-    return handled;
-  }
+        if (!canHandleNamespace(namespace)) {
+            return false;
+        }
+
+        boolean handled = true;
+
+        switch (name) {
+            case "dropDownHorizontalOffset":
+                spinner.setDropDownHorizontalOffset(parseDimension(value, 0, dm));
+                break;
+            case "dropDownVerticalOffset":
+                spinner.setDropDownVerticalOffset(parseDimension(value, 0, dm));
+                break;
+            case "dropDownWidth":
+                spinner.setDropDownWidth(parseDimension(value, 0, dm));
+                break;
+            case "gravity":
+                spinner.setGravity(parseGravity(value));
+                break;
+            case "popupBackground":
+                spinner.setPopupBackgroundDrawable(parseDrawable(value, context));
+                break;
+            default:
+                handled = false;
+                break;
+        }
+
+        if (!handled) {
+            handled = super.apply(attribute, view);
+        }
+
+        return handled;
+    }
 }

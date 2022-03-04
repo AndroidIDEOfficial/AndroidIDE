@@ -17,92 +17,96 @@
 package com.itsaky.xml.impl;
 
 import android.os.Parcel;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.xml.INamespace;
-import java.util.Objects;
+
 import org.jetbrains.annotations.Contract;
+
+import java.util.Objects;
 
 /**
  * @author Akash Yadav
  */
 public class UiNamespace implements INamespace {
 
-  private final String name;
-  private final String uri;
+    private final String name;
+    private final String uri;
 
-  public static final Creator<UiNamespace> CREATOR =
-      new Creator<>() {
-        @NonNull
-        @Contract("_ -> new")
-        @Override
-        public UiNamespace createFromParcel(Parcel source) {
-          return new UiNamespace(source);
-        }
+    public static final Creator<UiNamespace> CREATOR =
+            new Creator<>() {
+                @NonNull
+                @Contract("_ -> new")
+                @Override
+                public UiNamespace createFromParcel(Parcel source) {
+                    return new UiNamespace(source);
+                }
 
-        @NonNull
-        @Contract(value = "_ -> new", pure = true)
-        @Override
-        public UiNamespace[] newArray(int size) {
-          return new UiNamespace[0];
-        }
-      };
+                @NonNull
+                @Contract(value = "_ -> new", pure = true)
+                @Override
+                public UiNamespace[] newArray(int size) {
+                    return new UiNamespace[0];
+                }
+            };
 
-  public UiNamespace(String name, String uri) {
-    this.name = name;
-    this.uri = uri;
-  }
-
-  private UiNamespace(@NonNull Parcel in) {
-    this.name = in.readString();
-    this.uri = in.readString();
-  }
-
-  @NonNull
-  @Override
-  public String toString() {
-    return "UiNamespace{" + "name='" + name + '\'' + ", uri='" + uri + '\'' + '}';
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    public UiNamespace(String name, String uri) {
+        this.name = name;
+        this.uri = uri;
     }
 
-    if (!(o instanceof UiNamespace)) {
-      return false;
+    private UiNamespace(@NonNull Parcel in) {
+        this.name = in.readString();
+        this.uri = in.readString();
     }
 
-    UiNamespace that = (UiNamespace) o;
+    @NonNull
+    @Override
+    public String toString() {
+        return "UiNamespace{" + "name='" + name + '\'' + ", uri='" + uri + '\'' + '}';
+    }
 
-    // name doesn't matter while
-    // check for URI
-    return Objects.equals(getUri(), that.getUri());
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(getUri());
-  }
+        if (!(o instanceof UiNamespace)) {
+            return false;
+        }
 
-  @Override
-  public String getName() {
-    return name;
-  }
+        UiNamespace that = (UiNamespace) o;
 
-  @Override
-  public String getUri() {
-    return uri;
-  }
+        // name doesn't matter while
+        // check for URI
+        return Objects.equals(getUri(), that.getUri());
+    }
 
-  @Override
-  public int describeContents() {
-    return 0;
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUri());
+    }
 
-  @Override
-  public void writeToParcel(@NonNull Parcel dest, int flags) {
-    dest.writeString(name);
-    dest.writeString(uri);
-  }
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getUri() {
+        return uri;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(uri);
+    }
 }

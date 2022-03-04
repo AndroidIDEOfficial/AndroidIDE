@@ -24,22 +24,22 @@ import com.itsaky.lsp.util.DefaultServerSettings;
  */
 public class AbstractServiceProvider implements ConfigurableServiceProvider {
 
-  private IServerSettings settings;
+    private IServerSettings settings;
 
-  public AbstractServiceProvider() {
-    this.settings = new DefaultServerSettings();
-  }
-
-  @Override
-  public void applySettings(IServerSettings settings) {
-    if (settings == null) {
-      settings = new DefaultServerSettings();
+    public AbstractServiceProvider() {
+        this.settings = new DefaultServerSettings();
     }
 
-    this.settings = settings;
-  }
+    @Override
+    public void applySettings(IServerSettings settings) {
+        if (settings == null) {
+            settings = new DefaultServerSettings();
+        }
 
-  public IServerSettings getSettings() {
-    return settings;
-  }
+        this.settings = settings;
+    }
+
+    public IServerSettings getSettings() {
+        return settings;
+    }
 }

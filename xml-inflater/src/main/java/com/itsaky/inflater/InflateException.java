@@ -22,15 +22,15 @@ package com.itsaky.inflater;
 /** Thrown when there was an error inflating the layout */
 public class InflateException extends RuntimeException {
 
-  public InflateException(String message) {
-    super(message);
-  }
+    public InflateException(String message) {
+        super(message);
+    }
 
-  public InflateException(Throwable th) {
-    super(th);
-  }
+    public InflateException(Throwable th) {
+        super(th);
+    }
 
-  public InflateException(String msg, Throwable th) {
-    super(msg, th);
-  }
+    public InflateException(String msg, Throwable th) {
+        super(msg, th);
+    }
 }

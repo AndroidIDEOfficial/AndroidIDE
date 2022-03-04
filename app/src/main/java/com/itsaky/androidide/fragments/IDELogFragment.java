@@ -21,13 +21,13 @@ import com.itsaky.androidide.utils.Logger;
 
 public class IDELogFragment extends SimpleOutputFragment {
 
-  private final Logger.LogListener listener = this::log;
+    private final Logger.LogListener listener = this::log;
 
-  public IDELogFragment() {
-    Logger.addLogListener(listener);
-  }
+    public IDELogFragment() {
+        Logger.addLogListener(listener);
+    }
 
-  private void log(int priority, String tag, String message) {
-    appendOutput(String.format("%s: %s", tag, message));
-  }
+    private void log(int priority, String tag, String message) {
+        appendOutput(String.format("%s: %s", tag, message));
+    }
 }

@@ -18,8 +18,10 @@
 package com.itsaky.lsp.java.utils;
 
 import androidx.annotation.NonNull;
+
 import com.google.common.reflect.ClassPath;
 import com.itsaky.androidide.utils.Logger;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,41 +33,41 @@ import java.util.Set;
 
 public class ScanClassPath {
 
-  public static Set<String> classPathTopLevelClasses(Set<Path> classPath) {
-    LOG.info(
-        String.format(
-            Locale.getDefault(),
-            "Searching for top-level classes in %d classpath locations",
-            classPath.size()));
+    public static Set<String> classPathTopLevelClasses(Set<Path> classPath) {
+        LOG.info(
+                String.format(
+                        Locale.getDefault(),
+                        "Searching for top-level classes in %d classpath locations",
+                        classPath.size()));
 
-    URL[] urls = classPath.stream().map(ScanClassPath::toUrl).toArray(URL[]::new);
-    ClassLoader classLoader = new URLClassLoader(urls, null);
+        URL[] urls = classPath.stream().map(ScanClassPath::toUrl).toArray(URL[]::new);
+        ClassLoader classLoader = new URLClassLoader(urls, null);
 
-    ClassPath scanner;
+        ClassPath scanner;
 
-    try {
-      scanner = ClassPath.from(classLoader);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+        try {
+            scanner = ClassPath.from(classLoader);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Set<String> classes = new HashSet<>();
+        for (ClassPath.ClassInfo c : scanner.getTopLevelClasses()) {
+            classes.add(c.getName());
+        }
+
+        LOG.info(String.format(Locale.ROOT, "Found %d classes in classpath", classes.size()));
+
+        return classes;
     }
 
-    Set<String> classes = new HashSet<>();
-    for (ClassPath.ClassInfo c : scanner.getTopLevelClasses()) {
-      classes.add(c.getName());
+    private static URL toUrl(@NonNull Path p) {
+        try {
+            return p.toUri().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    LOG.info(String.format(Locale.ROOT, "Found %d classes in classpath", classes.size()));
-
-    return classes;
-  }
-
-  private static URL toUrl(@NonNull Path p) {
-    try {
-      return p.toUri().toURL();
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private static final Logger LOG = Logger.instance("ScanClassPath");
+    private static final Logger LOG = Logger.instance("ScanClassPath");
 }

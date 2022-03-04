@@ -17,9 +17,12 @@
 package com.itsaky.androidide.language;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.lsp.models.DiagnosticItem;
+
 import io.github.rosemoe.sora.lang.Language;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -30,22 +33,22 @@ import java.util.List;
  */
 public abstract class IDELanguage implements Language {
 
-  @Override
-  public boolean useTab() {
-    return false;
-  }
+    @Override
+    public boolean useTab() {
+        return false;
+    }
 
-  public int getTabSize() {
-    return StudioApp.getInstance().getPrefManager().getEditorTabSize();
-  }
+    public int getTabSize() {
+        return StudioApp.getInstance().getPrefManager().getEditorTabSize();
+    }
 
-  /**
-   * Get the diagnostics from the last analyze.
-   *
-   * @return The diagnostics. Must not be null.
-   */
-  @NonNull
-  public List<DiagnosticItem> getDiagnostics() {
-    return Collections.emptyList();
-  }
+    /**
+     * Get the diagnostics from the last analyze.
+     *
+     * @return The diagnostics. Must not be null.
+     */
+    @NonNull
+    public List<DiagnosticItem> getDiagnostics() {
+        return Collections.emptyList();
+    }
 }
