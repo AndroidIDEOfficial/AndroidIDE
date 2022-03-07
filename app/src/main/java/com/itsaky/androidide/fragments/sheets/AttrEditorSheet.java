@@ -17,18 +17,6 @@
 
 package com.itsaky.androidide.fragments.sheets;
 
-import static com.itsaky.androidide.utils.AttributeDialogs.booleanEditor;
-import static com.itsaky.androidide.utils.AttributeDialogs.colorPicker;
-import static com.itsaky.androidide.utils.AttributeDialogs.enumEditor;
-import static com.itsaky.androidide.utils.AttributeDialogs.flagEditor;
-import static com.itsaky.attrinfo.models.Attr.BOOLEAN;
-import static com.itsaky.attrinfo.models.Attr.COLOR;
-import static com.itsaky.attrinfo.models.Attr.DIMENSION;
-import static com.itsaky.attrinfo.models.Attr.ENUM;
-import static com.itsaky.attrinfo.models.Attr.FLAG;
-import static com.itsaky.attrinfo.models.Attr.STRING;
-
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +24,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.transition.TransitionManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -44,12 +31,10 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.SimpleIconTextAdapter;
 import com.itsaky.androidide.adapters.XMLAttributeListAdapter;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.colorpicker.ColorPickerView;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetBinding;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetItemBinding;
 import com.itsaky.androidide.models.IconTextListItem;
 import com.itsaky.androidide.models.XMLAttribute;
-import com.itsaky.androidide.utils.AttributeDialogs;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.attrinfo.models.Attr;
@@ -111,13 +96,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
         
         setupViewData ();
         
-        AttributeDialogs.init (requireActivity ());
-    }
-    
-    @Override
-    public void onDismiss (@NonNull DialogInterface dialog) {
-        AttributeDialogs.release ();
-        super.onDismiss (dialog);
     }
     
     public AttrEditorSheet setDeletionFailedListener (OnViewDeletionFailedListener listener) {
@@ -175,38 +153,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
     
     private void showValueEditorSheet (@NonNull XMLAttribute attribute) {
         getValueEditorSheet (attribute).show (getChildFragmentManager (), "attr_value_editor_sheet");
-    }
-    
-    private void showEditorDialog (@NonNull XMLAttribute attribute) {
-        final var attr = attribute.getAttr ();
-        final var values = attr.possibleValues.toArray (new String[0]);
-        final AttributeDialogs.OnClickListener onDone =
-                (dialog, which, newValue) -> applyNewValue (attribute, newValue);
-        
-        final ColorPickerView.OnPickListener mPickListener =
-                (color, hexCode) -> applyNewValue (attribute, hexCode);
-        
-        AlertDialog dialog = null;
-        if (attribute.hasFormat (DIMENSION)) {
-            dialog = AttributeDialogs.dimensionEditor (attribute.getValue (), onDone);
-        } else if (attribute.hasFormat (STRING)) {
-            dialog = AttributeDialogs.stringEditor (onDone);
-        } else if (attribute.hasFormat (BOOLEAN)) {
-            dialog = booleanEditor (onDone);
-        } else if (attribute.hasFormat (ENUM)) {
-            dialog = enumEditor (values, attribute.getValue (), onDone);
-        } else if (attribute.hasFormat (FLAG)) {
-            dialog = flagEditor (values, attribute.getValue (), onDone);
-        } else if (attribute.hasFormat (COLOR)) {
-            // TODO Implement something to allow values from colors.xml or ColorStateLists
-            //    Make this color picker optional
-            dialog = colorPicker (mPickListener);
-        }
-        
-        if (dialog != null) {
-            dialog.setTitle (String.format ("%s:%s", attribute.getNamespace ().getName (), attribute.getAttributeName ()));
-            dialog.show ();
-        }
     }
     
     private void applyNewValue (@NonNull IAttribute attribute, String newValue) {
