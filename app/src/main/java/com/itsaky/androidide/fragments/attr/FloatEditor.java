@@ -20,5 +20,4 @@ package com.itsaky.androidide.fragments.attr;
 /**
  * @author Akash Yadav
  */
-public class FloatEditor extends BaseValueEditorFragment {
-}
+public class FloatEditor extends BaseValueEditorFragment {}

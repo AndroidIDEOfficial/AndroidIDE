@@ -31,41 +31,39 @@ import java.util.Objects;
  * @author Akash Yadav
  */
 public class BaseValueEditorFragment extends Fragment {
-    
+
     protected OnValueChangeListener mValueChangeListener;
     protected XMLAttribute attribute;
     protected String name;
-    
-    public void setAttribute (XMLAttribute attribute) {
+
+    public void setAttribute(XMLAttribute attribute) {
         this.attribute = attribute;
     }
-    
-    public void setName (String name) {
+
+    public void setName(String name) {
         this.name = name;
     }
-    
-    public void setOnValueChangeListener (OnValueChangeListener listener) {
+
+    public void setOnValueChangeListener(OnValueChangeListener listener) {
         this.mValueChangeListener = listener;
     }
-    
-    protected void notifyValueChanged (@NonNull String newValue) {
-        Objects.requireNonNull (newValue);
-        
+
+    protected void notifyValueChanged(@NonNull String newValue) {
+        Objects.requireNonNull(newValue);
+
         if (mValueChangeListener != null) {
-            mValueChangeListener.onValueChanged (this.attribute, newValue);
+            mValueChangeListener.onValueChanged(this.attribute, newValue);
         }
     }
-    
-    /**
-     * Listener for listening for value change event.
-     */
+
+    /** Listener for listening for value change event. */
     public interface OnValueChangeListener {
         /**
          * Called when the value was changed.
          *
          * @param attribute The attribute whose value was changed.
-         * @param newValue  The new value for the editor.
+         * @param newValue The new value for the editor.
          */
-        void onValueChanged (IAttribute attribute, String newValue);
+        void onValueChanged(IAttribute attribute, String newValue);
     }
 }

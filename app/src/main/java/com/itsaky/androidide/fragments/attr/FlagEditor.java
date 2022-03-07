@@ -20,5 +20,4 @@ package com.itsaky.androidide.fragments.attr;
 /**
  * @author Akash Yadav
  */
-public class FlagEditor extends BaseValueEditorFragment {
-}
+public class FlagEditor extends BaseValueEditorFragment {}

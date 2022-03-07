@@ -167,9 +167,8 @@ public class EditorTextActionWindow extends EditorPopupWindow
                 View.MeasureSpec.makeMeasureSpec(
                         (int)
                                 ((int) (260 * editor.getDpUnit())
-                                        - dp16
-                                                * 2), // 260dp at most and 16dp margins from top and
-                                                      // bottom
+                                        - dp16 * 2), // 260dp at most and 16dp margins from top and
+                        // bottom
                         View.MeasureSpec.AT_MOST));
         setSize(this.actionsList.getMeasuredWidth(), this.actionsList.getMeasuredHeight());
 

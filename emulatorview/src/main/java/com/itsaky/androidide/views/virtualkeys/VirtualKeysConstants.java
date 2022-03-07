@@ -88,22 +88,16 @@ public class VirtualKeysConstants {
                         // Tab_key,
                         // Delete_key}
                         put("ENTER", "↲"); // U+21B2 ↲ DOWNWARDS ARROW WITH TIP LEFTWARDS
-                        put(
-                                "TAB",
-                                "↹"); // U+21B9 ↹ LEFTWARDS ARROW TO BAR OVER RIGHTWARDS ARROW TO
-                                      // BAR
-                        put(
-                                "BKSP",
-                                "⌫"); // U+232B ⌫ ERASE TO THE LEFT sometimes seen and easy to
-                                      // understand
-                        put(
-                                "DEL",
-                                "⌦"); // U+2326 ⌦ ERASE TO THE RIGHT not well known but easy to
-                                      // understand
+                        put("TAB", "↹"); // U+21B9 ↹ LEFTWARDS ARROW TO BAR OVER RIGHTWARDS ARROW TO
+                        // BAR
+                        put("BKSP", "⌫"); // U+232B ⌫ ERASE TO THE LEFT sometimes seen and easy to
+                        // understand
+                        put("DEL", "⌦"); // U+2326 ⌦ ERASE TO THE RIGHT not well known but easy to
+                        // understand
                         put(
                                 "DRAWER",
                                 "☰"); // U+2630 ☰ TRIGRAM FOR HEAVEN not well known but easy to
-                                      // understand
+                        // understand
                         put(
                                 "KEYBOARD",
                                 "⌨"); // U+2328 ⌨ KEYBOARD not well known but easy to understand
@@ -126,11 +120,11 @@ public class VirtualKeysConstants {
                         put(
                                 "PGUP",
                                 "⇑"); // no ISO character exists, U+21D1 ⇑ UPWARDS DOUBLE ARROW will
-                                      // do the trick
+                        // do the trick
                         put(
                                 "PGDN",
                                 "⇓"); // no ISO character exists, U+21D3 ⇓ DOWNWARDS DOUBLE ARROW
-                                      // will do the trick
+                        // will do the trick
                     }
                 };
 
@@ -155,19 +149,19 @@ public class VirtualKeysConstants {
                         put(
                                 "CTRL",
                                 "⎈"); // ISO character "U+2388 ⎈ HELM SYMBOL" is unknown to people
-                                      // and never printed
+                        // and never printed
                         // on computers, however "U+25C7 ◇ WHITE DIAMOND" is a nice presentation,
                         // and
                         // "^" for terminal app and mac is often used
                         put(
                                 "ALT",
                                 "⎇"); // ISO character "U+2387 ⎇ ALTERNATIVE KEY SYMBOL'" is unknown
-                                      // to people and
+                        // to people and
                         // only printed as the Option key "⌥" on Mac computer
                         put(
                                 "ESC",
                                 "⎋"); // ISO character "U+238B ⎋ BROKEN CIRCLE WITH NORTHWEST ARROW"
-                                      // is unknown to
+                        // is unknown to
                         // people and not often printed on computers
                     }
                 };
@@ -236,7 +230,7 @@ public class VirtualKeysConstants {
                     put(
                             "RETURN",
                             "ENTER"); // Technically different keys, but most applications won't see
-                                      // the
+                    // the
                     // difference
                     put("FUNCTION", "FN");
                     // no alias for ALT

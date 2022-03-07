@@ -305,7 +305,7 @@ public class CommonParseUtils {
                         typeAndValue.split(
                                 Pattern.quote(
                                         "/")); // For @android:color/white, it will be ["color",
-                                               // "white"]
+                // "white"]
                 final String type = split[0];
                 final String typeVal = split[1];
                 final int id = findFrameworkResourceId(type, typeVal);

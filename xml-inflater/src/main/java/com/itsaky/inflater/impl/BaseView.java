@@ -266,11 +266,8 @@ public abstract class BaseView implements IView {
 
         if (!attributes.isEmpty()) {
             for (var attr : attributes) {
-                newLine(
-                        sb,
-                        indentCount
-                                + 1); // Attributes must be indented by one tab (4 spaces by
-                                      // default)
+                newLine(sb, indentCount + 1); // Attributes must be indented by one tab (4 spaces by
+                // default)
                 attr.getNamespace();
                 if (attr.getNamespace() != null && attr.getNamespace().getName().length() > 0) {
                     sb.append(attr.getNamespace().getName());

@@ -109,7 +109,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
             if (doc.childrenSize() > 1) {
                 throw new InflateException(
                         "More than one root element was found. An XML layout can have only one root"
-                            + " element.");
+                                + " element.");
             }
 
             IView root = onCreateView(doc.child(0), parent, null);

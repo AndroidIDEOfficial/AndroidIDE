@@ -605,7 +605,7 @@ public final class TerminalEmulator {
             case 0: // Null character (NUL, ^@). Do nothing.
                 break;
             case 7: // Bell (BEL, ^G, \a). If in an OSC sequence, BEL may terminate a string;
-                    // otherwise
+                // otherwise
                 // signal bell.
                 if (mEscapeState == ESC_OSC) doOsc(b);
                 else mSession.onBell();
@@ -641,12 +641,12 @@ public final class TerminalEmulator {
                 setCursorCol(mLeftMargin);
                 break;
             case 14: // Shift Out (Ctrl-N, SO) → Switch to Alternate Character Set. This invokes the
-                     // G1
+                // G1
                 // character set.
                 mUseLineDrawingUsesG0 = false;
                 break;
             case 15: // Shift In (Ctrl-O, SI) → Switch to Standard Character Set. This invokes the
-                     // G0
+                // G0
                 // character set.
                 mUseLineDrawingUsesG0 = true;
                 break;
@@ -693,9 +693,8 @@ public final class TerminalEmulator {
                         doCsi(b);
                         break;
                     case ESC_CSI_EXCLAMATION:
-                        if (b
-                                == 'p') { // Soft terminal reset (DECSTR,
-                                          // http://vt100.net/docs/vt510-rm/DECSTR).
+                        if (b == 'p') { // Soft terminal reset (DECSTR,
+                            // http://vt100.net/docs/vt510-rm/DECSTR).
                             reset();
                         } else {
                             unknownSequence(b);
@@ -876,7 +875,7 @@ public final class TerminalEmulator {
                                                 true; // True if setting, false if clearing.
                                         switch (getArg(i, 0, false)) {
                                             case 0: // Attributes off (no bold, no underline, no
-                                                    // blink, positive image).
+                                                // blink, positive image).
                                                 bits =
                                                         (TextStyle.CHARACTER_ATTRIBUTE_BOLD
                                                                 | TextStyle
@@ -974,7 +973,7 @@ public final class TerminalEmulator {
                             blockClear(mCursorCol, 0, columnsToInsert, mRows);
                         } else if (b
                                 == '~') { // Delete Ps Column(s) (default = 1) (DECDC), VT420 and
-                                          // up.
+                            // up.
                             int columnsAfterCursor = mRightMargin - mCursorCol;
                             int columnsToDelete = Math.min(getArg0(1), columnsAfterCursor);
                             int columnsToMove = columnsAfterCursor - columnsToDelete;
@@ -1020,9 +1019,8 @@ public final class TerminalEmulator {
                                     mClient.logError(
                                             LOG_TAG,
                                             "Got DECRQM for unrecognized private DEC mode=" + mode);
-                                    value =
-                                            0; // 0=not recognized, 3=permanently set, 4=permanently
-                                               // reset
+                                    value = 0; // 0=not recognized, 3=permanently set, 4=permanently
+                                    // reset
                                 }
                             }
                             mSession.write(String.format(Locale.US, "\033[?%d;%d$y", mode, value));
@@ -1248,7 +1246,7 @@ public final class TerminalEmulator {
     private void doCsiQuestionMark(int b) {
         switch (b) {
             case 'J': // Selective erase in display (DECSED) -
-                      // http://www.vt100.net/docs/vt510-rm/DECSED.
+                // http://www.vt100.net/docs/vt510-rm/DECSED.
             case 'K': // Selective erase in line (DECSEL) - http://vt100.net/docs/vt510-rm/DECSEL.
                 mAboutToAutoWrap = false;
                 int fillChar = ' ';
@@ -1622,7 +1620,7 @@ public final class TerminalEmulator {
                 continueSequence(ESC_SELECT_RIGHT_PAREN);
                 break;
             case '6': // Back index (http://www.vt100.net/docs/vt510-rm/DECBI). Move left, insert
-                      // blank
+                // blank
                 // column if start.
                 if (mCursorCol > mLeftMargin) {
                     mCursorCol--;
@@ -1651,7 +1649,7 @@ public final class TerminalEmulator {
                 restoreCursor();
                 break;
             case '9': // Forward Index (http://www.vt100.net/docs/vt510-rm/DECFI). Move right,
-                      // insert
+                // insert
                 // blank column if end.
                 if (mCursorCol < mRightMargin - 1) {
                     mCursorCol++;
@@ -1840,7 +1838,7 @@ public final class TerminalEmulator {
                 // ED ignores the scrolling margins.
                 switch (getArg0(0)) {
                     case 0: // Erase from the active position to the end of the screen, inclusive
-                            // (default).
+                        // (default).
                         blockClear(mCursorCol, mCursorRow, mColumns - mCursorCol);
                         blockClear(0, mCursorRow + 1, mColumns, mRows - (mCursorRow + 1));
                         break;
@@ -1849,7 +1847,7 @@ public final class TerminalEmulator {
                         blockClear(0, mCursorRow, mCursorCol + 1);
                         break;
                     case 2: // Erase all of the display - all lines are erased, changed to
-                            // single-width, and
+                        // single-width, and
                         // the cursor does not
                         // move..
                         blockClear(0, 0, mColumns, mRows);
@@ -1994,7 +1992,7 @@ public final class TerminalEmulator {
                 continueSequence(ESC_CSI_BIGGERTHAN);
                 break;
             case '`': // Horizontal position absolute (HPA -
-                      // http://www.vt100.net/docs/vt510-rm/HPA).
+                // http://www.vt100.net/docs/vt510-rm/HPA).
                 setCursorColRespectingOriginMode(getArg0(1) - 1);
                 break;
             case 'b': // Repeat the preceding graphic character Ps times (REP).
@@ -2003,7 +2001,7 @@ public final class TerminalEmulator {
                 for (int i = 0; i < numRepeat; i++) emitCodePoint(mLastEmittedCodePoint);
                 break;
             case 'c': // Primary Device Attributes (http://www.vt100.net/docs/vt510-rm/DA1) if
-                      // argument is
+                // argument is
                 // missing or zero.
                 // The important part that may still be used by some (tmux stores this value but
                 // does not
@@ -2104,7 +2102,7 @@ public final class TerminalEmulator {
             case 't': // Window manipulation (from dtterm, as well as extensions)
                 switch (getArg0(0)) {
                     case 11: // Report xterm window state. If the xterm window is open
-                             // (non-iconified), it
+                        // (non-iconified), it
                         // returns CSI 1 t .
                         mSession.write("\033[1t");
                         break;
@@ -2118,12 +2116,12 @@ public final class TerminalEmulator {
                                         Locale.US, "\033[4;%d;%dt", mRows * 12, mColumns * 12));
                         break;
                     case 18: // Report the size of the text area in characters. Result is CSI 8 ;
-                             // height ;
+                        // height ;
                         // width t
                         mSession.write(String.format(Locale.US, "\033[8;%d;%dt", mRows, mColumns));
                         break;
                     case 19: // Report the size of the screen in characters. Result is CSI 9 ;
-                             // height ; width
+                        // height ; width
                         // t
                         // We report the same size as the view, since it's the view really isn't
                         // resizable from
@@ -2131,12 +2129,12 @@ public final class TerminalEmulator {
                         mSession.write(String.format(Locale.US, "\033[9;%d;%dt", mRows, mColumns));
                         break;
                     case 20: // Report xterm windows icon label. Result is OSC L label ST. Disabled
-                             // due to
+                        // due to
                         // security concerns:
                         mSession.write("\033]LIconLabel\033\\");
                         break;
                     case 21: // Report xterm windows title. Result is OSC l label ST. Disabled due
-                             // to security
+                        // to security
                         // concerns:
                         mSession.write("\033]l\033\\");
                         break;
@@ -2211,9 +2209,8 @@ public final class TerminalEmulator {
             } else if (code == 22) { // Normal color or intensity, neither bright, bold nor faint.
                 mEffect &=
                         ~(TextStyle.CHARACTER_ATTRIBUTE_BOLD | TextStyle.CHARACTER_ATTRIBUTE_DIM);
-            } else if (code
-                    == 23) { // not italic, but rarely used as such; clears standout with
-                             // TERM=screen
+            } else if (code == 23) { // not italic, but rarely used as such; clears standout with
+                // TERM=screen
                 mEffect &= ~TextStyle.CHARACTER_ATTRIBUTE_ITALIC;
             } else if (code == 24) { // underline: none
                 mEffect &= ~TextStyle.CHARACTER_ATTRIBUTE_UNDERLINE;

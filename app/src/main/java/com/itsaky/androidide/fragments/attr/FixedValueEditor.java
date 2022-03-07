@@ -34,31 +34,41 @@ import com.itsaky.androidide.R;
  * @author Akash Yadav
  */
 public abstract class FixedValueEditor extends BaseValueEditorFragment {
-    
+
     protected ChipGroup chipGroup;
-    
+
     @Nullable
     @Override
-    public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.chipGroup = new ChipGroup (inflater.getContext ());
-        this.chipGroup.setLayoutParams (new ViewGroup.LayoutParams (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        this.chipGroup.setSelectionRequired (true);
-        this.chipGroup.setSingleSelection (false);
-        
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        this.chipGroup = new ChipGroup(inflater.getContext());
+        this.chipGroup.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        this.chipGroup.setSelectionRequired(true);
+        this.chipGroup.setSingleSelection(false);
+
         return this.chipGroup;
     }
-    
-    protected Chip newChip (String title, boolean checked) {
-        final var chip = new Chip (requireContext ());
-        chip.setText (title);
-        chip.setCheckedIcon (ContextCompat.getDrawable (requireContext (), R.drawable.ic_ok));
-        chip.setChecked (checked);
-        chip.setChipBackgroundColor (ContextCompat.getColorStateList (requireContext (), R.color.bg_enum_chips));
-        chip.setTextColor (ContextCompat.getColor (requireContext (), R.color.primaryTextColor));
-        chip.setLayoutParams (new ChipGroup.LayoutParams (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        chip.setChipStrokeWidth (1f);
-        chip.setChipStrokeColor (ColorStateList.valueOf (ContextCompat.getColor (requireContext (), R.color.primaryDarkColor)));
-        
+
+    protected Chip newChip(String title, boolean checked) {
+        final var chip = new Chip(requireContext());
+        chip.setText(title);
+        chip.setCheckedIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_ok));
+        chip.setChecked(checked);
+        chip.setChipBackgroundColor(
+                ContextCompat.getColorStateList(requireContext(), R.color.bg_enum_chips));
+        chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.primaryTextColor));
+        chip.setLayoutParams(
+                new ChipGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        chip.setChipStrokeWidth(1f);
+        chip.setChipStrokeColor(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.primaryDarkColor)));
+
         return chip;
     }
 }

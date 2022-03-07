@@ -39,90 +39,94 @@ import java.util.Objects;
  */
 @SuppressWarnings("deprecation")
 public class AttrValueFormatTabAdapter extends FragmentStatePagerAdapter {
-    
-    private static final Logger LOG = Logger.instance ("AttrValueEditorTabAdapter");
-    private final List<Fragment> mFragments = new ArrayList<> ();
-    private final List<String> mTitles = new ArrayList<> ();
+
+    private static final Logger LOG = Logger.instance("AttrValueEditorTabAdapter");
+    private final List<Fragment> mFragments = new ArrayList<>();
+    private final List<String> mTitles = new ArrayList<>();
     private final XMLAttribute attribute;
-    
+
     private final BaseValueEditorFragment.OnValueChangeListener changeListener;
-    
-    public AttrValueFormatTabAdapter (@NonNull FragmentManager manager, XMLAttribute attribute, BaseValueEditorFragment.OnValueChangeListener changeListener) {
-        super (manager);
-        Objects.requireNonNull (attribute);
-        
+
+    public AttrValueFormatTabAdapter(
+            @NonNull FragmentManager manager,
+            XMLAttribute attribute,
+            BaseValueEditorFragment.OnValueChangeListener changeListener) {
+        super(manager);
+        Objects.requireNonNull(attribute);
+
         this.changeListener = changeListener;
         this.attribute = attribute;
     }
-    
-    public void addFragment (final Class<? extends BaseValueEditorFragment> fragment, String title) {
-        Objects.requireNonNull (fragment);
-        Objects.requireNonNull (title);
-        if (TextUtils.isEmpty (title.trim ())) {
-            throw new IllegalArgumentException ("Invalid tab title");
+
+    public void addFragment(final Class<? extends BaseValueEditorFragment> fragment, String title) {
+        Objects.requireNonNull(fragment);
+        Objects.requireNonNull(title);
+        if (TextUtils.isEmpty(title.trim())) {
+            throw new IllegalArgumentException("Invalid tab title");
         }
-        
-        mTitles.add (capitalize (title));
-        mFragments.add (createFragment (fragment, title));
+
+        mTitles.add(capitalize(title));
+        mFragments.add(createFragment(fragment, title));
     }
-    
+
     @NonNull
-    private String capitalize (String title) {
-        title = title.trim ();
-        
-        final var sb = new StringBuilder ();
-        for (int i = 0; i < title.length (); i++) {
-            var ch = title.charAt (i);
+    private String capitalize(String title) {
+        title = title.trim();
+
+        final var sb = new StringBuilder();
+        for (int i = 0; i < title.length(); i++) {
+            var ch = title.charAt(i);
             if (i == 0) {
-                ch = Character.toUpperCase (ch);
+                ch = Character.toUpperCase(ch);
             } else {
-                ch = Character.toLowerCase (ch);
+                ch = Character.toLowerCase(ch);
             }
-            
-            sb.append (ch);
+
+            sb.append(ch);
         }
-        
-        return sb.toString ();
+
+        return sb.toString();
     }
-    
-    public String getTitle (int position) {
-        return mTitles.get (position);
+
+    public String getTitle(int position) {
+        return mTitles.get(position);
     }
-    
+
     @NonNull
-    public Fragment createFragment (Class<? extends BaseValueEditorFragment> clazz, @NonNull final String name) {
+    public Fragment createFragment(
+            Class<? extends BaseValueEditorFragment> clazz, @NonNull final String name) {
         try {
-            final var frag = clazz.newInstance ();
-            frag.setAttribute (attribute);
-            frag.setName (name);
-            frag.setOnValueChangeListener (this.changeListener);
-            
+            final var frag = clazz.newInstance();
+            frag.setAttribute(attribute);
+            frag.setName(name);
+            frag.setOnValueChangeListener(this.changeListener);
+
             return frag;
         } catch (Throwable th) {
-            LOG.error ("Unable to create value editor fragment", th);
-            throw new RuntimeException (th);
+            LOG.error("Unable to create value editor fragment", th);
+            throw new RuntimeException(th);
         }
     }
-    
-    public void removeAll () {
-        mFragments.clear ();
-        mTitles.clear ();
+
+    public void removeAll() {
+        mFragments.clear();
+        mTitles.clear();
     }
-    
+
     @NonNull
     @Override
-    public Fragment getItem (int position) {
-        return mFragments.get (position);
+    public Fragment getItem(int position) {
+        return mFragments.get(position);
     }
-    
+
     @Override
-    public int getCount () {
-        return mFragments.size ();
+    public int getCount() {
+        return mFragments.size();
     }
-    
+
     @Nullable
     @Override
-    public CharSequence getPageTitle (int position) {
-        return mTitles.get (position);
+    public CharSequence getPageTitle(int position) {
+        return mTitles.get(position);
     }
 }

@@ -32,29 +32,30 @@ import java.util.Objects;
  * @author Akash Yadav
  */
 public class EnumEditor extends FixedValueEditor {
-    
+
     @Override
-    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated (view, savedInstanceState);
-        
-        Objects.requireNonNull (this.attribute);
-        Objects.requireNonNull (this.chipGroup);
-        
-        this.chipGroup.setSingleSelection (true);
-        
-        final var attr = this.attribute.getAttr ();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Objects.requireNonNull(this.attribute);
+        Objects.requireNonNull(this.chipGroup);
+
+        this.chipGroup.setSingleSelection(true);
+
+        final var attr = this.attribute.getAttr();
         for (var value : attr.possibleValues) {
-            if (TextUtils.isEmpty (value)) {
+            if (TextUtils.isEmpty(value)) {
                 continue;
             }
-            
-            this.chipGroup.addView (newChip (value, value.equals (this.attribute.getValue ())));
+
+            this.chipGroup.addView(newChip(value, value.equals(this.attribute.getValue())));
         }
-        
-        this.chipGroup.setOnCheckedChangeListener ((group, checkedId) -> {
-            final var chip = (Chip) group.findViewById (checkedId);
-            final var val = chip.getText ().toString ().trim ();
-            notifyValueChanged (val);
-        });
+
+        this.chipGroup.setOnCheckedChangeListener(
+                (group, checkedId) -> {
+                    final var chip = (Chip) group.findViewById(checkedId);
+                    final var val = chip.getText().toString().trim();
+                    notifyValueChanged(val);
+                });
     }
 }

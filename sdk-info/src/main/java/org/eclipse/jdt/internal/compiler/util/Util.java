@@ -506,7 +506,7 @@ public class Util {
                 && start
                         >= string.length
                                 - 1) { // unless "-*" we need at least one more char, e.g. after
-                                       // "+[", other
+            // "+[", other
             // variants are even longer
             throw new IllegalArgumentException();
         }

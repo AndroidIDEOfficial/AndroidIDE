@@ -64,86 +64,92 @@ import java.util.Objects;
  * @author Akash Yadav
  */
 public class AttrValueEditorSheet extends BottomSheetDialogFragment {
-    
+
     private static final String KEY_ATTRIBUTE = "attrEditorSheet_attribute";
     private LayoutAttrValueEditorBinding binding;
     private AttrValueFormatTabAdapter adapter;
     private XMLAttribute attribute;
-    
+
     private BaseValueEditorFragment.OnValueChangeListener changeListener;
-    
-    public void setOnValueChangeListener (BaseValueEditorFragment.OnValueChangeListener changeListener) {
+
+    public void setOnValueChangeListener(
+            BaseValueEditorFragment.OnValueChangeListener changeListener) {
         this.changeListener = changeListener;
     }
-    
+
     @NonNull
-    public static AttrValueEditorSheet newInstance (final XMLAttribute attribute) {
-        Objects.requireNonNull (attribute);
-        
-        final var args = new Bundle ();
-        args.putParcelable (KEY_ATTRIBUTE, attribute);
-        
-        final var fragment = new AttrValueEditorSheet ();
-        fragment.setArguments (args);
+    public static AttrValueEditorSheet newInstance(final XMLAttribute attribute) {
+        Objects.requireNonNull(attribute);
+
+        final var args = new Bundle();
+        args.putParcelable(KEY_ATTRIBUTE, attribute);
+
+        final var fragment = new AttrValueEditorSheet();
+        fragment.setArguments(args);
         return fragment;
     }
-    
+
     @Nullable
     @Override
-    public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        this.binding = LayoutAttrValueEditorBinding.inflate (inflater, container, false);
-        return binding.getRoot ();
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        this.binding = LayoutAttrValueEditorBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
-    
+
     @Override
-    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated (view, savedInstanceState);
-        
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         if (attribute == null) {
-            this.attribute = requireArguments ().getParcelable (KEY_ATTRIBUTE);
+            this.attribute = requireArguments().getParcelable(KEY_ATTRIBUTE);
         }
-        
-        Objects.requireNonNull (this.attribute);
-        
-        final var namespace = this.attribute.getNamespace ();
-        final var formatText = Attr.createFormatText (attribute.getFormat ());
-        this.binding.attributeName.setText (String.format ("%s:%s", namespace.getName (), attribute.getAttributeName ()));
-        this.binding.attributeFormat.setText (formatText);
-        
-        setupTabs (formatText);
+
+        Objects.requireNonNull(this.attribute);
+
+        final var namespace = this.attribute.getNamespace();
+        final var formatText = Attr.createFormatText(attribute.getFormat());
+        this.binding.attributeName.setText(
+                String.format("%s:%s", namespace.getName(), attribute.getAttributeName()));
+        this.binding.attributeFormat.setText(formatText);
+
+        setupTabs(formatText);
     }
-    
+
     @SuppressLint("NotifyDataSetChanged")
-    private void setupTabs (@NonNull String formatText) {
-        this.binding.tabs.removeAllTabs ();
-        this.binding.pager.setSaveEnabled (false);
-        
+    private void setupTabs(@NonNull String formatText) {
+        this.binding.tabs.removeAllTabs();
+        this.binding.pager.setSaveEnabled(false);
+
         if (this.adapter != null) {
-            this.adapter.removeAll ();
-            this.adapter.notifyDataSetChanged ();
+            this.adapter.removeAll();
+            this.adapter.notifyDataSetChanged();
         }
-        
-        this.adapter = new AttrValueFormatTabAdapter (getChildFragmentManager (), attribute, changeListener);
-        
-        final var formats = formatText.split ("\\|");
+
+        this.adapter =
+                new AttrValueFormatTabAdapter(getChildFragmentManager(), attribute, changeListener);
+
+        final var formats = formatText.split("\\|");
         for (var formatName : formats) {
-            if (TextUtils.isEmpty (formatName) || formatName.length () < 2) {
+            if (TextUtils.isEmpty(formatName) || formatName.length() < 2) {
                 continue;
             }
-            
-            final var frag = getFragmentClass (formatName);
+
+            final var frag = getFragmentClass(formatName);
             if (frag != null) {
-                this.adapter.addFragment (frag, formatName);
+                this.adapter.addFragment(frag, formatName);
             }
         }
-        
-        binding.pager.setAdapter (this.adapter);
-        binding.tabs.setupWithViewPager (binding.pager);
+
+        binding.pager.setAdapter(this.adapter);
+        binding.tabs.setupWithViewPager(binding.pager);
     }
-    
+
     @Nullable
     @Contract(pure = true)
-    private Class<? extends BaseValueEditorFragment> getFragmentClass (@NonNull String name) {
+    private Class<? extends BaseValueEditorFragment> getFragmentClass(@NonNull String name) {
         switch (name) {
             case FORMAT_REFERENCE:
                 return ReferenceEditor.class;
@@ -166,12 +172,12 @@ public class AttrValueEditorSheet extends BottomSheetDialogFragment {
             case FORMAT_FLAG:
                 return FlagEditor.class;
         }
-        
+
         return null;
     }
-    
-    public void setAttribute (XMLAttribute attribute) {
-        Objects.requireNonNull (attribute);
+
+    public void setAttribute(XMLAttribute attribute) {
+        Objects.requireNonNull(attribute);
         this.attribute = attribute;
     }
 }

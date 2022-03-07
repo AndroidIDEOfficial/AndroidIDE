@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  * @see com.itsaky.attrinfo.AttrInfo
  */
 public class Attr {
-    
+
     public static final int REFERENCE = 1;
     public static final int COLOR = 1 << 1;
     public static final int BOOLEAN = 1 << 2;
@@ -51,7 +51,7 @@ public class Attr {
     public static final int ENUM = 1 << 8;
     public static final int FLAG = 1 << 9;
     public static final int UNKNOWN = 1 << 10;
-    
+
     public static final String FORMAT_REFERENCE = "reference";
     public static final String FORMAT_COLOR = "color";
     public static final String FORMAT_BOOLEAN = "boolean";
@@ -62,38 +62,38 @@ public class Attr {
     public static final String FORMAT_STRING = "string";
     public static final String FORMAT_ENUM = "enum";
     public static final String FORMAT_FLAG = "flag";
-    
-    private static final Logger LOG = Logger.instance ("AttrInfo::Attr");
-    
+
+    private static final Logger LOG = Logger.instance("AttrInfo::Attr");
+
     public INamespace namespace;
     public String name;
     public Set<String> possibleValues;
     public int format;
-    
-    public Attr (String name) {
-        this (name, INamespace.ANDROID);
+
+    public Attr(String name) {
+        this(name, INamespace.ANDROID);
     }
-    
-    public Attr (String name, INamespace namespace) {
+
+    public Attr(String name, INamespace namespace) {
         this.name = name;
         this.namespace = namespace;
-        this.possibleValues = new TreeSet<> ();
+        this.possibleValues = new TreeSet<>();
     }
-    
-    public static int formatForName (@NonNull String names) {
+
+    public static int formatForName(@NonNull String names) {
         var result = 0;
-        if (names.contains ("|")) {
-            for (var name : names.split (Pattern.quote ("|"))) {
-                result |= formatForSingleName (name);
+        if (names.contains("|")) {
+            for (var name : names.split(Pattern.quote("|"))) {
+                result |= formatForSingleName(name);
             }
         } else {
-            result = formatForSingleName (names);
+            result = formatForSingleName(names);
         }
         return result;
     }
-    
+
     @Contract(pure = true)
-    public static int formatForSingleName (@NonNull String name) {
+    public static int formatForSingleName(@NonNull String name) {
         switch (name) {
             case FORMAT_REFERENCE:
                 return REFERENCE;
@@ -116,70 +116,70 @@ public class Attr {
             case FORMAT_FLAG:
                 return FLAG;
         }
-        
+
         return UNKNOWN;
     }
-    
-    public static String createFormatText (int format) {
-        final var formats = new ArrayList<String> ();
+
+    public static String createFormatText(int format) {
+        final var formats = new ArrayList<String>();
         if ((format & REFERENCE) != 0) {
-            formats.add (FORMAT_REFERENCE);
+            formats.add(FORMAT_REFERENCE);
         }
-        
+
         if ((format & COLOR) != 0) {
-            formats.add (FORMAT_COLOR);
+            formats.add(FORMAT_COLOR);
         }
-        
+
         if ((format & BOOLEAN) != 0) {
-            formats.add (FORMAT_BOOLEAN);
+            formats.add(FORMAT_BOOLEAN);
         }
-        
+
         if ((format & DIMENSION) != 0) {
-            formats.add (FORMAT_DIMENSION);
+            formats.add(FORMAT_DIMENSION);
         }
-        
+
         if ((format & FLOAT) != 0) {
-            formats.add (FORMAT_FLOAT);
+            formats.add(FORMAT_FLOAT);
         }
-        
+
         if ((format & INTEGER) != 0) {
-            formats.add (FORMAT_INTEGER);
+            formats.add(FORMAT_INTEGER);
         }
-        
+
         if ((format & FRACTION) != 0) {
-            formats.add (FORMAT_FRACTION);
+            formats.add(FORMAT_FRACTION);
         }
-        
+
         if ((format & STRING) != 0) {
-            formats.add (FORMAT_STRING);
+            formats.add(FORMAT_STRING);
         }
-        
+
         if ((format & ENUM) != 0) {
-            formats.add (FORMAT_ENUM);
+            formats.add(FORMAT_ENUM);
         }
-        
+
         if ((format & FLAG) != 0) {
-            formats.add (FORMAT_FLAG);
+            formats.add(FORMAT_FLAG);
         }
-        
-        if (formats.isEmpty ()) {
-            formats.add ("unknown");
+
+        if (formats.isEmpty()) {
+            formats.add("unknown");
         }
-        
-        return TextUtils.join ("|", formats);
+
+        return TextUtils.join("|", formats);
     }
-    
-    public boolean hasPossibleValues () {
-        return possibleValues != null && possibleValues.size () > 0;
+
+    public boolean hasPossibleValues() {
+        return possibleValues != null && possibleValues.size() > 0;
     }
-    
-    public boolean hasFormat (int format) {
+
+    public boolean hasFormat(int format) {
         return (this.format & format) != 0;
     }
-    
+
     @NonNull
     @Override
-    public String toString () {
+    public String toString() {
         return "Attr ["
                 + "  name: "
                 + name
@@ -188,33 +188,33 @@ public class Attr {
                 + namespace
                 + "\n"
                 + "  values: "
-                + TextUtils.join (", ", this.possibleValues)
+                + TextUtils.join(", ", this.possibleValues)
                 + "\n"
                 + "  format: "
                 + format
                 + "\n"
                 + "]";
     }
-    
+
     @Override
-    public boolean equals (Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        
-        if (o == null || getClass () != o.getClass ()) {
+
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        
+
         Attr attr = (Attr) o;
         return format == attr.format
-                && Objects.equals (namespace, attr.namespace)
-                && Objects.equals (name, attr.name)
-                && Objects.equals (possibleValues, attr.possibleValues);
+                && Objects.equals(namespace, attr.namespace)
+                && Objects.equals(name, attr.name)
+                && Objects.equals(possibleValues, attr.possibleValues);
     }
-    
+
     @Override
-    public int hashCode () {
-        return Objects.hash (namespace, name, possibleValues, format);
+    public int hashCode() {
+        return Objects.hash(namespace, name, possibleValues, format);
     }
 }

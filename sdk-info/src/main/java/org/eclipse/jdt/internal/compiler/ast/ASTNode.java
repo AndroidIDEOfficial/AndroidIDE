@@ -24,25 +24,25 @@ public abstract class ASTNode {
     // storage for internal flags (32 bits)				BIT USAGE
     public static final int Bit1 =
             0x1; // return type (operator) | name reference kind (name ref) | add assertion (type
-                 // decl) |
+    // decl) |
     // useful empty statement (empty statement)
     public static final int Bit2 =
             0x2; // return type (operator) | name reference kind (name ref) | has local type (type,
     // method, field decl) | if type elided (local)
     public static final int Bit3 =
             0x4; // return type (operator) | name reference kind (name ref) | implicit this (this
-                 // ref) |
+    // ref) |
     // is argument(local)
     public static final int Bit4 =
             0x8; // return type (operator) | first assignment to local (name ref,local decl) |
     // undocumented empty block (block, type and method decl)
     public static final int Bit5 =
             0x10; // value for return (expression) | has all method bodies (unit) | supertype ref
-                  // (type
+    // (type
     // ref) | resolved (field decl)| name ref (yield result value)
     public static final int Bit6 =
             0x20; // depth (name ref, msg) | ignore need cast check (cast expression) | error in
-                  // signature
+    // signature
     // (method declaration/ initializer) | is recovered (annotation reference)
     public static final int Bit7 =
             0x40; // depth (name ref, msg) | need runtime checkcast (cast expression) | label used
@@ -55,7 +55,7 @@ public abstract class ASTNode {
     // isThenStatementUnreachable (if statement) | can be static
     public static final int Bit10 =
             0x200; // depth (name ref, msg) | operator (operator) | is anonymous type (type decl) |
-                   // is
+    // is
     // implicit constructor (constructor)
     public static final int Bit11 =
             0x400; // depth (name ref, msg) | operator (operator) | is member type (type decl)
@@ -68,33 +68,33 @@ public abstract class ASTNode {
     // instance (explicit constr call) | hasBeenGenerated (type decl)
     public static final int Bit15 =
             0x4000; // is unnecessary cast (expression) | is varargs (type ref) |
-                    // isSubRoutineEscaping
+    // isSubRoutineEscaping
     // (try statement) | superAccess (javadoc allocation expression/javadoc message
     // send/javadoc return statement)
     public static final int Bit16 = 0x8000; // in javadoc comment (name ref, type ref, msg)
     public static final int Bit17 =
             0x10000; // compound assigned (reference lhs) | unchecked (msg, alloc, explicit constr
-                     // call)
+    // call)
     public static final int Bit18 = 0x20000; // non null (expression) | onDemand (import reference)
     public static final int Bit19 =
             0x40000; // didResolve (parameterized qualified type ref/parameterized single type ref)
-                     // |
+    // |
     // empty (javadoc return statement) | needReceiverGenericCast (msg/fieldref)
     public static final int Bit20 =
             0x80000; // contains syntax errors (method declaration, type declaration, field
-                     // declarations,
+    // declarations,
     // initializer), typeref: <> name ref: lambda capture)
     public static final int Bit21 =
             0x100000; // for all declarations that can contain type references that have type
-                      // annotations
+    // annotations
     // | insideExpressionStatement
     public static final int Bit22 =
             0x200000; // parenthesis count (expression) | used (import reference) shadows outer
-                      // local
+    // local
     // (local declarations)
     public static final int Bit23 =
             0x400000; // parenthesis count (expression) | second or later declarator in declaration
-                      // (local
+    // (local
     // declarations)
     public static final int Bit24 = 0x800000; // parenthesis count (expression)
     public static final int Bit25 = 0x1000000; // parenthesis count (expression)
@@ -104,13 +104,13 @@ public abstract class ASTNode {
     public static final int Bit29 = 0x10000000; // parenthesis count (expression)
     public static final int Bit30 =
             0x20000000; // elseif (if statement) | try block exit (try statement) | fall-through
-                        // (case
+    // (case
     // statement) | ignore no effect assign (expression ref) | needScope (for
     // statement) | isAnySubRoutineEscaping (return statement) | blockExit
     // (synchronized statement)
     public static final int Bit31 =
             0x40000000; // local declaration reachable (local decl) | ignore raw type check (type
-                        // ref) |
+    // ref) |
     // discard entire assignment (assignment) | isSynchronized (return statement) |
     // thenExit (if statement)
     public static final int Bit32 = 0x80000000; // reachable (statement)

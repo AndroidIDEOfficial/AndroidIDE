@@ -38,109 +38,107 @@ import java.util.Objects;
  * @author Akash Yadav
  */
 public class Logger {
-    
+
     public static final int DEBUG = 0;
     public static final int WARNING = 0;
     public static final int ERROR = 0;
     public static final int INFO = 0;
     public static final int VERBOSE = 0;
     private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
-    private static final List<LogListener> logListeners = new ArrayList<> ();
+    private static final List<LogListener> logListeners = new ArrayList<>();
     private static Logger instance;
     private String TAG;
-    
-    private Logger (String tag) {
+
+    private Logger(String tag) {
         TAG = tag;
     }
-    
-    public static Logger instance () {
-        return instance == null ? instance = createInstance ("AndroidIDE") : instance;
+
+    public static Logger instance() {
+        return instance == null ? instance = createInstance("AndroidIDE") : instance;
     }
-    
-    public static void addLogListener (LogListener listener) {
-        logListeners.add (Objects.requireNonNull (listener));
+
+    public static void addLogListener(LogListener listener) {
+        logListeners.add(Objects.requireNonNull(listener));
     }
-    
-    public static void removeLogListener (LogListener listener) {
-        logListeners.remove (Objects.requireNonNull (listener));
+
+    public static void removeLogListener(LogListener listener) {
+        logListeners.remove(Objects.requireNonNull(listener));
     }
-    
+
     @NonNull
     @Contract("_ -> new")
-    private static Logger createInstance (String tag) {
-        return new Logger (tag);
+    private static Logger createInstance(String tag) {
+        return new Logger(tag);
     }
-    
+
     @NonNull
     @Contract("_ -> new")
-    public static Logger instance (String tag) {
-        return createInstance (tag);
+    public static Logger instance(String tag) {
+        return createInstance(tag);
     }
-    
-    public Logger warn (Object... messages) {
-        final var msg = generateMessage (messages);
-        Log.w (TAG, msg);
-        notifyListener (WARNING, msg);
+
+    public Logger warn(Object... messages) {
+        final var msg = generateMessage(messages);
+        Log.w(TAG, msg);
+        notifyListener(WARNING, msg);
         return this;
     }
-    
-    public Logger debug (Object... messages) {
-        final var msg = generateMessage (messages);
-        Log.d (TAG, msg);
-        notifyListener (DEBUG, msg);
+
+    public Logger debug(Object... messages) {
+        final var msg = generateMessage(messages);
+        Log.d(TAG, msg);
+        notifyListener(DEBUG, msg);
         return this;
     }
-    
-    public Logger error (Object... messages) {
-        final var msg = generateMessage (messages);
-        Log.e (TAG, msg);
-        notifyListener (ERROR, msg);
+
+    public Logger error(Object... messages) {
+        final var msg = generateMessage(messages);
+        Log.e(TAG, msg);
+        notifyListener(ERROR, msg);
         return this;
     }
-    
-    public Logger verbose (Object... messages) {
-        final var msg = generateMessage (messages);
-        Log.v (TAG, msg);
-        notifyListener (VERBOSE, msg);
+
+    public Logger verbose(Object... messages) {
+        final var msg = generateMessage(messages);
+        Log.v(TAG, msg);
+        notifyListener(VERBOSE, msg);
         return this;
     }
-    
-    public Logger info (Object... messages) {
-        final var msg = generateMessage (messages);
-        Log.i (TAG, msg);
-        notifyListener (INFO, msg);
+
+    public Logger info(Object... messages) {
+        final var msg = generateMessage(messages);
+        Log.i(TAG, msg);
+        notifyListener(INFO, msg);
         return this;
     }
-    
+
     @NonNull
-    protected String generateMessage (Object... messages) {
-        StringBuilder sb = new StringBuilder ();
+    protected String generateMessage(Object... messages) {
+        StringBuilder sb = new StringBuilder();
         if (messages == null) {
             return "null";
         }
-        
+
         for (Object msg : messages) {
-            sb.append ("\n");
-            sb.append (
+            sb.append("\n");
+            sb.append(
                     msg instanceof Throwable
-                            ? ThrowableUtils.getFullStackTrace (((Throwable) msg))
+                            ? ThrowableUtils.getFullStackTrace(((Throwable) msg))
                             : msg);
-            sb.append ("\n");
+            sb.append("\n");
         }
-        
-        return sb.toString ();
+
+        return sb.toString();
     }
-    
-    private void notifyListener (int priority, String msg) {
+
+    private void notifyListener(int priority, String msg) {
         for (final var listener : logListeners) {
-            listener.log (priority, TAG, msg);
+            listener.log(priority, TAG, msg);
         }
     }
-    
-    /**
-     * A listener which can be used to listen to log events.
-     */
+
+    /** A listener which can be used to listen to log events. */
     public interface LogListener {
-        void log (int priority, String tag, String message);
+        void log(int priority, String tag, String message);
     }
 }

@@ -20,5 +20,4 @@ package com.itsaky.androidide.fragments.attr;
 /**
  * @author Akash Yadav
  */
-public class IntegerEditor extends BaseValueEditorFragment {
-}
+public class IntegerEditor extends BaseValueEditorFragment {}
