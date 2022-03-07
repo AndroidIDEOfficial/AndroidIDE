@@ -14,47 +14,74 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <RadioGroup
-        android:id="@+id/choices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <RadioButton
-            android:id="@+id/match"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/attr_val_match_parent" />
-
-        <RadioButton
-            android:id="@+id/wrap"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/attr_val_wrap_content" />
-
-        <RadioButton
-            android:id="@+id/other"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/attr_val_other" />
-
-    </RadioGroup>
+    tools:padding="16dp">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/other_value"
-        android:layout_width="match_parent"
+        android:id="@+id/dimension_input"
+        style="@style/AppTheme.TextInputLayout.Outlined"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_new_attr_value">
+        android:layout_marginEnd="8dp"
+        android:hint="@string/hint_dimension_val"
+        app:hintEnabled="true"
+        app:hintTextColor="@color/secondaryColor"
+        app:layout_constraintEnd_toStartOf="@id/unit_selector"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"
+            android:digits="0123456789."
+            android:inputType="numberDecimal" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-</LinearLayout>
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/unit_selector"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:entries="@array/dimension_units"
+        android:minWidth="56dp"
+        app:layout_constraintBottom_toBottomOf="@id/dimension_input"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_margin="16dp"
+        android:background="@color/primaryLightColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dimension_input" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dimension_res_input"
+        style="@style/AppTheme.TextInputLayout.Outlined"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/hint_dimension_res"
+        app:hintEnabled="true"
+        app:hintTextColor="@color/secondaryColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider1">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:digits="abcdefghijklmnopqrstwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_/@"
+            android:inputType="textNoSuggestions"
+            android:padding="16dp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

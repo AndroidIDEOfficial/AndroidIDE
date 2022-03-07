@@ -146,4 +146,10 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
+
+    <style name="AppTheme.TextInputLayout.Outlined" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="hintTextColor">@color/secondaryColor</item>
+        <item name="boxStrokeColor">@color/text_input_box_stroke_selector</item>
+    </style>
+
 </resources>

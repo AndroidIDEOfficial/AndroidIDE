@@ -334,4 +334,6 @@
     <string name="msg_search_attrs">Search attributes...</string>
     <string name="msg_attr_added">Attribute was added successfully</string>
     <string name="msg_attr_not_updated">Unable to update this attribute</string>
+    <string name="hint_dimension_val">Dimension value</string>
+    <string name="hint_dimension_res">Dimension resource</string>
 </resources>
