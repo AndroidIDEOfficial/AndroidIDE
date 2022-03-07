@@ -19,19 +19,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/content_background"
-    tools:padding="16dp">
+    android:background="@color/content_background">
 
     <TextView
         android:id="@+id/attribute_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:background="@color/primaryDarkColor"
         android:maxLines="1"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
         android:textColor="@color/primaryTextColor"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/close_button"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="android:layout_height" />
@@ -40,35 +42,46 @@
         android:id="@+id/attribute_format"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:background="@color/primaryDarkColor"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
         android:textColor="@color/secondaryTextColor_light"
         android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@id/close_button"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/attribute_name"
         tools:text="dimension|reference" />
 
-    <ImageView
-        android:id="@+id/close_button"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:src="@drawable/ic_close"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/editor_layout_container"
+    <com.itsaky.androidide.views.ScalableTabLayout
+        android:id="@+id/tabs"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primaryDarkColor"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/attribute_format" />
+        app:layout_constraintTop_toBottomOf="@id/attribute_format"
+        app:tabBackground="@android:color/transparent"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorColor="@color/secondaryColor"
+        app:tabIndicatorHeight="3dp"
+        app:tabMaxWidth="0dp"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@color/secondaryColor"
+        app:tabTextAppearance="@style/AppTheme.TabLayout.Title" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:minHeight="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabs" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

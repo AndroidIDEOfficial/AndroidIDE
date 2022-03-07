@@ -75,6 +75,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
     private static final List<IconTextListItem> VIEW_ACTIONS = new ArrayList<> ();
     private static final Logger LOG = Logger.instance ("AttrBottomSheet");
     private AttributeListSheet mAttrListSheet;
+    private AttrValueEditorSheet mValueEditorSheet;
     private IView selectedView;
     private File layout;
     private LayoutAttrEditorSheetBinding binding;
@@ -107,8 +108,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
                             getString (R.string.msg_viewaction_select_parent),
                             R.drawable.ic_view_select_parent));
         }
-        
-        binding.valueEditorLayout.closeButton.setOnClickListener (v -> hideValueEditorLayout ());
         
         setupViewData ();
         
@@ -171,12 +170,11 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
             return;
         }
         
-        showEditorDialog (attribute);
+        showValueEditorSheet (attribute);
     }
     
-    private void hideValueEditorLayout () {
-        TransitionManager.beginDelayedTransition (binding.getRoot ());
-        binding.valueEditorLayout.getRoot ().setVisibility (View.GONE);
+    private void showValueEditorSheet (@NonNull XMLAttribute attribute) {
+        getValueEditorSheet (attribute).show (getChildFragmentManager (), "attr_value_editor_sheet");
     }
     
     private void showEditorDialog (@NonNull XMLAttribute attribute) {
@@ -371,10 +369,36 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
         return mAttrListSheet;
     }
     
+    @NonNull
+    public AttrValueEditorSheet getValueEditorSheet (@NonNull XMLAttribute attribute) {
+        
+        if (mValueEditorSheet == null) {
+            mValueEditorSheet = AttrValueEditorSheet.newInstance (attribute);
+            mValueEditorSheet.setOnValueChangeListener (this::onValueChanged);
+        }
+        
+        mValueEditorSheet.setAttribute (attribute);
+        return mValueEditorSheet;
+    }
+    
+    public void onValueChanged (@NonNull IAttribute attribute, String newValue) {
+        Objects.requireNonNull (this.selectedView);
+        
+        final var attributeName = attribute.getAttributeName ();
+        final var namespace = attribute.getNamespace ();
+        
+        if (this.selectedView.hasAttribute (namespace, attributeName)) {
+            this.selectedView.updateAttribute (namespace, attributeName, newValue);
+        } else {
+            final var attr = new UiAttribute (namespace, attributeName, newValue);
+            this.selectedView.addAttribute (attr);
+        }
+    }
+    
     private void addNewAttribute (@NonNull Attr attr) {
         final XMLAttribute attribute = new XMLAttribute (attr.namespace, attr.name, "", false);
         attribute.setAttr (attr);
-        showEditorDialog (attribute);
+        showValueEditorSheet (attribute);
     }
     
     /**
