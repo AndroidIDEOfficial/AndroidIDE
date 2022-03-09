@@ -37,66 +37,66 @@ import java.util.Objects;
  * @author Akash Yadav
  */
 public abstract class FixedValueEditor extends BaseValueEditorFragment {
-    
+
     protected ChipGroup chipGroup;
-    
+
     @Nullable
     @Override
-    public View onCreateView (
+    public View onCreateView(
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        this.chipGroup = new ChipGroup (inflater.getContext ());
-        this.chipGroup.setLayoutParams (
-                new ViewGroup.LayoutParams (
+        this.chipGroup = new ChipGroup(inflater.getContext());
+        this.chipGroup.setLayoutParams(
+                new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        this.chipGroup.setSelectionRequired (true);
-        this.chipGroup.setSingleSelection (false);
-        
+        this.chipGroup.setSelectionRequired(true);
+        this.chipGroup.setSingleSelection(false);
+
         return this.chipGroup;
     }
-    
+
     @Override
-    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated (view, savedInstanceState);
-        
-        Objects.requireNonNull (this.attribute);
-        Objects.requireNonNull (this.chipGroup);
-        
-        this.chipGroup.setSingleSelection (false);
-        this.chipGroup.setSelectionRequired (true);
-        
-        final var attr = this.attribute.getAttr ();
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Objects.requireNonNull(this.attribute);
+        Objects.requireNonNull(this.chipGroup);
+
+        this.chipGroup.setSingleSelection(false);
+        this.chipGroup.setSelectionRequired(true);
+
+        final var attr = this.attribute.getAttr();
         for (var value : attr.possibleValues) {
-            if (TextUtils.isEmpty (value)) {
+            if (TextUtils.isEmpty(value)) {
                 continue;
             }
-            
-            this.chipGroup.addView (newChip (value, value.equals (this.attribute.getValue ())));
+
+            this.chipGroup.addView(newChip(value, value.equals(this.attribute.getValue())));
         }
-        
-        this.chipGroup.setOnCheckedChangeListener (this::onCheckChanged);
+
+        this.chipGroup.setOnCheckedChangeListener(this::onCheckChanged);
     }
-    
-    protected abstract void onCheckChanged (@NonNull ChipGroup group, int checkedId);
-    
-    protected Chip newChip (String title, boolean checked) {
-        final var chip = new Chip (requireContext ());
-        chip.setId (View.generateViewId ());
-        chip.setText (title);
-        chip.setCheckedIcon (ContextCompat.getDrawable (requireContext (), R.drawable.ic_ok));
-        chip.setChecked (checked);
-        chip.setChipBackgroundColor (
-                ContextCompat.getColorStateList (requireContext (), R.color.bg_enum_chips));
-        chip.setTextColor (ContextCompat.getColor (requireContext (), R.color.primaryTextColor));
-        chip.setLayoutParams (
-                new ChipGroup.LayoutParams (
+
+    protected abstract void onCheckChanged(@NonNull ChipGroup group, int checkedId);
+
+    protected Chip newChip(String title, boolean checked) {
+        final var chip = new Chip(requireContext());
+        chip.setId(View.generateViewId());
+        chip.setText(title);
+        chip.setCheckedIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_ok));
+        chip.setChecked(checked);
+        chip.setChipBackgroundColor(
+                ContextCompat.getColorStateList(requireContext(), R.color.bg_enum_chips));
+        chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.primaryTextColor));
+        chip.setLayoutParams(
+                new ChipGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        chip.setChipStrokeWidth (1f);
-        chip.setChipStrokeColor (
-                ColorStateList.valueOf (
-                        ContextCompat.getColor (requireContext (), R.color.primaryDarkColor)));
-        
+        chip.setChipStrokeWidth(1f);
+        chip.setChipStrokeColor(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(requireContext(), R.color.primaryDarkColor)));
+
         return chip;
     }
 }

@@ -37,43 +37,43 @@ import java.util.ArrayList;
  * @author Akash Yadav
  */
 public class FlagEditor extends FixedValueEditor {
-    
-    private static final Logger LOG = instance ("FlagEditor");
-    
+
+    private static final Logger LOG = instance("FlagEditor");
+
     @Override
-    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated (view, savedInstanceState);
-        
-        this.chipGroup.setSingleSelection (false);
-        this.chipGroup.setSelectionRequired (true);
-        this.chipGroup.setOnCheckedChangeListener (null); // does not work for multiple selections
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        this.chipGroup.setSingleSelection(false);
+        this.chipGroup.setSelectionRequired(true);
+        this.chipGroup.setOnCheckedChangeListener(null); // does not work for multiple selections
     }
-    
+
     @Override
-    protected void onCheckChanged (@NonNull ChipGroup group, int checkedId) {
+    protected void onCheckChanged(@NonNull ChipGroup group, int checkedId) {
         // Does noting...
     }
-    
-    protected void onCheckChangedMultiple (CompoundButton compoundButton, boolean b) {
-        final var items = new ArrayList<String> ();
-        for (var id : this.chipGroup.getCheckedChipIds ()) {
-            final var chip = (Chip) this.chipGroup.findViewById (id);
+
+    protected void onCheckChangedMultiple(CompoundButton compoundButton, boolean b) {
+        final var items = new ArrayList<String>();
+        for (var id : this.chipGroup.getCheckedChipIds()) {
+            final var chip = (Chip) this.chipGroup.findViewById(id);
             if (chip == null) {
-                LOG.error ("Unable to find chip with checked id:", id);
+                LOG.error("Unable to find chip with checked id:", id);
                 continue;
             }
-            
-            final var val = chip.getText ().toString ().trim ();
-            items.add (val);
+
+            final var val = chip.getText().toString().trim();
+            items.add(val);
         }
-        
-        notifyValueChanged (TextUtils.join ("|", items));
+
+        notifyValueChanged(TextUtils.join("|", items));
     }
-    
+
     @Override
-    protected Chip newChip (String title, boolean checked) {
-        final var chip = super.newChip (title, checked);
-        chip.setOnCheckedChangeListener (this::onCheckChangedMultiple);
+    protected Chip newChip(String title, boolean checked) {
+        final var chip = super.newChip(title, checked);
+        chip.setOnCheckedChangeListener(this::onCheckChangedMultiple);
         return chip;
     }
 }

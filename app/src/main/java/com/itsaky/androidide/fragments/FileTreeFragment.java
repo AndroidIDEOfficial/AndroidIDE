@@ -218,8 +218,10 @@ public class FileTreeFragment extends BottomSheetDialogFragment
         if (gradleHome.exists() && gradleHome.isDirectory()) {
             if (!gradleProps.exists()) {
                 FileIOUtils.writeFileFromString(
-                        gradleProps, "# Specify global Gradle properties in this file\n"
-                            + "# These properties will be applicable for every project you build with Gradle.");
+                        gradleProps,
+                        "# Specify global Gradle properties in this file\n"
+                            + "# These properties will be applicable for every project you build"
+                            + " with Gradle.");
             }
             TreeNode home = new TreeNode(gradleHome);
             home.setViewHolder(new FileTreeViewHolder(getContext()));
