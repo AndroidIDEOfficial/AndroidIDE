@@ -24,20 +24,31 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.itsaky.androidide.utils.Logger;
 
 /**
  * @author Akash Yadav
  */
 public class EnumEditor extends FixedValueEditor {
     
+    private static final Logger LOG = Logger.instance ("EnumEditor");
+    
     @Override
     public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
+        
+        this.chipGroup.setSingleSelection (true);
+        this.chipGroup.setSelectionRequired (true);
     }
     
     @Override
     protected void onCheckChanged (@NonNull ChipGroup group, int checkedId) {
-        final var chip = (Chip) group.findViewById (checkedId);
+        final var chip = (Chip) group.findViewById (group.getCheckedChipId ());
+        if (chip == null) {
+            LOG.error ("Unable to update enum value. Checked Chip view is null.");
+            return;
+        }
+        
         final var val = chip.getText ().toString ().trim ();
         notifyValueChanged (val);
     }

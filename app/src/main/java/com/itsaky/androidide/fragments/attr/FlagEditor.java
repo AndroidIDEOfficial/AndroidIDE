@@ -17,15 +17,19 @@
 
 package com.itsaky.androidide.fragments.attr;
 
+import static com.itsaky.androidide.utils.Logger.instance;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.itsaky.androidide.utils.Logger;
 
 import java.util.ArrayList;
 
@@ -34,23 +38,42 @@ import java.util.ArrayList;
  */
 public class FlagEditor extends FixedValueEditor {
     
+    private static final Logger LOG = instance ("FlagEditor");
+    
     @Override
     public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
+        
+        this.chipGroup.setSingleSelection (false);
+        this.chipGroup.setSelectionRequired (true);
+        this.chipGroup.setOnCheckedChangeListener (null); // does not work for multiple selections
     }
     
     @Override
     protected void onCheckChanged (@NonNull ChipGroup group, int checkedId) {
-        final var checked = group.getCheckedChipIds ();
+        // Does noting...
+    }
+    
+    protected void onCheckChangedMultiple (CompoundButton compoundButton, boolean b) {
         final var items = new ArrayList<String> ();
-        if (!checked.isEmpty ()) {
-            for (var id : checked) {
-                final var chip = (Chip) group.findViewById (id);
-                final var val = chip.getText ().toString ().trim ();
-                items.add (val);
+        for (var id : this.chipGroup.getCheckedChipIds ()) {
+            final var chip = (Chip) this.chipGroup.findViewById (id);
+            if (chip == null) {
+                LOG.error ("Unable to find chip with checked id:", id);
+                continue;
             }
             
-            notifyValueChanged (TextUtils.join ("|", items));
+            final var val = chip.getText ().toString ().trim ();
+            items.add (val);
         }
+        
+        notifyValueChanged (TextUtils.join ("|", items));
+    }
+    
+    @Override
+    protected Chip newChip (String title, boolean checked) {
+        final var chip = super.newChip (title, checked);
+        chip.setOnCheckedChangeListener (this::onCheckChangedMultiple);
+        return chip;
     }
 }

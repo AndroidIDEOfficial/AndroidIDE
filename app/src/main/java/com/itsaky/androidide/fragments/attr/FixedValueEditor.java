@@ -82,6 +82,7 @@ public abstract class FixedValueEditor extends BaseValueEditorFragment {
     
     protected Chip newChip (String title, boolean checked) {
         final var chip = new Chip (requireContext ());
+        chip.setId (View.generateViewId ());
         chip.setText (title);
         chip.setCheckedIcon (ContextCompat.getDrawable (requireContext (), R.drawable.ic_ok));
         chip.setChecked (checked);
