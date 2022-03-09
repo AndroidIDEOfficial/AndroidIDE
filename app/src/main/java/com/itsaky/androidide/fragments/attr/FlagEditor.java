@@ -17,7 +17,40 @@
 
 package com.itsaky.androidide.fragments.attr;
 
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+
+import java.util.ArrayList;
+
 /**
  * @author Akash Yadav
  */
-public class FlagEditor extends BaseValueEditorFragment {}
+public class FlagEditor extends FixedValueEditor {
+    
+    @Override
+    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated (view, savedInstanceState);
+    }
+    
+    @Override
+    protected void onCheckChanged (@NonNull ChipGroup group, int checkedId) {
+        final var checked = group.getCheckedChipIds ();
+        final var items = new ArrayList<String> ();
+        if (!checked.isEmpty ()) {
+            for (var id : checked) {
+                final var chip = (Chip) group.findViewById (id);
+                final var val = chip.getText ().toString ().trim ();
+                items.add (val);
+            }
+            
+            notifyValueChanged (TextUtils.join ("|", items));
+        }
+    }
+}

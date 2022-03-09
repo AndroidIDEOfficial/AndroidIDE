@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.AttrValueCompletionAdapter;
@@ -37,111 +38,126 @@ import com.itsaky.inflater.values.ValuesTableFactory;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
  * @author Akash Yadav
  */
 public class DimensionEditor extends BaseValueEditorFragment {
-
-    private static final Logger LOG = Logger.instance("DimensionEditor");
+    
+    private static final Logger LOG = Logger.instance ("DimensionEditor");
     public TextWatcherAdapter dimensionInputWatcher;
     public TextWatcherAdapter dimensionResInputWatcher;
     private LayoutDimensionAttrEditorBinding binding;
     private String[] dimensionUnits;
-
+    
     @Nullable
     @Override
-    public View onCreateView(
+    public View onCreateView (
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        this.binding = LayoutDimensionAttrEditorBinding.inflate(inflater, container, false);
-        return this.binding.getRoot();
+        this.binding = LayoutDimensionAttrEditorBinding.inflate (inflater, container, false);
+        return this.binding.getRoot ();
     }
-
+    
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated (view, savedInstanceState);
+        
         final var dimensionInput =
-                Objects.requireNonNull(this.binding.dimensionInput.getEditText());
+                Objects.requireNonNull (this.binding.dimensionInput.getEditText ());
         if (dimensionInputWatcher != null) {
-            dimensionInput.removeTextChangedListener(dimensionInputWatcher);
+            dimensionInput.removeTextChangedListener (dimensionInputWatcher);
         }
-
+        
         dimensionInputWatcher =
-                new TextWatcherAdapter() {
+                new TextWatcherAdapter () {
                     @Override
-                    public void afterTextChanged(@NonNull Editable s) {
-                        final var text = s.toString().trim();
+                    public void afterTextChanged (@NonNull Editable s) {
+                        final var text = s.toString ().trim ();
                         final var unit =
-                                getDimensionUnits()[binding.unitSelector.getSelectedItemPosition()];
-
+                                getDimensionUnits ()[binding.unitSelector.getSelectedItemPosition ()];
+                        
                         // This will call CommonParseUtils#parseDimension
-                        notifyValueChanged(text.concat(unit));
+                        notifyValueChanged (text.concat (unit));
                     }
                 };
-
-        dimensionInput.addTextChangedListener(dimensionInputWatcher);
-
+        
+        dimensionInput.addTextChangedListener (dimensionInputWatcher);
+        
         final var dimensionResInput =
                 (MaterialAutoCompleteTextView)
-                        Objects.requireNonNull(binding.dimensionResInput.getEditText());
-
+                        Objects.requireNonNull (binding.dimensionResInput.getEditText ());
+        
         if (dimensionResInputWatcher != null) {
-            dimensionResInput.removeTextChangedListener(dimensionResInputWatcher);
+            dimensionResInput.removeTextChangedListener (dimensionResInputWatcher);
         }
-
+        
         dimensionResInputWatcher =
-                new TextWatcherAdapter() {
+                new TextWatcherAdapter () {
                     @Override
-                    public void afterTextChanged(@NonNull Editable s) {
-                        final var text = s.toString().trim();
-                        if (TextUtils.isEmpty(text)) {
+                    public void afterTextChanged (@NonNull Editable s) {
+                        final var text = s.toString ().trim ();
+                        if (TextUtils.isEmpty (text)) {
                             return;
                         }
-
-                        notifyValueChanged(text);
+                        
+                        notifyValueChanged (text);
                     }
                 };
-
-        dimensionResInput.addTextChangedListener(dimensionResInputWatcher);
-
-        final var list = new ArrayList<String>();
-        final var tables = ValuesTableFactory.getAllTables();
-        for (var entry : tables.entrySet()) {
-            final var dimens = entry.getValue().getTable("dimen");
-            if (dimens != null) {
-                list.addAll(
-                        dimens.keySet().stream()
-                                .map("@dimen/"::concat)
-                                .collect(Collectors.toSet()));
+        
+        dimensionResInput.addTextChangedListener (dimensionResInputWatcher);
+        
+        final var future = CompletableFuture.supplyAsync (() -> {
+            final var list = new ArrayList<String> ();
+            final var tables = ValuesTableFactory.getAllTables ();
+            for (var entry : tables.entrySet ()) {
+                final var dimens = entry.getValue ().getTable ("dimen");
+                if (dimens != null) {
+                    list.addAll (
+                            dimens.keySet ().stream ()
+                                    .map ("@dimen/"::concat)
+                                    .collect (Collectors.toSet ()));
+                }
             }
-        }
-
-        final var adapter = new AttrValueCompletionAdapter(requireContext(), list);
-        dimensionResInput.setThreshold(1);
-        dimensionResInput.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+            
+            return list;
+        });
+        future.whenComplete ((list, throwable) -> {
+            if (list == null || list.isEmpty ()) {
+                LOG.error ("No completion items found");
+                return;
+            }
+            
+            LOG.debug ("Found", list.size (), "dimension resources for completion");
+            
+            ThreadUtils.runOnUiThread (() -> {
+                final var adapter = new AttrValueCompletionAdapter (requireContext (), list);
+                dimensionResInput.setThreshold (1);
+                dimensionResInput.setAdapter (adapter);
+                adapter.notifyDataSetChanged ();
+            });
+        });
     }
-
+    
     @NonNull
-    private String[] getDimensionUnits() {
+    private String[] getDimensionUnits () {
         if (dimensionUnits == null) {
             dimensionUnits =
-                    requireContext().getResources().getStringArray(R.array.dimension_units);
+                    requireContext ().getResources ().getStringArray (R.array.dimension_units);
         }
-
+        
         return dimensionUnits;
     }
-
+    
     @Override
-    protected void notifyValueChanged(@NonNull String newValue) {
+    protected void notifyValueChanged (@NonNull String newValue) {
         try {
-            super.notifyValueChanged(newValue);
+            super.notifyValueChanged (newValue);
         } catch (Throwable e) {
-            LOG.error("Unable to update dimension value to '" + newValue + "'", e);
+            LOG.error ("Unable to update dimension value to '" + newValue + "'", e);
         }
     }
 }
