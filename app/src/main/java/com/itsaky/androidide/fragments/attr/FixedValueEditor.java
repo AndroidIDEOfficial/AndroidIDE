@@ -18,6 +18,7 @@ package com.itsaky.androidide.fragments.attr;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,8 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.itsaky.androidide.R;
+
+import java.util.Objects;
 
 /**
  * @author Akash Yadav
@@ -53,8 +56,33 @@ public abstract class FixedValueEditor extends BaseValueEditorFragment {
         return this.chipGroup;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Objects.requireNonNull(this.attribute);
+        Objects.requireNonNull(this.chipGroup);
+
+        this.chipGroup.setSingleSelection(false);
+        this.chipGroup.setSelectionRequired(true);
+
+        final var attr = this.attribute.getAttr();
+        for (var value : attr.possibleValues) {
+            if (TextUtils.isEmpty(value)) {
+                continue;
+            }
+
+            this.chipGroup.addView(newChip(value, value.equals(this.attribute.getValue())));
+        }
+
+        this.chipGroup.setOnCheckedChangeListener(this::onCheckChanged);
+    }
+
+    protected abstract void onCheckChanged(@NonNull ChipGroup group, int checkedId);
+
     protected Chip newChip(String title, boolean checked) {
         final var chip = new Chip(requireContext());
+        chip.setId(View.generateViewId());
         chip.setText(title);
         chip.setCheckedIcon(ContextCompat.getDrawable(requireContext(), R.drawable.ic_ok));
         chip.setChecked(checked);

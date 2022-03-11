@@ -36,6 +36,15 @@ import java.util.Properties;
 @SuppressLint("SdCardPath")
 public final class Environment {
 
+    public static final Map<String, String> IDE_PROPS = new HashMap<>();
+    public static final Map<String, String> ENV_VARS = new HashMap<>();
+    public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
+    private static final String DEFAULT_JAVA_HOME =
+            "/data/data/com.itsaky.androidide/files/framework/jdk";
+    private static final String DEFAULT_ANDROID_HOME =
+            "/data/data/com.itsaky.androidide/files/framework/android-sdk";
+    private static final Logger LOG = Logger.instance("Environment");
+    private static final List<String> blacklist = new ArrayList<>();
     public static File ROOT;
     public static File SYSROOT;
     public static File HOME;
@@ -49,7 +58,6 @@ public final class Environment {
     public static File IDE_PROPS_FILE;
     public static File LIB_HOOK;
     public static File LIB_HOOK2;
-
     /**
      * JDK modules used by the java language server for completions. This version of JDK modules
      * contains only the classes included in android.jar
@@ -58,31 +66,13 @@ public final class Environment {
 
     public static File INIT_SCRIPT;
     public static File PROJECT_DATA_FILE;
-
     public static File GRADLE_PROPS;
     public static File GRADLE_USER_HOME;
-
     public static File JAVA;
     public static File BUSYBOX;
     public static File SHELL;
     public static File LOGIN_SHELL;
-
     public static File BOOTCLASSPATH;
-
-    public static final String SAMPLE_GRADLE_PROP_CONTENTS =
-            "# Specify global Gradle properties in this file\n"
-                + "# These properties will be applicable for every project you build with Gradle.";
-    public static final Map<String, String> IDE_PROPS = new HashMap<>();
-    public static final Map<String, String> ENV_VARS = new HashMap<>();
-
-    public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
-
-    private static final String DEFAULT_JAVA_HOME =
-            "/data/data/com.itsaky.androidide/files/framework/jdk";
-    private static final String DEFAULT_ANDROID_HOME =
-            "/data/data/com.itsaky.androidide/files/framework/android-sdk";
-
-    private static final Logger LOG = Logger.instance("Environment");
 
     public static void init() {
         final BaseApplication app = BaseApplication.getBaseInstance();
@@ -135,7 +125,9 @@ public final class Environment {
     @NonNull
     private static Map<String, String> readProperties() {
         final Map<String, String> props = new HashMap<>();
-        if (IDE_PROPS_FILE == null || !IDE_PROPS_FILE.exists()) return props;
+        if (IDE_PROPS_FILE == null || !IDE_PROPS_FILE.exists()) {
+            return props;
+        }
         try {
             Properties p = new Properties();
             p.load(new StringReader(FileIOUtils.readFile2String(IDE_PROPS_FILE)));
@@ -265,8 +257,6 @@ public final class Environment {
         final var release = new File(COMPILER_MODULE, "release");
         return modules.exists() && modules.isFile() && release.exists() && release.isFile();
     }
-
-    private static final List<String> blacklist = new ArrayList<>();
 
     private static List<String> blacklistedVariables() {
         if (blacklist.isEmpty()) {

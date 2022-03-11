@@ -148,6 +148,10 @@ public class AttrInfo {
             attribute.name = split[1];
         }
 
+        if (attribute.name.equals("gravity")) {
+            System.out.println("This is it");
+        }
+
         if (attr.hasAttr("format")) {
             attribute.format = Attr.formatForName(attr.attr("format"));
             if (attribute.hasFormat(Attr.BOOLEAN)) {
@@ -171,7 +175,7 @@ public class AttrInfo {
         }
 
         if (flags.size() > 0) {
-            for (var flagEntry : enums) {
+            for (var flagEntry : flags) {
                 checkName(flagEntry);
                 attribute.possibleValues.add(flagEntry.attr("name"));
             }

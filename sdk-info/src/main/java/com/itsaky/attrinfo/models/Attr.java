@@ -17,6 +17,8 @@
  */
 package com.itsaky.attrinfo.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -38,7 +40,7 @@ import java.util.regex.Pattern;
  * @author Akash Yadav
  * @see com.itsaky.attrinfo.AttrInfo
  */
-public class Attr {
+public class Attr implements Parcelable {
 
     public static final int REFERENCE = 1;
     public static final int COLOR = 1 << 1;
@@ -62,9 +64,19 @@ public class Attr {
     public static final String FORMAT_STRING = "string";
     public static final String FORMAT_ENUM = "enum";
     public static final String FORMAT_FLAG = "flag";
+    public static final Creator<Attr> CREATOR =
+            new Creator<>() {
+                @Override
+                public Attr createFromParcel(Parcel in) {
+                    return new Attr(in);
+                }
 
+                @Override
+                public Attr[] newArray(int size) {
+                    return new Attr[size];
+                }
+            };
     private static final Logger LOG = Logger.instance("AttrInfo::Attr");
-
     public INamespace namespace;
     public String name;
     public Set<String> possibleValues;
@@ -78,6 +90,16 @@ public class Attr {
         this.name = name;
         this.namespace = namespace;
         this.possibleValues = new TreeSet<>();
+    }
+
+    protected Attr(@NonNull Parcel in) {
+        this.namespace = in.readParcelable(INamespace.class.getClassLoader());
+        this.name = in.readString();
+        this.format = in.readInt();
+
+        final var list = new ArrayList<String>();
+        in.readStringList(list);
+        this.possibleValues = new TreeSet<>(list);
     }
 
     public static int formatForName(@NonNull String names) {
@@ -216,5 +238,18 @@ public class Attr {
     @Override
     public int hashCode() {
         return Objects.hash(namespace, name, possibleValues, format);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeParcelable(namespace, flags);
+        dest.writeString(name);
+        dest.writeInt(format);
+        dest.writeStringList(new ArrayList<>(this.possibleValues));
     }
 }

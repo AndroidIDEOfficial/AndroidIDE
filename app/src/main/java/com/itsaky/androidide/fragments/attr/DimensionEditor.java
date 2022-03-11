@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.AttrValueCompletionAdapter;
@@ -37,6 +38,7 @@ import com.itsaky.inflater.values.ValuesTableFactory;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -108,22 +110,41 @@ public class DimensionEditor extends BaseValueEditorFragment {
 
         dimensionResInput.addTextChangedListener(dimensionResInputWatcher);
 
-        final var list = new ArrayList<String>();
-        final var tables = ValuesTableFactory.getAllTables();
-        for (var entry : tables.entrySet()) {
-            final var dimens = entry.getValue().getTable("dimen");
-            if (dimens != null) {
-                list.addAll(
-                        dimens.keySet().stream()
-                                .map("@dimen/"::concat)
-                                .collect(Collectors.toSet()));
-            }
-        }
+        final var future =
+                CompletableFuture.supplyAsync(
+                        () -> {
+                            final var list = new ArrayList<String>();
+                            final var tables = ValuesTableFactory.getAllTables();
+                            for (var entry : tables.entrySet()) {
+                                final var dimens = entry.getValue().getTable("dimen");
+                                if (dimens != null) {
+                                    list.addAll(
+                                            dimens.keySet().stream()
+                                                    .map("@dimen/"::concat)
+                                                    .collect(Collectors.toSet()));
+                                }
+                            }
 
-        final var adapter = new AttrValueCompletionAdapter(requireContext(), list);
-        dimensionResInput.setThreshold(1);
-        dimensionResInput.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+                            return list;
+                        });
+        future.whenComplete(
+                (list, throwable) -> {
+                    if (list == null || list.isEmpty()) {
+                        LOG.error("No completion items found");
+                        return;
+                    }
+
+                    LOG.debug("Found", list.size(), "dimension resources for completion");
+
+                    ThreadUtils.runOnUiThread(
+                            () -> {
+                                final var adapter =
+                                        new AttrValueCompletionAdapter(requireContext(), list);
+                                dimensionResInput.setThreshold(1);
+                                dimensionResInput.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
+                            });
+                });
     }
 
     @NonNull

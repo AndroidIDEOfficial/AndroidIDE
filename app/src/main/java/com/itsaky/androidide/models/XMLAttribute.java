@@ -87,6 +87,7 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
                 in.readString(),
                 in.readString(),
                 in.readByte() != 0);
+        this.attr = in.readParcelable(Attr.class.getClassLoader());
     }
 
     /**
@@ -174,5 +175,6 @@ public class XMLAttribute extends UiAttribute implements Parcelable {
         dest.writeString(getAttributeName());
         dest.writeString(getValue());
         dest.writeByte((byte) (isApplied ? 1 : 0));
+        dest.writeParcelable(getAttr(), flags);
     }
 }

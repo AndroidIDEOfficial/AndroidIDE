@@ -132,7 +132,7 @@ public class ValuesTable {
         LOG.info(
                 String.format(
                         Locale.getDefault(),
-                        "Took %d ms to read %s files in directory: %s",
+                        "Took %d ms to read %d files in directory: %s",
                         duration,
                         files.length,
                         valuesDirectory));

@@ -14,48 +14,42 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.androidide.fragments.attr;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.chip.Chip;
-
-import java.util.Objects;
+import com.google.android.material.chip.ChipGroup;
+import com.itsaky.androidide.utils.Logger;
 
 /**
  * @author Akash Yadav
  */
 public class EnumEditor extends FixedValueEditor {
 
+    private static final Logger LOG = Logger.instance("EnumEditor");
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Objects.requireNonNull(this.attribute);
-        Objects.requireNonNull(this.chipGroup);
-
         this.chipGroup.setSingleSelection(true);
+        this.chipGroup.setSelectionRequired(true);
+    }
 
-        final var attr = this.attribute.getAttr();
-        for (var value : attr.possibleValues) {
-            if (TextUtils.isEmpty(value)) {
-                continue;
-            }
-
-            this.chipGroup.addView(newChip(value, value.equals(this.attribute.getValue())));
+    @Override
+    protected void onCheckChanged(@NonNull ChipGroup group, int checkedId) {
+        final var chip = (Chip) group.findViewById(group.getCheckedChipId());
+        if (chip == null) {
+            LOG.error("Unable to update enum value. Checked Chip view is null.");
+            return;
         }
 
-        this.chipGroup.setOnCheckedChangeListener(
-                (group, checkedId) -> {
-                    final var chip = (Chip) group.findViewById(checkedId);
-                    final var val = chip.getText().toString().trim();
-                    notifyValueChanged(val);
-                });
+        final var val = chip.getText().toString().trim();
+        notifyValueChanged(val);
     }
 }

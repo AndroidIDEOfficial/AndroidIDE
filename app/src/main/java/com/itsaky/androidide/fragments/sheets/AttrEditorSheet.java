@@ -206,6 +206,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
 
             final var attributes = new TreeSet<Attr>(Comparator.comparing(attr -> attr.name));
             attributes.addAll(style.attributes);
+            attributes.addAll(attrs.NO_PARENT.attributes);
 
             final var widgetInfo = StudioApp.getInstance().widgetInfo();
             final var widget = widgetInfo.getWidgetBySimpleName(tag);
