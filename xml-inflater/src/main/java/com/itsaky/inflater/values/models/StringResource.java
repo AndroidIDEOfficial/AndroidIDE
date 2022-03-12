@@ -19,13 +19,13 @@ package com.itsaky.inflater.values.models;
 import androidx.annotation.NonNull;
 
 /**
- * Represents a dimension value.
+ * Represents a string value.
  *
  * @author Akash Yadav
  */
-public class DimensionValue extends AbstractResourceValue {
+public class StringResource extends AbstractResource {
 
-    public DimensionValue(@NonNull String name, @NonNull String value) {
+    public StringResource (@NonNull String name, @NonNull String value) {
         super(name, value);
     }
 }

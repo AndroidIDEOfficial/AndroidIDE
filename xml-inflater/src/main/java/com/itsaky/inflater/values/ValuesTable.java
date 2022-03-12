@@ -23,11 +23,11 @@ import androidx.annotation.Nullable;
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.values.models.ArrayResource;
-import com.itsaky.inflater.values.models.BooleanValue;
-import com.itsaky.inflater.values.models.ColorValue;
-import com.itsaky.inflater.values.models.DimensionValue;
-import com.itsaky.inflater.values.models.IntegerValue;
-import com.itsaky.inflater.values.models.StringValue;
+import com.itsaky.inflater.values.models.BooleanResource;
+import com.itsaky.inflater.values.models.ColorResource;
+import com.itsaky.inflater.values.models.DimensionResource;
+import com.itsaky.inflater.values.models.IntegerResource;
+import com.itsaky.inflater.values.models.StringResource;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -51,14 +51,14 @@ public class ValuesTable {
 
     private static final Logger LOG = Logger.instance("ValuesTable");
     // TODO Parse styles and styleables
-    private final Map<String, IResourceValue> arrays;
-    private final Map<String, IResourceValue> strings;
-    private final Map<String, IResourceValue> colors;
-    private final Map<String, IResourceValue> integers;
-    private final Map<String, IResourceValue> dimens;
-    private final Map<String, IResourceValue> booleans;
+    private final Map<String, IResource> arrays;
+    private final Map<String, IResource> strings;
+    private final Map<String, IResource> colors;
+    private final Map<String, IResource> integers;
+    private final Map<String, IResource> dimens;
+    private final Map<String, IResource> booleans;
 
-    private final Map<String, Map<String, IResourceValue>> resourceMap = new HashMap<>();
+    private final Map<String, Map<String, IResource>> resourceMap = new HashMap<>();
 
     private ValuesTable() {
         this.arrays = new HashMap<>();
@@ -174,27 +174,27 @@ public class ValuesTable {
 
         // Value must be read after all other required values have been read
         final var value = parser.nextText();
-        IResourceValue resourceValue;
+        IResource resourceValue;
 
         switch (tag) {
             case "string":
-                resourceValue = new StringValue(name, value);
+                resourceValue = new StringResource (name, value);
                 values.strings.put(name, resourceValue);
                 break;
             case "color":
-                resourceValue = new ColorValue(name, value);
+                resourceValue = new ColorResource (name, value);
                 values.colors.put(name, resourceValue);
                 break;
             case "bool":
-                resourceValue = new BooleanValue(name, value);
+                resourceValue = new BooleanResource (name, value);
                 values.booleans.put(name, resourceValue);
                 break;
             case "dimen":
-                resourceValue = new DimensionValue(name, value);
+                resourceValue = new DimensionResource (name, value);
                 values.dimens.put(name, resourceValue);
                 break;
             case "integer":
-                resourceValue = new IntegerValue(name, value);
+                resourceValue = new IntegerResource (name, value);
                 values.integers.put(name, resourceValue);
                 break;
             default:
@@ -255,7 +255,7 @@ public class ValuesTable {
     }
 
     @Nullable
-    public Map<String, IResourceValue> getTable(final String name) {
+    public Map<String, IResource> getTable(final String name) {
         Objects.requireNonNull(name);
         return this.resourceMap.get(name);
     }
@@ -267,8 +267,8 @@ public class ValuesTable {
      * @return The resource value or {@code null} if there is no resource with the given name.
      */
     @SuppressWarnings("unused")
-    public IResourceValue findResource(final String name) {
-        IResourceValue value;
+    public IResource findResource(final String name) {
+        IResource value;
 
         value = findString(name);
         if (value != null) {
@@ -314,8 +314,8 @@ public class ValuesTable {
      * @param name The name of the string resource.
      * @return The string resource or {@code null} if there is no resource with the given name.
      */
-    public StringValue findString(final String name) {
-        return (StringValue) strings.getOrDefault(name, null);
+    public StringResource findString(final String name) {
+        return (StringResource) strings.getOrDefault(name, null);
     }
 
     /**
@@ -324,8 +324,8 @@ public class ValuesTable {
      * @param name The name of the color resource.
      * @return The color resource or {@code null} if there is no resource with the given name.
      */
-    public ColorValue findColor(final String name) {
-        return (ColorValue) colors.getOrDefault(name, null);
+    public ColorResource findColor(final String name) {
+        return (ColorResource) colors.getOrDefault(name, null);
     }
 
     /**
@@ -334,8 +334,8 @@ public class ValuesTable {
      * @param name The name of the integer resource.
      * @return The integer resource or {@code null} if there is no resource with the given name.
      */
-    public IntegerValue findInteger(final String name) {
-        return (IntegerValue) integers.getOrDefault(name, null);
+    public IntegerResource findInteger(final String name) {
+        return (IntegerResource) integers.getOrDefault(name, null);
     }
 
     /**
@@ -344,8 +344,8 @@ public class ValuesTable {
      * @param name The name of the dimension resource.
      * @return The dimension resource or {@code null} if there is no resource with the given name.
      */
-    public DimensionValue findDimension(final String name) {
-        return (DimensionValue) dimens.getOrDefault(name, null);
+    public DimensionResource findDimension(final String name) {
+        return (DimensionResource) dimens.getOrDefault(name, null);
     }
 
     /**
@@ -354,8 +354,8 @@ public class ValuesTable {
      * @param name The name of the boolean resource.
      * @return The boolean resource or {@code null} if there is no resource with the given name.
      */
-    public BooleanValue findBoolean(final String name) {
-        return (BooleanValue) booleans.getOrDefault(name, null);
+    public BooleanResource findBoolean(final String name) {
+        return (BooleanResource) booleans.getOrDefault(name, null);
     }
 
     /**

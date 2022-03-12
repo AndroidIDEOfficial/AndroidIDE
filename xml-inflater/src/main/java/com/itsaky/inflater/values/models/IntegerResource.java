@@ -14,36 +14,31 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.inflater.values.models;
 
 import androidx.annotation.NonNull;
 
 /**
+ * Represents an integer value.
+ *
  * @author Akash Yadav
  */
-public class BooleanValue extends AbstractResourceValue {
+public class IntegerResource extends AbstractResource {
 
-    public BooleanValue(@NonNull String name, @NonNull String value) {
+    public IntegerResource (@NonNull String name, @NonNull String value) {
         super(name, value);
     }
 
     /**
-     * Get the value of this resource as boolean.
+     * Get the value as integer. Or -1 if the value is not an integer.
      *
-     * @return The value of this resource.
-     * @throws UnsupportedOperationException If the value is not a boolean value. This will also be
-     *     thrown if the value this resource refers to another resource.
+     * @return The integer value.
      */
-    public boolean asBoolean() {
-        final var val = getValue();
-        switch (val) {
-            case "true":
-                return true;
-            case "false":
-                return false;
-            default:
-                throw new UnsupportedOperationException("Cannot parse boolean value: " + val);
+    public int asInteger() {
+        try {
+            return Integer.parseInt(getValue());
+        } catch (Throwable th) {
+            return -1;
         }
     }
 }

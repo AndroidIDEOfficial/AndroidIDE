@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.Logger;
 public class EnumEditor extends FixedValueEditor {
 
     private static final Logger LOG = Logger.instance("EnumEditor");
-
+    
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

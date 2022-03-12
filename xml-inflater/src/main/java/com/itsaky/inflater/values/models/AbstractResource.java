@@ -18,7 +18,7 @@ package com.itsaky.inflater.values.models;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.inflater.values.IResourceValue;
+import com.itsaky.inflater.values.IResource;
 
 import java.util.Objects;
 
@@ -27,32 +27,32 @@ import java.util.Objects;
  *
  * @author Akash Yadav
  */
-abstract class AbstractResourceValue implements IResourceValue {
-
+abstract class AbstractResource implements IResource {
+    
     private final String name;
     private final String value;
-
-    public AbstractResourceValue(@NonNull String name, @NonNull String value) {
+    
+    public AbstractResource (@NonNull String name, @NonNull String value) {
         this.name = name;
         this.value = value;
     }
-
+    
     @NonNull
     @Override
-    public String getName() {
+    public String getName () {
         return name;
     }
-
+    
     @NonNull
     @Override
-    public String getValue() {
+    public String getValue () {
         return value;
     }
-
+    
     @NonNull
     @Override
-    public String toString() {
-        return getClass().getSimpleName()
+    public String toString () {
+        return getClass ().getSimpleName ()
                 + "{"
                 + "name='"
                 + name
@@ -62,24 +62,24 @@ abstract class AbstractResourceValue implements IResourceValue {
                 + '\''
                 + '}';
     }
-
+    
     @Override
-    public boolean equals(Object o) {
+    public boolean equals (Object o) {
         if (this == o) {
             return true;
         }
-
-        if (!(o instanceof AbstractResourceValue)) {
+        
+        if (!(o instanceof AbstractResource)) {
             return false;
         }
-
-        AbstractResourceValue that = (AbstractResourceValue) o;
-        return Objects.equals(getName(), that.getName())
-                && Objects.equals(getValue(), that.getValue());
+        
+        AbstractResource that = (AbstractResource) o;
+        return Objects.equals (getName (), that.getName ())
+                && Objects.equals (getValue (), that.getValue ());
     }
-
+    
     @Override
-    public int hashCode() {
-        return Objects.hash(getName(), getValue());
+    public int hashCode () {
+        return Objects.hash (getName (), getValue ());
     }
 }

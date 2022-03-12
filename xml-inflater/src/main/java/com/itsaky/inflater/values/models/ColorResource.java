@@ -14,32 +14,33 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.itsaky.inflater.values.models;
 
-package com.itsaky.inflater.values;
+import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 
 /**
- * Base class for value entries in "res/values" directory.
+ * Represents a color resource value.
  *
  * @author Akash Yadav
  */
-public interface IResourceValue {
+public class ColorResource extends AbstractResource {
+
+    public ColorResource (@NonNull String name, @NonNull String value) {
+        super(name, value);
+    }
 
     /**
-     * Get the unique identifier (name) of this resource. Defined by "name" attribute in resource
-     * value entries in xml files.
+     * Parse the value of this color resource and get the int color.
      *
-     * @return The name of this value.
+     * @return The int color value or -1 if this is not a valid color.
      */
-    @NonNull
-    String getName();
-
-    /**
-     * Get the value of this resource entry.
-     *
-     * @return The value of this resource.
-     */
-    @NonNull
-    String getValue();
+    public int parseColor() {
+        try {
+            return Color.parseColor(getValue());
+        } catch (Throwable th) {
+            return -1;
+        }
+    }
 }
