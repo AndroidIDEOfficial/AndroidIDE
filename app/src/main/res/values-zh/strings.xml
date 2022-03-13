@@ -155,6 +155,10 @@
     <string name="template_description_navigation_drawer">使用AppCompat Toolbar, DrawerLayout and NavigationView的项目</string>
     <string name="template_empty">空项目</string>
     <string name="template_navigation_drawer">导航侧滑项目</string>
+    <string name="template_kotlin_basic">Kotlin 基本项目</string>
+    <string name="template_description_kotlin_basic">带有 Appcompat Toolbar 与 Floating Action Button 的 Kotlin 项目</string>
+    <string name="template_libgdx">LibGDX 游戏</string>
+    <string name="template_description_libgdx">LibGDX 游戏项目图像渲染示例</string>
 
     <!-- Files -->
     <string name="save">保存</string>
@@ -352,5 +356,32 @@
     <string name="msg_compiler_module_install">正在安装编译器模块，请稍等&#8230;</string>
     <string name="msg_compiler_module_install_failed">编译器模块安装失败！ 错误信息:\n%s</string>
     <string name="msg_compiler_module_installed">编译器模块已成功安装!</string>
+    <string name="action_expand_selection">扩选</string>
+    <string name="idepref_java_matchLower_title">代码补全匹配小写字母</string>
+    <string name="idepref_editor_category_common">通用</string>
+    <string name="idepref_editor_category_java">Java</string>
+    <string name="title_files_unsaved">未保存文件</string>
+    <string name="msg_files_unsaved">部分文件并未保存，是否在关闭项目之前保存？未保存的文件：\n%s</string>
+    <string name="idepref_editor_autoSave_title">关闭文件前自动保存</string>
+    <string name="idepref_editor_autoSave_summary">在关闭文件之前自动保存文件。这是一个实验性功能，您应该自己保存这些文件。</string>
+    <string name="idepref_java_matchLower_summary">若启用，输入大小写字母都将提示类名及其作用域成员</string>
+    <string name="idepref_editor_ligatures_title">连体字</string>
+    <string name="idepref_editor_ligatures_summary">启用/禁用 连体字</string>
+
+    <string name="yes">@android:string/yes</string>
+    <string name="no">@android:string/no</string>
+    <string name="title_use_popup_actions">悬浮 文本操作栏</string>
+    <string name="msg_use_popup_actions">使用 PopupWindow 显示文本操作栏(重启以应用更改)</string>
+    <string name="title_use_horizontal_popup">水平 文本操作栏</string>
+    <string name="msg_use_horizontal_popup">水平显示文本操作栏(重启以应用更改)</string>
+    <string name="msg_apk_install_intent_failed">无法启动 APK 安装程序</string>
+    <string name="msg_viewaction_add_attr">新增 属性</string>
+    <string name="msg_search_attrs">搜索 属性&#8230;</string>
+    <string name="msg_attr_added">属性 已添加</string>
+    <string name="msg_attr_not_updated">无法更新此 属性</string>
+    <string name="hint_dimension_val">Dimension 值</string>
+    <string name="hint_dimension_res">Dimension 资源</string>
+    <string name="hint_boolean_res">Boolean 资源</string>
+    <string name="msg_file_tree">文件列表</string>
 
 </resources>
