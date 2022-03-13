@@ -337,4 +337,5 @@
     <string name="hint_dimension_val">Dimension value</string>
     <string name="hint_dimension_res">Dimension resource</string>
     <string name="hint_boolean_res">Boolean resource</string>
+    <string name="msg_file_tree">File tree</string>
 </resources>
