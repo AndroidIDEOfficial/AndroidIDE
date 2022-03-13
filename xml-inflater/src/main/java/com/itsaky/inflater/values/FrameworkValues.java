@@ -32,37 +32,37 @@ import java.util.Objects;
  * @author Akash Yadav
  */
 public class FrameworkValues {
-    
+
     @NonNull
-    public static List<String> listDimens () {
-        return listFields (android.R.dimen.class);
+    public static List<String> listDimens() {
+        return listFields(android.R.dimen.class);
     }
-    
+
     @NonNull
-    public static List<String> listStrings () {
-        return listFields (android.R.string.class);
+    public static List<String> listStrings() {
+        return listFields(android.R.string.class);
     }
-    
+
     @NonNull
-    public static List<String> listColors () {
-        return listFields (android.R.color.class);
+    public static List<String> listColors() {
+        return listFields(android.R.color.class);
     }
-    
+
     @NonNull
-    private static List<String> listFields (final Class<?> klass) {
-        Objects.requireNonNull (klass);
-        
-        final var list = new ArrayList<String> ();
-        final var fields = klass.getDeclaredFields ();
+    private static List<String> listFields(final Class<?> klass) {
+        Objects.requireNonNull(klass);
+
+        final var list = new ArrayList<String>();
+        final var fields = klass.getDeclaredFields();
         for (var field : fields) {
-            final var mods = field.getModifiers ();
-            if (!isPublic (mods) || !isStatic (mods)) {
+            final var mods = field.getModifiers();
+            if (!isPublic(mods) || !isStatic(mods)) {
                 continue;
             }
-            
-            list.add (field.getName ());
+
+            list.add(field.getName());
         }
-        
+
         return list;
     }
 }
