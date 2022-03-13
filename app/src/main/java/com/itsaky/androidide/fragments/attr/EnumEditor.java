@@ -26,13 +26,11 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.itsaky.androidide.utils.Logger;
 
-/**
- * @author Akash Yadav
- */
+/** @author Akash Yadav */
 public class EnumEditor extends FixedValueEditor {
 
     private static final Logger LOG = Logger.instance("EnumEditor");
-    
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

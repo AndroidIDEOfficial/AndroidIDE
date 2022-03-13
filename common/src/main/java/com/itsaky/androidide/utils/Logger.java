@@ -120,12 +120,12 @@ public class Logger {
         }
 
         for (Object msg : messages) {
-            sb.append("\n");
+            sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
             sb.append(
                     msg instanceof Throwable
                             ? ThrowableUtils.getFullStackTrace(((Throwable) msg))
                             : msg);
-            sb.append("\n");
+            sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
         }
 
         return sb.toString();

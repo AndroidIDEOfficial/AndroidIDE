@@ -31,4 +31,8 @@ ext {
             gson: 'com.google.code.gson:gson:2.8.8',
             guava: 'com.google.guava:guava:30.1.1-android'
     ]
+
+    tests = [
+            junit4: 'junit:junit:4.13'
+    ]
 }

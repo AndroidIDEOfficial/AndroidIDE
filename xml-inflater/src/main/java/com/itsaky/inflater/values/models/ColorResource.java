@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
  */
 public class ColorResource extends AbstractResource {
 
-    public ColorResource (@NonNull String name, @NonNull String value) {
+    public ColorResource(@NonNull String name, @NonNull String value) {
         super(name, value);
     }
 

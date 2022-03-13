@@ -36,10 +36,6 @@ public abstract class IDEHandler {
         this.provider = provider;
     }
 
-    protected void throwNPE() {
-        throw new NullPointerException();
-    }
-
     protected EditorActivity activity() {
         return provider.provideEditorActivity();
     }
