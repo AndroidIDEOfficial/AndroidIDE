@@ -39,6 +39,11 @@ public class FrameworkValues {
     }
 
     @NonNull
+    public static List<String> listBools() {
+        return listFields(android.R.bool.class);
+    }
+
+    @NonNull
     public static List<String> listStrings() {
         return listFields(android.R.string.class);
     }

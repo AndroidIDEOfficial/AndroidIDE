@@ -17,7 +17,87 @@
 
 package com.itsaky.androidide.fragments.attr;
 
-/**
- * @author Akash Yadav
- */
-public class ReferenceEditor extends BaseValueEditorFragment {}
+import static com.itsaky.androidide.utils.Logger.instance;
+
+import android.text.Editable;
+import android.text.TextUtils;
+import android.widget.AutoCompleteTextView;
+
+import androidx.annotation.NonNull;
+
+import com.blankj.utilcode.util.ThreadUtils;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.itsaky.androidide.adapters.AttrValueCompletionAdapter;
+import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.TextWatcherAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
+/** @author Akash Yadav */
+public class ReferenceEditor extends BaseValueEditorFragment {
+
+    private static final Logger LOG = instance("ReferenceEditor");
+    public TextWatcherAdapter resInputWatcher;
+
+    @Override
+    protected void notifyValueChanged(@NonNull String newValue) {
+        try {
+            super.notifyValueChanged(newValue);
+        } catch (Throwable e) {
+            LOG.error("Unable to update resource value to '" + newValue + "'", e);
+        }
+    }
+
+    protected void setupReferenceInput(MaterialAutoCompleteTextView referenceInput) {
+        Objects.requireNonNull(referenceInput);
+
+        if (resInputWatcher != null) {
+            referenceInput.removeTextChangedListener(resInputWatcher);
+        }
+
+        resInputWatcher =
+                new TextWatcherAdapter() {
+                    @Override
+                    public void afterTextChanged(@NonNull Editable s) {
+                        final var text = s.toString().trim();
+                        if (TextUtils.isEmpty(text)) {
+                            return;
+                        }
+
+                        notifyValueChanged(text);
+                    }
+                };
+
+        referenceInput.addTextChangedListener(resInputWatcher);
+
+        CompletableFuture.supplyAsync(this::computeReferenceItems)
+                .whenComplete(
+                        (list, error) -> handleAutoCompleteResult(list, error, referenceInput));
+    }
+
+    protected void handleAutoCompleteResult(
+            List<String> list, Throwable error, AutoCompleteTextView referenceInput) {
+        if (list == null || list.isEmpty()) {
+            LOG.error("No completion items found");
+            LOG.error("Error was:", error);
+            return;
+        }
+
+        LOG.debug("Found", list.size(), "resource items for completion");
+
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    final var adapter = new AttrValueCompletionAdapter(requireContext(), list);
+                    referenceInput.setThreshold(1);
+                    referenceInput.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                });
+    }
+
+    protected List<String> computeReferenceItems() {
+        return new ArrayList<>();
+    }
+}
