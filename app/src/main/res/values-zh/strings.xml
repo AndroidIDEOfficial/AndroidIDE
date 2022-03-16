@@ -383,5 +383,10 @@
     <string name="hint_dimension_res">Dimension 资源</string>
     <string name="hint_boolean_res">Boolean 资源</string>
     <string name="msg_file_tree">文件列表</string>
+    <string name="hint_color_resource">Color 资源</string>
+    <string name="title_color_picker">取色器</string>
+    <string name="hint_string_value">String 值</string>
+    <string name="hint_string_resource">String 资源</string>
+    <string name="hint_resource_reference">任何资源引用</string>
 
 </resources>
