@@ -18,7 +18,7 @@ package com.itsaky.inflater.values.models;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.inflater.values.IResourceValue;
+import com.itsaky.inflater.values.IResource;
 
 import java.util.Objects;
 
@@ -27,12 +27,12 @@ import java.util.Objects;
  *
  * @author Akash Yadav
  */
-abstract class AbstractResourceValue implements IResourceValue {
+abstract class AbstractResource implements IResource {
 
     private final String name;
     private final String value;
 
-    public AbstractResourceValue(@NonNull String name, @NonNull String value) {
+    public AbstractResource(@NonNull String name, @NonNull String value) {
         this.name = name;
         this.value = value;
     }
@@ -69,11 +69,11 @@ abstract class AbstractResourceValue implements IResourceValue {
             return true;
         }
 
-        if (!(o instanceof AbstractResourceValue)) {
+        if (!(o instanceof AbstractResource)) {
             return false;
         }
 
-        AbstractResourceValue that = (AbstractResourceValue) o;
+        AbstractResource that = (AbstractResource) o;
         return Objects.equals(getName(), that.getName())
                 && Objects.equals(getValue(), that.getValue());
     }

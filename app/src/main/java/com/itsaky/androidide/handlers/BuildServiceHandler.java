@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 package com.itsaky.androidide.handlers;
 
 import android.view.View;
@@ -36,6 +36,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,18 +56,11 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
 
     @Override
     public void start() {
-        if (this.activity() == null) {
-            throwNPE();
-        }
+        Objects.requireNonNull(this.activity());
 
         AndroidProject project = provider.provideAndroidProject();
-        if (project == null) {
-            throwNPE();
-        }
-
-        if (project.getProjectPath() == null) {
-            throwNPE();
-        }
+        Objects.requireNonNull(project);
+        Objects.requireNonNull(project.getProjectPath());
 
         this.service = new IDEService(new File(project.getProjectPath()));
         this.service.setListener(this);
@@ -107,8 +101,12 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
                 Environment.setBootClasspath(androidJar);
                 provider.provideAndroidProject().addClasspath(androidJar.getAbsolutePath());
                 activity().updateServices();
-            } else activity().setStatus("android.jar not found!");
-        } else activity().setStatus("Cannot get :app module...");
+            } else {
+                activity().setStatus("android.jar not found!");
+            }
+        } else {
+            activity().setStatus("Cannot get :app module...");
+        }
     }
 
     @Override
@@ -126,7 +124,9 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     @Override
     public void onBuildSuccessful(GradleTask task, String msg) {
         appendOutput(task, msg);
-        if (task == null || activity() == null) return;
+        if (task == null || activity() == null) {
+            return;
+        }
         if (task.canOutput()) {
             activity().setStatus(msg);
         }
@@ -156,7 +156,9 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     @Override
     public void onBuildFailed(GradleTask task, String msg) {
         appendOutput(task, msg);
-        if (task == null) return;
+        if (task == null) {
+            return;
+        }
         if (task.canOutput()) {
             activity().setStatus(msg);
         }
@@ -176,7 +178,9 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
 
     @Override
     public void appendOutput(GradleTask task, CharSequence text) {
-        if (text == null) return;
+        if (text == null) {
+            return;
+        }
         if (task != null && !task.canOutput()) {
             return;
         }
@@ -214,11 +218,13 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     }
 
     private boolean isClasspathValid(String path) {
-        if (path == null || path.trim().length() <= 0 || path.trim().equals("/")) return false;
+        if (path == null || path.trim().length() <= 0 || path.trim().equals("/")) {
+            return false;
+        }
         File file = new File(path);
         return file.isFile()
                 && file.getName().endsWith(".jar")
-                /** Release R.jar shouldn't be included in classpath */
+                // Release R.jar shouldn't be included in classpath
                 && !file.getAbsolutePath().endsWith("/release/R.jar");
     }
 
@@ -230,7 +236,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
         if (apks.size() == 1) {
             activity().install(apks.iterator().next());
         } else {
-            final List<File> files = new ArrayList<File>(apks);
+            final List<File> files = new ArrayList<>(apks);
             final MaterialAlertDialogBuilder builder =
                     DialogUtils.newMaterialDialogBuilder(activity());
             builder.setTitle(activity().getString(R.string.title_install_apks));

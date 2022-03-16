@@ -23,9 +23,9 @@ import androidx.annotation.NonNull;
  *
  * @author Akash Yadav
  */
-public class DimensionValue extends AbstractResourceValue {
+public class DimensionResource extends AbstractResource {
 
-    public DimensionValue(@NonNull String name, @NonNull String value) {
+    public DimensionResource(@NonNull String name, @NonNull String value) {
         super(name, value);
     }
 }

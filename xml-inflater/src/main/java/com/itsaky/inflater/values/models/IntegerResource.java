@@ -23,9 +23,9 @@ import androidx.annotation.NonNull;
  *
  * @author Akash Yadav
  */
-public class IntegerValue extends AbstractResourceValue {
+public class IntegerResource extends AbstractResource {
 
-    public IntegerValue(@NonNull String name, @NonNull String value) {
+    public IntegerResource(@NonNull String name, @NonNull String value) {
         super(name, value);
     }
 

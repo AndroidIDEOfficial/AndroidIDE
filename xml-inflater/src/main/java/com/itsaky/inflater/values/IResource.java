@@ -14,18 +14,32 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.inflater.values.models;
+
+package com.itsaky.inflater.values;
 
 import androidx.annotation.NonNull;
 
 /**
- * Represents a string value.
+ * Base class for value entries in "res/values" directory.
  *
  * @author Akash Yadav
  */
-public class StringValue extends AbstractResourceValue {
+public interface IResource {
 
-    public StringValue(@NonNull String name, @NonNull String value) {
-        super(name, value);
-    }
+    /**
+     * Get the unique identifier (name) of this resource. Defined by "name" attribute in resource
+     * value entries in xml files.
+     *
+     * @return The name of this value.
+     */
+    @NonNull
+    String getName();
+
+    /**
+     * Get the value of this resource entry.
+     *
+     * @return The value of this resource.
+     */
+    @NonNull
+    String getValue();
 }

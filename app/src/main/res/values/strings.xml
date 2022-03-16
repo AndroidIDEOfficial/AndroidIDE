@@ -336,4 +336,11 @@
     <string name="msg_attr_not_updated">Unable to update this attribute</string>
     <string name="hint_dimension_val">Dimension value</string>
     <string name="hint_dimension_res">Dimension resource</string>
+    <string name="hint_boolean_res">Boolean resource</string>
+    <string name="msg_file_tree">File tree</string>
+    <string name="hint_color_resource">Color resource</string>
+    <string name="title_color_picker">Color picker</string>
+    <string name="hint_string_value">String value</string>
+    <string name="hint_string_resource">String resource</string>
+    <string name="hint_resource_reference">Any resource reference</string>
 </resources>

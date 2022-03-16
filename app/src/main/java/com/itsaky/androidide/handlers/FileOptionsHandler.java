@@ -54,9 +54,7 @@ public class FileOptionsHandler extends IDEHandler
 
     @Override
     public void start() {
-        if (activity() == null) {
-            throwNPE();
-        }
+        Objects.requireNonNull(this.activity());
     }
 
     @Override

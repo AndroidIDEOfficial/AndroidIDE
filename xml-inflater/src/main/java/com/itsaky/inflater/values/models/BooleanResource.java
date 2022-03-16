@@ -19,12 +19,10 @@ package com.itsaky.inflater.values.models;
 
 import androidx.annotation.NonNull;
 
-/**
- * @author Akash Yadav
- */
-public class BooleanValue extends AbstractResourceValue {
+/** @author Akash Yadav */
+public class BooleanResource extends AbstractResource {
 
-    public BooleanValue(@NonNull String name, @NonNull String value) {
+    public BooleanResource(@NonNull String name, @NonNull String value) {
         super(name, value);
     }
 

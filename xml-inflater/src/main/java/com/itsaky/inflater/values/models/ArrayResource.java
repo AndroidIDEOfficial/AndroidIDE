@@ -33,7 +33,7 @@ import androidx.annotation.NonNull;
  *
  * @author Akash Yadav
  */
-public class ArrayResource extends AbstractResourceValue {
+public class ArrayResource extends AbstractResource {
 
     private final String[] values;
 

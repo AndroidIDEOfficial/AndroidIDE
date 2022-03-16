@@ -223,10 +223,6 @@ public final class Environment {
         }
     }
 
-    public static String readPropOrNull(String key) {
-        return readProp(key, null);
-    }
-
     public static String readProp(String key, String defaultValue) {
         String value = IDE_PROPS.getOrDefault(key, defaultValue);
         if (value == null) {
@@ -252,6 +248,7 @@ public final class Environment {
         return in;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isCompilerModuleInstalled() {
         final var modules = new File(COMPILER_MODULE, "lib/modules");
         final var release = new File(COMPILER_MODULE, "release");
