@@ -41,6 +41,7 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ILanguageServer;
+import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.CodeActionParams;
 import com.itsaky.lsp.models.CodeActionResult;
 import com.itsaky.lsp.models.DefinitionResult;
@@ -59,235 +60,239 @@ import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.toaster.Toaster;
 
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.widget.CodeEditor;
-
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-public class IDEEditor extends CodeEditor {
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.widget.CodeEditor;
 
+public class IDEEditor extends CodeEditor {
+    
+    public static final String KEY_FILE = "editor_file";
+    private static final Logger LOG = Logger.instance ("IDEEditor");
     private int mFileVersion;
     private File file;
-
     private ILanguageServer mLanguageServer;
     private IDELanguageClientImpl mLanguageClient;
     private SignatureHelpWindow mSignatureHelpWindow;
     private DiagnosticWindow mDiagnosticWindow;
-
     private ITextActionPresenter mTextActionPresenter;
-
-    public static final String KEY_FILE = "editor_file";
-    private static final Logger LOG = Logger.instance("IDEEditor");
-
-    public IDEEditor(Context context) {
-        this(context, null);
+    
+    public IDEEditor (Context context) {
+        this (context, null);
     }
-
-    public IDEEditor(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    
+    public IDEEditor (Context context, AttributeSet attrs) {
+        this (context, attrs, 0);
     }
-
-    public IDEEditor(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+    
+    public IDEEditor (Context context, AttributeSet attrs, int defStyleAttr) {
+        this (context, attrs, defStyleAttr, 0);
     }
-
-    public IDEEditor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        setColorScheme(new SchemeAndroidIDE());
-        setTextActionPresenter(chooseTextActionPresenter());
-        subscribeEvent(
-                SelectionChangeEvent.class, (event, unsubscribe) -> handleSelectionChange(event));
-        subscribeEvent(
-                ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange(event));
-
+    
+    public IDEEditor (Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super (context, attrs, defStyleAttr, defStyleRes);
+        
+        setColorScheme (new SchemeAndroidIDE ());
+        setTextActionPresenter (chooseTextActionPresenter ());
+        subscribeEvent (
+                SelectionChangeEvent.class, (event, unsubscribe) -> handleSelectionChange (event));
+        subscribeEvent (
+                ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange (event));
+        
         // default editor input type + no suggestions flag
-        setInputType(
+        setInputType (
                 EditorInfo.TYPE_CLASS_TEXT
                         | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
                         | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
                         | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
     }
-
+    
     @NonNull
     @Contract(" -> new")
-    public ITextActionPresenter chooseTextActionPresenter() {
-        final var prefs = StudioApp.getInstance().getPrefManager();
-        final var usePopup = prefs.getBoolean(PreferenceManager.KEY_EDITOR_USE_POPUP, false);
+    public ITextActionPresenter chooseTextActionPresenter () {
+        final var prefs = StudioApp.getInstance ().getPrefManager ();
+        final var usePopup = prefs.getBoolean (PreferenceManager.KEY_EDITOR_USE_POPUP, false);
         if (usePopup) {
-            return new EditorTextActionWindow(this);
+            return new EditorTextActionWindow (this);
         } else {
-            return new EditorTextActionMode();
+            return new EditorTextActionMode ();
         }
     }
-
+    
     /**
      * Set selection to the given range.
      *
      * @param range The range to select.
      */
-    public void setSelection(@NonNull Range range) {
-        setSelectionRegion(
-                range.getStart().getLine(),
-                range.getStart().getColumn(),
-                range.getEnd().getLine(),
-                range.getEnd().getColumn());
+    public void setSelection (@NonNull Range range) {
+        setSelectionRegion (
+                range.getStart ().getLine (),
+                range.getStart ().getColumn (),
+                range.getEnd ().getLine (),
+                range.getEnd ().getColumn ());
     }
-
+    
     /**
      * Set the selection of this editor to the given position.
      *
      * @param position The position to select.
      */
-    public void setSelection(@NonNull Position position) {
-        setSelection(position.getLine(), position.getColumn());
+    public void setSelection (@NonNull Position position) {
+        setSelection (position.getLine (), position.getColumn ());
     }
-
-    /**
-     * Set the file that this editor is currently editing.
-     *
-     * @param file The file to set.
-     */
-    public void setFile(File file) {
-        this.file = file;
-
-        if (file != null && mLanguageServer != null) {
-            final var text = getText().toString();
-            final var event = new DocumentOpenEvent(file.toPath(), text, mFileVersion = 0);
-            mLanguageServer.getDocumentHandler().onFileOpened(event);
-        }
-
-        if (file != null) {
-            getExtraArguments().putString(KEY_FILE, file.getAbsolutePath());
-        } else {
-            getExtraArguments().remove(KEY_FILE);
-        }
-    }
-
+    
     /**
      * Get the file that this editor is currently editing.
      *
      * @return The file instance.
      */
-    public File getFile() {
+    public File getFile () {
         return file;
     }
-
+    
+    /**
+     * Set the file that this editor is currently editing.
+     *
+     * @param file The file to set.
+     */
+    public void setFile (File file) {
+        this.file = file;
+        
+        if (file != null && mLanguageServer != null) {
+            final var text = getText ().toString ();
+            final var event = new DocumentOpenEvent (file.toPath (), text, mFileVersion = 0);
+            mLanguageServer.getDocumentHandler ().onFileOpened (event);
+        }
+        
+        if (file != null) {
+            getExtraArguments ().putString (KEY_FILE, file.getAbsolutePath ());
+        } else {
+            getExtraArguments ().remove (KEY_FILE);
+        }
+    }
+    
     /**
      * Set the language server that this editor will connect with. If the language client is not
      * set, it'll be set to {@link IDELanguageClientImpl}.
      *
      * @param server The server to set. Provide <code>null</code> to disable all the language server
-     *     features.
+     *               features.
      */
-    public void setLanguageServer(ILanguageServer server) {
+    public void setLanguageServer (ILanguageServer server) {
         this.mLanguageServer = server;
-
-        if (mLanguageClient == null && IDELanguageClientImpl.isInitialized()) {
-            mLanguageClient = IDELanguageClientImpl.getInstance();
+        
+        if (mLanguageClient == null && IDELanguageClientImpl.isInitialized ()) {
+            mLanguageClient = IDELanguageClientImpl.getInstance ();
         }
     }
-
+    
     /**
      * Append the given text at the end of the editor's content.
      *
      * @param text The text to append.
      * @return The line at which the text was appended.
      */
-    public int append(CharSequence text) {
-        final var content = getText();
-        if (getLineCount() <= 0) {
+    public int append (CharSequence text) {
+        final var content = getText ();
+        if (getLineCount () <= 0) {
             return 0;
         }
-        final int line = getLineCount() - 1;
-        int col = content.getColumnCount(line);
+        final int line = getLineCount () - 1;
+        int col = content.getColumnCount (line);
         if (col < 0) {
             col = 0;
         }
-        content.insert(line, col, text);
+        content.insert (line, col, text);
         return line;
     }
-
-    /** Set the selection of the editor's cursor to the last line of the it's content. */
-    public void goToEnd() {
-        final var line = getText().getLineCount() - 1;
-        setSelection(line, 0);
+    
+    /**
+     * Set the selection of the editor's cursor to the last line of the it's content.
+     */
+    public void goToEnd () {
+        final var line = getText ().getLineCount () - 1;
+        setSelection (line, 0);
     }
-
-    /** Comment the line of the left cursor. */
-    public void commentLine() {
-        if (getFile() == null) {
+    
+    /**
+     * Comment the line of the left cursor.
+     */
+    public void commentLine () {
+        if (getFile () == null) {
             return;
         }
-
-        final var text = getText();
-        final var name = getFile().getName();
-        int line = getCursor().getLeftLine();
-        if (name.endsWith(".java") || name.endsWith(".gradle")) {
-            while (line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
-                if (!text.getLineString(line).trim().startsWith("//")) {
-                    text.insert(line, 0, "//");
+        
+        final var text = getText ();
+        final var name = getFile ().getName ();
+        int line = getCursor ().getLeftLine ();
+        if (name.endsWith (".java") || name.endsWith (".gradle")) {
+            while (line >= getCursor ().getLeftLine () && line <= getCursor ().getRightLine ()) {
+                if (!text.getLineString (line).trim ().startsWith ("//")) {
+                    text.insert (line, 0, "//");
                 }
                 line++;
             }
-        } else if (name.endsWith(".xml")) {
-            while (line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
-                final String lineString = text.getLineString(line);
-                if (!lineString.trim().startsWith("<!--") && !lineString.trim().endsWith("-->")) {
-                    text.replace(
+        } else if (name.endsWith (".xml")) {
+            while (line >= getCursor ().getLeftLine () && line <= getCursor ().getRightLine ()) {
+                final String lineString = text.getLineString (line);
+                if (!lineString.trim ().startsWith ("<!--") && !lineString.trim ().endsWith ("-->")) {
+                    text.replace (
                             line,
                             0,
                             line,
-                            text.getColumnCount(line),
-                            "<!--".concat(lineString).concat("-->"));
+                            text.getColumnCount (line),
+                            "<!--".concat (lineString).concat ("-->"));
                 }
                 line++;
             }
         }
     }
-
-    /** Uncomment the current line */
-    public void uncommentLine() {
-        if (getFile() == null) {
+    
+    /**
+     * Uncomment the current line
+     */
+    public void uncommentLine () {
+        if (getFile () == null) {
             return;
         }
-
-        final var text = getText();
-        final String name = getFile().getName();
-        int line = getCursor().getLeftLine();
-        if (name.endsWith(".java") || name.endsWith(".gradle")) {
-            while (line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
-                String l = text.getLineString(line);
-                if (l.trim().startsWith("//")) {
-                    int i = l.indexOf("//");
-                    text.delete(line, i, line, i + 2);
+        
+        final var text = getText ();
+        final String name = getFile ().getName ();
+        int line = getCursor ().getLeftLine ();
+        if (name.endsWith (".java") || name.endsWith (".gradle")) {
+            while (line >= getCursor ().getLeftLine () && line <= getCursor ().getRightLine ()) {
+                String l = text.getLineString (line);
+                if (l.trim ().startsWith ("//")) {
+                    int i = l.indexOf ("//");
+                    text.delete (line, i, line, i + 2);
                 }
                 line++;
             }
-        } else if (name.endsWith(".xml")) {
+        } else if (name.endsWith (".xml")) {
             final String commentStart = "<!--";
             final String commentEnd = "-->";
-            while (line >= getCursor().getLeftLine() && line <= getCursor().getRightLine()) {
-                String l = text.getLineString(line);
-                if (l.trim().startsWith(commentStart)) {
-                    int i = l.indexOf(commentStart);
-                    text.delete(line, i, line, i + commentStart.length());
+            while (line >= getCursor ().getLeftLine () && line <= getCursor ().getRightLine ()) {
+                String l = text.getLineString (line);
+                if (l.trim ().startsWith (commentStart)) {
+                    int i = l.indexOf (commentStart);
+                    text.delete (line, i, line, i + commentStart.length ());
                 }
-                if (l.trim().endsWith(commentEnd)) {
-                    int count = text.getColumnCount(line);
-                    text.delete(line, count - commentEnd.length(), line, count);
+                if (l.trim ().endsWith (commentEnd)) {
+                    int count = text.getColumnCount (line);
+                    text.delete (line, count - commentEnd.length (), line, count);
                 }
                 line++;
             }
         }
     }
-
+    
     /**
      * If any language server is set, asks the language server to find the definition of token at
      * the cursor position.
@@ -296,88 +301,88 @@ public class IDEEditor extends CodeEditor {
      * file in this editor, the range specified in the response will be selected.
      */
     @SuppressWarnings("deprecation")
-    public void findDefinition() {
-        if (getFile() == null) {
+    public void findDefinition () {
+        if (getFile () == null) {
             return;
         }
-
+        
         final ProgressDialog pd =
-                ProgressDialog.show(
-                        getContext(),
+                ProgressDialog.show (
+                        getContext (),
                         null,
-                        getContext().getString(R.string.msg_finding_definition));
-
+                        getContext ().getString (R.string.msg_finding_definition));
+        
         try {
             final CompletableFuture<DefinitionResult> future =
-                    CompletableFuture.supplyAsync(
+                    CompletableFuture.supplyAsync (
                             () -> {
-                                final var provider = mLanguageServer.getDefinitionProvider();
+                                final var provider = mLanguageServer.getDefinitionProvider ();
                                 final var params =
-                                        new com.itsaky.lsp.models.DefinitionParams(
-                                                getFile().toPath(),
-                                                new com.itsaky.lsp.models.Position(
-                                                        getCursor().getLeftLine(),
-                                                        getCursor().getLeftColumn()));
-
-                                return provider.findDefinitions(params);
+                                        new com.itsaky.lsp.models.DefinitionParams (
+                                                getFile ().toPath (),
+                                                new com.itsaky.lsp.models.Position (
+                                                        getCursor ().getLeftLine (),
+                                                        getCursor ().getLeftColumn ()));
+                                
+                                return provider.findDefinitions (params);
                             });
-
-            future.whenComplete(
+            
+            future.whenComplete (
                     (result, error) -> {
                         if (result == null
                                 || mLanguageClient == null
-                                || future.isCancelled()
-                                || future.isCompletedExceptionally()) {
-                            LOG.error("An error occurred while finding definition", error);
-                            showDefinitionNotFound(pd);
+                                || future.isCancelled ()
+                                || future.isCompletedExceptionally ()) {
+                            LOG.error ("An error occurred while finding definition", error);
+                            showDefinitionNotFound (pd);
                             return;
                         }
-
-                        final var locations = result.getLocations();
-                        if (locations.size() <= 0) {
-                            LOG.error("No definitions found", "Size:", locations.size());
-                            showDefinitionNotFound(pd);
+                        
+                        final var locations = result.getLocations ();
+                        if (locations.size () <= 0) {
+                            LOG.error ("No definitions found", "Size:", locations.size ());
+                            showDefinitionNotFound (pd);
                             return;
                         }
-
-                        ThreadUtils.runOnUiThread(
+                        
+                        ThreadUtils.runOnUiThread (
                                 () -> {
-                                    if (locations.size() == 1) {
-                                        var location = locations.get(0);
-                                        if (location.getFile().equals(getFile().toPath())) {
-                                            setSelection(location.getRange());
+                                    if (locations.size () == 1) {
+                                        var location = locations.get (0);
+                                        if (location.getFile ().equals (getFile ().toPath ())) {
+                                            setSelection (location.getRange ());
                                             return;
                                         }
-                                        mLanguageClient.showDocument(
-                                                new ShowDocumentParams(
-                                                        location.getFile(), location.getRange()));
+                                        mLanguageClient.showDocument (
+                                                new ShowDocumentParams (
+                                                        location.getFile (), location.getRange ()));
                                     } else {
-                                        mLanguageClient.showLocations(locations);
+                                        mLanguageClient.showLocations (locations);
                                     }
                                 });
-
-                        dismissOnUiThread(pd);
+                        
+                        dismissOnUiThread (pd);
                     });
         } catch (Throwable th) {
-            LOG.error("An error occurred while finding definition", th);
-            showDefinitionNotFound(pd);
+            LOG.error ("An error occurred while finding definition", th);
+            showDefinitionNotFound (pd);
         }
     }
-
+    
     /**
      * Notify the user that no definitions can be found.
      *
      * @param pd The {@link ProgressDialog} that was shown when requesting the definitions.
      */
     @SuppressWarnings("deprecation")
-    private void showDefinitionNotFound(final ProgressDialog pd) {
-        ThreadUtils.runOnUiThread(
+    private void showDefinitionNotFound (final ProgressDialog pd) {
+        ThreadUtils.runOnUiThread (
                 () -> {
-                    StudioApp.getInstance().toast(R.string.msg_no_definition, Toaster.Type.ERROR);
-                    pd.dismiss();
+                    StudioApp.getInstance ().toast (R.string.msg_no_definition, Toaster.Type.ERROR);
+                    pd.dismiss ();
                 });
     }
-
+    
     /**
      * If any language server instance is set, finds the references to of the token at the current
      * cursor position.
@@ -385,408 +390,421 @@ public class IDEEditor extends CodeEditor {
      * <p>If the server returns a valid response, that response is forwarded to the {@link
      * IDELanguageClientImpl}.
      */
-    public void findReferences() {
-        if (getFile() == null) {
+    public void findReferences () {
+        if (getFile () == null) {
             return;
         }
-
-        @SuppressWarnings("deprecation")
-        final ProgressDialog pd =
-                ProgressDialog.show(
-                        getContext(),
+        
+        @SuppressWarnings("deprecation") final ProgressDialog pd =
+                ProgressDialog.show (
+                        getContext (),
                         null,
-                        getContext().getString(R.string.msg_finding_references));
-
+                        getContext ().getString (R.string.msg_finding_references));
+        
         try {
             final CompletableFuture<ReferenceResult> future =
-                    CompletableFuture.supplyAsync(
+                    CompletableFuture.supplyAsync (
                             () -> {
-                                final var provider = mLanguageServer.getReferenceProvider();
+                                final var provider = mLanguageServer.getReferenceProvider ();
                                 final var referenceParams =
-                                        new ReferenceParams(
-                                                getFile().toPath(),
-                                                new com.itsaky.lsp.models.Position(
-                                                        getCursor().getLeftLine(),
-                                                        getCursor().getLeftColumn()),
+                                        new ReferenceParams (
+                                                getFile ().toPath (),
+                                                new com.itsaky.lsp.models.Position (
+                                                        getCursor ().getLeftLine (),
+                                                        getCursor ().getLeftColumn ()),
                                                 true);
-                                return provider.findReferences(referenceParams);
+                                return provider.findReferences (referenceParams);
                             });
-
-            future.whenComplete(
+            
+            future.whenComplete (
                     (result, error) -> {
                         if (result == null
                                 || mLanguageClient == null
-                                || future.isCancelled()
-                                || future.isCompletedExceptionally()) {
-                            LOG.error("An error occurred while finding references", error);
-                            showReferencesNotFound(pd);
+                                || future.isCancelled ()
+                                || future.isCompletedExceptionally ()) {
+                            LOG.error ("An error occurred while finding references", error);
+                            showReferencesNotFound (pd);
                             return;
                         }
-
-                        if (result.getLocations().isEmpty()) {
-                            showReferencesNotFound(pd);
+                        
+                        if (result.getLocations ().isEmpty ()) {
+                            showReferencesNotFound (pd);
                             return;
                         } else {
-                            if (result.getLocations().size() == 1) {
-                                final var loc = result.getLocations().get(0);
-                                if (loc.getFile().equals(getFile().toPath())) {
-                                    setSelection(loc.getRange());
+                            if (result.getLocations ().size () == 1) {
+                                final var loc = result.getLocations ().get (0);
+                                if (loc.getFile ().equals (getFile ().toPath ())) {
+                                    setSelection (loc.getRange ());
                                     return;
                                 }
                             }
-
-                            ThreadUtils.runOnUiThread(
-                                    () -> mLanguageClient.showLocations(result.getLocations()));
+                            
+                            ThreadUtils.runOnUiThread (
+                                    () -> mLanguageClient.showLocations (result.getLocations ()));
                         }
-
-                        dismissOnUiThread(pd);
+                        
+                        dismissOnUiThread (pd);
                     });
         } catch (Throwable th) {
-            LOG.error("An error occurred while finding references", th);
-            showReferencesNotFound(pd);
+            LOG.error ("An error occurred while finding references", th);
+            showReferencesNotFound (pd);
         }
     }
-
+    
     /**
      * Notify the user that no references were found for the selected token.
      *
      * @param pd The {@link ProgressDialog} that was shown when requesting references.
      */
     @SuppressWarnings("deprecation")
-    private void showReferencesNotFound(final ProgressDialog pd) {
-        ThreadUtils.runOnUiThread(
+    private void showReferencesNotFound (final ProgressDialog pd) {
+        ThreadUtils.runOnUiThread (
                 () -> {
-                    StudioApp.getInstance().toast(R.string.msg_no_references, Toaster.Type.ERROR);
-                    pd.dismiss();
+                    StudioApp.getInstance ().toast (R.string.msg_no_references, Toaster.Type.ERROR);
+                    pd.dismiss ();
                 });
     }
-
+    
     /**
      * If any language server is set, requests signature help at the cursor's position. On a valid
      * response, shows the signature help in a popup window.
      */
     @SuppressWarnings("unused") // accessed using reflection in CompletionItem class
-    public void signatureHelp() {
-        if (mLanguageServer != null && getFile() != null) {
+    public void signatureHelp () {
+        if (mLanguageServer != null && getFile () != null) {
             final CompletableFuture<SignatureHelp> future =
-                    CompletableFuture.supplyAsync(
+                    CompletableFuture.supplyAsync (
                             () -> {
-                                final var provider = mLanguageServer.getSignatureHelpProvider();
-                                return provider.provideSignatures(
-                                        new SignatureHelpParams(
-                                                getFile().toPath(),
-                                                new com.itsaky.lsp.models.Position(
-                                                        getCursor().getLeftLine(),
-                                                        getCursor().getLeftColumn())));
+                                final var provider = mLanguageServer.getSignatureHelpProvider ();
+                                return provider.provideSignatures (
+                                        new SignatureHelpParams (
+                                                getFile ().toPath (),
+                                                new com.itsaky.lsp.models.Position (
+                                                        getCursor ().getLeftLine (),
+                                                        getCursor ().getLeftColumn ())));
                             });
-
-            future.whenComplete(
+            
+            future.whenComplete (
                     (help, error) -> {
                         if (help == null
                                 || mLanguageClient == null
-                                || future.isCancelled()
-                                || future.isCompletedExceptionally()) {
-                            LOG.error("An error occurred while finding signature help", error);
+                                || future.isCancelled ()
+                                || future.isCompletedExceptionally ()) {
+                            LOG.error ("An error occurred while finding signature help", error);
                             return;
                         }
-
-                        ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
+                        
+                        ThreadUtils.runOnUiThread (() -> showSignatureHelp (help));
                     });
         }
     }
-
+    
     /**
      * Shows the given signature help in the editor.
      *
      * @param help The signature help data to show.
      */
-    public void showSignatureHelp(SignatureHelp help) {
-        getSignatureHelpWindow().setupAndDisplay(help);
+    public void showSignatureHelp (SignatureHelp help) {
+        getSignatureHelpWindow ().setupAndDisplay (help);
     }
-
+    
     /**
      * Dismisses the given dialog on the UI thread.
      *
      * @param dialog The dialog to dismiss.
      */
-    private void dismissOnUiThread(@NonNull final Dialog dialog) {
-        ThreadUtils.runOnUiThread(dialog::dismiss);
+    private void dismissOnUiThread (@NonNull final Dialog dialog) {
+        ThreadUtils.runOnUiThread (dialog::dismiss);
     }
-
-    /** If any language server is set, notify the server that the file in this editor was saved. */
-    public void didSave() {
-        if (mLanguageServer != null && getFile() != null) {
+    
+    /**
+     * If any language server is set, notify the server that the file in this editor was saved.
+     */
+    public void didSave () {
+        if (mLanguageServer != null && getFile () != null) {
             mLanguageServer
-                    .getDocumentHandler()
-                    .onFileSaved(new DocumentSaveEvent(getFile().toPath()));
+                    .getDocumentHandler ()
+                    .onFileSaved (new DocumentSaveEvent (getFile ().toPath ()));
         }
     }
-
-    /** Notify the language server that the file in this editor is about to be closed. */
-    public void close() {
-        if (mLanguageServer != null && getFile() != null) {
+    
+    /**
+     * Notify the language server that the file in this editor is about to be closed.
+     */
+    public void close () {
+        if (mLanguageServer != null && getFile () != null) {
             mLanguageServer
-                    .getDocumentHandler()
-                    .onFileClosed(new DocumentCloseEvent(getFile().toPath()));
-            LOG.info("'textDocument/didClose' was sent to the language server.");
+                    .getDocumentHandler ()
+                    .onFileClosed (new DocumentCloseEvent (getFile ().toPath ()));
+            LOG.info ("'textDocument/didClose' was sent to the language server.");
         } else {
-            LOG.info("No language server is available for this file");
+            LOG.info ("No language server is available for this file");
         }
     }
-
+    
+    /**
+     * Tells the language client to perform the given code action item.
+     *
+     * @param action The action to perform.
+     */
+    public void performCodeAction (CodeActionItem action) {
+        if (mLanguageClient != null) {
+            mLanguageClient.performCodeAction (this, action);
+        }
+    }
+    
     /**
      * Request code actions from server at the given position containing given diagnostics
      *
      * @return A {@link CompletableFuture}. May return {@code null}.
      */
-    public CompletableFuture<CodeActionResult> codeActions() {
-        // TODO Implement this properly
-        return CompletableFuture.completedFuture(new CodeActionResult());
+    public CompletableFuture<CodeActionResult> codeActions () {
+        return codeActions (Collections.emptyList ());
     }
-
+    
     /**
      * Requests code actions for the given diagnostics to the language server.
      *
      * @param diagnostics The diagnostics to request code actions for.
      * @return The {@link CodeActionResult} from the server.
      */
-    public CompletableFuture<CodeActionResult> codeActions(List<DiagnosticItem> diagnostics) {
+    public CompletableFuture<CodeActionResult> codeActions (List<DiagnosticItem> diagnostics) {
         if (mLanguageServer == null || mLanguageClient == null) {
             return null;
         }
-
-        return CompletableFuture.supplyAsync(
+        
+        return CompletableFuture.supplyAsync (
                 () ->
                         mLanguageServer
-                                .getCodeActionProvider()
-                                .codeActions(
-                                        new CodeActionParams(
-                                                getFile().toPath(),
-                                                getCursorRange(),
+                                .getCodeActionProvider ()
+                                .codeActions (
+                                        new CodeActionParams (
+                                                getFile ().toPath (),
+                                                getCursorRange (),
                                                 diagnostics)));
     }
-
+    
     /**
      * Requests the language server to provided a semantically larger selection than the current
      * selection. If a valid response is received, that range will be selected.
      */
-    public void expandSelection() {
-        if (mLanguageServer == null || getFile() == null) {
-            LOG.error("Cannot expand selection. Language server or file is null");
+    public void expandSelection () {
+        if (mLanguageServer == null || getFile () == null) {
+            LOG.error ("Cannot expand selection. Language server or file is null");
             return;
         }
-
+        
         //noinspection deprecation
         final var pd =
-                ProgressDialog.show(
-                        getContext(),
+                ProgressDialog.show (
+                        getContext (),
                         null,
-                        getContext().getString(R.string.please_wait),
+                        getContext ().getString (R.string.please_wait),
                         true,
                         false);
         final CompletableFuture<Range> future =
-                CompletableFuture.supplyAsync(
+                CompletableFuture.supplyAsync (
                         () ->
                                 mLanguageServer
-                                        .getSelectionProvider()
-                                        .expandSelection(
-                                                new ExpandSelectionParams(
-                                                        getFile().toPath(), getCursorRange())));
-
-        future.whenComplete(
+                                        .getSelectionProvider ()
+                                        .expandSelection (
+                                                new ExpandSelectionParams (
+                                                        getFile ().toPath (), getCursorRange ())));
+        
+        future.whenComplete (
                 ((range, throwable) -> {
-                    pd.dismiss();
-
+                    pd.dismiss ();
+                    
                     if (throwable != null) {
-                        LOG.error("Error computing expanded selection range", throwable);
+                        LOG.error ("Error computing expanded selection range", throwable);
                         return;
                     }
-
-                    ThreadUtils.runOnUiThread(() -> setSelection(range));
+                    
+                    ThreadUtils.runOnUiThread (() -> setSelection (range));
                 }));
     }
-
+    
     /**
      * Get the cursor's position in the form of {@link Position}.
      *
      * @return The {@link Position} of the cursor.
      */
     @SuppressWarnings("unused")
-    public Position getCursorAsLSPPosition() {
-        return new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
+    public Position getCursorAsLSPPosition () {
+        return new Position (getCursor ().getLeftLine (), getCursor ().getLeftColumn ());
     }
-
+    
     /**
      * Get the cursor's selection range in the form of {@link Range}.
      *
      * @return The {@link Range} of the cursor.
      */
-    public Range getCursorRange() {
-        final var cursor = getCursor();
-        final var start = new Position(cursor.getLeftLine(), cursor.getLeftColumn());
-        final var end = new Position(cursor.getRightLine(), cursor.getRightColumn());
-        return new Range(start, end);
+    public Range getCursorRange () {
+        final var cursor = getCursor ();
+        final var start = new Position (cursor.getLeftLine (), cursor.getLeftColumn ());
+        final var end = new Position (cursor.getRightLine (), cursor.getRightColumn ());
+        return new Range (start, end);
     }
-
+    
     /**
      * Validates the range if it is invalid and returns a valid range.
      *
      * @param range Th range to validate.
      * @return A new, validated range.
      */
-    public Range validateRange(@NonNull final Range range) {
-        final var start = range.getStart();
-        final var end = range.getEnd();
-
-        if (start.getLine() < 0) {
-            start.setLine(0);
-        } else if (start.getLine() >= getText().getLineCount()) {
-            start.setLine(getText().getLineCount() - 1);
+    public Range validateRange (@NonNull final Range range) {
+        final var start = range.getStart ();
+        final var end = range.getEnd ();
+        
+        if (start.getLine () < 0) {
+            start.setLine (0);
+        } else if (start.getLine () >= getText ().getLineCount ()) {
+            start.setLine (getText ().getLineCount () - 1);
         }
-
-        if (end.getLine() < 0) {
-            end.setLine(0);
-        } else if (end.getLine() >= getText().getLineCount()) {
-            end.setLine(getText().getLineCount() - 1);
+        
+        if (end.getLine () < 0) {
+            end.setLine (0);
+        } else if (end.getLine () >= getText ().getLineCount ()) {
+            end.setLine (getText ().getLineCount () - 1);
         }
-
-        if (end.getLine() < start.getLine()) {
-            var l = end.getLine();
-            var l2 = start.getLine();
-            start.setLine(l);
-            end.setLine(l2);
+        
+        if (end.getLine () < start.getLine ()) {
+            var l = end.getLine ();
+            var l2 = start.getLine ();
+            start.setLine (l);
+            end.setLine (l2);
         }
-
-        if (start.getColumn() < 0) {
-            start.setColumn(0);
-        } else if (start.getColumn() >= getText().getColumnCount(start.getLine())) {
-            start.setColumn(getText().getColumnCount(start.getLine()) - 1);
+        
+        if (start.getColumn () < 0) {
+            start.setColumn (0);
+        } else if (start.getColumn () >= getText ().getColumnCount (start.getLine ())) {
+            start.setColumn (getText ().getColumnCount (start.getLine ()) - 1);
         }
-
-        if (end.getColumn() < 0) {
-            end.setColumn(0);
-        } else if (end.getColumn() >= getText().getColumnCount(end.getLine())) {
-            end.setColumn(getText().getColumnCount(end.getLine()) - 1);
+        
+        if (end.getColumn () < 0) {
+            end.setColumn (0);
+        } else if (end.getColumn () >= getText ().getColumnCount (end.getLine ())) {
+            end.setColumn (getText ().getColumnCount (end.getLine ()) - 1);
         }
-
-        if (end.getColumn() < start.getColumn()) {
-            final var c = start.getColumn();
-            final var c2 = end.getColumn();
-            start.setColumn(c2);
-            end.setColumn(c);
+        
+        if (end.getColumn () < start.getColumn ()) {
+            final var c = start.getColumn ();
+            final var c2 = end.getColumn ();
+            start.setColumn (c2);
+            end.setColumn (c);
         }
-
-        return new Range(start, end);
+        
+        return new Range (start, end);
     }
-
-    /**
-     * Set the text action presenter of this editor.
-     *
-     * @param actionPresenter The presenter to set. Must not be <code>null</code>.
-     */
-    public void setTextActionPresenter(@NonNull ITextActionPresenter actionPresenter) {
-        Objects.requireNonNull(actionPresenter, "Cannot set text action presenter to null");
-
-        if (mTextActionPresenter != null) {
-            mTextActionPresenter.destroy();
-            mTextActionPresenter = null;
-        }
-
-        this.mTextActionPresenter = actionPresenter;
-
-        actionPresenter.bindEditor(this);
-        registerActionsTo(actionPresenter);
-    }
-
+    
     /**
      * Get the text action presenter attached with this editor.
      *
      * @return The attached text action presenter.
      */
     @SuppressWarnings("unused")
-    public ITextActionPresenter getTextActionPresenter() {
+    public ITextActionPresenter getTextActionPresenter () {
         return mTextActionPresenter;
     }
-
+    
+    /**
+     * Set the text action presenter of this editor.
+     *
+     * @param actionPresenter The presenter to set. Must not be <code>null</code>.
+     */
+    public void setTextActionPresenter (@NonNull ITextActionPresenter actionPresenter) {
+        Objects.requireNonNull (actionPresenter, "Cannot set text action presenter to null");
+        
+        if (mTextActionPresenter != null) {
+            mTextActionPresenter.destroy ();
+            mTextActionPresenter = null;
+        }
+        
+        this.mTextActionPresenter = actionPresenter;
+        
+        actionPresenter.bindEditor (this);
+        registerActionsTo (actionPresenter);
+    }
+    
     /**
      * Register the editor's actions to the given action presenter.
      *
      * @param actionPresenter The action presenter to register actions to.
      */
-    public void registerActionsTo(@NonNull ITextActionPresenter actionPresenter) {
-        Objects.requireNonNull(
+    public void registerActionsTo (@NonNull ITextActionPresenter actionPresenter) {
+        Objects.requireNonNull (
                 actionPresenter, "Cannot register actions to null text action presenter");
-
+        
         var index = -1;
-
+        
         TypedArray array =
-                getContext()
-                        .getTheme()
-                        .obtainStyledAttributes(
-                                new int[] {
-                                    android.R.attr.actionModeSelectAllDrawable,
-                                    android.R.attr.actionModeCutDrawable,
-                                    android.R.attr.actionModeCopyDrawable,
-                                    android.R.attr.actionModePasteDrawable,
+                getContext ()
+                        .getTheme ()
+                        .obtainStyledAttributes (
+                                new int[]{
+                                        android.R.attr.actionModeSelectAllDrawable,
+                                        android.R.attr.actionModeCutDrawable,
+                                        android.R.attr.actionModeCopyDrawable,
+                                        android.R.attr.actionModePasteDrawable,
                                 });
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_expand_selection),
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_expand_selection),
                         R.string.action_expand_selection,
                         TextAction.EXPAND_SELECTION,
                         index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        array.getDrawable(0),
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        array.getDrawable (0),
                         android.R.string.selectAll,
                         TextAction.SELECT_ALL,
                         index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        array.getDrawable(1), android.R.string.cut, TextAction.CUT, index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        array.getDrawable(2), android.R.string.copy, TextAction.COPY, index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        array.getDrawable(3), android.R.string.paste, TextAction.PASTE, index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_goto_definition),
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        array.getDrawable (1), android.R.string.cut, TextAction.CUT, index++));
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        array.getDrawable (2), android.R.string.copy, TextAction.COPY, index++));
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        array.getDrawable (3), android.R.string.paste, TextAction.PASTE, index++));
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_goto_definition),
                         R.string.menu_navigate_definition,
                         TextAction.GOTO_DEFINITION,
                         index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_find_references),
+        
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_find_references),
                         R.string.menu_navigate_references,
                         TextAction.FIND_REFERENCES,
                         index++));
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_comment_line),
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_comment_line),
                         R.string.menu_comment_line,
                         TextAction.COMMENT_LINE,
                         index++));
-
+        
         //noinspection UnusedAssignment
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_uncomment_line),
+        actionPresenter.registerAction (
+                new TextAction (
+                        createTextActionDrawable (R.drawable.ic_uncomment_line),
                         R.string.menu_uncomment_line,
                         TextAction.UNCOMMENT_LINE,
                         index++));
-
-        array.recycle();
+        
+        array.recycle ();
     }
-
+    
     /**
      * Called by text action presenters to check if the action with the given ID should be shown or
      * not.
@@ -794,21 +812,21 @@ public class IDEEditor extends CodeEditor {
      * @param actionId The action ID to check.
      * @return <code>true</code> if the action should be shown, <code>false</code> otherwise.
      */
-    public boolean shouldShowTextAction(int actionId) {
-        final var capabilities = mLanguageServer != null ? mLanguageServer.getCapabilities() : null;
+    public boolean shouldShowTextAction (int actionId) {
+        final var capabilities = mLanguageServer != null ? mLanguageServer.getCapabilities () : null;
         final var notNull = capabilities != null;
-        final var expand = notNull && capabilities.getSmartSelectionsEnabled();
-        final var definitions = notNull && capabilities.getDefinitionsAvailable();
-        final var references = notNull && capabilities.getReferencesAvailable();
+        final var expand = notNull && capabilities.getSmartSelectionsEnabled ();
+        final var definitions = notNull && capabilities.getDefinitionsAvailable ();
+        final var references = notNull && capabilities.getReferencesAvailable ();
         final var commentUncomment =
-                getFile() != null
-                        && (getFile().getName().endsWith(".java")
-                                || getFile().getName().endsWith(".gradle")
-                                || getFile().getName().endsWith(".xml"));
+                getFile () != null
+                        && (getFile ().getName ().endsWith (".java")
+                        || getFile ().getName ().endsWith (".gradle")
+                        || getFile ().getName ().endsWith (".xml"));
         switch (actionId) {
             case TextAction.CUT:
             case TextAction.PASTE:
-                return isEditable();
+                return isEditable ();
             case TextAction.GOTO_DEFINITION:
                 return definitions;
             case TextAction.EXPAND_SELECTION:
@@ -819,90 +837,90 @@ public class IDEEditor extends CodeEditor {
             case TextAction.UNCOMMENT_LINE:
                 return commentUncomment;
         }
-
+        
         return true;
     }
-
+    
     /**
      * Performs the given text action in this editor.
      *
      * @param action The action to perform.
      */
-    public void performTextAction(@NonNull TextAction action) {
-        Objects.requireNonNull(action, "Cannot perform null text action");
-
+    public void performTextAction (@NonNull TextAction action) {
+        Objects.requireNonNull (action, "Cannot perform null text action");
+        
         switch (action.id) {
             case TextAction.SELECT_ALL:
-                selectAll();
+                selectAll ();
                 break;
             case TextAction.CUT:
-                cutText();
+                cutText ();
                 break;
             case TextAction.COPY:
-                copyText();
+                copyText ();
                 break;
             case TextAction.PASTE:
-                pasteText();
+                pasteText ();
                 break;
             case TextAction.GOTO_DEFINITION:
-                findDefinition();
+                findDefinition ();
                 break;
             case TextAction.FIND_REFERENCES:
-                findReferences();
+                findReferences ();
                 break;
             case TextAction.COMMENT_LINE:
-                commentLine();
+                commentLine ();
                 break;
             case TextAction.UNCOMMENT_LINE:
-                uncommentLine();
+                uncommentLine ();
                 break;
             case TextAction.EXPAND_SELECTION:
-                expandSelection();
+                expandSelection ();
                 break;
         }
     }
-
-    private Drawable createTextActionDrawable(int icon) {
-        final Drawable d = ContextCompat.getDrawable(getContext(), icon);
+    
+    private Drawable createTextActionDrawable (int icon) {
+        final Drawable d = ContextCompat.getDrawable (getContext (), icon);
         if (d != null) {
-            d.setColorFilter(
-                    ContextCompat.getColor(getContext(), secondaryColor), PorterDuff.Mode.SRC_ATOP);
+            d.setColorFilter (
+                    ContextCompat.getColor (getContext (), secondaryColor), PorterDuff.Mode.SRC_ATOP);
         }
         return d;
     }
-
-    private void handleSelectionChange(SelectionChangeEvent event) {
-        if (event.isSelected() || !(getEditorLanguage() instanceof IDELanguage)) {
+    
+    private void handleSelectionChange (SelectionChangeEvent event) {
+        if (event.isSelected () || !(getEditorLanguage () instanceof IDELanguage)) {
             // do not show diagnostics when text is selected
             // or if we cannot get diagnostics
             return;
         }
-
-        final var diagnostics = ((IDELanguage) getEditorLanguage()).getDiagnostics();
-        final var line = event.getLeft().line;
-        final var column = event.getLeft().column;
-
+        
+        final var diagnostics = ((IDELanguage) getEditorLanguage ()).getDiagnostics ();
+        final var line = event.getLeft ().line;
+        final var column = event.getLeft ().column;
+        
         // diagnostics are expected to be sorted, so, we do a binary search
-        getDiagnosticWindow().showDiagnostic(binarySearchDiagnostic(diagnostics, line, column));
+        getDiagnosticWindow ().showDiagnostic (binarySearchDiagnostic (diagnostics, line, column));
     }
-
+    
     @Nullable
-    private DiagnosticItem binarySearchDiagnostic(
+    private DiagnosticItem binarySearchDiagnostic (
             @NonNull List<DiagnosticItem> diagnostics, int line, int column) {
-
-        if (diagnostics.isEmpty()) {
+        
+        if (diagnostics.isEmpty ()) {
             return null;
         }
-
-        final var pos = new Position(line, column);
+        
+        final var pos = new Position (line, column);
         int left = 0;
-        int right = diagnostics.size() - 1;
+        int right = diagnostics.size () - 1;
         int mid;
         while (left < right) {
             mid = (left + right) / 2;
-            var d = diagnostics.get(mid);
-            var r = d.getRange();
-            var c = r.containsForBinarySearch(pos);
+            var d = diagnostics.get (mid);
+            var r = d.getRange ();
+            var c = r.containsForBinarySearch (pos);
             if (c < 0) {
                 right = mid - 1;
             } else if (c > 0) {
@@ -911,30 +929,30 @@ public class IDEEditor extends CodeEditor {
                 return d;
             }
         }
-
+        
         return null;
     }
-
+    
     /**
      * Notify the language server that the content of this file has been changed.
      *
      * @param event The content change event.
      */
-    private void handleContentChange(ContentChangeEvent event) {
-
-        if (getFile() == null) {
+    private void handleContentChange (ContentChangeEvent event) {
+        
+        if (getFile () == null) {
             return;
         }
-
-        StudioApp.getInstance()
-                .getJavaLanguageServer()
-                .getDocumentHandler()
-                .onContentChange(
-                        new DocumentChangeEvent(getFile().toPath(), getText(), mFileVersion + 1));
-
-        checkForSignatureHelp(event);
+        
+        StudioApp.getInstance ()
+                .getJavaLanguageServer ()
+                .getDocumentHandler ()
+                .onContentChange (
+                        new DocumentChangeEvent (getFile ().toPath (), getText (), mFileVersion + 1));
+        
+        checkForSignatureHelp (event);
     }
-
+    
     /**
      * Checks if the content change event should trigger signature help. Signature help trigger
      * characters are :
@@ -946,34 +964,34 @@ public class IDEEditor extends CodeEditor {
      *
      * @param event The content change event.
      */
-    private void checkForSignatureHelp(@NonNull ContentChangeEvent event) {
-        if (event.getAction() != ContentChangeEvent.ACTION_INSERT
-                || event.getChangedText().length() != 1) {
+    private void checkForSignatureHelp (@NonNull ContentChangeEvent event) {
+        if (event.getAction () != ContentChangeEvent.ACTION_INSERT
+                || event.getChangedText ().length () != 1) {
             return;
         }
-
-        final var ch = event.getChangedText().charAt(0);
+        
+        final var ch = event.getChangedText ().charAt (0);
         if (ch == '(' || ch == ',') {
-            signatureHelp();
+            signatureHelp ();
         }
     }
-
-    private SignatureHelpWindow getSignatureHelpWindow() {
+    
+    private SignatureHelpWindow getSignatureHelpWindow () {
         if (mSignatureHelpWindow == null) {
-            mSignatureHelpWindow = new SignatureHelpWindow(this);
+            mSignatureHelpWindow = new SignatureHelpWindow (this);
         }
-
+        
         return mSignatureHelpWindow;
     }
-
-    private DiagnosticWindow getDiagnosticWindow() {
+    
+    private DiagnosticWindow getDiagnosticWindow () {
         if (mDiagnosticWindow == null) {
-            mDiagnosticWindow = new DiagnosticWindow(this);
+            mDiagnosticWindow = new DiagnosticWindow (this);
         }
-
+        
         return mDiagnosticWindow;
     }
-
+    
     /**
      * A text action presenter presents text actions (cut, copy, paste, etc). <br>
      *
@@ -982,68 +1000,73 @@ public class IDEEditor extends CodeEditor {
      * @author Akash Yadav
      */
     public interface ITextActionPresenter {
-
+        
         /**
          * Bind the action presenter with the given editor instance.
          *
          * @param editor The editor to bind with.
          */
-        void bindEditor(@NonNull IDEEditor editor);
-
+        void bindEditor (@NonNull IDEEditor editor);
+        
         /**
          * Register the text action with this presenter.
          *
          * @param action The action to register.
          */
-        void registerAction(@NonNull TextAction action);
-
+        void registerAction (@NonNull TextAction action);
+        
         /**
          * Destroy this action presenter. The presenter should unsubscribe from any subscribed
          * events and release any held resources.
          */
-        void destroy();
+        void destroy ();
     }
-
+    
     /**
      * A model class for text actions.
      *
      * @author Akash Yadav
      */
     public static class TextAction implements Comparable<TextAction> {
-
+        
         public static final int EXPAND_SELECTION = 4;
         public static final int GOTO_DEFINITION = 5;
         public static final int FIND_REFERENCES = 6;
         public static final int COMMENT_LINE = 7;
         public static final int UNCOMMENT_LINE = 8;
-
+        
         // common action IDs
         public static final int PASTE = 3;
         public static final int COPY = 2;
         public static final int CUT = 1;
         public static final int SELECT_ALL = 0;
-
-        /** The drawable resource id for this text action. */
-        public Drawable icon;
-
-        /** The string resource id for this text action. */
-        @StringRes public int titleId;
-
-        /** The ID of this text action; */
+        /**
+         * The ID of this text action;
+         */
         public final int id;
-
-        /** The index at which this action should be placed. */
+        /**
+         * The index at which this action should be placed.
+         */
         public final int index;
-
-        public TextAction(Drawable icon, int titleId, int id, int index) {
+        /**
+         * The drawable resource id for this text action.
+         */
+        public Drawable icon;
+        /**
+         * The string resource id for this text action.
+         */
+        @StringRes
+        public int titleId;
+        
+        public TextAction (Drawable icon, int titleId, int id, int index) {
             this.icon = icon;
             this.titleId = titleId;
             this.id = id;
             this.index = index;
         }
-
+        
         @Override
-        public boolean equals(Object o) {
+        public boolean equals (Object o) {
             if (this == o) {
                 return true;
             }
@@ -1053,15 +1076,15 @@ public class IDEEditor extends CodeEditor {
             TextAction that = (TextAction) o;
             return id == that.id;
         }
-
+        
         @Override
-        public int hashCode() {
-            return Objects.hash(id);
+        public int hashCode () {
+            return Objects.hash (id);
         }
-
+        
         @Override
-        public int compareTo(TextAction o) {
-            return Integer.compare(this.index, o.index);
+        public int compareTo (TextAction o) {
+            return Integer.compare (this.index, o.index);
         }
     }
 }

@@ -331,7 +331,7 @@
     <string name="msg_use_horizontal_popup">Make the floating text actions appear horizontally (restart required if changed).</string>
     <string name="msg_apk_install_intent_failed">Unable to start intent for installing APK</string>
     <string name="msg_viewaction_add_attr">Add attribute</string>
-    <string name="msg_search_attrs">Search attributes...</string>
+    <string name="msg_search_attrs">Search attributes…</string>
     <string name="msg_attr_added">Attribute was added successfully</string>
     <string name="msg_attr_not_updated">Unable to update this attribute</string>
     <string name="hint_dimension_val">Dimension value</string>
@@ -343,4 +343,5 @@
     <string name="hint_string_value">String value</string>
     <string name="hint_string_resource">String resource</string>
     <string name="hint_resource_reference">Any resource reference</string>
+    <string name="msg_fix_diagnostic">QuickFix</string>
 </resources>
