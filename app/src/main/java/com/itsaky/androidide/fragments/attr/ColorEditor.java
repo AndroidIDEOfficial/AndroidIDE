@@ -18,6 +18,7 @@
 package com.itsaky.androidide.fragments.attr;
 
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.colorpicker.ColorPickerView;
 import com.itsaky.androidide.databinding.LayoutColorAttrEditorBinding;
 import com.itsaky.androidide.utils.DialogUtils;
@@ -40,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * @author Akash Yadav
  */
-public class ColorEditor extends ReferenceEditor {
+public class ColorEditor extends AbstractReferenceEditor {
     
     private LayoutColorAttrEditorBinding binding;
     private Dialog colorPickerDialog;
@@ -58,6 +60,13 @@ public class ColorEditor extends ReferenceEditor {
         
         this.binding.pickColor.setOnClickListener (v -> getColorPickerDialog ().show ());
         setupReferenceInput ((MaterialAutoCompleteTextView) this.binding.colorResInput.getEditText ());
+        
+        try {
+            final var col = Color.parseColor (attribute.getValue ());
+            this.binding.colorPreview.setCardBackgroundColor (col);
+        } catch (Throwable th) {
+            // ignored
+        }
     }
     
     @Override
@@ -78,6 +87,10 @@ public class ColorEditor extends ReferenceEditor {
                 FrameworkValues.listColors ().stream ()
                         .map ("@android:color/"::concat)
                         .collect (Collectors.toList ()));
+        
+        final var resTable = StudioApp.getInstance ().getResourceTable ();
+        list.addAll (resTable.listResourceNames ("color"));
+        
         return list;
     }
     

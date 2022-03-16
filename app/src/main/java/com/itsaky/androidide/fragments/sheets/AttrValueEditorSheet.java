@@ -49,6 +49,7 @@ import com.itsaky.androidide.fragments.attr.FlagEditor;
 import com.itsaky.androidide.fragments.attr.FloatEditor;
 import com.itsaky.androidide.fragments.attr.FractionEditor;
 import com.itsaky.androidide.fragments.attr.IntegerEditor;
+import com.itsaky.androidide.fragments.attr.AbstractReferenceEditor;
 import com.itsaky.androidide.fragments.attr.ReferenceEditor;
 import com.itsaky.androidide.fragments.attr.StringEditor;
 import com.itsaky.androidide.models.XMLAttribute;

@@ -32,6 +32,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.itsaky.androidide.utils.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author Akash Yadav
@@ -47,6 +48,14 @@ public class FlagEditor extends FixedValueEditor {
         this.chipGroup.setSingleSelection(false);
         this.chipGroup.setSelectionRequired(true);
         this.chipGroup.setOnCheckedChangeListener(null); // does not work for multiple selections
+    
+        final var values = Arrays.asList (this.attribute.getValue ().split ("\\|"));
+        for (int i = 0; i < this.chipGroup.getChildCount (); i++) {
+            final var chip = (Chip) this.chipGroup.getChildAt (i);
+            if (values.contains (chip.getText ().toString ().trim ())) {
+                chip.setChecked (true);
+            }
+        }
     }
 
     @Override

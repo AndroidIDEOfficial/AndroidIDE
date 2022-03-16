@@ -14,91 +14,72 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package com.itsaky.androidide.fragments.attr;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
-import android.text.Editable;
-import android.text.TextUtils;
-import android.widget.AutoCompleteTextView;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.itsaky.androidide.adapters.AttrValueCompletionAdapter;
-import com.itsaky.androidide.utils.Logger;
-import com.itsaky.androidide.utils.TextWatcherAdapter;
+import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.databinding.LayoutReferenceAttrEditorBinding;
+import com.itsaky.inflater.values.FrameworkValues;
+import com.itsaky.inflater.values.ValuesTableFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * @author Akash Yadav
  */
-public class ReferenceEditor extends BaseValueEditorFragment {
+public class ReferenceEditor extends AbstractReferenceEditor {
     
-    private static final Logger LOG = instance ("ReferenceEditor");
-    public TextWatcherAdapter resInputWatcher;
+    private LayoutReferenceAttrEditorBinding binding;
+    
+    @Nullable
+    @Override
+    public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        this.binding = LayoutReferenceAttrEditorBinding.inflate (inflater, container, false);
+        return this.binding.getRoot ();
+    }
     
     @Override
-    protected void notifyValueChanged (@NonNull String newValue) {
-        try {
-            super.notifyValueChanged (newValue);
-        } catch (Throwable e) {
-            LOG.error ("Unable to update resource value to '" + newValue + "'", e);
-        }
+    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated (view, savedInstanceState);
+        
+        setupReferenceInput ((MaterialAutoCompleteTextView) this.binding.resInput.getEditText ());
     }
     
-    protected void setupReferenceInput (MaterialAutoCompleteTextView referenceInput) {
-        Objects.requireNonNull (referenceInput);
-        
-        if (resInputWatcher != null) {
-            referenceInput.removeTextChangedListener (resInputWatcher);
-        }
-        
-        resInputWatcher =
-                new TextWatcherAdapter () {
-                    @Override
-                    public void afterTextChanged (@NonNull Editable s) {
-                        final var text = s.toString ().trim ();
-                        if (TextUtils.isEmpty (text)) {
-                            return;
-                        }
-                        
-                        notifyValueChanged (text);
-                    }
-                };
-        
-        referenceInput.addTextChangedListener (resInputWatcher);
-        
-        CompletableFuture.supplyAsync (this::computeReferenceItems)
-                .whenComplete (
-                        (list, error) -> handleAutoCompleteResult (list, error, referenceInput));
-    }
-    
-    protected void handleAutoCompleteResult (
-            List<String> list, Throwable error, AutoCompleteTextView referenceInput) {
-        if (list == null || list.isEmpty ()) {
-            LOG.error ("No completion items found");
-            LOG.error ("Error was:", error);
-            return;
-        }
-        
-        LOG.debug ("Found", list.size (), "resource items for completion");
-        
-        ThreadUtils.runOnUiThread (
-                () -> {
-                    final var adapter = new AttrValueCompletionAdapter (requireContext (), list);
-                    referenceInput.setThreshold (1);
-                    referenceInput.setAdapter (adapter);
-                    adapter.notifyDataSetChanged ();
-                });
-    }
-    
+    @Override
     protected List<String> computeReferenceItems () {
-        return new ArrayList<> ();
+        final var resTable = StudioApp.getInstance ().getResourceTable ();
+        final var list = new ArrayList<> (resTable.listResourceNames (null));
+        
+        final var tables = ValuesTableFactory.getAllTables ();
+        for (var entry : tables.entrySet ()) {
+            final var resourceMap = entry.getValue ().getResourceMap ();
+            for (var resourceEntries : resourceMap.entrySet ()) {
+                final var name = resourceEntries.getKey ();
+                list.addAll (
+                        resourceEntries
+                                .getValue ()
+                                .keySet ()
+                                .stream ()
+                                .map (("@android:" + name + "/")::concat)
+                                .collect (Collectors.toList ()
+                                )
+                );
+            }
+        }
+        
+        list.addAll (FrameworkValues.listAllResources ());
+        
+        return list;
     }
 }

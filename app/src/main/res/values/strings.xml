@@ -342,4 +342,5 @@
     <string name="title_color_picker">Color picker</string>
     <string name="hint_string_value">String value</string>
     <string name="hint_string_resource">String resource</string>
+    <string name="hint_resource_reference">Any resource reference</string>
 </resources>

@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 /**
  * @author Akash Yadav
  */
-public class StringEditor extends ReferenceEditor {
+public class StringEditor extends AbstractReferenceEditor {
     
     private LayoutStringAttrEditorBinding binding;
     
@@ -54,13 +54,15 @@ public class StringEditor extends ReferenceEditor {
     public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated (view, savedInstanceState);
         
-        Objects.requireNonNull (this.binding.stringInput.getEditText ()).addTextChangedListener (new TextWatcherAdapter () {
+        final var stringInput = Objects.requireNonNull (this.binding.stringInput.getEditText ());
+        stringInput.addTextChangedListener (new TextWatcherAdapter () {
             @Override
             public void afterTextChanged (@NonNull Editable s) {
                 notifyValueChanged (s.toString ());
             }
         });
         
+        stringInput.setText (this.attribute.getValue ());
         setupReferenceInput ((MaterialAutoCompleteTextView) this.binding.stringResInput.getEditText ());
     }
     
@@ -79,7 +81,7 @@ public class StringEditor extends ReferenceEditor {
         }
         
         list.addAll (
-                FrameworkValues.listDimens ().stream ()
+                FrameworkValues.listStrings ().stream ()
                         .map ("@android:string/"::concat)
                         .collect (Collectors.toList ()));
         return list;

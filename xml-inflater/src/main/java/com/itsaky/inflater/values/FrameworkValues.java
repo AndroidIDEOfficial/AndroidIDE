@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Provides framework resource values.
@@ -32,42 +33,54 @@ import java.util.Objects;
  * @author Akash Yadav
  */
 public class FrameworkValues {
-
+    
     @NonNull
-    public static List<String> listDimens() {
-        return listFields(android.R.dimen.class);
+    public static List<String> listDimens () {
+        return listFields (android.R.dimen.class);
     }
-
+    
     @NonNull
-    public static List<String> listBools() {
-        return listFields(android.R.bool.class);
+    public static List<String> listBools () {
+        return listFields (android.R.bool.class);
     }
-
+    
     @NonNull
-    public static List<String> listStrings() {
-        return listFields(android.R.string.class);
+    public static List<String> listStrings () {
+        return listFields (android.R.string.class);
     }
-
+    
     @NonNull
-    public static List<String> listColors() {
-        return listFields(android.R.color.class);
+    public static List<String> listColors () {
+        return listFields (android.R.color.class);
     }
-
+    
     @NonNull
-    private static List<String> listFields(final Class<?> klass) {
-        Objects.requireNonNull(klass);
-
-        final var list = new ArrayList<String>();
-        final var fields = klass.getDeclaredFields();
+    private static List<String> listFields (final Class<?> klass) {
+        Objects.requireNonNull (klass);
+        
+        final var list = new ArrayList<String> ();
+        final var fields = klass.getDeclaredFields ();
         for (var field : fields) {
-            final var mods = field.getModifiers();
-            if (!isPublic(mods) || !isStatic(mods)) {
+            final var mods = field.getModifiers ();
+            if (!isPublic (mods) || !isStatic (mods)) {
                 continue;
             }
-
-            list.add(field.getName());
+            
+            list.add (field.getName ());
         }
-
+        
+        return list;
+    }
+    
+    @NonNull
+    public static List<String> listAllResources () {
+        final var list = new ArrayList<String> ();
+        for (var klass : android.R.class.getDeclaredClasses ()) {
+            list.addAll (listFields (klass).stream ()
+                    .map (("@android:" + klass.getSimpleName () + "/")::concat)
+                    .collect (Collectors.toList ())
+            );
+        }
         return list;
     }
 }
