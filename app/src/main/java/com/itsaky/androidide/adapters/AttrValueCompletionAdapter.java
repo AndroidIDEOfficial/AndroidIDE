@@ -38,84 +38,84 @@ import java.util.Locale;
  * @author Akash Yadav
  */
 public class AttrValueCompletionAdapter extends BaseAdapter implements Filterable {
-
+    
     private final List<String> items;
     private final List<String> filtered;
     private final Context context;
     private final Filter mFilter =
-            new Filter() {
+            new Filter () {
                 @Override
-                protected FilterResults performFiltering(CharSequence constraint) {
-                    final var result = new FilterResults();
-                    if (TextUtils.isEmpty(constraint)) {
-                        final var list = new ArrayList<>(items);
+                protected FilterResults performFiltering (CharSequence constraint) {
+                    final var result = new FilterResults ();
+                    if (TextUtils.isEmpty (constraint)) {
+                        final var list = new ArrayList<> (items);
                         result.values = list;
-                        result.count = list.size();
+                        result.count = list.size ();
                         return result;
                     }
-
-                    final var match = constraint.toString().trim().toLowerCase(Locale.ROOT);
-                    final var list = new ArrayList<String>();
+                    
+                    final var match = constraint.toString ().trim ().toLowerCase (Locale.ROOT);
+                    final var list = new ArrayList<String> ();
                     for (String item : items) {
-                        if (item.contains(match)) {
-                            list.add(item);
+                        if (item.contains (match)) {
+                            list.add (item);
                         }
                     }
-
+                    
                     result.values = list;
-                    result.count = list.size();
+                    result.count = list.size ();
                     return result;
                 }
-
+                
                 @Override
-                protected void publishResults(
+                protected void publishResults (
                         CharSequence constraint, @NonNull FilterResults results) {
                     //noinspection unchecked
                     List<String> items = (List<String>) results.values;
-                    if (items.isEmpty()) {
-                        notifyDataSetInvalidated();
+                    if (items.isEmpty ()) {
+                        notifyDataSetInvalidated ();
                     } else {
-                        notifyDataSetChanged();
+                        notifyDataSetChanged ();
                     }
                 }
             };
-
-    public AttrValueCompletionAdapter(Context context, List<String> items) {
+    
+    public AttrValueCompletionAdapter (Context context, List<String> items) {
         this.context = context;
         this.items = items;
-        this.filtered = new ArrayList<>(items);
+        this.filtered = new ArrayList<> (items);
     }
-
+    
     @Override
-    public int getCount() {
-        return this.filtered.size();
+    public int getCount () {
+        return this.filtered.size ();
     }
-
+    
     @Override
-    public Object getItem(int position) {
-        return filtered.get(position);
+    public Object getItem (int position) {
+        return filtered.get (position);
     }
-
+    
     @Override
-    public long getItemId(int position) {
+    public long getItemId (int position) {
         return position;
     }
-
+    
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView (int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView =
-                    ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                            .inflate(android.R.layout.simple_list_item_1, parent, false);
+                    ((LayoutInflater) context.getSystemService (Context.LAYOUT_INFLATER_SERVICE))
+                            .inflate (android.R.layout.simple_list_item_1, parent, false);
         }
-
-        ((TextView) convertView).setText(getItem(position).toString());
-
+        
+        ((TextView) convertView).setText (getItem (position).toString ());
+        
         return convertView;
     }
-
+    
     @Override
-    public Filter getFilter() {
+    public Filter getFilter () {
         return mFilter;
     }
 }

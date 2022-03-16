@@ -338,4 +338,6 @@
     <string name="hint_dimension_res">Dimension resource</string>
     <string name="hint_boolean_res">Boolean resource</string>
     <string name="msg_file_tree">File tree</string>
+    <string name="hint_color_resource">Color resource</string>
+    <string name="title_color_picker">Color picker</string>
 </resources>
