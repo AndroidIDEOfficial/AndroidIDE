@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Adapter for showing the autocomplete items while editing attribute values in UI Designer.
@@ -72,6 +73,11 @@ public class AttrValueCompletionAdapter extends BaseAdapter implements Filterabl
                         CharSequence constraint, @NonNull FilterResults results) {
                     //noinspection unchecked
                     List<String> items = (List<String>) results.values;
+                    Objects.requireNonNull (items);
+                    
+                    filtered.clear ();
+                    filtered.addAll (items);
+                    
                     if (items.isEmpty ()) {
                         notifyDataSetInvalidated ();
                     } else {
