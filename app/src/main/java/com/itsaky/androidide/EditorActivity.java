@@ -121,6 +121,7 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1438,10 +1439,9 @@ public class EditorActivity extends StudioActivity
     private void initializeLanguageServers () {
         final var client = IDELanguageClientImpl.getInstance ();
         final var javaLanguageServer = getApp ().getJavaLanguageServer ();
-        final var workspaceRoots =
-                Collections.singleton (
-                        new File (Objects.requireNonNull (getAndroidProject ()).getProjectPath ())
-                                .toPath ());
+        final var workspaceRoots = new HashSet<Path> ();
+        workspaceRoots.add (new File (Objects.requireNonNull (getAndroidProject ()).getProjectPath ()).toPath ());
+        workspaceRoots.add (Environment.HOME.toPath ().resolve ("logsender"));
         
         final var params = new InitializeParams (workspaceRoots);
         
