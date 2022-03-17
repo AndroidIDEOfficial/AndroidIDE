@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
@@ -23,9 +22,16 @@ android {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion
     }
-
-
-    buildFeatures {
+	
+	lintOptions {
+		abortOnError false
+		disable "VectorPath",
+				"NestedWeights",
+				"ContentDescription",
+                "SmallSp"
+    }
+	
+	buildFeatures {
         viewBinding true
     }
     
@@ -59,30 +65,27 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    packagingOptions {
-        resources {
-            excludes += ['META-INF/eclipse.inf', 'about_files/LICENSE-2.0.txt', 'plugin.xml', 'plugin.properties', 'about.mappings', 'about.properties', 'about.ini', 'modeling32.png']
-        }
-    }
-
-    lint {
-        abortOnError false
-        disable 'VectorPath', 'NestedWeights', 'ContentDescription', 'SmallSp'
-    }
-}
-
-// Build the gradle plugin before building app
-project.afterEvaluate {
-    tasks.preBuild {
-        finalizedBy rootProject.project(':gradle-plugin').getTasksByName("jar", true).iterator().next()
-    }
+	
+	packagingOptions {
+		exclude 'META-INF/eclipse.inf'
+		exclude 'about_files/LICENSE-2.0.txt'
+		exclude 'plugin.xml'
+		exclude 'plugin.properties'
+        exclude 'about.mappings'
+        exclude 'about.properties'
+        exclude 'about.ini'
+        exclude 'modeling32.png'
+	}
 }
 
 dependencies {
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+
     // Annotation processors
 	annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
-
-    implementation common.editor
+	
 	implementation common.utilcode
 	implementation common.file_picker
 	implementation common.glide
@@ -113,10 +116,6 @@ dependencies {
 	implementation 'com.google.firebase:firebase-analytics'
 	implementation 'com.google.firebase:firebase-crashlytics'
 	implementation 'com.google.firebase:firebase-messaging'
-
-    // Kotlin
-    implementation "androidx.core:core-ktx:1.7.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     
 	// Local projects here
 	implementation project(':treeview')
@@ -127,9 +126,10 @@ dependencies {
 
     implementation project(':lsp:api')
     implementation project(':lsp:java')
-    implementation project(':lsp:xml')
     
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	
 	coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }
+
+

@@ -2,9 +2,7 @@
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE JDK के एक संशोधित निर्माण का उपयोग करता है जिसे GNU General Public License v2.0 के तहत लाइसेंस प्राप्त है। स्रोत कोड और जेडीके का लाइसेंस यहां उपलब्ध है: </string>
-    <string name="title_developers">डेवलपर्स</string>
-    <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
+    <string name="license_jdk">AndroidIDE JDK के एक संशोधित निर्माण का उपयोग करता है जिसे GNU General Public License v3.0 के तहत लाइसेंस प्राप्त है। स्रोत कोड और जेडीके का लाइसेंस यहां उपलब्ध है: </string>
     <string name="title_open_source_licenses">ओपन सोर्स लाइसेंस </string>
     <string name="msg_open_source_licenses">AndroidIDE ओपन सोर्स लाइब्रेरी का उपयोग करता है। आप नीचे दिए गए लिंक पर क्लिक करके उपयोग किए गए लाइब्रेरी के स्रोत और लाइसेंस प्राप्त कर सकते हैं ।</string>
     <string name="msg_about_licensed_under">लाइसेंस</string>
@@ -34,9 +32,7 @@
     <string name="nothing_here">यहाँ कुछ भी नहीं &#8230;</string>
 
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_sdk_info_load_failed">एसडीके की जानकारी लोड करने में विफल रहे</string>
-    <string name="msg_fix_diagnostic">[QuickFix]</string>
-    <string name="msg_no_code_actions">कोई कोड कार्रवाई नहीं मिली</string>
+    <string name="msg_fix_diagnostic">[क्विक फिक्स]</string>
     <string name="msg_cannot_perform_fix">कोड क्रिया करने में असमर्थ </string>
     <string name="msg_performing_fixes">सुधार कर रहे है &#8230;</string>
     <string name="msg_code_actions">कोड क्रियाएं</string>
@@ -102,7 +98,6 @@
     <string name="gradle_daemon_status">ग्रैडल डेमॉन की स्थिति</string>
     <string name="msg_service_started">सेवा शुरू</string>
     <string name="msg_starting_completion">सेवाएं शुरू करना</string>
-    <string name="msg_starting_completion_failed">कंप्लीशन सेवाएं प्रारंभ करने में विफल</string>
     <string name="msg_starting_daemon">एक गरडले डेमॉन शुरू कर रहे है</string>
     <string name="title_install_apks">एपीके इंस्टॉल करें</string>
     <string name="title_clear_output">क्लियर आउटपुट</string>
@@ -135,14 +130,6 @@
     <string name="msg_invalid_project">चुनी गई डायरेक्टरी एक एंड्रॉयड प्रोजेक्ट नहीं है</string>
     <string name="msg_project_deleted">प्रोजेक्ट डिलीट करने में सफल</string>
     <string name="msg_project_delete_failed">प्रोजेक्ट मिटाया नहीं जा सका!</string>
-    <string name="menu_project_info">प्रोजेक्ट की जानकारी</string>
-    <string name="header_module_info">मॉड्यूल की जानकारी</string>
-    <string name="msg_module_count">मॉड्यूल्स : %d</string>
-    <string name="msg_task_count">टास्क्स : %d</string>
-    <string name="msg_dependency_count">डिपेंडेंसीज : %d</string>
-    <string name="msg_package_name">पैकेज : %s</string>
-    <string name="msg_min_sdk">मिन एसडीके : %s</string>
-    <string name="msg_target_sdk">टार्गेट एसडीके : %s</string>
     <string name="title_confirm_project_close">प्रोजेक्ट बंद करें</string>
     <string name="msg_confirm_project_close">क्या आप वाकई इस प्रोजेक्ट को बंद करना चाहते हैं? इस प्रोजेक्ट के बंद होने के बाद सभी शुरू किए गए ग्रैडल डेमॉन को रोक दिया जाएगा।</string>
     <string name="project_exists">इसी नाम का एक प्रोजेक्ट पहले से मौजूद है!</string>
@@ -157,7 +144,6 @@
 
     <!-- Files -->
     <string name="save">सेव</string>
-    <string name="show_files">फाइलें</string>
     <string name="menu_find">खोजें</string>
     <string name="menu_find_file">फ़ाइल में खोजें</string>
     <string name="menu_find_project">प्रोजेक्ट में खोजें</string>
@@ -221,25 +207,15 @@
     <string name="classtype_enum">इनम</string>
     <string name="msg_checking_storage_permissions">स्टोरेज अनुमतियों की जाँच करना </string>
     <string name="msg_failed_list_files">प्रोजेक्ट फ़ाइलें लिस्ट करने में विफल! </string>
-    <string name="msg_failed_save">फ़ाइलें सेव करने में विफल! </string>
     <string name="msg_storage_denied">स्टोरेज की अनुमति के बिना आगे नहीं बढ़ सकता</string>
     <string name="msg_storage_granted">स्टोरेज की अनुमति दी गई!</string>
 
     <!-- Code Editor -->
     <string name="undo">अनडू</string>
     <string name="redo">रीडू</string>
-    <item name="paste" type="string">पेस्ट</item>
     <item name="copy" type="string" tools:override="true">कॉपी</item>
-    <item name="selectAll" formatted="true" type="string">सिलेक्ट ऑल</item>
-    <item name="cut" type="string">कट</item>
-    <item name="last" type="string">आखरी</item>
-    <item name="next" type="string">अगला</item>
-    <item name="replace" type="string">बदले</item>
-    <item name="replaceAll" type="string">सभी बदले</item>
-    <item name="replacement" type="string">बदलाव</item>
     <item name="text_to_search" type="string">खोजने के लिए शब्द</item>
-    <item name="more" translatable="false" type="string">और</item>
-
+    
     <!-- Preferences -->
     <string name="title_change_text_size">एडिटर के फॉण्ट का आकार</string>
     <string name="idepref_about_title">AndroidIDE के बारे में</string>
@@ -247,8 +223,6 @@
     <string name="idepref_build_clearCache_summary">ग्रैडल कैश डायरेक्ट्री साफ़ करें। यह ग्रैडल द्वारा डाउनलोड की गई सभी डिपेंडेंसीज को हटा देगा। आवश्यक फ़ाइलें अगले निर्माण में फिर से डाउनलोड की जाएंगी।</string>
     <string name="idepref_build_customgradlecommands_title">अतिरिक्त ग्रैडल कमांड्स</string>
     <string name="idepref_build_customgradlecommands_summary">अतिरिक्त कमांड्स चुनें जो प्रत्येक कार्य को निष्पादित करते समय जोड़े जाएंगे</string>
-    <string name="idepref_build_editgradleproperties_title">एडिट ग्लोबल ग्रैडल प्रॉपर्टीज</string>
-    <string name="idepref_build_editgradleproperties_summary">GRADLE_HOME में gradle.properties एडिट करें</string>
     <string name="idepref_editor_fontsize_title">फॉन्ट साइज</string>
     <string name="idepref_editor_fontsize_summary">एडिटर का फ़ॉन्ट साइज</string>
     <string name="idepref_editor_paintingflags_title">नन-प्रिंटेबल पेंटिंग फ्लैग्स</string>
@@ -275,19 +249,12 @@
 
     <!-- Error Messages used while Logging -->
     <string name="err_installation">इंस्टॉलेशन एरर</string>
-    <string name="err_completion">कंप्लीशन एरर</string>
-    <string name="err_no_server_implementation">कोई लैंग्वेज सर्वर उपलब्ध नही है।</string>
-    <string name="err_init_server">लैंग्वेज सर्वर प्रारंभ करने में एरर</string>
     <string name="err_init_sdkinfo">SDK जानकारी प्रारंभ करने में असमर्थ</string>
     <string name="err_cannot_start_file_picker">फ़ाइल पिकर प्रारंभ करने में असमर्थ</string>
     <string name="err_cannot_parse_apk_metadata">एपीके मेटाडेटा को पार्स करने में विफल</string>
-    <string name="err_cannot_save_files">फ़ाइलें सेव में असमर्थ</string>
     <string name="err_cannot_preview_layout">लेआउट का प्रिव्यू करने में असमर्थ</string>
     <string name="err_cannot_inflate_layout">लेआउट को इंफ्लेट करने में असमर्थ</string>
-    <string name="err_cannot_start_server">इसके लिए लैंग्वेज सर्वर प्रारंभ करने में असमर्थ: %s</string>
-    <string name="err_cannot_write_socket">सॉकेट स्ट्रीम को राइट करने में विफल</string>
-    <string name="err_server_disconnected">लैंग्वेज सर्वर प्रक्रिया अनपेक्षित रूप से बाहर निकल गई।</string>
-
+    
     <!-- Layout preview and designer -->
     <string name="msg_cannot_preview_layout">लेआउट का प्रिव्यू करने में असमर्थ!</string>
     <string name="title_preview_layout">प्रिव्यू लेयाउट</string>
@@ -307,18 +274,10 @@
     <string name="widget_group_layouts">लेयाउट्स</string>
     <string name="layout_linear">लीनियर लेयाउट</string>
     <string name="layout_relative">रिलेटिव लेयाउट</string>
-    <string name="msg_attr_edit_hint">एडिट करने के लिए अट्रीब्यूट पर क्लिक करें।</string>
-    <string name="sym_equal">=</string>
-    <string name="msg_attr_namespace">\'%s\' नेमस्पेस</string>
-    <string name="msg_unknown_package">अज्ञात पैकेज का नाम</string>
-    <string name="msg_attr_editor_select_view">किसी व्यू की अट्रीब्यूट्स को एडिट करने के लिए उसका चयन करें।</string>
-    <string name="msg_attr_editor_no_attrs">इस व्यू के लिए कोई अट्रीब्यूट नहीं जोड़ी गई है।\n जोड़ने के लिए \'+\' बटन पर क्लिक करें।</string>
-    <string name="msg_enter_attr_value">अट्रीब्यूट के लिए नया वैल्यू दर्ज करें:</string>
     <string name="hint_new_attr_value">नया वैल्यू</string>
     <string name="attr_val_wrap_content">रेप कॉन्टेंट</string>
     <string name="attr_val_match_parent">मैच पैरेंट</string>
     <string name="attr_val_other">अन्य वैल्यू</string>
-    <string name="msg_enter_dimension_value">डायमेंशन वैल्यू दर्ज करें</string>
     <string name="msg_applicable_attrs">लागू अट्रीब्यूट्स</string>
     <string name="msg_attr_editor_actions">एक्शन्स</string>
     <string name="title_viewaction_delete">डिलीट</string>
@@ -329,7 +288,6 @@
     <string name="msg_view_deletion_failed">व्यू को डिलीट करने में असमर्थ।</string>
     <string name="msg_empty_ui_layout">कोई व्यू नहीं जोड़ा गया है। जोड़ने के लिए क्लिक करें।</string>
     <string name="msg_no_attr_format">इस अट्रीब्यूट के लिए कोई अट्रीब्यूट फॉर्मेट उपलब्ध नहीं हैं।</string>
-    <string name="msg_attr_editor_null">इस अट्रीब्यूट के लिए अट्रीब्यूट एडिटर बनाने में असमर्थ</string>
     <string name="msg_invalid_attr_value">अमान्य वैल्यू</string>
     <string name="msg_new_str_value">नया स्ट्रिंग वैल्यू</string>
     <string name="msg_choose_new_val">नया वैल्यू चयन करें</string>
@@ -366,7 +324,29 @@
     <string name="template_description_libgdx">एक उदाहरण के रूप में एक छवि प्रस्तुत करने के लिए स्थापित LibGDX गेम प्रोजेक्ट।</string>
     <string name="idepref_editor_ligatures_title">संयुक्ताक्षर बनाना</string>
     <string name="idepref_editor_ligatures_summary">फ़ॉन्ट संयुक्ताक्षर को सक्षम/अक्षम करें</string>
+    
     <string name="yes">हां</string>
     <string name="no">नहीं</string>
-
+    <string name="title_use_popup_actions">फ़्लोटिंग टेक्स्ट क्रियाएं</string>
+    <string name="msg_use_popup_actions">टेक्स्ट क्रियाओं को दिखाने के लिए पॉपअपविंडो का प्रयोग करें (यदि बदला गया है तो पुनः आरंभ करना आवश्यक है).</string>
+    <string name="title_use_horizontal_popup">क्षैतिज टेक्स्ट क्रियाएं</string>
+    <string name="msg_use_horizontal_popup">फ़्लोटिंग टेक्स्ट क्रियाओं को क्षैतिज रूप से प्रदर्शित करें (यदि बदला गया है तो पुनः आरंभ करना आवश्यक है).</string>
+    <string name="msg_apk_install_intent_failed">एपीके स्थापित करने का इन्टेन्ट शुरू करने में असमर्थ</string>
+    <string name="msg_viewaction_add_attr">अट्रीब्यूट जोड़ें</string>
+    <string name="msg_search_attrs">अट्रीब्यूटस खोजे…</string>
+    <string name="msg_attr_added">अट्रीब्यूट सफलतापूर्वक जोड़ी गई</string>
+    <string name="msg_attr_not_updated">इस अट्रीब्यूट को अपडेट करने में असमर्थ</string>
+    <string name="hint_dimension_val">डाइमेंशन वैल्यू</string>
+    <string name="hint_dimension_res">डाइमेंशन रिसोर्स</string>
+    <string name="hint_boolean_res">बुलियन रिसोर्स</string>
+    <string name="msg_file_tree">फाइल ट्री</string>
+    <string name="hint_color_resource">रंग रिसोर्स</string>
+    <string name="title_color_picker">रंग पीकर</string>
+    <string name="hint_string_value">स्ट्रिंग वैल्यू</string>
+    <string name="hint_string_resource">स्ट्रिंग रिसोर्स</string>
+    <string name="hint_resource_reference">कोई रिसोर्स संदर्भ</string>
 </resources>
+
+
+
+
