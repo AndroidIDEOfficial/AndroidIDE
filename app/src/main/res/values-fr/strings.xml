@@ -44,7 +44,7 @@
 
     <string name="ide_preferences">Préférences de l\'IDE</string>
 
-    <string name="discussions_on_telegram">Discuter sur Telegram</string>
+    <string name="discussions_on_telegram">Discuter sur Telegram (anglais)</string>
 
     <string name="msg_empty_view">je n\'ai rien à vous montrez &#8230;</string>
 
@@ -370,7 +370,7 @@
 
     <string name="folder_name">Nom du dossier</string>
 
-    <string name="file_name">Nom du fichirr</string>
+    <string name="file_name">Nom du fichier</string>
 
     <string name="new_name">Nouveau nom</string>
 
@@ -408,9 +408,9 @@
 
     <string name="action_closeAll">Tout fermer</string>
 
-    <string name="action_closeOthers">Fermez les autres</string>
+    <string name="action_closeOthers">Fermer les autres</string>
 
-    <string name="action_closeThis">Fermer celui actuel</string>
+    <string name="action_closeThis">Fermer</string>
 
     <string name="all_saved">Fichiers ouverts sauvegardés</string>
 
@@ -488,7 +488,7 @@
 
     <string name="idepref_build_editgradleproperties_title">Modifier les propriétés globales de Gradle</string>
 
-    <string name="idepref_build_editgradleproperties_summary">Modifie gradle.properties dans GRADLE_HOME</string>
+    <string name="idepref_build_editgradleproperties_summary">Modifiez gradle.properties dans GRADLE_HOME</string>
 
     <string name="idepref_editor_fontsize_title">Taille des caractères</string>
 
@@ -524,7 +524,7 @@
 
     <string name="msg_tab_size">Spécifier la taille de l\'onglet</string>
 
-    <string name="msg_preferences">Préférences</string>
+    <string name="msg_preferences">Paramètres</string>
 
     <string name="msg_failed_get_changelog">Échec lors de la récupération du Changelog</string>
 
@@ -532,154 +532,91 @@
 
     <string name="msg_editor_font_size">Veuillez choisir la taille des caractères par défaut de l\'éditeur :</string>
 
-    <string name="msg_clear_cache">Cela supprimera le cache des dossiers de Gradle. Si vous le supprimer, la prochaine compilation peut prendre un peu plus de temps que la normale car Gradle téléchargera à nouveau les fichiers requis.\nIMPORTANT: cela supprimera également AAPT2. vous devrez donc le réinstaller, ou sinon vous obtiendrez une erreur de compilation.\n\Êtes vous sûres de vouloir supprimer le cache ?</string>
+    <string name="msg_clear_cache">Cela supprimera le cache des dossiers de Gradle. Si vous le supprimer, la prochaine compilation pourra prendre un peu plus de temps que la normale, Gradle téléchargera à nouveau les fichiers requis.\nIMPORTANT: cela supprimera également AAPT2. vous devrez donc le réinstaller, ou sinon vous obtiendrez une erreur de compilation.\n\Êtes vous sûres de vouloir supprimer le cache ?</string>
 
 
     <!-- Error Messages used while Logging -->
 
     <string name="err_installation">Erreur d\'installation</string>
-
     <string name="err_completion">Erreur de completation</string>
-
     <string name="err_no_server_implementation">Aucun serveur de langage trouvé.</string>
-
     <string name="err_init_server">Erreur lors de l\'initiation du serveur des langages</string>
-
     <string name="err_init_sdkinfo">Échec de l\'initialisation des informations du SDK</string>
-
     <string name="err_cannot_start_file_picker">Échec lors du lancement du sélectionneur de fichiers</string>
-
     <string name="err_cannot_parse_apk_metadata">Échec lors de la lecture du metadata de l\'APK</string>
-
     <string name="err_cannot_save_files">Impossible de sauvegarder les/le fichier.s</string>
-
     <string name="err_cannot_preview_layout">Impossible d\'afficher l\'aperçu du layout</string>
-
-    <string name="err_cannot_inflate_layout">Impossible d\'inflate le layout</string>
-
-    <string name="err_cannot_start_server">Impossible de lancer le serveur des langages: %s</string>
-
+    <string name="err_cannot_inflate_layout">Impossible de lancer le layout</string>
+    <string name="err_cannot_start_server">Impossible de lancer le service des langages: %s</string>
     <string name="err_cannot_write_socket">Failed to write to Socket stream</string>
-
     <string name="err_server_disconnected">Le processus du serveur s\'est déconnectée accidentellement.</string>
 
 
     <!-- Layout preview and designer -->
 
     <string name="msg_cannot_preview_layout">Impossible d\'afficher l\'aperçu du layout !</string>
-
     <string name="title_preview_layout">Aperçu du Layout</string>
-
     <string name="label_ui_designer_content">Contenu principal du concepteur d\'interface utilisateur</string>
-
     <string name="widget_textview">TextView</string>
-
     <string name="widget_button">Button</string>
-
     <string name="widget_group_android">Android</string>
-
     <string name="widget_checkbox">CheckBox</string>
-
     <string name="widget_checked_textview">CheckedTextView</string>
-
     <string name="widget_edittext">EditText</string>
-
     <string name="widget_image_button">ImageButton</string>
-
     <string name="widget_image_view">ImageView</string>
-
     <string name="widget_progressbar">ProgressBar</string>
-
     <string name="widget_radio_button">RadioButton</string>
-
     <string name="widget_seekbar">SeekBar</string>
-
     <string name="widget_spinner">Spinner</string>
-
     <string name="widget_group_layouts">Layouts</string>
-
     <string name="layout_linear">LinearLayout</string>
-
     <string name="layout_relative">RelativeLayout</string>
-
     <string name="msg_attr_edit_hint">Cliquer sur l\'attribut pour le modifier</string>
-
     <string name="sym_equal">=</string>
-
     <string name="msg_attr_namespace">\'%s\' namespace</string>
-
     <string name="msg_unknown_package">Nom du package inconnu</string>
-
     <string name="msg_attr_editor_select_view">Sélectionner une vue pour modifier ses attributs.</string>
-
     <string name="msg_attr_editor_no_attrs">No attributes has been added for this view.\nClick on the \'+\' button to add.</string>
-
-    <string name="msg_enter_attr_value">Enter new value for attribute:</string>
-
+    <string name="msg_enter_attr_value">Entrer une nouvelle valeur pour l'attribut: </string>
     <string name="hint_new_attr_value">Nouvelle valeur</string>
-
     <string name="attr_val_wrap_content">wrap_content</string>
-
     <string name="attr_val_match_parent">match_parent</string>
-
     <string name="attr_val_other">Autre valeur</string>
-
     <string name="msg_enter_dimension_value">Entrer la dimension</string>
-
     <string name="msg_applicable_attrs">Applicable attributes</string>
-
     <string name="msg_attr_editor_actions">Actions</string>
-
     <string name="title_viewaction_delete">Supprimer</string>
-
     <string name="msg_viewaction_select_parent">Sélectionner parent</string>
-
     <string name="msg_no_view_parent">Cette vue n\'a pas de parent</string>
-
     <string name="msg_yesno_def_title">Veuillez confirmez</string>
-
     <string name="msg_yesno_def_message">Êtes vous sûres ?</string>
-
     <string name="msg_view_deletion_failed">Impossible de supprimer la vue.</string>
-
     <string name="msg_empty_ui_layout">Aucune vue n\'a été ajouté. Cliquer pour l\'ajouter.</string>
-
     <string name="msg_no_attr_format">Pas de format d\'attribut est disponible pour cette attribut.</string>
-
     <string name="msg_attr_editor_null">impossible de créer un éditeur pour cette attribut</string>
-
     <string name="msg_invalid_attr_value">Valeur invalide</string>
-
     <string name="msg_new_str_value">Nouvelle valeur string</string>
-
     <string name="msg_choose_new_val">Choissisez une nouvelle valeur</string>
-
-    <string name="msg_select_one_flag">Please check at least one flag.</string>
-
+    <string name="msg_select_one_flag">Merci de cocher au moins un flag.</string>
     <string name="msg_generate_xml_failed">Impossible de générer le code XML</string>
+    <string name="title_generating_xml">Génération du code XML</string>
+    <string name="title_code_generation_failed">Impossible de générer le code</string>
+    <string name="msg_code_generation_failed">Impossible de générer le code XML, Voulez vous quand-même quitter ?</string>
+    <string name="msg_invalid_designer_result">Le concepteur d'interface utilisateur a retourné un résultat invalide</string>
+    <string name="idepref_editor_autoSave_summary">Sauvegarder les fichiers avant leurs fermetures, Cette option est EXPERIMENTAL. Vous devez habituellement les sauvegarder tout seul.</string>
+    <string name="idepref_java_matchLower_summary">Si cette option est activée, la saisie de lettres minuscules ou majuscules suggérera des noms de classe ainsi que des membres de la portée.</string>
+    <string name="idepref_editor_ligatures_title">Suppléments police</string>
+    <string name="idepref_editor_ligatures_summary">Activé/désactivé suppléments police</string>
 
-    <string name="title_generating_xml">Generating XML code</string>
-
-    <string name="title_code_generation_failed">Code generation failed</string>
-
-    <string name="msg_code_generation_failed">Failed to generate XML code. Would you like to exit anyway?</string>
-
-    <string name="msg_invalid_designer_result">UI Designer returned invalid result</string>
-
+    
+    <string name="msg_file_tree">Fichiers</string>
     <string name="msg_swipe_up">Balayez vers le haut pour accéder au contenue de la console, des logs et autres.</string>
-
     <string name="msg_ide_crashed">AndroidIDE a crashé</string>
-
-    <string name="msg_report_crash">Please open an issue on github with the following stacktrace :</string>
-
-    <string name="msg_crash_report_hint">Click on the button below to copy log and open issues page.</string>
-
-    <string name="msg_copy_report_action">Copy and report</string>
-
-    <string name="msg_reading_bootstrap">Reading bootstrap archive…</string>
-
+    <string name="msg_report_crash">Merci d'ouvrir une nouvelle Issue sur Gitub avec l'erreur ci-dessous (anglais): </string>
+    <string name="msg_crash_report_hint">Cliquez sur le bouton ci dessous pour copier les logs et une ouvrir la page des issues.</string>
+    <string name="msg_copy_report_action">Copier et signaler</string>
+    <string name="msg_reading_bootstrap">Reading bootstrap archive…</string
     <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
-
     <string name="title_translations">Traduction</string>
-
 </resources>
