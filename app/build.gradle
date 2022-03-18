@@ -23,9 +23,16 @@ android {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion
     }
-
-
-    buildFeatures {
+	
+	lintOptions {
+		abortOnError false
+		disable "VectorPath",
+				"NestedWeights",
+				"ContentDescription",
+                "SmallSp"
+    }
+	
+	buildFeatures {
         viewBinding true
     }
     
@@ -59,29 +66,24 @@ android {
             signingConfig signingConfigs.release
         }
     }
-    packagingOptions {
-        resources {
-            excludes += ['META-INF/eclipse.inf', 'about_files/LICENSE-2.0.txt', 'plugin.xml', 'plugin.properties', 'about.mappings', 'about.properties', 'about.ini', 'modeling32.png']
-        }
-    }
-
-    lint {
-        abortOnError false
-        disable 'VectorPath', 'NestedWeights', 'ContentDescription', 'SmallSp'
-    }
-}
-
-// Build the gradle plugin before building app
-project.afterEvaluate {
-    tasks.preBuild {
-        finalizedBy rootProject.project(':gradle-plugin').getTasksByName("jar", true).iterator().next()
-    }
+	
+	packagingOptions {
+		exclude 'META-INF/eclipse.inf'
+		exclude 'about_files/LICENSE-2.0.txt'
+		exclude 'plugin.xml'
+		exclude 'plugin.properties'
+        exclude 'about.mappings'
+        exclude 'about.properties'
+        exclude 'about.ini'
+        exclude 'modeling32.png'
+	}
 }
 
 dependencies {
+
     // Annotation processors
 	annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
-
+    
     implementation common.editor
 	implementation common.utilcode
 	implementation common.file_picker
@@ -113,7 +115,7 @@ dependencies {
 	implementation 'com.google.firebase:firebase-analytics'
 	implementation 'com.google.firebase:firebase-crashlytics'
 	implementation 'com.google.firebase:firebase-messaging'
-
+    
     // Kotlin
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -133,3 +135,7 @@ dependencies {
 	
 	coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }
+
+
+
+
