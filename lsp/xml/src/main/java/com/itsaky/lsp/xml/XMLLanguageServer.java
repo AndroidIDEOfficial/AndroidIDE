@@ -19,32 +19,35 @@ package com.itsaky.lsp.xml;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.lsp.api.ICodeActionProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
-import com.itsaky.lsp.api.IDefinitionProvider;
-import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.api.IReferenceProvider;
-import com.itsaky.lsp.api.ISelectionProvider;
 import com.itsaky.lsp.api.IServerSettings;
-import com.itsaky.lsp.api.ISignatureHelpProvider;
+import com.itsaky.lsp.models.CodeActionParams;
+import com.itsaky.lsp.models.CodeActionResult;
+import com.itsaky.lsp.models.DefinitionParams;
+import com.itsaky.lsp.models.DefinitionResult;
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.InitializeParams;
+import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.models.ReferenceParams;
+import com.itsaky.lsp.models.ReferenceResult;
 import com.itsaky.lsp.models.ServerCapabilities;
-import com.itsaky.lsp.util.NoCodeActionsProvider;
+import com.itsaky.lsp.models.SignatureHelp;
+import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.NoCompletionsProvider;
-import com.itsaky.lsp.util.NoDefinitionProvider;
-import com.itsaky.lsp.util.NoDiagnosticProvider;
 import com.itsaky.lsp.util.NoDocumentHandler;
-import com.itsaky.lsp.util.NoReferenceProvider;
-import com.itsaky.lsp.util.NoSelectionProvider;
-import com.itsaky.lsp.util.NoSignatureHelpProvider;
 import com.itsaky.lsp.xml.models.DefaultXMLServerSettings;
 import com.itsaky.lsp.xml.providers.CompletionProvider;
 import com.itsaky.sdk.SDKInfo;
 
 import org.jetbrains.annotations.Nullable;
+
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Language server implementation for XML files.
@@ -53,14 +56,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public class XMLLanguageServer implements ILanguageServer {
 
+    private final IDocumentHandler documentHandler = new NoDocumentHandler();
     private SDKInfo sdkInfo;
-
     private ILanguageClient client;
     private IServerSettings settings;
     private boolean initialized = false;
     private boolean canProvideCompletions = false;
-
-    private final IDocumentHandler documentHandler = new NoDocumentHandler();
     private ServerCapabilities capabilities;
 
     public XMLLanguageServer() {}
@@ -135,43 +136,43 @@ public class XMLLanguageServer implements ILanguageServer {
 
     @NonNull
     @Override
-    public ICodeActionProvider getCodeActionProvider() {
-        return new NoCodeActionsProvider();
+    public CodeActionResult codeActions(@NonNull CodeActionParams params) {
+        return new CodeActionResult();
     }
 
     @NonNull
     @Override
-    public IReferenceProvider getReferenceProvider() {
-        return new NoReferenceProvider();
+    public ReferenceResult findReferences(@NonNull ReferenceParams params) {
+        return new ReferenceResult(Collections.emptyList());
     }
 
     @NonNull
     @Override
-    public IDefinitionProvider getDefinitionProvider() {
-        return new NoDefinitionProvider();
+    public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
+        return new DefinitionResult(Collections.emptyList());
     }
 
     @NonNull
     @Override
-    public ISelectionProvider getSelectionProvider() {
-        return new NoSelectionProvider();
+    public Range expandSelection(@NonNull ExpandSelectionParams params) {
+        return params.getSelection();
     }
 
     @NonNull
     @Override
-    public ISignatureHelpProvider getSignatureHelpProvider() {
-        return new NoSignatureHelpProvider();
+    public SignatureHelp signatureHelp(@NonNull SignatureHelpParams params) {
+        return new SignatureHelp(Collections.emptyList(), -1, -1);
+    }
+
+    @NonNull
+    @Override
+    public List<DiagnosticItem> analyze(@NonNull Path file) {
+        return Collections.emptyList();
     }
 
     @NonNull
     @Override
     public IDocumentHandler getDocumentHandler() {
         return this.documentHandler;
-    }
-
-    @NonNull
-    @Override
-    public IDiagnosticProvider getCodeAnalyzer() {
-        return new NoDiagnosticProvider();
     }
 }

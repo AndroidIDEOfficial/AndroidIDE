@@ -20,7 +20,6 @@ package com.itsaky.lsp.java.providers;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.api.ICodeActionProvider;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
@@ -81,8 +80,13 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-public class CodeActionProvider implements ICodeActionProvider {
+public class CodeActionProvider {
 
+    private static final Pattern NOT_THROWN_EXCEPTION =
+            Pattern.compile("^'((\\w+\\.)*\\w+)' is not thrown");
+    private static final Pattern UNREPORTED_EXCEPTION =
+            Pattern.compile("unreported exception ((\\w+\\.)*\\w+)");
+    private static final Logger LOG = Logger.instance("JavaCodeActionProvider");
     private final CompilerProvider compiler;
 
     public CodeActionProvider(CompilerProvider compiler) {
@@ -90,7 +94,6 @@ public class CodeActionProvider implements ICodeActionProvider {
     }
 
     @NonNull
-    @Override
     public CodeActionResult codeActions(@NonNull CodeActionParams params) {
         if (params.getDiagnostics().isEmpty()) {
             return codeActionsForCursor(params);
@@ -390,28 +393,6 @@ public class CodeActionProvider implements ICodeActionProvider {
         return new MethodPtr(task.task, method);
     }
 
-    static class MethodPtr {
-        String className, methodName;
-        String[] erasedParameterTypes;
-
-        MethodPtr(JavacTask task, ExecutableElement method) {
-            final Types types = task.getTypes();
-            final TypeElement parent = (TypeElement) method.getEnclosingElement();
-            className = parent.getQualifiedName().toString();
-            methodName = method.getSimpleName().toString();
-            erasedParameterTypes = new String[method.getParameters().size()];
-            for (int i = 0; i < erasedParameterTypes.length; i++) {
-                final VariableElement param = method.getParameters().get(i);
-                final TypeMirror type = param.asType();
-                final TypeMirror erased = types.erasure(type);
-                erasedParameterTypes[i] = erased.toString();
-            }
-        }
-    }
-
-    private static final Pattern NOT_THROWN_EXCEPTION =
-            Pattern.compile("^'((\\w+\\.)*\\w+)' is not thrown");
-
     private String extractNotThrownExceptionName(String message) {
         final Matcher matcher = NOT_THROWN_EXCEPTION.matcher(message);
         if (!matcher.find()) {
@@ -420,9 +401,6 @@ public class CodeActionProvider implements ICodeActionProvider {
         }
         return matcher.group(1);
     }
-
-    private static final Pattern UNREPORTED_EXCEPTION =
-            Pattern.compile("unreported exception ((\\w+\\.)*\\w+)");
 
     private String extractExceptionName(String message) {
         final Matcher matcher = UNREPORTED_EXCEPTION.matcher(message);
@@ -480,5 +458,22 @@ public class CodeActionProvider implements ICodeActionProvider {
         return Collections.singletonList(action);
     }
 
-    private static final Logger LOG = Logger.instance("JavaCodeActionProvider");
+    static class MethodPtr {
+        String className, methodName;
+        String[] erasedParameterTypes;
+
+        MethodPtr(JavacTask task, ExecutableElement method) {
+            final Types types = task.getTypes();
+            final TypeElement parent = (TypeElement) method.getEnclosingElement();
+            className = parent.getQualifiedName().toString();
+            methodName = method.getSimpleName().toString();
+            erasedParameterTypes = new String[method.getParameters().size()];
+            for (int i = 0; i < erasedParameterTypes.length; i++) {
+                final VariableElement param = method.getParameters().get(i);
+                final TypeMirror type = param.asType();
+                final TypeMirror erased = types.erasure(type);
+                erasedParameterTypes[i] = erased.toString();
+            }
+        }
+    }
 }

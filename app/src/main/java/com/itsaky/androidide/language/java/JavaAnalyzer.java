@@ -41,12 +41,6 @@ import com.itsaky.lsp.models.DiagnosticSeverity;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 
-import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
-import io.github.rosemoe.sora.lang.styling.CodeBlock;
-import io.github.rosemoe.sora.lang.styling.MappedSpans;
-import io.github.rosemoe.sora.lang.styling.Span;
-import io.github.rosemoe.sora.lang.styling.Styles;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
@@ -59,6 +53,12 @@ import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
 
+import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
+import io.github.rosemoe.sora.lang.styling.CodeBlock;
+import io.github.rosemoe.sora.lang.styling.MappedSpans;
+import io.github.rosemoe.sora.lang.styling.Span;
+import io.github.rosemoe.sora.lang.styling.Styles;
+
 /**
  * Code analyzer for the Java Language
  *
@@ -66,9 +66,10 @@ import java.util.concurrent.CompletableFuture;
  */
 public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
 
-    private List<DiagnosticItem> diagnostics = new ArrayList<>();
+    private static final Logger LOG = Logger.instance("JavaAnalyzer");
     private final List<DiagnosticItem> ideDiagnostics = new ArrayList<>();
     private final ILanguageServer languageServer;
+    private List<DiagnosticItem> diagnostics = new ArrayList<>();
 
     public JavaAnalyzer(ILanguageServer languageServer) {
         this.languageServer = languageServer;
@@ -92,10 +93,7 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
             if (languageServer != null && file.exists()) {
                 CompletableFuture.runAsync(
                         () -> {
-                            final var analyzer = languageServer.getCodeAnalyzer();
-
-                            diagnostics = analyzer.analyze(file.toPath());
-
+                            diagnostics = languageServer.analyze(file.toPath());
                             if (languageServer.getClient() != null) {
                                 languageServer
                                         .getClient()
@@ -398,6 +396,4 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
                 return Span.FLAG_TYPO;
         }
     }
-
-    private static final Logger LOG = Logger.instance("JavaAnalyzer");
 }

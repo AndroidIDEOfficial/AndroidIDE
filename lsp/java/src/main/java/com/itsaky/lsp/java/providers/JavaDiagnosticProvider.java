@@ -19,7 +19,6 @@ package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
@@ -34,7 +33,7 @@ import java.util.List;
  *
  * @author Akash Yadav
  */
-public class JavaDiagnosticProvider implements IDiagnosticProvider {
+public class JavaDiagnosticProvider {
 
     private final CompilerProvider compiler;
 
@@ -42,8 +41,11 @@ public class JavaDiagnosticProvider implements IDiagnosticProvider {
         this.compiler = compiler;
     }
 
+    private static boolean isTaskValid(CompileTask task) {
+        return task != null && task.task != null && task.roots != null && task.roots.size() > 0;
+    }
+
     @NonNull
-    @Override
     public List<DiagnosticItem> analyze(@NonNull Path file) {
         final SynchronizedTask synchronizedTask = compiler.compile(file);
         return synchronizedTask.getWithTask(
@@ -55,9 +57,5 @@ public class JavaDiagnosticProvider implements IDiagnosticProvider {
 
                     return DiagnosticsProvider.findDiagnostics(task, file);
                 });
-    }
-
-    private static boolean isTaskValid(CompileTask task) {
-        return task != null && task.task != null && task.roots != null && task.roots.size() > 0;
     }
 }

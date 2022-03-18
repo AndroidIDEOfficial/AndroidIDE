@@ -19,7 +19,6 @@ package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
@@ -70,24 +69,23 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.tools.JavaFileObject;
 
-public class SignatureProvider implements ISignatureHelpProvider {
-
-    private final CompilerProvider compiler;
+public class SignatureProvider {
 
     public static final SignatureHelp NOT_SUPPORTED =
             new SignatureHelp(Collections.emptyList(), -1, -1);
+    private final CompilerProvider compiler;
 
     public SignatureProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
 
     @NonNull
-    @Override
-    public SignatureHelp provideSignatures(SignatureHelpParams params) {
+    public SignatureHelp signatureHelp(@NonNull SignatureHelpParams params) {
         return signatureHelp(
                 params.getFile(), params.getPosition().getLine(), params.getPosition().getColumn());
     }
 
+    @NonNull
     public SignatureHelp signatureHelp(Path file, int l, int c) {
 
         // 1-based line and column index

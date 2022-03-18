@@ -20,7 +20,6 @@ package com.itsaky.lsp.java.providers;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.api.IDefinitionProvider;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
@@ -47,22 +46,19 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Elements;
 import javax.tools.JavaFileObject;
 
-public class DefinitionProvider implements IDefinitionProvider {
+public class DefinitionProvider {
+    public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
+    private static final Logger LOG = Logger.instance("JavaDefinitionProvider");
     private final CompilerProvider compiler;
     private Path file;
     private int line, column;
-
-    public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
-
-    private static final Logger LOG = Logger.instance("JavaDefinitionProvider");
 
     public DefinitionProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
 
     @NonNull
-    @Override
-    public DefinitionResult findDefinitions(DefinitionParams params) {
+    public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
         this.file = params.getFile();
 
         // 1-based line and column index

@@ -20,7 +20,6 @@ package com.itsaky.lsp.java.providers;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.api.ISelectionProvider;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.visitors.FindBiggerRange;
 import com.itsaky.lsp.models.ExpandSelectionParams;
@@ -32,17 +31,16 @@ import com.sun.source.tree.CompilationUnitTree;
  *
  * @author Akash Yadav
  */
-public class JavaSelectionProvider implements ISelectionProvider {
-
-    private final CompilerProvider compiler;
+public class JavaSelectionProvider {
 
     private static final Logger LOG = Logger.instance("JavaSelectionProvider");
+    private final CompilerProvider compiler;
 
     public JavaSelectionProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
 
-    @Override
+    @NonNull
     public Range expandSelection(@NonNull ExpandSelectionParams params) {
         return compiler.compile(params.getFile())
                 .getWithTask(

@@ -21,17 +21,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.api.ICodeActionProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
-import com.itsaky.lsp.api.IDefinitionProvider;
-import com.itsaky.lsp.api.IDiagnosticProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.api.IReferenceProvider;
-import com.itsaky.lsp.api.ISelectionProvider;
 import com.itsaky.lsp.api.IServerSettings;
-import com.itsaky.lsp.api.ISignatureHelpProvider;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
@@ -42,33 +36,38 @@ import com.itsaky.lsp.java.providers.JavaDiagnosticProvider;
 import com.itsaky.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.lsp.java.providers.ReferenceProvider;
 import com.itsaky.lsp.java.providers.SignatureProvider;
+import com.itsaky.lsp.models.CodeActionParams;
+import com.itsaky.lsp.models.CodeActionResult;
+import com.itsaky.lsp.models.DefinitionParams;
+import com.itsaky.lsp.models.DefinitionResult;
+import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
+import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.InitializeParams;
+import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.models.ReferenceParams;
+import com.itsaky.lsp.models.ReferenceResult;
 import com.itsaky.lsp.models.ServerCapabilities;
-import com.itsaky.lsp.util.NoCodeActionsProvider;
+import com.itsaky.lsp.models.SignatureHelp;
+import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.NoCompletionsProvider;
-import com.itsaky.lsp.util.NoDefinitionProvider;
-import com.itsaky.lsp.util.NoDiagnosticProvider;
-import com.itsaky.lsp.util.NoReferenceProvider;
-import com.itsaky.lsp.util.NoSelectionProvider;
-import com.itsaky.lsp.util.NoSignatureHelpProvider;
 
+import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
+    private static final Logger LOG = Logger.instance("JavaLanguageServer");
     private ILanguageClient client;
     private IServerSettings settings;
     private JavaCompilerService compiler;
-
     private JavaServerConfiguration configuration;
     private boolean initialized;
     private boolean createCompiler;
-
-    private static final Logger LOG = Logger.instance("JavaLanguageServer");
     private ServerCapabilities capabilities;
 
     public JavaLanguageServer() {
@@ -186,68 +185,68 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
     @NonNull
     @Override
-    public ICodeActionProvider getCodeActionProvider() {
+    public CodeActionResult codeActions(@NonNull CodeActionParams params) {
         if (!settings.codeActionsEnabled()) {
-            return new NoCodeActionsProvider();
+            return new CodeActionResult();
         }
 
-        return new CodeActionProvider(getCompiler());
+        return new CodeActionProvider(getCompiler()).codeActions(params);
     }
 
     @NonNull
     @Override
-    public IReferenceProvider getReferenceProvider() {
+    public ReferenceResult findReferences(@NonNull ReferenceParams params) {
         if (!settings.referencesEnabled()) {
-            return new NoReferenceProvider();
+            return new ReferenceResult(Collections.emptyList());
         }
 
-        return new ReferenceProvider(getCompiler());
+        return new ReferenceProvider(getCompiler()).findReferences(params);
     }
 
     @NonNull
     @Override
-    public IDefinitionProvider getDefinitionProvider() {
+    public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
         if (!settings.definitionsEnabled()) {
-            return new NoDefinitionProvider();
+            return new DefinitionResult(Collections.emptyList());
         }
 
-        return new DefinitionProvider(getCompiler());
+        return new DefinitionProvider(getCompiler()).findDefinition(params);
     }
 
     @NonNull
     @Override
-    public ISelectionProvider getSelectionProvider() {
+    public Range expandSelection(@NonNull ExpandSelectionParams params) {
         if (!settings.smartSelectionsEnabled()) {
-            return new NoSelectionProvider();
+            return params.getSelection();
         }
 
-        return new JavaSelectionProvider(getCompiler());
+        return new JavaSelectionProvider(getCompiler()).expandSelection(params);
     }
 
     @NonNull
     @Override
-    public ISignatureHelpProvider getSignatureHelpProvider() {
+    public SignatureHelp signatureHelp(@NonNull SignatureHelpParams params) {
         if (!settings.signatureHelpEnabled()) {
-            return new NoSignatureHelpProvider();
+            return new SignatureHelp(Collections.emptyList(), -1, -1);
         }
 
-        return new SignatureProvider(getCompiler());
+        return new SignatureProvider(getCompiler()).signatureHelp(params);
+    }
+
+    @NonNull
+    @Override
+    public List<DiagnosticItem> analyze(@NonNull Path file) {
+        if (!settings.codeAnalysisEnabled()) {
+            return Collections.emptyList();
+        }
+
+        return new JavaDiagnosticProvider(getCompiler()).analyze(file);
     }
 
     @NonNull
     @Override
     public IDocumentHandler getDocumentHandler() {
         return this;
-    }
-
-    @NonNull
-    @Override
-    public IDiagnosticProvider getCodeAnalyzer() {
-        if (!settings.codeAnalysisEnabled()) {
-            return new NoDiagnosticProvider();
-        }
-
-        return new JavaDiagnosticProvider(getCompiler());
     }
 
     @Override

@@ -31,14 +31,27 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.itsaky.lsp.models.CodeActionParams;
+import com.itsaky.lsp.models.CodeActionResult;
+import com.itsaky.lsp.models.DefinitionParams;
+import com.itsaky.lsp.models.DefinitionResult;
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.ExpandSelectionParams;
 import com.itsaky.lsp.models.InitializeParams;
+import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.models.ReferenceParams;
+import com.itsaky.lsp.models.ReferenceResult;
 import com.itsaky.lsp.models.ServerCapabilities;
+import com.itsaky.lsp.models.SignatureHelp;
+import com.itsaky.lsp.models.SignatureHelpParams;
+
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * A language server provides API for providing functions related to a specific file type.
@@ -113,44 +126,58 @@ public interface ILanguageServer {
     ICompletionProvider getCompletionProvider();
 
     /**
-     * Get the code action provider associated with this language server. Must not be null.
+     * Compute code actions for the given params.
      *
-     * @return The code action provider.
+     * @param params The params for computing code actions.
+     * @return The code action result.
      */
     @NonNull
-    ICodeActionProvider getCodeActionProvider();
+    CodeActionResult codeActions(@NonNull CodeActionParams params);
 
     /**
-     * Get the reference provider associated with this language server.
+     * Find references using the given params.
      *
-     * @return The reference provider instance.
+     * @param params The params to use for computing references.
+     * @return The result of the computation.
      */
     @NonNull
-    IReferenceProvider getReferenceProvider();
+    ReferenceResult findReferences(@NonNull ReferenceParams params);
 
     /**
-     * Get the definition provider associated with this language server.
+     * Find definition using the given params.
      *
-     * @return The definition provider.
+     * @param params The params to use for computing the definition.
+     * @return The result of the computation.
      */
     @NonNull
-    IDefinitionProvider getDefinitionProvider();
+    DefinitionResult findDefinition(@NonNull DefinitionParams params);
 
     /**
-     * Get the selection provider associated with this language server.
+     * Request the server to provide an expanded selection range for the current selection.
      *
-     * @return The selection provider instance.
+     * @param params The params for computing the expanded selection range.
+     * @return The expanded range or same selection range if computation was failed.
      */
     @NonNull
-    ISelectionProvider getSelectionProvider();
+    Range expandSelection(@NonNull ExpandSelectionParams params);
 
     /**
-     * Get the signature help provider associated with this language server.
+     * Compute signature help with the given params.
      *
-     * @return The signature help provider.
+     * @param params The params to compute signature help.
+     * @return The signature help.
      */
     @NonNull
-    ISignatureHelpProvider getSignatureHelpProvider();
+    SignatureHelp signatureHelp(@NonNull SignatureHelpParams params);
+
+    /**
+     * Analyze the given file and provide diagnostics from the analyze result.
+     *
+     * @param file The file to analyze.
+     * @return The list of diagnostics. May be empty.
+     */
+    @NonNull
+    List<DiagnosticItem> analyze(@NonNull Path file);
 
     /**
      * The document handler associated with this language server instance.
@@ -159,14 +186,6 @@ public interface ILanguageServer {
      */
     @NonNull
     IDocumentHandler getDocumentHandler();
-
-    /**
-     * Get the code analyzer associated with this language server.
-     *
-     * @return The code analyzer.
-     */
-    @NonNull
-    IDiagnosticProvider getCodeAnalyzer();
 
     /**
      * Thrown to indicate that a language server received an initialize notification but was already

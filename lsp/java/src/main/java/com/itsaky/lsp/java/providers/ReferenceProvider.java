@@ -19,7 +19,6 @@ package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.lsp.api.IReferenceProvider;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
@@ -40,21 +39,19 @@ import java.util.List;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-public class ReferenceProvider implements IReferenceProvider {
+public class ReferenceProvider {
 
+    public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
     private final CompilerProvider compiler;
     private Path file;
     private int line, column;
-
-    public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
 
     public ReferenceProvider(CompilerProvider compiler) {
         this.compiler = compiler;
     }
 
     @NonNull
-    @Override
-    public ReferenceResult findReferences(ReferenceParams params) {
+    public ReferenceResult findReferences(@NonNull ReferenceParams params) {
         this.file = params.getFile();
 
         // 1-based line and column indexes
