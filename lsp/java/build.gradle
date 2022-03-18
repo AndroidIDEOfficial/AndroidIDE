@@ -41,10 +41,12 @@ dependencies {
     implementation common.editor
     implementation common.utilcode
     implementation androidx.annotation
-    implementation google.guava
+    implementation google.guava_jre
     implementation google.gson
 
     implementation "com.github.marschall:zipfilesystem-standalone:1.0.1"
+    implementation 'com.google.auto.value:auto-value-annotations:1.9'
+    annotationProcessor 'com.google.auto.value:auto-value:1.9'
 
     compileOnly androidx.appcompat
     compileOnly project(':common')

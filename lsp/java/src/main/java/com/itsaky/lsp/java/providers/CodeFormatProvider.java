@@ -49,10 +49,12 @@ public class CodeFormatProvider {
     }
 
     public CharSequence format(CharSequence input) {
+        final long start = System.currentTimeMillis();
         try (final StringWriterCharSink sink = new StringWriterCharSink(); ) {
             final CharSource source = CharSource.wrap(input);
             final Formatter formatter = new Formatter(getFormatterOptions());
             formatter.formatSource(source, sink);
+            LOG.info("Java code formatted in", System.currentTimeMillis() - start + "ms");
             return sink.toString();
         } catch (Throwable e) {
             LOG.error("Failed to format code.", e);
