@@ -616,7 +616,7 @@
     <string name="msg_report_crash">Merci d'ouvrir une nouvelle Issue sur Gitub avec l'erreur ci-dessous (anglais): </string>
     <string name="msg_crash_report_hint">Cliquez sur le bouton ci dessous pour copier les logs et une ouvrir la page des issues.</string>
     <string name="msg_copy_report_action">Copier et signaler</string>
-    <string name="msg_reading_bootstrap">Reading bootstrap archive…</string
+    <string name="msg_reading_bootstrap">Reading bootstrap archive…</string,>
     <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
     <string name="title_translations">Traduction</string>
 </resources>
