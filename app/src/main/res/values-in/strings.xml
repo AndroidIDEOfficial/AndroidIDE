@@ -3,8 +3,6 @@
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
     <string name="license_jdk">AndroidIDE uses a modified build of the JDK which is licensed under the GNU General Public License v2.0. The source code and the license of the JDK is available at : </string>
-    <string name="title_developers">Pengembang</string>
-    <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
     <string name="title_open_source_licenses">Lisensi sumber terbuka</string>
     <string name="msg_open_source_licenses">AndroidIDE menggunakan sumber pustaka terbuka. Anda dapat menemukan lisensi dan sumber dari pustaka yang digunakan dengan menekan link dibawah.</string>
     <string name="msg_about_licensed_under">Berlisensi di bawah: </string>
@@ -29,14 +27,10 @@
     <string name="app_logs">Log App</string>
     <string name="ide_logs">Log IDE</string>
     <string name="label_splash_image">Gambar Splash</string>
-    <string name="cancel">Batalkan</string>
     <string name="get_started">Memulai</string>
     <string name="nothing_here">Tidak ada apa-apa disini &#8230;</string>
 
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_sdk_info_load_failed">Gagal memuat informasi SDK</string>
-    <string name="msg_fix_diagnostic">[QuickFix]</string>
-    <string name="msg_no_code_actions">Tidak dapat menemukan perbaikan cepat (QuickFix)</string>
     <string name="msg_cannot_perform_fix">Tidak dapat menampilkan perbaikan cepat (QuickFix)</string>
     <string name="msg_performing_fixes">Menampilkan perbaikan&#8230;</string>
     <string name="msg_code_actions">Quickfixes</string>
@@ -102,7 +96,6 @@
     <string name="gradle_daemon_status">Status Gradle Daemon</string>
     <string name="msg_service_started">Layanan Dimulai</string>
     <string name="msg_starting_completion">Memulai layanan</string>
-    <string name="msg_starting_completion_failed">Gagal untuk memulai layanan perlengkapan otomatis</string>
     <string name="msg_starting_daemon">Memulai Gradle daemon</string>
     <string name="title_install_apks">Instal Aplikasi</string>
     <string name="title_clear_output">Bersihkan hasil</string>
@@ -135,14 +128,6 @@
     <string name="msg_invalid_project">Direktori yang dipilih bukan projek Android</string>
     <string name="msg_project_deleted">Projek dihapus</string>
     <string name="msg_project_delete_failed">Gagal menghapus projek!</string>
-    <string name="menu_project_info">Informasi Projek</string>
-    <string name="header_module_info">Informasi Modul</string>
-    <string name="msg_module_count">Modul : %d</string>
-    <string name="msg_task_count">Tugas : %d</string>
-    <string name="msg_dependency_count">Dependensi : %d</string>
-    <string name="msg_package_name">Paket : %s</string>
-    <string name="msg_min_sdk">Min SDK : %s</string>
-    <string name="msg_target_sdk">Target SDK : %s</string>
     <string name="title_confirm_project_close">Tutup projek</string>
     <string name="msg_confirm_project_close">anda yakin ingin menutup projek ini? Semua Gradle daemon yang berjalan akan diberhentikan setelah projek ini ditutup.</string>
     <string name="project_exists">Sudah terdapat projek dengan nama yang sama!</string>
@@ -156,10 +141,11 @@
     <string name="template_navigation_drawer">Projek NavigationDrawer</string>
     <string name="template_kotlin_basic">Project Kotlin Dasar</string>
     <string name="template_description_kotlin_basic">Project Kotlin dengan Toolbar Appcompat dan Floating Action Button</string>
+    <string name="template_libgdx">Gim LibGDX</string>
+    <string name="template_description_libgdx">Persiapan projek gim LibGDX untuk menampilkan gambar as sebagai contoh.</string>
 
     <!-- Files -->
     <string name="save">Simpan</string>
-    <string name="show_files">File-file</string>
     <string name="menu_find">Pencarian</string>
     <string name="menu_find_file">Cari di dalam file</string>
     <string name="menu_find_project">Cari di dalam projek</string>
@@ -211,7 +197,7 @@
     <string name="action_closeAll">Tutup semua</string>
     <string name="action_closeOthers">Tutup lainnya</string>
     <string name="action_closeThis">Tutup ini</string>
-    <string name="all_saved">Semua file disimpan!</string>
+    <string name="all_saved">Semua file tersimpan!</string>
     <string name="msg_newfile_dest">Tujuan: %s/</string>
     <string name="restype_drawable">Drawable</string>
     <string name="restype_layout">Layout</string>
@@ -223,24 +209,14 @@
     <string name="classtype_enum">Enum</string>
     <string name="msg_checking_storage_permissions">Mengecek ijin penyimpanan</string>
     <string name="msg_failed_list_files">Gagal memuat file-file dalam projek!</string>
-    <string name="msg_failed_save">Gagal menyimpan file!</string>
     <string name="msg_storage_denied">Tidak dapat melanjutkan tanpa ijin penyimpanan</string>
     <string name="msg_storage_granted">Peizinan penyimpanan diberikan!</string>
 
     <!-- Code Editor -->
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
-    <item name="paste" type="string">Tempel</item>
     <item name="copy" type="string" tools:override="true">Salin</item>
-    <item name="selectAll" formatted="true" type="string">Pilih Semua</item>
-    <item name="cut" type="string">Potong</item>
-    <item name="last" type="string">Terakhir</item>
-    <item name="next" type="string">Selanjutnya</item>
-    <item name="replace" type="string">Ganti</item>
-    <item name="replaceAll" type="string">Ganti semua</item>
-    <item name="replacement" type="string">Pergantian</item>
     <item name="text_to_search" type="string">Teks untuk dicari</item>
-    <item name="more" translatable="false" type="string">Lainnya</item>
 
     <!-- Preferences -->
     <string name="title_change_text_size">Ukuran huruf editor</string>
@@ -249,8 +225,6 @@
     <string name="idepref_build_clearCache_summary">Membersihkan direktori cache Gradle. ini akan menghapus semua dependensi yang telah diunduh oleh Gradle. File yang diperlukan akan diunduh kembali pada build berikutnya.</string>
     <string name="idepref_build_customgradlecommands_title">Penambahan perintah Gradle</string>
     <string name="idepref_build_customgradlecommands_summary">Pilih tambahan perintah yang akan ditambahkan ketika melaksanakan setiap task</string>
-    <string name="idepref_build_editgradleproperties_title">Edit properti global Gradle</string>
-    <string name="idepref_build_editgradleproperties_summary">Edit gradle.properties di GRADLE_HOME</string>
     <string name="idepref_editor_fontsize_title">Ukuran huruf</string>
     <string name="idepref_editor_fontsize_summary">Ukuran huruf pada editor</string>
     <string name="idepref_editor_paintingflags_title">Gambaran editor yang tidak tercetak</string>
@@ -277,18 +251,11 @@
 
     <!-- Error Messages used while Logging -->
     <string name="err_installation">Instalasi error</string>
-    <string name="err_completion">Perlengkapan error</string>
-    <string name="err_no_server_implementation">Tidak ditemukan implementasi LanguageServer.</string>
-    <string name="err_init_server">Error menginisialisasi server bahasa (LanguageServer)</string>
-    <string name="err_init_sdkinfo">Tidak dapat inisialisasi informasi SDK</string>
+    <string name="err_init_sdkinfo">Tidak dapat menginisialisasi informasi SDK</string>
     <string name="err_cannot_start_file_picker">Tidak dapat memulai pemilihan file (File Picker)</string>
     <string name="err_cannot_parse_apk_metadata">Gagal mengurai metadata APK</string>
-    <string name="err_cannot_save_files">Tidak dapat menyimpan file</string>
     <string name="err_cannot_preview_layout">Tidak dapat melihat pratinjau layout</string>
     <string name="err_cannot_inflate_layout">Layout tidak dapat di-inflate</string>
-    <string name="err_cannot_start_server">Tidak dapat memulai layanan Language Server karena: %s</string>
-    <string name="err_cannot_write_socket">Gagal menulis ke Socket stream</string>
-    <string name="err_server_disconnected">Proses server bahasa (LanguageServer) berhenti secara tidak terduga.</string>
 
     <!-- Layout preview and designer -->
     <string name="msg_cannot_preview_layout">Tidak dapat melihat pratinjau layout!</string>
@@ -309,20 +276,11 @@
     <string name="widget_group_layouts">Layouts</string>
     <string name="layout_linear">LinearLayout</string>
     <string name="layout_relative">RelativeLayout</string>
-    <string name="msg_attr_edit_hint">Klik pada item atribut untuk mengedit.</string>
-    <string name="sym_equal">=</string>
-    <string name="msg_attr_namespace">\'%s\' namespace</string>
-    <string name="msg_unknown_package">Nama paket tidak diketahui</string>
-    <string name="msg_attr_editor_select_view">Pilih sebuah View untuk mengedit atributnya.</string>
-    <string name="msg_attr_editor_no_attrs">Tidak ada atribut yang ditambahkan untuk View ini.\nKlik pada tombol \'+\' untuk menambahkan.</string>
-    <string name="msg_enter_attr_value">Masukan isi untuk atribut:</string>
-    <string name="hint_new_attr_value">Isi baru</string>
     <string name="attr_val_wrap_content">wrap_content</string>
     <string name="attr_val_match_parent">match_parent</string>
-    <string name="attr_val_other">Isi lainnya</string>
-    <string name="msg_enter_dimension_value">Masukan isi dimensi</string>
-    <string name="msg_applicable_attrs">Atribut yang tersedia</string>
-    <string name="msg_attr_editor_actions">Aksi</string>
+    <string name="attr_val_other">Yang lainnya</string>
+    <string name="msg_applicable_attrs">Atribut yang berlaku</string>
+    <string name="msg_attr_editor_actions">Tindakan</string>
     <string name="title_viewaction_delete">Hapus</string>
     <string name="msg_viewaction_select_parent">Pilih parent</string>
     <string name="msg_no_view_parent">View ini tidak memiliki parent</string>
@@ -331,7 +289,7 @@
     <string name="msg_view_deletion_failed">Tidak dapat menghapus View.</string>
     <string name="msg_empty_ui_layout">Tidak ada View yang ditambahkan. Klik untuk menambahkan.</string>
     <string name="msg_no_attr_format">Tidak ada format atribut yang tersedia untuk atribut ini.</string>
-    <string name="msg_attr_editor_null">Tidak dapat membuat editor atribut untuk atribut ini</string>
+    <string name="hint_new_attr_value">Isi baru</string>
     <string name="msg_invalid_attr_value">Isi tidak valid</string>
     <string name="msg_new_str_value">Isi baru string</string>
     <string name="msg_choose_new_val">Pilih isi yang baru</string>
@@ -353,5 +311,36 @@
     <string name="msg_compiler_module_install">Modul compiler sedang dipasang, mohon tunggu&#8230;</string>
     <string name="msg_compiler_module_install_failed">Pemasangan modul compiler gagal. Berikut errornya:\n%s</string>
     <string name="msg_compiler_module_installed">Modul compiler sukses terpasang!</string>
+    <string name="action_expand_selection">Perluas seleksi</string>
+    <string name="idepref_java_matchLower_title">Samakan penyelesaian dalam huruf kecil</string>
+    <string name="idepref_editor_category_common">Umum</string>
+    <string name="idepref_editor_category_java">Java</string>
+    <string name="title_files_unsaved">File tidak tersimpan</string>
+    <string name="msg_files_unsaved">Beberapa file belum disimpan. Apakah anda ingin menyimpan sebelum menutup file tersebut? File yang belum tersimpan: \n%s</string>
+    <string name="idepref_editor_autoSave_title">Simpan sebelum menutup file</string>
+    <string name="idepref_editor_autoSave_summary">Simpan file sebelum menutup mereka. Ini adalah fitur PERCOBAAN. Anda diharapkan menyimpan file anda sendiri.</string>
+    <string name="idepref_java_matchLower_summary">Jika aktif, maka mengetik huruf kecil atau besar akan menyarankan nama Class serta yang termasuk dalam scope.</string>
+    <string name="idepref_editor_ligatures_title">Ligatur font</string>
+    <string name="idepref_editor_ligatures_summary">Aktifkan/matikan ligatur font</string>
 
+    <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
+    <string name="title_use_popup_actions">Teks aksi mengapung</string>
+    <string name="msg_use_popup_actions">Gunakan PopupWindow untuk mengaktifkan teks aksi (butuh restart setelah diubah).</string>
+    <string name="title_use_horizontal_popup">Teks aksi horizontal</string>
+    <string name="msg_use_horizontal_popup">Membuat teks aksi mengapung tampil horizontal (butuh restart setelah diubah).</string>
+    <string name="msg_apk_install_intent_failed">Tidak dapat memulai Intent untuk menginstal APK</string>
+    <string name="msg_viewaction_add_attr">Tambah atribut</string>
+    <string name="msg_search_attrs">Cari atribut...</string>
+    <string name="msg_attr_added">Atribut berhasil ditambahkan</string>
+    <string name="msg_attr_not_updated">Gagal memperbarui atribut ini</string>
+    <string name="hint_dimension_val">Isi Dimension</string>
+    <string name="hint_dimension_res">Sumber Dimension</string>
+    <string name="hint_boolean_res">Sumber Boolean</string>
+    <string name="msg_file_tree">Cabang file</string>
+    <string name="hint_color_resource">Sumber warna</string>
+    <string name="title_color_picker">Pemilih warna</string>
+    <string name="hint_string_value">Isi string</string>
+    <string name="hint_string_resource">Sumber string</string>
+    <string name="hint_resource_reference">Referensi sumber lain</string>
 </resources>
