@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,53 +14,42 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
-
+ */
 package com.itsaky.androidide.fragments.preferences;
 
-import android.content.Intent;
-import android.graphics.Typeface;
-import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.StyleSpan;
-import android.util.TypedValue;
-import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
-import android.widget.ScrollView;
-import android.widget.TextView;
+import static com.itsaky.androidide.utils.Logger.instance;
 
-import androidx.core.content.ContextCompat;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 
-import com.blankj.utilcode.util.ResourceUtils;
-import com.blankj.utilcode.util.SizeUtils;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.AboutActivity;
+import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.utils.DialogUtils;
+import com.itsaky.androidide.utils.Logger;
+import com.itsaky.toaster.Toaster;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.jetbrains.annotations.Contract;
 
 public class IDEPreferences extends BasePreferenceFragment {
 
-    private GeneralPreferences mGeneralPrefs;
-    private BuildPreferences mBuildPreferences;
-    private EditorPreferences mEditorPreferences;
-
-    private String CHANGELOG = null;
-
     public static final String KEY_GENERAL = "idepref_general";
-    public static final String KEY_APPEARANCE = "idepref_appearance";
     public static final String KEY_EDITOR = "idepref_editor";
     public static final String KEY_BUILD = "idepref_build";
     public static final String KEY_TELEGRAM = "idepref_telegram";
     public static final String KEY_ISSUES = "idepref_issues";
     public static final String KEY_CHANGELOG = "idepref_changelog";
     public static final String KEY_ABOUT = "idepref_about";
+    private static final Logger LOG = instance("IDEPreferences");
+    private GeneralPreferences mGeneralPrefs;
+    private BuildPreferences mBuildPreferences;
+    private EditorPreferences mEditorPreferences;
 
     @Override
     public void onCreatePreferences(Bundle savedState, String rootKey) {
@@ -141,75 +128,41 @@ public class IDEPreferences extends BasePreferenceFragment {
     }
 
     private void showChangelog() {
-        final int dp8 = SizeUtils.dp2px(8);
-        final int dp16 = SizeUtils.dp2px(16);
-        final ScrollView vScroll = new ScrollView(getContext());
-        vScroll.setFillViewport(true);
-        vScroll.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-
-        final HorizontalScrollView scroll = new HorizontalScrollView(getContext());
-        scroll.setLayoutParams(new ViewGroup.LayoutParams(-1, -2));
-        scroll.setFillViewport(true);
-        scroll.setPadding(dp16, dp8, dp16, dp8);
-        scroll.setPaddingRelative(dp16, dp8, dp16, dp8);
-
-        final TextView text = new TextView(getContext());
-        text.setText(CHANGELOG == null ? CHANGELOG = changelogAsString() : CHANGELOG);
-        text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        text.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
-        scroll.removeAllViews();
-        vScroll.removeAllViews();
-        scroll.addView(text, new ViewGroup.LayoutParams(-1, -1));
-        vScroll.addView(scroll);
-
-        final MaterialAlertDialogBuilder builder =
-                DialogUtils.newMaterialDialogBuilder(getContext());
-        builder.setTitle(R.string.pref_changelog);
-        builder.setView(vScroll);
-        builder.setPositiveButton(android.R.string.ok, null);
-        builder.create().show();
-    }
-
-    private String changelogAsString() {
+        final var intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(
+                Uri.parse(
+                        BaseApplication.GITHUB_URL
+                                .concat("/releases/tag/v")
+                                .concat(BuildConfig.VERSION_NAME)));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
-            final SpannableStringBuilder sb = new SpannableStringBuilder();
-            JSONArray arr = new JSONArray(ResourceUtils.readAssets2String("changelog.json"));
-            for (int i = 0; i < arr.length(); i++) {
-                JSONObject version = arr.getJSONObject(i);
-                sb.append(
-                        "v".concat(version.getString("version")),
-                        new StyleSpan(Typeface.BOLD),
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                JSONArray changes = version.getJSONArray("changes");
-                for (int j = 0; j < changes.length(); j++) {
-                    sb.append("\n    ");
-                    sb.append("\u2022 ".concat(changes.getString(j)));
-                }
-                sb.append("\n\n");
-            }
-            return sb.toString();
+            startActivity(intent);
         } catch (Throwable th) {
-            return getString(R.string.msg_failed_get_changelog);
+            LOG.error("Unable to start activity to show changelog", th);
+            StudioApp.getInstance().toast("Unable to start activity", Toaster.Type.ERROR);
         }
     }
 
+    @NonNull
+    @Contract(pure = true)
     private Preference.OnPreferenceClickListener getListener() {
-        return new Preference.OnPreferenceClickListener() {
-
-            @Override
-            public boolean onPreferenceClick(Preference p1) {
-                final String key = p1.getKey();
-                if (key.equals(KEY_CHANGELOG)) {
+        return preference -> {
+            final String key = preference.getKey();
+            switch (key) {
+                case KEY_CHANGELOG:
                     showChangelog();
-                } else if (key.equals(KEY_TELEGRAM)) {
+                    break;
+                case KEY_TELEGRAM:
                     StudioApp.getInstance().openTelegramGroup();
-                } else if (key.equals(KEY_ISSUES)) {
+                    break;
+                case KEY_ISSUES:
                     StudioApp.getInstance().openGitHub();
-                } else if (key.equals(KEY_ABOUT)) {
+                    break;
+                case KEY_ABOUT:
                     startActivity(new Intent(getContext(), AboutActivity.class));
-                }
-                return true;
+                    break;
             }
+            return true;
         };
     }
 }

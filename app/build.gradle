@@ -76,7 +76,7 @@ android {
         exclude 'about.properties'
         exclude 'about.ini'
         exclude 'modeling32.png'
-	}
+    }
 }
 
 dependencies {
