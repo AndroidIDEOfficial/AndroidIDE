@@ -603,7 +603,7 @@
     <string name="title_generating_xml">Génération du code XML</string>
     <string name="title_code_generation_failed">Impossible de générer le code</string>
     <string name="msg_code_generation_failed">Impossible de générer le code XML, Voulez vous quand-même quitter ?</string>
-    <string name="msg_invalid_designer_result">Le concepteur d'interface utilisateur a retourné un résultat invalide</string>
+    <string name="msg_invalid_designer_result">Le concepteur d\'interface utilisateur a retourné un résultat invalide</string>
     <string name="idepref_editor_autoSave_summary">Sauvegarder les fichiers avant leurs fermetures, Cette option est EXPERIMENTAL. Vous devez habituellement les sauvegarder tout seul.</string>
     <string name="idepref_java_matchLower_summary">Si cette option est activée, la saisie de lettres minuscules ou majuscules suggérera des noms de classe ainsi que des membres de la portée.</string>
     <string name="idepref_editor_ligatures_title">Suppléments police</string>
@@ -616,7 +616,7 @@
     <string name="msg_report_crash">Merci d'ouvrir une nouvelle Issue sur Gitub avec l'erreur ci-dessous (anglais): </string>
     <string name="msg_crash_report_hint">Cliquez sur le bouton ci dessous pour copier les logs et une ouvrir la page des issues.</string>
     <string name="msg_copy_report_action">Copier et signaler</string>
-    <string name="msg_reading_bootstrap">Reading bootstrap archive…</string,>
+    <string name="msg_reading_bootstrap">Reading bootstrap archive…</string>
     <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
     <string name="title_translations">Traduction</string>
 </resources>
