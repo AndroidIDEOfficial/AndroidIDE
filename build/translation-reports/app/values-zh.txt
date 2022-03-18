@@ -1,0 +1,54 @@
+
+Missing in LANG (You need to translate these)
+File: /mnt/d/projects/androidstudioprojects/androidide/app/src/main/res/values-zh/strings.xml
+------------------------- BEGIN ----------------------
+-------------------------- END -----------------------
+
+
+Not present in BASE (you need to remove it from LANG)
+File: /mnt/d/projects/androidstudioprojects/androidide/app/src/main/res/values/strings.xml
+------------------------- BEGIN ----------------------
+title_developers
+msg_developers
+cancel
+msg_sdk_info_load_failed
+msg_no_code_actions
+msg_starting_completion_failed
+menu_project_info
+header_module_info
+msg_module_count
+msg_task_count
+msg_dependency_count
+msg_package_name
+msg_min_sdk
+msg_target_sdk
+show_files
+msg_failed_save
+idepref_build_editgradleproperties_title
+idepref_build_editgradleproperties_summary
+err_completion
+err_no_server_implementation
+err_init_server
+err_cannot_save_files
+err_cannot_start_server
+err_cannot_write_socket
+err_server_disconnected
+msg_attr_edit_hint
+sym_equal
+msg_attr_namespace
+msg_unknown_package
+msg_attr_editor_select_view
+msg_attr_editor_no_attrs
+msg_enter_attr_value
+msg_enter_dimension_value
+msg_attr_editor_null
+-------------------------- END -----------------------
+
+
+Summary
+----------------
+BASE file: '/mnt/d/projects/androidstudioprojects/androidide/app/src/main/res/values/strings.xml'
+LANG file: '/mnt/d/projects/androidstudioprojects/androidide/app/src/main/res/values-zh/strings.xml'
+
+  34 orphaned strings.
+

@@ -8,7 +8,7 @@ buildscript {
         versionCode = 200
         versionName = "2.0-beta"
         packageName = "com.itsaky.androidide"
-        
+
         javaSourceVersion = JavaVersion.VERSION_11
         javaTargetVersion = JavaVersion.VERSION_11
     }
@@ -17,9 +17,9 @@ buildscript {
         google()
         mavenLocal()
         mavenCentral()
-        maven { url 'https://jitpack.io'}
+        maven { url 'https://jitpack.io' }
     }
-    
+
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.2'
         classpath 'com.google.gms:google-services:4.3.10'
@@ -30,6 +30,59 @@ buildscript {
 
 subprojects {
     apply from: "${rootDir}/gradle/dependencies.gradle"
+
+    task checkTranslations() {
+
+        def php = new File ("/usr/bin/php")
+        if (!php.exists()) {
+            project.logger.lifecycle("'${php.absolutePath}' not found. Skipping translation check.")
+            return
+        }
+
+        def resDir = project.file("src/main/res")
+        def strings = new File(resDir, "values/strings.xml")
+        def reportDir = new File(project.rootProject.buildDir, "translation-reports")
+        reportDir.delete()
+
+        if (resDir.exists() && strings.exists()) {
+            def translationDirs = resDir.listFiles((FileFilter) (file -> {
+                return file.isDirectory() && file.getName().startsWith("values-") }))
+            for (def dir : translationDirs) {
+                final var translation = new File(dir, "strings.xml")
+                if (translation.exists()) {
+                    def out = new File(reportDir, "${project.path.replace(':', '/')}/${dir.name}.txt")
+                    if (!out.parentFile.exists()) {
+                        out.parentFile.mkdirs()
+                    }
+
+                    if (out.exists()) {
+                        out.delete()
+                    }
+                    out.createNewFile()
+
+                    def result = exec {
+                        ignoreExitValue true
+                        standardOutput new FileOutputStream(out)
+                        commandLine "${php.absolutePath}",
+                                "${project.rootProject.file(".tools/strings-check.php")}",
+                                "${strings.absolutePath}",
+                                "${translation.absolutePath}"
+                    }
+
+                    if (result.getExitValue() == 0) {
+                        out.delete()
+                    } else {
+                        project.logger.lifecycle("Translation report for '${project.path}/${dir.name}' is written to '${out.absolutePath}'")
+                    }
+
+                } else {
+                    project.logger.info("No translation file specifed for '${dir.name}'. Skipping..")
+                }
+            }
+        } else {
+            project.logger.info("Default strings.xml file does not exist for project '${project.name}'")
+        }
+    }
 }
 
 allprojects {
@@ -37,17 +90,10 @@ allprojects {
         google()
         mavenLocal()
         mavenCentral()
-        maven { url 'https://jitpack.io'}
+        maven { url 'https://jitpack.io' }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-
-
-
-
-
-
-

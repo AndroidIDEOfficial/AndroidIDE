@@ -35,9 +35,22 @@ jobs:
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
 
-      - name: Upload artifact
+      - name: Generate translation report
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :app:checkTranslations
+        shell: bash
+
+      - name: Upload APK
         uses: actions/upload-artifact@v2
         if: ${{ !github.head_ref }}
         with:
           name: apk-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload translation report
+        uses: actions/upload-artifact@v2
+        if: ${{ !github.head_ref }}
+        with:
+          name: translation-report
+          path: build/translation-reports/
