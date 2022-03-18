@@ -95,10 +95,70 @@ import javax.lang.model.util.Types;
 
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
-    private final CompilerProvider compiler;
-
     public static final int MAX_COMPLETION_ITEMS = 50;
-
+    private static final String[] TOP_LEVEL_KEYWORDS = {
+        "package",
+        "import",
+        "public",
+        "private",
+        "protected",
+        "abstract",
+        "class",
+        "interface",
+        "@interface",
+        "extends",
+        "implements",
+    };
+    private static final String[] CLASS_BODY_KEYWORDS = {
+        "public",
+        "private",
+        "protected",
+        "static",
+        "final",
+        "native",
+        "synchronized",
+        "abstract",
+        "default",
+        "class",
+        "interface",
+        "void",
+        "boolean",
+        "int",
+        "long",
+        "float",
+        "double",
+    };
+    private static final String[] METHOD_BODY_KEYWORDS = {
+        "new",
+        "assert",
+        "try",
+        "catch",
+        "finally",
+        "throw",
+        "return",
+        "break",
+        "case",
+        "continue",
+        "default",
+        "do",
+        "while",
+        "for",
+        "switch",
+        "if",
+        "else",
+        "instanceof",
+        "var",
+        "final",
+        "class",
+        "void",
+        "boolean",
+        "int",
+        "long",
+        "float",
+        "double",
+    };
+    private static final Logger LOG = Logger.instance("JavaCompletionProvider");
+    private final CompilerProvider compiler;
     private Path completingFile;
     private long cursor;
 
@@ -733,9 +793,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
     private List<TextEdit> checkForImports(
             @NonNull Set<String> fileImports, Path path, String className) {
-        final String star = Extractors.packageName(className) + ".*";
-        if (fileImports.contains(className) || fileImports.contains(star) || path == null) {
-            return null;
+        final String pkgName = Extractors.packageName(className);
+        final String star = pkgName + ".*";
+        if ("java.lang".equals(pkgName)
+                || fileImports.contains(className)
+                || fileImports.contains(star)
+                || path == null) {
+            return Collections.emptyList();
         }
 
         AddImport addImport = new AddImport(path, className);
@@ -971,25 +1035,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         return i;
     }
 
-    @SuppressWarnings("unused")
-    private static class Priority {
-        static int iota = 0;
-        static final int SNIPPET = iota;
-        static final int LOCAL = iota++;
-        static final int FIELD = iota++;
-        static final int INHERITED_FIELD = iota++;
-        static final int METHOD = iota++;
-        static final int INHERITED_METHOD = iota++;
-        static final int OBJECT_METHOD = iota++;
-        static final int INNER_CLASS = iota++;
-        static final int INHERITED_INNER_CLASS = iota++;
-        static final int IMPORTED_CLASS = iota++;
-        static final int NOT_IMPORTED_CLASS = iota++;
-        static final int KEYWORD = iota++;
-        static final int PACKAGE_MEMBER = iota++;
-        static final int CASE_LABEL = iota++;
-    }
-
     private void logCompletionTiming(Instant started, List<?> list, boolean isIncomplete) {
         long elapsedMs = Duration.between(started, Instant.now()).toMillis();
         if (isIncomplete) {
@@ -1016,69 +1061,22 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         return className.subSequence(dot + 1, className.length());
     }
 
-    private static final String[] TOP_LEVEL_KEYWORDS = {
-        "package",
-        "import",
-        "public",
-        "private",
-        "protected",
-        "abstract",
-        "class",
-        "interface",
-        "@interface",
-        "extends",
-        "implements",
-    };
-
-    private static final String[] CLASS_BODY_KEYWORDS = {
-        "public",
-        "private",
-        "protected",
-        "static",
-        "final",
-        "native",
-        "synchronized",
-        "abstract",
-        "default",
-        "class",
-        "interface",
-        "void",
-        "boolean",
-        "int",
-        "long",
-        "float",
-        "double",
-    };
-
-    private static final String[] METHOD_BODY_KEYWORDS = {
-        "new",
-        "assert",
-        "try",
-        "catch",
-        "finally",
-        "throw",
-        "return",
-        "break",
-        "case",
-        "continue",
-        "default",
-        "do",
-        "while",
-        "for",
-        "switch",
-        "if",
-        "else",
-        "instanceof",
-        "var",
-        "final",
-        "class",
-        "void",
-        "boolean",
-        "int",
-        "long",
-        "float",
-        "double",
-    };
-
-    private static final Logger LOG = Logger.instance("JavaCompletionProvider");
+    @SuppressWarnings("unused")
+    private static class Priority {
+        static int iota = 0;
+        static final int SNIPPET = iota;
+        static final int LOCAL = iota++;
+        static final int FIELD = iota++;
+        static final int INHERITED_FIELD = iota++;
+        static final int METHOD = iota++;
+        static final int INHERITED_METHOD = iota++;
+        static final int OBJECT_METHOD = iota++;
+        static final int INNER_CLASS = iota++;
+        static final int INHERITED_INNER_CLASS = iota++;
+        static final int IMPORTED_CLASS = iota++;
+        static final int NOT_IMPORTED_CLASS = iota++;
+        static final int KEYWORD = iota++;
+        static final int PACKAGE_MEMBER = iota++;
+        static final int CASE_LABEL = iota++;
+    }
 }
