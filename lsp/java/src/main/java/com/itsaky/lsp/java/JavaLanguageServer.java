@@ -30,6 +30,7 @@ import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.java.providers.CodeActionProvider;
+import com.itsaky.lsp.java.providers.CodeFormatProvider;
 import com.itsaky.lsp.java.providers.CompletionProvider;
 import com.itsaky.lsp.java.providers.DefinitionProvider;
 import com.itsaky.lsp.java.providers.JavaDiagnosticProvider;
@@ -241,6 +242,12 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         }
 
         return new JavaDiagnosticProvider(getCompiler()).analyze(file);
+    }
+
+    @NonNull
+    @Override
+    public CharSequence formatCode(CharSequence input) {
+        return new CodeFormatProvider(getSettings()).format(input);
     }
 
     @NonNull

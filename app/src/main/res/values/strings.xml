@@ -344,6 +344,7 @@
     <string name="hint_string_resource">String resource</string>
     <string name="hint_resource_reference">Any resource reference</string>
     <string name="msg_fix_diagnostic">QuickFix</string>
+    <string name="title_format_code">Format code</string>
 </resources>
 
 

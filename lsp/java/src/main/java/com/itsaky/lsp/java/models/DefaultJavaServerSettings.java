@@ -24,4 +24,11 @@ import com.itsaky.lsp.util.DefaultServerSettings;
  *
  * @author Akash Yadav
  */
-public class DefaultJavaServerSettings extends DefaultServerSettings {}
+public class DefaultJavaServerSettings extends DefaultServerSettings {
+    public static final int CODE_STYLE_AOSP = 0;
+    public static final int CODE_STYLE_GOOGLE = 1;
+
+    public int getCodeStyle() {
+        return CODE_STYLE_AOSP;
+    }
+}

@@ -31,6 +31,7 @@ import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
 public class PrefBasedJavaServerSettings extends DefaultJavaServerSettings {
 
     public static final String KEY_JAVA_PREF_MATCH_LOWER = "idepref_editor_java_matchLower";
+    public static final String KEY_JAVA_PREF_CODE_STYLE = "idepref_editor_java_codeStyle";
 
     private static PrefBasedJavaServerSettings instance;
 
@@ -52,5 +53,10 @@ public class PrefBasedJavaServerSettings extends DefaultJavaServerSettings {
     @Override
     public boolean shouldMatchAllLowerCase() {
         return prefs.getBoolean(KEY_JAVA_PREF_MATCH_LOWER, false);
+    }
+
+    @Override
+    public int getCodeStyle() {
+        return prefs.getInt(KEY_JAVA_PREF_CODE_STYLE, CODE_STYLE_AOSP);
     }
 }

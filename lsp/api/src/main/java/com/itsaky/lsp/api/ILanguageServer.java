@@ -180,6 +180,17 @@ public interface ILanguageServer {
     List<DiagnosticItem> analyze(@NonNull Path file);
 
     /**
+     * Format the given source code input.
+     *
+     * @param input The source code to format.
+     * @return The formatted source.
+     */
+    @NonNull
+    default CharSequence formatCode(CharSequence input) {
+        return input;
+    }
+
+    /**
      * The document handler associated with this language server instance.
      *
      * @return The document handler. Must not be null.

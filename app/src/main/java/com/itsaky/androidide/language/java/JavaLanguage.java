@@ -30,6 +30,15 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.models.DiagnosticItem;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+
+import java.io.StringReader;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -40,23 +49,12 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-
-import java.io.StringReader;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class JavaLanguage extends IDELanguage {
 
+    private static final Logger LOG = Logger.instance("JavaLanguage");
+    private final NewlineHandler[] newlineHandlers;
     private JavaAnalyzer analyzer;
     private CommonCompletionProvider completer;
-
-    private final NewlineHandler[] newlineHandlers;
-
-    private static final Logger LOG = Logger.instance("JavaLanguage");
 
     public JavaLanguage() {
         final var server = StudioApp.getInstance().getJavaLanguageServer();
@@ -146,7 +144,7 @@ public class JavaLanguage extends IDELanguage {
 
     @Override
     public CharSequence format(CharSequence content) {
-        return content;
+        return StudioApp.getInstance().getJavaLanguageServer().formatCode(content);
     }
 
     @Override
@@ -158,6 +156,17 @@ public class JavaLanguage extends IDELanguage {
     public void destroy() {
         analyzer = null;
         completer = null;
+    }
+
+    private static class JavaSymbolPairs extends SymbolPairMatch {
+        public JavaSymbolPairs() {
+            super.putPair('{', new Replacement("{}", 1));
+            super.putPair('(', new Replacement("()", 1));
+            super.putPair('[', new Replacement("[]", 1));
+            super.putPair('"', new Replacement("\"\"", 1));
+            super.putPair('\'', new Replacement("''", 1));
+            super.putPair('<', new Replacement("<>", 1));
+        }
     }
 
     class BraceHandler implements NewlineHandler {
@@ -185,17 +194,6 @@ public class JavaLanguage extends IDELanguage {
                                                     count + advanceAfter, tabSize, useTab()));
             int shiftLeft = text.length() + 1;
             return new NewlineHandleResult(sb, shiftLeft);
-        }
-    }
-
-    private static class JavaSymbolPairs extends SymbolPairMatch {
-        public JavaSymbolPairs() {
-            super.putPair('{', new Replacement("{}", 1));
-            super.putPair('(', new Replacement("()", 1));
-            super.putPair('[', new Replacement("[]", 1));
-            super.putPair('"', new Replacement("\"\"", 1));
-            super.putPair('\'', new Replacement("''", 1));
-            super.putPair('<', new Replacement("<>", 1));
         }
     }
 }

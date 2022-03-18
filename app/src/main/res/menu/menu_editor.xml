@@ -123,6 +123,11 @@
                 android:title="@string/menu_navigate_references"
                 app:showAsAction="never" />
             <item
+                android:id="@+id/menuEditor_formatCode"
+                android:icon="@drawable/ic_format_code"
+                android:title="@string/title_format_code"
+                app:showAsAction="never" />
+            <item
                 android:id="@+id/menuEditor_commentLine"
                 android:icon="@drawable/ic_comment_line"
                 android:title="@string/menu_comment_line"
