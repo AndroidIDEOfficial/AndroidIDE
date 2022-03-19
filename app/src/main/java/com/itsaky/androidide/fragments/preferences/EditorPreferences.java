@@ -227,7 +227,6 @@ public class EditorPreferences extends BasePreferenceFragment
                 (d, i) -> {
                     d.dismiss();
 
-                    // Reversing the logic applied above...
                     int tabSize = (i + 1) * 2;
                     if (tabSize < 2 || tabSize > 8) {
                         tabSize = 4;

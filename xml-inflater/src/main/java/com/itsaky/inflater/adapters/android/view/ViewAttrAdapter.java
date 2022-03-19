@@ -553,6 +553,14 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
         }
     }
 
+    protected long parseLong(String value, long def) {
+        try {
+            return Long.parseLong(value);
+        } catch (Throwable th) {
+            return def;
+        }
+    }
+
     protected int parseDimension(final String value, int defaultValue, final DisplayMetrics dm) {
 
         if (value == null) {
