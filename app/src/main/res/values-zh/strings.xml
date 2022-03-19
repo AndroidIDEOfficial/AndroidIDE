@@ -387,7 +387,10 @@
     <string name="title_color_picker">取色器</string>
     <string name="hint_string_value">String 值</string>
     <string name="hint_string_resource">String 资源</string>
-    <string name="hint_resource_reference">任何资源引用</string>
-
+    <string name="hint_resource_reference">任一资源引用</string>
+    <string name="title_format_code">代码格式化</string>
+    <string name="idepref_java_useGoogleStyle_title">使用 Google Java 样式代码格式化</string>
+    <string name="idepref_java_useGoogleStyle_summary">使用 Google Java 样式代码格式化配置格式化 Java 源代码</string>
+    
 </resources>
 
