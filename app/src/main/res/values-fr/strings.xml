@@ -578,7 +578,7 @@
     <string name="msg_unknown_package">Nom du package inconnu</string>
     <string name="msg_attr_editor_select_view">Sélectionner une vue pour modifier ses attributs.</string>
     <string name="msg_attr_editor_no_attrs">No attributes has been added for this view.\nClick on the \'+\' button to add.</string>
-    <string name="msg_enter_attr_value">Entrer une nouvelle valeur pour l'attribut: </string>
+    <string name="msg_enter_attr_value">Entrer une nouvelle valeur pour l\'attribut: </string>
     <string name="hint_new_attr_value">Nouvelle valeur</string>
     <string name="attr_val_wrap_content">wrap_content</string>
     <string name="attr_val_match_parent">match_parent</string>
