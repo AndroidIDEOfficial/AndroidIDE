@@ -26,10 +26,12 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
@@ -57,15 +59,18 @@ import com.itsaky.lsp.models.ShowDocumentParams;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.widget.CodeEditor;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import org.jetbrains.annotations.Contract;
+
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.widget.CodeEditor;
 
 public class IDEEditor extends CodeEditor {
 
@@ -884,7 +889,8 @@ public class IDEEditor extends CodeEditor {
         final var column = event.getLeft().column;
 
         // diagnostics are expected to be sorted, so, we do a binary search
-        getDiagnosticWindow().showDiagnostic(binarySearchDiagnostic(diagnostics, line, column));
+        final var diagnostic = binarySearchDiagnostic(diagnostics, line, column);
+        getDiagnosticWindow().showDiagnostic(diagnostic);
     }
 
     @Nullable
@@ -899,7 +905,7 @@ public class IDEEditor extends CodeEditor {
         int left = 0;
         int right = diagnostics.size() - 1;
         int mid;
-        while (left < right) {
+        while (left <= right) {
             mid = (left + right) / 2;
             var d = diagnostics.get(mid);
             var r = d.getRange();
