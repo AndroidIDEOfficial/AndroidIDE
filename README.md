@@ -30,9 +30,9 @@ More features will be implemented as we continue to develop this app.
 - [ ] UI Designer
   - [x] Layout inflater
   - [x] Resolve resource references
-  - [ ] Auto-complete resource values when user edits attributes using the attribute editor
+  - [x] Auto-complete resource values when user edits attributes using the attribute editor
   - [ ] Drag & Drop (*)
-  - [ ] Visual attribute editor (*)
+  - [x] Visual attribute editor (*)
   - [ ] Android Widgets (*)
 - [ ] String Translator
 - [ ] Asset Studio (Drawable & Icon Maker)
