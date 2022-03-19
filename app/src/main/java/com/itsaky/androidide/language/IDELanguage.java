@@ -19,12 +19,13 @@ package com.itsaky.androidide.language;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.DiagnosticItem;
-
-import io.github.rosemoe.sora.lang.Language;
 
 import java.util.Collections;
 import java.util.List;
+
+import io.github.rosemoe.sora.lang.Language;
 
 /**
  * Base class for language implementations in the IDE.
@@ -50,5 +51,19 @@ public abstract class IDELanguage implements Language {
     @NonNull
     public List<DiagnosticItem> getDiagnostics() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public CharSequence format(CharSequence text) {
+        final var server = getLanguageServer();
+        if (server != null) {
+            return server.formatCode(text);
+        }
+
+        return text;
+    }
+
+    protected ILanguageServer getLanguageServer() {
+        return null;
     }
 }

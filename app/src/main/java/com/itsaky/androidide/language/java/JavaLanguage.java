@@ -28,6 +28,7 @@ import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.editor.IDEEditor;
+import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.DiagnosticItem;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -57,7 +58,7 @@ public class JavaLanguage extends IDELanguage {
     private CommonCompletionProvider completer;
 
     public JavaLanguage() {
-        final var server = StudioApp.getInstance().getJavaLanguageServer();
+        final var server = getLanguageServer();
         this.analyzer = new JavaAnalyzer(server);
         this.completer = new CommonCompletionProvider(server);
 
@@ -143,8 +144,8 @@ public class JavaLanguage extends IDELanguage {
     }
 
     @Override
-    public CharSequence format(CharSequence content) {
-        return StudioApp.getInstance().getJavaLanguageServer().formatCode(content);
+    protected ILanguageServer getLanguageServer() {
+        return StudioApp.getInstance().getJavaLanguageServer();
     }
 
     @Override
