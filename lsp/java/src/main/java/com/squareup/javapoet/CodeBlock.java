@@ -26,7 +26,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 

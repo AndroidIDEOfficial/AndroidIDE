@@ -20,12 +20,10 @@ package com.itsaky.inflater.drawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.util.DisplayMetrics;
-
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.InflateException;
 import com.itsaky.inflater.util.Preconditions;
-
 import org.xmlpull.v1.XmlPullParser;
 
 /**

@@ -18,9 +18,7 @@
 package com.itsaky.androidide.app;
 
 import android.content.Intent;
-
 import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.CrashHandlerActivity;
@@ -38,7 +36,6 @@ import com.itsaky.lsp.java.JavaLanguageServer;
 import com.itsaky.lsp.xml.XMLLanguageServer;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.WidgetInfo;
-
 import java.io.File;
 import java.util.Set;
 

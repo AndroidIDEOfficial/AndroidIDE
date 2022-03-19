@@ -6,7 +6,6 @@ import android.os.Message;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
-
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;

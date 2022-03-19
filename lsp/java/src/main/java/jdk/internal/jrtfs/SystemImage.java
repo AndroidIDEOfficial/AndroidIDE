@@ -25,10 +25,6 @@
 package jdk.internal.jrtfs;
 
 import com.itsaky.androidide.utils.Environment;
-
-import jdk.internal.jimage.ImageReader;
-import jdk.internal.jimage.ImageReader.Node;
-
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
@@ -37,6 +33,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import jdk.internal.jimage.ImageReader;
+import jdk.internal.jimage.ImageReader.Node;
 
 /**
  * @implNote This class needs to maintain JDK 8 source compatibility.

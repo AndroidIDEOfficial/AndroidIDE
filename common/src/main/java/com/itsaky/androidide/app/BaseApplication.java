@@ -24,11 +24,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
-
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.managers.PreferenceManager;
@@ -39,11 +37,9 @@ import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.StudioUtils;
 import com.itsaky.toaster.Toaster;
-
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.util.Arrays;
+import org.jetbrains.annotations.Contract;
 
 public abstract class BaseApplication extends MultiDexApplication {
 

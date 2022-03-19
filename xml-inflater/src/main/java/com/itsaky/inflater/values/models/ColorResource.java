@@ -17,7 +17,6 @@
 package com.itsaky.inflater.values.models;
 
 import android.graphics.Color;
-
 import androidx.annotation.NonNull;
 
 /**

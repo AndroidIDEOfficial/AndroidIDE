@@ -18,9 +18,7 @@
 package com.itsaky.androidide.language.java;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
@@ -30,16 +28,6 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.DiagnosticItem;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-
-import java.io.StringReader;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -49,6 +37,13 @@ import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
+import java.io.StringReader;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
 
 public class JavaLanguage extends IDELanguage {
 

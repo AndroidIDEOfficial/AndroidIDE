@@ -8,19 +8,16 @@ import android.graphics.Matrix;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
-
 import com.itsaky.inflater.R;
 import com.sdsmdg.harjot.vectormaster.models.ClipPathModel;
 import com.sdsmdg.harjot.vectormaster.models.GroupModel;
 import com.sdsmdg.harjot.vectormaster.models.PathModel;
 import com.sdsmdg.harjot.vectormaster.models.VectorModel;
 import com.sdsmdg.harjot.vectormaster.utilities.Utils;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.util.Stack;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class VectorMasterView extends View {
 

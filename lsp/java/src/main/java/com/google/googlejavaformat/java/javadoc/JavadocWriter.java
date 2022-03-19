@@ -49,6 +49,7 @@ final class JavadocWriter {
      */
     private static final ImmutableSet<Type> START_OF_LINE_TOKENS =
             immutableEnumSet(LIST_ITEM_OPEN_TAG, PARAGRAPH_OPEN_TAG, HEADER_OPEN_TAG);
+
     private final int blockIndent;
     private final StringBuilder output = new StringBuilder();
     private final NestingCounter continuingListItemCount = new NestingCounter();
@@ -60,6 +61,7 @@ final class JavadocWriter {
      * inside an {@code <li>} element in that inner list :)
      */
     private boolean continuingListItemOfInnermostList;
+
     private boolean continuingFooterTag;
     private int remainingOnLine;
     private boolean atStartOfLine;

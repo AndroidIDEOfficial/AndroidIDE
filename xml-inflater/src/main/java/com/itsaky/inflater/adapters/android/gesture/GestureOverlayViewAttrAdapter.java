@@ -19,9 +19,7 @@ package com.itsaky.inflater.adapters.android.gesture;
 import android.gesture.GestureOverlayView;
 import android.util.DisplayMetrics;
 import android.view.View;
-
 import androidx.annotation.NonNull;
-
 import com.blankj.utilcode.util.ReflectUtils;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;

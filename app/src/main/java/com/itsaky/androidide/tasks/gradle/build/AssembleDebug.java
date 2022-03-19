@@ -23,7 +23,6 @@ package com.itsaky.androidide.tasks.gradle.build;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.services.builder.IDEService;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;

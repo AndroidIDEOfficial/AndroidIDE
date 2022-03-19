@@ -23,7 +23,6 @@ import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.lsp.models.TextEdit;
 import com.sun.source.tree.ClassTree;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;

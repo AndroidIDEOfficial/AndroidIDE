@@ -17,11 +17,9 @@
 package com.itsaky.androidide.ui.edit;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.lsp.util.StringUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

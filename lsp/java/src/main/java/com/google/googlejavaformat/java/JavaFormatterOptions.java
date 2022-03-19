@@ -29,75 +29,75 @@ import com.google.errorprone.annotations.Immutable;
 @Immutable
 public class JavaFormatterOptions {
 
-  public enum Style {
-    /** The default Google Java Style configuration. */
-    GOOGLE(1),
+    public enum Style {
+        /** The default Google Java Style configuration. */
+        GOOGLE(1),
 
-    /** The AOSP-compliant configuration. */
-    AOSP(2);
+        /** The AOSP-compliant configuration. */
+        AOSP(2);
 
-    private final int indentationMultiplier;
+        private final int indentationMultiplier;
 
-    Style(int indentationMultiplier) {
-      this.indentationMultiplier = indentationMultiplier;
+        Style(int indentationMultiplier) {
+            this.indentationMultiplier = indentationMultiplier;
+        }
+
+        int indentationMultiplier() {
+            return indentationMultiplier;
+        }
     }
 
-    int indentationMultiplier() {
-      return indentationMultiplier;
-    }
-  }
+    private final Style style;
+    private final boolean formatJavadoc;
 
-  private final Style style;
-  private final boolean formatJavadoc;
-
-  private JavaFormatterOptions(Style style, boolean formatJavadoc) {
-    this.style = style;
-    this.formatJavadoc = formatJavadoc;
-  }
-
-  /** Returns the multiplier for the unit of indent. */
-  public int indentationMultiplier() {
-    return style.indentationMultiplier();
-  }
-
-  public boolean formatJavadoc() {
-    return formatJavadoc;
-  }
-
-  /** Returns the code style. */
-  public Style style() {
-    return style;
-  }
-
-  /** Returns the default formatting options. */
-  public static JavaFormatterOptions defaultOptions() {
-    return builder().build();
-  }
-
-  /** Returns a builder for {@link JavaFormatterOptions}. */
-  public static Builder builder() {
-    return new Builder();
-  }
-
-  /** A builder for {@link JavaFormatterOptions}. */
-  public static class Builder {
-    private Style style = Style.GOOGLE;
-    private boolean formatJavadoc = true;
-
-    private Builder() {}
-
-    public Builder style(Style style) {
-      this.style = style;
-      return this;
+    private JavaFormatterOptions(Style style, boolean formatJavadoc) {
+        this.style = style;
+        this.formatJavadoc = formatJavadoc;
     }
 
-    public Builder formatJavadoc(boolean formatJavadoc) {
-      this.formatJavadoc = formatJavadoc;
-      return this;
+    /** Returns the multiplier for the unit of indent. */
+    public int indentationMultiplier() {
+        return style.indentationMultiplier();
     }
 
-    public JavaFormatterOptions build() {
-      return new JavaFormatterOptions(style, formatJavadoc);
+    public boolean formatJavadoc() {
+        return formatJavadoc;
     }
-  }
+
+    /** Returns the code style. */
+    public Style style() {
+        return style;
+    }
+
+    /** Returns the default formatting options. */
+    public static JavaFormatterOptions defaultOptions() {
+        return builder().build();
+    }
+
+    /** Returns a builder for {@link JavaFormatterOptions}. */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /** A builder for {@link JavaFormatterOptions}. */
+    public static class Builder {
+        private Style style = Style.GOOGLE;
+        private boolean formatJavadoc = true;
+
+        private Builder() {}
+
+        public Builder style(Style style) {
+            this.style = style;
+            return this;
+        }
+
+        public Builder formatJavadoc(boolean formatJavadoc) {
+            this.formatJavadoc = formatJavadoc;
+            return this;
+        }
+
+        public JavaFormatterOptions build() {
+            return new JavaFormatterOptions(style, formatJavadoc);
+        }
+    }
 }

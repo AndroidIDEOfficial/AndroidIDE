@@ -19,15 +19,12 @@ package com.itsaky.androidide.adapters;
 
 import android.content.ClipData;
 import android.view.View;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.DesignerActivity;
 import com.itsaky.androidide.models.IconTextListItem;
 import com.itsaky.androidide.models.UIWidget;
 import com.itsaky.androidide.ui.WidgetDragData;
 import com.itsaky.androidide.ui.WidgetDragShadowBuilder;
-
 import java.util.List;
 
 public class WidgetItemAdapter extends SimpleIconTextAdapter

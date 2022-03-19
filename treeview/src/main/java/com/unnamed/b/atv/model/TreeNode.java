@@ -3,11 +3,9 @@ package com.unnamed.b.atv.model;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.unnamed.b.atv.R;
 import com.unnamed.b.atv.view.AndroidTreeView;
 import com.unnamed.b.atv.view.TreeNodeWrapperView;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;

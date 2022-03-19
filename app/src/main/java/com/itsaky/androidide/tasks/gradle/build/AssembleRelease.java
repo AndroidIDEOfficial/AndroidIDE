@@ -24,7 +24,6 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.tasks.GradleTask;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;

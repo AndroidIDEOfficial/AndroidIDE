@@ -35,12 +35,10 @@ import static com.itsaky.androidide.models.PrefBasedJavaServerSettings.KEY_JAVA_
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;

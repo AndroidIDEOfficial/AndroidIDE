@@ -16,33 +16,33 @@ package com.google.googlejavaformat.java.javadoc;
 
 /** Mutable integer for tracking the level of nesting. */
 final class NestingCounter {
-  private int value;
+    private int value;
 
-  int value() {
-    return value;
-  }
-
-  void increment() {
-    value++;
-  }
-
-  void incrementIfPositive() {
-    if (value > 0) {
-      value++;
+    int value() {
+        return value;
     }
-  }
 
-  void decrementIfPositive() {
-    if (value > 0) {
-      value--;
+    void increment() {
+        value++;
     }
-  }
 
-  boolean isPositive() {
-    return value > 0;
-  }
+    void incrementIfPositive() {
+        if (value > 0) {
+            value++;
+        }
+    }
 
-  void reset() {
-    value = 0;
-  }
+    void decrementIfPositive() {
+        if (value > 0) {
+            value--;
+        }
+    }
+
+    boolean isPositive() {
+        return value > 0;
+    }
+
+    void reset() {
+        value = 0;
+    }
 }

@@ -4,9 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Path;
-
 import com.sdsmdg.harjot.vectormaster.enums.TintMode;
-
 import java.util.ArrayList;
 
 public class VectorModel {

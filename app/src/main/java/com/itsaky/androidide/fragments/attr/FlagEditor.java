@@ -23,14 +23,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CompoundButton;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.itsaky.androidide.utils.Logger;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -48,12 +45,12 @@ public class FlagEditor extends FixedValueEditor {
         this.chipGroup.setSingleSelection(false);
         this.chipGroup.setSelectionRequired(true);
         this.chipGroup.setOnCheckedChangeListener(null); // does not work for multiple selections
-    
-        final var values = Arrays.asList (this.attribute.getValue ().split ("\\|"));
-        for (int i = 0; i < this.chipGroup.getChildCount (); i++) {
-            final var chip = (Chip) this.chipGroup.getChildAt (i);
-            if (values.contains (chip.getText ().toString ().trim ())) {
-                chip.setChecked (true);
+
+        final var values = Arrays.asList(this.attribute.getValue().split("\\|"));
+        for (int i = 0; i < this.chipGroup.getChildCount(); i++) {
+            final var chip = (Chip) this.chipGroup.getChildAt(i);
+            if (values.contains(chip.getText().toString().trim())) {
+                chip.setChecked(true);
             }
         }
     }

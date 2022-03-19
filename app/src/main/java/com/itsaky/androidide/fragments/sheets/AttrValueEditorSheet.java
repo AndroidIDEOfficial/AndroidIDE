@@ -33,10 +33,8 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.adapters.AttrValueFormatTabAdapter;
 import com.itsaky.androidide.databinding.LayoutAttrValueEditorBinding;
@@ -49,15 +47,12 @@ import com.itsaky.androidide.fragments.attr.FlagEditor;
 import com.itsaky.androidide.fragments.attr.FloatEditor;
 import com.itsaky.androidide.fragments.attr.FractionEditor;
 import com.itsaky.androidide.fragments.attr.IntegerEditor;
-import com.itsaky.androidide.fragments.attr.AbstractReferenceEditor;
 import com.itsaky.androidide.fragments.attr.ReferenceEditor;
 import com.itsaky.androidide.fragments.attr.StringEditor;
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.attrinfo.models.Attr;
-
-import org.jetbrains.annotations.Contract;
-
 import java.util.Objects;
+import org.jetbrains.annotations.Contract;
 
 /**
  * Sheet for editing value of an attribute.

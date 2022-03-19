@@ -18,7 +18,6 @@
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
@@ -30,12 +29,10 @@ import com.itsaky.lsp.models.ReferenceParams;
 import com.itsaky.lsp.models.ReferenceResult;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.TreePath;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 

@@ -20,14 +20,11 @@ package com.itsaky.androidide.views.editor;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureInformation;
-
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 

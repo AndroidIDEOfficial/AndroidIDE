@@ -25,7 +25,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.widget.Toast;
-
 import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 

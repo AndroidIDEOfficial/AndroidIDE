@@ -21,11 +21,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.transition.TransitionManager;
-
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.SimpleIconTextAdapter;
@@ -42,9 +40,6 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.toaster.Toaster;
-
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +48,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.Contract;
 
 public class AttrEditorSheet extends BottomSheetDialogFragment
         implements SimpleIconTextAdapter.OnBindListener<IconTextListItem> {

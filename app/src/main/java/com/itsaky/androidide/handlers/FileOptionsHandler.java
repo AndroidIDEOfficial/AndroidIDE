@@ -18,7 +18,6 @@
 package com.itsaky.androidide.handlers;
 
 import android.view.LayoutInflater;
-
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
@@ -34,7 +33,6 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ProjectWriter;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
-
 import java.io.File;
 import java.util.Objects;
 import java.util.regex.Pattern;

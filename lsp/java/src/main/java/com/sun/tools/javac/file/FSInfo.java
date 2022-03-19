@@ -27,7 +27,6 @@ package com.sun.tools.javac.file;
 
 import com.github.marschall.com.sun.nio.zipfs.ZipFileSystemProvider;
 import com.sun.tools.javac.util.Context;
-
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;

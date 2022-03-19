@@ -24,62 +24,63 @@ import java.util.concurrent.Callable;
  * format.
  */
 class FormatFileCallable implements Callable<String> {
-  private final String input;
-  private final CommandLineOptions parameters;
-  private final JavaFormatterOptions options;
+    private final String input;
+    private final CommandLineOptions parameters;
+    private final JavaFormatterOptions options;
 
-  public FormatFileCallable(
-      CommandLineOptions parameters, String input, JavaFormatterOptions options) {
-    this.input = input;
-    this.parameters = parameters;
-    this.options = options;
-  }
-
-  @Override
-  public String call() throws FormatterException {
-    if (parameters.fixImportsOnly()) {
-      return fixImports(input);
+    public FormatFileCallable(
+            CommandLineOptions parameters, String input, JavaFormatterOptions options) {
+        this.input = input;
+        this.parameters = parameters;
+        this.options = options;
     }
 
-    Formatter formatter = new Formatter(options);
-    String formatted = formatter.formatSource(input, characterRanges(input).asRanges());
-    formatted = fixImports(formatted);
-    if (parameters.reflowLongStrings()) {
-      formatted = StringWrapper.wrap(Formatter.MAX_LINE_LENGTH, formatted, formatter);
-    }
-    return formatted;
-  }
+    @Override
+    public String call() throws FormatterException {
+        if (parameters.fixImportsOnly()) {
+            return fixImports(input);
+        }
 
-  private String fixImports(String input) throws FormatterException {
-    if (parameters.removeUnusedImports()) {
-      input = RemoveUnusedImports.removeUnusedImports(input);
-    }
-    if (parameters.sortImports()) {
-      input = ImportOrderer.reorderImports(input, options.style());
-    }
-    return input;
-  }
-
-  private RangeSet<Integer> characterRanges(String input) {
-    final RangeSet<Integer> characterRanges = TreeRangeSet.create();
-
-    if (parameters.lines().isEmpty() && parameters.offsets().isEmpty()) {
-      characterRanges.add(Range.closedOpen(0, input.length()));
-      return characterRanges;
+        Formatter formatter = new Formatter(options);
+        String formatted = formatter.formatSource(input, characterRanges(input).asRanges());
+        formatted = fixImports(formatted);
+        if (parameters.reflowLongStrings()) {
+            formatted = StringWrapper.wrap(Formatter.MAX_LINE_LENGTH, formatted, formatter);
+        }
+        return formatted;
     }
 
-    characterRanges.addAll(Formatter.lineRangesToCharRanges(input, parameters.lines()));
-
-    for (int i = 0; i < parameters.offsets().size(); i++) {
-      Integer length = parameters.lengths().get(i);
-      if (length == 0) {
-        // 0 stands for "format the line under the cursor"
-        length = 1;
-      }
-      characterRanges.add(
-          Range.closedOpen(parameters.offsets().get(i), parameters.offsets().get(i) + length));
+    private String fixImports(String input) throws FormatterException {
+        if (parameters.removeUnusedImports()) {
+            input = RemoveUnusedImports.removeUnusedImports(input);
+        }
+        if (parameters.sortImports()) {
+            input = ImportOrderer.reorderImports(input, options.style());
+        }
+        return input;
     }
 
-    return characterRanges;
-  }
+    private RangeSet<Integer> characterRanges(String input) {
+        final RangeSet<Integer> characterRanges = TreeRangeSet.create();
+
+        if (parameters.lines().isEmpty() && parameters.offsets().isEmpty()) {
+            characterRanges.add(Range.closedOpen(0, input.length()));
+            return characterRanges;
+        }
+
+        characterRanges.addAll(Formatter.lineRangesToCharRanges(input, parameters.lines()));
+
+        for (int i = 0; i < parameters.offsets().size(); i++) {
+            Integer length = parameters.lengths().get(i);
+            if (length == 0) {
+                // 0 stands for "format the line under the cursor"
+                length = 1;
+            }
+            characterRanges.add(
+                    Range.closedOpen(
+                            parameters.offsets().get(i), parameters.offsets().get(i) + length));
+        }
+
+        return characterRanges;
+    }
 }

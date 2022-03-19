@@ -18,7 +18,6 @@
 package com.itsaky.androidide.utils;
 
 import android.graphics.Typeface;
-
 import com.itsaky.androidide.app.BaseApplication;
 
 public class TypefaceUtils {

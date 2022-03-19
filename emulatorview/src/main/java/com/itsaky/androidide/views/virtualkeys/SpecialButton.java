@@ -1,7 +1,6 @@
 package com.itsaky.androidide.views.virtualkeys;
 
 import androidx.annotation.NonNull;
-
 import java.util.HashMap;
 
 /** The {@link Class} that implements special buttons for {@link VirtualKeysView}. */

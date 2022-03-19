@@ -30,65 +30,68 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** A {@link JavaFileObject} decorator which {@linkplain Formatter formats} source code. */
 final class FormattingJavaFileObject extends ForwardingJavaFileObject<JavaFileObject> {
-  /** A rough estimate of the average file size: 80 chars per line, 500 lines. */
-  private static final int DEFAULT_FILE_SIZE = 80 * 500;
+    /** A rough estimate of the average file size: 80 chars per line, 500 lines. */
+    private static final int DEFAULT_FILE_SIZE = 80 * 500;
 
-  private final Formatter formatter;
-  private final Messager messager;
+    private final Formatter formatter;
+    private final Messager messager;
 
-  /**
-   * Create a new {@link FormattingJavaFileObject}.
-   *
-   * @param delegate {@link JavaFileObject} to decorate
-   * @param messager to log messages with.
-   */
-  FormattingJavaFileObject(
-      JavaFileObject delegate, Formatter formatter, @Nullable Messager messager) {
-    super(checkNotNull(delegate));
-    this.formatter = checkNotNull(formatter);
-    this.messager = messager;
-  }
+    /**
+     * Create a new {@link FormattingJavaFileObject}.
+     *
+     * @param delegate {@link JavaFileObject} to decorate
+     * @param messager to log messages with.
+     */
+    FormattingJavaFileObject(
+            JavaFileObject delegate, Formatter formatter, @Nullable Messager messager) {
+        super(checkNotNull(delegate));
+        this.formatter = checkNotNull(formatter);
+        this.messager = messager;
+    }
 
-  @Override
-  public Writer openWriter() throws IOException {
-    final StringBuilder stringBuilder = new StringBuilder(DEFAULT_FILE_SIZE);
-    return new Writer() {
-      @Override
-      public void write(char[] chars, int start, int end) throws IOException {
-        stringBuilder.append(chars, start, end - start);
-      }
+    @Override
+    public Writer openWriter() throws IOException {
+        final StringBuilder stringBuilder = new StringBuilder(DEFAULT_FILE_SIZE);
+        return new Writer() {
+            @Override
+            public void write(char[] chars, int start, int end) throws IOException {
+                stringBuilder.append(chars, start, end - start);
+            }
 
-      @Override
-      public void write(String string) throws IOException {
-        stringBuilder.append(string);
-      }
+            @Override
+            public void write(String string) throws IOException {
+                stringBuilder.append(string);
+            }
 
-      @Override
-      public void flush() throws IOException {}
+            @Override
+            public void flush() throws IOException {}
 
-      @Override
-      public void close() throws IOException {
-        try {
-          formatter.formatSource(
-              CharSource.wrap(stringBuilder),
-              new CharSink() {
-                @Override
-                public Writer openStream() throws IOException {
-                  return fileObject.openWriter();
+            @Override
+            public void close() throws IOException {
+                try {
+                    formatter.formatSource(
+                            CharSource.wrap(stringBuilder),
+                            new CharSink() {
+                                @Override
+                                public Writer openStream() throws IOException {
+                                    return fileObject.openWriter();
+                                }
+                            });
+                } catch (FormatterException e) {
+                    // An exception will happen when the code being formatted has an error. It's
+                    // better to
+                    // log the exception and emit unformatted code so the developer can view the
+                    // code which
+                    // caused a problem.
+                    try (Writer writer = fileObject.openWriter()) {
+                        writer.append(stringBuilder.toString());
+                    }
+                    if (messager != null) {
+                        messager.printMessage(
+                                Diagnostic.Kind.NOTE, "Error formatting " + getName());
+                    }
                 }
-              });
-        } catch (FormatterException e) {
-          // An exception will happen when the code being formatted has an error. It's better to
-          // log the exception and emit unformatted code so the developer can view the code which
-          // caused a problem.
-          try (Writer writer = fileObject.openWriter()) {
-            writer.append(stringBuilder.toString());
-          }
-          if (messager != null) {
-            messager.printMessage(Diagnostic.Kind.NOTE, "Error formatting " + getName());
-          }
-        }
-      }
-    };
-  }
+            }
+        };
+    }
 }

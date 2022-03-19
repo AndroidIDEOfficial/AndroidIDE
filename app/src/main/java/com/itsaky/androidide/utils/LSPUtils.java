@@ -23,7 +23,6 @@ import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticSeverity;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
-
 import java.util.Comparator;
 import java.util.List;
 

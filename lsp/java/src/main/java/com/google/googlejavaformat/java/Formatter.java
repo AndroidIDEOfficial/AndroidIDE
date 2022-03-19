@@ -40,7 +40,6 @@ import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Options;
-
 import java.io.IOError;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -48,7 +47,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.DiagnosticListener;
@@ -157,7 +155,8 @@ public final class Formatter {
         }
         OpsBuilder builder = new OpsBuilder(javaInput, javaOutput);
         // Output the compilation unit.
-        JavaInputAstVisitor visitor = new JavaInputAstVisitor(builder, options.indentationMultiplier());
+        JavaInputAstVisitor visitor =
+                new JavaInputAstVisitor(builder, options.indentationMultiplier());
         visitor.scan(unit, null);
         builder.sync(javaInput.getText().length());
         builder.drain();

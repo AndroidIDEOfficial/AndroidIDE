@@ -23,17 +23,13 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.DisplayMetrics;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.inflater.IResourceTable;
-
+import java.util.Arrays;
 import org.jetbrains.annotations.Contract;
 import org.xmlpull.v1.XmlPullParser;
-
-import java.util.Arrays;
 
 /**
  * Parses a drawable whose root element is {@code <shape>}. If the parse was successful, returns a

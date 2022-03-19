@@ -30,7 +30,6 @@ import static com.sun.tools.javac.main.Option.ENDORSEDDIRS;
 import static com.sun.tools.javac.main.Option.EXTDIRS;
 import static com.sun.tools.javac.main.Option.XBOOTCLASSPATH_APPEND;
 import static com.sun.tools.javac.main.Option.XBOOTCLASSPATH_PREPEND;
-
 import static javax.tools.StandardLocation.PLATFORM_CLASS_PATH;
 
 import com.sun.tools.javac.code.Lint;
@@ -47,10 +46,6 @@ import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Pair;
 import com.sun.tools.javac.util.StringUtils;
-
-import jdk.internal.jmod.JmodFile;
-import jdk.internal.jrtfs.JrtFileSystemProvider;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -92,7 +87,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.lang.model.SourceVersion;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileManager.Location;
@@ -100,6 +94,8 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardJavaFileManager.PathFactory;
 import javax.tools.StandardLocation;
+import jdk.internal.jmod.JmodFile;
+import jdk.internal.jrtfs.JrtFileSystemProvider;
 
 /**
  * This class converts command line arguments, environment variables and system properties (in

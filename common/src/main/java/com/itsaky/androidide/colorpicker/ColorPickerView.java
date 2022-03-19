@@ -31,11 +31,9 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-
 import com.google.android.material.slider.Slider;
 import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.common.databinding.LayoutColorPickerBinding;

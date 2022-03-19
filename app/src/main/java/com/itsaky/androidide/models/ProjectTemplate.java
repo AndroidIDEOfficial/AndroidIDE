@@ -18,7 +18,6 @@
 package com.itsaky.androidide.models;
 
 import android.content.Context;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 

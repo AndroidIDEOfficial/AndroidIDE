@@ -20,14 +20,11 @@ package com.itsaky.androidide.adapters;
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.itsaky.androidide.databinding.LayoutSymbolItemBinding;
 import com.itsaky.androidide.views.SymbolInputView.Symbol;
 import com.itsaky.androidide.views.editor.IDEEditor;
-
 import java.util.ArrayList;
 import java.util.List;
 

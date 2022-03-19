@@ -25,10 +25,8 @@ import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
-
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.Content;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;

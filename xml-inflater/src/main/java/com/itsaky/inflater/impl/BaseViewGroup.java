@@ -19,13 +19,10 @@ package com.itsaky.inflater.impl;
 
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.inflater.IAttributeAdapter;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.IViewGroup;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -18,7 +18,6 @@
 package com.itsaky.androidide.models;
 
 import com.itsaky.lsp.models.Range;
-
 import java.io.File;
 
 public class SearchResult extends Range {

@@ -19,24 +19,20 @@ package com.itsaky.attrinfo;
 
 import android.content.Context;
 import android.content.res.Resources;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.attrinfo.models.Styleable;
 import com.itsaky.sdkinfo.R;
 import com.itsaky.xml.INamespace;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 
 /**
  * A parser for parsing <b>attrs.xml</b>. This parser maps the attributes with the declared

@@ -26,9 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.databinding.LayoutProgressSheetBinding;
 import com.itsaky.androidide.utils.Logger;
 

@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
 import com.unnamed.b.atv.R;
 
 /** Created by Bogdan Melnychuk on 2/10/15. */

@@ -18,10 +18,8 @@
 package com.itsaky.lsp.java.utils;
 
 import androidx.annotation.NonNull;
-
 import com.google.common.reflect.ClassPath;
 import com.itsaky.androidide.utils.Logger;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;

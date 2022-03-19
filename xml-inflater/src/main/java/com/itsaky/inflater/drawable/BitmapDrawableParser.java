@@ -23,14 +23,11 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.InflateException;
-
 import org.jetbrains.annotations.Contract;
 import org.xmlpull.v1.XmlPullParser;
 

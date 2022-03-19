@@ -22,9 +22,7 @@ package com.itsaky.androidide.tasks;
 
 import android.os.Handler;
 import android.os.Looper;
-
 import com.itsaky.androidide.utils.Logger;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;

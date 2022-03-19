@@ -22,24 +22,24 @@ import com.google.common.base.MoreObjects;
  * delimited by {@link OpenOp}-{@code CloseOp} pairs turn into nested {@link Doc.Level}s.
  */
 public enum CloseOp implements Op {
-  CLOSE;
+    CLOSE;
 
-  /**
-   * Make a {@code CloseOp}, returning a singleton since they are all the same.
-   *
-   * @return the singleton {@code CloseOp}
-   */
-  public static Op make() {
-    return CLOSE;
-  }
+    /**
+     * Make a {@code CloseOp}, returning a singleton since they are all the same.
+     *
+     * @return the singleton {@code CloseOp}
+     */
+    public static Op make() {
+        return CLOSE;
+    }
 
-  @Override
-  public void add(DocBuilder builder) {
-    builder.close();
-  }
+    @Override
+    public void add(DocBuilder builder) {
+        builder.close();
+    }
 
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this).toString();
-  }
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).toString();
+    }
 }

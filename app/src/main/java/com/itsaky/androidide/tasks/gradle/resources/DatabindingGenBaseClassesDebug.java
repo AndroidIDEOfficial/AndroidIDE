@@ -21,7 +21,6 @@
 package com.itsaky.androidide.tasks.gradle.resources;
 
 import com.itsaky.androidide.tasks.BaseGradleTask;
-
 import java.util.Arrays;
 import java.util.List;
 

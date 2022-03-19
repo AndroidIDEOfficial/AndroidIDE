@@ -19,12 +19,9 @@ package com.itsaky.inflater.drawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
-
 import androidx.annotation.ChecksSdkIntAtLeast;
-
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.util.CommonParseUtils;
-
 import org.xmlpull.v1.XmlPullParser;
 
 /**

@@ -18,10 +18,8 @@ package com.itsaky.androidide.fragments.attr;
 
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.itsaky.androidide.utils.Logger;
@@ -30,35 +28,35 @@ import com.itsaky.androidide.utils.Logger;
  * @author Akash Yadav
  */
 public class EnumEditor extends FixedValueEditor {
-    
-    private static final Logger LOG = Logger.instance ("EnumEditor");
-    
+
+    private static final Logger LOG = Logger.instance("EnumEditor");
+
     @Override
-    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated (view, savedInstanceState);
-        
-        this.chipGroup.setSingleSelection (true);
-        this.chipGroup.setSelectionRequired (true);
-        
-        final var val = this.attribute.getValue ();
-        for (int i = 0; i < this.chipGroup.getChildCount (); i++) {
-            final var chip = (Chip) this.chipGroup.getChildAt (i);
-            if (val.equals (chip.getText ().toString ().trim ())) {
-                chip.setChecked (true);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        this.chipGroup.setSingleSelection(true);
+        this.chipGroup.setSelectionRequired(true);
+
+        final var val = this.attribute.getValue();
+        for (int i = 0; i < this.chipGroup.getChildCount(); i++) {
+            final var chip = (Chip) this.chipGroup.getChildAt(i);
+            if (val.equals(chip.getText().toString().trim())) {
+                chip.setChecked(true);
                 break;
             }
         }
     }
-    
+
     @Override
-    protected void onCheckChanged (@NonNull ChipGroup group, int checkedId) {
-        final var chip = (Chip) group.findViewById (group.getCheckedChipId ());
+    protected void onCheckChanged(@NonNull ChipGroup group, int checkedId) {
+        final var chip = (Chip) group.findViewById(group.getCheckedChipId());
         if (chip == null) {
-            LOG.error ("Unable to update enum value. Checked Chip view is null.");
+            LOG.error("Unable to update enum value. Checked Chip view is null.");
             return;
         }
-        
-        final var val = chip.getText ().toString ().trim ();
-        notifyValueChanged (val);
+
+        final var val = chip.getText().toString().trim();
+        notifyValueChanged(val);
     }
 }

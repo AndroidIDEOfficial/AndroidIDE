@@ -19,10 +19,8 @@ package com.itsaky.androidide.fragments.attr;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.inflater.IAttribute;
-
 import java.util.Objects;
 
 /**

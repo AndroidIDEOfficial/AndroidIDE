@@ -21,7 +21,6 @@ import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.utils.FindHelper;
 import com.sun.source.tree.*;
 import com.sun.source.util.*;
-
 import javax.lang.model.element.Name;
 
 public class FindNameAt extends TreePathScanner<TreePath, Long> {

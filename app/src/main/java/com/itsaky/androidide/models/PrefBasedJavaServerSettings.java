@@ -18,7 +18,6 @@
 package com.itsaky.androidide.models;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
@@ -31,7 +30,8 @@ import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
 public class PrefBasedJavaServerSettings extends DefaultJavaServerSettings {
 
     public static final String KEY_JAVA_PREF_MATCH_LOWER = "idepref_editor_java_matchLower";
-    public static final String KEY_JAVA_PREF_GOOGLE_CODE_STYLE = "idepref_editor_java_googleCodeStyle";
+    public static final String KEY_JAVA_PREF_GOOGLE_CODE_STYLE =
+            "idepref_editor_java_googleCodeStyle";
 
     private static PrefBasedJavaServerSettings instance;
 
