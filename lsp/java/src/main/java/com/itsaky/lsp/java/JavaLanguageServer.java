@@ -257,6 +257,11 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     }
 
     @Override
+    public boolean accepts(Path file) {
+        return FileStore.isJavaFile(file);
+    }
+
+    @Override
     public void onFileOpened(DocumentOpenEvent event) {
         FileStore.open(event);
     }

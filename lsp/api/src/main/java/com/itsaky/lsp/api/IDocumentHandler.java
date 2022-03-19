@@ -22,12 +22,23 @@ import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
 
+import java.nio.file.Path;
+
 /**
  * Handles documents of a language server implementations.
  *
  * @author Akash Yadav
  */
 public interface IDocumentHandler {
+
+    /**
+     * Check if this document handler can accept the given file or not.
+     *
+     * @param file The file to check.
+     * @return <code>true</code> if the document handler can accept this file, <code>false</code>
+     *     otherwise.
+     */
+    boolean accepts(Path file);
 
     /**
      * Notification sent to this handler to notify the file open event. This event tells the

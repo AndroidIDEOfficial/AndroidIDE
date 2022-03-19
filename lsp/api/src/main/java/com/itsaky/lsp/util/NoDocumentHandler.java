@@ -23,10 +23,18 @@ import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
 
+import java.nio.file.Path;
+
 /**
  * @author Akash Yadav
  */
 public class NoDocumentHandler implements IDocumentHandler {
+
+    @Override
+    public boolean accepts(Path file) {
+        return false;
+    }
+
     @Override
     public void onFileOpened(DocumentOpenEvent event) {}
 
