@@ -35,10 +35,9 @@
  *******************************************************************************/
 package org.eclipse.jdt.core.compiler;
 
-import org.eclipse.jdt.internal.compiler.parser.ScannerHelper;
-
 import java.util.Arrays;
 import java.util.List;
+import org.eclipse.jdt.internal.compiler.parser.ScannerHelper;
 
 /**
  * This class is a collection of helper methods to manipulate char arrays.

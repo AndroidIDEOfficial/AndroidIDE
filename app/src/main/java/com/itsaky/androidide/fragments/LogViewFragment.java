@@ -19,16 +19,12 @@ package com.itsaky.androidide.fragments;
 
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.models.LogLine;
-
 import io.github.rosemoe.sora.lang.Language;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

@@ -29,187 +29,188 @@ import java.util.List;
 /** Formats a subset of a compilation unit. */
 public class SnippetFormatter {
 
-  /** The kind of snippet to format. */
-  public enum SnippetKind {
-    COMPILATION_UNIT,
-    CLASS_BODY_DECLARATIONS,
-    STATEMENTS,
-    EXPRESSION
-  }
-
-  private class SnippetWrapper {
-    int offset;
-    final StringBuilder contents = new StringBuilder();
-
-    public SnippetWrapper append(String str) {
-      contents.append(str);
-      return this;
+    /** The kind of snippet to format. */
+    public enum SnippetKind {
+        COMPILATION_UNIT,
+        CLASS_BODY_DECLARATIONS,
+        STATEMENTS,
+        EXPRESSION
     }
 
-    public SnippetWrapper appendSource(String source) {
-      this.offset = contents.length();
-      contents.append(source);
-      return this;
+    private class SnippetWrapper {
+        int offset;
+        final StringBuilder contents = new StringBuilder();
+
+        public SnippetWrapper append(String str) {
+            contents.append(str);
+            return this;
+        }
+
+        public SnippetWrapper appendSource(String source) {
+            this.offset = contents.length();
+            contents.append(source);
+            return this;
+        }
+
+        public void closeBraces(int initialIndent) {
+            for (int i = initialIndent; --i >= 0; ) {
+                contents.append("\n").append(createIndentationString(i)).append("}");
+            }
+        }
     }
 
-    public void closeBraces(int initialIndent) {
-      for (int i = initialIndent; --i >= 0; ) {
-        contents.append("\n").append(createIndentationString(i)).append("}");
-      }
+    private static final int INDENTATION_SIZE = 2;
+    private final Formatter formatter = new Formatter();
+    private static final CharMatcher NOT_WHITESPACE = CharMatcher.whitespace().negate();
+
+    public String createIndentationString(int indentationLevel) {
+        Preconditions.checkArgument(
+                indentationLevel >= 0,
+                "Indentation level cannot be less than zero. Given: %s",
+                indentationLevel);
+        int spaces = indentationLevel * INDENTATION_SIZE;
+        StringBuilder buf = new StringBuilder(spaces);
+        for (int i = 0; i < spaces; i++) {
+            buf.append(' ');
+        }
+        return buf.toString();
     }
-  }
 
-  private static final int INDENTATION_SIZE = 2;
-  private final Formatter formatter = new Formatter();
-  private static final CharMatcher NOT_WHITESPACE = CharMatcher.whitespace().negate();
-
-  public String createIndentationString(int indentationLevel) {
-    Preconditions.checkArgument(
-        indentationLevel >= 0,
-        "Indentation level cannot be less than zero. Given: %s",
-        indentationLevel);
-    int spaces = indentationLevel * INDENTATION_SIZE;
-    StringBuilder buf = new StringBuilder(spaces);
-    for (int i = 0; i < spaces; i++) {
-      buf.append(' ');
+    private static Range<Integer> offsetRange(Range<Integer> range, int offset) {
+        range = range.canonical(DiscreteDomain.integers());
+        return Range.closedOpen(range.lowerEndpoint() + offset, range.upperEndpoint() + offset);
     }
-    return buf.toString();
-  }
 
-  private static Range<Integer> offsetRange(Range<Integer> range, int offset) {
-    range = range.canonical(DiscreteDomain.integers());
-    return Range.closedOpen(range.lowerEndpoint() + offset, range.upperEndpoint() + offset);
-  }
-
-  private static List<Range<Integer>> offsetRanges(List<Range<Integer>> ranges, int offset) {
-    List<Range<Integer>> result = new ArrayList<>();
-    for (Range<Integer> range : ranges) {
-      result.add(offsetRange(range, offset));
+    private static List<Range<Integer>> offsetRanges(List<Range<Integer>> ranges, int offset) {
+        List<Range<Integer>> result = new ArrayList<>();
+        for (Range<Integer> range : ranges) {
+            result.add(offsetRange(range, offset));
+        }
+        return result;
     }
-    return result;
-  }
 
-  /** Runs the Google Java formatter on the given source, with only the given ranges specified. */
-  public ImmutableList<Replacement> format(
-      SnippetKind kind,
-      String source,
-      List<Range<Integer>> ranges,
-      int initialIndent,
-      boolean includeComments)
-      throws FormatterException {
-    RangeSet<Integer> rangeSet = TreeRangeSet.create();
-    for (Range<Integer> range : ranges) {
-      rangeSet.add(range);
+    /** Runs the Google Java formatter on the given source, with only the given ranges specified. */
+    public ImmutableList<Replacement> format(
+            SnippetKind kind,
+            String source,
+            List<Range<Integer>> ranges,
+            int initialIndent,
+            boolean includeComments)
+            throws FormatterException {
+        RangeSet<Integer> rangeSet = TreeRangeSet.create();
+        for (Range<Integer> range : ranges) {
+            rangeSet.add(range);
+        }
+        if (includeComments) {
+            if (kind != SnippetKind.COMPILATION_UNIT) {
+                throw new IllegalArgumentException(
+                        "comment formatting is only supported for compilation units");
+            }
+            return formatter.getFormatReplacements(source, ranges);
+        }
+        SnippetWrapper wrapper = snippetWrapper(kind, source, initialIndent);
+        ranges = offsetRanges(ranges, wrapper.offset);
+
+        String replacement = formatter.formatSource(wrapper.contents.toString(), ranges);
+        replacement =
+                replacement.substring(
+                        wrapper.offset,
+                        replacement.length()
+                                - (wrapper.contents.length() - wrapper.offset - source.length()));
+
+        return toReplacements(source, replacement).stream()
+                .filter(r -> rangeSet.encloses(r.getReplaceRange()))
+                .collect(toImmutableList());
     }
-    if (includeComments) {
-      if (kind != SnippetKind.COMPILATION_UNIT) {
-        throw new IllegalArgumentException(
-            "comment formatting is only supported for compilation units");
-      }
-      return formatter.getFormatReplacements(source, ranges);
-    }
-    SnippetWrapper wrapper = snippetWrapper(kind, source, initialIndent);
-    ranges = offsetRanges(ranges, wrapper.offset);
 
-    String replacement = formatter.formatSource(wrapper.contents.toString(), ranges);
-    replacement =
-        replacement.substring(
-            wrapper.offset,
-            replacement.length() - (wrapper.contents.length() - wrapper.offset - source.length()));
-
-    return toReplacements(source, replacement).stream()
-        .filter(r -> rangeSet.encloses(r.getReplaceRange()))
-        .collect(toImmutableList());
-  }
-
-  /**
-   * Generates {@code Replacement}s rewriting {@code source} to {@code replacement}, under the
-   * assumption that they differ in whitespace alone.
-   */
-  private static List<Replacement> toReplacements(String source, String replacement) {
-    if (!NOT_WHITESPACE.retainFrom(source).equals(NOT_WHITESPACE.retainFrom(replacement))) {
-      throw new IllegalArgumentException(
-          "source = \"" + source + "\", replacement = \"" + replacement + "\"");
-    }
-    /*
-     * In the past we seemed to have problems touching non-whitespace text in the formatter, even
-     * just replacing some code with itself.  Retrospective attempts to reproduce this have failed,
-     * but this may be an issue for future changes.
+    /**
+     * Generates {@code Replacement}s rewriting {@code source} to {@code replacement}, under the
+     * assumption that they differ in whitespace alone.
      */
-    List<Replacement> replacements = new ArrayList<>();
-    int i = NOT_WHITESPACE.indexIn(source);
-    int j = NOT_WHITESPACE.indexIn(replacement);
-    if (i != 0 || j != 0) {
-      replacements.add(Replacement.create(0, i, replacement.substring(0, j)));
+    private static List<Replacement> toReplacements(String source, String replacement) {
+        if (!NOT_WHITESPACE.retainFrom(source).equals(NOT_WHITESPACE.retainFrom(replacement))) {
+            throw new IllegalArgumentException(
+                    "source = \"" + source + "\", replacement = \"" + replacement + "\"");
+        }
+        /*
+         * In the past we seemed to have problems touching non-whitespace text in the formatter, even
+         * just replacing some code with itself.  Retrospective attempts to reproduce this have failed,
+         * but this may be an issue for future changes.
+         */
+        List<Replacement> replacements = new ArrayList<>();
+        int i = NOT_WHITESPACE.indexIn(source);
+        int j = NOT_WHITESPACE.indexIn(replacement);
+        if (i != 0 || j != 0) {
+            replacements.add(Replacement.create(0, i, replacement.substring(0, j)));
+        }
+        while (i != -1 && j != -1) {
+            int i2 = NOT_WHITESPACE.indexIn(source, i + 1);
+            int j2 = NOT_WHITESPACE.indexIn(replacement, j + 1);
+            if (i2 == -1 || j2 == -1) {
+                break;
+            }
+            if ((i2 - i) != (j2 - j)
+                    || !source.substring(i + 1, i2).equals(replacement.substring(j + 1, j2))) {
+                replacements.add(Replacement.create(i + 1, i2, replacement.substring(j + 1, j2)));
+            }
+            i = i2;
+            j = j2;
+        }
+        return replacements;
     }
-    while (i != -1 && j != -1) {
-      int i2 = NOT_WHITESPACE.indexIn(source, i + 1);
-      int j2 = NOT_WHITESPACE.indexIn(replacement, j + 1);
-      if (i2 == -1 || j2 == -1) {
-        break;
-      }
-      if ((i2 - i) != (j2 - j)
-          || !source.substring(i + 1, i2).equals(replacement.substring(j + 1, j2))) {
-        replacements.add(Replacement.create(i + 1, i2, replacement.substring(j + 1, j2)));
-      }
-      i = i2;
-      j = j2;
-    }
-    return replacements;
-  }
 
-  private SnippetWrapper snippetWrapper(SnippetKind kind, String source, int initialIndent) {
-    /*
-     * Synthesize a dummy class around the code snippet provided by Eclipse.  The dummy class is
-     * correctly formatted -- the blocks use correct indentation, etc.
-     */
-    switch (kind) {
-      case COMPILATION_UNIT:
-        {
-          SnippetWrapper wrapper = new SnippetWrapper();
-          for (int i = 1; i <= initialIndent; i++) {
-            wrapper.append("class Dummy {\n").append(createIndentationString(i));
-          }
-          wrapper.appendSource(source);
-          wrapper.closeBraces(initialIndent);
-          return wrapper;
+    private SnippetWrapper snippetWrapper(SnippetKind kind, String source, int initialIndent) {
+        /*
+         * Synthesize a dummy class around the code snippet provided by Eclipse.  The dummy class is
+         * correctly formatted -- the blocks use correct indentation, etc.
+         */
+        switch (kind) {
+            case COMPILATION_UNIT:
+                {
+                    SnippetWrapper wrapper = new SnippetWrapper();
+                    for (int i = 1; i <= initialIndent; i++) {
+                        wrapper.append("class Dummy {\n").append(createIndentationString(i));
+                    }
+                    wrapper.appendSource(source);
+                    wrapper.closeBraces(initialIndent);
+                    return wrapper;
+                }
+            case CLASS_BODY_DECLARATIONS:
+                {
+                    SnippetWrapper wrapper = new SnippetWrapper();
+                    for (int i = 1; i <= initialIndent; i++) {
+                        wrapper.append("class Dummy {\n").append(createIndentationString(i));
+                    }
+                    wrapper.appendSource(source);
+                    wrapper.closeBraces(initialIndent);
+                    return wrapper;
+                }
+            case STATEMENTS:
+                {
+                    SnippetWrapper wrapper = new SnippetWrapper();
+                    wrapper.append("class Dummy {\n").append(createIndentationString(1));
+                    for (int i = 2; i <= initialIndent; i++) {
+                        wrapper.append("{\n").append(createIndentationString(i));
+                    }
+                    wrapper.appendSource(source);
+                    wrapper.closeBraces(initialIndent);
+                    return wrapper;
+                }
+            case EXPRESSION:
+                {
+                    SnippetWrapper wrapper = new SnippetWrapper();
+                    wrapper.append("class Dummy {\n").append(createIndentationString(1));
+                    for (int i = 2; i <= initialIndent; i++) {
+                        wrapper.append("{\n").append(createIndentationString(i));
+                    }
+                    wrapper.append("Object o = ");
+                    wrapper.appendSource(source);
+                    wrapper.append(";");
+                    wrapper.closeBraces(initialIndent);
+                    return wrapper;
+                }
+            default:
+                throw new IllegalArgumentException("Unknown snippet kind: " + kind);
         }
-      case CLASS_BODY_DECLARATIONS:
-        {
-          SnippetWrapper wrapper = new SnippetWrapper();
-          for (int i = 1; i <= initialIndent; i++) {
-            wrapper.append("class Dummy {\n").append(createIndentationString(i));
-          }
-          wrapper.appendSource(source);
-          wrapper.closeBraces(initialIndent);
-          return wrapper;
-        }
-      case STATEMENTS:
-        {
-          SnippetWrapper wrapper = new SnippetWrapper();
-          wrapper.append("class Dummy {\n").append(createIndentationString(1));
-          for (int i = 2; i <= initialIndent; i++) {
-            wrapper.append("{\n").append(createIndentationString(i));
-          }
-          wrapper.appendSource(source);
-          wrapper.closeBraces(initialIndent);
-          return wrapper;
-        }
-      case EXPRESSION:
-        {
-          SnippetWrapper wrapper = new SnippetWrapper();
-          wrapper.append("class Dummy {\n").append(createIndentationString(1));
-          for (int i = 2; i <= initialIndent; i++) {
-            wrapper.append("{\n").append(createIndentationString(i));
-          }
-          wrapper.append("Object o = ");
-          wrapper.appendSource(source);
-          wrapper.append(";");
-          wrapper.closeBraces(initialIndent);
-          return wrapper;
-        }
-      default:
-        throw new IllegalArgumentException("Unknown snippet kind: " + kind);
     }
-  }
 }

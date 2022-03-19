@@ -166,9 +166,12 @@ public class IDEEditor extends CodeEditor {
         this.file = file;
 
         if (file != null && mLanguageServer != null) {
-            final var text = getText().toString();
-            final var event = new DocumentOpenEvent(file.toPath(), text, mFileVersion = 0);
-            mLanguageServer.getDocumentHandler().onFileOpened(event);
+            final var documentHandler = mLanguageServer.getDocumentHandler();
+            if (documentHandler.accepts(file.toPath())) {
+                final var text = getText().toString();
+                final var event = new DocumentOpenEvent(file.toPath(), text, mFileVersion = 0);
+                documentHandler.onFileOpened(event);
+            }
         }
 
         if (file != null) {
@@ -511,18 +514,22 @@ public class IDEEditor extends CodeEditor {
     /** If any language server is set, notify the server that the file in this editor was saved. */
     public void didSave() {
         if (mLanguageServer != null && getFile() != null) {
-            mLanguageServer
-                    .getDocumentHandler()
-                    .onFileSaved(new DocumentSaveEvent(getFile().toPath()));
+            final var documentHandler = mLanguageServer.getDocumentHandler();
+            final var file = getFile().toPath();
+            if (documentHandler.accepts(file)) {
+                documentHandler.onFileSaved(new DocumentSaveEvent(file));
+            }
         }
     }
 
     /** Notify the language server that the file in this editor is about to be closed. */
     public void close() {
         if (mLanguageServer != null && getFile() != null) {
-            mLanguageServer
-                    .getDocumentHandler()
-                    .onFileClosed(new DocumentCloseEvent(getFile().toPath()));
+            final var documentHandler = mLanguageServer.getDocumentHandler();
+            final var file = getFile().toPath();
+            if (documentHandler.accepts(file)) {
+                documentHandler.onFileClosed(new DocumentCloseEvent(file));
+            }
             LOG.info("'textDocument/didClose' was sent to the language server.");
         } else {
             LOG.info("No language server is available for this file");
@@ -882,7 +889,8 @@ public class IDEEditor extends CodeEditor {
         final var column = event.getLeft().column;
 
         // diagnostics are expected to be sorted, so, we do a binary search
-        getDiagnosticWindow().showDiagnostic(binarySearchDiagnostic(diagnostics, line, column));
+        final var diagnostic = binarySearchDiagnostic(diagnostics, line, column);
+        getDiagnosticWindow().showDiagnostic(diagnostic);
     }
 
     @Nullable
@@ -897,7 +905,7 @@ public class IDEEditor extends CodeEditor {
         int left = 0;
         int right = diagnostics.size() - 1;
         int mid;
-        while (left < right) {
+        while (left <= right) {
             mid = (left + right) / 2;
             var d = diagnostics.get(mid);
             var r = d.getRange();
@@ -925,11 +933,14 @@ public class IDEEditor extends CodeEditor {
             return;
         }
 
-        StudioApp.getInstance()
-                .getJavaLanguageServer()
-                .getDocumentHandler()
-                .onContentChange(
-                        new DocumentChangeEvent(getFile().toPath(), getText(), mFileVersion + 1));
+        final var documentHandler =
+                StudioApp.getInstance().getJavaLanguageServer().getDocumentHandler();
+
+        final var file = getFile().toPath();
+        if (documentHandler.accepts(file)) {
+            documentHandler.onContentChange(
+                    new DocumentChangeEvent(file, getText(), mFileVersion + 1));
+        }
 
         checkForSignatureHelp(event);
     }

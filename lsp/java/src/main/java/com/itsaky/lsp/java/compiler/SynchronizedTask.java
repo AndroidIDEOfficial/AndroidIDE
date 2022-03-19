@@ -36,7 +36,6 @@ package com.itsaky.lsp.java.compiler;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

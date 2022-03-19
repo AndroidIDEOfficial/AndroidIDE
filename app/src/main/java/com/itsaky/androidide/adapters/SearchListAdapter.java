@@ -24,17 +24,14 @@ import android.graphics.PorterDuff;
 import android.text.SpannableStringBuilder;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.databinding.LayoutSearchResultGroupBinding;
 import com.itsaky.androidide.databinding.LayoutSearchResultItemBinding;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.syntax.highlighters.JavaHighlighter;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;

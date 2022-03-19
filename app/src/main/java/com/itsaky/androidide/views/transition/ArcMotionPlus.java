@@ -41,7 +41,6 @@ package com.itsaky.androidide.views.transition;
 import android.content.Context;
 import android.graphics.Path;
 import android.util.AttributeSet;
-
 import androidx.transition.PathMotion;
 
 public class ArcMotionPlus extends PathMotion {

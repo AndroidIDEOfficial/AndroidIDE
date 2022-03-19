@@ -1,15 +1,12 @@
 package com.itsaky.androidide.views.virtualkeys;
 
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class VirtualKeyButton {
 

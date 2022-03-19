@@ -1,7 +1,6 @@
 package com.itsaky.androidide.views.virtualkeys;
 
 import android.view.KeyEvent;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

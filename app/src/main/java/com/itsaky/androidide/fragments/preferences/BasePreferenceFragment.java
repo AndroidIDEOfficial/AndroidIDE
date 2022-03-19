@@ -24,10 +24,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceFragmentCompat;
-
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.managers.PreferenceManager;
 

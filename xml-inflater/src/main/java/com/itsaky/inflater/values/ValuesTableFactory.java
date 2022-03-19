@@ -17,7 +17,6 @@
 package com.itsaky.inflater.values;
 
 import com.itsaky.androidide.utils.Logger;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Locale;

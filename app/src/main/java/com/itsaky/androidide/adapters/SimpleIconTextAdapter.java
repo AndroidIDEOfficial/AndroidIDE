@@ -18,9 +18,7 @@
 package com.itsaky.androidide.adapters;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.models.IconTextListItem;
-
 import java.util.List;
 
 /**

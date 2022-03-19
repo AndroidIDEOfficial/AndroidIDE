@@ -18,7 +18,6 @@
 package com.itsaky.attrinfo.models;
 
 import androidx.annotation.NonNull;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

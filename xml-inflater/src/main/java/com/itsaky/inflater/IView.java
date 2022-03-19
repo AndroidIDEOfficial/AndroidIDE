@@ -18,12 +18,9 @@
 package com.itsaky.inflater;
 
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.xml.INamespace;
-
 import java.util.List;
 
 /**

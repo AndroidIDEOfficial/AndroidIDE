@@ -19,12 +19,9 @@ package com.itsaky.widgets;
 
 import android.content.Context;
 import android.content.res.Resources;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.widgets.models.Widget;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

@@ -20,12 +20,10 @@ package com.itsaky.androidide.fragments.preferences;
 import static com.itsaky.androidide.managers.PreferenceManager.*;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
-
 import com.itsaky.androidide.R;
 
 public class GeneralPreferences extends BasePreferenceFragment

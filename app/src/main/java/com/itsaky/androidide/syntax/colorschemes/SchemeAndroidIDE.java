@@ -18,7 +18,6 @@
 package com.itsaky.androidide.syntax.colorschemes;
 
 import android.graphics.Color;
-
 import io.github.rosemoe.sora.lang.styling.TextStyle;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 

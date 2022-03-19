@@ -19,18 +19,14 @@ package com.itsaky.androidide.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.xml.INamespace;
-
-import org.jetbrains.annotations.Contract;
-
 import java.util.Objects;
+import org.jetbrains.annotations.Contract;
 
 /**
  * A model that is used to show attributes list of a view.

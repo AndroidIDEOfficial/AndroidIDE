@@ -18,10 +18,8 @@
 package com.itsaky.lsp.xml.utils;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;

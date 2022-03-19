@@ -20,15 +20,12 @@
 
 package com.itsaky.androidide;
 
+import abhishekti7.unicorn.filepicker.UnicornFilePicker;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
-
 import androidx.transition.TransitionManager;
-
-import abhishekti7.unicorn.filepicker.UnicornFilePicker;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.transition.MaterialContainerTransform;
 import com.itsaky.androidide.app.StudioActivity;
@@ -48,7 +45,6 @@ import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.ProjectFinder;
 import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.toaster.Toaster;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;

@@ -18,13 +18,10 @@
 package com.itsaky.androidide.models;
 
 import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-
 import java.util.Locale;
 
 public class LogLine {

@@ -19,22 +19,19 @@ package com.itsaky.apiinfo;
 
 import android.content.Context;
 import android.content.res.Resources;
-
 import com.itsaky.apiinfo.models.ClassInfo;
 import com.itsaky.apiinfo.models.FieldInfo;
 import com.itsaky.apiinfo.models.MethodInfo;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 public class ApiInfo {
 

@@ -35,10 +35,8 @@
 package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 

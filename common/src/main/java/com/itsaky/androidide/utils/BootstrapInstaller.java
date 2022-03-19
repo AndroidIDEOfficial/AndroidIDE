@@ -22,15 +22,12 @@ import static com.itsaky.androidide.utils.Environment.SYSROOT;
 import android.content.Context;
 import android.system.ErrnoException;
 import android.system.Os;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
-
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.managers.ToolsManager;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;

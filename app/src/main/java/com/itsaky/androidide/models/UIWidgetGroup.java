@@ -19,14 +19,11 @@ package com.itsaky.androidide.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
-
-import org.jetbrains.annotations.Contract;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.jetbrains.annotations.Contract;
 
 /**
  * Model class for holding data about a group that will be displayed in Widgets list in UI Designer

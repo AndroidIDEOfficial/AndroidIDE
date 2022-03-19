@@ -18,13 +18,10 @@
 package com.itsaky.sdk;
 
 import android.content.Context;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.widgets.WidgetInfo;
-
 import java.util.Objects;
 
 /**

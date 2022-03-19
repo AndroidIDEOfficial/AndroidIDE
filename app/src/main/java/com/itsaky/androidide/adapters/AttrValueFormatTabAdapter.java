@@ -17,17 +17,14 @@
 package com.itsaky.androidide.adapters;
 
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-
 import com.itsaky.androidide.fragments.attr.BaseValueEditorFragment;
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.androidide.utils.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

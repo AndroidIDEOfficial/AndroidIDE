@@ -26,7 +26,6 @@ import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;

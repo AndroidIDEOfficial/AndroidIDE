@@ -22,14 +22,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.fragments.DiagnosticsListFragment;
 import com.itsaky.androidide.fragments.IDELogFragment;
 import com.itsaky.androidide.fragments.LogViewFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.SimpleOutputFragment;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

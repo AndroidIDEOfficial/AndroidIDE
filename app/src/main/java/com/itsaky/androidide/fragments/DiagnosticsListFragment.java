@@ -22,16 +22,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.views.EmptyView;
-
 import java.util.ArrayList;
 
 public class DiagnosticsListFragment extends Fragment {

@@ -19,10 +19,8 @@ package com.itsaky.androidide.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.itsaky.androidide.adapters.SymbolInputAdapter;
 import com.itsaky.androidide.views.editor.IDEEditor;
 

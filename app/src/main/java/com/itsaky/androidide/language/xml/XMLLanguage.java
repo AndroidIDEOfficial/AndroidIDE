@@ -18,9 +18,7 @@
 package com.itsaky.androidide.language.xml;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
@@ -28,7 +26,7 @@ import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.editor.IDEEditor;
-
+import com.itsaky.lsp.api.ILanguageServer;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -36,25 +34,21 @@ import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-
 import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
 
 public class XMLLanguage extends IDELanguage {
 
-    private XMLAnalyzer analyzer;
+    private static final Logger LOG = Logger.instance("XMLLanguage");
     private final CommonCompletionProvider completer;
     private final NewlineHandler[] newlineHandlers;
-
-    private static final Logger LOG = Logger.instance("XMLLanguage");
+    private XMLAnalyzer analyzer;
 
     public XMLLanguage() {
-        this.completer =
-                new CommonCompletionProvider(StudioApp.getInstance().getXMLLanguageServer());
+        this.completer = new CommonCompletionProvider(getLanguageServer());
         this.analyzer = new XMLAnalyzer();
         this.newlineHandlers = new NewlineHandler[0];
     }
@@ -142,8 +136,8 @@ public class XMLLanguage extends IDELanguage {
     }
 
     @Override
-    public CharSequence format(CharSequence content) {
-        return content;
+    protected ILanguageServer getLanguageServer() {
+        return StudioApp.getInstance().getXMLLanguageServer();
     }
 
     @Override

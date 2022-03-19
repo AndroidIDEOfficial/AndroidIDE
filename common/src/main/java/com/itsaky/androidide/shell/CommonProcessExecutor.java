@@ -18,7 +18,6 @@
 package com.itsaky.androidide.shell;
 
 import com.itsaky.androidide.utils.Environment;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;

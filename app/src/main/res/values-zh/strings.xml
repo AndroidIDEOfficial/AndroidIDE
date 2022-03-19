@@ -3,8 +3,6 @@
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
     <string name="license_jdk">AndroidIDE使用了以GPL v2.0开源的JDK的修改版构建版本。你可以在此处找到它的源代码和许可证： </string>
-    <string name="title_developers">开发者</string>
-    <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
     <string name="title_open_source_licenses">开源许可证</string>
     <string name="msg_open_source_licenses">AndroidIDE使用开源库项目。你可以点击下面的链接找到他们的许可证和源代码。 </string>
     <string name="msg_about_licensed_under">许可证: </string>
@@ -29,14 +27,11 @@
     <string name="app_logs">应用日志</string>
     <string name="ide_logs">IDE日志</string>
     <string name="label_splash_image">Splash images</string>
-    <string name="cancel">取消</string>
     <string name="get_started">开始使用</string>
     <string name="nothing_here">这里啥也没有 &#8230;</string>
 
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_sdk_info_load_failed">加载SDK信息失败</string>
     <string name="msg_fix_diagnostic">[快速修复]</string>
-    <string name="msg_no_code_actions">没有可用的快速修复</string>
     <string name="msg_cannot_perform_fix">无法执行快速修复</string>
     <string name="msg_performing_fixes">正在修复&#8230;</string>
     <string name="msg_code_actions">快速修复</string>
@@ -103,7 +98,6 @@
     <string name="gradle_daemon_status">Gradle守护进程状态</string>
     <string name="msg_service_started">服务已启动</string>
     <string name="msg_starting_completion">正在启动服务</string>
-    <string name="msg_starting_completion_failed">启动自动补全服务失败</string>
     <string name="msg_starting_daemon">正在启动Gradle守护进程</string>
     <string name="title_install_apks">安装APK</string>
     <string name="title_clear_output">清空输出</string>
@@ -136,14 +130,6 @@
     <string name="msg_invalid_project">选择的目录不是一个Android应用项目</string>
     <string name="msg_project_deleted">已删除项目</string>
     <string name="msg_project_delete_failed">删除项目失败!</string>
-    <string name="menu_project_info">项目信息</string>
-    <string name="header_module_info">模块信息</string>
-    <string name="msg_module_count">模块数 : %d</string>
-    <string name="msg_task_count">任务数 : %d</string>
-    <string name="msg_dependency_count">依赖数 : %d</string>
-    <string name="msg_package_name">包名: %s</string>
-    <string name="msg_min_sdk">最小SDK版本 : %s</string>
-    <string name="msg_target_sdk">目标SDK版本 : %s</string>
     <string name="title_confirm_project_close">关闭项目</string>
     <string name="msg_confirm_project_close">你确定要关闭项目吗？项目关闭后，已启动的Gradle守护进程将会被停止。</string>
     <string name="project_exists">已存在同名的项目!</string>
@@ -162,7 +148,6 @@
 
     <!-- Files -->
     <string name="save">保存</string>
-    <string name="show_files">文件</string>
     <string name="menu_find">查找</string>
     <string name="menu_find_file">在文件中查找</string>
     <string name="menu_find_project">在项目中查找</string>
@@ -226,7 +211,6 @@
     <string name="classtype_enum">枚举</string>
     <string name="msg_checking_storage_permissions">正在检查存储权限</string>
     <string name="msg_failed_list_files">无法列出项目文件列表!</string>
-    <string name="msg_failed_save">保存文件失败!</string>
     <string name="msg_storage_denied">没有存储权限，无法继续</string>
     <string name="msg_storage_granted">存储权限已许可!</string>
 
@@ -252,8 +236,6 @@
     <string name="idepref_build_clearCache_summary">清除Gradle缓存目录。这将会删除所有已下载的依赖项。所需的文件在下一次编译中会被重新下载。</string>
     <string name="idepref_build_customgradlecommands_title">附加Gradle命令</string>
     <string name="idepref_build_customgradlecommands_summary">选择执行Gradle任务时要添加的命令</string>
-    <string name="idepref_build_editgradleproperties_title">编辑全局Gradle配置</string>
-    <string name="idepref_build_editgradleproperties_summary">编辑位于GRADLE_HOME的gradle.properties</string>
     <string name="idepref_editor_fontsize_title">字体大小</string>
     <string name="idepref_editor_fontsize_summary">编辑器字体大小</string>
     <string name="idepref_editor_paintingflags_title">不可打印字符显示设置</string>
@@ -280,18 +262,11 @@
 
     <!-- Error Messages used while Logging -->
     <string name="err_installation">安装错误</string>
-    <string name="err_completion">补全错误</string>
-    <string name="err_no_server_implementation">未找到可用的语言服务器.</string>
-    <string name="err_init_server">初始化语言服务器失败</string>
     <string name="err_init_sdkinfo">无法获取SDK信息</string>
     <string name="err_cannot_start_file_picker">无法启动文件选择</string>
     <string name="err_cannot_parse_apk_metadata">转换APK元信息失败</string>
-    <string name="err_cannot_save_files">保存文件失败</string>
     <string name="err_cannot_preview_layout">无法预览布局</string>
     <string name="err_cannot_inflate_layout">布局实例化失败</string>
-    <string name="err_cannot_start_server">为 %s 启动语言服务器失败</string>
-    <string name="err_cannot_write_socket">写入Socket失败</string>
-    <string name="err_server_disconnected">语言服务器进程意外退出了</string>
 
     <!-- Layout preview and designer -->
     <string name="msg_cannot_preview_layout">无法预览布局!</string>
@@ -312,18 +287,10 @@
     <string name="widget_group_layouts">布局</string>
     <string name="layout_linear">线性布局</string>
     <string name="layout_relative">相对布局</string>
-    <string name="msg_attr_edit_hint">单击属性以编辑</string>
-    <string name="sym_equal">=</string>
-    <string name="msg_attr_namespace">\'%s\' 命名空间</string>
-    <string name="msg_unknown_package">未知包名</string>
-    <string name="msg_attr_editor_select_view">选择一个视图以编辑属性</string>
-    <string name="msg_attr_editor_no_attrs">这个控件还没有添加任何属性。\n单击按钮 \'+\' 以增加属性。</string>
-    <string name="msg_enter_attr_value">输入新值:</string>
     <string name="hint_new_attr_value">属性值</string>
     <string name="attr_val_wrap_content">wrap_content</string>
     <string name="attr_val_match_parent">match_parent</string>
     <string name="attr_val_other">其他值</string>
-    <string name="msg_enter_dimension_value">输入尺寸值</string>
     <string name="msg_applicable_attrs">可用属性</string>
     <string name="msg_attr_editor_actions">操作</string>
     <string name="title_viewaction_delete">删除</string>
@@ -334,7 +301,6 @@
     <string name="msg_view_deletion_failed">删除视图失败</string>
     <string name="msg_empty_ui_layout">还没有添加控件。单击以添加</string>
     <string name="msg_no_attr_format">为找到可用的属性格式</string>
-    <string name="msg_attr_editor_null">无法为该属性创建属性编辑器</string>
     <string name="msg_invalid_attr_value">非法属性值</string>
     <string name="msg_new_str_value">新字符串值</string>
     <string name="msg_choose_new_val">选择新值</string>
@@ -387,7 +353,10 @@
     <string name="title_color_picker">取色器</string>
     <string name="hint_string_value">String 值</string>
     <string name="hint_string_resource">String 资源</string>
-    <string name="hint_resource_reference">任何资源引用</string>
-
+    <string name="hint_resource_reference">任一资源引用</string>
+    <string name="title_format_code">代码格式化</string>
+    <string name="idepref_java_useGoogleStyle_title">使用 Google Java 样式代码格式化</string>
+    <string name="idepref_java_useGoogleStyle_summary">使用 Google Java 样式代码格式化配置格式化 Java 源代码</string>
+    
 </resources>
 

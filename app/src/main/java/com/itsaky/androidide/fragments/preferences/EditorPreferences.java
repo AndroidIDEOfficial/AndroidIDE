@@ -30,16 +30,15 @@ import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_HORIZO
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_PRINTABLE_CHARS;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_TAB_SIZE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_USE_POPUP;
+import static com.itsaky.androidide.models.PrefBasedJavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
 import static com.itsaky.androidide.models.PrefBasedJavaServerSettings.KEY_JAVA_PREF_MATCH_LOWER;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
@@ -48,7 +47,8 @@ import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.models.PrefBasedJavaServerSettings;
 import com.itsaky.androidide.utils.DialogUtils;
 
-public class EditorPreferences extends BasePreferenceFragment {
+public class EditorPreferences extends BasePreferenceFragment
+        implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
     @Override
     public void onCreatePreferences(Bundle p1, String p2) {
@@ -70,6 +70,7 @@ public class EditorPreferences extends BasePreferenceFragment {
         final var autoSave = new SwitchPreference(getContext());
         final var usePopupActions = new SwitchPreference(getContext());
         final var horizontalPopup = new SwitchPreference(getContext());
+        final var useGoogleCodeStyle = new SwitchPreference(getContext());
 
         final var javaMatchLower = new SwitchPreference(getContext());
 
@@ -121,6 +122,11 @@ public class EditorPreferences extends BasePreferenceFragment {
         javaMatchLower.setTitle(getString(R.string.idepref_java_matchLower_title));
         javaMatchLower.setSummary(getString(R.string.idepref_java_matchLower_summary));
 
+        useGoogleCodeStyle.setIcon(R.drawable.ic_format_code);
+        useGoogleCodeStyle.setKey(KEY_JAVA_PREF_GOOGLE_CODE_STYLE);
+        useGoogleCodeStyle.setTitle(getString(R.string.idepref_java_useGoogleStyle_title));
+        useGoogleCodeStyle.setSummary(getString(R.string.idepref_java_useGoogleStyle_summary));
+
         commonCategory.setTitle(getString(R.string.idepref_editor_category_common));
         commonCategory.addPreference(fontSize);
         commonCategory.addPreference(fontLigatures);
@@ -133,18 +139,20 @@ public class EditorPreferences extends BasePreferenceFragment {
 
         javaCategory.setTitle(getString(R.string.idepref_editor_category_java));
         javaCategory.addPreference(javaMatchLower);
+        javaCategory.addPreference(useGoogleCodeStyle);
 
         setPreferenceScreen(screen);
 
-        fontSize.setOnPreferenceClickListener(this::onPreferenceClick);
-        fontLigatures.setOnPreferenceChangeListener(this::onPreferenceChange);
-        usePopupActions.setOnPreferenceChangeListener(this::onPreferenceChange);
-        horizontalPopup.setOnPreferenceChangeListener(this::onPreferenceChange);
-        nonPrintable.setOnPreferenceClickListener(this::onPreferenceClick);
-        tabSize.setOnPreferenceClickListener(this::onPreferenceClick);
-        drawHex.setOnPreferenceChangeListener(this::onPreferenceChange);
-        autoSave.setOnPreferenceChangeListener(this::onPreferenceChange);
-        javaMatchLower.setOnPreferenceChangeListener(this::onPreferenceChange);
+        fontSize.setOnPreferenceClickListener(this);
+        fontLigatures.setOnPreferenceChangeListener(this);
+        usePopupActions.setOnPreferenceChangeListener(this);
+        horizontalPopup.setOnPreferenceChangeListener(this);
+        nonPrintable.setOnPreferenceClickListener(this);
+        tabSize.setOnPreferenceClickListener(this);
+        drawHex.setOnPreferenceChangeListener(this);
+        autoSave.setOnPreferenceChangeListener(this);
+        javaMatchLower.setOnPreferenceChangeListener(this);
+        useGoogleCodeStyle.setOnPreferenceChangeListener(this);
 
         fontLigatures.setChecked(getPrefManager().getBoolean(KEY_EDITOR_FONT_LIGATURES, true));
         usePopupActions.setChecked(getPrefManager().getBoolean(KEY_EDITOR_USE_POPUP, false));
@@ -152,8 +160,11 @@ public class EditorPreferences extends BasePreferenceFragment {
         drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
         autoSave.setChecked(getPrefManager().getBoolean(KEY_EDITOR_AUTO_SAVE, false));
         javaMatchLower.setChecked(getPrefManager().getBoolean(KEY_JAVA_PREF_MATCH_LOWER, false));
+        useGoogleCodeStyle.setChecked(
+                getPrefManager().getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false));
     }
 
+    @Override
     public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
         final boolean value = (boolean) newValue;
 
@@ -180,6 +191,7 @@ public class EditorPreferences extends BasePreferenceFragment {
         return true;
     }
 
+    @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         final String key = preference.getKey();
         switch (key) {
@@ -201,18 +213,11 @@ public class EditorPreferences extends BasePreferenceFragment {
                 DialogUtils.newMaterialDialogBuilder(getContext());
         final String[] sizes = new String[] {"2", "4", "6", "8"};
 
-        // We apply simple maths,
-        // assuming that tab size options have a difference of 2
-        // And the array is sorted
-        // Like, 2, 4, 6, 8, 10, etc
-        //
-        // If current tab size if 4, 4/2 = 2 and 2 - 1 = 1, so option at index 1 will be selected
-        // which
-        // is current tab size (4)!
         int current = (getPrefManager().getEditorTabSize() / 2) - 1;
         if (current < 0 || current >= sizes.length) {
             current = 1;
         }
+
         builder.setTitle(R.string.title_tab_size);
         builder.setSingleChoiceItems(
                 sizes,
@@ -220,7 +225,6 @@ public class EditorPreferences extends BasePreferenceFragment {
                 (d, i) -> {
                     d.dismiss();
 
-                    // Reversing the logic applied above...
                     int tabSize = (i + 1) * 2;
                     if (tabSize < 2 || tabSize > 8) {
                         tabSize = 4;

@@ -21,16 +21,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.itsaky.androidide.databinding.FragmentNonEditableEditorBinding;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.editor.IDEEditor;
-
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public abstract class NonEditableEditorFragment extends Fragment {

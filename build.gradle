@@ -17,6 +17,7 @@ buildscript {
         google()
         mavenLocal()
         mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
         maven { url 'https://jitpack.io' }
     }
 
@@ -25,11 +26,18 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.10'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.github.sherter.googlejavaformatgradleplugin:google-java-format-gradle-plugin:0.9-SNAPSHOT'
     }
 }
 
 subprojects {
     apply from: "${rootDir}/gradle/dependencies.gradle"
+    apply plugin: 'com.github.sherter.google-java-format'
+
+    googleJavaFormat {
+        toolVersion = '1.15.0'
+        options style: 'AOSP'
+    }
 
     task checkTranslations() {
 

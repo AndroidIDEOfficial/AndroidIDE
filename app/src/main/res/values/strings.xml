@@ -345,6 +345,8 @@
     <string name="hint_resource_reference">Any resource reference</string>
     <string name="msg_fix_diagnostic">QuickFix</string>
     <string name="title_format_code">Format code</string>
+    <string name="idepref_java_useGoogleStyle_title">Use Google Java Style code formatting</string>
+    <string name="idepref_java_useGoogleStyle_summary">Use Google Java Style code formatting configuration for formatting Java source code.</string>
 </resources>
 
 

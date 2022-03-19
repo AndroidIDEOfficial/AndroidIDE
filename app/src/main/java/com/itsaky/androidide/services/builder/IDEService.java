@@ -21,7 +21,6 @@ import static com.itsaky.androidide.managers.ToolsManager.getCommonAsset;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
@@ -44,9 +43,6 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.InputStreamLineReader;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.toaster.Toaster;
-
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,6 +58,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.Contract;
 
 public class IDEService {
 

@@ -38,7 +38,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
@@ -48,7 +47,6 @@ import androidx.transition.Fade;
 import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
 import androidx.transition.TransitionSet;
-
 import com.blankj.utilcode.util.DeviceUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.adapters.WidgetGroupItemAdapter;
@@ -71,14 +69,12 @@ import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.IViewGroup;
 import com.itsaky.inflater.impl.BaseView;
-
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import org.jetbrains.annotations.Contract;
 
 public class DesignerActivity extends StudioActivity
         implements WidgetItemAdapter.OnDragStartListener {

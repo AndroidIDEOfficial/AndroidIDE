@@ -2,7 +2,6 @@ package com.itsaky.terminal.view.textselection;
 
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
-
 import com.itsaky.terminal.view.TerminalView;
 
 /**

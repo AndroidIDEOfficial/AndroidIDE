@@ -18,12 +18,10 @@
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.models.DiagnosticItem;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;

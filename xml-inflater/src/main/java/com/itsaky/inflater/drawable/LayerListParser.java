@@ -21,13 +21,10 @@ import static com.itsaky.inflater.util.Preconditions.assertNotBlank;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.DisplayMetrics;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.util.TextDrawable;
-
 import org.jetbrains.annotations.Contract;
 import org.xmlpull.v1.XmlPullParser;
 

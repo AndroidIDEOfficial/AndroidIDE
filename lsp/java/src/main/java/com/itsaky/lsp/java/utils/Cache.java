@@ -18,7 +18,6 @@
 package com.itsaky.lsp.java.utils;
 
 import com.itsaky.lsp.java.FileStore;
-
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.HashMap;

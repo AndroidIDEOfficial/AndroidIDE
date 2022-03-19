@@ -20,17 +20,14 @@ package com.itsaky.androidide.adapters;
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDiagnosticItemBinding;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticSeverity;
-
 import java.io.File;
 import java.util.List;
 

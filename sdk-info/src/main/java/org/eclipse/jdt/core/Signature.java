@@ -16,11 +16,10 @@
  *******************************************************************************/
 package org.eclipse.jdt.core;
 
+import java.util.ArrayList;
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.parser.ScannerHelper;
 import org.eclipse.jdt.internal.compiler.util.Util;
-
-import java.util.ArrayList;
 
 /**
  * Provides methods for encoding and decoding type and method signature strings.

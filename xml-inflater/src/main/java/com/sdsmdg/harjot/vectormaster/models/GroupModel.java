@@ -2,10 +2,8 @@ package com.sdsmdg.harjot.vectormaster.models;
 
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-
 import com.sdsmdg.harjot.vectormaster.DefaultValues;
 import com.sdsmdg.harjot.vectormaster.utilities.Utils;
-
 import java.util.ArrayList;
 
 public class GroupModel {

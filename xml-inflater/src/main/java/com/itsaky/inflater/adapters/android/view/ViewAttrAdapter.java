@@ -27,10 +27,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
 import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IAttributeAdapter;
@@ -550,6 +548,22 @@ public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapt
             return Float.parseFloat(value);
         } catch (Throwable th) {
             return 1f;
+        }
+    }
+
+    protected float parseFloat(String value, float def) {
+        try {
+            return Float.parseFloat(value);
+        } catch (Throwable th) {
+            return def;
+        }
+    }
+
+    protected long parseLong(String value, long def) {
+        try {
+            return Long.parseLong(value);
+        } catch (Throwable th) {
+            return def;
         }
     }
 

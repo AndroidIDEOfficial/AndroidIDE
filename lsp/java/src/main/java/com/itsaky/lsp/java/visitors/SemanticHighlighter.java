@@ -20,7 +20,6 @@ package com.itsaky.lsp.java.visitors;
 import static android.text.TextUtils.substring;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.compiler.CompileTask;
@@ -42,11 +41,9 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;

@@ -18,11 +18,8 @@
 package com.itsaky.inflater.impl;
 
 import android.view.ViewGroup;
-
 import androidx.annotation.Nullable;
-
 import com.itsaky.inflater.IView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

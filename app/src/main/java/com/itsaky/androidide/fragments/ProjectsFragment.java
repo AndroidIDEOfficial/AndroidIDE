@@ -26,10 +26,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.adapters.ProjectsListAdapter;
 import com.itsaky.androidide.app.StudioApp;
@@ -37,7 +35,6 @@ import com.itsaky.androidide.databinding.LayoutProjectsBinding;
 import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.ProjectFinder;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

@@ -24,10 +24,8 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
-
 import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.project.IDEProject;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
