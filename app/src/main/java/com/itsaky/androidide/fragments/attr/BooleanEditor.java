@@ -18,16 +18,20 @@
 package com.itsaky.androidide.fragments.attr;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.databinding.LayoutBooleanAttrEditorBinding;
 import com.itsaky.inflater.values.FrameworkValues;
 import com.itsaky.inflater.values.ValuesTableFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,12 +63,14 @@ public class BooleanEditor extends AbstractReferenceEditor {
                     notifyValueChanged(checked.getText().toString().trim());
                 });
 
-        switch (attribute.getValue()) {
-            case "true":
-                this.binding.boolTrue.setChecked(true);
-                break;
-            case "false":
-                this.binding.boolFalse.setChecked(true);
+        if (!TextUtils.isEmpty(attribute.getValue())) {
+            switch (attribute.getValue()) {
+                case "true":
+                    this.binding.boolTrue.setChecked(true);
+                    break;
+                case "false":
+                    this.binding.boolFalse.setChecked(true);
+            }
         }
 
         setupReferenceInput(

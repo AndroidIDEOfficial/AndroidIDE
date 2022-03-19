@@ -68,7 +68,7 @@ public abstract class FixedValueEditor extends BaseValueEditorFragment {
             if (TextUtils.isEmpty(value)) {
                 continue;
             }
-
+            
             this.chipGroup.addView(newChip(value, value.equals(this.attribute.getValue())));
         }
 
