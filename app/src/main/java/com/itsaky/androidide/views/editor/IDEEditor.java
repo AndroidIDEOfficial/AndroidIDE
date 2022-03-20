@@ -106,12 +106,21 @@ public class IDEEditor extends CodeEditor {
         subscribeEvent(
                 ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange(event));
 
-        // default editor input type + no suggestions flag
-        setInputType(
+        setInputType(createInputFlags());
+    }
+
+    public static int createInputFlags() {
+        var flags =
                 EditorInfo.TYPE_CLASS_TEXT
                         | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-                        | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-                        | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+        if (StudioApp.getInstance()
+                .getPrefManager()
+                .getBoolean(PreferenceManager.KEY_EDITOR_FLAG_PASSWORD, true)) {
+            flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+        }
+
+        return flags;
     }
 
     @NonNull
@@ -127,16 +136,73 @@ public class IDEEditor extends CodeEditor {
     }
 
     /**
+     * Checks if the given range is valid for this editor's text.
+     *
+     * @param range The range to check.
+     * @return <code>true</code> if valid, <code>false</code> otherwise.
+     */
+    public boolean isValidRange(final Range range) {
+        if (range == null) {
+            return false;
+        }
+
+        final var start = range.getStart();
+        final var end = range.getEnd();
+
+        return isValidPosition(start)
+                && isValidPosition(end)
+                && start.compareTo(end) < 0; // make sure start position is before end position
+    }
+
+    /**
+     * Checks if the given position is valid for this editor's text.
+     *
+     * @param position The position to check.
+     * @return <code>true</code> if valid, <code>false</code> otherwise.
+     */
+    public boolean isValidPosition(final Position position) {
+        if (position == null) {
+            return false;
+        }
+
+        return isValidLine(position.getLine())
+                && isValidColumn(position.getLine(), position.getColumn());
+    }
+
+    /**
+     * Checks if the given line is valid for this editor's text.
+     *
+     * @param line The line to check.
+     * @return <code>true</code> if valid, <code>false</code> otherwise.
+     */
+    public boolean isValidLine(int line) {
+        return line >= 0 && line < getText().getLineCount();
+    }
+
+    /**
+     * Checks if the given column is valid for this editor's text.
+     *
+     * @param line The line of the column to check.
+     * @param column The column to check.
+     * @return <code>true</code> if valid, <code>false</code> otherwise.
+     */
+    public boolean isValidColumn(int line, int column) {
+        return column >= 0 && column < getText().getColumnCount(line);
+    }
+
+    /**
      * Set selection to the given range.
      *
      * @param range The range to select.
      */
     public void setSelection(@NonNull Range range) {
-        setSelectionRegion(
-                range.getStart().getLine(),
-                range.getStart().getColumn(),
-                range.getEnd().getLine(),
-                range.getEnd().getColumn());
+        if (isValidRange(range)) {
+            setSelectionRegion(
+                    range.getStart().getLine(),
+                    range.getStart().getColumn(),
+                    range.getEnd().getLine(),
+                    range.getEnd().getColumn());
+        }
     }
 
     /**
