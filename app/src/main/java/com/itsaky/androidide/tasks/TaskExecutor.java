@@ -18,57 +18,50 @@
 
 package com.itsaky.androidide.tasks;
 
-import android.os.Handler;
-import android.os.Looper;
-
+import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.utils.Logger;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public class TaskExecutor {
-
-    private final Executor executor = Executors.newSingleThreadExecutor();
-    private final Handler handler = new Handler(Looper.getMainLooper());
 
     private final Logger LOG = Logger.instance("TaskExecutor");
 
     public <R> void executeAsync(Callable<R> callable, Callback<R> callback) {
-        executor.execute(
-                () -> {
-                    try {
-                        final R result = callable.call();
-                        handler.post(
-                                () -> {
-                                    callback.complete(result);
-                                });
-                    } catch (Throwable th) {
-                        LOG.error("Callable task was not able to finish", th);
-                    }
-                });
+        CompletableFuture.supplyAsync(
+                        () -> {
+                            try {
+                                return callable.call();
+                            } catch (Throwable th) {
+                                LOG.error(
+                                        "An error occurred while executing Callable in background thread.",
+                                        th);
+                                return null;
+                            }
+                        })
+                .whenComplete(
+                        (result, throwable) ->
+                                ThreadUtils.runOnUiThread(() -> callback.complete(result)));
     }
 
     public <R> void executeAsyncProvideError(Callable<R> callable, CallbackWithError<R> callback) {
-        executor.execute(
-                () -> {
-                    Throwable error = null;
-                    R result = null;
-
-                    try {
-                        result = callable.call();
-                    } catch (Throwable th) {
-                        LOG.error("Callable task was not able to finish", th);
-                        error = th;
-                    }
-                    final R resultCopied = result;
-                    final Throwable errorCopied = error;
-
-                    handler.post(
-                            () -> {
-                                callback.complete(resultCopied, errorCopied);
-                            });
-                });
+        CompletableFuture.supplyAsync(
+                        () -> {
+                            try {
+                                return callable.call();
+                            } catch (Throwable th) {
+                                LOG.error(
+                                        "An error occurred while executing Callable in background thread.",
+                                        th);
+                                throw new CompletionException(th);
+                            }
+                        })
+                .whenComplete(
+                        (result, throwable) ->
+                                ThreadUtils.runOnUiThread(
+                                        () -> callback.complete(result, throwable)));
     }
 
     public interface Callback<R> {
