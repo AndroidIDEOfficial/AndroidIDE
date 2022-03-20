@@ -342,9 +342,9 @@
     <string name="no">Non</string>
     <string name="title_use_popup_actions">Menu d\'action</string>
     <string name="msg_use_popup_actions">Utiliser le menu d\'action pour afficher les actions sur le texte (redémarrage requis).</string>
-    <string name="title_use_horizontal_popup">Menu d'action horizontal</string>
+    <string name="title_use_horizontal_popup">Menu d\'action horizontal</string>
     <string name="msg_use_horizontal_popup">Faire afficher le Menu d\'action horizontalement (redémarrage requis).</string>
-    <string name="msg_apk_install_intent_failed">impossible de démarrage l'intent pour installer l'APK</string>
+    <string name="msg_apk_install_intent_failed">impossible de démarrer l'intent pour installer l'APK</string>
     <string name="msg_viewaction_add_attr">Ajouter un attribut</string>
     <string name="msg_search_attrs">Recherche d'attribut…</string>
     <string name="msg_attr_added">Attribut ajouté avec succès</string>
