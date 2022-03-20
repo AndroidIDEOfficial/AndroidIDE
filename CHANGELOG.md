@@ -1,17 +1,38 @@
 # AndroidIDE Changelog
 This is the changelog of all the releases on AndroidIDE.
 
+## **v2.0.1-beta** (in development)
+### Important notes
+<!--Breaking changes and other important stuff here-->
+(No notes)
+
+### Additions
+<!--New features-->
+- Code formatter for Java source code.
+- Support for [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView), [ToggleButton](https://developer.android.com/reference/android/widget/ToggleButton), [Switch](https://developer.android.com/reference/android/widget/Switch), [GridLayout](https://developer.android.com/reference/android/widget/GridLayout).
+
+### Removals
+<!--Things that were removed-->
+(No removals)
+
+### Fixes
+<!--Bug fixes, etc-->
+- Fixed crash in attribute editors when adding an attribute.
+- Some diagnostic items are not shown in diagnostic window (#96).
+
+### Improvements
+<!--Things that were removed and worth mentioning-->
+- Do not import classes from `java.lang` package when completion items are selected.
+- Updated Chinese translation. Thanks to @mikofe (#128).
+
 ## **v2.0.0-beta**
-AndroidIDE v2.0.0-beta is here with new features and improvements.
+AndroidIDE v2.0.0-beta is here with new features and improvements.  
 
-**This is a pre-release and is not so stable. There are some features that are partially implemented.**
+### Important Notes
+- This is a pre-release and is not so stable. There are some features that are partially implemented.
+- The minimum SDK has been raised to `26` (`Android O`).  
 
-The minimum SDK has been raised to `26` (`Android O`).
-
-### Changelog
-Here are the things that were added/removed/improved.
-
-#### Additions
+### Additions
 - XML Layout Designer with ability to preview XML drawables.
 - Added packages for terminal.
 - libGDx project template. Thanks to @Smooth-E (#81).
@@ -30,10 +51,10 @@ Here are the things that were added/removed/improved.
 - French translation. Thanks to @Se-Lyan (#79).
 - Russian translation. Thanks to @Smooth-E (#97).
 
-#### Removals
+### Removals
 - Autosave of files is removed. However, a preference has been added for the same which, when enabled, saves the files automatically before close.
 
-#### Fixes
+### Fixes
 - File does not close and crashes if reopened and closed again.
 - Flickering of whole auto completion window.
 - Flickering of completion item due to API info.
@@ -44,7 +65,7 @@ Here are the things that were added/removed/improved.
 - Fixed a bug due to which the IDE was not able to open empty files.
 - `LogSender` class not included in JLS workspace.
 
-#### Improvements
+### Improvements
 - Show crash report when the IDE crashes.
 - The Java language server is now embedded in the IDE itself.
 - The AndroidIDE Gradle plugin is now packaged with the IDE.
