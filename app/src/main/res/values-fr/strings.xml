@@ -320,7 +320,7 @@
     <string name="title_generating_xml">Génération du code XML</string>
     <string name="title_code_generation_failed">Impossible de générer le code</string>
     <string name="msg_code_generation_failed">Impossible de générer le code XML, Voulez vous quand-même quitter ?</string>
-    <string name="msg_invalid_designer_result">Le concepteur d'interface utilisateur a retourné un résultat invalide</string>
+    <string name="msg_invalid_designer_result">Le concepteur d\'interface utilisateur a retourné un résultat invalide</string>
     <string name="title_compiler_module_install">Installing compiler module</string>
     <string name="msg_compiler_module_install">Compiler module is being installed, please wait&#8230;</string>
     <string name="msg_compiler_module_install_failed">Échec de l\'installation des modules du compileur. Érreur:\n%s</string>
@@ -330,7 +330,7 @@
     <string name="idepref_editor_category_common">Common</string>
     <string name="idepref_editor_category_java">Java</string>
     <string name="title_files_unsaved">Fichiers non sauvegardés</string>
-    <string name="msg_files_unsaved">Certains fichiers n'ont pas été sauvegardés, voulez vous les sauvegarder avant de les fermer ? Fichiers non sauvegardés: \n%s</string>
+    <string name="msg_files_unsaved">Certains fichiers n\'ont pas été sauvegardés, voulez vous les sauvegarder avant de les fermer ? Fichiers non sauvegardés: \n%s</string>
     <string name="idepref_editor_autoSave_title">Sauvegarder avant de fermer les fichiers</string>
     <string name="idepref_editor_autoSave_summary">Sauvegarder les fichiers avant leurs fermetures, Cette option est EXPERIMENTAL. Vous devez habituellement les sauvegarder tout seul.</string>
     <string name="idepref_java_matchLower_summary">Si cette option est activée, la saisie de lettres minuscules ou majuscules suggérera des noms de classe ainsi que des membres de la portée.</string>
@@ -344,11 +344,11 @@
     <string name="msg_use_popup_actions">Utiliser le menu d\'action pour afficher les actions sur le texte (redémarrage requis).</string>
     <string name="title_use_horizontal_popup">Menu d\'action horizontal</string>
     <string name="msg_use_horizontal_popup">Faire afficher le Menu d\'action horizontalement (redémarrage requis).</string>
-    <string name="msg_apk_install_intent_failed">impossible de démarrer l'intent pour installer l'APK</string>
+    <string name="msg_apk_install_intent_failed">impossible de démarrer l\'intent pour installer l'APK</string>
     <string name="msg_viewaction_add_attr">Ajouter un attribut</string>
-    <string name="msg_search_attrs">Recherche d'attribut…</string>
+    <string name="msg_search_attrs">Recherche d\'attribut…</string>
     <string name="msg_attr_added">Attribut ajouté avec succès</string>
-    <string name="msg_attr_not_updated">Impossible de mettre à jour l'attribut</string>
+    <string name="msg_attr_not_updated">Impossible de mettre à jour l\'attribut</string>
     <string name="hint_dimension_val">Valeur dimension</string>
     <string name="hint_dimension_res">Ressources dimension</string>
     <string name="hint_boolean_res">Boolean resource</string>
@@ -370,6 +370,6 @@
     <string name="idepref_java_useGoogleStyle_title">Style de formatage Java de Google</string>
     <string name="idepref_java_useGoogleStyle_summary">Utiliser le style de formatage Java de Google.</string>
     <string name="idepref_visiblePassword_title">Suggestions de mot de passe</string>
-    <string name="idepref_visiblePassword_summary">À utiliser pour l\'indicateur de type d'entrée de mot de passe visible dans l\'éditeur. Cela garantit qu\'aucune suggestion n\'est proposée par le clavier.</string>
+    <string name="idepref_visiblePassword_summary">À utiliser pour l\'indicateur de type d\'entrée de mot de passe visible dans l\'éditeur. Cela garantit qu\'aucune suggestion n\'est proposée par le clavier.</string>
 
 </resources>
