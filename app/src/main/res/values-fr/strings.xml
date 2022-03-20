@@ -271,7 +271,6 @@
 
     <!-- Error Messages used while Logging -->
     <string name="err_installation">Erreur d\'installation</string>
-    <string name="err_no_server_implementation">Aucun serveur de langage trouvé.</string>
     <string name="err_init_sdkinfo">Échec de l\'initialisation des informations du SDK</string>
     <string name="err_cannot_start_file_picker">Échec lors du lancement du sélectionneur de fichiers</string>
     <string name="err_cannot_parse_apk_metadata">Échec lors de la lecture du metadata de l\'APK</string>
@@ -337,7 +336,7 @@
     <string name="idepref_editor_ligatures_title">Suppléments police</string>
     <string name="idepref_editor_ligatures_summary">Activé/désactivé suppléments police</string>
 
-    
+    <string name="title_translations">Traductions</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="title_use_popup_actions">Menu d\'action</string>
