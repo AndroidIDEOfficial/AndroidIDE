@@ -23,16 +23,12 @@ import android.content.SharedPreferences;
 
 public class PreferenceManager {
 
-    private final SharedPreferences prefs;
-
     public static final String KEY_FRAMEWORK_DOWNLOADED = "framework_downloaded";
     public static final String KEY_FRAMEWORK_INSTALLED = "framework_installed";
     public static final String KEY_IS_FIRST_PROJECT_BUILD = "project_isFirstBuild";
-
     public static final String KEY_OPEN_PROJECTS = "idepref_general_autoOpenProjects";
     public static final String KEY_CONFIRM_PROJECT_OPEN = "idepref_general_confirmProjectOpen";
     public static final String KEY_TERMINAL_USE_SYSTEM_SHELL = "idepref_general_terminalShell";
-
     public static final String KEY_EDITOR_FLAG_WS_LEADING = "idepref_editor_wsLeading";
     public static final String KEY_EDITOR_FLAG_WS_TRAILING = "idepref_editor_wsTrailing";
     public static final String KEY_EDITOR_FLAG_WS_INNER = "idepref_editor_wsInner";
@@ -46,15 +42,15 @@ public class PreferenceManager {
     public static final String KEY_EDITOR_FONT_LIGATURES = "idepref_editor_fontLigatures";
     public static final String KEY_EDITOR_USE_POPUP = "idepref_editor_usePopup";
     public static final String KEY_EDITOR_HORIZONTAL_POPUP = "idepref_editor_horizontalPopup";
-
+    public static final String KEY_EDITOR_FLAG_PASSWORD = "idepref_editor_flagPassword";
     public static final String KEY_GRADLE_CMD_STACK_TRACE = "idepref_gradleCmd_stacktrace";
     public static final String KEY_GRADLE_CMD_DEBUG = "idepref_gradleCmd_debug";
     public static final String KEY_GRADLE_CMD_SCAN = "idepref_gradleCmd_scan";
     public static final String KEY_GRADLE_CMD_INFO = "idepref_gradleCmd_info";
     public static final String KEY_GRADLE_CMD_WARNING_MODE = "idepref_gradleCmd_warningMode";
-
     public static final String KEY_LAST_OPENED_PROJECT = "ide_last_project";
     public static final String NO_OPENED_PROJECT = "<NO_OPENED_PROJECT>";
+    private final SharedPreferences prefs;
 
     @SuppressLint("CommitPrefEdits")
     public PreferenceManager(Context ctx) {
@@ -113,12 +109,12 @@ public class PreferenceManager {
         return prefs.getString(key, defaultValue);
     }
 
-    public PreferenceManager setOpenedProject(String root) {
-        return putString(KEY_LAST_OPENED_PROJECT, root);
-    }
-
     public String getOpenedProject() {
         return getString(KEY_LAST_OPENED_PROJECT, NO_OPENED_PROJECT);
+    }
+
+    public PreferenceManager setOpenedProject(String root) {
+        return putString(KEY_LAST_OPENED_PROJECT, root);
     }
 
     public boolean wasProjectOpened() {
@@ -141,36 +137,36 @@ public class PreferenceManager {
         return getBoolean(KEY_GRADLE_CMD_INFO, true);
     }
 
-    public boolean isGradleDebugEnabled() {
-        return getBoolean(KEY_GRADLE_CMD_DEBUG);
-    }
-
-    public boolean isGradleScanEnabled() {
-        return getBoolean(KEY_GRADLE_CMD_SCAN);
-    }
-
-    public boolean isGradleWarningEnabled() {
-        return getBoolean(KEY_GRADLE_CMD_WARNING_MODE);
-    }
-
-    public PreferenceManager setGradleStacktraceEnabled(boolean enabled) {
-        return putBoolean(KEY_GRADLE_CMD_STACK_TRACE, enabled);
-    }
-
     public PreferenceManager setGradleInfoEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLE_CMD_INFO, enabled);
+    }
+
+    public boolean isGradleDebugEnabled() {
+        return getBoolean(KEY_GRADLE_CMD_DEBUG);
     }
 
     public PreferenceManager setGradleDebugEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLE_CMD_DEBUG, enabled);
     }
 
+    public boolean isGradleScanEnabled() {
+        return getBoolean(KEY_GRADLE_CMD_SCAN);
+    }
+
     public PreferenceManager setGradleScanEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLE_CMD_SCAN, enabled);
     }
 
+    public boolean isGradleWarningEnabled() {
+        return getBoolean(KEY_GRADLE_CMD_WARNING_MODE);
+    }
+
     public PreferenceManager setGradleWarningEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLE_CMD_WARNING_MODE, enabled);
+    }
+
+    public PreferenceManager setGradleStacktraceEnabled(boolean enabled) {
+        return putBoolean(KEY_GRADLE_CMD_STACK_TRACE, enabled);
     }
 
     public int getEditorTabSize() {

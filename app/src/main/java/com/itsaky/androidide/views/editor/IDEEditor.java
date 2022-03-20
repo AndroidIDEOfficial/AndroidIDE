@@ -106,12 +106,21 @@ public class IDEEditor extends CodeEditor {
         subscribeEvent(
                 ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange(event));
 
-        // default editor input type + no suggestions flag
-        setInputType(
+        setInputType(createInputFlags());
+    }
+
+    public static int createInputFlags() {
+        var flags =
                 EditorInfo.TYPE_CLASS_TEXT
                         | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-                        | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-                        | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+        if (StudioApp.getInstance()
+                .getPrefManager()
+                .getBoolean(PreferenceManager.KEY_EDITOR_FLAG_PASSWORD, true)) {
+            flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+        }
+
+        return flags;
     }
 
     @NonNull

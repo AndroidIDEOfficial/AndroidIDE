@@ -291,6 +291,8 @@ public class CodeEditorView extends FrameLayout {
         boolean ligaturesChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED;
         boolean flagsChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED;
         boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED;
+        boolean inputFlagsChanged =
+                isFirstCreate || ConstantsBridge.EDITOR_PREF_VISIBLE_PASSWORD_CHANGED;
         final PreferenceManager prefs = StudioApp.getInstance().getPrefManager();
 
         if (sizeChanged) {
@@ -333,6 +335,11 @@ public class CodeEditorView extends FrameLayout {
 
             binding.editor.setNonPrintablePaintingFlags(flags);
             ConstantsBridge.EDITOR_PREF_FLAGS_CHANGED = false;
+        }
+
+        if (inputFlagsChanged) {
+            binding.editor.setInputType(IDEEditor.createInputFlags());
+            ConstantsBridge.EDITOR_PREF_VISIBLE_PASSWORD_CHANGED = false;
         }
 
         if (drawHexChanged) {
