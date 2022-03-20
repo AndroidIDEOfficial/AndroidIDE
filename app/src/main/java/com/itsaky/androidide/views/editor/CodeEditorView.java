@@ -38,8 +38,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
@@ -57,9 +59,10 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.models.Range;
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.lang.EmptyLanguage;
-import io.github.rosemoe.sora.text.Content;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+
 import java.io.File;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -67,8 +70,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
+
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.lang.EmptyLanguage;
+import io.github.rosemoe.sora.text.Content;
 
 /**
  * A view that handles opened code editors.
@@ -78,13 +83,11 @@ import org.antlr.v4.runtime.Token;
 @SuppressLint("ViewConstructor") // This view is always dynamically created.
 public class CodeEditorView extends FrameLayout {
 
+    private static final Logger LOG = Logger.instance("CodeEditorView");
     private final File file;
     private final LayoutCodeEditorBinding binding;
-
     private boolean isModified;
     private boolean isFirstCreate;
-
-    private static final Logger LOG = Logger.instance("CodeEditorView");
 
     public CodeEditorView(
             @NonNull Context context, @NonNull File file, final @NonNull Range selection) {
@@ -122,12 +125,7 @@ public class CodeEditorView extends FrameLayout {
                                                     selection.getStart().getLine(),
                                                     selection.getStart().getColumn());
                                 } else {
-                                    getEditor()
-                                            .setSelectionRegion(
-                                                    selection.getStart().getLine(),
-                                                    selection.getStart().getColumn(),
-                                                    selection.getEnd().getLine(),
-                                                    selection.getEnd().getColumn());
+                                    getEditor().setSelection(selection);
                                 }
                             });
                 });

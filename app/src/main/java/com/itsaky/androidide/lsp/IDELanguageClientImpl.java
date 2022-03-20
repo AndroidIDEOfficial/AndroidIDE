@@ -20,6 +20,7 @@
 package com.itsaky.androidide.lsp;
 
 import android.view.View;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -47,7 +48,7 @@ import com.itsaky.lsp.models.Location;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.sora.text.Content;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,15 +56,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import io.github.rosemoe.sora.text.Content;
+
 /** AndroidIDE specific implementation of the LanguageClient */
 public class IDELanguageClientImpl implements ILanguageClient {
 
     protected static final Gson gson = new Gson();
     protected static final Logger LOG = Logger.instance("AbstractLanguageClient");
-
-    private final Map<File, List<DiagnosticItem>> diagnostics = new HashMap<>();
     private static IDELanguageClientImpl mInstance;
-
+    private final Map<File, List<DiagnosticItem>> diagnostics = new HashMap<>();
     protected EditorActivityProvider activityProvider;
 
     private IDELanguageClientImpl(EditorActivityProvider provider) {
@@ -366,12 +367,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
                                 .setSelection(
                                         range.getStart().getLine(), range.getStart().getColumn());
                     } else {
-                        frag.getEditor()
-                                .setSelectionRegion(
-                                        range.getStart().getLine(),
-                                        range.getStart().getColumn(),
-                                        range.getEnd().getLine(),
-                                        range.getEnd().getColumn());
+                        frag.getEditor().setSelection(range);
                     }
                 } else {
                     activity().openFileAndSelect(file, range);
