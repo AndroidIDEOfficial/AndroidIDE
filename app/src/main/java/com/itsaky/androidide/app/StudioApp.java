@@ -39,7 +39,7 @@ import com.itsaky.widgets.WidgetInfo;
 import java.io.File;
 import java.util.Set;
 
-public class StudioApp extends BaseApplication {
+public class StudioApp extends BaseApplication implements Thread.UncaughtExceptionHandler {
 
     private static final Logger LOG = Logger.instance("StudioApp");
     private static StudioApp instance;
@@ -149,5 +149,9 @@ public class StudioApp extends BaseApplication {
 
     public WidgetInfo widgetInfo() {
         return sdkInfo.getWidgetInfo();
+    }
+    
+    public void uncaughtException(Thread thread, Throwable e) {
+        
     }
 }
