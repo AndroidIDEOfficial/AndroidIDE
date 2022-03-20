@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,13 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 
 package com.itsaky.androidide.tasks;
 
 import android.os.Handler;
 import android.os.Looper;
+
 import com.itsaky.androidide.utils.Logger;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -33,14 +33,6 @@ public class TaskExecutor {
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private final Logger LOG = Logger.instance("TaskExecutor");
-
-    public interface Callback<R> {
-        void complete(R result);
-    }
-
-    public interface CallbackWithError<R> {
-        void complete(R result, Throwable error);
-    }
 
     public <R> void executeAsync(Callable<R> callable, Callback<R> callback) {
         executor.execute(
@@ -77,5 +69,13 @@ public class TaskExecutor {
                                 callback.complete(resultCopied, errorCopied);
                             });
                 });
+    }
+
+    public interface Callback<R> {
+        void complete(R result);
+    }
+
+    public interface CallbackWithError<R> {
+        void complete(R result, Throwable error);
     }
 }
