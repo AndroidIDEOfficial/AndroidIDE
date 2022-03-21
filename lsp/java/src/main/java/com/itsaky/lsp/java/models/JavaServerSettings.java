@@ -14,51 +14,41 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.androidide.models;
+package com.itsaky.lsp.java.models;
 
 import androidx.annotation.NonNull;
-import com.itsaky.androidide.app.StudioApp;
+
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
+import com.itsaky.lsp.util.PrefBasedServerSettings;
 
 /**
  * Server settings for the java language server.
  *
  * @author Akash Yadav
  */
-public class PrefBasedJavaServerSettings extends DefaultJavaServerSettings {
+public class JavaServerSettings extends PrefBasedServerSettings {
 
-    public static final String KEY_JAVA_PREF_MATCH_LOWER = "idepref_editor_java_matchLower";
     public static final String KEY_JAVA_PREF_GOOGLE_CODE_STYLE =
             "idepref_editor_java_googleCodeStyle";
-
-    private static PrefBasedJavaServerSettings instance;
-
-    private final PreferenceManager prefs;
-
-    public PrefBasedJavaServerSettings() {
-        this.prefs = StudioApp.getInstance().getPrefManager();
-    }
+    public static final int CODE_STYLE_AOSP = 0;
+    public static final int CODE_STYLE_GOOGLE = 1;
+    private static JavaServerSettings instance;
 
     @NonNull
-    public static PrefBasedJavaServerSettings getInstance() {
+    public static JavaServerSettings getInstance() {
         if (instance == null) {
-            instance = new PrefBasedJavaServerSettings();
+            instance = new JavaServerSettings();
         }
 
         return instance;
     }
 
-    @Override
-    public boolean shouldMatchAllLowerCase() {
-        return prefs.getBoolean(KEY_JAVA_PREF_MATCH_LOWER, false);
-    }
-
-    @Override
     public int getCodeStyle() {
-        if (prefs.getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false)) {
-            return CODE_STYLE_GOOGLE;
+        final PreferenceManager prefs = getPrefs();
+        if (prefs != null) {
+            if (prefs.getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false)) {
+                return CODE_STYLE_GOOGLE;
+            }
         }
 
         return CODE_STYLE_AOSP;

@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,30 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
-
+ */
 package com.itsaky.androidide.fragments.preferences;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceFragmentCompat;
+
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.managers.PreferenceManager;
 
 public abstract class BasePreferenceFragment extends PreferenceFragmentCompat {
 
-    protected PreferenceManager mPrefManager;
-
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
-        v.setBackgroundColor(
-                ContextCompat.getColor(
-                        StudioApp.getInstance(), com.itsaky.androidide.R.color.content_background));
+        if (v != null) {
+            v.setBackgroundColor(
+                    ContextCompat.getColor(
+                            StudioApp.getInstance(),
+                            com.itsaky.androidide.R.color.content_background));
+        }
         return v;
     }
 
@@ -49,8 +50,6 @@ public abstract class BasePreferenceFragment extends PreferenceFragmentCompat {
     }
 
     protected PreferenceManager getPrefManager() {
-        return mPrefManager == null
-                ? mPrefManager = new PreferenceManager(getContext())
-                : mPrefManager;
+        return StudioApp.getInstance().getPrefManager();
     }
 }

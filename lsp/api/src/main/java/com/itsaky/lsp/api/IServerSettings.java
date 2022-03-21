@@ -25,6 +25,8 @@ package com.itsaky.lsp.api;
  */
 public interface IServerSettings {
 
+    String KEY_COMPLETIONS_MATCH_LOWER = "idepref_editor_completions_matchLower";
+
     /**
      * Called by language server to check if the completions are enabled. If not enabled, the server
      * should not was time and memory computing completions.

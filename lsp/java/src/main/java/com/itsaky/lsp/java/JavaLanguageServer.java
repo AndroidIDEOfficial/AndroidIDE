@@ -19,6 +19,7 @@ package com.itsaky.lsp.java;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
@@ -26,8 +27,8 @@ import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
-import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
+import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.lsp.java.providers.CodeActionProvider;
 import com.itsaky.lsp.java.providers.CodeFormatProvider;
 import com.itsaky.lsp.java.providers.CompletionProvider;
@@ -54,6 +55,7 @@ import com.itsaky.lsp.models.ServerCapabilities;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.NoCompletionsProvider;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -89,7 +91,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
     public IServerSettings getSettings() {
         if (settings == null) {
-            settings = new DefaultJavaServerSettings();
+            settings = JavaServerSettings.getInstance();
         }
 
         return settings;

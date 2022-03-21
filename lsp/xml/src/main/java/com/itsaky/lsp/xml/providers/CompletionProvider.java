@@ -19,6 +19,7 @@ package com.itsaky.lsp.xml.providers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
@@ -33,18 +34,21 @@ import com.itsaky.lsp.models.CompletionItemKind;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.InsertTextFormat;
+import com.itsaky.lsp.util.StringUtils;
 import com.itsaky.lsp.xml.R;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.models.Widget;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+import org.jetbrains.annotations.Contract;
+
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-import org.jetbrains.annotations.Contract;
 
 /**
  * Completion provider for the XML Language
@@ -68,6 +72,21 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         Objects.requireNonNull(settings);
 
         this.sdkInfo = sdkInfo;
+    }
+
+    @NonNull
+    @Contract(pure = true)
+    private static CompletionItem createNamespaceCompletion(String name, String value) {
+        final var item = new CompletionItem();
+        item.setLabel(name + "Ns");
+        item.setDetail(
+                BaseApplication.getBaseInstance().getString(R.string.msg_add_namespace_decl, name));
+        item.setInsertText(String.format("xmlns:%1$s=\"%2$s\"", name, value));
+        item.setKind(CompletionItemKind.SNIPPET);
+        item.setSortText(
+                "1000" + item.getLabel()); // This item is expected to be at the last of the
+        // completion list
+        return item;
     }
 
     @Override
@@ -127,6 +146,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             return EMPTY;
         }
 
+        final var matchLower = getSettings().shouldMatchAllLowerCase();
         final var result = new CompletionResult();
         final var attrs = sdkInfo.getAttrInfo();
         // final var parser = XmlUtils.newParser (contents);
@@ -153,7 +173,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                     if (attr != null && attr.hasPossibleValues()) {
                         Set<String> values = attr.possibleValues;
                         for (String value : values) {
-                            if (value.toLowerCase(Locale.US).startsWith(prefix)) {
+                            if (StringUtils.matchesPartialName(value, prefix, matchLower)) {
                                 result.getItems().add(valueAsCompletion(value));
                             }
                         }
@@ -162,7 +182,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             } else {
                 for (Map.Entry<String, Attr> entry : attrs.getAttributes().entrySet()) {
                     Attr attr = entry.getValue();
-                    if (attr.name.toLowerCase(Locale.US).startsWith(prefix)) {
+                    if (StringUtils.matchesPartialName(attr.name, prefix, matchLower)) {
                         result.getItems().add(attrAsCompletion(attr));
                     }
                 }
@@ -170,15 +190,15 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                 // Shortcuts for automatically declaring namespaces
                 // These completions are proposed if you type 'androidNs', 'appNs' or 'toolsNs'
                 // Idea is shamelessly copied from Android Studio 😂
-                if ("android".startsWith(prefix)) {
+                if (StringUtils.matchesPartialName("android", prefix, matchLower)) {
                     result.getItems().add(createNamespaceCompletion("android", ANDROID_NS));
                 }
 
-                if ("app".startsWith(prefix)) {
+                if (StringUtils.matchesPartialName("app", prefix, matchLower)) {
                     result.getItems().add(createNamespaceCompletion("app", APP_NS));
                 }
 
-                if ("tools".startsWith(prefix)) {
+                if (StringUtils.matchesPartialName("tools", prefix, matchLower)) {
                     result.getItems().add(createNamespaceCompletion("tools", TOOLS_NS));
                 }
             }
@@ -191,7 +211,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         prefix = prefix.toLowerCase(Locale.ROOT);
         for (var widget : this.sdkInfo.getWidgetInfo().getWidgets()) {
             var name = widget.simpleName.toLowerCase(Locale.ROOT);
-            if (name.startsWith(prefix)) {
+            if (StringUtils.matchesPartialName(
+                    name, prefix, getSettings().shouldMatchAllLowerCase())) {
                 result.getItems().add(widgetNameAsCompletion(widget, slash));
             }
         }
@@ -277,21 +298,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         }
 
         return sb.toString();
-    }
-
-    @NonNull
-    @Contract(pure = true)
-    private static CompletionItem createNamespaceCompletion(String name, String value) {
-        final var item = new CompletionItem();
-        item.setLabel(name + "Ns");
-        item.setDetail(
-                BaseApplication.getBaseInstance().getString(R.string.msg_add_namespace_decl, name));
-        item.setInsertText(String.format("xmlns:%1$s=\"%2$s\"", name, value));
-        item.setKind(CompletionItemKind.SNIPPET);
-        item.setSortText(
-                "1000" + item.getLabel()); // This item is expected to be at the last of the
-        // completion list
-        return item;
     }
 
     private static class IsInValueScanner {

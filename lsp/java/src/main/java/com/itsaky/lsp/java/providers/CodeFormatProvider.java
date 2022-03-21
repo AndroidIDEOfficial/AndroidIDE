@@ -20,13 +20,15 @@ package com.itsaky.lsp.java.providers;
 import static com.itsaky.androidide.utils.Logger.instance;
 
 import androidx.annotation.NonNull;
+
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.IServerSettings;
-import com.itsaky.lsp.java.models.DefaultJavaServerSettings;
+import com.itsaky.lsp.java.models.JavaServerSettings;
+
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -39,11 +41,11 @@ public class CodeFormatProvider {
 
     private static final Logger LOG = instance("JavaCodeFormatProvider");
 
-    private final DefaultJavaServerSettings settings;
+    private final JavaServerSettings settings;
 
     public CodeFormatProvider(IServerSettings settings) {
-        assert settings instanceof DefaultJavaServerSettings;
-        this.settings = (DefaultJavaServerSettings) settings;
+        assert settings instanceof JavaServerSettings;
+        this.settings = (JavaServerSettings) settings;
     }
 
     public CharSequence format(CharSequence input) {
@@ -64,7 +66,7 @@ public class CodeFormatProvider {
         return JavaFormatterOptions.builder()
                 .formatJavadoc(true)
                 .style(
-                        settings.getCodeStyle() == DefaultJavaServerSettings.CODE_STYLE_AOSP
+                        settings.getCodeStyle() == JavaServerSettings.CODE_STYLE_AOSP
                                 ? JavaFormatterOptions.Style.AOSP
                                 : JavaFormatterOptions.Style.GOOGLE)
                 .build();

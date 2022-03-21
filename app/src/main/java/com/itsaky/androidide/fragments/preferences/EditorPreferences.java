@@ -31,8 +31,8 @@ import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_HORIZO
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_PRINTABLE_CHARS;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_TAB_SIZE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_USE_POPUP;
-import static com.itsaky.androidide.models.PrefBasedJavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
-import static com.itsaky.androidide.models.PrefBasedJavaServerSettings.KEY_JAVA_PREF_MATCH_LOWER;
+import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
+import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_COMPLETIONS_MATCH_LOWER;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -47,7 +47,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
 import com.itsaky.androidide.models.ConstantsBridge;
-import com.itsaky.androidide.models.PrefBasedJavaServerSettings;
+import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.androidide.utils.DialogUtils;
 
 public class EditorPreferences extends BasePreferenceFragment
@@ -121,7 +121,7 @@ public class EditorPreferences extends BasePreferenceFragment
         autoSave.setTitle(getString(R.string.idepref_editor_autoSave_title));
         autoSave.setSummary(getString(R.string.idepref_editor_autoSave_summary));
 
-        javaMatchLower.setKey(KEY_JAVA_PREF_MATCH_LOWER);
+        javaMatchLower.setKey(KEY_COMPLETIONS_MATCH_LOWER);
         javaMatchLower.setIcon(R.drawable.ic_text_lower);
         javaMatchLower.setTitle(getString(R.string.idepref_java_matchLower_title));
         javaMatchLower.setSummary(getString(R.string.idepref_java_matchLower_summary));
@@ -170,7 +170,7 @@ public class EditorPreferences extends BasePreferenceFragment
         horizontalPopup.setChecked(getPrefManager().getBoolean(KEY_EDITOR_HORIZONTAL_POPUP, false));
         drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
         autoSave.setChecked(getPrefManager().getBoolean(KEY_EDITOR_AUTO_SAVE, false));
-        javaMatchLower.setChecked(getPrefManager().getBoolean(KEY_JAVA_PREF_MATCH_LOWER, false));
+        javaMatchLower.setChecked(getPrefManager().getBoolean(KEY_COMPLETIONS_MATCH_LOWER, false));
         useGoogleCodeStyle.setChecked(
                 getPrefManager().getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false));
         visiblePasswordFlag.setChecked(getPrefManager().getBoolean(KEY_EDITOR_FLAG_PASSWORD, true));
@@ -189,10 +189,6 @@ public class EditorPreferences extends BasePreferenceFragment
                 break;
             case KEY_EDITOR_FONT_LIGATURES:
                 ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED = true;
-                break;
-            case KEY_JAVA_PREF_MATCH_LOWER:
-                final var javaServer = StudioApp.getInstance().getJavaLanguageServer();
-                javaServer.applySettings(PrefBasedJavaServerSettings.getInstance());
                 break;
         }
 
