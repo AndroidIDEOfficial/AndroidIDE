@@ -26,10 +26,12 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
@@ -57,15 +59,18 @@ import com.itsaky.lsp.models.ShowDocumentParams;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.widget.CodeEditor;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import org.jetbrains.annotations.Contract;
+
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.widget.CodeEditor;
 
 public class IDEEditor extends CodeEditor {
 
@@ -595,6 +600,8 @@ public class IDEEditor extends CodeEditor {
         } else {
             LOG.info("No language server is available for this file");
         }
+
+        ensureWindowsDismissed();
     }
 
     /**
@@ -926,6 +933,21 @@ public class IDEEditor extends CodeEditor {
             case TextAction.EXPAND_SELECTION:
                 expandSelection();
                 break;
+        }
+    }
+
+    /** Ensures that all the windows are dismissed. */
+    private void ensureWindowsDismissed() {
+        if (getDiagnosticWindow().isShowing()) {
+            getDiagnosticWindow().dismiss();
+        }
+
+        if (getSignatureHelpWindow().isShowing()) {
+            getSignatureHelpWindow().dismiss();
+        }
+
+        if (mTextActionPresenter != null) {
+            mTextActionPresenter.destroy();
         }
     }
 
