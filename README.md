@@ -17,7 +17,7 @@
 - [x] API information for classes and their members (since, removed, deprecated).
 - [ ] Language servers
   - [x] Java
-  - [ ] XML
+  - [ ] XML (*)
   - [ ] Kotlin
 - [ ] UI Designer
   - [x] Layout inflater
@@ -31,7 +31,7 @@
 - [ ] Git (*)
 
 Items marked with `(*)` are partially implemented.
-Git is currently available only in the terminal i.e. no GUI interface for `git`.
+`XML` language server supports only code completion at the moment. Git is currently available only in the terminal i.e. no GUI interface for `git`.
 
 ## Limitations
 - Gradle Wrapper is supported. But, it requires that the project's application module is named 'app'.
@@ -39,14 +39,6 @@ Git is currently available only in the terminal i.e. no GUI interface for `git`.
 - No official NDK support because we haven't built the NDK for Android.
 
 The app is still being developed actively. It's in beta stage and may not be stable. if you have any issues using the app, please let us know.
-
-## Issues/suggestions
-You should report bugs and suggest features/enhancements [here](https://github.com/itsaky/AndroidIDE/issues).
-Describe the issue/request briefly. Provide steps to reproduce the issue.
-
-If you need any help, you should discuss it [here](https://t.me/androidide_discussions).
-
-Provide a proper title and a short description for issues.
 
 ## Contributing
 See the [contributing guide](./CONTRIBUTING.md).
