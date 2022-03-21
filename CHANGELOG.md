@@ -30,9 +30,10 @@ This is the changelog of all the releases of AndroidIDE.
 
 ### Fixes
 <!--Bug fixes, etc-->
-- Fixed crash in attribute editors when adding an attribute.
-- Fixed crash when selecting diagnostic item from diagnostics list.
-- Some diagnostic items are not shown in diagnostic window (#96).
+- Fixed: Cash in attribute editors when adding an attribute.
+- Fixed: Crash when selecting diagnostic item from diagnostics list.
+- Fixed: Some diagnostic items are not shown in diagnostic window (#96).
+- Fixed: Popup windows created by editor are not dismissed even when the file is closed.
 
 ### Improvements
 
