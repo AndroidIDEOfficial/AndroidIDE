@@ -31,8 +31,8 @@ import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_HORIZO
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_PRINTABLE_CHARS;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_TAB_SIZE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_USE_POPUP;
-import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
 import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_COMPLETIONS_MATCH_LOWER;
+import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -44,10 +44,8 @@ import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
 import com.itsaky.androidide.models.ConstantsBridge;
-import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.androidide.utils.DialogUtils;
 
 public class EditorPreferences extends BasePreferenceFragment
@@ -76,7 +74,7 @@ public class EditorPreferences extends BasePreferenceFragment
         final var useGoogleCodeStyle = new SwitchPreference(getContext());
         final var visiblePasswordFlag = new SwitchPreference(getContext());
 
-        final var javaMatchLower = new SwitchPreference(getContext());
+        final var completionsMatchLower = new SwitchPreference(getContext());
 
         screen.addPreference(commonCategory);
         screen.addPreference(javaCategory);
@@ -121,10 +119,10 @@ public class EditorPreferences extends BasePreferenceFragment
         autoSave.setTitle(getString(R.string.idepref_editor_autoSave_title));
         autoSave.setSummary(getString(R.string.idepref_editor_autoSave_summary));
 
-        javaMatchLower.setKey(KEY_COMPLETIONS_MATCH_LOWER);
-        javaMatchLower.setIcon(R.drawable.ic_text_lower);
-        javaMatchLower.setTitle(getString(R.string.idepref_java_matchLower_title));
-        javaMatchLower.setSummary(getString(R.string.idepref_java_matchLower_summary));
+        completionsMatchLower.setKey(KEY_COMPLETIONS_MATCH_LOWER);
+        completionsMatchLower.setIcon(R.drawable.ic_text_lower);
+        completionsMatchLower.setTitle(getString(R.string.idepref_java_matchLower_title));
+        completionsMatchLower.setSummary(getString(R.string.idepref_java_matchLower_summary));
 
         useGoogleCodeStyle.setIcon(R.drawable.ic_format_code);
         useGoogleCodeStyle.setKey(KEY_JAVA_PREF_GOOGLE_CODE_STYLE);
@@ -139,16 +137,16 @@ public class EditorPreferences extends BasePreferenceFragment
         commonCategory.setTitle(getString(R.string.idepref_editor_category_common));
         commonCategory.addPreference(fontSize);
         commonCategory.addPreference(fontLigatures);
+        commonCategory.addPreference(tabSize);
+        commonCategory.addPreference(completionsMatchLower);
         commonCategory.addPreference(visiblePasswordFlag);
         commonCategory.addPreference(usePopupActions);
         commonCategory.addPreference(horizontalPopup);
         commonCategory.addPreference(nonPrintable);
-        commonCategory.addPreference(tabSize);
         commonCategory.addPreference(drawHex);
         commonCategory.addPreference(autoSave);
 
         javaCategory.setTitle(getString(R.string.idepref_editor_category_java));
-        javaCategory.addPreference(javaMatchLower);
         javaCategory.addPreference(useGoogleCodeStyle);
 
         setPreferenceScreen(screen);
@@ -161,7 +159,7 @@ public class EditorPreferences extends BasePreferenceFragment
         tabSize.setOnPreferenceClickListener(this);
         drawHex.setOnPreferenceChangeListener(this);
         autoSave.setOnPreferenceChangeListener(this);
-        javaMatchLower.setOnPreferenceChangeListener(this);
+        completionsMatchLower.setOnPreferenceChangeListener(this);
         useGoogleCodeStyle.setOnPreferenceChangeListener(this);
         visiblePasswordFlag.setOnPreferenceChangeListener(this);
 
@@ -170,7 +168,8 @@ public class EditorPreferences extends BasePreferenceFragment
         horizontalPopup.setChecked(getPrefManager().getBoolean(KEY_EDITOR_HORIZONTAL_POPUP, false));
         drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
         autoSave.setChecked(getPrefManager().getBoolean(KEY_EDITOR_AUTO_SAVE, false));
-        javaMatchLower.setChecked(getPrefManager().getBoolean(KEY_COMPLETIONS_MATCH_LOWER, false));
+        completionsMatchLower.setChecked(
+                getPrefManager().getBoolean(KEY_COMPLETIONS_MATCH_LOWER, false));
         useGoogleCodeStyle.setChecked(
                 getPrefManager().getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false));
         visiblePasswordFlag.setChecked(getPrefManager().getBoolean(KEY_EDITOR_FLAG_PASSWORD, true));
