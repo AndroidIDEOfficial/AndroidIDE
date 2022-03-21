@@ -34,7 +34,6 @@ import com.itsaky.lsp.models.CompletionItemKind;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.InsertTextFormat;
-import com.itsaky.lsp.util.StringUtils;
 import com.itsaky.lsp.xml.R;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.models.Widget;
@@ -70,6 +69,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     public CompletionProvider(SDKInfo sdkInfo, IServerSettings settings) {
         Objects.requireNonNull(sdkInfo);
         Objects.requireNonNull(settings);
+        super.applySettings(settings);
 
         this.sdkInfo = sdkInfo;
     }
@@ -173,7 +173,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                     if (attr != null && attr.hasPossibleValues()) {
                         Set<String> values = attr.possibleValues;
                         for (String value : values) {
-                            if (StringUtils.matchesPartialName(value, prefix, matchLower)) {
+                            if (matchesPartialName(value, prefix, matchLower)) {
                                 result.getItems().add(valueAsCompletion(value));
                             }
                         }
@@ -182,7 +182,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             } else {
                 for (Map.Entry<String, Attr> entry : attrs.getAttributes().entrySet()) {
                     Attr attr = entry.getValue();
-                    if (StringUtils.matchesPartialName(attr.name, prefix, matchLower)) {
+                    if (matchesPartialName(attr.name, prefix, matchLower)) {
                         result.getItems().add(attrAsCompletion(attr));
                     }
                 }
@@ -190,15 +190,15 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                 // Shortcuts for automatically declaring namespaces
                 // These completions are proposed if you type 'androidNs', 'appNs' or 'toolsNs'
                 // Idea is shamelessly copied from Android Studio 😂
-                if (StringUtils.matchesPartialName("android", prefix, matchLower)) {
+                if (matchesPartialName("android", prefix, matchLower)) {
                     result.getItems().add(createNamespaceCompletion("android", ANDROID_NS));
                 }
 
-                if (StringUtils.matchesPartialName("app", prefix, matchLower)) {
+                if (matchesPartialName("app", prefix, matchLower)) {
                     result.getItems().add(createNamespaceCompletion("app", APP_NS));
                 }
 
-                if (StringUtils.matchesPartialName("tools", prefix, matchLower)) {
+                if (matchesPartialName("tools", prefix, matchLower)) {
                     result.getItems().add(createNamespaceCompletion("tools", TOOLS_NS));
                 }
             }
@@ -211,8 +211,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         prefix = prefix.toLowerCase(Locale.ROOT);
         for (var widget : this.sdkInfo.getWidgetInfo().getWidgets()) {
             var name = widget.simpleName.toLowerCase(Locale.ROOT);
-            if (StringUtils.matchesPartialName(
-                    name, prefix, getSettings().shouldMatchAllLowerCase())) {
+            if (matchesPartialName(name, prefix, getSettings().shouldMatchAllLowerCase())) {
                 result.getItems().add(widgetNameAsCompletion(widget, slash));
             }
         }
@@ -298,6 +297,23 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         }
 
         return sb.toString();
+    }
+
+    private boolean matchesPartialName(String candidate, String partialName, boolean matchLower) {
+        if (candidate == null || partialName == null) {
+            return false;
+        }
+
+        if (candidate.length() < partialName.length()) {
+            return false;
+        }
+
+        if (matchLower) {
+            candidate = candidate.toLowerCase(Locale.ROOT);
+            partialName = partialName.toLowerCase(Locale.ROOT);
+        }
+
+        return candidate.startsWith(partialName);
     }
 
     private static class IsInValueScanner {

@@ -37,10 +37,9 @@ public class StringUtils {
             char char2 = partialName.charAt(i);
 
             // Match by keeping the first character of the partial name and candidate as is
-            // The make all the characters lower case
+            // Then make all the characters lower case
             // So if the first character is upper case, we could assume that the user is expecting a
-            // class
-            // name
+            // class name
             // Otherwise a variable name
             if (allLower || i != 0) {
                 char1 = Character.toLowerCase(char1);

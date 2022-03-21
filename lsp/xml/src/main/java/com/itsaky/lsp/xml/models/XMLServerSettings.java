@@ -17,9 +17,20 @@
 
 package com.itsaky.lsp.xml.models;
 
-import com.itsaky.lsp.util.DefaultServerSettings;
+import com.itsaky.lsp.util.PrefBasedServerSettings;
 
 /**
  * @author Akash Yadav
  */
-public class DefaultXMLServerSettings extends DefaultServerSettings {}
+public class XMLServerSettings extends PrefBasedServerSettings {
+
+    private static XMLServerSettings instance;
+
+    public static XMLServerSettings getInstance() {
+        if (instance == null) {
+            instance = new XMLServerSettings();
+        }
+
+        return instance;
+    }
+}
