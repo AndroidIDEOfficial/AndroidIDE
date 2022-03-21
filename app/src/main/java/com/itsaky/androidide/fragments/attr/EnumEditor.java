@@ -19,10 +19,8 @@ package com.itsaky.androidide.fragments.attr;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.itsaky.androidide.utils.Logger;

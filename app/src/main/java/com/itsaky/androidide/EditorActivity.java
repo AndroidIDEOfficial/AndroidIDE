@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -51,7 +50,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
-
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
@@ -88,7 +86,6 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
@@ -112,14 +109,14 @@ import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
+import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
-
-import org.jetbrains.annotations.Contract;
-
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.Unsubscribe;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -134,11 +131,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.Unsubscribe;
 import me.piruin.quickaction.ActionItem;
 import me.piruin.quickaction.QuickAction;
+import org.jetbrains.annotations.Contract;
 
 public class EditorActivity extends StudioActivity
         implements FileTreeFragment.FileActionListener,

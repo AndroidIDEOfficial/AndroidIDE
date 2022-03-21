@@ -20,7 +20,6 @@ package com.itsaky.androidide.tasks;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.utils.Logger;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;

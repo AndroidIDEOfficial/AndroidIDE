@@ -23,15 +23,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.databinding.LayoutBooleanAttrEditorBinding;
 import com.itsaky.inflater.values.FrameworkValues;
 import com.itsaky.inflater.values.ValuesTableFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -38,10 +38,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.adapters.CompletionListAdapter;
@@ -59,10 +57,9 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.models.Range;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.lang.EmptyLanguage;
+import io.github.rosemoe.sora.text.Content;
 import java.io.File;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -70,10 +67,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.lang.EmptyLanguage;
-import io.github.rosemoe.sora.text.Content;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
 
 /**
  * A view that handles opened code editors.
