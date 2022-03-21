@@ -21,17 +21,17 @@ This is the changelog of all the releases of AndroidIDE.
   [`Switch`](https://developer.android.com/reference/android/widget/Switch),
   [`GridLayout`](https://developer.android.com/reference/android/widget/GridLayout) in layout
   inflater.
+- Preference to disable use of `TYPE_TEXT_VARIATION_VISIBLE_PASSWORD` flag in editor.
+- 
 
 ### Removals
-
 <!--Things that were removed-->
 (No removals)
 
 ### Fixes
-
 <!--Bug fixes, etc-->
-
 - Fixed crash in attribute editors when adding an attribute.
+- Fixed crash when selecting diagnostic item from diagnostics list.
 - Some diagnostic items are not shown in diagnostic window (#96).
 
 ### Improvements
@@ -39,7 +39,9 @@ This is the changelog of all the releases of AndroidIDE.
 <!--Things that were removed and worth mentioning-->
 
 - Do not import classes from `java.lang` package when completion items are selected.
+- XML completion provider now uses 'Match completions in lower case' preference.
 - Updated Chinese translation. Thanks to @mikofe (#128).
+- Updated French translation. Thanks to @Se-Lyan (#136).
 
 ## **v2.0.0-beta**
 
