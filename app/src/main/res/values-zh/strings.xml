@@ -339,7 +339,7 @@
     <string name="title_use_popup_actions">悬浮 文本操作栏</string>
     <string name="msg_use_popup_actions">使用 PopupWindow 显示文本操作栏(重启以应用更改)</string>
     <string name="title_use_horizontal_popup">水平 文本操作栏</string>
-    <string name="msg_use_horizontal_popup">水平显示文本操作栏(重启以应用更改)</string>
+    <string name="msg_use_horizontal_popup">水平显示悬浮文本操作栏(重启以应用更改)</string>
     <string name="msg_apk_install_intent_failed">无法启动 APK 安装程序</string>
     <string name="msg_viewaction_add_attr">新增 属性</string>
     <string name="msg_search_attrs">搜索 属性&#8230;</string>
@@ -357,6 +357,8 @@
     <string name="title_format_code">代码格式化</string>
     <string name="idepref_java_useGoogleStyle_title">使用 Google Java 样式代码格式化</string>
     <string name="idepref_java_useGoogleStyle_summary">使用 Google Java 样式代码格式化配置格式化 Java 源代码</string>
-    
+    <string name="idepref_visiblePassword_title">可见密码 标志</string>
+    <string name="idepref_visiblePassword_summary">在编辑器中使用 可见密码 输入类型标志，这确保软键盘不会出现问题</string>
+
 </resources>
 
