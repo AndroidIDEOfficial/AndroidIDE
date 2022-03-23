@@ -91,12 +91,12 @@
     <string name="stop_gradle_daemons">Остановить Daemon\'ы Gradle</string>
     <string name="quick_run_debug">Быстрая сборка</string>
     <string name="msg_sync_needed">Файлы Gradle были изменены. Пожалуйста пересоберите проект, чтобы синхронизировать зависимости и конфигурации.</string>
-    <string name="msg_task_begin">========== [%s] TASK_BEGIN: %s ==========</string>
+    <string name="msg_task_begin" formatted="false">========== [%s] TASK_BEGIN: %s ==========</string>
     <string name="preparing">Подготовка</string>
     <string name="preparing_first">Выполняется подготовка. Первая сборка может занять 10–15 минут!</string>
     <string name="msg_gradle_terminated">Процесс Gradle завершился с кодом %1$d</string>
     <string name="msg_gradlew_installation_failed">Ошибка установки Gradle Wrapper: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper недоступен!\nУстановка версии Gradle по умолчанию. Gradle v7.3 будет скачан, если это необходимо.</string>
+    <string name="msg_installing_gradlew">Gradle wrapper недоступен!\nУстановка версии Gradle по умолчанию. Gradle wrapper будет скачан, если это необходимо.</string>
     <string name="msg_getting_daemom_status">Получение статуса Daemon, пожалуйста, подождите&#8230;</string>
     <string name="msg_daemons_stopped">Daemon\'ы Gradle остановлены</string>
     <string name="gradle_daemon_status">Статус Gradle Daemon</string>

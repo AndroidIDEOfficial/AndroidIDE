@@ -198,7 +198,11 @@ public class EditorActivity extends StudioActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(mBinding.editorToolbar);
-
+		
+		// See more:
+        // https://developer.android.com/reference/android/widget/Toolbar#setContentInsetStartWithNavigation(int)
+        mBinding.editorToolbar.setContentInsetStartWithNavigation(0);
+		
         mViewModel = new ViewModelProvider(this).get(EditorViewModel.class);
         getProjectFromIntent();
 

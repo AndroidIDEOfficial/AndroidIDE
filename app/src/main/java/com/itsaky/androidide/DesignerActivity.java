@@ -134,6 +134,11 @@ public class DesignerActivity extends StudioActivity
         super.onCreate(savedInstanceState);
 
         setSupportActionBar(mBinding.toolbar);
+		
+		// See more:
+        // https://developer.android.com/reference/android/widget/Toolbar#setContentInsetStartWithNavigation(int)
+        mBinding.toolbar.setContentInsetStartWithNavigation(0);
+		
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final var toggle =

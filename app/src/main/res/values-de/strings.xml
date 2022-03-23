@@ -88,12 +88,12 @@
     <string name="stop_gradle_daemons">Stoppen sie Gradle-D&#xE4;monen</string>
     <string name="quick_run_debug">Schnelldurchlauf</string>
     <string name="msg_sync_needed">Die Gradle-Dateien haben sich ver&#xE4;ndert. Bitte starte den Build Prozess um diese zu Synchronisieren.</string>
-    <string name="msg_task_begin">========== [%s] TASK_BEGIN: %s ==========</string>
+    <string name="msg_task_begin" formatted="false">========== [%s] TASK_BEGIN: %s ==========</string>
     <string name="preparing">Vorbereiten</string>
     <string name="preparing_first">Vorbereiten. Der erste Build kann bis zu 10 bis 15 Minuten dauern!</string>
     <string name="msg_gradle_terminated">Der Gradle-Prozess wurde mit dem Exit-Code %1$d beendet</string>
     <string name="msg_gradlew_installation_failed">Gradle Wrapper konnte nicht installiert werden: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper ist nicht verf&#xFC;gbar!\nStandard-Wrapper wird installiert. Gradle v7.3 wird bei Bedarf heruntergeladen.</string>
+    <string name="msg_installing_gradlew">Gradle wrapper ist nicht verf&#xFC;gbar!\nStandard-Wrapper wird installiert. Gradle wrapper wird bei Bedarf heruntergeladen.</string>
     <string name="msg_getting_daemom_status">Abrufen des Daemon-Status, bitte warten&#x2026;</string>
     <string name="msg_daemons_stopped">Gradle-D&#xE4;monen gestoppt</string>
     <string name="gradle_daemon_status">Gradle-Daemon-Status</string>

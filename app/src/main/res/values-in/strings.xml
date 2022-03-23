@@ -85,12 +85,12 @@
     <string name="stop_gradle_daemons">Hentikan Gradle Daemon</string>
     <string name="quick_run_debug">Quick run</string>
     <string name="msg_sync_needed">File Gradle telah berubah. Mohon build ulang project anda untuk menyinkronkan dependensi dan konfigurasi.</string>
-    <string name="msg_task_begin">========== [%s] MEMULAI_TUGAS_BUILD: %s ==========</string>
+    <string name="msg_task_begin" formatted="false">========== [%s] MEMULAI_TUGAS_BUILD: %s ==========</string>
     <string name="preparing">Menyiapkan</string>
     <string name="preparing_first">Menyiapkan. Build pertama mungkin memakan waktu sekitar 10&#8211;15 menit!</string>
     <string name="msg_gradle_terminated">Proses Gradle berhenti dengan kode exit %1$d</string>
     <string name="msg_gradlew_installation_failed">Gagal untuk menginstal Gradle Wrapper: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper tidak tersedia!\nMenginstal Gradle bawaan. Gradle v7.3 akan diunduh jika diperlukan.</string>
+    <string name="msg_installing_gradlew">Gradle wrapper tidak tersedia!\nMenginstal Gradle bawaan. Gradle wrapper akan diunduh jika diperlukan.</string>
     <string name="msg_getting_daemom_status">Mendapatkan status Daemon, mohon tunggu&#8230;</string>
     <string name="msg_daemons_stopped">Gradle Daemon Dihentikan</string>
     <string name="gradle_daemon_status">Status Gradle Daemon</string>

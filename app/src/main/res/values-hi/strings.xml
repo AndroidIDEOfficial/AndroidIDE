@@ -87,12 +87,12 @@
     <string name="stop_gradle_daemons">ग्रैडल डेमंस बंद करे</string>
     <string name="quick_run_debug">क्विक रन</string>
     <string name="msg_sync_needed">ग्रैडल फाइलें बदल गई हैं। डिपेंडेंसी और कॉन्फ़िगरेशन्स को सिंक करने के लिए कृपया अपनी प्रोजेक्ट का पुनर्निर्माण करें।</string>
-    <string name="msg_task_begin">========== [%s] टास्क सुरु हो रहा है: %s ==========</string>
+    <string name="msg_task_begin" formatted="false">========== [%s] टास्क सुरु हो रहा है: %s ==========</string>
     <string name="preparing">तैयार कर रहे हैं</string>
     <string name="preparing_first">तैयार कर रहे हैं। पहले निर्माण में 10&#8211;15 मिनट तक लग सकते हैं!</string>
     <string name="msg_gradle_terminated">ग्रैडल प्रक्रिया एग्जिट कोड %1$d के साथ बाहर निकली</string>
     <string name="msg_gradlew_installation_failed">ग्रैडल रैपर इंस्टॉल करने में विफल: %s</string>
-    <string name="msg_installing_gradlew">ग्रैडल रैपर उपलब्ध नहीं है!\nडिफ़ॉल्ट इंस्टाल किया जा रहा है। यदि आवश्यक हो तो ग्रैडल v7.3 डाउनलोड किया जाएगा।</string>
+    <string name="msg_installing_gradlew">ग्रैडल रैपर उपलब्ध नहीं है!\nडिफ़ॉल्ट इंस्टाल किया जा रहा है। यदि आवश्यक हो तो ग्रैडल रैपर डाउनलोड किया जाएगा।</string>
     <string name="msg_getting_daemom_status">डेमॉन की स्थिति, कृपया प्रतीक्षा करें&#8230;</string>
     <string name="msg_daemons_stopped">ग्रैडल डेमन्स रुक गए</string>
     <string name="gradle_daemon_status">ग्रैडल डेमॉन की स्थिति</string>

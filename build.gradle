@@ -1,8 +1,9 @@
 buildscript {
+    ext.build_gradle_version = '7.1.2'
     ext.kotlin_version = '1.6.10'
     project.ext {
-        compileSdk = 31
-        buildTools = "31.0.0"
+        compileSdk = 32
+        buildTools = "32.0.0"
         minSdk = 26
         targetSdk = 28
         versionCode = 201
@@ -22,7 +23,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath "com.android.tools.build:gradle:$build_gradle_version"
         classpath 'com.google.gms:google-services:4.3.10'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"

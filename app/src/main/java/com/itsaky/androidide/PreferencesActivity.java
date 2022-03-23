@@ -43,6 +43,11 @@ public class PreferencesActivity extends StudioActivity {
         super.onCreate(savedInstanceState);
 
         setSupportActionBar(binding.toolbar);
+		
+		// See more:
+        // https://developer.android.com/reference/android/widget/Toolbar#setContentInsetStartWithNavigation(int)
+        binding.toolbar.setContentInsetStartWithNavigation(0);
+		
         getSupportActionBar().setTitle(R.string.ide_preferences);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

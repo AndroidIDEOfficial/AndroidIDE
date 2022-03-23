@@ -18,6 +18,10 @@
         <item name="android:textColorSecondary">@color/secondaryTextColor</item>
         <item name="android:windowBackground">@color/content_background</item>
         <item name="android:fontFamily">@font/josefin_sans</item>
+		
+		<!-- See more -->
+		<!-- https://developer.android.com/reference/android/view/Window#attr_android:navigationBarColor -->
+		<item name="android:navigationBarColor">@color/primaryDarkColor</item>
     </style>
 
     <style name="AppTheme.UIDesigner.WidgetGroupChip" parent="Widget.MaterialComponents.Chip.Choice">
