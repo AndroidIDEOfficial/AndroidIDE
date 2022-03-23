@@ -18,6 +18,7 @@
 package com.itsaky.androidide.handlers;
 
 import android.view.View;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.managers.PreferenceManager;
@@ -30,6 +31,7 @@ import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.build.ApkGeneratingTask;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,6 +124,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     @Override
     public void onBuildSuccessful(GradleTask task, String msg) {
         appendOutput(task, msg);
+        analyzeCurrentFile();
         if (task == null || activity() == null) {
             return;
         }
@@ -154,6 +157,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     @Override
     public void onBuildFailed(GradleTask task, String msg) {
         appendOutput(task, msg);
+        analyzeCurrentFile();
         if (task == null) {
             return;
         }
@@ -258,5 +262,15 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
         }
 
         return names;
+    }
+
+    private void analyzeCurrentFile() {
+        final var editorView = activity().getCurrentEditor();
+        if (editorView != null) {
+            final var editor = editorView.getEditor();
+            if (editor != null) {
+                editor.analyze();
+            }
+        }
     }
 }

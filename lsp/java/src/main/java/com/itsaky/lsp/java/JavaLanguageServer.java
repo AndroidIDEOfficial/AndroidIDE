@@ -61,7 +61,6 @@ import com.itsaky.lsp.util.NoCompletionsProvider;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
@@ -104,8 +103,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         if (client != null) {
             client.publishDiagnostics(new DiagnosticResult(this.selectedFile, diagnostics));
         }
-
-        this.analyzeTimer.restart();
     }
 
     public IServerSettings getSettings() {
@@ -290,8 +287,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     public void onContentChange(@NonNull DocumentChangeEvent event) {
         // If a file's content is changed, it is definitely visible to user.
         onFileSelected(event.getChangedFile());
-
-        this.analyzeTimer.restart();
+        ensureAnalyzeTimerStarted();
         FileStore.change(event);
     }
 
@@ -307,10 +303,14 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
     @Override
     public void onFileSelected(@NonNull Path path) {
-        if (Objects.equals(this.selectedFile, path)) {
-            return;
-        }
-
         this.selectedFile = path;
+    }
+
+    private void ensureAnalyzeTimerStarted() {
+        if (!this.analyzeTimer.isStarted()) {
+            this.analyzeTimer.start();
+        } else {
+            this.analyzeTimer.restart();
+        }
     }
 }

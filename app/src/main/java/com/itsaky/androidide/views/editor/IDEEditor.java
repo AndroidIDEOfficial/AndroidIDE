@@ -136,6 +136,23 @@ public class IDEEditor extends CodeEditor {
         }
     }
 
+    public void analyze() {
+        if (mLanguageServer != null
+                && getFile() != null
+                && getEditorLanguage() instanceof IDELanguage) {
+            CompletableFuture.supplyAsync(() -> mLanguageServer.analyze(getFile().toPath()))
+                    .whenComplete(
+                            (diagnostics, throwable) -> {
+                                final var lang = (IDELanguage) getEditorLanguage();
+                                final var analyzer = lang.getAnalyzeManager();
+                                if (analyzer instanceof IAnalyzeManager) {
+                                    ((IAnalyzeManager) analyzer).updateDiagnostics(diagnostics);
+                                }
+                                analyzer.rerun();
+                            });
+        }
+    }
+
     /**
      * Checks if the given range is valid for this editor's text.
      *
@@ -241,19 +258,7 @@ public class IDEEditor extends CodeEditor {
             }
 
             // request diagnostics
-            if (getFile() != null && getEditorLanguage() instanceof IDELanguage) {
-                CompletableFuture.supplyAsync(() -> mLanguageServer.analyze(getFile().toPath()))
-                        .whenComplete(
-                                (diagnostics, throwable) -> {
-                                    final var lang = getEditorLanguage();
-                                    final var analyzeManager = lang.getAnalyzeManager();
-                                    if (analyzeManager instanceof IAnalyzeManager) {
-                                        ((IAnalyzeManager) analyzeManager)
-                                                .updateDiagnostics(diagnostics);
-                                        analyzeManager.rerun();
-                                    }
-                                });
-            }
+            analyze();
         }
 
         if (file != null) {

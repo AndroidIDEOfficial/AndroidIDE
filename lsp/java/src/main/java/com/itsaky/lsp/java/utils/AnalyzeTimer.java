@@ -34,6 +34,7 @@ public class AnalyzeTimer {
     @NonNull private final Handler timerHandler;
     @NonNull private final Runnable timerCallback;
     private long interval;
+    private boolean started;
 
     /**
      * Creates a new AnalyzeTimer instance.
@@ -79,10 +80,16 @@ public class AnalyzeTimer {
     public void restart() {
         timerHandler.removeCallbacks(timerCallback);
         timerHandler.postDelayed(timerCallback, interval);
+        started = true;
     }
 
     /** Shutdown the timer. Cancels any running timers. */
     public void shutdown() {
         timerHandler.removeCallbacks(timerCallback);
+        started = false;
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 }
