@@ -357,6 +357,9 @@
     <string name="title_format_code">代码格式化</string>
     <string name="idepref_java_useGoogleStyle_title">使用 Google Java 样式代码格式化</string>
     <string name="idepref_java_useGoogleStyle_summary">使用 Google Java 样式代码格式化配置格式化 Java 源代码</string>
+    <string name="idepref_visiblePassword_title">使用明文密码键盘</string>
+    <string name="idepref_visiblePassword_summary">在编辑器中指示系统使用明文密码键盘。这确保您的键盘不会显示字词建议</string>
+
     
 </resources>
 
