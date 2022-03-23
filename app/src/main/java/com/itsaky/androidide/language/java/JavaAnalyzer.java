@@ -366,7 +366,7 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> implements IAnalyze
                         end.getLine(),
                         end.getColumn());
             } catch (Throwable e) {
-                LOG.error("Unable to mark problem region for diagnostic:", d);
+                // Might happen frequently if user types faster
             }
         }
     }
