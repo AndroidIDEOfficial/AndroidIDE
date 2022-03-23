@@ -28,50 +28,51 @@ import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.withoutCompletion;
 
 import androidx.annotation.NonNull;
+
+import com.itsaky.androidide.language.IAnalyzeManager;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.androidide.views.editor.IDEEditor;
-import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.DiagnosticSeverity;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.Token;
+import org.jetbrains.annotations.Contract;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
 import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.MappedSpans;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.Styles;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-import java.util.concurrent.CompletableFuture;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.Token;
-import org.jetbrains.annotations.Contract;
 
 /**
  * Code analyzer for the Java Language
  *
  * @author Akash Yadav
  */
-public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
+public class JavaAnalyzer extends SimpleAnalyzeManager<Void> implements IAnalyzeManager {
 
     private static final Logger LOG = Logger.instance("JavaAnalyzer");
     private final List<DiagnosticItem> ideDiagnostics = new ArrayList<>();
-    private final ILanguageServer languageServer;
     private List<DiagnosticItem> diagnostics = new ArrayList<>();
 
-    public JavaAnalyzer(ILanguageServer languageServer) {
-        this.languageServer = languageServer;
+    @Override
+    public void updateDiagnostics(@NonNull List<DiagnosticItem> diagnostics) {
+        this.diagnostics = diagnostics;
     }
 
     @NonNull
+    @Override
     public List<DiagnosticItem> getDiagnostics() {
         final var result = new ArrayList<>(ideDiagnostics);
         if (diagnostics != null && !diagnostics.isEmpty()) {
@@ -83,23 +84,6 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> {
 
     @Override
     protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {
-        final var args = getExtraArguments();
-        if (args.containsKey(IDEEditor.KEY_FILE)) {
-            final var file = new File(args.getString(IDEEditor.KEY_FILE));
-            if (languageServer != null && file.exists()) {
-                CompletableFuture.runAsync(
-                        () -> {
-                            diagnostics = languageServer.analyze(file.toPath());
-                            if (languageServer.getClient() != null) {
-                                languageServer
-                                        .getClient()
-                                        .publishDiagnostics(
-                                                new DiagnosticResult(file.toPath(), diagnostics));
-                            }
-                        });
-            }
-        }
-
         final CodePointCharStream stream;
         final var styles = new Styles();
         final var colors = new MappedSpans.Builder();

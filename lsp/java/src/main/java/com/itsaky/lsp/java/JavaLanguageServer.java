@@ -19,6 +19,7 @@ package com.itsaky.lsp.java;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
@@ -36,11 +37,13 @@ import com.itsaky.lsp.java.providers.JavaDiagnosticProvider;
 import com.itsaky.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.lsp.java.providers.ReferenceProvider;
 import com.itsaky.lsp.java.providers.SignatureProvider;
+import com.itsaky.lsp.java.utils.AnalyzeTimer;
 import com.itsaky.lsp.models.CodeActionParams;
 import com.itsaky.lsp.models.CodeActionResult;
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
@@ -54,13 +57,16 @@ import com.itsaky.lsp.models.ServerCapabilities;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.NoCompletionsProvider;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
     private static final Logger LOG = Logger.instance("JavaLanguageServer");
+    private final AnalyzeTimer analyzeTimer;
     private ILanguageClient client;
     private IServerSettings settings;
     private JavaCompilerService compiler;
@@ -68,11 +74,13 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     private boolean initialized;
     private boolean createCompiler;
     private ServerCapabilities capabilities;
+    private Path selectedFile;
 
     public JavaLanguageServer() {
         this.initialized = false;
         this.createCompiler = true;
         this.configuration = new JavaServerConfiguration();
+        this.analyzeTimer = new AnalyzeTimer(this::analyzeSelected);
 
         applySettings(getSettings());
     }
@@ -85,6 +93,19 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         }
 
         return compiler;
+    }
+
+    private void analyzeSelected() {
+        if (this.selectedFile == null) {
+            return;
+        }
+
+        final List<DiagnosticItem> diagnostics = analyze(selectedFile);
+        if (client != null) {
+            client.publishDiagnostics(new DiagnosticResult(this.selectedFile, diagnostics));
+        }
+
+        this.analyzeTimer.restart();
     }
 
     public IServerSettings getSettings() {
@@ -136,6 +157,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         }
 
         FileStore.shutdown();
+        this.analyzeTimer.shutdown();
         initialized = false;
     }
 
@@ -265,7 +287,11 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     }
 
     @Override
-    public void onContentChange(DocumentChangeEvent event) {
+    public void onContentChange(@NonNull DocumentChangeEvent event) {
+        // If a file's content is changed, it is definitely visible to user.
+        onFileSelected(event.getChangedFile());
+
+        this.analyzeTimer.restart();
         FileStore.change(event);
     }
 
@@ -277,5 +303,14 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     @Override
     public void onFileClosed(DocumentCloseEvent event) {
         FileStore.close(event);
+    }
+
+    @Override
+    public void onFileSelected(@NonNull Path path) {
+        if (Objects.equals(this.selectedFile, path)) {
+            return;
+        }
+
+        this.selectedFile = path;
     }
 }

@@ -54,7 +54,7 @@ public class JavaLanguage extends IDELanguage {
 
     public JavaLanguage() {
         final var server = getLanguageServer();
-        this.analyzer = new JavaAnalyzer(server);
+        this.analyzer = new JavaAnalyzer();
         this.completer = new CommonCompletionProvider(server);
 
         this.newlineHandlers = new NewlineHandler[1];

@@ -15,8 +15,7 @@ This is the changelog of all the releases of AndroidIDE.
 
 - Code formatter for Java source code.
 - Support for
-  [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView)
-  ,
+  [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView),
   [`ToggleButton`](https://developer.android.com/reference/android/widget/ToggleButton),
   [`Switch`](https://developer.android.com/reference/android/widget/Switch),
   [`GridLayout`](https://developer.android.com/reference/android/widget/GridLayout) in layout

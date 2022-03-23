@@ -17,11 +17,14 @@
 
 package com.itsaky.lsp.util;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
+
 import java.nio.file.Path;
 
 /**
@@ -45,4 +48,7 @@ public class NoDocumentHandler implements IDocumentHandler {
 
     @Override
     public void onFileClosed(DocumentCloseEvent event) {}
+
+    @Override
+    public void onFileSelected(@NonNull Path path) {}
 }

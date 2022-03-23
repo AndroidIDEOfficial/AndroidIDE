@@ -17,10 +17,13 @@
 
 package com.itsaky.lsp.api;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
+
 import java.nio.file.Path;
 
 /**
@@ -71,4 +74,12 @@ public interface IDocumentHandler {
      * @param event The document close event data.
      */
     void onFileClosed(DocumentCloseEvent event);
+
+    /**
+     * Notify the document handler that the user has selected the given file for editing. Usually,
+     * the given file is visible to user.
+     *
+     * @param path The file that was selected.
+     */
+    void onFileSelected(@NonNull Path path);
 }

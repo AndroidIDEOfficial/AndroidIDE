@@ -35,6 +35,7 @@ import androidx.core.content.ContextCompat;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.language.IAnalyzeManager;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
@@ -237,6 +238,21 @@ public class IDEEditor extends CodeEditor {
                 final var text = getText().toString();
                 final var event = new DocumentOpenEvent(file.toPath(), text, mFileVersion = 0);
                 documentHandler.onFileOpened(event);
+            }
+
+            // request diagnostics
+            if (getFile() != null && getEditorLanguage() instanceof IDELanguage) {
+                CompletableFuture.supplyAsync(() -> mLanguageServer.analyze(getFile().toPath()))
+                        .whenComplete(
+                                (diagnostics, throwable) -> {
+                                    final var lang = getEditorLanguage();
+                                    final var analyzeManager = lang.getAnalyzeManager();
+                                    if (analyzeManager instanceof IAnalyzeManager) {
+                                        ((IAnalyzeManager) analyzeManager)
+                                                .updateDiagnostics(diagnostics);
+                                        analyzeManager.rerun();
+                                    }
+                                });
             }
         }
 
@@ -602,6 +618,17 @@ public class IDEEditor extends CodeEditor {
         }
 
         ensureWindowsDismissed();
+    }
+
+    public void onEditorSelected() {
+        if (getFile() == null) {
+            return;
+        }
+
+        final var path = getFile().toPath();
+        if (mLanguageServer != null) {
+            mLanguageServer.getDocumentHandler().onFileSelected(path);
+        }
     }
 
     /**

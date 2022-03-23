@@ -20,6 +20,7 @@
 package com.itsaky.androidide.lsp;
 
 import android.view.View;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -31,6 +32,7 @@ import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
+import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
@@ -47,13 +49,15 @@ import com.itsaky.lsp.models.Location;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.sora.text.Content;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import io.github.rosemoe.sora.text.Content;
 
 /** AndroidIDE specific implementation of the LanguageClient */
 public class IDELanguageClientImpl implements ILanguageClient {
@@ -141,6 +145,17 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
         File file = result.getFile().toFile();
         if (!file.exists() || !file.isFile()) return;
+
+        final var editorView = activity().getEditorForFile(file);
+        if (editorView != null) {
+            final var editor = editorView.getEditor();
+            if (editor != null) {
+                final var editorLanguage = editor.getEditorLanguage();
+                if (editorLanguage instanceof IDELanguage) {
+                    ((IDELanguage) editorLanguage).setDiagnostics(result.getDiagnostics());
+                }
+            }
+        }
 
         diagnostics.put(file, result.getDiagnostics());
         activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
