@@ -19,6 +19,7 @@ package com.itsaky.lsp.xml.providers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
@@ -27,6 +28,7 @@ import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IServerSettings;
+import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.CompletionData;
 import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionItemKind;
@@ -36,15 +38,19 @@ import com.itsaky.lsp.models.InsertTextFormat;
 import com.itsaky.lsp.xml.R;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.models.Widget;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+import org.jetbrains.annotations.Contract;
+
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-import org.jetbrains.annotations.Contract;
+
+import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 
 /**
  * Completion provider for the XML Language
@@ -101,7 +107,10 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         try {
             return complete(contents, prefix, getFileType(params.getFile()), index);
         } catch (Exception e) {
-            LOG.error("Unable to provide XML completions");
+            // Do not log if completion request was cancelled
+            if (!(e instanceof CompletionCancelledException)) {
+                LOG.error("Unable to provide XML completions");
+            }
             return EMPTY;
         }
     }
@@ -235,6 +244,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
         item.setSortText("1" + attr.name);
         item.setKind(CompletionItemKind.SNIPPET);
+        item.setCommand(new Command("Trigger completion request", Command.TRIGGER_COMPLETION));
         return item;
     }
 
@@ -343,7 +353,10 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                     }
                 }
             } catch (Throwable e) {
-                LOG.error("An error occurred on checking if cursor is in string", e);
+                // Do not log if completion was cancelled
+                if (!(e instanceof CompletionCancelledException)) {
+                    LOG.error("An error occurred on checking if cursor is in string", e);
+                }
             }
             return null;
         }

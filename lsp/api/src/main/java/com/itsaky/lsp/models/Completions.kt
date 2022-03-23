@@ -21,22 +21,23 @@ import android.text.TextUtils
 import com.itsaky.androidide.utils.Logger
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import java.nio.file.Path
 import java.util.regex.Pattern
 
-data class CompletionParams (var position: Position, var file: Path) {
+data class CompletionParams(var position: Position, var file: Path) {
     var content: CharSequence? = null
     var prefix: String? = null
     
-    fun requirePrefix () : String {
+    fun requirePrefix(): String {
         if (prefix == null) {
-            throw IllegalArgumentException ("Prefix is required but none was provided")
+            throw IllegalArgumentException("Prefix is required but none was provided")
         }
         
         return prefix as String
     }
     
-    fun requireContents () : CharSequence {
+    fun requireContents(): CharSequence {
         if (content == null) {
             throw IllegalArgumentException("Content is required but no content was provided!")
         }
@@ -44,8 +45,8 @@ data class CompletionParams (var position: Position, var file: Path) {
     }
 }
 
-data class CompletionResult (var isIncomplete: Boolean, var items: List<CompletionItem>) {
-    constructor() : this (false, ArrayList<CompletionItem>())
+data class CompletionResult(var isIncomplete: Boolean, var items: List<CompletionItem>) {
+    constructor() : this(false, ArrayList<CompletionItem>())
     
     override fun toString(): String {
         return TextUtils.join("\n", items)
@@ -77,11 +78,11 @@ data class CompletionItem(@JvmField var label: String,
         private val LOG = Logger.instance("CompletionItem")
     }
     
-    fun setLabel (label: String) {
+    fun setLabel(label: String) {
         this.label = label
     }
     
-    fun getLabel () : String = this.label as String
+    fun getLabel(): String = this.label as String
     
     override fun toString(): String {
         return "CompletionItem(label='$label', detail='$detail', insertText='$insertText', insertTextFormat=$insertTextFormat, sortText='$sortText', command=$command, kind=$kind, data=$data)"
@@ -131,14 +132,21 @@ data class CompletionItem(@JvmField var label: String,
             }
         }
         
-        if (command != null ) {
-            if ("editor.action.triggerParameterHints" == command!!.command) {
+        executeCommand(editor)
+    }
+    
+    private fun executeCommand(editor: CodeEditor) {
+        if (command != null) {
+            LOG.info("Executing command '${command!!.title}' for completion item.")
+            if (Command.TRIGGER_PARAMETER_HINTS == command!!.command) {
                 performSignatureHelp(editor)
+            } else if (Command.TRIGGER_COMPLETION == command!!.command) {
+                triggerCompletion(editor);
             }
         }
     }
     
-    private fun performSignatureHelp (editor: CodeEditor) {
+    private fun performSignatureHelp(editor: CodeEditor) {
         // We use reflection to invoke the 'signatureHelp' method in IDEEditor
         // As the IDEEditor class is heavily dependent on the :app module,
         // we cannot declare it as a dependency of this (:lsp:api) module
@@ -153,12 +161,19 @@ data class CompletionItem(@JvmField var label: String,
         }
     }
     
-    private fun getIdentifierStart (text: CharSequence, end: Int) : Int {
+    private fun triggerCompletion(editor: CodeEditor) {
+        val completion = editor.getComponent(EditorAutoCompletion::class.java)
+        editor.post {
+            completion.requireCompletion()
+        }
+    }
+    
+    private fun getIdentifierStart(text: CharSequence, end: Int): Int {
         
         var start = end
         while (start > 0) {
             if (Character.isJavaIdentifierPart(text[start - 1])) {
-                start --
+                start--
                 continue
             }
             
@@ -175,39 +190,39 @@ data class CompletionData(
     var erasedParameterTypes: Array<String>,
     var plusOverloads: Int
 ) {
-
-    constructor() : this ("", "", arrayOf(), -1)
-
+    
+    constructor() : this("", "", arrayOf(), -1)
+    
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
         }
-
+        
         if (javaClass != other?.javaClass) {
             return false
         }
-
+        
         other as CompletionData
-
+        
         if (className != other.className) {
             return false
         }
-
+        
         if (memberName != other.memberName) {
             return false
         }
-
+        
         if (!erasedParameterTypes.contentEquals(other.erasedParameterTypes)) {
             return false
         }
-
+        
         if (plusOverloads != other.plusOverloads) {
             return false
         }
-
+        
         return true
     }
-
+    
     override fun hashCode(): Int {
         var result = className.hashCode()
         result = 31 * result + memberName.hashCode()
@@ -217,7 +232,20 @@ data class CompletionData(
     }
 }
 
-data class Command (var title: String, var command: String)
+data class Command(var title: String, var command: String) {
+    companion object {
+        
+        /**
+         * Action for triggering a signature help request to the language server.
+         */
+        const val TRIGGER_PARAMETER_HINTS = "editor.action.triggerParameterHints"
+        
+        /**
+         * Action for triggering a completion request to the language server.
+         */
+        const val TRIGGER_COMPLETION = "editor.action.triggerCompletionRequest"
+    }
+}
 
 enum class CompletionItemKind {
     CLASS,
@@ -235,7 +263,7 @@ enum class CompletionItemKind {
     SNIPPET,
     TYPE_PARAMETER,
     VALUE,
-
+    
     KEYWORD,
     NONE
 }
