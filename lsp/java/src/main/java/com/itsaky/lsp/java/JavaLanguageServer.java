@@ -59,8 +59,10 @@ import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
@@ -99,10 +101,18 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
             return;
         }
 
-        final List<DiagnosticItem> diagnostics = analyze(selectedFile);
-        if (client != null) {
-            client.publishDiagnostics(new DiagnosticResult(this.selectedFile, diagnostics));
-        }
+        CompletableFuture.supplyAsync(() -> analyze(selectedFile))
+                .whenComplete(
+                        ((diagnostics, throwable) -> {
+                            if (client != null) {
+                                if (diagnostics == null) {
+                                    diagnostics = new ArrayList<>(0);
+                                }
+                                
+                                client.publishDiagnostics(
+                                        new DiagnosticResult(this.selectedFile, diagnostics));
+                            }
+                        }));
     }
 
     public IServerSettings getSettings() {

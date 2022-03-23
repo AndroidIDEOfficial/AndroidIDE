@@ -351,15 +351,23 @@ public class JavaAnalyzer extends SimpleAnalyzeManager<Void> implements IAnalyze
     private void markDiagnostics(MappedSpans.Builder colors, List<DiagnosticItem> diagnostics) {
         diagnostics.sort(DiagnosticItem.START_COMPARATOR);
         for (var d : diagnostics) {
+            if (d == null) {
+                continue;
+            }
+
             var start = d.getRange().getStart();
             var end = d.getRange().getEnd();
 
-            colors.markProblemRegion(
-                    convertToSpanFlag(d.getSeverity()),
-                    start.getLine(),
-                    start.getColumn(),
-                    end.getLine(),
-                    end.getColumn());
+            try {
+                colors.markProblemRegion(
+                        convertToSpanFlag(d.getSeverity()),
+                        start.getLine(),
+                        start.getColumn(),
+                        end.getLine(),
+                        end.getColumn());
+            } catch (Throwable e) {
+                LOG.error("Unable to mark problem region for diagnostic:", d);
+            }
         }
     }
 
