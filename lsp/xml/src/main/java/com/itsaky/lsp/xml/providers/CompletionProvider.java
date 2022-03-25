@@ -64,9 +64,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
     private static final String TOOLS_NS = "http://schemas.android.com/tools";
 
-    private static final String INITIAL_TAG_ATTRIBUTES =
-            "android:layout_width=\"wrap_content\"\n" + "android:layout_height=\"wrap_content\"";
-
     private final SDKInfo sdkInfo;
 
     public CompletionProvider(SDKInfo sdkInfo, IServerSettings settings) {
@@ -296,9 +293,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         sb.append(view.simpleName);
 
         if (!closing) {
-            sb.append("\n");
-            sb.append(INITIAL_TAG_ATTRIBUTES);
-            sb.append("\n$0/");
+            sb.append("$0/");
         } else {
             sb.append(">$0");
         }

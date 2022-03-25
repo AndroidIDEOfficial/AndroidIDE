@@ -969,7 +969,7 @@ public class IDEEditor extends CodeEditor {
     }
 
     /** Ensures that all the windows are dismissed. */
-    private void ensureWindowsDismissed() {
+    public void ensureWindowsDismissed() {
         if (getDiagnosticWindow().isShowing()) {
             getDiagnosticWindow().dismiss();
         }

@@ -18,11 +18,19 @@
 package com.itsaky.androidide.language.groovy;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+
+import java.io.StringReader;
+
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -32,23 +40,21 @@ import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
-import java.io.StringReader;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
 
 public class GroovyLanguage extends IDELanguage {
 
+    private static final Logger LOG = Logger.instance("GroovyLanguage");
     private final GroovyAnalyzer analyzer;
     private final GroovyAutoComplete completer;
-
-    private static final Logger LOG = Logger.instance("GroovyLanguage");
+    private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
 
     public GroovyLanguage() {
         analyzer = new GroovyAnalyzer();
         completer = new GroovyAutoComplete();
     }
 
-    public int getIndentAdvance(String p1) {
+    @Override
+    public int getIndentAdvance(@NonNull String p1) {
         try {
             GroovyLexer lexer = new GroovyLexer(CharStreams.fromReader(new StringReader(p1)));
             Token token = null;
@@ -127,8 +133,6 @@ public class GroovyLanguage extends IDELanguage {
     public CharSequence format(CharSequence content) {
         return content;
     }
-
-    private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
 
     @Override
     public NewlineHandler[] getNewlineHandlers() {

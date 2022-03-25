@@ -17,13 +17,11 @@
 
 package com.itsaky.lsp.models
 
-import android.text.TextUtils
 import com.itsaky.androidide.utils.Logger
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import java.nio.file.Path
-import java.util.regex.Pattern
 
 data class CompletionParams(var position: Position, var file: Path) {
     var content: CharSequence? = null
@@ -49,7 +47,7 @@ data class CompletionResult(var isIncomplete: Boolean, var items: List<Completio
     constructor() : this(false, ArrayList<CompletionItem>())
     
     override fun toString(): String {
-        return TextUtils.join("\n", items)
+        return android.text.TextUtils.join("\n", items)
     }
 }
 
@@ -96,13 +94,15 @@ data class CompletionItem(@JvmField var label: String,
         text.delete(line, start, line, column)
         
         if (text.contains("\n")) {
-            val lines = insert.split(Pattern.quote("\n"))
+            val lines = insert.split("\\\n")
             var i = 0
             lines.forEach {
+                var commit = it
                 if (i != 0) {
-                    editor.commitText("\n")
+                    commit = "\n" + commit
                 }
-                editor.commitText(it)
+                
+                editor.commitText(commit)
                 i++
             }
         } else {

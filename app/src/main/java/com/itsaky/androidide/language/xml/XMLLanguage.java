@@ -18,7 +18,9 @@
 package com.itsaky.androidide.language.xml;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
@@ -27,6 +29,14 @@ import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+
+import java.io.StringReader;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -34,11 +44,6 @@ import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
-import java.io.StringReader;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
 
 public class XMLLanguage extends IDELanguage {
 
@@ -57,7 +62,8 @@ public class XMLLanguage extends IDELanguage {
         return JavaCharacter.isJavaIdentifierPart(ch) || ch == '<' || ch == '/';
     }
 
-    public int getIndentAdvance(String content) {
+    @Override
+    public int getIndentAdvance(@NonNull String content) {
         try {
             XMLLexer lexer = new XMLLexer(CharStreams.fromReader(new StringReader(content)));
             Token token;
@@ -65,13 +71,10 @@ public class XMLLanguage extends IDELanguage {
             while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
                 switch (token.getType()) {
                     case XMLLexer.OPEN:
-                    case XMLLexer.OPEN_SLASH:
-                    case XMLLexer.XMLDeclOpen:
                         advance++;
                         break;
                     case XMLLexer.CLOSE:
                     case XMLLexer.SLASH_CLOSE:
-                    case XMLLexer.SPECIAL_CLOSE:
                         advance--;
                         break;
                     default:
@@ -127,12 +130,7 @@ public class XMLLanguage extends IDELanguage {
     @Override
     public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {
         final var text = content.getLine(line).substring(0, column);
-        return getIndentAdvance(text);
-    }
-
-    @Override
-    public boolean useTab() {
-        return false;
+        return getIndentAdvance(text.trim());
     }
 
     @Override

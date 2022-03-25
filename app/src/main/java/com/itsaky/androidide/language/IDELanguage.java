@@ -76,6 +76,10 @@ public abstract class IDELanguage implements Language {
         return text;
     }
 
+    public int getIndentAdvance(@NonNull String line) {
+        return 0;
+    }
+
     protected ILanguageServer getLanguageServer() {
         return null;
     }

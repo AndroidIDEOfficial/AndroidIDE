@@ -18,7 +18,9 @@
 package com.itsaky.androidide.language.java;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
@@ -28,6 +30,16 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.DiagnosticItem;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+
+import java.io.StringReader;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -37,13 +49,6 @@ import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
-import java.io.StringReader;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
 
 public class JavaLanguage extends IDELanguage {
 
@@ -67,9 +72,10 @@ public class JavaLanguage extends IDELanguage {
         return analyzer == null ? Collections.emptyList() : analyzer.getDiagnostics();
     }
 
-    public int getIndentAdvance(String p1) {
+    @Override
+    public int getIndentAdvance(@NonNull String line) {
         try {
-            JavaLexer lexer = new JavaLexer(CharStreams.fromReader(new StringReader(p1)));
+            JavaLexer lexer = new JavaLexer(CharStreams.fromReader(new StringReader(line)));
             Token token;
             int advance = 0;
             while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
@@ -131,11 +137,6 @@ public class JavaLanguage extends IDELanguage {
     @Override
     public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {
         return getIndentAdvance(content.getLine(line).substring(0, column));
-    }
-
-    @Override
-    public boolean useTab() {
-        return false;
     }
 
     @Override

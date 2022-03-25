@@ -68,11 +68,6 @@ public class LogLanguageImpl extends IDELanguage {
     }
 
     @Override
-    public boolean useTab() {
-        return false;
-    }
-
-    @Override
     public CharSequence format(CharSequence text) {
         return text;
     }
