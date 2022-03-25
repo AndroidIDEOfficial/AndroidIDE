@@ -182,7 +182,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                         }
                     }
                 }
-            } else {
+            } else if (prefix.length() > 0) {
                 for (Map.Entry<String, Attr> entry : attrs.getAttributes().entrySet()) {
                     Attr attr = entry.getValue();
                     if (matchesPartialName(attr.name, prefix, matchLower)) {
