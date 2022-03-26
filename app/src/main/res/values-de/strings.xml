@@ -3,8 +3,6 @@
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
     <string name="license_jdk">AndroidIDE verwendet einen modifizierten Build des JDK, das unter der GNU General Public License v2.0 lizenziert ist. Der Quellcode und die Lizenz des JDK sind verf&#xFC;gbar unter:</string>
-    <string name="title_developers">Entwickler</string>
-    <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
     <string name="title_open_source_licenses">Open-Source-Lizenzen</string>
     <string name="msg_open_source_licenses">AndroidIDE verwendet Open-Source-Bibliotheken. Sie k&#xF6;nnen den Quellcode und die Lizenz der verwendeten Bibliotheken finden, indem Sie auf die folgenden Links klicken.</string>
     <string name="msg_about_licensed_under">Lizenziert unter:</string>
@@ -29,13 +27,10 @@
     <string name="app_logs">App Logs</string>
     <string name="ide_logs">IDE Logs</string>
     <string name="label_splash_image">Splash-Bild</string>
-    <string name="cancel">Abbrechen</string>
     <string name="get_started">Loslegen</string>
     <string name="nothing_here">Nichts hier &#x2026;</string>
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_sdk_info_load_failed">SDK-Informationen konnten nicht geladen werden</string>
     <string name="msg_fix_diagnostic">[Schnelle L&#xF6;sung]</string>
-    <string name="msg_no_code_actions">Kein Quickfix gefunden</string>
     <string name="msg_cannot_perform_fix">Schnellkorrektur kann nicht durchgef&#xFC;hrt werden</string>
     <string name="msg_performing_fixes">Korrekturen durchf&#xFC;hren&#x2026;</string>
     <string name="msg_code_actions">Schnellkorrekturen</string>
@@ -56,7 +51,7 @@
     <string name="title_installation_failed">Installation fehlgeschlagen</string>
     <string name="msg_installation_failed">Der Installationsvorgang wurde mit dem Beendigungscode %1$d beendet. Stellen Sie sicher, dass Sie die Build-Tools aus Originalquellen heruntergeladen haben.\n\nSie k&#xF6;nnten versuchen, Daten von AndroidIDE zu l&#xF6;schen und erneut zu installieren.\n\n%2$s</string>
     <string name="choose">Ausw&#xE4;hlen</string>
-    <string name="get_ready_for_something_awesome">Machen Sie sich bereit f&#xFC;r etwas Gro&#xDF;artiges!</string>
+    <string name="get_ready_for_something_awesome">Mach dich bereit f&#xFC;r etwas Gro&#xDF;artiges!</string>
     <string name="androidide_build_tools">AndroidIDE-Build-Tools</string>
     <string name="install_build_tools_required_b">Installieren Sie die von AndroidIDE ben&#xF6;tigten Build-Tools</string>
     <string name="choose_directory_which_contain">W&#xE4;hlen Sie das Verzeichnis, das Build-Tools enth&#xE4;lt.</string>
@@ -99,7 +94,6 @@
     <string name="gradle_daemon_status">Gradle-Daemon-Status</string>
     <string name="msg_service_started">Dienst gestartet</string>
     <string name="msg_starting_completion">Dienste starten</string>
-    <string name="msg_starting_completion_failed">Completion Services konnten nicht gestartet werden</string>
     <string name="msg_starting_daemon">Gradle Daemon wird gestartet</string>
     <string name="title_install_apks">APK(s) installieren</string>
     <string name="title_clear_output">Ausgabe s&#xE4;ubern</string>
@@ -131,14 +125,6 @@
     <string name="msg_invalid_project">Das ausgew&#xE4;hlte Verzeichnis ist kein Android-Projekt</string>
     <string name="msg_project_deleted">Projekt gel&#xF6;scht</string>
     <string name="msg_project_delete_failed">Projekt konnte nicht gel&#xF6;scht werden!</string>
-    <string name="menu_project_info">Projektinfo</string>
-    <string name="header_module_info">Modulinfo</string>
-    <string name="msg_module_count">Module : %d</string>
-    <string name="msg_task_count">Aufgaben : %d</string>
-    <string name="msg_dependency_count">Dependencies: %d</string>
-    <string name="msg_package_name">Pakete</string>
-    <string name="msg_min_sdk">Mindest-SDK: %s</string>
-    <string name="msg_target_sdk">Ziel-SDK: %s</string>
     <string name="title_confirm_project_close">Projekt schlie&#xDF;en</string>
     <string name="msg_confirm_project_close">M&#xF6;chten Sie dieses Projekt wirklich schlie&#xDF;en? Alle gestarteten Gradle-Daemons werden gestoppt, nachdem dieses Projekt geschlossen wurde.</string>
     <string name="project_exists">Ein gleichnamiges Projekt existiert bereits!</string>
@@ -151,7 +137,6 @@
     <string name="template_navigation_drawer">Projekt mit NavigationDrawer</string>
     <!-- Files -->
     <string name="save">Speichern</string>
-    <string name="show_files">Dateien</string>
     <string name="menu_find">Finden</string>
     <string name="menu_find_file">In Datei suchen</string>
     <string name="menu_find_project">Im Projekt suchen</string>
@@ -215,23 +200,13 @@
     <string name="classtype_enum">Enum</string>
     <string name="msg_checking_storage_permissions">&#xDC;berpr&#xFC;fung der Speicherberechtigungen</string>
     <string name="msg_failed_list_files">Projektdateien konnten nicht aufgelistet werden!</string>
-    <string name="msg_failed_save">Dateien konnten nicht gespeichert werden!</string>
     <string name="msg_storage_denied">Ohne die Speicherberechtigung kann nicht fortgefahren werden</string>
     <string name="msg_storage_granted">Speicherberechtigung erteilt!</string>
     <!-- Code Editor -->
     <string name="undo">R&#xFC;ckg&#xE4;ngig machen</string>
     <string name="redo">Wiederholen</string>
-    <item name="paste" type="string">Paste</item>
     <item name="copy" type="string" tools:override="true">Copy</item>
-    <item name="selectAll" formatted="true" type="string">Select All</item>
-    <item name="cut" type="string">Cut</item>
-    <item name="last" type="string">Last</item>
-    <item name="next" type="string">Next</item>
-    <item name="replace" type="string">Replace</item>
-    <item name="replaceAll" type="string">Replace all</item>
-    <item name="replacement" type="string">Replacement</item>
     <item name="text_to_search" type="string">Text to search</item>
-    <item name="more" type="string">Mehr</item>
     <!-- Preferences -->
     <string name="title_change_text_size">Editor Schriftgr&#xF6;&#xDF;e</string>
     <string name="idepref_about_title">&#xDC;ber AndroidIDE</string>
@@ -239,8 +214,6 @@
     <string name="idepref_build_clearCache_summary">L&#xF6;schen Sie das Gradle-Cache-Verzeichnis. Dadurch werden alle von Gradle heruntergeladenen Dateien gel&#xF6;scht. Erforderliche Dateien werden im n&#xE4;chsten Build erneut heruntergeladen.</string>
     <string name="idepref_build_customgradlecommands_title">Zus&#xE4;tzliche Gradle-Befehle</string>
     <string name="idepref_build_customgradlecommands_summary">W&#xE4;hlen Sie zus&#xE4;tzliche Befehle aus, die beim Ausf&#xFC;hren jeder Aufgabe hinzugef&#xFC;gt werden</string>
-    <string name="idepref_build_editgradleproperties_title">Bearbeiten Sie globale Gradle-Eigenschaften</string>
-    <string name="idepref_build_editgradleproperties_summary">Bearbeiten Sie gradle.properties in GRADLE_HOME</string>
     <string name="idepref_editor_fontsize_title">Schriftgr&#xF6;&#xDF;e</string>
     <string name="idepref_editor_fontsize_summary">Schriftgr&#xF6;&#xDF;e des Editors</string>
     <string name="idepref_editor_paintingflags_title">Non-printable painting flags</string>
@@ -265,18 +238,11 @@
     <string name="msg_clear_cache">Dadurch wird das von Gradle erstellte Cache-Verzeichnis gel&#xF6;scht. Wenn Sie es l&#xF6;schen, kann der n&#xE4;chste Build etwas l&#xE4;nger als normal dauern, da Gradle die erforderlichen Dateien erneut herunterl&#xE4;dt.\nWICHTIG: Dadurch wird auch AAPT2 gel&#xF6;scht. Sie m&#xFC;ssen es neu installieren, andernfalls kommt es zu einem Build-Fehler.\n\nSind Sie sicher, dass Sie Caches l&#xF6;schen m&#xF6;chten?</string>
     <!-- Error Messages used while Logging -->
     <string name="err_installation">Installationsfehler</string>
-    <string name="err_completion">Completion Fehler</string>
-    <string name="err_no_server_implementation">Keine Language Server Implementierung gefunden.</string>
-    <string name="err_init_server">Fehler beim Initialisieren des Language Server.</string>
     <string name="err_init_sdkinfo">SDK Info kann nicht initialisiert werden</string>
     <string name="err_cannot_start_file_picker">Datei Picker kann nicht gestartet werden</string>
     <string name="err_cannot_parse_apk_metadata">APK-Metadaten konnten nicht geparst werden</string>
-    <string name="err_cannot_save_files">Dateien k&#xF6;nnen nicht gespeichert werden</string>
     <string name="err_cannot_preview_layout">Vorschau des Layouts nicht m&#xF6;glich</string>
     <string name="err_cannot_inflate_layout">Layout kann nicht angezeigt werden</string>
-    <string name="err_cannot_start_server">Language Server kann nicht gestartet werden f&#xFC;r: %s</string>
-    <string name="err_cannot_write_socket">Fehler beim Schreiben in den Socket-Stream</string>
-    <string name="err_server_disconnected">Der Language Server Prozess wurde unerwartet beendet.</string>
     <!-- Layout preview and designer -->
     <string name="msg_cannot_preview_layout">Vorschau des Layouts nicht m&#xF6;glich!</string>
     <string name="title_preview_layout">Layout Vorschau</string>
@@ -296,18 +262,10 @@
     <string name="widget_group_layouts">Layouts</string>
     <string name="layout_linear">LinearLayout</string>
     <string name="layout_relative">RelativeLayout</string>
-    <string name="msg_attr_edit_hint">Klicken Sie auf die zu bearbeitenden Attributelemente.</string>
-    <string name="sym_equal">=</string>
-    <string name="msg_attr_namespace">Namespace \'%s\'</string>
-    <string name="msg_unknown_package">Unbekannter Paketname</string>
-    <string name="msg_attr_editor_select_view">W&#xE4;hlen Sie eine View aus, um ihre Attribute zu bearbeiten.</string>
-    <string name="msg_attr_editor_no_attrs">F&#xFC;r diese View wurden keine Attribute hinzugef&#xFC;gt.\nKlicken Sie zum Hinzuf&#xFC;gen auf die Schaltfl&#xE4;che \'+\'.</string>
-    <string name="msg_enter_attr_value">Neuen Wert f&#xFC;r Attribut eingeben:</string>
     <string name="hint_new_attr_value">Neuer Wert</string>
     <string name="attr_val_wrap_content">wrap_content</string>
     <string name="attr_val_match_parent">match_parent</string>
     <string name="attr_val_other">Anderer Wert</string>
-    <string name="msg_enter_dimension_value">Dimensionswert eingeben</string>
     <string name="msg_applicable_attrs">Anwendbare Attribute</string>
     <string name="msg_attr_editor_actions">Aktionen</string>
     <string name="title_viewaction_delete">L&#xF6;schen</string>
@@ -318,7 +276,6 @@
     <string name="msg_view_deletion_failed">Die View kann nicht gel&#xF6;scht werden.</string>
     <string name="msg_empty_ui_layout">Es wurden keine View hinzugef&#xFC;gt. Zum Hinzuf&#xFC;gen klicken.</string>
     <string name="msg_no_attr_format">F&#xFC;r dieses Attribut ist kein Attributformat verf&#xFC;gbar.</string>
-    <string name="msg_attr_editor_null">Attribut Editor kann f&#xFC;r dieses Attribut nicht erstellt werden</string>
     <string name="msg_invalid_attr_value">Ung&#xFC;ltiger Wert</string>
     <string name="msg_new_str_value">Neue string value</string>
     <string name="msg_choose_new_val">W&#xE4;hlen Sie einen neuen Wert aus</string>
@@ -351,4 +308,21 @@
     <string name="msg_compiler_module_install">Kompilierer Modul wird installiert, bitte warten&#8230;</string>
     <string name="template_description_kotlin_basic">Kotlin Projekt mit einer AppCompat Toolbar und einen FloatingActionButton</string>
     <string name="template_kotlin_basic">Kotlin Basis Projekt</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="msg_viewaction_add_attr">Attribut hinzufügen</string>
+    <string name="msg_search_attrs">Attribute suchen…</string>
+    <string name="msg_attr_added">Attribut wurde erfolgreich hinzugefügt</string>
+    <string name="msg_attr_not_updated">Fehler beim aktualisieren des Attributs</string>
+    <string name="msg_file_tree">Dateipfad</string>
+    <string name="hint_color_resource">Farbwert</string>
+    <string name="title_color_picker">Farbauswahl</string>
+    <string name="title_format_code">Code formatieren</string>
+    <string name="hint_string_value">String value</string>
+    <string name="hint_string_resource">String resource</string>
+    <string name="hint_resource_reference">Any resource reference</string>
+    <string name="hint_dimension_val">Dimension value</string>
+    <string name="hint_dimension_res">Dimension resource</string>
+    <string name="hint_boolean_res">Boolean resource</string>
+    <string name="msg_apk_install_intent_failed">Fehler beim installieren der App</string>
 </resources>
