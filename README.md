@@ -17,18 +17,18 @@
 - [x] API information for classes and their members (since, removed, deprecated).
 - [ ] Language servers
   - [x] Java
-  - [ ] XML (*)
+  - [x] XML (*)
   - [ ] Kotlin
 - [ ] UI Designer
   - [x] Layout inflater
   - [x] Resolve resource references
   - [x] Auto-complete resource values when user edits attributes using the attribute editor
-  - [ ] Drag & Drop (*)
+  - [x] Drag & Drop (*)
   - [x] Visual attribute editor (*)
-  - [ ] Android Widgets (*)
+  - [x] Android Widgets (*)
 - [ ] String Translator
 - [ ] Asset Studio (Drawable & Icon Maker)
-- [ ] Git (*)
+- [x] Git (*)
 
 Items marked with `(*)` are partially implemented.
 `XML` language server supports only code completion at the moment. Git is currently available only in the terminal i.e. no GUI interface for `git`.
