@@ -21,24 +21,32 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.TextActionItemAdapter;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.managers.PreferenceManager;
-import io.github.rosemoe.sora.event.HandleStateChangeEvent;
-import io.github.rosemoe.sora.event.ScrollEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.EditorTouchEventHandler;
-import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import io.github.rosemoe.sora.event.HandleStateChangeEvent;
+import io.github.rosemoe.sora.event.ScrollEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.event.SubscriptionReceipt;
+import io.github.rosemoe.sora.event.Unsubscribe;
+import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.EditorTouchEventHandler;
+import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 
 /**
  * Presents text actions in a popup widow.
@@ -49,16 +57,14 @@ import java.util.stream.Collectors;
 public class EditorTextActionWindow extends EditorPopupWindow
         implements IDEEditor.ITextActionPresenter {
 
+    private static final long DELAY = 200;
+    protected final List<SubscriptionReceipt<?>> subscriptionReceipts;
+    private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<>();
     private IDEEditor editor;
     private RecyclerView actionsList;
     private EditorTouchEventHandler touchHandler;
-    
-    private static final long DELAY = 200;
     private long mLastScroll;
     private int mLastPosition;
-    private boolean unsubscribeEvents = false;
-
-    private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<>();
 
     /**
      * Create a popup window for editor
@@ -70,6 +76,7 @@ public class EditorTextActionWindow extends EditorPopupWindow
      */
     public EditorTextActionWindow(@NonNull CodeEditor editor) {
         super(editor, FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED);
+        this.subscriptionReceipts = new ArrayList<>();
 
         getPopup().setAnimationStyle(R.style.PopupAnimation);
     }
@@ -116,7 +123,7 @@ public class EditorTextActionWindow extends EditorPopupWindow
         this.registeredActions.clear();
         this.editor = null;
         this.actionsList = null;
-        this.unsubscribeEvents = true;
+        this.unsubscribeEvents();
     }
 
     private void applyLayoutManager() {
@@ -172,66 +179,65 @@ public class EditorTextActionWindow extends EditorPopupWindow
     }
 
     private void subscribeToEvents() {
-        this.editor.subscribeEvent(
-                SelectionChangeEvent.class,
-                (event, unsubscribe) -> {
-                    if (unsubscribeEvents) {
-                        unsubscribe.unsubscribe();
-                        return;
-                    }
+        this.subscriptionReceipts.add(
+                this.editor.subscribeEvent(SelectionChangeEvent.class, this::onSelectionChanged));
 
-                    if (touchHandler.hasAnyHeldHandle()) {
-                        return;
-                    }
-                    if (event.isSelected()) {
-                        if (!isShowing()) {
-                            this.editor.post(this::displayWindow);
-                        }
-                        mLastPosition = -1;
-                    } else {
-                        var show = false;
-                        if (event.getCause() == SelectionChangeEvent.CAUSE_TAP
-                                && event.getLeft().index == mLastPosition
-                                && !isShowing()
-                                && !this.editor.getText().isInBatchEdit()) {
-                            this.editor.post(this::displayWindow);
-                            show = true;
-                        } else {
-                            dismiss();
-                        }
-                        if (event.getCause() == SelectionChangeEvent.CAUSE_TAP && !show) {
-                            mLastPosition = event.getLeft().index;
-                        } else {
-                            mLastPosition = -1;
-                        }
-                    }
-                });
-        this.editor.subscribeEvent(
-                ScrollEvent.class,
-                ((event, unsubscribe) -> {
-                    if (unsubscribeEvents) {
-                        unsubscribe.unsubscribe();
-                        return;
-                    }
+        this.subscriptionReceipts.add(
+                this.editor.subscribeEvent(ScrollEvent.class, this::onScrollEvent));
 
-                    var last = mLastScroll;
-                    mLastScroll = System.currentTimeMillis();
-                    if (mLastScroll - last < DELAY) {
-                        postDisplay();
-                    }
-                }));
-        this.editor.subscribeEvent(
-                HandleStateChangeEvent.class,
-                ((event, unsubscribe) -> {
-                    if (unsubscribeEvents) {
-                        unsubscribe.unsubscribe();
-                        return;
-                    }
+        this.subscriptionReceipts.add(
+                this.editor.subscribeEvent(
+                        HandleStateChangeEvent.class, this::onHandleStateChanged));
+    }
 
-                    if (event.isHeld()) {
-                        postDisplay();
-                    }
-                }));
+    private void unsubscribeEvents() {
+        for (final var receipt : this.subscriptionReceipts) {
+            receipt.unsubscribe();
+        }
+        this.subscriptionReceipts.clear();
+    }
+
+    protected void onSelectionChanged(SelectionChangeEvent event, Unsubscribe unsubscribe) {
+        if (touchHandler.hasAnyHeldHandle()) {
+            return;
+        }
+        if (event.isSelected()) {
+            if (!isShowing()) {
+                this.editor.post(this::displayWindow);
+            }
+            mLastPosition = -1;
+        } else {
+            var show = false;
+            if (event.getCause() == SelectionChangeEvent.CAUSE_TAP
+                    && event.getLeft().index == mLastPosition
+                    && !isShowing()
+                    && !this.editor.getText().isInBatchEdit()) {
+                this.editor.post(this::displayWindow);
+                show = true;
+            } else {
+                dismiss();
+            }
+            if (event.getCause() == SelectionChangeEvent.CAUSE_TAP && !show) {
+                mLastPosition = event.getLeft().index;
+            } else {
+                mLastPosition = -1;
+            }
+        }
+    }
+
+    protected void onScrollEvent(ScrollEvent event, Unsubscribe unsubscribe) {
+        var last = mLastScroll;
+        mLastScroll = System.currentTimeMillis();
+        if (mLastScroll - last < DELAY) {
+            postDisplay();
+        }
+    }
+
+    protected void onHandleStateChanged(
+            @NonNull HandleStateChangeEvent event, Unsubscribe unsubscribe) {
+        if (event.isHeld()) {
+            postDisplay();
+        }
     }
 
     private void performTextAction(@NonNull IDEEditor.TextAction action) {
@@ -292,7 +298,7 @@ public class EditorTextActionWindow extends EditorPopupWindow
                 new Runnable() {
                     @Override
                     public void run() {
-                        if (unsubscribeEvents || editor == null) {
+                        if (editor == null) {
                             if (isShowing()) {
                                 dismiss();
                             }
