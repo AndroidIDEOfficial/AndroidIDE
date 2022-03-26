@@ -16,13 +16,10 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.R.color.secondaryColor;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
@@ -845,22 +842,31 @@ public class IDEEditor extends CodeEditor {
 
         actionPresenter.registerAction(
                 new TextAction(
-                        array.getDrawable(0),
+                        tintDrawable(array.getDrawable(0)),
                         android.R.string.selectAll,
                         TextAction.SELECT_ALL,
                         index++));
 
         actionPresenter.registerAction(
                 new TextAction(
-                        array.getDrawable(1), android.R.string.cut, TextAction.CUT, index++));
+                        tintDrawable(array.getDrawable(1)),
+                        android.R.string.cut,
+                        TextAction.CUT,
+                        index++));
 
         actionPresenter.registerAction(
                 new TextAction(
-                        array.getDrawable(2), android.R.string.copy, TextAction.COPY, index++));
+                        tintDrawable(array.getDrawable(2)),
+                        android.R.string.copy,
+                        TextAction.COPY,
+                        index++));
 
         actionPresenter.registerAction(
                 new TextAction(
-                        array.getDrawable(3), android.R.string.paste, TextAction.PASTE, index++));
+                        tintDrawable(array.getDrawable(3)),
+                        android.R.string.paste,
+                        TextAction.PASTE,
+                        index++));
 
         actionPresenter.registerAction(
                 new TextAction(
@@ -984,12 +990,12 @@ public class IDEEditor extends CodeEditor {
     }
 
     private Drawable createTextActionDrawable(int icon) {
-        final Drawable d = ContextCompat.getDrawable(getContext(), icon);
-        if (d != null) {
-            d.setColorFilter(
-                    ContextCompat.getColor(getContext(), secondaryColor), PorterDuff.Mode.SRC_ATOP);
-        }
-        return d;
+        return ContextCompat.getDrawable(getContext(), icon);
+    }
+
+    private Drawable tintDrawable(@NonNull Drawable drawable) {
+        drawable.setTint(ContextCompat.getColor(getContext(), R.color.primaryIconColor));
+        return drawable;
     }
 
     private void handleSelectionChange(SelectionChangeEvent event) {

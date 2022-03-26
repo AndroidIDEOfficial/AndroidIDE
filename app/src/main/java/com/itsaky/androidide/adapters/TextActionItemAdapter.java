@@ -17,15 +17,15 @@
 
 package com.itsaky.androidide.adapters;
 
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.itsaky.androidide.app.StudioApp;
+
 import com.itsaky.androidide.databinding.LayoutTextActionItemBinding;
-import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.views.editor.IDEEditor;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -39,17 +39,12 @@ public class TextActionItemAdapter extends RecyclerView.Adapter<TextActionItemAd
 
     private final List<IDEEditor.TextAction> actions;
     private final Consumer<IDEEditor.TextAction> onClick;
-    private final boolean isHorizontal;
 
     public TextActionItemAdapter(
             List<IDEEditor.TextAction> actions, Consumer<IDEEditor.TextAction> onClick) {
         Objects.requireNonNull(actions);
         this.actions = actions;
         this.onClick = onClick;
-        this.isHorizontal =
-                StudioApp.getInstance()
-                        .getPrefManager()
-                        .getBoolean(PreferenceManager.KEY_EDITOR_HORIZONTAL_POPUP, false);
     }
 
     @NonNull
@@ -66,19 +61,8 @@ public class TextActionItemAdapter extends RecyclerView.Adapter<TextActionItemAd
         final var action = actions.get(position);
         final var button = binding.getRoot();
 
-        if (isHorizontal) {
-            // If not set to wrap_content, one item will take whole screen width.
-            final var params = button.getLayoutParams();
-            params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            button.setLayoutParams(params);
-
-            // looks better
-            button.setGravity(Gravity.CENTER);
-        }
-
+        button.setCompoundDrawablesRelativeWithIntrinsicBounds(null, action.icon, null, null);
         button.setText(action.titleId);
-        button.setCompoundDrawablesRelative(action.icon, null, null, null);
-
         button.setOnClickListener(
                 v -> {
                     if (onClick != null) {

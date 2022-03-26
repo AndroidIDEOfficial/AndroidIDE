@@ -58,22 +58,10 @@ public class AboutActivity extends StudioActivity {
         TooltipCompat.setTooltipText(items.github, getString(R.string.title_github));
         TooltipCompat.setTooltipText(items.email, getString(R.string.about_option_email));
         TooltipCompat.setTooltipText(items.website, getString(R.string.about_option_website));
-        items.github.setOnClickListener(
-                v -> {
-                    getApp().openGitHub();
-                });
-        items.discuss.setOnClickListener(
-                v -> {
-                    getApp().openTelegramGroup();
-                });
-        items.email.setOnClickListener(
-                v -> {
-                    getApp().emailUs();
-                });
-        items.website.setOnClickListener(
-                v -> {
-                    getApp().openWebsite();
-                });
+        items.github.setOnClickListener(v -> getApp().openGitHub());
+        items.discuss.setOnClickListener(v -> getApp().openTelegramGroup());
+        items.email.setOnClickListener(v -> getApp().emailUs());
+        items.website.setOnClickListener(v -> getApp().openWebsite());
     }
 
     private void setupTranslations() {

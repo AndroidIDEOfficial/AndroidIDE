@@ -27,10 +27,9 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.TextActionItemAdapter;
-import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.managers.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,17 +126,9 @@ public class EditorTextActionWindow extends EditorPopupWindow
     }
 
     private void applyLayoutManager() {
-        final var manager = StudioApp.getInstance().getPrefManager();
-        final var horizontal =
-                manager.getBoolean(PreferenceManager.KEY_EDITOR_HORIZONTAL_POPUP, false);
-        if (horizontal) {
-            this.actionsList.setLayoutManager(
-                    new LinearLayoutManager(
-                            this.actionsList.getContext(), LinearLayoutManager.HORIZONTAL, false));
-        } else {
-            this.actionsList.setLayoutManager(
-                    new LinearLayoutManager(this.actionsList.getContext()));
-        }
+        this.actionsList.setLayoutManager(
+                new LinearLayoutManager(
+                        this.actionsList.getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 
     @NonNull
@@ -157,20 +148,24 @@ public class EditorTextActionWindow extends EditorPopupWindow
             ((ViewGroup) actionsList.getParent()).removeView(actionsList);
         }
 
-        final var dp16 = editor.getDpUnit() * 16;
+        final var dp8 = SizeUtils.dp2px(8);
+        final var dp16 = dp8 * 2;
         final var actions =
                 this.registeredActions.stream()
                         .filter(action -> this.editor.shouldShowTextAction(action.id))
                         .collect(Collectors.toList());
         this.actionsList.setAdapter(new TextActionItemAdapter(actions, this::performTextAction));
+        this.actionsList.setClipToPadding(false);
+        this.actionsList.setClipChildren(false);
+        this.actionsList.setPaddingRelative(
+                dp8, this.actionsList.getPaddingTop(), dp8, this.actionsList.getPaddingBottom());
         this.actionsList.measure(
                 View.MeasureSpec.makeMeasureSpec(
-                        (int) (editor.getWidth() - dp16 * 2), // 16dp margins from start and end
+                        editor.getWidth() - dp16 * 2, // 16dp margins from start and end
                         View.MeasureSpec.AT_MOST),
                 View.MeasureSpec.makeMeasureSpec(
-                        (int)
-                                ((int) (260 * editor.getDpUnit())
-                                        - dp16 * 2), // 260dp at most and 16dp margins from top and
+                        (int) (260 * editor.getDpUnit())
+                                - dp16 * 2, // 260dp at most and 16dp margins from top and
                         // bottom
                         View.MeasureSpec.AT_MOST));
         setSize(this.actionsList.getMeasuredWidth(), this.actionsList.getMeasuredHeight());

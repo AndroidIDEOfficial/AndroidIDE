@@ -44,8 +44,8 @@
     <string name="menu_navigate_definition">Go to definition</string>
     <string name="menu_navigate_references">Find all references</string>
     <string name="menu_navigate">Code</string>
-    <string name="menu_comment_line">Comment line</string>
-    <string name="menu_uncomment_line">Uncomment line</string>
+    <string name="menu_comment_line">Comment</string>
+    <string name="menu_uncomment_line">Uncomment</string>
     <string name="view_diags">Diagnostics</string>
 
     <!-- Build Tools Installation -->
