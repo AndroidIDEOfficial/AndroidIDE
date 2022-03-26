@@ -21,20 +21,22 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
+
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.util.Pair;
+
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityAboutBinding;
 import com.itsaky.androidide.databinding.LayoutAboutItemsBinding;
 import com.itsaky.androidide.models.License;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class AboutActivity extends StudioActivity {
 
-    private ActivityAboutBinding binding;
-
     public static final String JDK_SOURCE = "https://github.com/itsaky/OpenJDK-Android";
+    private ActivityAboutBinding binding;
 
     @Override
     protected View bindLayout() {
@@ -108,7 +110,7 @@ public class AboutActivity extends StudioActivity {
         final var list = new ArrayList<Pair<String, String>>();
 
         list.add(Pair.create("Bahasa Indonesia", "Fitrah Nuno Syahbani"));
-        list.add(Pair.create("\u4e2d\u6587", "Rosemoe")); // 中文
+        list.add(Pair.create("\u4e2d\u6587", "Rosemoe and @mikofe")); // 中文
         list.add(Pair.create("Deutsch", "Marvin Stelter"));
         list.add(
                 Pair.create("\u0939\u093f\u0928\u094d\u0926\u0940", "Premjit Chowdhury")); // हिन्दी
