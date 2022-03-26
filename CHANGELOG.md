@@ -1,18 +1,14 @@
-# AndroidIDE Changelog
-
+# AndroidIDE Changelog 
 This is the changelog of all the releases of AndroidIDE.
 
 ## **v2.0.1-beta** (in development)
 
 ### Important notes
-
 <!--Breaking changes and other important stuff here-->
 (No notes)
 
 ### Additions
-
 <!--New features-->
-
 - Code formatter for Java source code.
 - Support for
   [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView),
@@ -21,40 +17,37 @@ This is the changelog of all the releases of AndroidIDE.
   [`GridLayout`](https://developer.android.com/reference/android/widget/GridLayout) in layout
   inflater.
 - Preference to disable use of `TYPE_TEXT_VARIATION_VISIBLE_PASSWORD` flag in editor.
-- 
+- Automatically trigger completion when attributes are inserted from completion window.
 
 ### Removals
 <!--Things that were removed-->
-(No removals)
+- Removed initial view attributes from view tags completion in XMLCompletionProvider
 
 ### Fixes
 <!--Bug fixes, etc-->
 - Fixed: Cash in attribute editors when adding an attribute.
 - Fixed: Crash when selecting diagnostic item from diagnostics list.
 - Fixed: Some diagnostic items are not shown in diagnostic window (#96).
+- Fixed: Diagnostics were updated late in the editor.
 - Fixed: Popup windows created by editor are not dismissed even when the file is closed.
 
 ### Improvements
-
-<!--Things that were removed and worth mentioning-->
-
+<!--Things that were improved and worth mentioning-->
 - Do not import classes from `java.lang` package when completion items are selected.
-- XML completion provider now uses 'Match completions in lower case' preference.
+- XML completion provider now uses 'Match completions in lower case' preference. 
+- Dismiss all windows shown by editor when file tab is unselected
 - Updated Chinese translation. Thanks to @mikofe (#128).
 - Updated French translation. Thanks to @Se-Lyan (#136).
 
 ## **v2.0.0-beta**
-
 AndroidIDE v2.0.0-beta is here with new features and improvements.
 
 ### Important Notes
-
 - This is a pre-release and is not so stable. There are some features that are partially
   implemented.
 - The minimum SDK has been raised to `26` (`Android O`).
 
 ### Additions
-
 - XML Layout Designer with ability to preview XML drawables.
 - Added packages for terminal.
 - libGDx project template. Thanks to @Smooth-E (#81).
@@ -74,12 +67,10 @@ AndroidIDE v2.0.0-beta is here with new features and improvements.
 - Russian translation. Thanks to @Smooth-E (#97).
 
 ### Removals
-
 - Autosave of files is removed. However, a preference has been added for the same which, when
   enabled, saves the files automatically before close.
 
 ### Fixes
-
 - File does not close and crashes if reopened and closed again.
 - Flickering of whole auto completion window.
 - Flickering of completion item due to API info.
@@ -91,7 +82,6 @@ AndroidIDE v2.0.0-beta is here with new features and improvements.
 - `LogSender` class not included in JLS workspace.
 
 ### Improvements
-
 - Show crash report when the IDE crashes.
 - The Java language server is now embedded in the IDE itself.
 - The AndroidIDE Gradle plugin is now packaged with the IDE.
@@ -103,7 +93,6 @@ AndroidIDE v2.0.0-beta is here with new features and improvements.
 - Allow installation of files from file tree.
 
 ### New Contributors
-
 * @BanDroid
 * @Rosemoe
 * @Premjit-Chowdhury
