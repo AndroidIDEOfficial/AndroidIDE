@@ -19,17 +19,21 @@ package com.itsaky.androidide.views.editor;
 import android.annotation.SuppressLint;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
+
 import com.itsaky.androidide.utils.Logger;
-import io.github.rosemoe.sora.event.ClickEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
+
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+
+import io.github.rosemoe.sora.event.ClickEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
 /**
  * Text action mode actions for the editor.
@@ -38,13 +42,11 @@ import java.util.TreeSet;
  */
 public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
 
+    private static final Logger LOG = Logger.instance("EditorTextActionMode");
+    private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<>();
     private IDEEditor editor;
     private ActionMode actionMode;
     private boolean unsubscribeEvents = false;
-
-    private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<>();
-
-    private static final Logger LOG = Logger.instance("EditorTextActionMode");
 
     @Override
     public void bindEditor(@NonNull IDEEditor editor) {
@@ -90,6 +92,11 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
         Objects.requireNonNull(this.editor, "No editor attached!");
 
         this.registeredActions.add(action);
+    }
+
+    @Override
+    public void dismiss() {
+        exit();
     }
 
     @Override

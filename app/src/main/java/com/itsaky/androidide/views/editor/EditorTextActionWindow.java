@@ -52,7 +52,7 @@ public class EditorTextActionWindow extends EditorPopupWindow
     private IDEEditor editor;
     private RecyclerView actionsList;
     private EditorTouchEventHandler touchHandler;
-
+    
     private static final long DELAY = 200;
     private long mLastScroll;
     private int mLastPosition;

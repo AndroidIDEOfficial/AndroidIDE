@@ -979,7 +979,7 @@ public class IDEEditor extends CodeEditor {
         }
 
         if (mTextActionPresenter != null) {
-            mTextActionPresenter.destroy();
+            mTextActionPresenter.dismiss();
         }
     }
 
@@ -1121,6 +1121,9 @@ public class IDEEditor extends CodeEditor {
          * @param action The action to register.
          */
         void registerAction(@NonNull TextAction action);
+
+        /** Dismiss the presenter. */
+        void dismiss();
 
         /**
          * Destroy this action presenter. The presenter should unsubscribe from any subscribed
