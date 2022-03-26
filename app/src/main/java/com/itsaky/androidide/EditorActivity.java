@@ -723,7 +723,14 @@ public class EditorActivity extends StudioActivity
 
     @Override
     public void onTabUnselected(@NonNull TabLayout.Tab tab) {
-        // unimplemented
+        final var position = tab.getPosition();
+        final var editorView = getEditorAtIndex(position);
+        if (editorView != null) {
+            final var editor = editorView.getEditor();
+            if (editor != null) {
+                editor.ensureWindowsDismissed();
+            }
+        }
     }
 
     @Override
