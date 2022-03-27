@@ -138,4 +138,9 @@ public class ImplementAbstractMethods extends Rewrite {
 
         return thisTree;
     }
+
+    @Override
+    protected void applyCommands(@NonNull CodeActionItem action) {
+        action.setCommand(new Command("Format code", Command.FORMAT_CODE));
+    }
 }

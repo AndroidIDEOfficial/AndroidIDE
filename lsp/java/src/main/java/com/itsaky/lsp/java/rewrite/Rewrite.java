@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.CodeActionKind;
-import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DocumentChange;
 import com.itsaky.lsp.models.TextEdit;
 
@@ -77,8 +76,5 @@ public abstract class Rewrite {
         return Collections.singletonList(action);
     }
 
-    protected void applyCommands(@NonNull CodeActionItem action) {
-        // By default, format code command is executed after code action has been performed.
-        action.setCommand(new Command("Format code", Command.FORMAT_CODE));
-    }
+    protected void applyCommands(@NonNull CodeActionItem action) {}
 }
