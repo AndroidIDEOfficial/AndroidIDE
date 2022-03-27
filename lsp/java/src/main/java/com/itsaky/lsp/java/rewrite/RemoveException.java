@@ -31,17 +31,21 @@ import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 
-public class RemoveException implements Rewrite {
+public class RemoveException extends Rewrite {
+    
+    private static final Pattern THROWS = Pattern.compile("\\s*\\bthrows\\b");
     final String className, methodName;
     final String[] erasedParameterTypes;
     final String exceptionType;
@@ -61,7 +65,7 @@ public class RemoveException implements Rewrite {
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         Path file = compiler.findTypeDeclaration(className);
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask(
+        return synchronizedTask.get(
                 task -> {
                     ExecutableElement methodElement =
                             FindHelper.findMethod(
@@ -80,8 +84,6 @@ public class RemoveException implements Rewrite {
                     return Collections.singletonMap(file, edits);
                 });
     }
-
-    private static final Pattern THROWS = Pattern.compile("\\s*\\bthrows\\b");
 
     private TextEdit removeEntireThrows(
             JavacTask task, CompilationUnitTree root, MethodTree method) {

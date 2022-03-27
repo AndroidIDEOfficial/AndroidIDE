@@ -37,6 +37,7 @@ import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.CodeActionItem;
@@ -56,6 +57,7 @@ import com.itsaky.lsp.models.ReferenceResult;
 import com.itsaky.lsp.models.ShowDocumentParams;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
+import com.itsaky.lsp.util.DiagnosticUtil;
 import com.itsaky.toaster.Toaster;
 
 import org.jetbrains.annotations.Contract;
@@ -68,6 +70,7 @@ import java.util.concurrent.CompletableFuture;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.event.Unsubscribe;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 public class IDEEditor extends CodeEditor {
@@ -99,10 +102,8 @@ public class IDEEditor extends CodeEditor {
 
         setColorScheme(new SchemeAndroidIDE());
         setTextActionPresenter(chooseTextActionPresenter());
-        subscribeEvent(
-                SelectionChangeEvent.class, (event, unsubscribe) -> handleSelectionChange(event));
-        subscribeEvent(
-                ContentChangeEvent.class, (event, unsubscribe) -> handleContentChange(event));
+        subscribeEvent(SelectionChangeEvent.class, this::handleSelectionChange);
+        subscribeEvent(ContentChangeEvent.class, this::handleContentChange);
 
         setInputType(createInputFlags());
     }
@@ -660,15 +661,15 @@ public class IDEEditor extends CodeEditor {
      * @return The {@link CodeActionResult} from the server.
      */
     public CompletableFuture<CodeActionResult> codeActions(List<DiagnosticItem> diagnostics) {
+        return codeActions(new CodeActionParams(getFile().toPath(), getCursorRange(), diagnostics));
+    }
+
+    public CompletableFuture<CodeActionResult> codeActions(CodeActionParams params) {
         if (mLanguageServer == null || mLanguageClient == null) {
-            return null;
+            return CompletableFuture.completedFuture(null);
         }
 
-        return CompletableFuture.supplyAsync(
-                () ->
-                        mLanguageServer.codeActions(
-                                new CodeActionParams(
-                                        getFile().toPath(), getCursorRange(), diagnostics)));
+        return CompletableFuture.supplyAsync(() -> mLanguageServer.codeActions(params));
     }
 
     /**
@@ -835,6 +836,13 @@ public class IDEEditor extends CodeEditor {
 
         actionPresenter.registerAction(
                 new TextAction(
+                        createTextActionDrawable(R.drawable.ic_quickfix),
+                        R.string.msg_fix_diagnostic,
+                        TextAction.QUICKFIX,
+                        index++));
+
+        actionPresenter.registerAction(
+                new TextAction(
                         createTextActionDrawable(R.drawable.ic_expand_selection),
                         R.string.action_expand_selection,
                         TextAction.EXPAND_SELECTION,
@@ -930,6 +938,29 @@ public class IDEEditor extends CodeEditor {
             case TextAction.COMMENT_LINE:
             case TextAction.UNCOMMENT_LINE:
                 return commentUncomment;
+            case TextAction.QUICKFIX:
+                if (getEditorLanguage() instanceof IDELanguage
+                        && mLanguageServer != null
+                        && mLanguageClient != null) {
+                    final var lang = (IDELanguage) getEditorLanguage();
+                    final var diagnostics = lang.getDiagnostics();
+                    if (diagnostics.isEmpty()) {
+                        return false;
+                    }
+
+                    final var diagnostic =
+                            DiagnosticUtil.binarySearchDiagnostic(
+                                    diagnostics, getCursorAsLSPPosition());
+                    if (diagnostic == null) {
+                        LOG.info(
+                                "No diagnostic found at cursor position. Skipping quickfix lookup...");
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                return false;
         }
 
         return true;
@@ -971,6 +1002,10 @@ public class IDEEditor extends CodeEditor {
             case TextAction.EXPAND_SELECTION:
                 expandSelection();
                 break;
+            case TextAction.QUICKFIX:
+                showCodeActions();
+                getTextActionPresenter().dismiss();
+                break;
         }
     }
 
@@ -989,6 +1024,59 @@ public class IDEEditor extends CodeEditor {
         }
     }
 
+    @SuppressWarnings("deprecation")
+    private void showCodeActions() {
+        if (!(getEditorLanguage() instanceof IDELanguage)) {
+            return;
+        }
+        final var lang = (IDELanguage) getEditorLanguage();
+        final var diagnostics = lang.getDiagnostics();
+        if (diagnostics.isEmpty()) {
+            LOG.error("Cannot show code actions. No diagnostic items available.");
+            return;
+        }
+
+        final var diagnostic =
+                DiagnosticUtil.binarySearchDiagnostic(diagnostics, getCursorAsLSPPosition());
+        if (diagnostic == null) {
+            LOG.info("No diagnostic found at cursor position. Skipping code action lookup...");
+            return;
+        }
+
+        final var future = codeActions(Collections.singletonList(diagnostic));
+        final var pd =
+                ProgressDialog.show(getContext(), null, "Computing code actions...", true, false);
+        future.whenComplete(
+                ((codeActionResult, throwable) -> {
+                    dismissOnUiThread(pd);
+                    if (codeActionResult == null
+                            || codeActionResult.getActions().isEmpty()
+                            || throwable != null) {
+                        LOG.info("No code actions found.", throwable);
+                        return;
+                    }
+
+                    ThreadUtils.runOnUiThread(() -> showCodeActions(codeActionResult.getActions()));
+                }));
+    }
+
+    private void showCodeActions(List<CodeActionItem> actions) {
+        final var titles = actions.stream().map(CodeActionItem::getTitle).toArray(String[]::new);
+        final var builder = DialogUtils.newMaterialDialogBuilder(getContext());
+        builder.setTitle("Select code action...");
+        builder.setItems(
+                titles,
+                (dialog, which) -> {
+                    final var action = actions.get(which);
+                    if (action != null) {
+                        performCodeAction(action);
+                    } else {
+                        LOG.error("Cannot perform code action. Action is null.");
+                    }
+                });
+        builder.show();
+    }
+
     private Drawable createTextActionDrawable(int icon) {
         return ContextCompat.getDrawable(getContext(), icon);
     }
@@ -998,7 +1086,8 @@ public class IDEEditor extends CodeEditor {
         return drawable;
     }
 
-    private void handleSelectionChange(SelectionChangeEvent event) {
+    private void handleSelectionChange(
+            @NonNull SelectionChangeEvent event, Unsubscribe unsubscribe) {
         if (event.isSelected() || !(getEditorLanguage() instanceof IDELanguage)) {
             // do not show diagnostics when text is selected
             // or if we cannot get diagnostics
@@ -1017,30 +1106,7 @@ public class IDEEditor extends CodeEditor {
     @Nullable
     private DiagnosticItem binarySearchDiagnostic(
             @NonNull List<DiagnosticItem> diagnostics, int line, int column) {
-
-        if (diagnostics.isEmpty()) {
-            return null;
-        }
-
-        final var pos = new Position(line, column);
-        int left = 0;
-        int right = diagnostics.size() - 1;
-        int mid;
-        while (left <= right) {
-            mid = (left + right) / 2;
-            var d = diagnostics.get(mid);
-            var r = d.getRange();
-            var c = r.containsForBinarySearch(pos);
-            if (c < 0) {
-                right = mid - 1;
-            } else if (c > 0) {
-                left = mid + 1;
-            } else {
-                return d;
-            }
-        }
-
-        return null;
+        return DiagnosticUtil.binarySearchDiagnostic(diagnostics, line, column);
     }
 
     /**
@@ -1048,15 +1114,12 @@ public class IDEEditor extends CodeEditor {
      *
      * @param event The content change event.
      */
-    private void handleContentChange(ContentChangeEvent event) {
-
-        if (getFile() == null) {
+    private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
+        if (getFile() == null || mLanguageServer == null) {
             return;
         }
 
-        final var documentHandler =
-                StudioApp.getInstance().getJavaLanguageServer().getDocumentHandler();
-
+        final var documentHandler = mLanguageServer.getDocumentHandler();
         final var file = getFile().toPath();
         if (documentHandler.accepts(file)) {
             documentHandler.onContentChange(
@@ -1128,6 +1191,18 @@ public class IDEEditor extends CodeEditor {
          */
         void registerAction(@NonNull TextAction action);
 
+        /**
+         * Look for the action with the given id in the actions registry.
+         *
+         * @param id The id to look for.
+         * @return The registered text action. Maybe <code>null</code>.
+         */
+        @Nullable
+        TextAction findAction(int id);
+
+        /** Invalidate the registered actions. */
+        void invalidateActions();
+
         /** Dismiss the presenter. */
         void dismiss();
 
@@ -1145,6 +1220,7 @@ public class IDEEditor extends CodeEditor {
      */
     public static class TextAction implements Comparable<TextAction> {
 
+        public static final int QUICKFIX = 9;
         public static final int EXPAND_SELECTION = 4;
         public static final int GOTO_DEFINITION = 5;
         public static final int FIND_REFERENCES = 6;
@@ -1164,6 +1240,8 @@ public class IDEEditor extends CodeEditor {
         public Drawable icon;
         /** The string resource id for this text action. */
         @StringRes public int titleId;
+        /** Whether this action should be visible to user. */
+        public boolean visible = true;
 
         public TextAction(Drawable icon, int titleId, int id, int index) {
             this.icon = icon;

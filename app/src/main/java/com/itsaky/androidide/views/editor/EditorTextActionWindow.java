@@ -16,20 +16,24 @@
  */
 package com.itsaky.androidide.views.editor;
 
+import static com.itsaky.androidide.utils.Logger.instance;
+
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.TextActionItemAdapter;
+import com.itsaky.androidide.databinding.LayoutEditorActionsBinding;
+import com.itsaky.androidide.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,11 +60,13 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 public class EditorTextActionWindow extends EditorPopupWindow
         implements IDEEditor.ITextActionPresenter {
 
+    private static final Logger LOG = instance("EditorTextActionWindow");
+
     private static final long DELAY = 200;
     protected final List<SubscriptionReceipt<?>> subscriptionReceipts;
     private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<>();
     private IDEEditor editor;
-    private RecyclerView actionsList;
+    private LayoutEditorActionsBinding binding;
     private EditorTouchEventHandler touchHandler;
     private long mLastScroll;
     private int mLastPosition;
@@ -86,21 +92,18 @@ public class EditorTextActionWindow extends EditorPopupWindow
 
         this.editor = editor;
         this.touchHandler = editor.getEventHandler();
-        this.actionsList = new RecyclerView(editor.getContext());
-        this.actionsList.setLayoutParams(
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        this.actionsList.setBackground(createBackground());
-        this.actionsList.setVerticalFadingEdgeEnabled(true);
-        this.actionsList.setFadingEdgeLength((int) (10 * editor.getDpUnit()));
-        this.actionsList.setClipToOutline(true); // prevent items from being drawn outside window
+        this.binding = LayoutEditorActionsBinding.inflate(LayoutInflater.from(editor.getContext()));
+        this.binding.getRoot().setBackground(createBackground());
+        this.binding.textActions.setVerticalFadingEdgeEnabled(true);
+        this.binding.textActions.setFadingEdgeLength((int) (10 * editor.getDpUnit()));
+        this.binding.textActions.setClipToOutline(
+                true); // prevent items from being drawn outside window
         this.editor
                 .getComponent(io.github.rosemoe.sora.widget.component.EditorTextActionWindow.class)
                 .setEnabled(false);
 
-        setContentView(this.actionsList);
+        setContentView(this.binding.getRoot());
         subscribeToEvents();
-        applyLayoutManager();
 
         this.registeredActions.clear();
     }
@@ -108,8 +111,30 @@ public class EditorTextActionWindow extends EditorPopupWindow
     @Override
     public void registerAction(@NonNull IDEEditor.TextAction action) {
         Objects.requireNonNull(editor, "No editor attached!");
-
         this.registeredActions.add(action);
+    }
+
+    @Nullable
+    @Override
+    public IDEEditor.TextAction findAction(int id) {
+        return this.registeredActions.stream()
+                .filter(action -> action.id == id)
+                .collect(Collectors.toList())
+                .get(0);
+    }
+
+    @Override
+    public void invalidateActions() {
+        if (binding == null || editor == null) {
+            return;
+        }
+
+        final var actions =
+                this.registeredActions.stream()
+                        .filter(this::canShowAction)
+                        .collect(Collectors.toList());
+        this.binding.textActions.setAdapter(
+                new TextActionItemAdapter(actions, this::performTextAction));
     }
 
     @Override
@@ -121,14 +146,8 @@ public class EditorTextActionWindow extends EditorPopupWindow
 
         this.registeredActions.clear();
         this.editor = null;
-        this.actionsList = null;
+        this.binding = null;
         this.unsubscribeEvents();
-    }
-
-    private void applyLayoutManager() {
-        this.actionsList.setLayoutManager(
-                new LinearLayoutManager(
-                        this.actionsList.getContext(), LinearLayoutManager.HORIZONTAL, false));
     }
 
     @NonNull
@@ -144,42 +163,51 @@ public class EditorTextActionWindow extends EditorPopupWindow
     public void show() {
         Objects.requireNonNull(editor, "No editor attached!");
 
-        if (actionsList.getParent() != null) {
-            ((ViewGroup) actionsList.getParent()).removeView(actionsList);
+        final var actionsList = this.binding.textActions;
+        if (binding.getRoot().getParent() != null) {
+            ((ViewGroup) binding.getRoot().getParent()).removeView(actionsList);
         }
 
         final var dp8 = SizeUtils.dp2px(8);
         final var dp16 = dp8 * 2;
         final var actions =
                 this.registeredActions.stream()
-                        .filter(action -> this.editor.shouldShowTextAction(action.id))
+                        .filter(this::canShowAction)
                         .collect(Collectors.toList());
-        this.actionsList.setAdapter(new TextActionItemAdapter(actions, this::performTextAction));
-        this.actionsList.setClipToPadding(false);
-        this.actionsList.setClipChildren(false);
-        this.actionsList.setPaddingRelative(
-                dp8, this.actionsList.getPaddingTop(), dp8, this.actionsList.getPaddingBottom());
-        this.actionsList.measure(
-                View.MeasureSpec.makeMeasureSpec(
-                        editor.getWidth() - dp16 * 2, // 16dp margins from start and end
-                        View.MeasureSpec.AT_MOST),
-                View.MeasureSpec.makeMeasureSpec(
-                        (int) (260 * editor.getDpUnit())
-                                - dp16 * 2, // 260dp at most and 16dp margins from top and
-                        // bottom
-                        View.MeasureSpec.AT_MOST));
-        setSize(this.actionsList.getMeasuredWidth(), this.actionsList.getMeasuredHeight());
-
+        actionsList.setAdapter(new TextActionItemAdapter(actions, this::performTextAction));
+        this.binding
+                .getRoot()
+                .measure(
+                        View.MeasureSpec.makeMeasureSpec(
+                                editor.getWidth() - dp16 * 2, // 16dp margins from start and end
+                                View.MeasureSpec.AT_MOST),
+                        View.MeasureSpec.makeMeasureSpec(
+                                (int) (260 * editor.getDpUnit())
+                                        - dp16 * 2, // 260dp at most and 16dp margins from top and
+                                // bottom
+                                View.MeasureSpec.AT_MOST));
+        setSize(
+                this.binding.getRoot().getMeasuredWidth(),
+                this.binding.getRoot().getMeasuredHeight());
         super.show();
+    }
+
+    private boolean canShowAction(@NonNull IDEEditor.TextAction action) {
+
+        // all the actions are visible by default
+        // so we need to get a confirmation from the editor
+        if (action.visible) {
+            return editor.shouldShowTextAction(action.id);
+        }
+
+        return false;
     }
 
     private void subscribeToEvents() {
         this.subscriptionReceipts.add(
                 this.editor.subscribeEvent(SelectionChangeEvent.class, this::onSelectionChanged));
-
         this.subscriptionReceipts.add(
                 this.editor.subscribeEvent(ScrollEvent.class, this::onScrollEvent));
-
         this.subscriptionReceipts.add(
                 this.editor.subscribeEvent(
                         HandleStateChangeEvent.class, this::onHandleStateChanged));

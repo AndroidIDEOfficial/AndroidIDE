@@ -16,34 +16,21 @@
   -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingStart="8dp"
-    android:paddingTop="4dp"
-    android:paddingEnd="8dp"
-    android:paddingBottom="4dp">
+    android:layout_width="300dp"
+    android:layout_height="450dp"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/text_actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="false"
-        android:focusable="false"
-        android:textColor="@color/primaryTextColor"
-        android:textSize="14sp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/fix"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_margin="8dp"
-        android:text="@string/msg_fix_diagnostic"
-        android:textColor="@color/secondaryColor"
-        android:textSize="10sp"
-        android:textStyle="bold"
-        app:strokeColor="@color/secondaryLightColor" />
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 </LinearLayout>

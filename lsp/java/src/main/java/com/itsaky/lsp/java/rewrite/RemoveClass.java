@@ -17,17 +17,20 @@
 
 package com.itsaky.lsp.java.rewrite;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.utils.EditHelper;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.lsp.models.TextEdit;
 import com.sun.source.tree.ClassTree;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
-public class RemoveClass implements Rewrite {
+public class RemoveClass extends Rewrite {
     final Path file;
     final int position;
 
@@ -37,7 +40,7 @@ public class RemoveClass implements Rewrite {
     }
 
     @Override
-    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
+    public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
         ParseTask task = compiler.parse(file);
         final ClassTree type =
                 new FindTypeDeclarationAt(task.task).scan(task.root, (long) position);

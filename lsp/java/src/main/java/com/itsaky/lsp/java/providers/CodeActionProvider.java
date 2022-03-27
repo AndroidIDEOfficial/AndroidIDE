@@ -17,7 +17,12 @@
 
 package com.itsaky.lsp.java.providers;
 
+import android.text.TextUtils;
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -30,6 +35,7 @@ import com.itsaky.lsp.java.rewrite.ConvertVariableToStatement;
 import com.itsaky.lsp.java.rewrite.CreateMissingMethod;
 import com.itsaky.lsp.java.rewrite.GenerateRecordConstructor;
 import com.itsaky.lsp.java.rewrite.ImplementAbstractMethods;
+import com.itsaky.lsp.java.rewrite.NoRewrite;
 import com.itsaky.lsp.java.rewrite.OverrideInheritedMethod;
 import com.itsaky.lsp.java.rewrite.RemoveClass;
 import com.itsaky.lsp.java.rewrite.RemoveException;
@@ -38,14 +44,11 @@ import com.itsaky.lsp.java.rewrite.Rewrite;
 import com.itsaky.lsp.java.visitors.FindMethodDeclarationAt;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.lsp.models.CodeActionItem;
-import com.itsaky.lsp.models.CodeActionKind;
 import com.itsaky.lsp.models.CodeActionParams;
 import com.itsaky.lsp.models.CodeActionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.DocumentChange;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
-import com.itsaky.lsp.models.TextEdit;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.LineMap;
@@ -54,12 +57,16 @@ import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+import com.sun.tools.javac.api.ClientCodeWrapper;
+import com.sun.tools.javac.util.JCDiagnostic;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +74,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -76,6 +84,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 
 public class CodeActionProvider {
 
@@ -116,28 +126,33 @@ public class CodeActionProvider {
 
         final TreeMap<String, Rewrite> rewrites = new TreeMap<>();
         final SynchronizedTask synchronizedTask = compiler.compile(file);
-        synchronizedTask.runWithTask(
+        return synchronizedTask.get(
                 task -> {
                     long elapsed = Duration.between(started, Instant.now()).toMillis();
                     LOG.info(String.format(Locale.getDefault(), "...compiled in %d ms", elapsed));
                     final LineMap lines = task.root().getLineMap();
                     final long cursor = lines.getPosition(line, column);
                     rewrites.putAll(overrideInheritedMethods(task, file, cursor));
-                });
 
-        List<CodeActionItem> actions = new ArrayList<>();
-        for (String title : rewrites.keySet()) {
-            // TODO are these all quick fixes?
-            actions.addAll(createQuickFix(title, rewrites.get(title)));
-        }
-        long elapsed = Duration.between(started, Instant.now()).toMillis();
-        LOG.info(
-                String.format(
-                        Locale.getDefault(),
-                        "...created %d actions in %d ms",
-                        actions.size(),
-                        elapsed));
-        return new CodeActionResult(actions);
+                    List<CodeActionItem> actions = new ArrayList<>();
+                    for (String title : rewrites.keySet()) {
+                        final Rewrite rewrite = rewrites.get(title);
+                        if (rewrite == null) {
+                            continue;
+                        }
+
+                        actions.addAll(createQuickFix(title, rewrite));
+                    }
+
+                    elapsed = Duration.between(started, Instant.now()).toMillis();
+                    LOG.info(
+                            String.format(
+                                    Locale.getDefault(),
+                                    "...created %d actions in %d ms",
+                                    actions.size(),
+                                    elapsed));
+                    return new CodeActionResult(actions);
+                });
     }
 
     private Map<String, Rewrite> overrideInheritedMethods(
@@ -210,113 +225,155 @@ public class CodeActionProvider {
         Instant started = Instant.now();
         Path file = params.getFile();
         final SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask(
-                task -> {
-                    List<CodeActionItem> actions = new ArrayList<>();
-                    for (DiagnosticItem d : params.getDiagnostics()) {
-                        List<CodeActionItem> newActions = codeActionForDiagnostic(task, file, d);
-                        actions.addAll(newActions);
-                    }
-                    long elapsed = Duration.between(started, Instant.now()).toMillis();
-                    LOG.info(
-                            String.format(
-                                    Locale.getDefault(),
-                                    "...created %d quick fixes in %d ms",
-                                    actions.size(),
-                                    elapsed));
-                    return actions;
-                });
+        final List<Pair<String, Rewrite>> actions =
+                synchronizedTask.get(
+                        task -> {
+                            List<Pair<String, Rewrite>> pairs = new ArrayList<>();
+                            for (DiagnosticItem d : params.getDiagnostics()) {
+                                Pair<String, Rewrite> pair = codeActionForDiagnostic(task, file, d);
+                                if (!TextUtils.isEmpty(pair.first) && pair.second != null) {
+                                    pairs.add(pair);
+                                }
+                            }
+                            return pairs;
+                        });
+
+        final List<CodeActionItem> result = new ArrayList<>();
+        for (Pair<String, Rewrite> pair : actions) {
+            try {
+                result.addAll(pair.second.asCodeActions(compiler, pair.first));
+            } catch (Throwable throwable) {
+                LOG.error("Unable to create rewrite for quickfix", throwable);
+            }
+        }
+
+        LOG.debug(
+                String.format(
+                        Locale.ROOT,
+                        "Created %d code actions in %dms",
+                        result.size(),
+                        Instant.now().toEpochMilli() - started.toEpochMilli()));
+
+        return result;
     }
 
-    private List<CodeActionItem> codeActionForDiagnostic(
+    private Pair<String, Rewrite> codeActionForDiagnostic(
             CompileTask task, Path file, DiagnosticItem d) {
         // TODO this should be done asynchronously using executeCommand
+        final Rewrite rewrite;
+        final String title;
         switch (d.getCode()) {
             case "unused_local":
-                final Rewrite toStatement =
+                rewrite =
                         new ConvertVariableToStatement(
                                 file, findPosition(task, d.getRange().getStart()));
-                return createQuickFix("Convert to statement", toStatement);
+                title = "Convert to statement";
+                break;
             case "unused_field":
-                final Rewrite toBlock =
+                rewrite =
                         new ConvertFieldToBlock(file, findPosition(task, d.getRange().getStart()));
-                return createQuickFix("Convert to block", toBlock);
+                title = "Convert to block";
+                break;
             case "unused_class":
-                final Rewrite removeClass =
-                        new RemoveClass(file, findPosition(task, d.getRange().getStart()));
-                return createQuickFix("Remove class", removeClass);
+                rewrite = new RemoveClass(file, findPosition(task, d.getRange().getStart()));
+                title = "Remove class";
+                break;
             case "unused_method":
                 final MethodPtr unusedMethod = findMethod(task, d.getRange());
-                final Rewrite removeMethod =
+                rewrite =
                         new RemoveMethod(
                                 unusedMethod.className,
                                 unusedMethod.methodName,
                                 unusedMethod.erasedParameterTypes);
-                return createQuickFix("Remove method", removeMethod);
+                title = "Remove method";
+                break;
             case "unused_throws":
                 final CharSequence shortExceptionName = extractRange(task, d.getRange());
                 final String notThrown = extractNotThrownExceptionName(d.getMessage());
                 final MethodPtr methodWithExtraThrow = findMethod(task, d.getRange());
-                final Rewrite removeThrow =
+                rewrite =
                         new RemoveException(
                                 methodWithExtraThrow.className,
                                 methodWithExtraThrow.methodName,
                                 methodWithExtraThrow.erasedParameterTypes,
                                 notThrown);
-                return createQuickFix("Remove '" + shortExceptionName + "'", removeThrow);
+                title = "Remove '" + shortExceptionName + "'";
+                break;
             case "compiler.warn.unchecked.call.mbr.of.raw.type":
                 final MethodPtr warnedMethod = findMethod(task, d.getRange());
-                final Rewrite suppressWarning =
+                rewrite =
                         new AddSuppressWarningAnnotation(
                                 warnedMethod.className,
                                 warnedMethod.methodName,
                                 warnedMethod.erasedParameterTypes);
-                return createQuickFix("Suppress 'unchecked' warning", suppressWarning);
+                title = "Suppress 'unchecked' warning";
+                break;
             case "compiler.err.unreported.exception.need.to.catch.or.throw":
                 final MethodPtr needsThrow = findMethod(task, d.getRange());
                 final String exceptionName = extractExceptionName(d.getMessage());
-                final Rewrite addThrows =
+                rewrite =
                         new AddException(
                                 needsThrow.className,
                                 needsThrow.methodName,
                                 needsThrow.erasedParameterTypes,
                                 exceptionName);
-                return createQuickFix("Add 'throws'", addThrows);
+                title = "Add 'throws'";
+                break;
             case "compiler.err.cant.resolve.location":
                 CharSequence simpleName = extractRange(task, d.getRange());
                 List<CodeActionItem> allImports = new ArrayList<>();
                 for (String qualifiedName : compiler.publicTopLevelTypes()) {
                     if (qualifiedName.endsWith("." + simpleName)) {
-                        String title = "Import '" + qualifiedName + "'";
+                        String actionTitle = "Import '" + qualifiedName + "'";
                         final Rewrite addImport = new AddImport(file, qualifiedName);
-                        allImports.addAll(createQuickFix(title, addImport));
+                        allImports.addAll(createQuickFix(actionTitle, addImport));
                     }
                 }
-                return allImports;
+                return Pair.create("", new NoRewrite(allImports));
             case "compiler.err.var.not.initialized.in.default.constructor":
                 final String needsConstructor = findClassNeedingConstructor(task, d.getRange());
-                if (needsConstructor == null) return Collections.emptyList();
-                final Rewrite generateConstructor = new GenerateRecordConstructor(needsConstructor);
-                return createQuickFix("Generate constructor", generateConstructor);
+                if (needsConstructor == null) {
+                    return Pair.create("", null);
+                }
+
+                rewrite = new GenerateRecordConstructor(needsConstructor);
+                title = "Generate constructor";
+                break;
             case "compiler.err.does.not.override.abstract":
-                final CompilationUnitTree root = task.root();
-                final LineMap lines = root.getLineMap();
-                final FindTypeDeclarationAt treeFinder = newClassFinder(task);
-                final Range range = d.getRange();
-                final long position =
-                        lines.getPosition(
-                                range.getStart().getLine() + 1, range.getStart().getColumn() + 1);
-                final ClassTree tree = treeFinder.scan(root, position);
-                final Rewrite implementAbstracts =
-                        new ImplementAbstractMethods(file, tree, treeFinder.getStoredTreePath());
-                return createQuickFix("Implement abstract methods", implementAbstracts);
+                final Diagnostic<? extends JavaFileObject> diagnostic =
+                        (Diagnostic<? extends JavaFileObject>) d.getExtra();
+                JCDiagnostic jcDiagnostic = unwrapJCDiagnostic(diagnostic);
+                if (jcDiagnostic == null) {
+                    return Pair.create("", null);
+                }
+
+                rewrite = new ImplementAbstractMethods(jcDiagnostic);
+                title = "Implement abstract methods";
+                break;
             case "compiler.err.cant.resolve.location.args":
-                final Rewrite missingMethod =
+                rewrite =
                         new CreateMissingMethod(file, findPosition(task, d.getRange().getStart()));
-                return createQuickFix("Create missing method", missingMethod);
+                title = "Create missing method";
+                break;
             default:
-                return Collections.emptyList();
+                return Pair.create("", null);
         }
+
+        return Pair.create(title, rewrite);
+    }
+
+    @Nullable
+    @Contract(pure = true)
+    private JCDiagnostic unwrapJCDiagnostic(Diagnostic<? extends JavaFileObject> diagnostic) {
+        if (diagnostic instanceof JCDiagnostic) {
+            return (JCDiagnostic) diagnostic;
+        } else if (diagnostic instanceof ClientCodeWrapper.DiagnosticSourceUnwrapper) {
+            ClientCodeWrapper.DiagnosticSourceUnwrapper unwrapper =
+                    (ClientCodeWrapper.DiagnosticSourceUnwrapper) diagnostic;
+            return unwrapper.d;
+        }
+
+        return null;
     }
 
     private int findPosition(CompileTask task, Position position) {
@@ -408,6 +465,7 @@ public class CodeActionProvider {
         return matcher.group(1);
     }
 
+    @NonNull
     private CharSequence extractRange(CompileTask task, Range range) {
         CharSequence contents;
         try {
@@ -433,33 +491,19 @@ public class CodeActionProvider {
     }
 
     private List<CodeActionItem> createQuickFix(String title, Rewrite rewrite) {
-        final Map<Path, TextEdit[]> edits = rewrite.rewrite(compiler);
 
-        if (edits == Rewrite.CANCELLED) {
+        if (rewrite == null) {
             return Collections.emptyList();
         }
 
-        CodeActionItem action = new CodeActionItem();
-        action.setKind(CodeActionKind.QuickFix);
-        action.setTitle(title);
-        for (final Path file : edits.keySet()) {
-            TextEdit[] textEdits = edits.get(file);
-            if (textEdits == null) {
-                continue;
-            }
-            final DocumentChange change = new DocumentChange();
-            change.setFile(file);
-            change.setEdits(Arrays.asList(textEdits));
-            action.getChanges().add(change);
-        }
-        return Collections.singletonList(action);
+        return ((Rewrite) rewrite).asCodeActions(compiler, title);
     }
 
     static class MethodPtr {
         String className, methodName;
         String[] erasedParameterTypes;
 
-        MethodPtr(JavacTask task, ExecutableElement method) {
+        MethodPtr(@NonNull JavacTask task, @NonNull ExecutableElement method) {
             final Types types = task.getTypes();
             final TypeElement parent = (TypeElement) method.getEnclosingElement();
             className = parent.getQualifiedName().toString();

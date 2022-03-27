@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.rewrite;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -37,20 +39,22 @@ import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 import java.util.StringJoiner;
+
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
-public class CreateMissingMethod implements Rewrite {
+public class CreateMissingMethod extends Rewrite {
+    private static final Logger LOG = Logger.instance("main");
     final Path file;
     final int position;
-
     int argCount = -1;
 
     public CreateMissingMethod(Path file, int position) {
@@ -59,9 +63,9 @@ public class CreateMissingMethod implements Rewrite {
     }
 
     @Override
-    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
+    public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask(
+        return synchronizedTask.get(
                 task -> {
                     final Trees trees = Trees.instance(task.task);
                     final FindMethodCallAt methodFinder = new FindMethodCallAt(task.task);
@@ -193,7 +197,7 @@ public class CreateMissingMethod implements Rewrite {
             CompileTask task,
             MethodInvocationTree call,
             String type,
-            boolean isMemeberSelect,
+            boolean isMemberSelect,
             boolean isStatic) {
         String methodName = extractMethodName(call.getMethodSelect());
         String returnType = type == null || "(ERROR)".equals(type) ? "void" : type;
@@ -202,7 +206,7 @@ public class CreateMissingMethod implements Rewrite {
             returnType = "_";
         }
         String parameters = printParameters(task, call);
-        String modifiers = isMemeberSelect ? "public" : "private";
+        String modifiers = isMemberSelect ? "public" : "private";
         if (isStatic) modifiers += " static";
         return modifiers + " " + returnType + " " + methodName + "(" + parameters + ")";
     }
@@ -271,6 +275,4 @@ public class CreateMissingMethod implements Rewrite {
             return "";
         }
     }
-
-    private static final Logger LOG = Logger.instance("main");
 }

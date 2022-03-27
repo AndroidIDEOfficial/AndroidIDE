@@ -33,7 +33,7 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
  *
  * @author Akash Yadav
  */
-public class SignatureHelpWindow extends SimpleTextWindow {
+public class SignatureHelpWindow extends BaseEditorWindow {
 
     private static final Logger LOG = Logger.instance("SignatureHelpWindow");
 

@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.rewrite;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.models.Position;
@@ -27,12 +29,14 @@ import com.sun.source.tree.LineMap;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
+
 import javax.lang.model.element.Modifier;
 
-public class ConvertFieldToBlock implements Rewrite {
+public class ConvertFieldToBlock extends Rewrite {
     final Path file;
     final int position;
 
@@ -42,7 +46,7 @@ public class ConvertFieldToBlock implements Rewrite {
     }
 
     @Override
-    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
+    public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
         ParseTask task = compiler.parse(file);
         Trees trees = Trees.instance(task.task);
         SourcePositions pos = trees.getSourcePositions();

@@ -34,63 +34,60 @@
 
 package com.itsaky.lsp.java.compiler;
 
-import androidx.annotation.GuardedBy;
-import androidx.annotation.NonNull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import static com.itsaky.androidide.utils.Logger.instance;
 
-// See CodeAssist's CompilerContainer
+import androidx.annotation.NonNull;
+
+import com.itsaky.androidide.utils.Logger;
+
+import java.util.concurrent.Semaphore;
+import java.util.function.Consumer;
+
+import kotlin.jvm.functions.Function1;
+
 public class SynchronizedTask {
 
+    private static final Logger LOG = instance("SynchronizedTask");
+    private final Semaphore semaphore = new Semaphore(1);
     private volatile boolean isWriting;
-    private final Object lock = new Object();
+    private CompileTask task;
 
-    @GuardedBy("lock")
-    private volatile CompileTask task;
-
-    private final List<Thread> readerThreads = Collections.synchronizedList(new ArrayList<>());
-
-    private void closeIfEmpty() {
-        if (readerThreads.isEmpty()) {
-            if (task != null) {
-                task.close();
-            }
+    public void run(@NonNull Consumer<CompileTask> taskConsumer) {
+        semaphore.acquireUninterruptibly();
+        try {
+            taskConsumer.accept(this.task);
+        } catch (Throwable th) {
+            LOG.error("An error occurred in SynchronizedTask.run()", th);
+        } finally {
+            semaphore.release();
         }
     }
 
-    public void runWithTask(@NonNull Consumer<CompileTask> taskConsumer) {
-        waitForWriter();
-        readerThreads.add(Thread.currentThread());
+    public <T> T get(@NonNull Function1<CompileTask, T> function) {
+        semaphore.acquireUninterruptibly();
         try {
-            taskConsumer.accept(task);
+            return function.invoke(this.task);
+        } catch (Throwable th) {
+            LOG.error("An error occurred in SynchronizedTask.get()", th);
+            return null;
         } finally {
-            readerThreads.remove(Thread.currentThread());
-        }
-    }
-
-    public <T> T getWithTask(@NonNull Function<CompileTask, T> function) {
-        waitForWriter();
-        readerThreads.add(Thread.currentThread());
-        try {
-            return function.apply(task);
-        } finally {
-            readerThreads.remove(Thread.currentThread());
+            semaphore.release();
         }
     }
 
     void doCompile(@NonNull Runnable run) {
-        synchronized (lock) {
-            assertIsNotReader();
-            waitForReaders();
-            try {
-                isWriting = true;
-                run.run();
-            } finally {
-                isWriting = false;
+        semaphore.acquireUninterruptibly();
+        isWriting = true;
+        try {
+            if (this.task != null) {
+                this.task.close();
             }
+            run.run();
+        } catch (Throwable th) {
+            LOG.error("An error occurred in SynchronizedTask.doCompile()");
+        } finally {
+            isWriting = false;
+            semaphore.release();
         }
     }
 
@@ -98,26 +95,7 @@ public class SynchronizedTask {
         this.task = task;
     }
 
-    private void waitForReaders() {
-        while (true) {
-            if (readerThreads.isEmpty()) {
-                closeIfEmpty();
-                return;
-            }
-        }
-    }
-
-    private void waitForWriter() {
-        while (true) {
-            if (!isWriting) {
-                return;
-            }
-        }
-    }
-
-    private void assertIsNotReader() {
-        if (readerThreads.contains(Thread.currentThread())) {
-            throw new RuntimeException("Cannot compile inside a container.");
-        }
+    public synchronized boolean isWriting() {
+        return isWriting || semaphore.hasQueuedThreads();
     }
 }

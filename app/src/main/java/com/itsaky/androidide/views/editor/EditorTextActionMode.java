@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
@@ -30,6 +31,7 @@ import com.itsaky.androidide.utils.Logger;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import io.github.rosemoe.sora.event.ClickEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
@@ -90,13 +92,28 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
     @Override
     public void registerAction(@NonNull IDEEditor.TextAction action) {
         Objects.requireNonNull(this.editor, "No editor attached!");
-
         this.registeredActions.add(action);
+    }
+
+    @Nullable
+    @Override
+    public IDEEditor.TextAction findAction(int id) {
+        return this.registeredActions.stream()
+                .filter(action -> action.id == id)
+                .collect(Collectors.toList())
+                .get(0);
     }
 
     @Override
     public void dismiss() {
         exit();
+    }
+
+    @Override
+    public void invalidateActions() {
+        if (actionMode != null) {
+            actionMode.invalidate();
+        }
     }
 
     @Override
@@ -141,7 +158,7 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
                                         mode.setTitle(android.R.string.selectTextMode);
 
                                         for (var action : registeredActions) {
-                                            if (editor.shouldShowTextAction(action.id)) {
+                                            if (canShowAction(action)) {
                                                 menu.add(0, action.id, 0, action.titleId)
                                                         .setIcon(action.icon)
                                                         .setShowAsActionFlags(
@@ -203,6 +220,17 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
             actionMode = null;
             return true;
         }
+        return false;
+    }
+
+    private boolean canShowAction(@NonNull IDEEditor.TextAction action) {
+
+        // all the actions are visible by default
+        // so we need to get a confirmation from the editor
+        if (action.visible) {
+            return editor.shouldShowTextAction(action.id);
+        }
+
         return false;
     }
 }

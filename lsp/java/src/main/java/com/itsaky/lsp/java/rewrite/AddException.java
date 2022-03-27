@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.rewrite;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.utils.FindHelper;
@@ -27,12 +29,14 @@ import com.sun.source.tree.LineMap;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
+
 import javax.lang.model.element.ExecutableElement;
 
-public class AddException implements Rewrite {
+public class AddException extends Rewrite {
     final String className, methodName;
     final String[] erasedParameterTypes;
     final String exceptionType;
@@ -49,14 +53,15 @@ public class AddException implements Rewrite {
     }
 
     @Override
-    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
+    public Map<Path, TextEdit[]> rewrite (
+            @NonNull CompilerProvider compiler) {
         Path file = compiler.findTypeDeclaration(className);
         if (file == CompilerProvider.NOT_FOUND) {
             return CANCELLED;
         }
 
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask(
+        return synchronizedTask.get(
                 task -> {
                     Trees trees = Trees.instance(task.task);
                     ExecutableElement methodElement =

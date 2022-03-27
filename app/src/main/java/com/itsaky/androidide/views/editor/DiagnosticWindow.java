@@ -17,32 +17,17 @@
 
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.blankj.utilcode.util.ThreadUtils;
-import com.itsaky.androidide.R;
-import com.itsaky.androidide.databinding.LayoutDiagnosticWindowBinding;
-import com.itsaky.androidide.utils.DialogUtils;
-import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.models.CodeActionItem;
+
 import com.itsaky.lsp.models.DiagnosticItem;
-import java.util.Collections;
 
 /**
  * Popup window used to show diagnostic messages.
  *
  * @author Akash Yadav
  */
-public class DiagnosticWindow extends SimpleTextWindow {
-
-    private static final Logger LOG = instance("DiagnosticWindow");
-    private LayoutDiagnosticWindowBinding binding;
+public class DiagnosticWindow extends BaseEditorWindow {
 
     /**
      * Create a popup window for editor
@@ -56,23 +41,6 @@ public class DiagnosticWindow extends SimpleTextWindow {
         super(editor);
     }
 
-    @Override
-    protected View onCreateContentView(@NonNull Context context) {
-        this.binding = LayoutDiagnosticWindowBinding.inflate(LayoutInflater.from(context));
-        this.binding.getRoot().setBackground(createBackground());
-        return this.binding.getRoot();
-    }
-
-    @Override
-    protected TextView onCreateTextView(@NonNull IDEEditor editor) {
-        return this.binding.text;
-    }
-
-    @Override
-    protected View getRootView() {
-        return this.binding.getRoot();
-    }
-
     /**
      * Show the given diagnostic item.
      *
@@ -84,63 +52,11 @@ public class DiagnosticWindow extends SimpleTextWindow {
                 dismiss();
             }
 
-            if (this.binding != null) {
-                this.binding.fix.setVisibility(View.GONE);
-            }
-
             return;
         }
 
         final var message = diagnostic.getMessage();
-        this.binding.text.setText(message);
-        this.binding.fix.setVisibility(View.VISIBLE);
-        this.binding.fix.setEnabled(false);
-
-        final var editor = (IDEEditor) getEditor();
-        final var future = editor.codeActions(Collections.singletonList(diagnostic));
-        future.whenComplete(
-                (result, throwable) -> {
-                    ThreadUtils.runOnUiThread(
-                            () -> {
-                                if (result == null
-                                        || result.getActions().isEmpty()
-                                        || throwable != null) {
-                                    LOG.error(
-                                            "No code actions were found for the given diagnostic item",
-                                            throwable);
-                                    binding.fix.setVisibility(View.GONE);
-                                    return;
-                                }
-
-                                binding.fix.setVisibility(View.VISIBLE);
-                                binding.fix.setEnabled(true);
-                                binding.fix.setClickable(true);
-                                binding.fix.setFocusable(true);
-                                binding.fix.setOnClickListener(
-                                        v -> {
-                                            final var actions = result.getActions();
-                                            if (actions.size() == 1) {
-                                                editor.performCodeAction(actions.get(0));
-                                            } else {
-                                                final var builder =
-                                                        DialogUtils.newMaterialDialogBuilder(
-                                                                editor.getContext());
-                                                builder.setItems(
-                                                        actions.stream()
-                                                                .map(CodeActionItem::getTitle)
-                                                                .toArray(String[]::new),
-                                                        (dialog, which) -> {
-                                                            editor.performCodeAction(
-                                                                    actions.get(which));
-                                                        });
-                                                builder.setPositiveButton(
-                                                        R.string.cancel,
-                                                        (dialog, which) -> dialog.dismiss());
-                                                builder.show();
-                                            }
-                                        });
-                            });
-                });
+        this.text.setText(message);
 
         displayWindow();
     }

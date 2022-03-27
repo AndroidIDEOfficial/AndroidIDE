@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.rewrite;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -31,6 +33,7 @@ import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -39,10 +42,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
+
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
-public class GenerateRecordConstructor implements Rewrite {
+public class GenerateRecordConstructor extends Rewrite {
+
+    private static final Logger LOG = Logger.instance("main");
     final String className;
 
     public GenerateRecordConstructor(String className) {
@@ -50,12 +56,12 @@ public class GenerateRecordConstructor implements Rewrite {
     }
 
     @Override
-    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
+    public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
         LOG.info("Generate default constructor for " + className + "...");
         // TODO this needs to fall back on looking for inner classes and package-private classes
         Path file = compiler.findTypeDeclaration(className);
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask(
+        return synchronizedTask.get(
                 task -> {
                     TypeElement typeElement = task.task.getElements().getTypeElement(className);
                     ClassTree typeTree = Trees.instance(task.task).getTree(typeElement);
@@ -147,6 +153,4 @@ public class GenerateRecordConstructor implements Rewrite {
         LOG.info("...insert constructor at end of class");
         return EditHelper.insertAtEndOfClass(task.task, task.root(), typeTree);
     }
-
-    private static final Logger LOG = Logger.instance("main");
 }

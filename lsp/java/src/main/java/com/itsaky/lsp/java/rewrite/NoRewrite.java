@@ -18,15 +18,33 @@
 package com.itsaky.lsp.java.rewrite;
 
 import com.itsaky.lsp.java.compiler.CompilerProvider;
+import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.TextEdit;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
-class RewriteNotSupported extends Rewrite {
+/**
+ * Helper class that simply returns the given code action items.
+ *
+ * @author Akash Yadav
+ */
+public class NoRewrite extends Rewrite {
+
+    private final List<CodeActionItem> actions;
+
+    public NoRewrite(List<CodeActionItem> actions) {
+        this.actions = actions;
+    }
 
     @Override
     public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
         return CANCELLED;
+    }
+
+    @Override
+    public List<CodeActionItem> asCodeActions(CompilerProvider compiler, String title) {
+        return actions;
     }
 }

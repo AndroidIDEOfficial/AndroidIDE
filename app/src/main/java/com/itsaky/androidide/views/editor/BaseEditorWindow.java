@@ -24,10 +24,13 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.R;
+
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 
 /**
@@ -35,7 +38,7 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
  *
  * @author Akash Yadav
  */
-public abstract class SimpleTextWindow extends EditorPopupWindow {
+public abstract class BaseEditorWindow extends EditorPopupWindow {
 
     protected final TextView text;
 
@@ -47,11 +50,11 @@ public abstract class SimpleTextWindow extends EditorPopupWindow {
      * @see #FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED
      * @see #FEATURE_HIDE_WHEN_FAST_SCROLL
      */
-    public SimpleTextWindow(@NonNull IDEEditor editor) {
+    public BaseEditorWindow(@NonNull IDEEditor editor) {
         super(editor, getFeatureFlags());
 
-        setContentView(onCreateContentView(editor.getContext()));
         this.text = onCreateTextView(editor);
+        setContentView(onCreateContentView(editor.getContext()));
     }
 
     private static int getFeatureFlags() {
@@ -86,7 +89,7 @@ public abstract class SimpleTextWindow extends EditorPopupWindow {
 
     public void displayWindow() {
         this.getRootView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        setSize(this.getRootView().getMeasuredWidth(), this.getRootView().getMeasuredHeight());
+        this.setSize(this.getRootView().getMeasuredWidth(), this.getRootView().getMeasuredHeight());
 
         final var line = getEditor().getCursor().getLeftLine();
         final var column = getEditor().getCursor().getLeftColumn();
@@ -107,5 +110,11 @@ public abstract class SimpleTextWindow extends EditorPopupWindow {
         background.setStroke(1, 0xffffffff);
         background.setCornerRadius(8);
         return background;
+    }
+
+    @NonNull
+    @Override
+    public IDEEditor getEditor() {
+        return (IDEEditor) super.getEditor();
     }
 }

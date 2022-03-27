@@ -32,10 +32,12 @@ import com.sun.source.tree.Tree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -43,7 +45,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 
-public class OverrideInheritedMethod implements Rewrite {
+public class OverrideInheritedMethod extends Rewrite {
     final String superClassName, methodName;
     final String[] erasedParameterTypes;
     final Path file;
@@ -72,7 +74,7 @@ public class OverrideInheritedMethod implements Rewrite {
 
     private String insertText(CompilerProvider compiler) {
         final SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.getWithTask(
+        return synchronizedTask.get(
                 task -> {
                     final Types types = task.task.getTypes();
                     final Trees trees = Trees.instance(task.task);
