@@ -56,15 +56,6 @@ public class ImplementAbstractMethods extends Rewrite {
     private final String classFile;
     private final long position;
 
-    public ImplementAbstractMethods(@NonNull String className, String classFile) {
-        if (className.startsWith("<anonymous")) {
-            className = className.substring("<anonymous ".length(), className.length() - 1);
-        }
-        this.className = className;
-        this.classFile = classFile;
-        this.position = 0;
-    }
-
     public ImplementAbstractMethods(@NonNull JCDiagnostic diagnostic) {
         Object[] args = diagnostic.getArgs();
         String className = args[0].toString();
