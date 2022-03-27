@@ -123,7 +123,7 @@ public class EditHelper {
     }
 
     public static int indent(
-            final JavacTask task, final CompilationUnitTree root, final ClassTree leaf) {
+            final JavacTask task, final CompilationUnitTree root, final Tree leaf) {
         SourcePositions pos = Trees.instance(task).getSourcePositions();
         LineMap lines = root.getLineMap();
         long startClass = pos.getStartPosition(root, leaf);

@@ -368,9 +368,7 @@ public class CodeActionProvider {
         if (diagnostic instanceof JCDiagnostic) {
             return (JCDiagnostic) diagnostic;
         } else if (diagnostic instanceof ClientCodeWrapper.DiagnosticSourceUnwrapper) {
-            ClientCodeWrapper.DiagnosticSourceUnwrapper unwrapper =
-                    (ClientCodeWrapper.DiagnosticSourceUnwrapper) diagnostic;
-            return unwrapper.d;
+            return ((ClientCodeWrapper.DiagnosticSourceUnwrapper) diagnostic).d;
         }
 
         return null;

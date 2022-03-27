@@ -22,16 +22,18 @@ import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.NewClassTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
-import com.sun.source.util.TreeScanner;
+import com.sun.source.util.TreePath;
+import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
 
 /**
  * @author Akash Yadav
  */
-public class FindAnonymousTypeDeclaration extends TreeScanner<ClassTree, Long> {
+public class FindAnonymousTypeDeclaration extends TreePathScanner<ClassTree, Long> {
 
     private final SourcePositions pos;
     private final CompilationUnitTree root;
+    private TreePath stored;
 
     public FindAnonymousTypeDeclaration(JavacTask task, CompilationUnitTree root) {
         this.pos = Trees.instance(task).getSourcePositions();
@@ -52,6 +54,7 @@ public class FindAnonymousTypeDeclaration extends TreeScanner<ClassTree, Long> {
 
         if (pos.getStartPosition(root, t.getClassBody()) <= find
                 && find < pos.getEndPosition(root, t.getClassBody())) {
+            stored = getCurrentPath();
             return t.getClassBody();
         }
 
@@ -62,5 +65,9 @@ public class FindAnonymousTypeDeclaration extends TreeScanner<ClassTree, Long> {
     public ClassTree reduce(ClassTree a, ClassTree b) {
         if (a != null) return a;
         return b;
+    }
+
+    public TreePath getStoredPath() {
+        return stored;
     }
 }

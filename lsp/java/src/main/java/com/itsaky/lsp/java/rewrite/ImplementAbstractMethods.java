@@ -23,25 +23,23 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
-import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.utils.EditHelper;
-import com.itsaky.lsp.java.utils.FindHelper;
 import com.itsaky.lsp.java.visitors.FindAnonymousTypeDeclaration;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
+import com.itsaky.lsp.models.CodeActionItem;
+import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
 import com.squareup.javapoet.MethodSpec;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.MethodTree;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.util.JCDiagnostic;
 
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.StringJoiner;
 
 import javax.lang.model.element.Element;
@@ -49,10 +47,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-import javax.tools.JavaFileObject;
 
 public class ImplementAbstractMethods extends Rewrite {
 
@@ -95,10 +90,8 @@ public class ImplementAbstractMethods extends Rewrite {
                 task -> {
                     StringJoiner insertText = new StringJoiner("\n");
                     Elements elements = task.task.getElements();
-                    Types types = task.task.getTypes();
                     Trees trees = Trees.instance(task.task);
                     TypeElement thisClass = elements.getTypeElement(this.className);
-                    DeclaredType thisType = (DeclaredType) thisClass.asType();
 
                     ClassTree thisTree = getClassTree(task, file);
                     if (thisTree == null) {
@@ -110,7 +103,8 @@ public class ImplementAbstractMethods extends Rewrite {
                         if (member.getKind() == ElementKind.METHOD
                                 && member.getModifiers().contains(Modifier.ABSTRACT)) {
                             ExecutableElement method = (ExecutableElement) member;
-                            String text = MethodSpec.overriding(method).build().toString();
+                            final MethodSpec methodSpec = MethodSpec.overriding(method).build();
+                            String text = "\n" + methodSpec;
                             text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
                             insertText.add(text);
                         }
@@ -124,33 +118,24 @@ public class ImplementAbstractMethods extends Rewrite {
     }
 
     @Nullable
-    private MethodTree findSource(
-            @NonNull CompilerProvider compiler,
-            CompileTask task,
-            @NonNull ExecutableElement method) {
-        TypeElement superClass = (TypeElement) method.getEnclosingElement();
-        String superClassName = superClass.getQualifiedName().toString();
-        String methodName = method.getSimpleName().toString();
-        String[] erasedParameterTypes = FindHelper.erasedParameterTypes(task, method);
-        Optional<JavaFileObject> sourceFile = compiler.findAnywhere(superClassName);
-        if (!sourceFile.isPresent()) return null;
-        ParseTask parse = compiler.parse(sourceFile.get());
-        return FindHelper.findMethod(parse, superClassName, methodName, erasedParameterTypes);
-    }
-
-    @Nullable
     private ClassTree getClassTree(CompileTask task, Path file) {
         ClassTree thisTree = null;
         CompilationUnitTree root = task.root(file);
         if (root == null) {
             return null;
         }
+
         if (position != 0) {
-            thisTree = new FindTypeDeclarationAt(task.task).scan(root, position);
+            final FindTypeDeclarationAt scanner = new FindTypeDeclarationAt(task.task);
+            thisTree = scanner.scan(root, position);
         }
+
         if (thisTree == null) {
-            thisTree = new FindAnonymousTypeDeclaration(task.task, root).scan(root, position);
+            final FindAnonymousTypeDeclaration scanner =
+                    new FindAnonymousTypeDeclaration(task.task, root);
+            thisTree = scanner.scan(root, position);
         }
+
         return thisTree;
     }
 }

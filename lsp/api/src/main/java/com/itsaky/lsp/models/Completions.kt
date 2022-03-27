@@ -20,7 +20,6 @@ package com.itsaky.lsp.models
 import com.itsaky.androidide.utils.Logger
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import java.nio.file.Path
 
 data class CompletionParams(var position: Position, var file: Path) {
@@ -136,35 +135,13 @@ data class CompletionItem(@JvmField var label: String,
     }
     
     private fun executeCommand(editor: CodeEditor) {
-        if (command != null) {
-            LOG.info("Executing command '${command!!.title}' for completion item.")
-            if (Command.TRIGGER_PARAMETER_HINTS == command!!.command) {
-                performSignatureHelp(editor)
-            } else if (Command.TRIGGER_COMPLETION == command!!.command) {
-                triggerCompletion(editor);
-            }
-        }
-    }
-    
-    private fun performSignatureHelp(editor: CodeEditor) {
-        // We use reflection to invoke the 'signatureHelp' method in IDEEditor
-        // As the IDEEditor class is heavily dependent on the :app module,
-        // we cannot declare it as a dependency of this (:lsp:api) module
-        // If we do, Gradle will complain about recursive dependencies because :app depends on :lsp:api
         try {
-            val clazz = editor.javaClass
-            val method = clazz.getMethod("signatureHelp")
+            val klass = editor::class.java
+            val method = klass.getMethod("executeCommand", Command::class.java)
             method.isAccessible = true
-            method.invoke(editor)
-        } catch (e: Throwable) {
-            LOG.error("Unable to invoke IDEEditor#signatureHelp()", e)
-        }
-    }
-    
-    private fun triggerCompletion(editor: CodeEditor) {
-        val completion = editor.getComponent(EditorAutoCompletion::class.java)
-        editor.post {
-            completion.requireCompletion()
+            method.invoke(command)
+        } catch (th: Throwable) {
+            LOG.error("Unable to invoke 'executeCommand(Command) method in IDEEditor.")
         }
     }
     
@@ -244,6 +221,11 @@ data class Command(var title: String, var command: String) {
          * Action for triggering a completion request to the language server.
          */
         const val TRIGGER_COMPLETION = "editor.action.triggerCompletionRequest"
+        
+        /**
+         * Action for triggering code format action automatically.
+         */
+        const val FORMAT_CODE = "editor.action.formatCode";
     }
 }
 

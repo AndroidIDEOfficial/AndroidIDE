@@ -34,7 +34,7 @@ public class FindTypeDeclarationAt extends TreePathScanner<ClassTree, Long> {
     public FindTypeDeclarationAt(JavacTask task) {
         pos = Trees.instance(task).getSourcePositions();
     }
-
+    
     @Override
     public ClassTree visitCompilationUnit(CompilationUnitTree t, Long find) {
         root = t;
@@ -60,7 +60,7 @@ public class FindTypeDeclarationAt extends TreePathScanner<ClassTree, Long> {
         return b;
     }
 
-    public TreePath getStoredTreePath() {
+    public TreePath getStoredPath () {
         return stored;
     }
 }

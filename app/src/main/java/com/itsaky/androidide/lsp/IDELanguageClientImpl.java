@@ -43,6 +43,7 @@ import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.models.CodeActionItem;
+import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.Location;
@@ -242,6 +243,8 @@ public class IDELanguageClientImpl implements ILanguageClient {
                             if (a == null || b != null || !a) {
                                 StudioApp.getInstance()
                                         .toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
+                            } else {
+                                editor.executeCommand(action.getCommand());
                             }
                         });
     }
@@ -323,6 +326,10 @@ public class IDELanguageClientImpl implements ILanguageClient {
         }
 
         return Boolean.TRUE;
+    }
+
+    private void execCommand(IDEEditor editor, Command command) {
+        editor.executeCommand(command);
     }
 
     private void editInEditor(final IDEEditor editor, final TextEdit edit) {

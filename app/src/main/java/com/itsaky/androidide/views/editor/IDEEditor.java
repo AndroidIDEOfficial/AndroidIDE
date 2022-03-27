@@ -43,6 +43,7 @@ import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.CodeActionParams;
 import com.itsaky.lsp.models.CodeActionResult;
+import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DocumentChangeEvent;
@@ -72,6 +73,7 @@ import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
 import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 
 public class IDEEditor extends CodeEditor {
 
@@ -642,6 +644,28 @@ public class IDEEditor extends CodeEditor {
     public void performCodeAction(CodeActionItem action) {
         if (mLanguageClient != null) {
             mLanguageClient.performCodeAction(this, action);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public void executeCommand(Command command) {
+        if (command == null) {
+            LOG.warn("Cannot execute command in editor. Command is null.");
+            return;
+        }
+
+        LOG.info(String.format("Executing command '%s' for completion item.", command.getTitle()));
+        switch (command.getCommand()) {
+            case Command.TRIGGER_COMPLETION:
+                final var completion = getComponent(EditorAutoCompletion.class);
+                completion.requireCompletion();
+                break;
+            case Command.TRIGGER_PARAMETER_HINTS:
+                signatureHelp();
+                break;
+            case Command.FORMAT_CODE:
+                formatCodeAsync();
+                break;
         }
     }
 
