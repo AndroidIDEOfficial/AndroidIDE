@@ -17,10 +17,14 @@
 
 package com.itsaky.androidide.fragments.attr;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.inflater.IAttribute;
+
 import java.util.Objects;
 
 /**
@@ -42,8 +46,10 @@ public class BaseValueEditorFragment extends Fragment {
         this.name = name;
     }
 
-    public void setOnValueChangeListener(OnValueChangeListener listener) {
-        this.mValueChangeListener = listener;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mValueChangeListener = (OnValueChangeListener) getParentFragment();
     }
 
     protected void notifyValueChanged(@NonNull String newValue) {

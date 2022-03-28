@@ -146,7 +146,8 @@ public class EditorActivity extends StudioActivity
                 NavigationView.OnNavigationItemSelectedListener,
                 DiagnosticClickListener,
                 IDEHandler.Provider,
-                EditorActivityProvider {
+                EditorActivityProvider,
+                OptionsListFragment.OnOptionsClickListener {
 
     public static final String EXTRA_PROJECT = "project";
     public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
@@ -207,8 +208,7 @@ public class EditorActivity extends StudioActivity
         mViewModel = new ViewModelProvider(this).get(EditorViewModel.class);
         getProjectFromIntent();
 
-        mFileTreeFragment =
-                FileTreeFragment.newInstance(this.getAndroidProject()).setFileActionListener(this);
+        mFileTreeFragment = FileTreeFragment.newInstance(this.getAndroidProject());
         mDaemonStatusFragment = new TextSheetFragment().setTextSelectable(true);
 
         setupDrawerToggle();
@@ -786,7 +786,7 @@ public class EditorActivity extends StudioActivity
             mFileOptionsFragment.addOption(
                     new SheetOption(4, R.drawable.ic_new_folder, R.string.new_folder, file));
         }
-        mFileOptionsFragment.setOnOptionsClickListener(mFileOptionsHandler);
+
         return mFileOptionsFragment;
     }
 
@@ -1704,5 +1704,12 @@ public class EditorActivity extends StudioActivity
                         closeAll();
                     }
                 });
+    }
+
+    @Override
+    public void onOptionsClick(SheetOption option) {
+        if (mFileOptionsHandler != null) {
+            mFileOptionsHandler.onOptionsClick(option);
+        }
     }
 }

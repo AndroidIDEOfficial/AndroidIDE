@@ -17,20 +17,24 @@
 
 package com.itsaky.androidide.fragments.sheets;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.DialogFragment;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.AttrListAdapter;
 import com.itsaky.androidide.databinding.LayoutAddAttrSheetBinding;
 import com.itsaky.attrinfo.models.Attr;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -112,8 +116,11 @@ public class AttributeListSheet extends BottomSheetDialogFragment {
         update();
     }
 
-    public void onItemClick(Consumer<Attr> onClick) {
-        this.clickConsumer = onClick;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        //noinspection unchecked
+        this.clickConsumer = (Consumer<Attr>) context;
     }
 
     public void update() {

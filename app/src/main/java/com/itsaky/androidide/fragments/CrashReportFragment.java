@@ -27,9 +27,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
@@ -37,27 +39,29 @@ import com.itsaky.androidide.databinding.LayoutCrashReportBinding;
 
 public class CrashReportFragment extends Fragment {
 
-    private LayoutCrashReportBinding binding;
-    private boolean closeAppOnClick = true;
-
     public static final String KEY_TITLE = "crash_title";
     public static final String KEY_MESSAGE = "crash_message";
     public static final String KEY_TRACE = "crash_trace";
+    public static final String KEY_CLOSE_APP_ON_CLICK = "close_on_app_click";
+    private LayoutCrashReportBinding binding;
+    private boolean closeAppOnClick = true;
 
     @NonNull
     public static CrashReportFragment newInstance(@NonNull final String trace) {
-        return CrashReportFragment.newInstance(null, null, trace);
+        return CrashReportFragment.newInstance(null, null, trace, true);
     }
 
     @NonNull
     public static CrashReportFragment newInstance(
             @Nullable final String title,
             @Nullable final String message,
-            @NonNull final String trace) {
+            @NonNull final String trace,
+            boolean closeAppOnClick) {
         final var frag = new CrashReportFragment();
         final var args = new Bundle();
 
         args.putString(KEY_TRACE, trace);
+        args.putBoolean(KEY_CLOSE_APP_ON_CLICK, closeAppOnClick);
 
         if (title != null) {
             args.putString(KEY_TITLE, title);
@@ -69,11 +73,6 @@ public class CrashReportFragment extends Fragment {
 
         frag.setArguments(args);
         return frag;
-    }
-
-    public CrashReportFragment setCloseAppOnClick(boolean closeAppOnClick) {
-        this.closeAppOnClick = closeAppOnClick;
-        return this;
     }
 
     @Nullable
@@ -90,6 +89,7 @@ public class CrashReportFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         final var args = requireArguments();
+        this.closeAppOnClick = args.getBoolean(KEY_CLOSE_APP_ON_CLICK);
         var title = getString(R.string.msg_ide_crashed);
         var message = getString(R.string.msg_report_crash);
         var trace = "";

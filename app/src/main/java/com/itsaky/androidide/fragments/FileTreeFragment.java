@@ -17,7 +17,6 @@
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
  **************************************************************************************/
-
 package com.itsaky.androidide.fragments;
 
 import android.content.Context;
@@ -27,9 +26,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ProgressBar;
+
 import androidx.annotation.NonNull;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
@@ -46,6 +47,7 @@ import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
+
 import java.io.File;
 import java.util.Arrays;
 
@@ -60,11 +62,6 @@ public class FileTreeFragment extends BottomSheetDialogFragment
 
     public FileTreeFragment() {}
 
-    public FileTreeFragment setFileActionListener(FileActionListener listener) {
-        this.mFileActionListener = listener;
-        return this;
-    }
-
     @NonNull
     public static FileTreeFragment newInstance(AndroidProject project) {
         Bundle bundle = new Bundle();
@@ -75,14 +72,20 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mFileActionListener = (FileActionListener) context;
+    }
+
+    @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = LayoutEditorFileTreeBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mProject = requireArguments().getParcelable("project");
 

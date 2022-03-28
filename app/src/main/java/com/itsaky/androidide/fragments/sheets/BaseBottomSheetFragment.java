@@ -23,12 +23,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.databinding.LayoutSheetBinding;
 
 public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment {
 
+    private static final String KEY_SHADOW_ENABLED = "shadowEnabled";
+    private static final String KEY_TITLE_ENABLED = "titleEnabled";
+    private static final String KEY_TITLE = "fragTitle";
     protected Dialog mDialog;
     protected boolean shadowEnabled = true;
     protected boolean titleEnabled = true;
@@ -52,8 +57,29 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        boolean titleSet = false;
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(KEY_TITLE_ENABLED)) {
+                this.titleEnabled = savedInstanceState.getBoolean(KEY_TITLE_ENABLED);
+            }
+
+            if (savedInstanceState.containsKey(KEY_SHADOW_ENABLED)) {
+                this.shadowEnabled = savedInstanceState.getBoolean(KEY_SHADOW_ENABLED);
+            }
+
+            if (savedInstanceState.containsKey(KEY_TITLE)) {
+                setTitle(savedInstanceState.getString(KEY_TITLE));
+                titleSet = true;
+            }
+        }
+
         bind(binding.container);
-        binding.title.setText(getTitle());
+
+        if (!titleSet) {
+            binding.title.setText(getTitle());
+        }
+
         binding.title.setOnClickListener(v -> handleTitleClick());
 
         if (shouldHideTitle()) {
@@ -108,4 +134,15 @@ public abstract class BaseBottomSheetFragment extends BottomSheetDialogFragment 
     protected void onShow() {}
 
     protected abstract void bind(LinearLayout container);
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_SHADOW_ENABLED, shadowEnabled);
+        outState.putBoolean(KEY_TITLE_ENABLED, titleEnabled);
+
+        if (binding != null) {
+            outState.putString(KEY_TITLE, binding.title.getText().toString());
+        }
+    }
 }

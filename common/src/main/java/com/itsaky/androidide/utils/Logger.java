@@ -18,12 +18,16 @@
 package com.itsaky.androidide.utils;
 
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ThrowableUtils;
+
+import org.jetbrains.annotations.Contract;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.jetbrains.annotations.Contract;
 
 /**
  * Logger for the IDE.
@@ -106,6 +110,27 @@ public class Logger {
         Log.i(TAG, msg);
         notifyListener(INFO, msg);
         return this;
+    }
+
+    /** Logs the name of method and class which calls this method. */
+    public void logThis() {
+        debug(getCallerClassDescription());
+    }
+
+    protected String getCallerClassDescription() {
+        final var elements = Thread.currentThread().getStackTrace();
+        for (int i = 1, elementsLength = elements.length; i < elementsLength; i++) {
+            final var element = elements[i];
+            final var klass = element.getClassName();
+            final var method = element.getMethodName();
+            if (Logger.class.getName().equals(klass) || klass.contains("java.lang.Thread")) {
+                continue;
+            }
+
+            return String.format("%s [%s]", method, klass);
+        }
+
+        return "<Logger> <Cannot get caller information>";
     }
 
     @NonNull

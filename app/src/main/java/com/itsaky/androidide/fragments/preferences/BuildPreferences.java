@@ -21,9 +21,11 @@
 package com.itsaky.androidide.fragments.preferences;
 
 import android.os.Bundle;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
+
 import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
@@ -31,12 +33,13 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
+
 import java.io.File;
 
 public class BuildPreferences extends BasePreferenceFragment
         implements Preference.OnPreferenceClickListener {
 
-    public static final String KEY_GRADLE_COMMAMDS = "idepref_build_gradleCommands";
+    public static final String KEY_GRADLE_COMMANDS = "idepref_build_gradleCommands";
     public static final String KEY_GRADLE_CLEAR_CACHE = "idepref_build_gradleClearCache";
 
     private ProgressSheet progressSheet;
@@ -52,7 +55,7 @@ public class BuildPreferences extends BasePreferenceFragment
 
         screen.addPreference(categoryGradle);
 
-        customCommands.setKey(KEY_GRADLE_COMMAMDS);
+        customCommands.setKey(KEY_GRADLE_COMMANDS);
         customCommands.setIcon(R.drawable.ic_bash_commands);
         customCommands.setTitle(R.string.idepref_build_customgradlecommands_title);
         customCommands.setSummary(R.string.idepref_build_customgradlecommands_summary);
@@ -75,7 +78,7 @@ public class BuildPreferences extends BasePreferenceFragment
     @Override
     public boolean onPreferenceClick(Preference p1) {
         final String key = p1.getKey();
-        if (key.equals(KEY_GRADLE_COMMAMDS)) {
+        if (key.equals(KEY_GRADLE_COMMANDS)) {
             showGradleCommandsDialog();
         } else if (key.equals(KEY_GRADLE_CLEAR_CACHE)) {
             showClearCacheDialog();
@@ -101,18 +104,16 @@ public class BuildPreferences extends BasePreferenceFragment
                 labels,
                 checked,
                 (p1, p2, p3) -> {
-                    boolean isChecked = p3;
-                    int pos = p2;
-                    if (pos == 0) {
-                        getPrefManager().setGradleStacktraceEnabled(isChecked);
-                    } else if (pos == 1) {
-                        getPrefManager().setGradleInfoEnabled(isChecked);
-                    } else if (pos == 2) {
-                        getPrefManager().setGradleDebugEnabled(isChecked);
-                    } else if (pos == 3) {
-                        getPrefManager().setGradleScanEnabled(isChecked);
-                    } else if (pos == 4) {
-                        getPrefManager().setGradleWarningEnabled(isChecked);
+                    if (p2 == 0) {
+                        getPrefManager().setGradleStacktraceEnabled(p3);
+                    } else if (p2 == 1) {
+                        getPrefManager().setGradleInfoEnabled(p3);
+                    } else if (p2 == 2) {
+                        getPrefManager().setGradleDebugEnabled(p3);
+                    } else if (p2 == 3) {
+                        getPrefManager().setGradleScanEnabled(p3);
+                    } else if (p2 == 4) {
+                        getPrefManager().setGradleWarningEnabled(p3);
                     }
                 });
         builder.setPositiveButton(android.R.string.ok, null);
@@ -132,11 +133,7 @@ public class BuildPreferences extends BasePreferenceFragment
                     p1.dismiss();
                     getProgressSheet().show(getChildFragmentManager(), "progress_sheet");
                     new TaskExecutor()
-                            .executeAsync(
-                                    this::deleteCaches,
-                                    __ -> {
-                                        getProgressSheet().dismiss();
-                                    });
+                            .executeAsync(this::deleteCaches, __ -> getProgressSheet().dismiss());
                 });
         builder.setNegativeButton(R.string.no, null);
         builder.create().show();

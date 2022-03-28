@@ -26,20 +26,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.databinding.LayoutProgressSheetBinding;
 import com.itsaky.androidide.utils.Logger;
 
 public class ProgressSheet extends BaseBottomSheetFragment {
 
+    private final Logger LOG = Logger.instance("ProgressSheet");
     private LayoutProgressSheetBinding binding;
-    private Drawable drawable = null;
     private String message = "";
     private String subMessage = "";
     private boolean subMessageEnabled = false;
-    private boolean welcomTextEnabled = false;
-
-    private final Logger LOG = Logger.instance("ProgressSheet");
+    private boolean welcomeTextEnabled = false;
 
     @Override
     protected void bind(LinearLayout container) {
@@ -75,7 +75,7 @@ public class ProgressSheet extends BaseBottomSheetFragment {
             binding.message.setLayoutParams(p);
         }
 
-        if (!welcomTextEnabled) {
+        if (!welcomeTextEnabled) {
             binding.welcomeText.setVisibility(View.GONE);
         }
     }
@@ -86,7 +86,7 @@ public class ProgressSheet extends BaseBottomSheetFragment {
     }
 
     public ProgressSheet setWelcomeTextEnabled(boolean enabled) {
-        this.welcomTextEnabled = enabled;
+        this.welcomeTextEnabled = enabled;
         return this;
     }
 
@@ -113,7 +113,6 @@ public class ProgressSheet extends BaseBottomSheetFragment {
     }
 
     public ProgressSheet setProgressDrawable(Drawable drawable) {
-        this.drawable = drawable;
         if (isShowing()) {
             binding.progress.setIndeterminateDrawable(drawable);
         }

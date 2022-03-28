@@ -17,21 +17,28 @@
 
 package com.itsaky.androidide.fragments;
 
+import static com.itsaky.androidide.utils.Logger.instance;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.itsaky.androidide.databinding.FragmentNonEditableEditorBinding;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.editor.IDEEditor;
+
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public abstract class NonEditableEditorFragment extends Fragment {
 
+    private static final Logger LOG = instance("NonEditableEditorFragment");
     private FragmentNonEditableEditorBinding binding;
 
     @Nullable
@@ -47,7 +54,6 @@ public abstract class NonEditableEditorFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         final var editor = binding.getRoot();
         editor.setEditable(false);
         editor.setDividerWidth(0);

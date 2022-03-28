@@ -66,13 +66,6 @@ public class AttrValueEditorSheet extends BottomSheetDialogFragment {
     private AttrValueFormatTabAdapter adapter;
     private XMLAttribute attribute;
 
-    private BaseValueEditorFragment.OnValueChangeListener changeListener;
-
-    public void setOnValueChangeListener(
-            BaseValueEditorFragment.OnValueChangeListener changeListener) {
-        this.changeListener = changeListener;
-    }
-
     @NonNull
     public static AttrValueEditorSheet newInstance(final XMLAttribute attribute) {
         Objects.requireNonNull(attribute);
@@ -125,7 +118,7 @@ public class AttrValueEditorSheet extends BottomSheetDialogFragment {
         }
 
         this.adapter =
-                new AttrValueFormatTabAdapter(getChildFragmentManager(), attribute, changeListener);
+                new AttrValueFormatTabAdapter(getChildFragmentManager(), attribute);
 
         final var formats = formatText.split("\\|");
         for (var formatName : formats) {

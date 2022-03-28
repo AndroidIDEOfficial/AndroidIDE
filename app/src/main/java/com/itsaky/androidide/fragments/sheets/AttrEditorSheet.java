@@ -17,13 +17,16 @@
 
 package com.itsaky.androidide.fragments.sheets;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.transition.TransitionManager;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.SimpleIconTextAdapter;
@@ -40,6 +43,9 @@ import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.toaster.Toaster;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,18 +53,21 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.Contract;
 
 public class AttrEditorSheet extends BottomSheetDialogFragment
-        implements SimpleIconTextAdapter.OnBindListener<IconTextListItem> {
+        implements SimpleIconTextAdapter.OnBindListener<IconTextListItem>, Consumer<Attr> {
 
     private static final List<IconTextListItem> VIEW_ACTIONS = new ArrayList<>();
     private static final Logger LOG = Logger.instance("AttrBottomSheet");
     private AttributeListSheet mAttrListSheet;
     private AttrValueEditorSheet mValueEditorSheet;
     private IView selectedView;
+
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private File layout;
+
     private LayoutAttrEditorSheetBinding binding;
     private OnViewDeletionFailedListener mDeletionFailedListener;
 
@@ -93,9 +102,10 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
         setupViewData();
     }
 
-    public AttrEditorSheet setDeletionFailedListener(OnViewDeletionFailedListener listener) {
-        this.mDeletionFailedListener = listener;
-        return this;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mDeletionFailedListener = (OnViewDeletionFailedListener) context;
     }
 
     public AttrEditorSheet setLayout(File layout) {
@@ -148,31 +158,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
 
     private void showValueEditorSheet(@NonNull XMLAttribute attribute) {
         getValueEditorSheet(attribute).show(getChildFragmentManager(), "attr_value_editor_sheet");
-    }
-
-    private void applyNewValue(@NonNull IAttribute attribute, String newValue) {
-        if (this.selectedView.hasAttribute(
-                attribute.getNamespace(), attribute.getAttributeName())) {
-            if (!this.selectedView.updateAttribute(
-                    attribute.getNamespace(), attribute.getAttributeName(), newValue)) {
-                StudioApp.getInstance()
-                        .toast(getString(R.string.msg_attr_not_updated), Toaster.Type.ERROR);
-            } else {
-                // Update the view data
-                // This will make sure that the attributes list has been updated
-                setupViewData();
-            }
-        } else {
-            addAttribute(
-                    new UiAttribute(
-                            attribute.getNamespace(), attribute.getAttributeName(), newValue));
-        }
-    }
-
-    private void addAttribute(@NonNull IAttribute attribute) {
-        this.selectedView.addAttribute(attribute);
-        setupViewData();
-        StudioApp.getInstance().toast(getString(R.string.msg_attr_added), Toaster.Type.SUCCESS);
     }
 
     @Override
@@ -300,11 +285,15 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
         return new ArrayList<>(attributes);
     }
 
+    @Override
+    public void accept(Attr attr) {
+        addNewAttribute(attr);
+    }
+
     @NonNull
     private AttributeListSheet getAttrListSheet() {
         if (mAttrListSheet == null) {
             mAttrListSheet = new AttributeListSheet();
-            mAttrListSheet.onItemClick(this::addNewAttribute);
             mAttrListSheet.setCancelable(true);
         }
 
@@ -316,7 +305,6 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
 
         if (mValueEditorSheet == null) {
             mValueEditorSheet = AttrValueEditorSheet.newInstance(attribute);
-            mValueEditorSheet.setOnValueChangeListener(this::onValueChanged);
         }
 
         mValueEditorSheet.setAttribute(attribute);

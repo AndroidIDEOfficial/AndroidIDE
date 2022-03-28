@@ -17,23 +17,29 @@
 
 package com.itsaky.androidide.adapters;
 
+import static com.itsaky.androidide.utils.Logger.instance;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.fragments.DiagnosticsListFragment;
 import com.itsaky.androidide.fragments.IDELogFragment;
 import com.itsaky.androidide.fragments.LogViewFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.SimpleOutputFragment;
+import com.itsaky.androidide.utils.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
 
+    private static final Logger LOG = instance("EditorBottomSheetTabAdapter");
     private final List<Tab> fragments;
 
     public EditorBottomSheetTabAdapter(@NonNull FragmentActivity fragmentActivity) {
@@ -43,29 +49,29 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
         this.fragments.add(
                 new Tab(
                         fragmentActivity.getString(R.string.build_output),
-                        new SimpleOutputFragment()));
+                        SimpleOutputFragment.class));
         this.fragments.add(
-                new Tab(fragmentActivity.getString(R.string.app_logs), new LogViewFragment()));
+                new Tab(fragmentActivity.getString(R.string.app_logs), LogViewFragment.class));
         this.fragments.add(
-                new Tab(fragmentActivity.getString(R.string.ide_logs), new IDELogFragment()));
+                new Tab(fragmentActivity.getString(R.string.ide_logs), IDELogFragment.class));
         this.fragments.add(
                 new Tab(
                         fragmentActivity.getString(R.string.view_diags),
-                        new DiagnosticsListFragment()));
+                        DiagnosticsListFragment.class));
         this.fragments.add(
                 new Tab(
                         fragmentActivity.getString(R.string.view_search_results),
-                        new SearchResultFragment()));
+                        SearchResultFragment.class));
     }
 
     public Fragment getFragmentAtIndex(int index) {
-        return this.fragments.get(index).fragment;
+        return this.fragments.get(index).getInstance();
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return this.fragments.get(position).fragment;
+        return this.fragments.get(position).createInstance();
     }
 
     @Override
@@ -100,8 +106,8 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
     @Nullable
     private <T extends Fragment> T findFragmentByClass(Class<T> clazz) {
         for (final var tab : this.fragments) {
-            if (tab.fragment.getClass() == clazz) {
-                return (T) tab.fragment;
+            if (tab.fragment == clazz) {
+                return (T) tab.getInstance();
             }
         }
         return null;
@@ -110,7 +116,7 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
     public <T extends Fragment> int findIndexOfFragmentByClass(Class<T> tClass) {
         for (int i = 0; i < this.fragments.size(); i++) {
             final var tab = this.fragments.get(i);
-            if (tab.fragment.getClass() == tClass) {
+            if (tab.fragment == tClass) {
                 return i;
             }
         }
@@ -120,12 +126,29 @@ public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
 
     static class Tab {
 
-        public Tab(String title, Fragment fragment) {
+        String title;
+        Class<? extends Fragment> fragment;
+        Fragment instance;
+
+        public Tab(String title, Class<? extends Fragment> fragment) {
             this.title = title;
             this.fragment = fragment;
         }
 
-        String title;
-        Fragment fragment;
+        Fragment createInstance() {
+            try {
+                final var constructor = fragment.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                return this.instance = constructor.newInstance();
+            } catch (Throwable th) {
+                LOG.error("Unable to create fragment instance", th);
+                return null;
+            }
+        }
+
+        @Nullable
+        Fragment getInstance() {
+            return instance == null ? createInstance() : instance;
+        }
     }
 }

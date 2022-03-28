@@ -22,9 +22,11 @@ import static com.itsaky.androidide.utils.Logger.instance;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
+
 import com.itsaky.androidide.AboutActivity;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
@@ -32,9 +34,9 @@ import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.toaster.Toaster;
-import org.jetbrains.annotations.Contract;
 
-public class IDEPreferences extends BasePreferenceFragment {
+public class IDEPreferences extends BasePreferenceFragment
+        implements Preference.OnPreferenceClickListener {
 
     public static final String KEY_GENERAL = "idepref_general";
     public static final String KEY_EDITOR = "idepref_editor";
@@ -101,11 +103,10 @@ public class IDEPreferences extends BasePreferenceFragment {
         screen.addPreference(changelog);
         screen.addPreference(about);
 
-        final Preference.OnPreferenceClickListener listener = getListener();
-        github.setOnPreferenceClickListener(listener);
-        telegram.setOnPreferenceClickListener(listener);
-        changelog.setOnPreferenceClickListener(listener);
-        about.setOnPreferenceClickListener(listener);
+        github.setOnPreferenceClickListener(this);
+        telegram.setOnPreferenceClickListener(this);
+        changelog.setOnPreferenceClickListener(this);
+        about.setOnPreferenceClickListener(this);
     }
 
     private GeneralPreferences getGeneralFrag() {
@@ -140,26 +141,23 @@ public class IDEPreferences extends BasePreferenceFragment {
         }
     }
 
-    @NonNull
-    @Contract(pure = true)
-    private Preference.OnPreferenceClickListener getListener() {
-        return preference -> {
-            final String key = preference.getKey();
-            switch (key) {
-                case KEY_CHANGELOG:
-                    showChangelog();
-                    break;
-                case KEY_TELEGRAM:
-                    StudioApp.getInstance().openTelegramGroup();
-                    break;
-                case KEY_ISSUES:
-                    StudioApp.getInstance().openGitHub();
-                    break;
-                case KEY_ABOUT:
-                    startActivity(new Intent(getContext(), AboutActivity.class));
-                    break;
-            }
-            return true;
-        };
+    @Override
+    public boolean onPreferenceClick(@NonNull Preference preference) {
+        final String key = preference.getKey();
+        switch (key) {
+            case KEY_CHANGELOG:
+                showChangelog();
+                break;
+            case KEY_TELEGRAM:
+                StudioApp.getInstance().openTelegramGroup();
+                break;
+            case KEY_ISSUES:
+                StudioApp.getInstance().openGitHub();
+                break;
+            case KEY_ABOUT:
+                startActivity(new Intent(getContext(), AboutActivity.class));
+                break;
+        }
+        return true;
     }
 }

@@ -20,28 +20,31 @@
 
 package com.itsaky.androidide.fragments.sheets;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.itsaky.androidide.adapters.OptionsSheetAdapter;
 import com.itsaky.androidide.models.SheetOption;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class OptionsListFragment extends BaseBottomSheetFragment {
 
+    private final List<SheetOption> mOptions = new ArrayList<>();
+    protected boolean dismissOnItemClick = true;
     private RecyclerView mList;
     private OnOptionsClickListener listener;
-    private final List<SheetOption> mOptions = new ArrayList<>();
-
-    protected boolean dismissOnItemClick = true;
 
     @Override
-    protected void bind(LinearLayout container) {
-        mList = new RecyclerView(getContext());
+    protected void bind(@NonNull LinearLayout container) {
+        mList = new RecyclerView(requireContext());
         container.removeAllViews();
         container.addView(mList, new LinearLayout.LayoutParams(-1, -1));
     }
@@ -55,21 +58,22 @@ public class OptionsListFragment extends BaseBottomSheetFragment {
                         mOptions,
                         __ -> {
                             if (dismissOnItemClick) dismiss();
-                            if (listener != null) listener.onOptionsClick(__);
+                            if (listener != null) {
+                                listener.onOptionsClick(__);
+                            }
                         }));
     }
 
-    public OptionsListFragment setOnOptionsClickListener(OnOptionsClickListener listener) {
-        this.listener = listener;
-        return this;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.listener = (OnOptionsClickListener) context;
     }
 
-    public OptionsListFragment addOption(SheetOption option) {
+    public void addOption(SheetOption option) {
         if (!mOptions.contains(option)) {
             mOptions.add(option);
         }
-
-        return this;
     }
 
     public OptionsListFragment removeOption(int optionIndex) {

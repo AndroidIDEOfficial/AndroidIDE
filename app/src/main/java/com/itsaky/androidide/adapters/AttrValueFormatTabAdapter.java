@@ -17,14 +17,17 @@
 package com.itsaky.androidide.adapters;
 
 import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+
 import com.itsaky.androidide.fragments.attr.BaseValueEditorFragment;
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.androidide.utils.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -42,16 +45,10 @@ public class AttrValueFormatTabAdapter extends FragmentStatePagerAdapter {
     private final List<String> mTitles = new ArrayList<>();
     private final XMLAttribute attribute;
 
-    private final BaseValueEditorFragment.OnValueChangeListener changeListener;
-
-    public AttrValueFormatTabAdapter(
-            @NonNull FragmentManager manager,
-            XMLAttribute attribute,
-            BaseValueEditorFragment.OnValueChangeListener changeListener) {
+    public AttrValueFormatTabAdapter(@NonNull FragmentManager manager, XMLAttribute attribute) {
         super(manager);
         Objects.requireNonNull(attribute);
 
-        this.changeListener = changeListener;
         this.attribute = attribute;
     }
 
@@ -85,10 +82,6 @@ public class AttrValueFormatTabAdapter extends FragmentStatePagerAdapter {
         return sb.toString();
     }
 
-    public String getTitle(int position) {
-        return mTitles.get(position);
-    }
-
     @NonNull
     public Fragment createFragment(
             Class<? extends BaseValueEditorFragment> clazz, @NonNull final String name) {
@@ -96,7 +89,6 @@ public class AttrValueFormatTabAdapter extends FragmentStatePagerAdapter {
             final var frag = clazz.newInstance();
             frag.setAttribute(attribute);
             frag.setName(name);
-            frag.setOnValueChangeListener(this.changeListener);
 
             return frag;
         } catch (Throwable th) {
