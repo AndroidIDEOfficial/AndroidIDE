@@ -81,7 +81,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class DesignerActivity extends StudioActivity
-        implements WidgetItemAdapter.OnDragStartListener {
+        implements WidgetItemAdapter.OnDragStartListener,
+                AttrEditorSheet.OnViewDeletionFailedListener {
 
     public static final String KEY_LAYOUT_PATH = "designer_layoutPath";
     public static final String KEY_GENERATED_CODE = "designer_xmlCode";
@@ -473,5 +474,10 @@ public class DesignerActivity extends StudioActivity
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean onDeletionFailed(IView view) {
+        return this.onViewDeletionFailed(view);
     }
 }
