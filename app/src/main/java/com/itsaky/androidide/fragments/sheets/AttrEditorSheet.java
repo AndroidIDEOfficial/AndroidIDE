@@ -34,6 +34,7 @@ import com.itsaky.androidide.adapters.XMLAttributeListAdapter;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetBinding;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetItemBinding;
+import com.itsaky.androidide.fragments.attr.BaseValueEditorFragment;
 import com.itsaky.androidide.models.IconTextListItem;
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.androidide.utils.DialogUtils;
@@ -57,7 +58,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AttrEditorSheet extends BottomSheetDialogFragment
-        implements SimpleIconTextAdapter.OnBindListener<IconTextListItem>, Consumer<Attr> {
+        implements SimpleIconTextAdapter.OnBindListener<IconTextListItem>,
+                Consumer<Attr>,
+                BaseValueEditorFragment.OnValueChangeListener {
 
     private static final List<IconTextListItem> VIEW_ACTIONS = new ArrayList<>();
     private static final Logger LOG = Logger.instance("AttrBottomSheet");
@@ -311,6 +314,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
         return mValueEditorSheet;
     }
 
+    @Override
     public void onValueChanged(@NonNull IAttribute attribute, String newValue) {
         Objects.requireNonNull(this.selectedView);
 

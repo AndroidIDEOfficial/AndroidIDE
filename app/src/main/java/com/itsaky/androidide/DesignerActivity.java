@@ -467,17 +467,13 @@ public class DesignerActivity extends StudioActivity
                 : mEditorSheet;
     }
 
-    private boolean onViewDeletionFailed(@NonNull IView view) {
+    @Override
+    public boolean onDeletionFailed(@NonNull IView view) {
         final var v = view.asView();
         if (mBinding.layoutContainer.indexOfChild(v) >= 0) {
             mBinding.layoutContainer.removeView(v);
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean onDeletionFailed(IView view) {
-        return this.onViewDeletionFailed(view);
     }
 }

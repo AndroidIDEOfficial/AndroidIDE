@@ -28,13 +28,16 @@ import static com.itsaky.attrinfo.models.Attr.FORMAT_REFERENCE;
 import static com.itsaky.attrinfo.models.Attr.FORMAT_STRING;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.adapters.AttrValueFormatTabAdapter;
 import com.itsaky.androidide.databinding.LayoutAttrValueEditorBinding;
@@ -51,17 +54,22 @@ import com.itsaky.androidide.fragments.attr.ReferenceEditor;
 import com.itsaky.androidide.fragments.attr.StringEditor;
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.attrinfo.models.Attr;
-import java.util.Objects;
+import com.itsaky.inflater.IAttribute;
+
 import org.jetbrains.annotations.Contract;
+
+import java.util.Objects;
 
 /**
  * Sheet for editing value of an attribute.
  *
  * @author Akash Yadav
  */
-public class AttrValueEditorSheet extends BottomSheetDialogFragment {
+public class AttrValueEditorSheet extends BottomSheetDialogFragment
+        implements BaseValueEditorFragment.OnValueChangeListener {
 
     private static final String KEY_ATTRIBUTE = "attrEditorSheet_attribute";
+    private BaseValueEditorFragment.OnValueChangeListener valueChangeListener;
     private LayoutAttrValueEditorBinding binding;
     private AttrValueFormatTabAdapter adapter;
     private XMLAttribute attribute;
@@ -76,6 +84,13 @@ public class AttrValueEditorSheet extends BottomSheetDialogFragment {
         final var fragment = new AttrValueEditorSheet();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.valueChangeListener =
+                (BaseValueEditorFragment.OnValueChangeListener) getParentFragment();
     }
 
     @Nullable
@@ -117,8 +132,7 @@ public class AttrValueEditorSheet extends BottomSheetDialogFragment {
             this.adapter.notifyDataSetChanged();
         }
 
-        this.adapter =
-                new AttrValueFormatTabAdapter(getChildFragmentManager(), attribute);
+        this.adapter = new AttrValueFormatTabAdapter(getChildFragmentManager(), attribute);
 
         final var formats = formatText.split("\\|");
         for (var formatName : formats) {
@@ -168,5 +182,12 @@ public class AttrValueEditorSheet extends BottomSheetDialogFragment {
     public void setAttribute(XMLAttribute attribute) {
         Objects.requireNonNull(attribute);
         this.attribute = attribute;
+    }
+
+    @Override
+    public void onValueChanged(IAttribute attribute, String newValue) {
+        if (valueChangeListener != null) {
+            valueChangeListener.onValueChanged(attribute, newValue);
+        }
     }
 }
