@@ -590,11 +590,18 @@ public class EditorActivity extends StudioActivity
     }
 
     public void appendApkLog(LogLine line) {
-        bottomSheetTabAdapter.getLogFragment().appendLog(line);
+        final var logFragment = bottomSheetTabAdapter.getLogFragment();
+        if (logFragment != null) {
+            logFragment.appendLog(line);
+        }
     }
 
     public void appendBuildOut(final String str) {
-        bottomSheetTabAdapter.getBuildOutputFragment().appendOutput(str);
+        final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
+
+        if (frag != null) {
+            frag.appendOutput(str);
+        }
     }
 
     public void showDaemonStatus() {
@@ -632,18 +639,23 @@ public class EditorActivity extends StudioActivity
 
     public void handleDiagnosticsResultVisibility(boolean errorVisible) {
         runOnUiThread(
-                () ->
-                        bottomSheetTabAdapter
-                                .getDiagnosticsFragment()
-                                .handleResultVisibility(errorVisible));
+                () -> {
+                    final var diagnosticsFragment = bottomSheetTabAdapter.getDiagnosticsFragment();
+                    if (diagnosticsFragment != null) {
+                        diagnosticsFragment.handleResultVisibility(errorVisible);
+                    }
+                });
     }
 
     public void handleSearchResultVisibility(boolean errorVisible) {
         runOnUiThread(
-                () ->
-                        bottomSheetTabAdapter
-                                .getSearchResultFragment()
-                                .handleResultVisibility(errorVisible));
+                () -> {
+                    final var searchResultFragment =
+                            bottomSheetTabAdapter.getSearchResultFragment();
+                    if (searchResultFragment != null) {
+                        searchResultFragment.handleResultVisibility(errorVisible);
+                    }
+                });
     }
 
     public void setStatus(final CharSequence text) {
@@ -821,11 +833,24 @@ public class EditorActivity extends StudioActivity
     }
 
     public void setDiagnosticsAdapter(@NonNull final DiagnosticsAdapter adapter) {
-        runOnUiThread(() -> bottomSheetTabAdapter.getDiagnosticsFragment().setAdapter(adapter));
+        runOnUiThread(
+                () -> {
+                    final var diagnosticsFragment = bottomSheetTabAdapter.getDiagnosticsFragment();
+                    if (diagnosticsFragment != null) {
+                        diagnosticsFragment.setAdapter(adapter);
+                    }
+                });
     }
 
     public void setSearchResultAdapter(@NonNull final SearchListAdapter adapter) {
-        runOnUiThread(() -> bottomSheetTabAdapter.getSearchResultFragment().setAdapter(adapter));
+        runOnUiThread(
+                () -> {
+                    final var searchResultFragment =
+                            bottomSheetTabAdapter.getSearchResultFragment();
+                    if (searchResultFragment != null) {
+                        searchResultFragment.setAdapter(adapter);
+                    }
+                });
     }
 
     @Override
