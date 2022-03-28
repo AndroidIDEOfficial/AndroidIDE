@@ -18,8 +18,11 @@
 package com.itsaky.androidide.fragments.attr;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.itsaky.androidide.models.XMLAttribute;
@@ -34,22 +37,24 @@ import java.util.Objects;
  */
 public class BaseValueEditorFragment extends Fragment {
 
+    public static final String KEY_ATTR = "editor_attr";
+    public static final String KEY_NAME = "editor_name";
     protected OnValueChangeListener mValueChangeListener;
     protected XMLAttribute attribute;
     protected String name;
-
-    public void setAttribute(XMLAttribute attribute) {
-        this.attribute = attribute;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mValueChangeListener = (OnValueChangeListener) getParentFragment();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        final var args = requireArguments();
+        this.attribute = args.getParcelable(KEY_ATTR);
+        this.name = args.getString(KEY_NAME);
     }
 
     protected void notifyValueChanged(@NonNull String newValue) {

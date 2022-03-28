@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.adapters;
 
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -87,8 +88,10 @@ public class AttrValueFormatTabAdapter extends FragmentStatePagerAdapter {
             Class<? extends BaseValueEditorFragment> clazz, @NonNull final String name) {
         try {
             final var frag = clazz.newInstance();
-            frag.setAttribute(attribute);
-            frag.setName(name);
+            final var args = new Bundle();
+            args.putParcelable(BaseValueEditorFragment.KEY_ATTR, attribute);
+            args.putString(BaseValueEditorFragment.KEY_NAME, name);
+            frag.setArguments(args);
 
             return frag;
         } catch (Throwable th) {
