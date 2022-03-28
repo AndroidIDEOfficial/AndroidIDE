@@ -120,7 +120,7 @@ public class AttributeListSheet extends BottomSheetDialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         //noinspection unchecked
-        this.clickConsumer = (Consumer<Attr>) context;
+        this.clickConsumer = (Consumer<Attr>) getParentFragment();
     }
 
     public void update() {
