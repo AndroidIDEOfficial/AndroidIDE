@@ -130,7 +130,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
 
     @NonNull
     @Override
-    protected IResourceTable requireResourceFinder() {
+    protected IResourceTable requireResourceTable () {
         return this.resFinder;
     }
 

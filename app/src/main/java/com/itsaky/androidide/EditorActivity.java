@@ -108,7 +108,6 @@ import com.itsaky.androidide.viewmodel.EditorViewModel;
 import com.itsaky.androidide.views.MaterialBanner;
 import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
-import com.itsaky.inflater.ILayoutInflater;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.java.models.JavaServerSettings;
@@ -129,7 +128,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.regex.Pattern;
@@ -1338,18 +1336,12 @@ public class EditorActivity extends StudioActivity
             }
 
             saveAll(false);
-            if (getApp().getLayoutInflater() == null) {
-                LOG.info("Creating layout inflater instance...");
-                getApp().createInflater(
-                                getApp().createInflaterConfig(
-                                                getContextProvider(), getResourceDirectories()));
-            }
 
             final Intent intent = new Intent(this, DesignerActivity.class);
             intent.putExtra(
                     DesignerActivity.KEY_LAYOUT_PATH,
                     getCurrentEditor().getFile().getAbsolutePath());
-
+            intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, getResourceDirectories());
             LOG.info("Launching UI Designer...");
             mUIDesignerLauncher.launch(intent);
         } catch (Throwable th) {
@@ -1359,14 +1351,8 @@ public class EditorActivity extends StudioActivity
     }
 
     @NonNull
-    @Contract(" -> new")
-    private ILayoutInflater.ContextProvider getContextProvider() {
-        return this::provide;
-    }
-
-    @NonNull
-    private Set<File> getResourceDirectories() {
-        final Set<File> dirs = new HashSet<>();
+    private ArrayList<String> getResourceDirectories() {
+        final var dirs = new ArrayList<String>();
         if (getAndroidProject() != null
                 && getAndroidProject().getModulePaths() != null
                 && !getAndroidProject().getModulePaths().isEmpty()) {
@@ -1374,7 +1360,7 @@ public class EditorActivity extends StudioActivity
                 if (path != null && new File(path).exists()) {
                     File res = new File(path, "src/main/res");
                     if (res.exists()) {
-                        dirs.add(res);
+                        dirs.add(res.getAbsolutePath());
                     }
                 }
             }
@@ -1412,7 +1398,9 @@ public class EditorActivity extends StudioActivity
         CompletableFuture.runAsync(
                 () ->
                         ValuesTableFactory.setupWithResDirectories(
-                                getResourceDirectories().toArray(new File[0])));
+                                getResourceDirectories().stream()
+                                        .map(File::new)
+                                        .toArray(File[]::new)));
     }
 
     @Nullable
