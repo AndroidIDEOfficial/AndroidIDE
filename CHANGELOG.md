@@ -1,4 +1,5 @@
-# AndroidIDE Changelog 
+# AndroidIDE Changelog
+
 This is the changelog of all the releases of AndroidIDE.
 
 ## **v2.0.1-beta** (in development)
@@ -11,33 +12,40 @@ This is the changelog of all the releases of AndroidIDE.
 <!--New features-->
 - Code formatter for Java source code.
 - Support for
-  [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView),
+  [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView)
+  ,
   [`ToggleButton`](https://developer.android.com/reference/android/widget/ToggleButton),
   [`Switch`](https://developer.android.com/reference/android/widget/Switch),
   [`GridLayout`](https://developer.android.com/reference/android/widget/GridLayout) in layout
   inflater.
 - Preference to disable use of `TYPE_TEXT_VARIATION_VISIBLE_PASSWORD` flag in editor.
 - Automatically trigger completion when attributes are inserted from completion window.
+- Code actions
 
 ### Removals
 <!--Things that were removed-->
-- Removed initial view attributes from view tags completion in XMLCompletionProvider
+- Removed initial view attributes from view tags completion in XMLCompletionProvider.
+- Vertical text action window has been removed.
 
 ### Fixes
 <!--Bug fixes, etc-->
-- Fixed: Cash in attribute editors when adding an attribute.
-- Fixed: Crash when selecting diagnostic item from diagnostics list.
-- Fixed: Some diagnostic items are not shown in diagnostic window (#96).
-- Fixed: Diagnostics were updated late in the editor.
-- Fixed: Popup windows created by editor are not dismissed even when the file is closed.
+- Cash in attribute editors when adding an attribute.
+- Crash when selecting diagnostic item from diagnostics list.
+- Some diagnostic items are not shown in diagnostic window (#96).
+- Diagnostics were updated late in the editor.
+- Popup windows created by editor are not dismissed even when the file is closed.
+- No build output when activity is recreated (#121).
+- Crash in UI Designer when activity is recreated (#124).
 
 ### Improvements
 <!--Things that were improved and worth mentioning-->
 - Do not import classes from `java.lang` package when completion items are selected.
-- XML completion provider now uses 'Match completions in lower case' preference. 
+- XML completion provider now uses 'Match completions in lower case' preference.
 - Dismiss all windows shown by editor when file tab is unselected
+- Updated templates to work with Android 12 (#144).
 - Updated Chinese translation. Thanks to @mikofe (#128).
 - Updated French translation. Thanks to @Se-Lyan (#136).
+- Updated German translation (#144).
 
 ## **v2.0.0-beta**
 AndroidIDE v2.0.0-beta is here with new features and improvements.
