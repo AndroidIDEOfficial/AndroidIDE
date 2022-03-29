@@ -58,301 +58,300 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class AttrEditorSheet extends BottomSheetDialogFragment
-        implements SimpleIconTextAdapter.OnBindListener<IconTextListItem>,
-                Consumer<Attr>,
-                BaseValueEditorFragment.OnValueChangeListener {
+    implements SimpleIconTextAdapter.OnBindListener<IconTextListItem>,
+        Consumer<Attr>,
+        BaseValueEditorFragment.OnValueChangeListener {
 
-    private static final List<IconTextListItem> VIEW_ACTIONS = new ArrayList<>();
-    private static final Logger LOG = Logger.instance("AttrBottomSheet");
-    private AttributeListSheet mAttrListSheet;
-    private AttrValueEditorSheet mValueEditorSheet;
-    private IView selectedView;
+  private static final List<IconTextListItem> VIEW_ACTIONS = new ArrayList<>();
+  private static final Logger LOG = Logger.instance("AttrBottomSheet");
+  private AttributeListSheet mAttrListSheet;
+  private AttrValueEditorSheet mValueEditorSheet;
+  private IView selectedView;
 
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    private File layout;
+  @SuppressWarnings({"FieldCanBeLocal", "unused"})
+  private File layout;
 
-    private LayoutAttrEditorSheetBinding binding;
-    private OnViewDeletionFailedListener mDeletionFailedListener;
+  private LayoutAttrEditorSheetBinding binding;
+  private OnViewDeletionFailedListener mDeletionFailedListener;
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        this.binding =
-                LayoutAttrEditorSheetBinding.inflate(
-                        LayoutInflater.from(getContext()), container, false);
-        return binding.getRoot();
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    this.binding =
+        LayoutAttrEditorSheetBinding.inflate(LayoutInflater.from(getContext()), container, false);
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+
+    if (VIEW_ACTIONS.isEmpty()) {
+      Collections.addAll(
+          VIEW_ACTIONS,
+          IconTextListItem.create(getString(R.string.msg_viewaction_add_attr), R.drawable.ic_add),
+          IconTextListItem.create(
+              getString(R.string.title_viewaction_delete), R.drawable.ic_delete),
+          IconTextListItem.create(
+              getString(R.string.msg_viewaction_select_parent), R.drawable.ic_view_select_parent));
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    setupViewData();
+  }
 
-        if (VIEW_ACTIONS.isEmpty()) {
-            Collections.addAll(
-                    VIEW_ACTIONS,
-                    IconTextListItem.create(
-                            getString(R.string.msg_viewaction_add_attr), R.drawable.ic_add),
-                    IconTextListItem.create(
-                            getString(R.string.title_viewaction_delete), R.drawable.ic_delete),
-                    IconTextListItem.create(
-                            getString(R.string.msg_viewaction_select_parent),
-                            R.drawable.ic_view_select_parent));
+  @Override
+  public void onAttach(@NonNull Context context) {
+    super.onAttach(context);
+    mDeletionFailedListener = (OnViewDeletionFailedListener) context;
+  }
+
+  public AttrEditorSheet setLayout(File layout) {
+    Objects.requireNonNull(layout);
+
+    this.layout = layout;
+    return this;
+  }
+
+  private void setupViewData() {
+    binding.actionsList.setAdapter(new SimpleIconTextAdapter(VIEW_ACTIONS).setOnBindListener(this));
+
+    if (dismissIfSelectedNull()) {
+      LOG.error("Cannot edit attributes of a null view.");
+      return;
+    }
+
+    binding.widgetName.setText(this.selectedView.getXmlTag());
+    binding.attrList.setAdapter(
+        new XMLAttributeListAdapter(
+            this.selectedView.getAttributes().stream()
+                .map(XMLAttribute::new)
+                .collect(Collectors.toList()),
+            this::onAttrClick));
+  }
+
+  public void setSelectedView(IView view) {
+    this.selectedView = view;
+  }
+
+  private void onAttrClick(
+      LayoutAttrEditorSheetItemBinding binding, @NonNull XMLAttribute attribute) {
+
+    if (dismissIfSelectedNull()) {
+      LOG.error("Cannot edit attributes of a null view.");
+      return;
+    }
+
+    final var format = attribute.findFormat();
+    if (format == -1) {
+      StudioApp.getInstance().toast(getString(R.string.msg_no_attr_format), Toaster.Type.ERROR);
+      LOG.error(getString(R.string.msg_no_attr_format), attribute);
+      return;
+    }
+
+    showValueEditorSheet(attribute);
+  }
+
+  private void showValueEditorSheet(@NonNull XMLAttribute attribute) {
+    getValueEditorSheet(attribute).show(getChildFragmentManager(), "attr_value_editor_sheet");
+  }
+
+  @Override
+  public void postBind(
+      IconTextListItem item, @NonNull SimpleIconTextAdapter.VH holder, int position) {
+    final var binding = holder.binding;
+    binding.getRoot().setOnClickListener(v -> onViewActionClick(position));
+  }
+
+  private void onViewActionClick(int position) {
+    if (dismissIfSelectedNull()) {
+      return;
+    }
+
+    if (position == 0) { // Add attribute
+      var tag = this.selectedView.getXmlTag();
+      if ("include".equals(tag) || "merge".equals(tag)) {
+        tag = "View";
+      }
+
+      final var attrs = StudioApp.getInstance().attrInfo();
+      final var style = attrs.getStyle(tag);
+      if (style == null) {
+        LOG.error("Unable to retrieve attributes for tag:", tag);
+        return;
+      }
+
+      final var attributes = new TreeSet<Attr>(Comparator.comparing(attr -> attr.name));
+      attributes.addAll(style.attributes);
+      attributes.addAll(attrs.NO_PARENT.attributes);
+
+      final var widgetInfo = StudioApp.getInstance().widgetInfo();
+      final var widget = widgetInfo.getWidgetBySimpleName(tag);
+      if (widget != null) {
+        for (var superclass : widget.superclasses) {
+          if ("java.lang.Object".equals(superclass)) {
+            break;
+          }
+
+          final var simpleName = superclass.substring(superclass.lastIndexOf(".") + 1);
+          final var superStyle = attrs.getStyle(simpleName);
+          if (superStyle != null) {
+            attributes.addAll(superStyle.attributes);
+          }
         }
+      }
 
-        setupViewData();
-    }
+      final var parent = this.selectedView.getParent();
+      if (parent != null) {
+        final var parentTag = parent.getXmlTag();
+        final var parentWidget = widgetInfo.getWidgetBySimpleName(parentTag);
+        if (parentWidget != null) {
+          final var parentLayoutParams = attrs.getStyle(parentTag + "_Layout");
+          if (parentLayoutParams != null) {
+            attributes.addAll(parentLayoutParams.attributes);
+          }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        mDeletionFailedListener = (OnViewDeletionFailedListener) context;
-    }
+          final var paramSuperclasses = widgetInfo.getLayoutParamSuperClasses(parentWidget.name);
+          if (paramSuperclasses != null) {
+            for (var superclass : paramSuperclasses) {
+              if ("java.lang.Object".equals(superclass)) {
+                continue;
+              }
 
-    public AttrEditorSheet setLayout(File layout) {
-        Objects.requireNonNull(layout);
-
-        this.layout = layout;
-        return this;
-    }
-
-    private void setupViewData() {
-        binding.actionsList.setAdapter(
-                new SimpleIconTextAdapter(VIEW_ACTIONS).setOnBindListener(this));
-
-        if (this.selectedView == null) {
-            LOG.error("Cannot edit attributes of a null view.");
-            return;
-        }
-
-        binding.widgetName.setText(this.selectedView.getXmlTag());
-        binding.attrList.setAdapter(
-                new XMLAttributeListAdapter(
-                        this.selectedView.getAttributes().stream()
-                                .map(XMLAttribute::new)
-                                .collect(Collectors.toList()),
-                        this::onAttrClick));
-    }
-
-    public void setSelectedView(IView view) {
-        this.selectedView = view;
-    }
-
-    private void onAttrClick(
-            LayoutAttrEditorSheetItemBinding binding, @NonNull XMLAttribute attribute) {
-
-        if (this.selectedView == null) {
-            LOG.error("Cannot edit attributes of a null view.");
-            return;
-        }
-
-        final var format = attribute.findFormat();
-        if (format == -1) {
-            StudioApp.getInstance()
-                    .toast(getString(R.string.msg_no_attr_format), Toaster.Type.ERROR);
-            LOG.error(getString(R.string.msg_no_attr_format), attribute);
-            return;
-        }
-
-        showValueEditorSheet(attribute);
-    }
-
-    private void showValueEditorSheet(@NonNull XMLAttribute attribute) {
-        getValueEditorSheet(attribute).show(getChildFragmentManager(), "attr_value_editor_sheet");
-    }
-
-    @Override
-    public void postBind(
-            IconTextListItem item, @NonNull SimpleIconTextAdapter.VH holder, int position) {
-        final var binding = holder.binding;
-        binding.getRoot().setOnClickListener(v -> onViewActionClick(position));
-    }
-
-    private void onViewActionClick(int position) {
-        if (this.selectedView == null) {
-            return;
-        }
-
-        if (position == 0) { // Add attribute
-            var tag = this.selectedView.getXmlTag();
-            if ("include".equals(tag) || "merge".equals(tag)) {
-                tag = "View";
+              final var split = superclass.split("\\.");
+              final var simpleClassName = split[split.length - 2];
+              var paramName = split[split.length - 1];
+              paramName = paramName.substring(0, paramName.length() - "Params".length());
+              final var superParamEntry = attrs.getStyle(simpleClassName + "_" + paramName);
+              if (superParamEntry != null) {
+                attributes.addAll(superParamEntry.attributes);
+              }
             }
+          }
+        }
+      }
 
-            final var attrs = StudioApp.getInstance().attrInfo();
-            final var style = attrs.getStyle(tag);
-            if (style == null) {
-                LOG.error("Unable to retrieve attributes for tag:", tag);
-                return;
-            }
+      final var sheet = getAttrListSheet();
+      sheet.setItems(filterAppliedAttributes(attributes));
+      sheet.show(getChildFragmentManager(), "attr_list_sheet");
 
-            final var attributes = new TreeSet<Attr>(Comparator.comparing(attr -> attr.name));
-            attributes.addAll(style.attributes);
-            attributes.addAll(attrs.NO_PARENT.attributes);
-
-            final var widgetInfo = StudioApp.getInstance().widgetInfo();
-            final var widget = widgetInfo.getWidgetBySimpleName(tag);
-            if (widget != null) {
-                for (var superclass : widget.superclasses) {
-                    if ("java.lang.Object".equals(superclass)) {
-                        break;
-                    }
-
-                    final var simpleName = superclass.substring(superclass.lastIndexOf(".") + 1);
-                    final var superStyle = attrs.getStyle(simpleName);
-                    if (superStyle != null) {
-                        attributes.addAll(superStyle.attributes);
-                    }
+    } else if (position == 1) { // Delete
+      DialogUtils.newYesNoDialog(
+              getContext(),
+              (dialog, which) -> {
+                var handled = selectedView.removeFromParent();
+                if (!handled) {
+                  handled =
+                      mDeletionFailedListener != null
+                          && mDeletionFailedListener.onDeletionFailed(this.selectedView);
                 }
-            }
-
-            final var parent = this.selectedView.getParent();
-            if (parent != null) {
-                final var parentTag = parent.getXmlTag();
-                final var parentWidget = widgetInfo.getWidgetBySimpleName(parentTag);
-                if (parentWidget != null) {
-                    final var parentLayoutParams = attrs.getStyle(parentTag + "_Layout");
-                    if (parentLayoutParams != null) {
-                        attributes.addAll(parentLayoutParams.attributes);
-                    }
-
-                    final var paramSuperclasses =
-                            widgetInfo.getLayoutParamSuperClasses(parentWidget.name);
-                    if (paramSuperclasses != null) {
-                        for (var superclass : paramSuperclasses) {
-                            if ("java.lang.Object".equals(superclass)) {
-                                continue;
-                            }
-
-                            final var split = superclass.split("\\.");
-                            final var simpleClassName = split[split.length - 2];
-                            var paramName = split[split.length - 1];
-                            paramName =
-                                    paramName.substring(0, paramName.length() - "Params".length());
-                            final var superParamEntry =
-                                    attrs.getStyle(simpleClassName + "_" + paramName);
-                            if (superParamEntry != null) {
-                                attributes.addAll(superParamEntry.attributes);
-                            }
-                        }
-                    }
+                if (!handled) {
+                  StudioApp.getInstance()
+                      .toast(getString(R.string.msg_view_deletion_failed), Toaster.Type.ERROR);
+                } else {
+                  dismiss();
                 }
-            }
+              },
+              (dialog, which) -> dialog.dismiss())
+          .show();
+    } else if (position == 2) { // Select parent
+      if (this.selectedView.getParent() == null) {
+        StudioApp.getInstance().toast(getString(R.string.msg_no_view_parent), Toaster.Type.ERROR);
+        return;
+      }
 
-            final var sheet = getAttrListSheet();
-            sheet.setItems(filterAppliedAttributes(attributes));
-            sheet.show(getChildFragmentManager(), "attr_list_sheet");
+      this.selectedView = this.selectedView.getParent();
 
-        } else if (position == 1) { // Delete
-            DialogUtils.newYesNoDialog(
-                            getContext(),
-                            (dialog, which) -> {
-                                var handled = selectedView.removeFromParent();
-                                if (!handled) {
-                                    handled =
-                                            mDeletionFailedListener != null
-                                                    && mDeletionFailedListener.onDeletionFailed(
-                                                            this.selectedView);
-                                }
-                                if (!handled) {
-                                    StudioApp.getInstance()
-                                            .toast(
-                                                    getString(R.string.msg_view_deletion_failed),
-                                                    Toaster.Type.ERROR);
-                                } else {
-                                    dismiss();
-                                }
-                            },
-                            (dialog, which) -> dialog.dismiss())
-                    .show();
-        } else if (position == 2) { // Select parent
-            if (this.selectedView.getParent() == null) {
-                StudioApp.getInstance()
-                        .toast(getString(R.string.msg_no_view_parent), Toaster.Type.ERROR);
-                return;
-            }
+      TransitionManager.beginDelayedTransition(binding.getRoot());
+      setupViewData();
+    }
+  }
 
-            this.selectedView = this.selectedView.getParent();
+  @NonNull
+  @Contract("_ -> new")
+  private List<Attr> filterAppliedAttributes(@NonNull TreeSet<Attr> attributes) {
+    attributes.removeIf(attr -> this.selectedView.hasAttribute(attr.namespace, attr.name));
+    return new ArrayList<>(attributes);
+  }
 
-            TransitionManager.beginDelayedTransition(binding.getRoot());
-            setupViewData();
-        }
+  @Override
+  public void accept(Attr attr) {
+    addNewAttribute(attr);
+  }
+
+  @NonNull
+  private AttributeListSheet getAttrListSheet() {
+    if (mAttrListSheet == null) {
+      mAttrListSheet = new AttributeListSheet();
+      mAttrListSheet.setCancelable(true);
     }
 
-    @NonNull
-    @Contract("_ -> new")
-    private List<Attr> filterAppliedAttributes(@NonNull TreeSet<Attr> attributes) {
-        attributes.removeIf(attr -> this.selectedView.hasAttribute(attr.namespace, attr.name));
-        return new ArrayList<>(attributes);
+    return mAttrListSheet;
+  }
+
+  @NonNull
+  public AttrValueEditorSheet getValueEditorSheet(@NonNull XMLAttribute attribute) {
+
+    if (mValueEditorSheet == null) {
+      mValueEditorSheet = AttrValueEditorSheet.newInstance(attribute);
     }
 
-    @Override
-    public void accept(Attr attr) {
-        addNewAttribute(attr);
+    mValueEditorSheet.setAttribute(attribute);
+    return mValueEditorSheet;
+  }
+
+  @Override
+  public void onValueChanged(@NonNull IAttribute attribute, String newValue) {
+    if (dismissIfSelectedNull()) {
+      LOG.warn("Cannot update attribute with new value. Selected view is null.");
+      return;
     }
 
-    @NonNull
-    private AttributeListSheet getAttrListSheet() {
-        if (mAttrListSheet == null) {
-            mAttrListSheet = new AttributeListSheet();
-            mAttrListSheet.setCancelable(true);
-        }
+    final var attributeName = attribute.getAttributeName();
+    final var namespace = attribute.getNamespace();
 
-        return mAttrListSheet;
+    if (this.selectedView.hasAttribute(namespace, attributeName)) {
+      this.selectedView.updateAttribute(namespace, attributeName, newValue);
+    } else {
+      final var attr = new UiAttribute(namespace, attributeName, newValue);
+      this.selectedView.addAttribute(attr);
     }
+  }
 
-    @NonNull
-    public AttrValueEditorSheet getValueEditorSheet(@NonNull XMLAttribute attribute) {
+  private void addNewAttribute(@NonNull Attr attr) {
+    final XMLAttribute attribute = new XMLAttribute(attr.namespace, attr.name, "", false);
+    attribute.setAttr(attr);
+    showValueEditorSheet(attribute);
+  }
 
-        if (mValueEditorSheet == null) {
-            mValueEditorSheet = AttrValueEditorSheet.newInstance(attribute);
-        }
-
-        mValueEditorSheet.setAttribute(attribute);
-        return mValueEditorSheet;
+  private boolean dismissIfSelectedNull() {
+    if (selectedView == null) {
+      dismiss();
+      return true;
     }
+    return false;
+  }
 
-    @Override
-    public void onValueChanged(@NonNull IAttribute attribute, String newValue) {
-        Objects.requireNonNull(this.selectedView);
-
-        final var attributeName = attribute.getAttributeName();
-        final var namespace = attribute.getNamespace();
-
-        if (this.selectedView.hasAttribute(namespace, attributeName)) {
-            this.selectedView.updateAttribute(namespace, attributeName, newValue);
-        } else {
-            final var attr = new UiAttribute(namespace, attributeName, newValue);
-            this.selectedView.addAttribute(attr);
-        }
-    }
-
-    private void addNewAttribute(@NonNull Attr attr) {
-        final XMLAttribute attribute = new XMLAttribute(attr.namespace, attr.name, "", false);
-        attribute.setAttr(attr);
-        showValueEditorSheet(attribute);
-    }
+  /**
+   * A listener can be used to get notified when we fail to remove a view from its parent. This is
+   * used in {@link com.itsaky.androidide.DesignerActivity DesignerActivity}.
+   *
+   * <p>When the user tries to remove the outermost view of the inflated layout, AttrEditorSheet
+   * fails to remove the view from its parent ({@link IView#getParent()} is null for root XML
+   * layout). In this case, DesignerActivity check if the view that we were trying to delete is the
+   * root layout or not. If it is the root layout, then it deletes the layout from the layout
+   * container.
+   *
+   * @author Akash Yadav
+   */
+  public interface OnViewDeletionFailedListener {
 
     /**
-     * A listener can be used to get notified when we fail to remove a view from its parent. This is
-     * used in {@link com.itsaky.androidide.DesignerActivity DesignerActivity}.
-     *
-     * <p>When the user tries to remove the outermost view of the inflated layout, AttrEditorSheet
-     * fails to remove the view from its parent ({@link IView#getParent()} is null for root XML
-     * layout). In this case, DesignerActivity check if the view that we were trying to delete is
-     * the root layout or not. If it is the root layout, then it deletes the layout from the layout
-     * container.
-     *
-     * @author Akash Yadav
+     * @param view The view that was not removed from its parent.
+     * @return {@code true} if the listener handled the error. {@code false} otherwise.
      */
-    public interface OnViewDeletionFailedListener {
-
-        /**
-         * @param view The view that was not removed from its parent.
-         * @return {@code true} if the listener handled the error. {@code false} otherwise.
-         */
-        boolean onDeletionFailed(IView view);
-    }
+    boolean onDeletionFailed(IView view);
+  }
 }

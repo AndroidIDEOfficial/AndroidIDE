@@ -98,6 +98,7 @@ public class DesignerActivity extends StudioActivity
   public static final String DRAGGING_WIDGET_TAG = "DRAGGING_WIDGET";
   public static final String DRAGGING_WIDGET_MIME = "application/ide_widget";
   private static final Logger LOG = Logger.instance("DesignerActivity");
+  public final String EDITOR_SHEET_DIALOG_TAG = "attribute_editor_dialog";
   private final boolean isTablet = DeviceUtils.isTablet();
   private final List<UIWidgetGroup> widgetGroups = new ArrayList<>();
   private ActivityDesignerBinding mBinding;
@@ -224,6 +225,18 @@ public class DesignerActivity extends StudioActivity
     mBinding.layoutContainer.addView(view.asView());
     mBinding.layoutContainer.setOnClickListener(
         v -> mBinding.getRoot().openDrawer(GravityCompat.START));
+
+    tryDismiss();
+  }
+
+  private void tryDismiss() {
+    final var manager = getSupportFragmentManager();
+    final var frag = manager.findFragmentByTag(EDITOR_SHEET_DIALOG_TAG);
+    if (frag != null) {
+      final var transaction = manager.beginTransaction();
+      transaction.remove(frag);
+      transaction.commit();
+    }
   }
 
   @Override
@@ -348,7 +361,7 @@ public class DesignerActivity extends StudioActivity
     getAttrEditorSheet().setSelectedView(view);
 
     if (!getSupportFragmentManager().isDestroyed()) {
-      getAttrEditorSheet().show(getSupportFragmentManager(), "attribute_editor_dialog");
+      getAttrEditorSheet().show(getSupportFragmentManager(), EDITOR_SHEET_DIALOG_TAG);
     }
   }
 
