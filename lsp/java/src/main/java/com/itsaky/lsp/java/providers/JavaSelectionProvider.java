@@ -42,7 +42,7 @@ public class JavaSelectionProvider {
     @NonNull
     public Range expandSelection(@NonNull ExpandSelectionParams params) {
         return compiler.compile(params.getFile())
-                .get (
+                .get(
                         task -> {
                             final CompilationUnitTree root = task.root(params.getFile());
                             final FindBiggerRange rangeFinder =
@@ -50,7 +50,7 @@ public class JavaSelectionProvider {
                             final Range range = rangeFinder.scan(root, params.getSelection());
 
                             if (range != null) {
-                                LOG.debug("Expanding selection to range", range);
+                                LOG.verbose("Expanding selection to range", range);
                                 return range;
                             }
 

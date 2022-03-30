@@ -46,7 +46,7 @@ public class JavaDiagnosticProvider {
     @NonNull
     public List<DiagnosticItem> analyze(@NonNull Path file) {
         final SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.get (
+        return synchronizedTask.get(
                 task -> {
                     if (!isTaskValid(task)) {
                         // Do not use Collections.emptyList ()

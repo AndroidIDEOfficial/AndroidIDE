@@ -22,15 +22,13 @@ import com.itsaky.lsp.java.utils.FindHelper;
 import com.itsaky.lsp.models.TextEdit;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.util.Trees;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
-
 import javax.lang.model.element.ExecutableElement;
 
 public class RemoveMethod extends Rewrite {
-    
+
     final String className, methodName;
     final String[] erasedParameterTypes;
 

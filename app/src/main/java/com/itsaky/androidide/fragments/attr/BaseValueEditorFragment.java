@@ -20,14 +20,11 @@ package com.itsaky.androidide.fragments.attr;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.inflater.IAttribute;
-
 import java.util.Objects;
 
 /**

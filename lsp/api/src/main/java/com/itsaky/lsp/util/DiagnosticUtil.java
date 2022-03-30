@@ -19,7 +19,6 @@ package com.itsaky.lsp.util;
 
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Position;
-
 import java.util.List;
 
 /**

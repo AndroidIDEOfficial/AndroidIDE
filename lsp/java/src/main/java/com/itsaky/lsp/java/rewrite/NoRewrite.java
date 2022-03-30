@@ -20,7 +20,6 @@ package com.itsaky.lsp.java.rewrite;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.TextEdit;
-
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;

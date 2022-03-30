@@ -40,10 +40,10 @@ import java.util.Objects;
 public class Logger {
 
     public static final int DEBUG = 0;
-    public static final int WARNING = 0;
-    public static final int ERROR = 0;
-    public static final int INFO = 0;
-    public static final int VERBOSE = 0;
+    public static final int WARNING = 1;
+    public static final int ERROR = 2;
+    public static final int INFO = 3;
+    public static final int VERBOSE = 4;
     private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
     private static final List<LogListener> logListeners = new ArrayList<>();
     private static Logger instance;
@@ -75,6 +75,25 @@ public class Logger {
     @Contract("_ -> new")
     public static Logger instance(String tag) {
         return createInstance(tag);
+    }
+
+    @NonNull
+    @Contract(pure = true)
+    public static String priorityText(int priority) {
+        switch (priority) {
+            case DEBUG:
+                return "DEBUG";
+            case INFO:
+                return "INFO";
+            case VERBOSE:
+                return "VERBOSE";
+            case ERROR:
+                return "ERROR";
+            case WARNING:
+                return "WARNING";
+            default:
+                return "<UNKNOWN>";
+        }
     }
 
     public Logger warn(Object... messages) {

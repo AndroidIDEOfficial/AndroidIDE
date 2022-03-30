@@ -18,7 +18,6 @@
 package com.itsaky.androidide.language;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.ILanguageServer;
@@ -26,9 +25,11 @@ import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.Position;
-
-import org.jetbrains.annotations.Contract;
-
+import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
+import io.github.rosemoe.sora.lang.completion.CompletionHelper;
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.ContentReference;
+import io.github.rosemoe.sora.util.MyCharacter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,12 +38,7 @@ import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-
-import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
-import io.github.rosemoe.sora.lang.completion.CompletionHelper;
-import io.github.rosemoe.sora.text.CharPosition;
-import io.github.rosemoe.sora.text.ContentReference;
-import io.github.rosemoe.sora.util.MyCharacter;
+import org.jetbrains.annotations.Contract;
 
 /**
  * Common implementation of completion provider which requests completions to provided language

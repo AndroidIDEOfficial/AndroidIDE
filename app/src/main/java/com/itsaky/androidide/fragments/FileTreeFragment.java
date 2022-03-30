@@ -26,11 +26,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ProgressBar;
-
 import androidx.annotation.NonNull;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
@@ -47,7 +45,6 @@ import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
-
 import java.io.File;
 import java.util.Arrays;
 

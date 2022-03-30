@@ -21,15 +21,12 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.util.Pair;
-
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityAboutBinding;
 import com.itsaky.androidide.databinding.LayoutAboutItemsBinding;
 import com.itsaky.androidide.models.License;
-
 import java.util.ArrayList;
 import java.util.List;
 

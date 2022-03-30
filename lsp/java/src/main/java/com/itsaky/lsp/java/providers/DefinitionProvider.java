@@ -69,7 +69,7 @@ public class DefinitionProvider {
 
     public List<Location> find() {
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.get (
+        return synchronizedTask.get(
                 task -> {
                     Element element = NavigationHelper.findElement(task, file, line, column);
                     if (element == null) {
@@ -138,7 +138,7 @@ public class DefinitionProvider {
 
         List<Location> locations = new ArrayList<>();
         SynchronizedTask synchronizedTask = compiler.compile(sources);
-        synchronizedTask.run (
+        synchronizedTask.run(
                 task -> {
                     Trees trees = Trees.instance(task.task);
                     Elements elements = task.task.getElements();
@@ -170,7 +170,7 @@ public class DefinitionProvider {
     private List<Location> findRemoteDefinitions(JavaFileObject otherFile) {
         SynchronizedTask synchronizedTask =
                 compiler.compile(Arrays.asList(new SourceFileObject(file), otherFile));
-        return synchronizedTask.get (
+        return synchronizedTask.get(
                 task -> {
                     Element element = NavigationHelper.findElement(task, file, line, column);
                     return findDefinitions(task, element);

@@ -22,13 +22,10 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.editor.IDEEditor;
-
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public class TextSheetFragment extends BaseBottomSheetFragment {

@@ -215,7 +215,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         String partial = partialIdentifier(contents, (int) cursor);
         boolean endsWithParen = endsWithParen(contents, (int) cursor);
         SynchronizedTask synchronizedTask = compiler.compile(Collections.singletonList(source));
-        return synchronizedTask.get (
+        return synchronizedTask.get(
                 task -> {
                     LOG.info(
                             "...compiled in "

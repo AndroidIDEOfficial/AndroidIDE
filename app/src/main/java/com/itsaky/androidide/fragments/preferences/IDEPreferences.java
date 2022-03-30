@@ -22,11 +22,9 @@ import static com.itsaky.androidide.utils.Logger.instance;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
-
 import com.itsaky.androidide.AboutActivity;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;

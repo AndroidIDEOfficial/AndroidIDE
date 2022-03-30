@@ -37,12 +37,9 @@ package com.itsaky.lsp.java.compiler;
 import static com.itsaky.androidide.utils.Logger.instance;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.utils.Logger;
-
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
-
 import kotlin.jvm.functions.Function1;
 
 public class SynchronizedTask {

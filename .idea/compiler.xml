@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="1.8">
+    <bytecodeTargetLevel target="11">
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
       <module name="AndroidIDE.gradle-tooling.plugin" target="1.8" />
     </bytecodeTargetLevel>

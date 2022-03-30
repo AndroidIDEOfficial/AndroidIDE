@@ -19,7 +19,6 @@ package com.itsaky.lsp.xml.providers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
@@ -38,19 +37,16 @@ import com.itsaky.lsp.models.InsertTextFormat;
 import com.itsaky.lsp.xml.R;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.models.Widget;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-import org.jetbrains.annotations.Contract;
-
+import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+import org.jetbrains.annotations.Contract;
 
 /**
  * Completion provider for the XML Language

@@ -19,7 +19,6 @@ package com.itsaky.lsp.java;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
@@ -57,7 +56,6 @@ import com.itsaky.lsp.models.ServerCapabilities;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.NoCompletionsProvider;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,7 +106,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
                                 if (diagnostics == null) {
                                     diagnostics = new ArrayList<>(0);
                                 }
-                                
+
                                 client.publishDiagnostics(
                                         new DiagnosticResult(this.selectedFile, diagnostics));
                             }
@@ -147,6 +145,10 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         capabilities.setSmartSelectionsEnabled(true);
 
         initialized = true;
+    }
+
+    boolean isInitialized() {
+        return initialized;
     }
 
     @NonNull

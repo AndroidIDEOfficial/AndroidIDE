@@ -59,7 +59,7 @@ public class ReferenceProvider {
 
     public List<Location> find() {
         final SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.get (
+        return synchronizedTask.get(
                 task -> {
                     Element element = NavigationHelper.findElement(task, file, line, column);
                     if (element == null) return NOT_SUPPORTED;
@@ -89,13 +89,13 @@ public class ReferenceProvider {
     private List<Location> findTypeReferences(String className) {
         Path[] files = compiler.findTypeReferences(className);
         if (files.length == 0) return Collections.emptyList();
-        return compiler.compile(files).get (this::findReferences);
+        return compiler.compile(files).get(this::findReferences);
     }
 
     private List<Location> findMemberReferences(String className, String memberName) {
         Path[] files = compiler.findMemberReferences(className, memberName);
         if (files.length == 0) return Collections.emptyList();
-        return compiler.compile(files).get (this::findReferences);
+        return compiler.compile(files).get(this::findReferences);
     }
 
     private List<Location> findReferences(CompileTask task) {

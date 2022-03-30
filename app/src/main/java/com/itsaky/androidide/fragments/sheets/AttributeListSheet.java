@@ -23,18 +23,15 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.DialogFragment;
-
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.adapters.AttrListAdapter;
 import com.itsaky.androidide.databinding.LayoutAddAttrSheetBinding;
 import com.itsaky.attrinfo.models.Attr;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

@@ -18,7 +18,6 @@
 package com.itsaky.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.visitors.FindVariableAtCursor;
@@ -31,7 +30,6 @@ import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
-
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;

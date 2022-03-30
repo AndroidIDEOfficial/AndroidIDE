@@ -91,7 +91,7 @@ public class SignatureProvider {
 
         // TODO prune
         SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.get (
+        return synchronizedTask.get(
                 task -> {
                     long cursor = task.root().getLineMap().getPosition(line, column);
                     TreePath path = new FindInvocationAt(task.task).scan(task.root(), cursor);
