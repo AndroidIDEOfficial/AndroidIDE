@@ -43,6 +43,7 @@ subprojects {
     }
 
     project.afterEvaluate {
+
         task format (type: GoogleJavaFormat) {
             source 'src/main'
             source 'src/test'
@@ -58,6 +59,13 @@ subprojects {
             ignoreFailures false
 
             dependsOn project.tasks.withType(GoogleJavaFormat).iterator().next()
+        }
+
+        def preBuild = project.tasks.findByName("preBuild")
+        if (preBuild != null) {
+            preBuild.finalizedBy format
+        } else {
+            println "Task preBuild not found in project ${project.displayName}"
         }
     }
 

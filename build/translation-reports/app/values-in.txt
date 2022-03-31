@@ -1,0 +1,26 @@
+
+Missing in LANG (You need to translate these)
+File: /mnt/d/projects/androidstudioprojects/androidide/app/src/main/res/values-in/strings.xml
+------------------------- BEGIN ----------------------
+msg_fix_diagnostic
+title_format_code
+idepref_java_useGoogleStyle_title
+idepref_java_useGoogleStyle_summary
+idepref_visiblePassword_title
+idepref_visiblePassword_summary
+-------------------------- END -----------------------
+
+
+Not present in BASE (you need to remove it from LANG)
+File: /mnt/d/projects/androidstudioprojects/androidide/app/src/main/res/values/strings.xml
+------------------------- BEGIN ----------------------
+-------------------------- END -----------------------
+
+
+Summary
+----------------
+BASE file: '/mnt/d/projects/androidstudioprojects/androidide/app/src/main/res/values/strings.xml'
+LANG file: '/mnt/d/projects/androidstudioprojects/androidide/app/src/main/res/values-in/strings.xml'
+
+   6 missing strings.
+
