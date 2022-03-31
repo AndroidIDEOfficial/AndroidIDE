@@ -24,9 +24,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
+
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.managers.PreferenceManager;
@@ -37,15 +39,13 @@ import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.StudioUtils;
 import com.itsaky.toaster.Toaster;
-import java.io.File;
-import java.util.Arrays;
+
 import org.jetbrains.annotations.Contract;
 
-public abstract class BaseApplication extends MultiDexApplication {
+import java.io.File;
+import java.util.Arrays;
 
-    private static BaseApplication instance;
-    private StudioUtils mUtils;
-    private PreferenceManager mPrefsManager;
+public abstract class BaseApplication extends MultiDexApplication {
 
     public static final String NOTIFICATION_ID_UPDATE = "17571";
     public static final String NOTIFICATION_ID_DEVS = "17572";
@@ -53,6 +53,39 @@ public abstract class BaseApplication extends MultiDexApplication {
     public static final String GITHUB_URL = "https://github.com/itsaky/AndroidIDE";
     public static final String WEBSITE = "https://androidide.com";
     public static final String EMAIL = "contact@androidide.com";
+    private static BaseApplication instance;
+    private StudioUtils mUtils;
+    private PreferenceManager mPrefsManager;
+
+    public static BaseApplication getBaseInstance() {
+        return instance;
+    }
+
+    public static boolean isAbiSupported() {
+        return isAarch64() || isArmv7a();
+    }
+
+    public static boolean isAarch64() {
+        return !isAndroid12() && Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
+    }
+
+    public static boolean isArmv7a() {
+        return Arrays.asList(Build.SUPPORTED_ABIS).contains("armeabi-v7a");
+    }
+
+    public static boolean isAndroid12() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+    }
+
+    @NonNull
+    public static String getArch() {
+        if (BaseApplication.isAarch64()) {
+            return "arm64-v8a";
+        } else if (BaseApplication.isArmv7a()) {
+            return "armeabi-v7a";
+        }
+        throw new UnsupportedOperationException("Device not supported");
+    }
 
     @Override
     public void onCreate() {
@@ -104,10 +137,6 @@ public abstract class BaseApplication extends MultiDexApplication {
 
     private String getDevNotificationChannelName() {
         return getString(R.string.cms_channel_id_devs);
-    }
-
-    public static BaseApplication getBaseInstance() {
-        return instance;
     }
 
     public ShellServer newShell(ShellServer.Callback callback) {
@@ -165,28 +194,6 @@ public abstract class BaseApplication extends MultiDexApplication {
 
     public File[] listProjects() {
         return getProjectsDir().listFiles(File::isDirectory);
-    }
-
-    public static boolean isAbiSupported() {
-        return isAarch64() || isArmv7a();
-    }
-
-    public static boolean isAarch64() {
-        return Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
-    }
-
-    public static boolean isArmv7a() {
-        return Arrays.asList(Build.SUPPORTED_ABIS).contains("armeabi-v7a");
-    }
-
-    @NonNull
-    public static String getArch() {
-        if (BaseApplication.isAarch64()) {
-            return "arm64-v8a";
-        } else if (BaseApplication.isArmv7a()) {
-            return "armeabi-v7a";
-        }
-        throw new UnsupportedOperationException("Device not supported");
     }
 
     public StudioUtils getUtils() {
