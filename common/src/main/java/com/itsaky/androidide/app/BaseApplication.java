@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
@@ -73,6 +74,7 @@ public abstract class BaseApplication extends MultiDexApplication {
         return Arrays.asList(Build.SUPPORTED_ABIS).contains("armeabi-v7a");
     }
 
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
     public static boolean isAndroid12() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
     }

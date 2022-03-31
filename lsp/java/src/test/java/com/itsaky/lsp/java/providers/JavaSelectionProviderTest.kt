@@ -61,6 +61,44 @@ class JavaSelectionProviderTest : CursorDependentTest() {
         assertThat(expanded).isEqualTo(Range(Position(4, 27), Position(4, 41)))
     }
     
+    @Test
+    fun testMethodSelection() {
+        openFile("MethodBodySelectionExpansionTest");
+        
+        val start = Position(3, 43)
+        val end = Position(5, 5)
+        val range = Range(start, end)
+        
+        val expanded = LanguageServerProvider.server().expandSelection(ExpandSelectionParams(file!!, range))
+        assertThat(expanded).isEqualTo(Range(Position(3, 4), end))
+    }
+    
+    @Test
+    fun testTryCatchSelection() {
+        openFile("TrySelectionExpansionTest");
+        
+        // Test expand selection if catch block is selected
+        val start = Position(7, 10)
+        val end = Position(8, 9)
+        val range = Range(start, end)
+        
+        val expanded = LanguageServerProvider.server().expandSelection(ExpandSelectionParams(file!!, range))
+        assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
+    }
+    
+    @Test
+    fun testTryFinallySelection() {
+        openFile("TrySelectionExpansionTest");
+        
+        // Test expand selection if catch block is selected
+        val start = Position(8, 18)
+        val end = Position(10, 9)
+        val range = Range(start, end)
+        
+        val expanded = LanguageServerProvider.server().expandSelection(ExpandSelectionParams(file!!, range))
+        assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
+    }
+    
     private fun findRange(): Range {
         val pos = Content(contents!!).indexer.getCharPosition(cursor)
         val position = Position(pos.line, pos.column, pos.index)
@@ -68,7 +106,7 @@ class JavaSelectionProviderTest : CursorDependentTest() {
     }
     
     private fun openFile(fileName: String) {
-        file = sourceFile(fileName)
+        file = sourceFile("selection/$fileName")
         contents = contents(file!!)
         
         LanguageServerProvider.server()
