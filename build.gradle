@@ -1,3 +1,6 @@
+import com.github.sherter.googlejavaformatgradleplugin.GoogleJavaFormat
+import com.github.sherter.googlejavaformatgradleplugin.VerifyGoogleJavaFormat
+
 buildscript {
     ext.kotlin_version = '1.6.10'
     project.ext {
@@ -37,6 +40,25 @@ subprojects {
     googleJavaFormat {
         toolVersion = '1.15.0'
         options style: 'AOSP'
+    }
+
+    project.afterEvaluate {
+        task format (type: GoogleJavaFormat) {
+            source 'src/main'
+            source 'src/test'
+            include '**/*.java'
+            exclude '**/*_template.java'
+        }
+
+        task verifyFormatting(type: VerifyGoogleJavaFormat) {
+            source 'src/main'
+            source 'src/test'
+            include '**/*.java'
+            exclude '**/*_template.java'
+            ignoreFailures false
+
+            dependsOn project.tasks.withType(GoogleJavaFormat).iterator().next()
+        }
     }
 
     task checkTranslations() {

@@ -24,6 +24,10 @@ android {
         targetCompatibility rootProject.ext.javaTargetVersion
     }
 
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
     lintOptions {
         abortOnError false
         disable "VectorPath",

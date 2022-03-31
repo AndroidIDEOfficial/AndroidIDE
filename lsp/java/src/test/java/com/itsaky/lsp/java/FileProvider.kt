@@ -62,7 +62,7 @@ class FileProvider {
          */
         @JvmStatic
         fun sourceFile(name: String): Path {
-            return resources().resolve("$name.java")
+            return resources().resolve("${name}_template.java")
         }
         
         @JvmStatic
