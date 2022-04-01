@@ -68,6 +68,13 @@ public interface ILanguageServer {
     void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException;
 
     /**
+     * Checks if this language server has been initialized.
+     *
+     * @return <code>true</code> if the server has been initialized, <code>false</code> otherwise.
+     */
+    boolean isInitialized();
+
+    /**
      * Returns the capabilities that the LSP implementation provides.
      *
      * @return The capabilities of the server.

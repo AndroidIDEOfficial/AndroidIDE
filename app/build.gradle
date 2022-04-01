@@ -86,7 +86,7 @@ android {
 dependencies {
 
     // Annotation processors
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.1'
 
     implementation common.editor
     implementation common.utilcode

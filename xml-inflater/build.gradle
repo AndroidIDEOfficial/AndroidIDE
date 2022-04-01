@@ -35,6 +35,4 @@ dependencies {
     
     implementation project (":common")
     api project (':sdk-info')
-
-    testImplementation tests.junit4
 }

@@ -14,6 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
@@ -39,13 +40,13 @@ android {
 }
 
 dependencies {
-    implementation common.editor
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    compileOnly project(':common')
-}
-
-repositories {
-    mavenCentral()
+    implementation project(':lsp:api')
+    implementation project(':common')
+    implementation common.editor
+    implementation tests.junit
+    implementation tests.google_truth
+    implementation tests.robolectric
 }

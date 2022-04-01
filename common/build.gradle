@@ -35,6 +35,4 @@ dependencies {
 	implementation androidx.animated_vectors
     
     api androidx.multidex
-
-    testImplementation tests.junit4
 }

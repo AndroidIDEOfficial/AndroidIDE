@@ -14,11 +14,10 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.lsp.java
+package com.itsaky.lsp.api
 
 import com.itsaky.androidide.utils.Logger
-import com.itsaky.lsp.java.LoggingTest
-import com.itsaky.lsp.java.util.ReflectiveLogListener
+import com.itsaky.lsp.api.util.ReflectiveLogListener
 import java.util.*
 
 /**
@@ -26,7 +25,7 @@ import java.util.*
  *
  * @author Akash Yadav
  */
-open class LoggingTest {
+abstract class LoggingTest : BaseLanguageServerTest() {
     companion object {
         private var logListener: ReflectiveLogListener? = null
         

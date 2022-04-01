@@ -147,7 +147,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         initialized = true;
     }
 
-    boolean isInitialized() {
+    @Override
+    public boolean isInitialized() {
         return initialized;
     }
 

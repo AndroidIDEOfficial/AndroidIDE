@@ -14,11 +14,11 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-package com.itsaky.lsp.java
+package com.itsaky.lsp.api
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.utils.Environment
-import com.itsaky.lsp.java.FileProvider.Companion.resources
+import com.itsaky.lsp.api.FileProvider.Companion.resources
 import com.itsaky.lsp.models.InitializeParams
 import org.jetbrains.annotations.Contract
 import java.io.File
@@ -28,9 +28,9 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-object LanguageServerProvider {
-    private val server = JavaLanguageServer()
-    fun server(): JavaLanguageServer {
+abstract class LanguageServerProvider {
+    
+    fun server(): ILanguageServer {
         
         if (Environment.COMPILER_MODULE == null) {
             val javaHome = System.getProperty("java.home")
@@ -38,12 +38,16 @@ object LanguageServerProvider {
             Environment.COMPILER_MODULE = File(javaHome)
         }
         
-        return server
+        initIfNecessary()
+        
+        return getServer()
     }
     
-    fun initIfNecessary() {
-        if (!server().isInitialized) {
-            server().initialize(createInitParams())
+    protected abstract fun getServer(): ILanguageServer
+    
+    private fun initIfNecessary() {
+        if (!getServer().isInitialized) {
+            getServer().initialize(createInitParams())
         }
     }
     
