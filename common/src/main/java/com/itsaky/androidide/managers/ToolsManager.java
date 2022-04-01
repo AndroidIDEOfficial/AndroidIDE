@@ -18,6 +18,7 @@
 package com.itsaky.androidide.managers;
 
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
@@ -25,22 +26,28 @@ import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.io.IOException;
-import org.jetbrains.annotations.Contract;
 
 public class ToolsManager {
 
-    private static PreferenceManager prefs;
-
     public static final int LOG_SENDER_VERSION = 2;
-
     public static final String KEY_LOG_SENDER_VERSION = "tools_logsenderVersion";
-
+    private static final Logger LOG = Logger.instance("ToolsManager");
     public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
     public static String COMMON_ASSET_DATA_DIR = "data/common";
+    private static PreferenceManager prefs;
 
     public static void init(@NonNull BaseApplication app, Runnable onFinish) {
+
+        if (BaseApplication.getArch() == null) {
+            LOG.error("Device not supported");
+            return;
+        }
+
         prefs = app.getPrefManager();
 
         copyBusyboxIfNeeded();
@@ -139,6 +146,4 @@ public class ToolsManager {
     public static String getCommonAsset(String name) {
         return COMMON_ASSET_DATA_DIR + "/" + name;
     }
-
-    private static final Logger LOG = Logger.instance("ToolsManager");
 }

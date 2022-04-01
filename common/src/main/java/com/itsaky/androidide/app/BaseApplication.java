@@ -24,10 +24,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+
 import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.multidex.MultiDexApplication;
+
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.managers.PreferenceManager;
@@ -38,9 +41,11 @@ import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.StudioUtils;
 import com.itsaky.toaster.Toaster;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.util.Arrays;
-import org.jetbrains.annotations.Contract;
 
 public abstract class BaseApplication extends MultiDexApplication {
 
@@ -75,14 +80,15 @@ public abstract class BaseApplication extends MultiDexApplication {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
     }
 
-    @NonNull
+    @Nullable
     public static String getArch() {
         if (BaseApplication.isAarch64()) {
             return "arm64-v8a";
         } else if (BaseApplication.isArmv7a()) {
             return "armeabi-v7a";
         }
-        throw new UnsupportedOperationException("Device not supported");
+
+        return null;
     }
 
     @Override
