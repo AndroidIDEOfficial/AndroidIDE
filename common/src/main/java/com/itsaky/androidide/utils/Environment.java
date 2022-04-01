@@ -36,10 +36,10 @@ public final class Environment {
     public static final Map<String, String> IDE_PROPS = new HashMap<>();
     public static final Map<String, String> ENV_VARS = new HashMap<>();
     public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
-    private static final String DEFAULT_JAVA_HOME =
-            "/data/data/com.itsaky.androidide/files/framework/jdk";
-    private static final String DEFAULT_ANDROID_HOME =
-            "/data/data/com.itsaky.androidide/files/framework/android-sdk";
+    public static final String DEFAULT_ROOT = "/data/data/com.itsaky.androidide/files";
+    public static final String DEFAULT_HOME = DEFAULT_ROOT + "/framework";
+    private static final String DEFAULT_JAVA_HOME = DEFAULT_HOME + "/jdk";
+    private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
     private static final Logger LOG = Logger.instance("Environment");
     private static final List<String> blacklist = new ArrayList<>();
     public static File ROOT;
