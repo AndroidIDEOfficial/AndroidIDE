@@ -25,8 +25,8 @@
         tools:ignore="UnusedAttribute,MediaCapabilities">
         <activity
             android:name=".CrashHandlerActivity"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="com.itsaky.androidide.REPORT_CRASH" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -64,6 +64,17 @@
             android:name=".TerminalActivity"
             android:configChanges="orientation|screenSize|uiMode"
             android:windowSoftInputMode="adjustResize" />
+
+        <provider
+            android:name=".filepicker.DocumentsProvider"
+            android:authorities="com.itsaky.androidide.root"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
         <service
             android:name=".services.MessagingService"
             android:exported="false">
@@ -80,6 +91,7 @@
                 <action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
             </intent-filter>
         </receiver>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />

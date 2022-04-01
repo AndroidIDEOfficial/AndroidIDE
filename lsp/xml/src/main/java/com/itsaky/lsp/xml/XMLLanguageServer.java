@@ -68,6 +68,11 @@ public class XMLLanguageServer implements ILanguageServer {
         this.canProvideCompletions = true;
     }
 
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
+
     @NonNull
     public IServerSettings getSettings() {
         if (settings == null) {
