@@ -161,7 +161,7 @@ subprojects {
             source 'src/test'
             include '**/*.java'
             exclude '**/*_template.java'
-            ignoreFailures false
+            ignoreFailures true
 
             dependsOn project.tasks.withType(GoogleJavaFormat).iterator().next()
             finalizedBy tasks.getByName("checkFormattingChanges")

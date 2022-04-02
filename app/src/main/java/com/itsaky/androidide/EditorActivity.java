@@ -929,7 +929,7 @@ public class EditorActivity extends StudioActivity
     public void install(@NonNull File apk) {
         LOG.debug("Installing APK:", apk);
         if (apk.exists()) {
-            Intent i = IntentUtils.getInstallAppIntent(apk);
+                    Intent i = IntentUtils.getInstallAppIntent(apk);
             if (i != null) {
                 startActivity(i);
             } else {
