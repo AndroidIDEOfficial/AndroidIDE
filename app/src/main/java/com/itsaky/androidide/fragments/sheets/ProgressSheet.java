@@ -32,7 +32,7 @@ import com.itsaky.androidide.utils.Logger;
 
 public class ProgressSheet extends BaseBottomSheetFragment {
 
-    private final Logger LOG = Logger.newInstance ("ProgressSheet");
+    private final Logger LOG = Logger.newInstance("ProgressSheet");
     private LayoutProgressSheetBinding binding;
     private String message = "";
     private String subMessage = "";

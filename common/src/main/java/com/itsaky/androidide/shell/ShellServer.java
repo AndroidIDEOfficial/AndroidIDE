@@ -38,7 +38,7 @@ public class ShellServer extends Thread {
     private BufferedReader output;
     private Process process;
 
-    private static final Logger LOG = Logger.newInstance ("ShellServer");
+    private static final Logger LOG = Logger.newInstance("ShellServer");
 
     public ShellServer(
             Callback callback,

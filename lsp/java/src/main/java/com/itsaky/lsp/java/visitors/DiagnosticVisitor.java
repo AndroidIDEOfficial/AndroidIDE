@@ -309,5 +309,5 @@ public class DiagnosticVisitor extends TreeScanner<Void, Map<TreePath, String>> 
         }
     }
 
-    private static final Logger LOG = Logger.newInstance ("main");
+    private static final Logger LOG = Logger.newInstance("main");
 }

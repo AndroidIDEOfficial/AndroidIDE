@@ -93,7 +93,7 @@ public class DesignerActivity extends StudioActivity
     public static final String KEY_GENERATED_CODE = "designer_xmlCode";
     public static final String DRAGGING_WIDGET_TAG = "DRAGGING_WIDGET";
     public static final String DRAGGING_WIDGET_MIME = "application/ide_widget";
-    private static final Logger LOG = Logger.newInstance ("DesignerActivity");
+    private static final Logger LOG = Logger.newInstance("DesignerActivity");
     public final String EDITOR_SHEET_DIALOG_TAG = "attribute_editor_dialog";
     private final boolean isTablet = DeviceUtils.isTablet();
     private final List<UIWidgetGroup> widgetGroups = new ArrayList<>();

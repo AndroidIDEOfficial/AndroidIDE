@@ -50,7 +50,7 @@ import java.util.zip.ZipInputStream;
  */
 public class BootstrapInstaller {
 
-    private static final Logger LOG = Logger.newInstance ("BootstrapInstaller");
+    private static final Logger LOG = Logger.newInstance("BootstrapInstaller");
 
     @NonNull
     public static CompletableFuture<Void> doInstall(

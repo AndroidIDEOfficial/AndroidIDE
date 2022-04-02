@@ -368,5 +368,5 @@ public class JavaCompilerService implements CompilerProvider {
         }
     }
 
-    private static final Logger LOG = Logger.newInstance ("JavaCompilerService");
+    private static final Logger LOG = Logger.newInstance("JavaCompilerService");
 }

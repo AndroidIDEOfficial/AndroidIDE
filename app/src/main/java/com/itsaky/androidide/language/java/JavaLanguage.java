@@ -47,7 +47,7 @@ import org.antlr.v4.runtime.Token;
 
 public class JavaLanguage extends IDELanguage {
 
-    private static final Logger LOG = Logger.newInstance ("JavaLanguage");
+    private static final Logger LOG = Logger.newInstance("JavaLanguage");
     private final NewlineHandler[] newlineHandlers;
     private JavaAnalyzer analyzer;
     private CommonCompletionProvider completer;

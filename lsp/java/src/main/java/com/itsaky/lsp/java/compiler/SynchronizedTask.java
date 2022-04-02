@@ -42,7 +42,7 @@ import kotlin.jvm.functions.Function1;
 
 public class SynchronizedTask {
 
-    private static final Logger LOG = Logger.newInstance ("SynchronizedTask");
+    private static final Logger LOG = Logger.newInstance("SynchronizedTask");
     private final Semaphore semaphore = new Semaphore(1);
     private volatile boolean isWriting;
     private CompileTask task;

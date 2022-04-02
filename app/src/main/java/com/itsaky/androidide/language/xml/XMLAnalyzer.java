@@ -44,7 +44,7 @@ import org.antlr.v4.runtime.Token;
  */
 public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
 
-    private static final Logger LOG = Logger.newInstance ("XMLAnalyzer");
+    private static final Logger LOG = Logger.newInstance("XMLAnalyzer");
 
     @Override
     protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {

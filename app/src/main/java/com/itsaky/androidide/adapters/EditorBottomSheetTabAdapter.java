@@ -35,7 +35,7 @@ import java.util.List;
 
 public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
 
-    private static final Logger LOG = Logger.newInstance ("EditorBottomSheetTabAdapter");
+    private static final Logger LOG = Logger.newInstance("EditorBottomSheetTabAdapter");
     private final List<Tab> fragments;
 
     public EditorBottomSheetTabAdapter(@NonNull FragmentActivity fragmentActivity) {

@@ -148,7 +148,7 @@ public class EditorActivity extends StudioActivity
     private static final int ACTION_ID_CLOSE = 100;
     private static final int ACTION_ID_OTHERS = 101;
     private static final int ACTION_ID_ALL = 102;
-    private static final Logger LOG = Logger.newInstance ("EditorActivity");
+    private static final Logger LOG = Logger.newInstance("EditorActivity");
     /**
      * MenuItem(s) that are related to the build process
      *

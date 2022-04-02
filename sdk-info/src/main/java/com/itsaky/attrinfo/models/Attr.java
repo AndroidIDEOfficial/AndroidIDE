@@ -72,7 +72,7 @@ public class Attr implements Parcelable {
                     return new Attr[size];
                 }
             };
-    private static final Logger LOG = Logger.newInstance ("AttrInfo::Attr");
+    private static final Logger LOG = Logger.newInstance("AttrInfo::Attr");
     public INamespace namespace;
     public String name;
     public Set<String> possibleValues;

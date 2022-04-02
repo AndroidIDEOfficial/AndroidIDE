@@ -88,7 +88,7 @@ public class CodeActionProvider {
             Pattern.compile("^'((\\w+\\.)*\\w+)' is not thrown");
     private static final Pattern UNREPORTED_EXCEPTION =
             Pattern.compile("unreported exception ((\\w+\\.)*\\w+)");
-    private static final Logger LOG = Logger.newInstance ("JavaCodeActionProvider");
+    private static final Logger LOG = Logger.newInstance("JavaCodeActionProvider");
     private final CompilerProvider compiler;
 
     public CodeActionProvider(CompilerProvider compiler) {

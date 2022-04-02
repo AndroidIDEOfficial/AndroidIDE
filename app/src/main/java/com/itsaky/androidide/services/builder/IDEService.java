@@ -85,7 +85,7 @@ public class IDEService {
     public static final int TASK_LINT_DEBUG = GradleTask.TASK_LINT_DEBUG;
     public static final int TASK_LINT_RELEASE = GradleTask.TASK_LINT_RELEASE;
 
-    public static final Logger LOG = Logger.newInstance ("IDEService");
+    public static final Logger LOG = Logger.newInstance("IDEService");
 
     private final InputStreamLineReader.OnReadListener mOutputReadListener = this::onBuildOutput;
 

@@ -33,7 +33,7 @@ public class LogReceiver extends BroadcastReceiver {
     public static final String APPEND_LOG = "com.itsaky.androidide.logs.APPEND_LOG";
     public static final String EXTRA_LINE = "log_line";
 
-    private final Logger LOG = Logger.newInstance ("LogReceiver");
+    private final Logger LOG = Logger.newInstance("LogReceiver");
 
     public LogReceiver setLogListener(LogListener listener) {
         this.listener = listener;

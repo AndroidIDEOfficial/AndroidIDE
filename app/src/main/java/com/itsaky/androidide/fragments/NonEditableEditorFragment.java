@@ -33,7 +33,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public abstract class NonEditableEditorFragment extends Fragment {
 
-    private static final Logger LOG = Logger.newInstance ("NonEditableEditorFragment");
+    private static final Logger LOG = Logger.newInstance("NonEditableEditorFragment");
     private FragmentNonEditableEditorBinding binding;
 
     @Nullable

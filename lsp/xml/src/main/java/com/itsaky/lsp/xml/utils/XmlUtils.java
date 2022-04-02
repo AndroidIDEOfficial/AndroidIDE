@@ -30,7 +30,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 public class XmlUtils {
 
     private static final XmlPullParserFactory parserFactory;
-    private static final Logger LOG = Logger.newInstance ("XmlUtils");
+    private static final Logger LOG = Logger.newInstance("XmlUtils");
 
     static {
         try {

@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 public class ValuesTableFactory {
 
     private static final Map<File, ValuesTable> valueTables = new HashMap<>();
-    private static final Logger LOG = Logger.newInstance ("ValuesTableFactory");
+    private static final Logger LOG = Logger.newInstance("ValuesTableFactory");
 
     public static ValuesTable getTable(final File resDir) {
         return valueTables.getOrDefault(resDir, null);

@@ -58,7 +58,7 @@ import org.jetbrains.annotations.Contract;
  */
 public class JavaAnalyzer extends SimpleAnalyzeManager<Void> implements IAnalyzeManager {
 
-    private static final Logger LOG = Logger.newInstance ("JavaAnalyzer");
+    private static final Logger LOG = Logger.newInstance("JavaAnalyzer");
     private final List<DiagnosticItem> ideDiagnostics = new ArrayList<>();
     private List<DiagnosticItem> diagnostics = new ArrayList<>();
 

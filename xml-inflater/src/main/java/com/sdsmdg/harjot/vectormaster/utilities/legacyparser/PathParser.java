@@ -24,7 +24,7 @@ import java.util.ArrayList;
 /** This class is a duplicate of the PathParser.java in androidx.core.graphics package. */
 public class PathParser {
 
-    private static final Logger LOG = Logger.newInstance ("PathParser");
+    private static final Logger LOG = Logger.newInstance("PathParser");
 
     // Copy from Arrays.copyOfRange() which is only available from API level 9.
     /**

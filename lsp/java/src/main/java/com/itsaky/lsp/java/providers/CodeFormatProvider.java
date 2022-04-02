@@ -35,7 +35,7 @@ import java.io.Writer;
  */
 public class CodeFormatProvider {
 
-    private static final Logger LOG = Logger.newInstance ("JavaCodeFormatProvider");
+    private static final Logger LOG = Logger.newInstance("JavaCodeFormatProvider");
 
     private final JavaServerSettings settings;
 

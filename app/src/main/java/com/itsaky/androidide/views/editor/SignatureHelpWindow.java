@@ -35,7 +35,7 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
  */
 public class SignatureHelpWindow extends BaseEditorWindow {
 
-    private static final Logger LOG = Logger.newInstance ("SignatureHelpWindow");
+    private static final Logger LOG = Logger.newInstance("SignatureHelpWindow");
 
     /**
      * Create a signature help popup window for editor

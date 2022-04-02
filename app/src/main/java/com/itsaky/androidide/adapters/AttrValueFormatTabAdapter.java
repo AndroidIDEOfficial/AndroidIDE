@@ -38,7 +38,7 @@ import java.util.Objects;
 @SuppressWarnings("deprecation")
 public class AttrValueFormatTabAdapter extends FragmentStatePagerAdapter {
 
-    private static final Logger LOG = Logger.newInstance ("AttrValueEditorTabAdapter");
+    private static final Logger LOG = Logger.newInstance("AttrValueEditorTabAdapter");
     private final List<Fragment> mFragments = new ArrayList<>();
     private final List<String> mTitles = new ArrayList<>();
     private final XMLAttribute attribute;

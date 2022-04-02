@@ -35,7 +35,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class AbstractReferenceEditor extends BaseValueEditorFragment {
 
-    private static final Logger LOG = Logger.newInstance ("ReferenceEditor");
+    private static final Logger LOG = Logger.newInstance("ReferenceEditor");
     public TextWatcherAdapter resInputWatcher;
 
     @Override

@@ -228,5 +228,5 @@ public class SemanticHighlighter extends TreePathScanner<Void, List<HighlightTok
         return super.visitMethod(tree, colors);
     }
 
-    private static final Logger LOG = Logger.newInstance ("JavaSemanticHighlighter");
+    private static final Logger LOG = Logger.newInstance("JavaSemanticHighlighter");
 }

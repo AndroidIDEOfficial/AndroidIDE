@@ -45,7 +45,7 @@ import javax.lang.model.element.TypeElement;
 
 public class GenerateRecordConstructor extends Rewrite {
 
-    private static final Logger LOG = Logger.newInstance ("main");
+    private static final Logger LOG = Logger.newInstance("main");
     final String className;
 
     public GenerateRecordConstructor(String className) {

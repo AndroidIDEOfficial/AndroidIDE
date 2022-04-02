@@ -56,7 +56,7 @@ public class FindBiggerRange extends TreeScanner<Range, Range> {
 
         final Range treeRange = getRange(tree);
         if (treeRange != null && range.isSmallerThan(treeRange)) {
-            Logger.newInstance ("FindBiggerRange")
+            Logger.newInstance("FindBiggerRange")
                     .debug("Selecting tree", tree, tree.getClass(), tree.getKind());
             return treeRange;
         }

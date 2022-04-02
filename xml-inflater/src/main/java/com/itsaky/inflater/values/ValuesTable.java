@@ -46,7 +46,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
  */
 public class ValuesTable {
 
-    private static final Logger LOG = Logger.newInstance ("ValuesTable");
+    private static final Logger LOG = Logger.newInstance("ValuesTable");
     // TODO Parse styles and styleables
     private final Map<String, IResource> arrays;
     private final Map<String, IResource> strings;

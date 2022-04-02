@@ -41,7 +41,7 @@ public class IDEPreferences extends BasePreferenceFragment
     public static final String KEY_ISSUES = "idepref_issues";
     public static final String KEY_CHANGELOG = "idepref_changelog";
     public static final String KEY_ABOUT = "idepref_about";
-    private static final Logger LOG = Logger.newInstance ("IDEPreferences");
+    private static final Logger LOG = Logger.newInstance("IDEPreferences");
     private GeneralPreferences mGeneralPrefs;
     private BuildPreferences mBuildPreferences;
     private EditorPreferences mEditorPreferences;

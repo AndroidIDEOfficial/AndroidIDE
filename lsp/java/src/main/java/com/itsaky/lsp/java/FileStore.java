@@ -347,5 +347,5 @@ public class FileStore {
         }
     }
 
-    private static final Logger LOG = Logger.newInstance ("FileStore");
+    private static final Logger LOG = Logger.newInstance("FileStore");
 }

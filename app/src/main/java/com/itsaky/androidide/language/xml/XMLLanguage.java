@@ -42,7 +42,7 @@ import org.antlr.v4.runtime.Token;
 
 public class XMLLanguage extends IDELanguage {
 
-    private static final Logger LOG = Logger.newInstance ("XMLLanguage");
+    private static final Logger LOG = Logger.newInstance("XMLLanguage");
     private final CommonCompletionProvider completer;
     private final NewlineHandler[] newlineHandlers;
     private XMLAnalyzer analyzer;

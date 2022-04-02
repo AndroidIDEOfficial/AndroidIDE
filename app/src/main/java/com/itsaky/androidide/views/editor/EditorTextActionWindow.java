@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 public class EditorTextActionWindow extends EditorPopupWindow
         implements IDEEditor.ITextActionPresenter {
 
-    private static final Logger LOG = Logger.newInstance ("EditorTextActionWindow");
+    private static final Logger LOG = Logger.newInstance("EditorTextActionWindow");
 
     private static final long DELAY = 200;
     protected final List<SubscriptionReceipt<?>> subscriptionReceipts;

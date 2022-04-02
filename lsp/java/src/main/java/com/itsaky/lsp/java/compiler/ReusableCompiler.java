@@ -76,7 +76,7 @@ import javax.tools.JavaFileObject;
  */
 public class ReusableCompiler {
 
-    private static final Logger LOG = Logger.newInstance ("ReusableCompiler");
+    private static final Logger LOG = Logger.newInstance("ReusableCompiler");
     private static final JavacTool systemProvider = JavacTool.create();
 
     private final List<String> currentOptions = new ArrayList<>();

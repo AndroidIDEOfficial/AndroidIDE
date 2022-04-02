@@ -37,7 +37,7 @@ public abstract class StudioActivity extends AppCompatActivity {
     public static final String TAG = "StudioActivity";
     public static final int REQCODE_STORAGE = 1009;
 
-    protected static Logger LOG = Logger.newInstance ("StudioActivity");
+    protected static Logger LOG = Logger.newInstance("StudioActivity");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

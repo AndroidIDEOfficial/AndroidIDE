@@ -41,7 +41,7 @@ import javax.tools.JavaFileObject;
 
 public class CompileBatch implements AutoCloseable {
 
-    private static final Logger LOG = Logger.newInstance ("CompileBatch");
+    private static final Logger LOG = Logger.newInstance("CompileBatch");
     private static final Path FILE_NOT_FOUND = Paths.get("");
     final JavaCompilerService parent;
     final ReusableCompiler.Borrow borrow;

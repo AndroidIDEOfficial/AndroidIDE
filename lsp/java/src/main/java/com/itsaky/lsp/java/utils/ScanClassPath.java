@@ -67,5 +67,5 @@ public class ScanClassPath {
         }
     }
 
-    private static final Logger LOG = Logger.newInstance ("ScanClassPath");
+    private static final Logger LOG = Logger.newInstance("ScanClassPath");
 }

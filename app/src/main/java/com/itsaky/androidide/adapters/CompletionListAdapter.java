@@ -49,7 +49,7 @@ import java.util.List;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {
 
-    private static final Logger LOG = Logger.newInstance ("CompletionListAdapter");
+    private static final Logger LOG = Logger.newInstance("CompletionListAdapter");
 
     @Override
     public void attachValues(

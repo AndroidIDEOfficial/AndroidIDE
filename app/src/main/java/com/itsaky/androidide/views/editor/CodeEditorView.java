@@ -78,7 +78,7 @@ import org.antlr.v4.runtime.Token;
 @SuppressLint("ViewConstructor") // This view is always dynamically created.
 public class CodeEditorView extends FrameLayout {
 
-    private static final Logger LOG = Logger.newInstance ("CodeEditorView");
+    private static final Logger LOG = Logger.newInstance("CodeEditorView");
     private final File file;
     private final LayoutCodeEditorBinding binding;
     private boolean isModified;
