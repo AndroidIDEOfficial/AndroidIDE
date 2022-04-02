@@ -149,23 +149,25 @@ subprojects {
             }
         })
 
-        tasks.register("format", GoogleJavaFormat, task -> {
-            source 'src/main'
-            source 'src/test'
-            include '**/*.java'
-            exclude '**/*_template.java'
-        })
-
         tasks.register("verifyFormatting", VerifyGoogleJavaFormat, task -> {
             source 'src/main'
             source 'src/test'
             include '**/*.java'
             exclude '**/*_template.java'
             ignoreFailures true
-
-            dependsOn project.tasks.withType(GoogleJavaFormat).iterator().next()
+            
             finalizedBy tasks.getByName("checkFormattingChanges")
         })
+
+        tasks.register("format", GoogleJavaFormat, task -> {
+            source 'src/main'
+            source 'src/test'
+            include '**/*.java'
+            exclude '**/*_template.java'
+
+            finalizedBy tasks.getByName("verifyFormatting")
+        })
+
     }
 }
 
