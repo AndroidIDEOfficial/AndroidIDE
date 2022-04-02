@@ -167,13 +167,6 @@ subprojects {
             dependsOn project.tasks.withType(GoogleJavaFormat).iterator().next()
             finalizedBy tasks.getByName("checkFormattingChanges")
         }
-
-        def preBuild = project.tasks.findByName("preBuild")
-        if (preBuild != null) {
-            preBuild.finalizedBy format
-        } else {
-            println "Task preBuild not found in project ${project.displayName}"
-        }
     }
 }
 
