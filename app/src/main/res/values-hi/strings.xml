@@ -27,14 +27,12 @@
     <string name="app_logs">एप लॉग्स</string>
     <string name="ide_logs">IDE लॉग्स</string>
     <string name="label_splash_image">स्प्लेश इमेज</string>
-    <string name="cancel">रद्द करे</string>
     <string name="get_started">शुरु करे</string>
     <string name="nothing_here">यहाँ कुछ भी नहीं &#8230;</string>
 
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_fix_diagnostic">[क्विक फिक्स]</string>
     <string name="msg_cannot_perform_fix">कोड क्रिया करने में असमर्थ </string>
-    <string name="msg_performing_fixes">सुधार कर रहे है &#8230;</string>
+    <string name="msg_performing_actions">सुधार कर रहे है &#8230;</string>
     <string name="msg_code_actions">कोड क्रियाएं</string>
     <string name="msg_api_info_since">एपीआई %d से उपलब्ध है</string>
     <string name="msg_api_info_removed">एपीआई %d  में हटाया गया</string>

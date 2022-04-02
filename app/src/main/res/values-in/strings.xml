@@ -32,7 +32,7 @@
 
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_cannot_perform_fix">Tidak dapat menampilkan perbaikan cepat (QuickFix)</string>
-    <string name="msg_performing_fixes">Menampilkan perbaikan&#8230;</string>
+    <string name="msg_performing_actions">Menampilkan perbaikan&#8230;</string>
     <string name="msg_code_actions">Quickfixes</string>
     <string name="msg_api_info_since">Sejak API %d</string>
     <string name="msg_api_info_removed">Dihapus pada API %d</string>

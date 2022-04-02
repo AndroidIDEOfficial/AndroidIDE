@@ -30,10 +30,9 @@
     <string name="get_started">Loslegen</string>
     <string name="nothing_here">Nichts hier &#x2026;</string>
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_fix_diagnostic">[Schnelle L&#xF6;sung]</string>
     <string name="msg_cannot_perform_fix">Schnellkorrektur kann nicht durchgef&#xFC;hrt werden</string>
-    <string name="msg_performing_fixes">Korrekturen durchf&#xFC;hren&#x2026;</string>
-    <string name="msg_code_actions">Schnellkorrekturen</string>
+    <string name="msg_performing_actions">Korrekturen durchf&#xFC;hren&#x2026;</string>
+    <string name="msg_code_actions">Aktionen</string>
     <string name="msg_api_info_since">Seit API %d</string>
     <string name="msg_api_info_removed">In API %d entfernt</string>
     <string name="msg_api_info_deprecated">Veraltet in API %d</string>

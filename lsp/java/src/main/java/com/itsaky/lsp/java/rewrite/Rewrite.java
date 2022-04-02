@@ -18,11 +18,13 @@
 package com.itsaky.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.CodeActionKind;
 import com.itsaky.lsp.models.DocumentChange;
 import com.itsaky.lsp.models.TextEdit;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +51,7 @@ public abstract class Rewrite {
 
     public List<CodeActionItem> asCodeActions(CompilerProvider compiler, String title) {
         final Map<Path, TextEdit[]> edits = rewrite(compiler);
-        if (edits == null) {
+        if (edits == null || edits.isEmpty()) {
             return Collections.emptyList();
         }
 

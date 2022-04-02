@@ -34,8 +34,7 @@
 
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_cannot_perform_fix">Impossible de lancer QuickFix</string>
-    <string name="msg_performing_fixes">Réglage de quelques bugs&#8230;</string>
-    <string name="msg_code_actions">Quickfixes</string>
+    <string name="msg_performing_actions">Réglage de quelques bugs&#8230;</string>
     <string name="msg_api_info_since">Depuis l\'API %d</string>
     <string name="msg_api_info_removed">Supprimé depuis l\'API %d</string>
     <string name="msg_api_info_deprecated">Obsolète depuis l\'API %d</string>
@@ -357,7 +356,7 @@
     <string name="hint_string_value">String value</string>
     <string name="hint_string_resource">String resource</string>
     <string name="hint_resource_reference">any resource reference</string>
-    <string name="msg_fix_diagnostic">QuickFix</string>
+    <string name="msg_code_actions">Actions</string>
     <string name="title_format_code">Formater code</string>
     <string name="msg_swipe_up">Balayez vers le haut pour accéder au contenue de la console, des logs et autres.</string>
     <string name="msg_ide_crashed">AndroidIDE a crashé</string>

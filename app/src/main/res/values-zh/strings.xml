@@ -31,10 +31,9 @@
     <string name="nothing_here">这里啥也没有 &#8230;</string>
 
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_fix_diagnostic">[快速修复]</string>
+    <string name="msg_code_actions">行动</string>
     <string name="msg_cannot_perform_fix">无法执行快速修复</string>
-    <string name="msg_performing_fixes">正在修复&#8230;</string>
-    <string name="msg_code_actions">快速修复</string>
+    <string name="msg_performing_actions">正在修复&#8230;</string>
     <string name="msg_api_info_since">在API %d 添加</string>
     <string name="msg_api_info_removed">在API %d 移除</string>
     <string name="msg_api_info_deprecated">在API %d 弃用</string>

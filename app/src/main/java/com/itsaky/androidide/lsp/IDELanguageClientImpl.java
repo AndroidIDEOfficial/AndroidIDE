@@ -20,8 +20,10 @@
 package com.itsaky.androidide.lsp;
 
 import android.view.View;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.itsaky.androidide.EditorActivity;
@@ -49,13 +51,15 @@ import com.itsaky.lsp.models.Location;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.sora.text.Content;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import io.github.rosemoe.sora.text.Content;
 
 /** AndroidIDE specific implementation of the LanguageClient */
 public class IDELanguageClientImpl implements ILanguageClient {
@@ -221,6 +225,11 @@ public class IDELanguageClientImpl implements ILanguageClient {
      */
     public void performCodeAction(IDEEditor editor, CodeActionItem action) {
         if (activity() == null || editor == null || action == null) {
+            LOG.error(
+                    "Unable to perform code action",
+                    "activity=" + activity(),
+                    "editor=" + editor,
+                    "action=" + action);
             StudioApp.getInstance().toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
             return;
         }
@@ -229,15 +238,19 @@ public class IDELanguageClientImpl implements ILanguageClient {
         progress.setSubMessageEnabled(false);
         progress.setWelcomeTextEnabled(false);
         progress.setCancelable(false);
-        progress.setMessage(activity().getString(R.string.msg_performing_fixes));
+        progress.setMessage(activity().getString(R.string.msg_performing_actions));
         progress.show(activity().getSupportFragmentManager(), "quick_fix_progress");
 
         new TaskExecutor()
                 .executeAsyncProvideError(
                         () -> performCodeActionAsync(editor, action),
-                        (a, b) -> {
-                            progress.dismiss();
-                            if (a == null || b != null || !a) {
+                        (result, throwable) -> {
+                            ThreadUtils.runOnUiThread(progress::dismiss);
+                            if (result == null || throwable != null || !result) {
+                                LOG.error(
+                                        "Unable to perform code action",
+                                        "result=" + result,
+                                        "throwable=" + throwable);
                                 StudioApp.getInstance()
                                         .toast(R.string.msg_cannot_perform_fix, Toaster.Type.ERROR);
                             } else {
@@ -282,6 +295,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
     }
 
     private Boolean performCodeActionAsync(final IDEEditor editor, final CodeActionItem action) {
+        LOG.debug("Performing code action:", action);
         final var changes = action.getChanges();
         if (changes.isEmpty()) {
             return Boolean.FALSE;

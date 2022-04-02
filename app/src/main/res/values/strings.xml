@@ -32,8 +32,7 @@
 
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_cannot_perform_fix">Unable to perform quick fix</string>
-    <string name="msg_performing_fixes">Performing fixes&#8230;</string>
-    <string name="msg_code_actions">Quickfixes</string>
+    <string name="msg_performing_actions">Performing code action&#8230;</string>
     <string name="msg_api_info_since">Since API %d</string>
     <string name="msg_api_info_removed">Removed in API %d</string>
     <string name="msg_api_info_deprecated">Deprecated in API %d</string>
@@ -343,7 +342,7 @@
     <string name="hint_string_value">String value</string>
     <string name="hint_string_resource">String resource</string>
     <string name="hint_resource_reference">Any resource reference</string>
-    <string name="msg_fix_diagnostic">QuickFix</string>
+    <string name="msg_code_actions">Actions</string>
     <string name="title_format_code">Format code</string>
     <string name="idepref_java_useGoogleStyle_title">Use Google Java Style code formatting</string>
     <string name="idepref_java_useGoogleStyle_summary">Use Google Java Style code formatting configuration for formatting Java source code.</string>

@@ -16,6 +16,8 @@
  */
 package com.itsaky.androidide.views.editor;
 
+import static com.itsaky.androidide.views.editor.IDEEditor.TextAction.QUICKFIX;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -23,10 +25,12 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
@@ -58,17 +62,23 @@ import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.DiagnosticUtil;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.event.Unsubscribe;
-import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import org.jetbrains.annotations.Contract;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.event.Unsubscribe;
+import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 
 public class IDEEditor extends CodeEditor {
 
@@ -856,7 +866,7 @@ public class IDEEditor extends CodeEditor {
         actionPresenter.registerAction(
                 new TextAction(
                         createTextActionDrawable(R.drawable.ic_quickfix),
-                        R.string.msg_fix_diagnostic,
+                        R.string.msg_code_actions,
                         TextAction.QUICKFIX,
                         index++));
 
@@ -957,29 +967,6 @@ public class IDEEditor extends CodeEditor {
             case TextAction.COMMENT_LINE:
             case TextAction.UNCOMMENT_LINE:
                 return commentUncomment;
-            case TextAction.QUICKFIX:
-                if (getEditorLanguage() instanceof IDELanguage
-                        && mLanguageServer != null
-                        && mLanguageClient != null) {
-                    final var lang = (IDELanguage) getEditorLanguage();
-                    final var diagnostics = lang.getDiagnostics();
-                    if (diagnostics.isEmpty()) {
-                        return false;
-                    }
-
-                    final var diagnostic =
-                            DiagnosticUtil.binarySearchDiagnostic(
-                                    diagnostics, getCursorAsLSPPosition());
-                    if (diagnostic == null) {
-                        LOG.info(
-                                "No diagnostic found at cursor position. Skipping quickfix lookup...");
-                        return false;
-                    }
-
-                    return true;
-                }
-
-                return false;
         }
 
         return true;
@@ -1022,7 +1009,7 @@ public class IDEEditor extends CodeEditor {
                 expandSelection();
                 break;
             case TextAction.QUICKFIX:
-                showCodeActions();
+                showCodeActions(mTextActionPresenter.getActions());
                 getTextActionPresenter().dismiss();
                 break;
         }
@@ -1051,15 +1038,15 @@ public class IDEEditor extends CodeEditor {
         final var lang = (IDELanguage) getEditorLanguage();
         final var diagnostics = lang.getDiagnostics();
         if (diagnostics.isEmpty()) {
-            LOG.error("Cannot show code actions. No diagnostic items available.");
-            return;
+            LOG.error(
+                    "No diagnostic items available. Code actions will be shown based on cursor position.");
         }
 
         final var diagnostic =
                 DiagnosticUtil.binarySearchDiagnostic(diagnostics, getCursorAsLSPPosition());
-        if (diagnostic == null) {
-            LOG.info("No diagnostic found at cursor position. Skipping code action lookup...");
-            return;
+        if (!diagnostics.isEmpty() && diagnostic == null) {
+            LOG.info(
+                    "No diagnostic found at cursor position. Code actions will be shown based on cursor position.");
         }
 
         final var future = codeActions(Collections.singletonList(diagnostic));
@@ -1079,7 +1066,7 @@ public class IDEEditor extends CodeEditor {
                 }));
     }
 
-    private void showCodeActions(List<CodeActionItem> actions) {
+    public void showCodeActions(List<CodeActionItem> actions) {
         final var titles = actions.stream().map(CodeActionItem::getTitle).toArray(String[]::new);
         final var builder = DialogUtils.newMaterialDialogBuilder(getContext());
         builder.setTitle("Select code action...");
@@ -1195,7 +1182,6 @@ public class IDEEditor extends CodeEditor {
      * @author Akash Yadav
      */
     public interface ITextActionPresenter {
-
         /**
          * Bind the action presenter with the given editor instance.
          *
@@ -1230,6 +1216,108 @@ public class IDEEditor extends CodeEditor {
          * events and release any held resources.
          */
         void destroy();
+
+        /**
+         * Update the list of computed code actions.
+         *
+         * @param actions The new list of code actions.
+         */
+        void updateCodeActions(@NonNull List<CodeActionItem> actions);
+
+        /**
+         * Get the computed code actions.
+         *
+         * @return The list of code actions.
+         */
+        @NonNull
+        List<CodeActionItem> getActions();
+
+        default boolean canShowAction(
+                @NonNull IDEEditor editor, @NonNull IDEEditor.TextAction action) {
+            if (action.id == QUICKFIX) {
+                try {
+                    // If code actions are not returned within 150ms, hide the action.
+                    final var future = computeCodeActions(editor);
+                    final var result = future.get(150, TimeUnit.MILLISECONDS);
+                    updateCodeActions(
+                            result == null ? Collections.emptyList() : result.getActions());
+                    return !getActions().isEmpty();
+                } catch (Throwable th) {
+                    if (!(th instanceof TimeoutException)) {
+                        LOG.error("Unable to calculate code actions", th);
+                    }
+
+                    return false;
+                }
+            }
+
+            // all the actions are visible by default
+            // so we need to get a confirmation from the editor
+            if (action.visible) {
+                return editor.shouldShowTextAction(action.id);
+            }
+
+            return false;
+        }
+
+        default void checkForCodeActions(IDEEditor editor) {
+            computeCodeActions(editor)
+                    .whenComplete(
+                            ((codeActionResult, throwable) -> {
+                                if (throwable != null) {
+                                    LOG.error("Error computing code actions", throwable);
+                                }
+
+                                final var codeAction = findAction(QUICKFIX);
+                                final List<CodeActionItem> actions =
+                                        codeActionResult != null
+                                                ? codeActionResult.getActions()
+                                                : Collections.emptyList();
+                                updateCodeActions(actions);
+                                if (codeAction != null) {
+                                    codeAction.visible =
+                                            codeActionResult != null
+                                                    && !codeActionResult.getActions().isEmpty();
+                                }
+
+                                invalidateActions();
+                            }));
+        }
+
+        default CompletableFuture<CodeActionResult> computeCodeActions(IDEEditor editor) {
+            return CompletableFuture.supplyAsync(
+                    () -> {
+                        if (editor.getFile() == null) {
+                            throw new CompletionException(
+                                    new NullPointerException(
+                                            "Cannot compute code actions. "
+                                                    + "No file is set to editor."));
+                        }
+
+                        final var file = editor.getFile().toPath();
+                        final var range = editor.getCursorRange();
+                        List<DiagnosticItem> diagnostics =
+                                editor.getEditorLanguage() instanceof IDELanguage
+                                        ? ((IDELanguage) editor.getEditorLanguage())
+                                                .getDiagnostics()
+                                        : Collections.emptyList();
+                        
+                        final var diagnostic =
+                                DiagnosticUtil.binarySearchDiagnostic(
+                                        diagnostics, editor.getCursorAsLSPPosition());
+                        diagnostics =
+                                diagnostic == null
+                                        ? Collections.emptyList()
+                                        : Collections.singletonList(diagnostic);
+                        final var params = new CodeActionParams(file, range, diagnostics);
+                        LOG.debug("Requesting code actions for params:", params);
+                        try {
+                            return editor.codeActions(params).get();
+                        } catch (Throwable e) {
+                            throw new CompletionException(e);
+                        }
+                    });
+        }
     }
 
     /**
