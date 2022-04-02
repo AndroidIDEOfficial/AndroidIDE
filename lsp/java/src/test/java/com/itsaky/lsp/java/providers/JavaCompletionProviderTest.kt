@@ -49,6 +49,48 @@ class JavaCompletionProviderTest : CursorDependentTest() {
                 "aaFloat", "aaDouble", "args")
     }
     
+    @Test
+    fun testMembers() {
+        // Complete members of String
+        openFile("MembersCompletionTest")
+        
+        val pos = cursorPosition()
+        val items = completionTitles(pos)
+        assertThat(items)
+            .containsAtLeast(
+                "getClass",
+                "toLowerCase",
+                "toUpperCase", "substring", "charAt")
+    }
+    
+    @Test
+    fun testLambdaVariableMemberAccess() {
+        // Complete members of Throwable
+        openFile("LambdaMembersCompletionTest")
+        
+        val pos = cursorPosition()
+        val items = completionTitles(pos)
+        assertThat(items)
+            .containsAtLeast(
+                "getMessage",
+                "getCause",
+                "getStackTrace", "printStackTrace")
+    }
+    
+    @Test
+    fun testStaticAccess() {
+        // Complete static members of String
+        openFile("StaticMembersCompletionTest")
+        
+        val pos = cursorPosition()
+        val items = completionTitles(pos)
+        assertThat(items)
+            .containsAtLeast(
+                "format",
+                "join",
+                "valueOf", "CASE_INSENSITIVE_ORDER", "class")
+    }
+    
     override fun openFile(fileName: String) {
         super.openFile("completion/${fileName}")
     }
