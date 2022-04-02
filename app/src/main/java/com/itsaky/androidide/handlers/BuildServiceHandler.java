@@ -18,6 +18,7 @@
 package com.itsaky.androidide.handlers;
 
 import android.view.View;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.managers.PreferenceManager;
@@ -30,6 +31,7 @@ import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.build.ApkGeneratingTask;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -214,7 +216,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
 
     public void assembleDebug(boolean shouldInstallApk) {
         setShouldInstallApk(shouldInstallApk);
-        getService().assembleDebug(shouldInstallApk);
+        getService().assembleDebug();
     }
 
     private boolean isClasspathValid(String path) {
@@ -230,12 +232,14 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
 
     private void installApks(final Set<File> apks) {
         if (activity() == null || apks == null || apks.isEmpty()) {
+            LOG.error("Cannot install APK. Activity=" + activity(), "apks=" + apks);
             return;
         }
 
         if (apks.size() == 1) {
             activity().install(apks.iterator().next());
         } else {
+            LOG.info("Multiple APKs found. Let the user select...");
             final List<File> files = new ArrayList<>(apks);
             final MaterialAlertDialogBuilder builder =
                     DialogUtils.newMaterialDialogBuilder(activity());

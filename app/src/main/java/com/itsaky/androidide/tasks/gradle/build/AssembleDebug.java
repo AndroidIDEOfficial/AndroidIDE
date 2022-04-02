@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,27 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 
 package com.itsaky.androidide.tasks.gradle.build;
 
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.services.builder.IDEService;
+
 import java.io.File;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class AssembleDebug extends ApkGeneratingTask {
-
-    private boolean installApk = true;
-
-    public AssembleDebug setInstallApk(boolean installApk) {
-        this.installApk = installApk;
-        return this;
-    }
 
     @Override
     public String getName() {
@@ -57,7 +49,7 @@ public class AssembleDebug extends ApkGeneratingTask {
 
     @Override
     public List<String> getTasks() {
-        return Arrays.asList(getCommands());
+        return Collections.singletonList(getCommands());
     }
 
     @Override

@@ -21,6 +21,7 @@ import static com.itsaky.androidide.managers.ToolsManager.getCommonAsset;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
@@ -37,12 +38,14 @@ import com.itsaky.androidide.shell.ProcessExecutorFactory;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.BaseGradleTasks;
-import com.itsaky.androidide.tasks.gradle.build.AssembleDebug;
 import com.itsaky.androidide.tasks.gradle.resources.UpdateResourceClassesTask;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.InputStreamLineReader;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.toaster.Toaster;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,20 +61,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.Contract;
 
 public class IDEService {
-
-    private BuildListener listener;
-    private GradleTask currentTask;
-
-    private IDEProject mIDEProject;
-    private IDEModule mAppModule;
-
-    private final File projectRoot;
-    private final IProcessExecutor processExecutor;
-
-    private boolean isBuilding = false;
 
     public static final int TASK_SHOW_DEPENDENCIES = GradleTask.TASK_SHOW_DEPENDENCIES;
     public static final int TASK_ASSEMBLE_DEBUG = GradleTask.TASK_ASSEMBLE_DEBUG;
@@ -84,11 +75,15 @@ public class IDEService {
     public static final int TASK_LINT = GradleTask.TASK_LINT;
     public static final int TASK_LINT_DEBUG = GradleTask.TASK_LINT_DEBUG;
     public static final int TASK_LINT_RELEASE = GradleTask.TASK_LINT_RELEASE;
-
     public static final Logger LOG = Logger.newInstance("IDEService");
-
+    private final File projectRoot;
+    private final IProcessExecutor processExecutor;
+    private BuildListener listener;
+    private GradleTask currentTask;
+    private IDEProject mIDEProject;
+    private IDEModule mAppModule;
     private final InputStreamLineReader.OnReadListener mOutputReadListener = this::onBuildOutput;
-
+    private boolean isBuilding = false;
     private final IProcessExitListener mProcessExitListener =
             new IProcessExitListener() {
                 @Override
@@ -408,8 +403,8 @@ public class IDEService {
         return gradlew.exists() && gradleWrapperJar.exists() && gradleWrapperProps.exists();
     }
 
-    public void assembleDebug(boolean installApk) {
-        execTask(((AssembleDebug) BaseGradleTasks.ASSEMBLE_DEBUG).setInstallApk(installApk));
+    public void assembleDebug() {
+        execTask(BaseGradleTasks.ASSEMBLE_DEBUG);
     }
 
     public void assembleRelease() {

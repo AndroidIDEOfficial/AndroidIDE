@@ -1,4 +1,4 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
@@ -14,12 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 package com.itsaky.androidide.models;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ApkMetadata {
 
     @SerializedName("version")
@@ -40,52 +44,74 @@ public class ApkMetadata {
     @SerializedName("elementType")
     private String elementType;
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    public void setArtifactType(ArtifactType artifactType) {
-        this.artifactType = artifactType;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
-
-    public void setVariantName(String variantName) {
-        this.variantName = variantName;
-    }
-
-    public void setElements(List<Element> elements) {
-        this.elements = elements;
-    }
-
-    public void setElementType(String elementType) {
-        this.elementType = elementType;
-    }
-
     public int getVersion() {
         return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public ArtifactType getArtifactType() {
         return artifactType;
     }
 
+    public void setArtifactType(ArtifactType artifactType) {
+        this.artifactType = artifactType;
+    }
+
     public String getApplicationId() {
         return applicationId;
+    }
+
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
     }
 
     public String getVariantName() {
         return variantName;
     }
 
+    public void setVariantName(String variantName) {
+        this.variantName = variantName;
+    }
+
     public List<Element> getElements() {
         return elements;
     }
 
+    public void setElements(List<Element> elements) {
+        this.elements = elements;
+    }
+
     public String getElementType() {
         return elementType;
+    }
+
+    public void setElementType(String elementType) {
+        this.elementType = elementType;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "ApkMetadata{"
+                + "version="
+                + version
+                + ", artifactType="
+                + artifactType
+                + ", applicationId='"
+                + applicationId
+                + '\''
+                + ", variantName='"
+                + variantName
+                + '\''
+                + ", elements="
+                + elements
+                + ", elementType='"
+                + elementType
+                + '\''
+                + '}';
     }
 
     public static class ArtifactType {
@@ -98,25 +124,26 @@ public class ApkMetadata {
         @SerializedName("kind")
         private String kind;
 
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public void setKind(String kind) {
-            this.kind = kind;
-        }
-
         public String getType() {
             return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
         }
 
         public String getKind() {
             return kind;
         }
 
+        public void setKind(String kind) {
+            this.kind = kind;
+        }
+
+        @NonNull
         @Override
         public String toString() {
-            return "[" + getClass().getCanonicalName() + "]" + "\ntype=" + type + ",\nkind=" + kind;
+            return "ArtifactType{" + "type='" + type + '\'' + ", kind='" + kind + '\'' + '}';
         }
     }
 
@@ -140,90 +167,74 @@ public class ApkMetadata {
         @SerializedName("outputFile")
         private String outputFile;
 
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public void setFilters(List<Object> filters) {
-            this.filters = filters;
-        }
-
-        public void setAttributes(List<Object> attributes) {
-            this.attributes = attributes;
-        }
-
-        public void setVersionCode(int versionCode) {
-            this.versionCode = versionCode;
-        }
-
-        public void setVersionName(String versionName) {
-            this.versionName = versionName;
-        }
-
-        public void setOutputFile(String outputFile) {
-            this.outputFile = outputFile;
-        }
-
         public String getType() {
             return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
         }
 
         public List<Object> getFilters() {
             return filters;
         }
 
+        public void setFilters(List<Object> filters) {
+            this.filters = filters;
+        }
+
         public List<Object> getAttributes() {
             return attributes;
+        }
+
+        public void setAttributes(List<Object> attributes) {
+            this.attributes = attributes;
         }
 
         public int getVersionCode() {
             return versionCode;
         }
 
+        public void setVersionCode(int versionCode) {
+            this.versionCode = versionCode;
+        }
+
         public String getVersionName() {
             return versionName;
+        }
+
+        public void setVersionName(String versionName) {
+            this.versionName = versionName;
         }
 
         public String getOutputFile() {
             return outputFile;
         }
 
+        public void setOutputFile(String outputFile) {
+            this.outputFile = outputFile;
+        }
+
+        @NonNull
         @Override
         public String toString() {
-            return "["
-                    + getClass().getCanonicalName()
-                    + "]"
-                    + "\ntype="
+            return "Element{"
+                    + "type='"
                     + type
-                    + ",\nfilters="
+                    + '\''
+                    + ", filters="
                     + filters
-                    + ",\nattributes="
+                    + ", attributes="
                     + attributes
-                    + ",\nversionCode="
+                    + ", versionCode="
                     + versionCode
-                    + ",\nversionName="
+                    + ", versionName='"
                     + versionName
-                    + ",\noutputFile="
-                    + outputFile;
+                    + '\''
+                    + ", outputFile='"
+                    + outputFile
+                    + '\''
+                    + '}';
         }
-    }
-
-    @Override
-    public String toString() {
-        return "["
-                + getClass().getCanonicalName()
-                + "]"
-                + "\nversion="
-                + version
-                + ",\nartifactType="
-                + artifactType
-                + ",\napplicationId="
-                + applicationId
-                + ",\nvariantName="
-                + variantName
-                + ",\nelements="
-                + elements
-                + ",\nelementType="
-                + elementType;
     }
 }
