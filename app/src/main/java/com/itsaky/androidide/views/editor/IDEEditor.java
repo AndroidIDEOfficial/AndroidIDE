@@ -25,10 +25,12 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
@@ -60,11 +62,9 @@ import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.DiagnosticUtil;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.event.Unsubscribe;
-import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -73,7 +73,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.jetbrains.annotations.Contract;
+
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.event.Unsubscribe;
+import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 
 public class IDEEditor extends CodeEditor {
 
@@ -1234,9 +1239,11 @@ public class IDEEditor extends CodeEditor {
                     // If code actions are not returned within 150ms, hide the action.
                     final var future = computeCodeActions(editor);
                     final var result = future.get(150, TimeUnit.MILLISECONDS);
-                    updateCodeActions(
-                            result == null ? Collections.emptyList() : result.getActions());
-                    return !getActions().isEmpty();
+                    List<CodeActionItem> actions =
+                            result == null ? Collections.emptyList() : result.getActions();
+                    actions.removeIf(codeAction -> codeAction.getChanges().isEmpty());
+                    updateCodeActions(actions);
+                    return !actions.isEmpty();
                 } catch (Throwable th) {
                     if (!(th instanceof TimeoutException)) {
                         LOG.error("Unable to calculate code actions", th);
@@ -1253,30 +1260,6 @@ public class IDEEditor extends CodeEditor {
             }
 
             return false;
-        }
-
-        default void checkForCodeActions(IDEEditor editor) {
-            computeCodeActions(editor)
-                    .whenComplete(
-                            ((codeActionResult, throwable) -> {
-                                if (throwable != null) {
-                                    LOG.error("Error computing code actions", throwable);
-                                }
-
-                                final var codeAction = findAction(QUICKFIX);
-                                final List<CodeActionItem> actions =
-                                        codeActionResult != null
-                                                ? codeActionResult.getActions()
-                                                : Collections.emptyList();
-                                updateCodeActions(actions);
-                                if (codeAction != null) {
-                                    codeAction.visible =
-                                            codeActionResult != null
-                                                    && !codeActionResult.getActions().isEmpty();
-                                }
-
-                                invalidateActions();
-                            }));
         }
 
         default CompletableFuture<CodeActionResult> computeCodeActions(IDEEditor editor) {
