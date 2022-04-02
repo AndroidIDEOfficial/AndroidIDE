@@ -16,6 +16,7 @@
  */
 package com.itsaky.lsp.java.providers
 
+import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.api.CursorDependentTest
 import com.itsaky.lsp.api.ILanguageServer
 import com.itsaky.lsp.java.JavaLanguageServerProvider
@@ -30,7 +31,7 @@ import org.robolectric.annotation.Config
  * @author Akash Yadav
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.DEFAULT_VALUE_STRING)
 class JavaCompletionProviderTest : CursorDependentTest() {
     private val server: ILanguageServer = JavaLanguageServerProvider.INSTANCE.server()
     override fun getServer(): ILanguageServer = server
@@ -40,8 +41,12 @@ class JavaCompletionProviderTest : CursorDependentTest() {
         openFile("LocalsCompletionTest")
         
         val pos = cursorPosition()
-//        val items = completionTitles(pos)
-//        assertThat(items).containsAtLeast("aString", "anInt", "aFloat", "aDouble", "args")
+        val items = completionTitles(pos)
+        assertThat(items)
+            .containsAtLeast(
+                "aaString",
+                "aaInt",
+                "aaFloat", "aaDouble", "args")
     }
     
     override fun openFile(fileName: String) {
@@ -49,6 +54,8 @@ class JavaCompletionProviderTest : CursorDependentTest() {
     }
     
     private fun completionTitles(pos: Position): List<CharSequence> {
-        return server.completionProvider.complete(CompletionParams(pos, file!!)).items.map { it.label }
+        return server.completionProvider
+            .complete(CompletionParams(pos, file!!))
+            .items.map { it.label }
     }
 }

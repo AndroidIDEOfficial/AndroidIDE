@@ -17,8 +17,6 @@
 
 package com.itsaky.lsp.java.compiler;
 
-import static android.text.TextUtils.substring;
-
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.FileStore;
@@ -34,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Name;
@@ -42,15 +41,14 @@ import javax.tools.JavaFileObject;
 
 public class CompileBatch implements AutoCloseable {
 
+    private static final Logger LOG = Logger.instance("CompileBatch");
+    private static final Path FILE_NOT_FOUND = Paths.get("");
     final JavaCompilerService parent;
     final ReusableCompiler.Borrow borrow;
-    /** Indicates the task that requested the compilation is finished with it. */
-    boolean closed;
-
     final JavacTask task;
     final List<CompilationUnitTree> roots;
-
-    private static final Logger LOG = Logger.instance("CompileBatch");
+    /** Indicates the task that requested the compilation is finished with it. */
+    boolean closed;
 
     CompileBatch(JavaCompilerService parent, Collection<? extends JavaFileObject> files) {
         this.parent = parent;
@@ -69,62 +67,6 @@ public class CompileBatch implements AutoCloseable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * If the compilation failed because javac didn't find some package-private files in source
-     * files with different names, list those source files.
-     */
-    Set<Path> needsAdditionalSources() {
-        // Check for "class not found errors" that refer to package private classes
-        Set<Path> addFiles = new HashSet<Path>();
-        for (Diagnostic err : parent.diagnostics) {
-            if (!err.getCode().equals("compiler.err.cant.resolve.location")) {
-                continue;
-            }
-            if (!isValidFileRange(err)) {
-                continue;
-            }
-            String className = errorText(err);
-            String packageName = packageName(err);
-            Path location = findPackagePrivateClass(packageName, className);
-            if (location != FILE_NOT_FOUND) {
-                addFiles.add(location);
-            }
-        }
-        return addFiles;
-    }
-
-    private String errorText(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
-        Path file = Paths.get(err.getSource().toUri());
-        CharSequence contents = FileStore.contents(file);
-        int begin = (int) err.getStartPosition();
-        int end = (int) err.getEndPosition();
-        return substring(contents, begin, end);
-    }
-
-    private String packageName(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
-        Path file = Paths.get(err.getSource().toUri());
-        return FileStore.packageName(file);
-    }
-
-    private static final Path FILE_NOT_FOUND = Paths.get("");
-
-    private Path findPackagePrivateClass(String packageName, String className) {
-        for (Path file : FileStore.list(packageName)) {
-            Parser parse = Parser.parseFile(file);
-            for (Name candidate : parse.packagePrivateClasses()) {
-                if (candidate.contentEquals(className)) {
-                    return file;
-                }
-            }
-        }
-        return FILE_NOT_FOUND;
-    }
-
-    @Override
-    public void close() {
-        closed = true;
     }
 
     private static ReusableCompiler.Borrow batchTask(
@@ -172,6 +114,87 @@ public class CompileBatch implements AutoCloseable {
                 "-Xlint:static");
 
         return list;
+    }
+
+    /**
+     * If the compilation failed because javac didn't find some package-private files in source
+     * files with different names, list those source files.
+     */
+    Set<Path> needsAdditionalSources() {
+        // Check for "class not found errors" that refer to package private classes
+        Set<Path> addFiles = new HashSet<Path>();
+        for (Diagnostic err : parent.diagnostics) {
+            if (!err.getCode().equals("compiler.err.cant.resolve.location")) {
+                continue;
+            }
+            if (!isValidFileRange(err)) {
+                continue;
+            }
+            String className = errorText(err);
+            String packageName = packageName(err);
+            Path location = findPackagePrivateClass(packageName, className);
+            if (location != FILE_NOT_FOUND) {
+                addFiles.add(location);
+            }
+        }
+        return addFiles;
+    }
+
+    private String errorText(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
+        Path file = Paths.get(err.getSource().toUri());
+        CharSequence contents = FileStore.contents(file);
+        int begin = (int) err.getStartPosition();
+        int end = (int) err.getEndPosition();
+        return substring(contents, begin, end);
+    }
+
+    private String substring(CharSequence source, int start, int end) {
+        final StringBuilder sb = new StringBuilder();
+        if (source == null) {
+            return sb.toString();
+        }
+
+        if (start > end || start < 0 || end >= source.length()) {
+            throw new IndexOutOfBoundsException(
+                    String.format(
+                            Locale.ROOT,
+                            "length=%d, start=%d, end=%d",
+                            source.length(),
+                            start,
+                            end));
+        }
+
+        if (source instanceof String) {
+            return ((String) source).substring(start, end);
+        }
+
+        for (int i = start; i < end; i++) {
+            sb.append(source.charAt(i));
+        }
+
+        return sb.toString();
+    }
+
+    private String packageName(javax.tools.Diagnostic<? extends javax.tools.JavaFileObject> err) {
+        Path file = Paths.get(err.getSource().toUri());
+        return FileStore.packageName(file);
+    }
+
+    private Path findPackagePrivateClass(String packageName, String className) {
+        for (Path file : FileStore.list(packageName)) {
+            Parser parse = Parser.parseFile(file);
+            for (Name candidate : parse.packagePrivateClasses()) {
+                if (candidate.contentEquals(className)) {
+                    return file;
+                }
+            }
+        }
+        return FILE_NOT_FOUND;
+    }
+
+    @Override
+    public void close() {
+        closed = true;
     }
 
     private boolean isValidFileRange(javax.tools.Diagnostic<? extends JavaFileObject> d) {
