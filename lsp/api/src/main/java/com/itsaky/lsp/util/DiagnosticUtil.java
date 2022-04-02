@@ -18,11 +18,9 @@
 package com.itsaky.lsp.util;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
-
 import java.util.Collections;
 import java.util.List;
 

@@ -19,26 +19,22 @@ package com.itsaky.androidide.views.editor;
 import android.annotation.SuppressLint;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.models.CodeActionItem;
-
+import io.github.rosemoe.sora.event.ClickEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import io.github.rosemoe.sora.event.ClickEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
 /**
  * Text action mode actions for the editor.
