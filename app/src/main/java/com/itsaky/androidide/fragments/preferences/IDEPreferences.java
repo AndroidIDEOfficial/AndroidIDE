@@ -17,8 +17,6 @@
  */
 package com.itsaky.androidide.fragments.preferences;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,7 +41,7 @@ public class IDEPreferences extends BasePreferenceFragment
     public static final String KEY_ISSUES = "idepref_issues";
     public static final String KEY_CHANGELOG = "idepref_changelog";
     public static final String KEY_ABOUT = "idepref_about";
-    private static final Logger LOG = instance("IDEPreferences");
+    private static final Logger LOG = Logger.newInstance ("IDEPreferences");
     private GeneralPreferences mGeneralPrefs;
     private BuildPreferences mBuildPreferences;
     private EditorPreferences mEditorPreferences;

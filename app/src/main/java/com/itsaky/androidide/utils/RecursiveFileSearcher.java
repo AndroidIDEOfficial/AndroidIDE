@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  */
 public class RecursiveFileSearcher {
 
-    private static final Logger logger = Logger.instance("RecursiveFileSearcher");
+    private static final Logger logger = Logger.newInstance ("RecursiveFileSearcher");
 
     /**
      * Search the given text in files recursively in given search directories

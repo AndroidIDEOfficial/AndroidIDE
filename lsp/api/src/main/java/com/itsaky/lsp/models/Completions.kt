@@ -72,7 +72,7 @@ data class CompletionItem(@JvmField var label: String,
     )
     
     companion object {
-        private val LOG = Logger.instance("CompletionItem")
+        private val LOG = Logger.newInstance("CompletionItem")
     }
     
     fun setLabel(label: String) {

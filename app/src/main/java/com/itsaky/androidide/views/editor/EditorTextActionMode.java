@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
 
-    private static final Logger LOG = Logger.instance("EditorTextActionMode");
+    private static final Logger LOG = Logger.newInstance ("EditorTextActionMode");
     private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<>();
     private IDEEditor editor;
     private ActionMode actionMode;

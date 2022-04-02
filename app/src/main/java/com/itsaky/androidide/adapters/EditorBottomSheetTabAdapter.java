@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.adapters;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
@@ -37,7 +35,7 @@ import java.util.List;
 
 public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
 
-    private static final Logger LOG = instance("EditorBottomSheetTabAdapter");
+    private static final Logger LOG = Logger.newInstance ("EditorBottomSheetTabAdapter");
     private final List<Tab> fragments;
 
     public EditorBottomSheetTabAdapter(@NonNull FragmentActivity fragmentActivity) {

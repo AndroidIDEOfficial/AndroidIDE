@@ -54,7 +54,7 @@ public class WidgetDragListener implements View.OnDragListener {
 
     public static final String ANDROID_NS = "android";
 
-    private static final Logger LOG = Logger.instance("WidgetDragListener");
+    private static final Logger LOG = Logger.newInstance ("WidgetDragListener");
 
     public WidgetDragListener(
             @NonNull Context context, IViewGroup viewGroup, OnViewAddedListener addedListener) {

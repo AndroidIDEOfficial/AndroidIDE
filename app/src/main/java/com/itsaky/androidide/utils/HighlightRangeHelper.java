@@ -134,5 +134,5 @@ public class HighlightRangeHelper {
         return false;
     }
 
-    private static final Logger LOG = Logger.instance("HighlightRangeHelper");
+    private static final Logger LOG = Logger.newInstance ("HighlightRangeHelper");
 }

@@ -34,7 +34,7 @@ import org.xmlpull.v1.XmlPullParser;
  */
 public class StateListParser extends IDrawableParser {
 
-    private static final Logger LOG = Logger.instance("StateListParser");
+    private static final Logger LOG = Logger.newInstance ("StateListParser");
 
     protected StateListParser(
             XmlPullParser parser,

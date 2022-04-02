@@ -61,7 +61,7 @@ import java.util.Objects;
 public class IDELanguageClientImpl implements ILanguageClient {
 
     protected static final Gson gson = new Gson();
-    protected static final Logger LOG = Logger.instance("AbstractLanguageClient");
+    protected static final Logger LOG = Logger.newInstance ("AbstractLanguageClient");
     private static IDELanguageClientImpl mInstance;
     private final Map<File, List<DiagnosticItem>> diagnostics = new HashMap<>();
     protected EditorActivityProvider activityProvider;

@@ -26,7 +26,7 @@ import java.util.concurrent.CompletionException;
 
 public class TaskExecutor {
 
-    private final Logger LOG = Logger.instance("TaskExecutor");
+    private final Logger LOG = Logger.newInstance ("TaskExecutor");
 
     public <R> void executeAsync(Callable<R> callable, Callback<R> callback) {
         CompletableFuture.supplyAsync(

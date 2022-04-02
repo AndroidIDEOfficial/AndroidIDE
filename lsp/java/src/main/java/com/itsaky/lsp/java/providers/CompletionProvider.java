@@ -154,7 +154,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         "float",
         "double",
     };
-    private static final Logger LOG = Logger.instance("JavaCompletionProvider");
+    private static final Logger LOG = Logger.newInstance ("JavaCompletionProvider");
     private final CompilerProvider compiler;
     private Path completingFile;
     private long cursor;

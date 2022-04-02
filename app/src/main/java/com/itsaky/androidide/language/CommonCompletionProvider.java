@@ -62,7 +62,7 @@ public class CommonCompletionProvider {
                 String s2 = p2.getSortText() == null ? p2.getLabel() : p2.getSortText();
                 return s1.compareTo(s2);
             };
-    private static final Logger LOG = Logger.instance("CommonCompletionProvider");
+    private static final Logger LOG = Logger.newInstance ("CommonCompletionProvider");
     private final ILanguageServer server;
     private CompletableFuture<CompletionResult> future;
 

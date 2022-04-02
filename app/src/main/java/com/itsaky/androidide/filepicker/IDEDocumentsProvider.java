@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.filepicker;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -56,7 +54,7 @@ import java.util.LinkedList;
 public class IDEDocumentsProvider extends DocumentsProvider {
 
     private static final String ALL_MIME_TYPES = "*/*";
-    private static final Logger LOG = instance("IDEDocumentsProvider");
+    private static final Logger LOG = Logger.newInstance ("IDEDocumentsProvider");
     private static final File BASE_DIR = getBaseDir();
     // The default columns to return information about a root if no specific
     // columns are requested in a query.

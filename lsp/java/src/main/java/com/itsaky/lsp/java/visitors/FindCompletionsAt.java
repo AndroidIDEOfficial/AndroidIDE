@@ -139,5 +139,5 @@ public class FindCompletionsAt extends TreePathScanner<TreePath, Long> {
         return b;
     }
 
-    private static final Logger LOG = Logger.instance("FindCompletionsAt");
+    private static final Logger LOG = Logger.newInstance ("FindCompletionsAt");
 }

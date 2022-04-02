@@ -51,7 +51,7 @@ public class CommonParseUtils {
     protected IResourceTable resourceFinder;
     protected final DisplayMetrics displayMetrics;
 
-    private static final Logger LOG = Logger.instance("CommonParseUtils");
+    private static final Logger LOG = Logger.newInstance ("CommonParseUtils");
 
     public CommonParseUtils(@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         this.resourceFinder = resourceFinder;

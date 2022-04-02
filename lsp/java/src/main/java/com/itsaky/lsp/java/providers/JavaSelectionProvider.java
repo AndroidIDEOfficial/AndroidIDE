@@ -32,7 +32,7 @@ import com.sun.source.tree.CompilationUnitTree;
  */
 public class JavaSelectionProvider {
 
-    private static final Logger LOG = Logger.instance("JavaSelectionProvider");
+    private static final Logger LOG = Logger.newInstance ("JavaSelectionProvider");
     private final CompilerProvider compiler;
 
     public JavaSelectionProvider(CompilerProvider compiler) {

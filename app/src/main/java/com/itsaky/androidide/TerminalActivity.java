@@ -62,7 +62,7 @@ import org.json.JSONException;
 public class TerminalActivity extends StudioActivity {
 
     public static final String KEY_WORKING_DIRECTORY = "terminal_workingDirectory";
-    private static final Logger LOG = Logger.instance("TerminalActivity");
+    private static final Logger LOG = Logger.newInstance ("TerminalActivity");
     private static final byte[] SOURCES_LIST_CONTENT =
             "deb https://androidide.com/packages/ stable main".getBytes();
     private final Client client = new Client();

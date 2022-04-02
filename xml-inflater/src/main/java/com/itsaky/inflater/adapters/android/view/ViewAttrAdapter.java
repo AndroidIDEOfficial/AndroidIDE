@@ -45,7 +45,7 @@ import com.itsaky.xml.INamespace;
  */
 public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapter {
 
-    protected static final Logger LOG = Logger.instance("BaseViewAttrAdapter");
+    protected static final Logger LOG = Logger.newInstance ("BaseViewAttrAdapter");
 
     public ViewAttrAdapter(@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super(resourceFinder, displayMetrics);

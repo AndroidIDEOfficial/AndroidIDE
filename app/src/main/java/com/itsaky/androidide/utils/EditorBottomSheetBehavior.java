@@ -30,7 +30,7 @@ import com.itsaky.androidide.databinding.LayoutEditorBottomSheetBinding;
 public class EditorBottomSheetBehavior<V extends View> extends BottomSheetBehavior<V> {
 
     private LayoutEditorBottomSheetBinding binding;
-    private static final Logger LOG = Logger.instance("EditorBottomSheetBehavior");
+    private static final Logger LOG = Logger.newInstance ("EditorBottomSheetBehavior");
 
     public EditorBottomSheetBehavior(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);

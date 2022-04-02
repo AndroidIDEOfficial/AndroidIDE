@@ -38,7 +38,7 @@ import org.antlr.v4.runtime.Token;
 
 public class GroovyLanguage extends IDELanguage {
 
-    private static final Logger LOG = Logger.instance("GroovyLanguage");
+    private static final Logger LOG = Logger.newInstance ("GroovyLanguage");
     private final GroovyAnalyzer analyzer;
     private final GroovyAutoComplete completer;
     private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};

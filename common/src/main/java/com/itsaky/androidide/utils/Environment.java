@@ -40,7 +40,7 @@ public final class Environment {
     public static final String DEFAULT_HOME = DEFAULT_ROOT + "/framework";
     private static final String DEFAULT_JAVA_HOME = DEFAULT_HOME + "/jdk";
     private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
-    private static final Logger LOG = Logger.instance("Environment");
+    private static final Logger LOG = Logger.newInstance ("Environment");
     private static final List<String> blacklist = new ArrayList<>();
     public static File ROOT;
     public static File SYSROOT;

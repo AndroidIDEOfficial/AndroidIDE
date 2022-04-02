@@ -43,7 +43,7 @@ import org.antlr.v4.runtime.Token;
 
 public class GroovyAnalyzer extends SimpleAnalyzeManager<Void> {
 
-    private static final Logger LOG = Logger.instance("GroovyAnalyzer");
+    private static final Logger LOG = Logger.newInstance ("GroovyAnalyzer");
 
     @Override
     protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {

@@ -34,8 +34,6 @@
 
 package com.itsaky.lsp.java.compiler;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
 import androidx.annotation.NonNull;
 import com.itsaky.androidide.utils.Logger;
 import java.util.concurrent.Semaphore;
@@ -44,7 +42,7 @@ import kotlin.jvm.functions.Function1;
 
 public class SynchronizedTask {
 
-    private static final Logger LOG = instance("SynchronizedTask");
+    private static final Logger LOG = Logger.newInstance ("SynchronizedTask");
     private final Semaphore semaphore = new Semaphore(1);
     private volatile boolean isWriting;
     private CompileTask task;

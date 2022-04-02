@@ -68,7 +68,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
 
     private ContextProvider contextProvider;
 
-    private static final Logger LOG = Logger.instance("XMLLayoutInflater");
+    private static final Logger LOG = Logger.newInstance ("XMLLayoutInflater");
     public static final String ATTR_ADAPTER_SUFFIX = "AttrAdapter";
 
     XMLLayoutInflater(@NonNull LayoutInflaterConfiguration config) {

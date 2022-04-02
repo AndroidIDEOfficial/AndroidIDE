@@ -64,7 +64,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
-    private static final Logger LOG = Logger.instance("JavaLanguageServer");
+    private static final Logger LOG = Logger.newInstance ("JavaLanguageServer");
     private final AnalyzeTimer analyzeTimer;
     private ILanguageClient client;
     private IServerSettings settings;

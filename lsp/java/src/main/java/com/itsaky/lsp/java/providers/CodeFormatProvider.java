@@ -17,8 +17,6 @@
 
 package com.itsaky.lsp.java.providers;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
 import androidx.annotation.NonNull;
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
@@ -37,7 +35,7 @@ import java.io.Writer;
  */
 public class CodeFormatProvider {
 
-    private static final Logger LOG = instance("JavaCodeFormatProvider");
+    private static final Logger LOG = Logger.newInstance ("JavaCodeFormatProvider");
 
     private final JavaServerSettings settings;
 

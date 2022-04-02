@@ -141,5 +141,5 @@ public abstract class ApkGeneratingTask extends BaseGradleTask {
         return false;
     }
 
-    private static final Logger LOG = Logger.instance("ApkGeneratingTask");
+    private static final Logger LOG = Logger.newInstance ("ApkGeneratingTask");
 }

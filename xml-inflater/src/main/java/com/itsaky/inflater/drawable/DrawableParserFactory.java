@@ -45,7 +45,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
  */
 public abstract class DrawableParserFactory {
 
-    private static final Logger LOG = Logger.instance("IDrawableParser");
+    private static final Logger LOG = Logger.newInstance ("IDrawableParser");
 
     /**
      * Create a new drawable parser for the given file. If the given file is not an XML Document,

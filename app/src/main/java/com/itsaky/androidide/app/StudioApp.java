@@ -43,7 +43,7 @@ import java.util.concurrent.CompletionException;
 
 public class StudioApp extends BaseApplication {
 
-    private static final Logger LOG = Logger.instance("StudioApp");
+    private static final Logger LOG = Logger.newInstance ("StudioApp");
     private static StudioApp instance;
     private static SDKInfo sdkInfo;
     private final ILanguageServer mJavaLanguageServer = new JavaLanguageServer();

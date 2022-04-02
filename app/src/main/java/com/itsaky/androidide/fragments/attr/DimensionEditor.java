@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  */
 public class DimensionEditor extends AbstractReferenceEditor {
 
-    private static final Logger LOG = Logger.instance("DimensionEditor");
+    private static final Logger LOG = Logger.newInstance ("DimensionEditor");
     public TextWatcherAdapter dimensionInputWatcher;
 
     private LayoutDimensionAttrEditorBinding binding;

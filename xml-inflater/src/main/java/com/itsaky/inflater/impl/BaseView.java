@@ -50,7 +50,7 @@ public abstract class BaseView implements IView {
     protected Object stored;
     private boolean isPlaceholder;
 
-    protected final Logger LOG = Logger.instance(getClass().getSimpleName());
+    protected final Logger LOG = Logger.newInstance (getClass().getSimpleName());
 
     public BaseView(String qualifiedName, View view) {
         this(qualifiedName, view, false);

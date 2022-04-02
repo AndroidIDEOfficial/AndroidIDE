@@ -48,7 +48,7 @@ import javax.lang.model.util.Elements;
 
 public class ImplementAbstractMethods extends Rewrite {
 
-    private static final Logger LOG = Logger.instance("main");
+    private static final Logger LOG = Logger.newInstance ("main");
     private final String className;
     private final String classFile;
     private final long position;

@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.fragments.attr;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -36,7 +34,7 @@ import java.util.Arrays;
  */
 public class FlagEditor extends FixedValueEditor {
 
-    private static final Logger LOG = instance("FlagEditor");
+    private static final Logger LOG = Logger.newInstance ("FlagEditor");
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

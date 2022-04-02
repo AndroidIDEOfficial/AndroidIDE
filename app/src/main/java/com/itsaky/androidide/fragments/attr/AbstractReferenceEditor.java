@@ -16,8 +16,6 @@
  */
 package com.itsaky.androidide.fragments.attr;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
 import android.text.Editable;
 import android.text.TextUtils;
 import android.widget.AutoCompleteTextView;
@@ -37,7 +35,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class AbstractReferenceEditor extends BaseValueEditorFragment {
 
-    private static final Logger LOG = instance("ReferenceEditor");
+    private static final Logger LOG = Logger.newInstance ("ReferenceEditor");
     public TextWatcherAdapter resInputWatcher;
 
     @Override

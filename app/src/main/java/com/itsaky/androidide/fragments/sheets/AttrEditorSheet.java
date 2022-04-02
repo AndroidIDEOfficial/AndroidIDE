@@ -59,7 +59,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
                 BaseValueEditorFragment.OnValueChangeListener {
 
     private static final List<IconTextListItem> VIEW_ACTIONS = new ArrayList<>();
-    private static final Logger LOG = Logger.instance("AttrBottomSheet");
+    private static final Logger LOG = Logger.newInstance ("AttrBottomSheet");
     private AttributeListSheet mAttrListSheet;
     private AttrValueEditorSheet mValueEditorSheet;
     private IView selectedView;

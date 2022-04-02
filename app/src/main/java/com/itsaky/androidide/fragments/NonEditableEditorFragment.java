@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.fragments;
 
-import static com.itsaky.androidide.utils.Logger.instance;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +33,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public abstract class NonEditableEditorFragment extends Fragment {
 
-    private static final Logger LOG = instance("NonEditableEditorFragment");
+    private static final Logger LOG = Logger.newInstance ("NonEditableEditorFragment");
     private FragmentNonEditableEditorBinding binding;
 
     @Nullable

@@ -30,7 +30,7 @@ import java.util.Locale;
 
 public class ProjectResourceTable implements IResourceTable {
 
-    private static final Logger LOG = Logger.instance("ProjectResourceFinder");
+    private static final Logger LOG = Logger.newInstance ("ProjectResourceFinder");
     private File resDir;
     private File color;
     private File layout;

@@ -259,5 +259,5 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
         return null;
     }
 
-    private static final Logger LOG = Logger.instance("main");
+    private static final Logger LOG = Logger.newInstance ("main");
 }

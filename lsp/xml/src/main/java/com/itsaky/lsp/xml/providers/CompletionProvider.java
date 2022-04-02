@@ -55,7 +55,7 @@ import org.jetbrains.annotations.Contract;
  */
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
-    private static final Logger LOG = Logger.instance("XMLCompletionProvider");
+    private static final Logger LOG = Logger.newInstance ("XMLCompletionProvider");
     private static final String APP_NS = "http://schemas.android.com/apk/res/auto";
     private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
     private static final String TOOLS_NS = "http://schemas.android.com/tools";

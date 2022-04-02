@@ -45,7 +45,7 @@ import javax.tools.JavaFileObject;
 
 public class DefinitionProvider {
     public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
-    private static final Logger LOG = Logger.instance("JavaDefinitionProvider");
+    private static final Logger LOG = Logger.newInstance ("JavaDefinitionProvider");
     private final CompilerProvider compiler;
     private Path file;
     private int line, column;

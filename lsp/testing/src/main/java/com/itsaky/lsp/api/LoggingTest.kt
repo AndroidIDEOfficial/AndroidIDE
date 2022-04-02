@@ -44,5 +44,5 @@ abstract class LoggingTest : BaseLanguageServerTest() {
     
     @Suppress("PropertyName")
     @JvmField
-    protected val LOG = Logger.instance(javaClass.simpleName)
+    protected val LOG = Logger.newInstance(javaClass.simpleName)
 }

@@ -55,7 +55,7 @@ public class ColorPickerView extends LinearLayout {
     private final LayoutColorPickerBinding binding;
     private final int DEFAULT_COLOR;
 
-    private static final Logger LOG = Logger.instance("ColorPickerView");
+    private static final Logger LOG = Logger.newInstance ("ColorPickerView");
 
     private final Slider.OnChangeListener mValueChangeListener =
             (slider, value, fromUser) -> {

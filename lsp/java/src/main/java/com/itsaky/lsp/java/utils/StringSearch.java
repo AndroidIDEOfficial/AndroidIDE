@@ -520,5 +520,5 @@ public class StringSearch {
 
     private static final ThreadLocal<char[]> SKIP_CHAR_BUFFER =
             ThreadLocal.withInitial(StringSearch::charArray);
-    private static final Logger LOG = Logger.instance("StringSearch");
+    private static final Logger LOG = Logger.newInstance ("StringSearch");
 }

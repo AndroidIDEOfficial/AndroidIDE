@@ -73,7 +73,7 @@ import org.jetbrains.annotations.Contract;
 public class IDEEditor extends CodeEditor {
 
     public static final String KEY_FILE = "editor_file";
-    private static final Logger LOG = Logger.instance("IDEEditor");
+    private static final Logger LOG = Logger.newInstance ("IDEEditor");
     private int mFileVersion;
     private File file;
     private ILanguageServer mLanguageServer;

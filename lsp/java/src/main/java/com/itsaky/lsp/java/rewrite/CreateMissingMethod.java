@@ -49,7 +49,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 public class CreateMissingMethod extends Rewrite {
-    private static final Logger LOG = Logger.instance("main");
+    private static final Logger LOG = Logger.newInstance ("main");
     final Path file;
     final int position;
     int argCount = -1;
