@@ -1030,43 +1030,13 @@ public class IDEEditor extends CodeEditor {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    private void showCodeActions() {
-        if (!(getEditorLanguage() instanceof IDELanguage)) {
+    public void showCodeActions(List<CodeActionItem> actions) {
+        if (actions == null || actions.isEmpty()) {
+            StudioApp.getInstance()
+                    .toast(getContext().getString(R.string.msg_no_actions), Toaster.Type.ERROR);
             return;
         }
-        final var lang = (IDELanguage) getEditorLanguage();
-        final var diagnostics = lang.getDiagnostics();
-        if (diagnostics.isEmpty()) {
-            LOG.error(
-                    "No diagnostic items available. Code actions will be shown based on cursor position.");
-        }
 
-        final var diagnostic =
-                DiagnosticUtil.binarySearchDiagnostic(diagnostics, getCursorAsLSPPosition());
-        if (!diagnostics.isEmpty() && diagnostic == null) {
-            LOG.info(
-                    "No diagnostic found at cursor position. Code actions will be shown based on cursor position.");
-        }
-
-        final var future = codeActions(Collections.singletonList(diagnostic));
-        final var pd =
-                ProgressDialog.show(getContext(), null, "Computing code actions...", true, false);
-        future.whenComplete(
-                ((codeActionResult, throwable) -> {
-                    dismissOnUiThread(pd);
-                    if (codeActionResult == null
-                            || codeActionResult.getActions().isEmpty()
-                            || throwable != null) {
-                        LOG.info("No code actions found.", throwable);
-                        return;
-                    }
-
-                    ThreadUtils.runOnUiThread(() -> showCodeActions(codeActionResult.getActions()));
-                }));
-    }
-
-    public void showCodeActions(List<CodeActionItem> actions) {
         final var titles = actions.stream().map(CodeActionItem::getTitle).toArray(String[]::new);
         final var builder = DialogUtils.newMaterialDialogBuilder(getContext());
         builder.setTitle("Select code action...");

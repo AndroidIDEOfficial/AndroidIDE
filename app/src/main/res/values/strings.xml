@@ -348,6 +348,7 @@
     <string name="idepref_java_useGoogleStyle_summary">Use Google Java Style code formatting configuration for formatting Java source code.</string>
     <string name="idepref_visiblePassword_title">Visible password flag</string>
     <string name="idepref_visiblePassword_summary">Use for visible password input type flag in editor. This makes sure that no suggestions are proposed by soft keyboard.</string>
+    <string name="msg_no_actions">No code actions found</string>
 </resources>
 
 
