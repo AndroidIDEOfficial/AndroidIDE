@@ -139,7 +139,7 @@ subprojects {
                 ignoreExitValue true
                 standardOutput out
                 errorOutput standardOutput
-                commandLine "git", "commit", "-m", "[Gradle] Format java source code in project ${project.displayName}"
+                commandLine "git", "commit", "-m", "[Gradle] Format java source code in ${project.displayName}"
             }
 
             if (exit.exitValue == 0) {
