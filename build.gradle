@@ -43,8 +43,7 @@ subprojects {
     }
 
     project.afterEvaluate {
-        task checkTranslations() {
-
+        tasks.register("checkTranslations", task -> {
             def php = new File("/usr/bin/php")
             if (!php.exists()) {
                 project.logger.lifecycle("'${php.absolutePath}' not found. Skipping translation check.")
@@ -95,7 +94,7 @@ subprojects {
             } else {
                 project.logger.info("Default strings.xml file does not exist for project '${project.name}'")
             }
-        }
+        })
 
         tasks.register("checkFormattingChanges", task -> {
             def exit = rootProject.exec {
@@ -150,14 +149,14 @@ subprojects {
             }
         })
 
-        task format(type: GoogleJavaFormat) {
+        tasks.register("format", GoogleJavaFormat, task -> {
             source 'src/main'
             source 'src/test'
             include '**/*.java'
             exclude '**/*_template.java'
-        }
+        })
 
-        task verifyFormatting(type: VerifyGoogleJavaFormat) {
+        tasks.register("verifyFormatting", VerifyGoogleJavaFormat, task -> {
             source 'src/main'
             source 'src/test'
             include '**/*.java'
@@ -166,7 +165,7 @@ subprojects {
 
             dependsOn project.tasks.withType(GoogleJavaFormat).iterator().next()
             finalizedBy tasks.getByName("checkFormattingChanges")
-        }
+        })
     }
 }
 
