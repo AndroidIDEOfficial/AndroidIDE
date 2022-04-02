@@ -28,7 +28,6 @@ import com.itsaky.androidide.models.ApkMetadata;
 import com.itsaky.androidide.tasks.BaseGradleTask;
 import com.itsaky.androidide.utils.JSONUtility;
 import com.itsaky.androidide.utils.Logger;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
