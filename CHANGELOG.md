@@ -6,7 +6,7 @@ This is the changelog of all the releases of AndroidIDE.
 
 ### Important notes
 <!--Breaking changes and other important stuff here-->
-(No notes)
+- As 64-bit installation does not work on Android 12 (due to [restriction by the OS](https://source.android.com/devices/tech/debug/tagged-pointers)), 32-bit build tools need to be installed when installing AndroidIDE on devices running Android 12.
 
 ### Additions
 <!--New features-->
@@ -20,6 +20,7 @@ This is the changelog of all the releases of AndroidIDE.
 - Preference to disable use of `TYPE_TEXT_VARIATION_VISIBLE_PASSWORD` flag in editor.
 - Automatically trigger completion when attributes are inserted from completion window.
 - Code actions
+- `DocumentsProvider` for providing access to files in `HOME` directory.
 
 ### Removals
 <!--Things that were removed-->
