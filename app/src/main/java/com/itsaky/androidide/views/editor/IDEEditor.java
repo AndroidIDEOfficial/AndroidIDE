@@ -1213,7 +1213,6 @@ public class IDEEditor extends CodeEditor {
                             result == null ? Collections.emptyList() : result.getActions();
                     actions.removeIf(codeAction -> codeAction.getChanges().isEmpty());
                     updateCodeActions(actions);
-                    LOG.debug("Code actions:", actions);
                     return !actions.isEmpty();
                 } catch (Throwable th) {
                     if (!(th instanceof TimeoutException)) {
@@ -1257,7 +1256,6 @@ public class IDEEditor extends CodeEditor {
                             ? Collections.emptyList()
                             : Collections.singletonList(diagnostic);
             final var params = new CodeActionParams(file, range, diagnostics);
-            LOG.debug("Requesting code actions for params:", params);
             try {
                 return editor.codeActions(params);
             } catch (Throwable e) {

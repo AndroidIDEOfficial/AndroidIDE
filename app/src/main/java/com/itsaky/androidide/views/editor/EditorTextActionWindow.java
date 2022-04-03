@@ -199,7 +199,6 @@ public class EditorTextActionWindow extends EditorPopupWindow
         setSize(
                 this.binding.getRoot().getMeasuredWidth(),
                 this.binding.getRoot().getMeasuredHeight());
-        LOG.debug("show() called");
         super.show();
     }
 
