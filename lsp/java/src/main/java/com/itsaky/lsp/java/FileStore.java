@@ -1,7 +1,9 @@
 package com.itsaky.lsp.java;
 
 import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
@@ -9,6 +11,8 @@ import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
+import com.itsaky.lsp.util.PathUtils;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -32,6 +36,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+
 import javax.lang.model.element.TypeElement;
 
 public class FileStore {
@@ -42,16 +47,7 @@ public class FileStore {
     /** javaSources[file] is the javaSources time of a .java source file. */
     // TODO organize by package name for speed of list(...)
     private static final TreeMap<Path, Info> javaSources = new TreeMap<>();
-
-    private static class Info {
-        final Instant modified;
-        final String packageName;
-
-        Info(Instant modified, String packageName) {
-            this.modified = modified;
-            this.packageName = packageName;
-        }
-    }
+    private static final Logger LOG = Logger.newInstance("FileStore");
 
     public static void shutdown() {
         workspaceRoots.clear();
@@ -79,16 +75,6 @@ public class FileStore {
             Files.walkFileTree(root, new FindJavaSources());
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public static class FindJavaSources extends SimpleFileVisitor<Path> {
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes _attrs) {
-            if (isJavaFile(file)) {
-                readInfoFromDisk(file);
-            }
-            return FileVisitResult.CONTINUE;
         }
     }
 
@@ -137,7 +123,7 @@ public class FileStore {
         for (Path dir = file.getParent(); dir != null; dir = dir.getParent()) {
             // Try to find a sibling with a package declaration
             for (Path sibling : javaSourcesIn(dir)) {
-                if (sibling.equals(file)) {
+                if (PathUtils.isSameFile(sibling, file)) {
                     continue;
                 }
                 String packageName = packageName(sibling);
@@ -335,6 +321,26 @@ public class FileStore {
         return Optional.empty();
     }
 
+    private static class Info {
+        final Instant modified;
+        final String packageName;
+
+        Info(Instant modified, String packageName) {
+            this.modified = modified;
+            this.packageName = packageName;
+        }
+    }
+
+    public static class FindJavaSources extends SimpleFileVisitor<Path> {
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes _attrs) {
+            if (isJavaFile(file)) {
+                readInfoFromDisk(file);
+            }
+            return FileVisitResult.CONTINUE;
+        }
+    }
+
     static class VersionedContent {
         final CharSequence content;
         final int version;
@@ -346,6 +352,4 @@ public class FileStore {
             this.version = version;
         }
     }
-
-    private static final Logger LOG = Logger.newInstance("FileStore");
 }

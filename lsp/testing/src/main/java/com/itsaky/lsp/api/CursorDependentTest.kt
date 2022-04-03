@@ -33,6 +33,7 @@ abstract class CursorDependentTest : LoggingTest() {
     private val cursorText = "@@cursor@@"
     
     fun requireCursor(): Int {
+        this.cursor = super.contents!!.indexOf(cursorText)
         assertThat(cursor).isGreaterThan(-1)
         return cursor
     }
@@ -59,10 +60,5 @@ abstract class CursorDependentTest : LoggingTest() {
         
         val pos = Content(contents!!).indexer.getCharPosition(cursor)
         return Position(pos.line, pos.column, pos.index)
-    }
-    
-    override fun openFile(fileName: String) {
-        super.openFile(fileName)
-        this.cursor = super.contents!!.indexOf(cursorText)
     }
 }

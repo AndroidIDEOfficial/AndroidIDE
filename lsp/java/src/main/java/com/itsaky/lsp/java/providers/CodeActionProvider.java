@@ -19,8 +19,10 @@ package com.itsaky.lsp.java.providers;
 
 import android.text.TextUtils;
 import android.util.Pair;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -56,6 +58,9 @@ import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.api.ClientCodeWrapper;
 import com.sun.tools.javac.util.JCDiagnostic;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -68,6 +73,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -79,7 +85,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import org.jetbrains.annotations.Contract;
 
 public class CodeActionProvider {
 
@@ -322,7 +327,11 @@ public class CodeActionProvider {
                 final List<String> classes = compiler.publicTopLevelTypes();
 
                 for (int i = 0; i < classes.size(); i++) {
-                    final String klass = classes.get(i);
+                    String klass = classes.get(i);
+                    if (klass.contains("/")) {
+                        klass = klass.replace("/", ".");
+                    }
+
                     if (!klass.endsWith("." + simpleName)) {
                         continue;
                     }

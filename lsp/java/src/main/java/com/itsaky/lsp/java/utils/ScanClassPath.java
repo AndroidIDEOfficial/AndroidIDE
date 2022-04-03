@@ -18,38 +18,48 @@
 package com.itsaky.lsp.java.utils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.common.reflect.ClassPath;
 import com.itsaky.androidide.utils.Logger;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Stream;
-import jdk.internal.jrtfs.JrtFileSystemProvider;
 
 public class ScanClassPath {
 
     private static final Logger LOG = Logger.newInstance("ScanClassPath");
 
-    public static Set<String> jdkTopLevelClasses() {
+    public Set<String> jdkTopLevelClasses() {
         LOG.info("Searching for top-level classes in the JDK");
 
         Set<String> classes = new TreeSet<>();
         try {
-            final FileSystem fs =
-                    new JrtFileSystemProvider()
-                            .newFileSystem(URI.create("jrt:/"), Collections.emptyMap());
+            final FileSystem fs = getJRTFileSystem();
+            if (fs == null) {
+                LOG.error("Unable to create an instance of JRTFileSystem");
+                return classes;
+            }
+
             final Path moduleRoot = fs.getPath("/modules/java.base/");
             try (Stream<Path> stream = Files.walk(moduleRoot)) {
                 final Iterator<Path> it = stream.iterator();
@@ -66,8 +76,8 @@ public class ScanClassPath {
             } catch (IOException e) {
                 LOG.error("An error occurred while indexing module 'java.base'", e);
             }
-        } catch (IOException e) {
-            LOG.error("Unable to create an instance of JRTFileSystem");
+        } catch (Throwable e) {
+            LOG.error("Unable to create an instance of JRTFileSystem", e);
         }
 
         LOG.info(
@@ -77,14 +87,14 @@ public class ScanClassPath {
     }
 
     @SuppressWarnings("UnstableApiUsage")
-    public static Set<String> classPathTopLevelClasses(Set<Path> classPath) {
+    public Set<String> classPathTopLevelClasses(Set<Path> classPath) {
         LOG.info(
                 String.format(
                         Locale.getDefault(),
                         "Searching for top-level classes in %d classpath locations",
                         classPath.size()));
 
-        URL[] urls = classPath.stream().map(ScanClassPath::toUrl).toArray(URL[]::new);
+        URL[] urls = classPath.stream().map(this::toUrl).toArray(URL[]::new);
         ClassLoader classLoader = new URLClassLoader(urls, null);
 
         ClassPath scanner;
@@ -104,7 +114,26 @@ public class ScanClassPath {
         return classes;
     }
 
-    private static URL toUrl(@NonNull Path p) {
+    @Nullable
+    @Contract(" -> new")
+    public FileSystem getJRTFileSystem() throws Exception {
+        final URI uri = URI.create("jrt:/");
+        try {
+            // Tests run on the JVM, so we cannot directly access JRTFileSystemProvider
+            // But this method will work
+            return FileSystems.getFileSystem(uri);
+        } catch (Throwable th) {
+
+            // When on ART, JRT file system is not available
+            // So we create an instance of the FS manually
+            final Class<?> klass = Class.forName("jdk.internal.jrtfs.JrtFileSystemProvider");
+            final Method newFs = klass.getMethod("newFileSystem", URI.class, Map.class);
+            newFs.setAccessible(true);
+            return (FileSystem) newFs.invoke(klass.newInstance(), uri, Collections.emptyMap());
+        }
+    }
+
+    private URL toUrl(@NonNull Path p) {
         try {
             return p.toUri().toURL();
         } catch (MalformedURLException e) {

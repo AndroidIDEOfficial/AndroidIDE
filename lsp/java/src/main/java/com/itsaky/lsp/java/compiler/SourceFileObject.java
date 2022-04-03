@@ -18,10 +18,18 @@
 package com.itsaky.lsp.java.compiler;
 
 import com.itsaky.lsp.java.FileStore;
-import java.io.*;
+import com.itsaky.lsp.util.PathUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.Writer;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.Instant;
+
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
 import javax.tools.JavaFileObject;
@@ -45,11 +53,20 @@ public class SourceFileObject implements JavaFileObject {
         this.modified = modified;
     }
 
+    private static Kind kindFromExtension(String name) {
+        for (Kind candidate : Kind.values()) {
+            if (name.endsWith(candidate.extension)) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other.getClass() != SourceFileObject.class) return false;
         SourceFileObject that = (SourceFileObject) other;
-        return this.path.equals(that.path);
+        return PathUtils.isSameFile(this.path, that.path);
     }
 
     @Override
@@ -61,15 +78,6 @@ public class SourceFileObject implements JavaFileObject {
     public Kind getKind() {
         String name = path.getFileName().toString();
         return kindFromExtension(name);
-    }
-
-    private static Kind kindFromExtension(String name) {
-        for (Kind candidate : Kind.values()) {
-            if (name.endsWith(candidate.extension)) {
-                return candidate;
-            }
-        }
-        return null;
     }
 
     @Override

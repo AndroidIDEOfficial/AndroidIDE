@@ -27,6 +27,7 @@ import com.itsaky.lsp.java.utils.ScanClassPath;
 import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarations;
 import com.sun.source.tree.CompilationUnitTree;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -43,6 +44,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
@@ -52,8 +54,10 @@ public class JavaCompilerService implements CompilerProvider {
     private static final Cache<String, Boolean> cacheContainsWord = new Cache<>();
     private static final Cache<Void, List<String>> cacheContainsType = new Cache<>();
     private static final Logger LOG = Logger.newInstance("JavaCompilerService");
+    protected final ScanClassPath classPathScanner = new ScanClassPath();
     protected final Set<Path> classPath, docPath;
-    protected final Set<String> jdkClasses = ScanClassPath.jdkTopLevelClasses(), classPathClasses;
+    protected final Set<String> jdkClasses = classPathScanner.jdkTopLevelClasses(),
+            classPathClasses;
     protected final ReusableCompiler compiler = new ReusableCompiler();
     protected final SynchronizedTask synchronizedTask = new SynchronizedTask();
     protected final List<Diagnostic<? extends JavaFileObject>> diagnostics = new ArrayList<>();
@@ -69,7 +73,7 @@ public class JavaCompilerService implements CompilerProvider {
     public JavaCompilerService(Set<Path> classPath, Set<Path> docPath) {
         this.classPath = Collections.unmodifiableSet(classPath);
         this.docPath = Collections.unmodifiableSet(docPath);
-        this.classPathClasses = ScanClassPath.classPathTopLevelClasses(classPath);
+        this.classPathClasses = classPathScanner.classPathTopLevelClasses(classPath);
         this.fileManager = new SourceFileManager();
     }
 

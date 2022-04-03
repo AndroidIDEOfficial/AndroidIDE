@@ -18,15 +18,15 @@
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
-import com.itsaky.androidide.app.BaseApplication;
+
 import com.itsaky.lsp.java.FileStore;
-import com.itsaky.lsp.java.R;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.visitors.DiagnosticVisitor;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticSeverity;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.util.PathUtils;
 import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
@@ -37,6 +37,7 @@ import com.sun.source.tree.VariableTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
 import javax.tools.Diagnostic;
@@ -74,7 +76,7 @@ public class DiagnosticsProvider {
         CompilationUnitTree root = null;
         for (CompilationUnitTree tree : task.roots) {
             final Path path = Paths.get(tree.getSourceFile().toUri());
-            if (path.equals(file)) {
+            if (PathUtils.isSameFile(path, file)) {
                 root = tree;
                 break;
             }
@@ -132,7 +134,7 @@ public class DiagnosticsProvider {
         long start = pos.getStartPosition(root, path.getLeaf());
         long end = pos.getEndPosition(root, path.getLeaf());
         final DiagnosticItem d = new DiagnosticItem();
-        d.setMessage(BaseApplication.getBaseInstance().getString(R.string.msg_not_thrown, name));
+        d.setMessage(String.format("'%s' is not thrown in the body of the method", name));
         d.setRange(new Range(getPosition(start, lines), getPosition(end, lines)));
         d.setCode("unused_throws");
         d.setSeverity(DiagnosticSeverity.INFO);
@@ -172,7 +174,7 @@ public class DiagnosticsProvider {
             end = start + name.length();
         }
 
-        String message = BaseApplication.getBaseInstance().getString(R.string.msg_not_used, name);
+        String message = String.format("'%s' is not used", name);
         String code;
         DiagnosticSeverity severity;
         if (leaf instanceof VariableTree) {
