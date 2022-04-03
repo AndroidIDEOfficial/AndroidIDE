@@ -79,9 +79,7 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
     }
 
     /** Need RuntimePermission "accessSystemModules" to create or get jrt:/ */
-    private void checkPermission() {
-    
-    }
+    private void checkPermission() {}
 
     private void checkUri(URI uri) {
         if (!uri.getScheme().equalsIgnoreCase(getScheme())) {

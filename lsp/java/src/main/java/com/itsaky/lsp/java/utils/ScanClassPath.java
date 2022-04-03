@@ -18,10 +18,8 @@
 package com.itsaky.lsp.java.utils;
 
 import androidx.annotation.NonNull;
-
 import com.google.common.reflect.ClassPath;
 import com.itsaky.androidide.utils.Logger;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,7 +36,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Stream;
-
 import jdk.internal.jrtfs.JrtFileSystemProvider;
 
 public class ScanClassPath {
