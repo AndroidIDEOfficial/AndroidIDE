@@ -18,12 +18,10 @@
 package com.itsaky.lsp.java.actions;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Range;
-
 import java.nio.file.Path;
 import java.util.List;
 

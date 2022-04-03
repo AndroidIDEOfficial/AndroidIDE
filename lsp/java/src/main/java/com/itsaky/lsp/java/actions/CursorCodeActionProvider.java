@@ -40,7 +40,6 @@ import static com.itsaky.lsp.java.utils.CodeActionUtils.isBlankLine;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.isInMethod;
 
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -58,7 +57,6 @@ import com.sun.source.tree.LineMap;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
-
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -68,7 +66,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
-
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;

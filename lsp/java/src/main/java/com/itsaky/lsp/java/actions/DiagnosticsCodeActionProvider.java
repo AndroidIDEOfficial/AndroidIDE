@@ -28,9 +28,7 @@ import static com.itsaky.lsp.java.utils.CodeActionUtils.unwrapJCDiagnostic;
 
 import android.text.TextUtils;
 import android.util.Pair;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -52,14 +50,12 @@ import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Range;
 import com.sun.tools.javac.util.JCDiagnostic;
-
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 

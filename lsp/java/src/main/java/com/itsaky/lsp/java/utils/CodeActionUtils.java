@@ -21,7 +21,6 @@ import static com.itsaky.androidide.utils.Logger.newInstance;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -40,19 +39,16 @@ import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.api.ClientCodeWrapper;
 import com.sun.tools.javac.util.JCDiagnostic;
-
-import org.jetbrains.annotations.Contract;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
+import org.jetbrains.annotations.Contract;
 
 /**
  * @author Akash Yadav
