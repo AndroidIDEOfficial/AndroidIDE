@@ -95,6 +95,24 @@ subprojects {
                 project.logger.info("Default strings.xml file does not exist for project '${project.name}'")
             }
         })
+        tasks.register("format", GoogleJavaFormat, task -> {
+            source 'src/main'
+            source 'src/test'
+            include '**/*.java'
+            exclude '**/*_template.java'
+
+            finalizedBy tasks.getByName("verifyFormatting")
+        })
+
+        tasks.register("verifyFormatting", VerifyGoogleJavaFormat, task -> {
+            source 'src/main'
+            source 'src/test'
+            include '**/*.java'
+            exclude '**/*_template.java'
+            ignoreFailures true
+
+            finalizedBy tasks.getByName("checkFormattingChanges")
+        })
 
         tasks.register("checkFormattingChanges", task -> {
             def exit = rootProject.exec {
@@ -138,7 +156,7 @@ subprojects {
                 ignoreExitValue true
                 standardOutput out
                 errorOutput standardOutput
-                commandLine "git", "commit", "-m", "[Gradle] Format java source code in ${project.displayName}"
+                commandLine "git", "commit", "-m", "[Gradle] Format java source code"
             }
 
             if (exit.exitValue == 0) {
@@ -148,26 +166,6 @@ subprojects {
                 println out.toString()
             }
         })
-
-        tasks.register("verifyFormatting", VerifyGoogleJavaFormat, task -> {
-            source 'src/main'
-            source 'src/test'
-            include '**/*.java'
-            exclude '**/*_template.java'
-            ignoreFailures true
-            
-            finalizedBy tasks.getByName("checkFormattingChanges")
-        })
-
-        tasks.register("format", GoogleJavaFormat, task -> {
-            source 'src/main'
-            source 'src/test'
-            include '**/*.java'
-            exclude '**/*_template.java'
-
-            finalizedBy tasks.getByName("verifyFormatting")
-        })
-
     }
 }
 
