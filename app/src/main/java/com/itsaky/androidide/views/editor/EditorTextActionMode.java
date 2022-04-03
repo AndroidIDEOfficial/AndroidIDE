@@ -19,22 +19,23 @@ package com.itsaky.androidide.views.editor;
 import android.annotation.SuppressLint;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
 import androidx.appcompat.view.menu.MenuBuilder;
+
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.models.CodeActionItem;
-import io.github.rosemoe.sora.event.ClickEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import io.github.rosemoe.sora.event.ClickEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
 /**
  * Text action mode actions for the editor.
@@ -44,7 +45,6 @@ import java.util.stream.Collectors;
 public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
 
     private static final Logger LOG = Logger.newInstance("EditorTextActionMode");
-    private final List<CodeActionItem> codeActions = new ArrayList<>(0);
     private final Set<IDEEditor.TextAction> registeredActions = new TreeSet<>();
     private IDEEditor editor;
     private ActionMode actionMode;
@@ -127,18 +127,6 @@ public class EditorTextActionMode implements IDEEditor.ITextActionPresenter {
         this.editor = null;
         this.actionMode = null;
         this.unsubscribeEvents = true;
-    }
-
-    @Override
-    public void updateCodeActions(@NonNull List<CodeActionItem> actions) {
-        this.codeActions.clear();
-        this.codeActions.addAll(actions);
-    }
-
-    @NonNull
-    @Override
-    public List<CodeActionItem> getActions() {
-        return codeActions;
     }
 
     public void clearRegisteredActions() {

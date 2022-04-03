@@ -16,8 +16,6 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import static com.itsaky.androidide.views.editor.IDEEditor.TextAction.QUICKFIX;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -25,10 +23,12 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
@@ -61,20 +61,21 @@ import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.DiagnosticUtil;
 import com.itsaky.lsp.util.PathUtils;
 import com.itsaky.toaster.Toaster;
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.event.Unsubscribe;
-import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import org.jetbrains.annotations.Contract;
+
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.event.Unsubscribe;
+import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 
 public class IDEEditor extends CodeEditor {
 
@@ -1006,10 +1007,29 @@ public class IDEEditor extends CodeEditor {
                 expandSelection();
                 break;
             case TextAction.QUICKFIX:
-                showCodeActions(mTextActionPresenter.getActions());
+                getTextActionPresenter()
+                        .computeCodeActions(this)
+                        .whenComplete(
+                                ((codeActionResult, throwable) -> {
+                                    if (codeActionResult == null
+                                            || throwable != null
+                                            || codeActionResult.getActions().isEmpty()) {
+                                        LOG.info("No code actions found");
+                                        notifyNoCodeActions();
+                                        return;
+                                    }
+
+                                    ThreadUtils.runOnUiThread(
+                                            () -> showCodeActions(codeActionResult.getActions()));
+                                }));
                 getTextActionPresenter().dismiss();
                 break;
         }
+    }
+
+    private void notifyNoCodeActions() {
+        ThreadUtils.runOnUiThread(
+                () -> StudioApp.getInstance().toast(R.string.msg_no_actions, Toaster.Type.ERROR));
     }
 
     /** Ensures that all the windows are dismissed. */
@@ -1184,44 +1204,8 @@ public class IDEEditor extends CodeEditor {
          */
         void destroy();
 
-        /**
-         * Update the list of computed code actions.
-         *
-         * @param actions The new list of code actions.
-         */
-        void updateCodeActions(@NonNull List<CodeActionItem> actions);
-
-        /**
-         * Get the computed code actions.
-         *
-         * @return The list of code actions.
-         */
-        @NonNull
-        List<CodeActionItem> getActions();
-
         default boolean canShowAction(
                 @NonNull IDEEditor editor, @NonNull IDEEditor.TextAction action) {
-            if (action.id == QUICKFIX) {
-                try {
-                    // If code actions are not returned within 150ms, hide the action.
-                    final var future = computeCodeActions(editor);
-                    final var result = future.get(150, TimeUnit.MILLISECONDS);
-                    List<CodeActionItem> actions =
-                            result == null ? Collections.emptyList() : result.getActions();
-                    actions.removeIf(codeAction -> codeAction.getChanges().isEmpty());
-                    updateCodeActions(actions);
-                    return !actions.isEmpty();
-                } catch (Throwable th) {
-                    if (!(th instanceof TimeoutException)) {
-                        LOG.error("Unable to calculate code actions", th.getMessage());
-                    } else {
-                        LOG.error("Timeout while computing code actions");
-                    }
-
-                    return false;
-                }
-            }
-
             // all the actions are visible by default
             // so we need to get a confirmation from the editor
             if (action.visible) {
