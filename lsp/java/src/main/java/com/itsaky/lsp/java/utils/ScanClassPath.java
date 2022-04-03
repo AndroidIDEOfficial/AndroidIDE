@@ -18,19 +18,68 @@
 package com.itsaky.lsp.java.utils;
 
 import androidx.annotation.NonNull;
+
 import com.google.common.reflect.ClassPath;
 import com.itsaky.androidide.utils.Logger;
+
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Stream;
+
+import jdk.internal.jrtfs.JrtFileSystemProvider;
 
 public class ScanClassPath {
 
+    private static final Logger LOG = Logger.newInstance("ScanClassPath");
+
+    public static Set<String> jdkTopLevelClasses() {
+        LOG.info("Searching for top-level classes in the JDK");
+
+        Set<String> classes = new TreeSet<>();
+        try {
+            final FileSystem fs =
+                    new JrtFileSystemProvider()
+                            .newFileSystem(URI.create("jrt:/"), Collections.emptyMap());
+            final Path moduleRoot = fs.getPath("/modules/java.base/");
+            try (Stream<Path> stream = Files.walk(moduleRoot)) {
+                final Iterator<Path> it = stream.iterator();
+                while (it.hasNext()) {
+                    final Path classFile = it.next();
+                    final String relative = moduleRoot.relativize(classFile).toString();
+                    if (relative.endsWith(".class") && !relative.contains("$")) {
+                        final String trim =
+                                relative.substring(0, relative.length() - ".class".length());
+                        final String qualifiedName = trim.replace(File.separatorChar, '.');
+                        classes.add(qualifiedName);
+                    }
+                }
+            } catch (IOException e) {
+                LOG.error("An error occurred while indexing module 'java.base'", e);
+            }
+        } catch (IOException e) {
+            LOG.error("Unable to create an instance of JRTFileSystem");
+        }
+
+        LOG.info(
+                String.format(
+                        Locale.ROOT, "Found %d classes in the java platform", classes.size()));
+        return classes;
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
     public static Set<String> classPathTopLevelClasses(Set<Path> classPath) {
         LOG.info(
                 String.format(
@@ -42,7 +91,6 @@ public class ScanClassPath {
         ClassLoader classLoader = new URLClassLoader(urls, null);
 
         ClassPath scanner;
-
         try {
             scanner = ClassPath.from(classLoader);
         } catch (IOException e) {
@@ -66,6 +114,4 @@ public class ScanClassPath {
             throw new RuntimeException(e);
         }
     }
-
-    private static final Logger LOG = Logger.newInstance("ScanClassPath");
 }

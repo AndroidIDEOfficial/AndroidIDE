@@ -24,15 +24,31 @@
  */
 package jdk.internal.jrtfs;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.channels.*;
-import java.nio.file.*;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.AccessMode;
+import java.nio.file.CopyOption;
+import java.nio.file.DirectoryStream;
 import java.nio.file.DirectoryStream.Filter;
-import java.nio.file.attribute.*;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.ProviderMismatchException;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -64,11 +80,7 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
 
     /** Need RuntimePermission "accessSystemModules" to create or get jrt:/ */
     private void checkPermission() {
-        SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            RuntimePermission perm = new RuntimePermission("accessSystemModules");
-            sm.checkPermission(perm);
-        }
+    
     }
 
     private void checkUri(URI uri) {

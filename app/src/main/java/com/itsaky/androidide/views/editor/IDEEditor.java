@@ -1213,10 +1213,13 @@ public class IDEEditor extends CodeEditor {
                             result == null ? Collections.emptyList() : result.getActions();
                     actions.removeIf(codeAction -> codeAction.getChanges().isEmpty());
                     updateCodeActions(actions);
+                    LOG.debug("Code actions:", actions);
                     return !actions.isEmpty();
                 } catch (Throwable th) {
                     if (!(th instanceof TimeoutException)) {
-                        LOG.error("Unable to calculate code actions", th);
+                        LOG.error("Unable to calculate code actions", th.getMessage());
+                    } else {
+                        LOG.error("Timeout while computing code actions");
                     }
 
                     return false;
@@ -1233,38 +1236,33 @@ public class IDEEditor extends CodeEditor {
         }
 
         default CompletableFuture<CodeActionResult> computeCodeActions(IDEEditor editor) {
-            return CompletableFuture.supplyAsync(
-                    () -> {
-                        if (editor.getFile() == null) {
-                            throw new CompletionException(
-                                    new NullPointerException(
-                                            "Cannot compute code actions. "
-                                                    + "No file is set to editor."));
-                        }
+            if (editor.getFile() == null) {
+                throw new CompletionException(
+                        new NullPointerException(
+                                "Cannot compute code actions. " + "No file is set to editor."));
+            }
 
-                        final var file = editor.getFile().toPath();
-                        final var range = editor.getCursorRange();
-                        List<DiagnosticItem> diagnostics =
-                                editor.getEditorLanguage() instanceof IDELanguage
-                                        ? ((IDELanguage) editor.getEditorLanguage())
-                                                .getDiagnostics()
-                                        : Collections.emptyList();
+            final var file = editor.getFile().toPath();
+            final var range = editor.getCursorRange();
+            List<DiagnosticItem> diagnostics =
+                    editor.getEditorLanguage() instanceof IDELanguage
+                            ? ((IDELanguage) editor.getEditorLanguage()).getDiagnostics()
+                            : Collections.emptyList();
 
-                        final var diagnostic =
-                                DiagnosticUtil.binarySearchDiagnostic(
-                                        diagnostics, editor.getCursorAsLSPPosition());
-                        diagnostics =
-                                diagnostic == null
-                                        ? Collections.emptyList()
-                                        : Collections.singletonList(diagnostic);
-                        final var params = new CodeActionParams(file, range, diagnostics);
-                        LOG.debug("Requesting code actions for params:", params);
-                        try {
-                            return editor.codeActions(params).get();
-                        } catch (Throwable e) {
-                            throw new CompletionException(e);
-                        }
-                    });
+            final var diagnostic =
+                    DiagnosticUtil.binarySearchDiagnostic(
+                            diagnostics, editor.getCursorAsLSPPosition());
+            diagnostics =
+                    diagnostic == null
+                            ? Collections.emptyList()
+                            : Collections.singletonList(diagnostic);
+            final var params = new CodeActionParams(file, range, diagnostics);
+            LOG.debug("Requesting code actions for params:", params);
+            try {
+                return editor.codeActions(params);
+            } catch (Throwable e) {
+                throw new CompletionException(e);
+            }
         }
     }
 
