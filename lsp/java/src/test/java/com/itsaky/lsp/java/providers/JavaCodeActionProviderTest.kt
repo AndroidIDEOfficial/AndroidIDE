@@ -23,7 +23,6 @@ import com.itsaky.lsp.api.LoggingTest
 import com.itsaky.lsp.java.JavaLanguageServerProvider
 import com.itsaky.lsp.models.CodeActionParams
 import com.itsaky.lsp.models.DiagnosticItem
-import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.models.Range
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,16 +47,6 @@ class JavaCodeActionProviderTest : LoggingTest() {
         val diagnostics = server.analyze(file!!).filter { it.code == "compiler.err.cant.resolve.location" }
         val actions = actions(diagnostics)
         assertThat(actions).contains("Import 'java.util.stream.Stream'")
-    }
-    
-    @Test
-    fun testGenerateSettersAndGetters() {
-        openFile("GenerateSettersAndGettersTest")
-        
-        val range = Range(Position(4, 4), Position(7, 30))
-        val actions = actions(range)
-        
-        assertThat(actions).contains("Create setters/getters")
     }
     
     private fun actions(range: Range): List<String> = actions(range, Collections.emptyList())
