@@ -23,11 +23,13 @@ import com.itsaky.lsp.api.LoggingTest
 import com.itsaky.lsp.java.JavaLanguageServerProvider
 import com.itsaky.lsp.models.CodeActionParams
 import com.itsaky.lsp.models.DiagnosticItem
+import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.models.Range
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.util.*
 
 /**
  * @author Akash Yadav
@@ -48,8 +50,22 @@ class JavaCodeActionProviderTest : LoggingTest() {
         assertThat(actions).contains("Import 'java.util.stream.Stream'")
     }
     
-    private fun actions(diagnostics: List<DiagnosticItem>): List<String> {
-        val params = CodeActionParams(file!!, Range(), diagnostics)
+    @Test
+    fun testGenerateSettersAndGetters() {
+        openFile("GenerateSettersAndGettersTest")
+        
+        val range = Range(Position(4, 4), Position(7, 30))
+        val actions = actions(range)
+        
+        assertThat(actions).contains("Create setters/getters")
+    }
+    
+    private fun actions(range: Range): List<String> = actions(range, Collections.emptyList())
+    private fun actions(diagnostics: List<DiagnosticItem>): List<String> =
+        actions(Range(), diagnostics)
+    
+    private fun actions(range: Range, diagnostics: List<DiagnosticItem>): List<String> {
+        val params = CodeActionParams(file!!, range, diagnostics)
         return server.codeActions(params).actions.map { it.title }
     }
     
