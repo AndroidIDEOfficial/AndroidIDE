@@ -1,9 +1,7 @@
 package com.itsaky.lsp.java;
 
 import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
@@ -12,7 +10,6 @@ import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.util.PathUtils;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -36,7 +33,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-
 import javax.lang.model.element.TypeElement;
 
 public class FileStore {
@@ -47,6 +43,7 @@ public class FileStore {
     /** javaSources[file] is the javaSources time of a .java source file. */
     // TODO organize by package name for speed of list(...)
     private static final TreeMap<Path, Info> javaSources = new TreeMap<>();
+
     private static final Logger LOG = Logger.newInstance("FileStore");
 
     public static void shutdown() {

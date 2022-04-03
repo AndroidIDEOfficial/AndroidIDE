@@ -19,12 +19,8 @@ package com.itsaky.lsp.java.utils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.google.common.reflect.ClassPath;
 import com.itsaky.androidide.utils.Logger;
-
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -44,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.Contract;
 
 public class ScanClassPath {
 

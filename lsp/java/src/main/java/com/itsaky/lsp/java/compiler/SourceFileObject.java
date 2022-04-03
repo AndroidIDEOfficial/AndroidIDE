@@ -19,7 +19,6 @@ package com.itsaky.lsp.java.compiler;
 
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.util.PathUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,7 +28,6 @@ import java.io.Writer;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.Instant;
-
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
 import javax.tools.JavaFileObject;
