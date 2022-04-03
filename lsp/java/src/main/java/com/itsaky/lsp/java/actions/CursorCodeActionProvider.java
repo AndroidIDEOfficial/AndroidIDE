@@ -49,7 +49,6 @@ import com.itsaky.lsp.java.rewrite.GenerateSettersAndGetters;
 import com.itsaky.lsp.java.rewrite.OverrideInheritedMethod;
 import com.itsaky.lsp.java.rewrite.Rewrite;
 import com.itsaky.lsp.java.utils.MethodPtr;
-import com.itsaky.lsp.java.visitors.FindMethodDeclarationAt;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.lsp.java.visitors.FindVariablesBetween;
 import com.itsaky.lsp.models.CodeActionItem;
@@ -57,7 +56,6 @@ import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.LineMap;
-import com.sun.source.tree.MethodTree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
 
@@ -170,9 +168,6 @@ public class CursorCodeActionProvider implements ActionProvider {
     @NonNull
     private Map<String, Rewrite> overrideInheritedMethods(
             @NonNull CompileTask task, Path file, long cursor) {
-
-        MethodTree methodTree = new FindMethodDeclarationAt(task.task).scan(task.root(), cursor);
-        if (methodTree != null) return Collections.emptyMap();
 
         final TreeMap<String, Rewrite> actions = new TreeMap<>();
         final Trees trees = Trees.instance(task.task);
