@@ -182,8 +182,10 @@ public class EditorTextActionWindow extends EditorPopupWindow
 
         final var dp8 = SizeUtils.dp2px(8);
         final var dp16 = dp8 * 2;
-        final var actions = new ArrayList<>(this.registeredActions);
-        actions.removeIf(action -> !canShowAction(editor, action));
+        final var actions =
+                this.registeredActions.stream()
+                        .filter(action -> canShowAction(editor, action))
+                        .collect(Collectors.toList());
         actionsList.setAdapter(new TextActionItemAdapter(actions, this::performTextAction));
         this.binding
                 .getRoot()
