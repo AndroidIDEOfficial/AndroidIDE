@@ -72,7 +72,7 @@ final class CodeWriter {
     int statementLine = -1;
 
     CodeWriter(Appendable out) {
-        this(out, "  ", Collections.emptySet(), Collections.emptySet());
+        this(out, "    ", Collections.emptySet(), Collections.emptySet());
     }
 
     CodeWriter(

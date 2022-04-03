@@ -45,11 +45,13 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
+import com.itsaky.lsp.java.rewrite.GenerateSettersAndGetters;
 import com.itsaky.lsp.java.rewrite.OverrideInheritedMethod;
 import com.itsaky.lsp.java.rewrite.Rewrite;
 import com.itsaky.lsp.java.utils.MethodPtr;
 import com.itsaky.lsp.java.visitors.FindMethodDeclarationAt;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
+import com.itsaky.lsp.java.visitors.FindVariablesBetween;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Range;
@@ -58,6 +60,8 @@ import com.sun.source.tree.LineMap;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
+import org.jetbrains.annotations.Contract;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -101,11 +105,11 @@ public class CursorCodeActionProvider implements ActionProvider {
         logCompilationTime(started);
 
         return synchronizedTask.get(
-                task -> writeActions(started, compiler, file, range, rewrites, task));
+                task -> provideActions(started, compiler, file, range, rewrites, task));
     }
 
     @NonNull
-    private List<CodeActionItem> writeActions(
+    private List<CodeActionItem> provideActions(
             Instant started,
             @NonNull CompilerProvider compiler,
             @NonNull Path file,
@@ -122,8 +126,15 @@ public class CursorCodeActionProvider implements ActionProvider {
         final long start = lines.getPosition(startLine, startColumn);
         final long end = lines.getPosition(endLine, endColumn);
 
-        if (isBlankLine(task.root(), start) && !isInMethod(task, start)) {
+        if (start != -1 && isBlankLine(task.root(), start) && !isInMethod(task, start)) {
             rewrites.putAll(overrideInheritedMethods(task, file, start));
+        }
+
+        if (start != -1 && end != -1) {
+            final List<TreePath> variables = findVariables(task, start, end);
+            if (!variables.isEmpty()) {
+                rewrites.putAll(createSettersAndGetters(file, task, variables));
+            }
         }
 
         List<CodeActionItem> actions = new ArrayList<>();
@@ -139,6 +150,21 @@ public class CursorCodeActionProvider implements ActionProvider {
         logActionTime(started, actions);
 
         return actions;
+    }
+
+    @NonNull
+    @Contract(pure = true)
+    private Map<String, ? extends Rewrite> createSettersAndGetters(
+            @NonNull Path file, CompileTask task, List<TreePath> variables) {
+        return Collections.singletonMap(
+                "Create setters/getters", new GenerateSettersAndGetters(file, task, variables));
+    }
+
+    @NonNull
+    private List<TreePath> findVariables(@NonNull CompileTask task, long start, long end) {
+        final FindVariablesBetween scanner = new FindVariablesBetween(task.task, start, end);
+        scanner.scan(task.root(), null);
+        return scanner.getPaths();
     }
 
     @NonNull
