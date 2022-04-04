@@ -149,7 +149,7 @@ boolean doJavaFormat(Formatter formatter, String path) {
 
         byte[] utf8Encoded = formatted.getBytes(StandardCharsets.UTF_8.name())
         Files.write(file, utf8Encoded)
-        getLogger().lifecycle("{}: Formatted successfully!", file)
+        println("${path}: Formatted successfully!")
         return true
     } catch (Throwable th) {
         getLogger().error("Failed to format ${path}", th)
@@ -158,62 +158,63 @@ boolean doJavaFormat(Formatter formatter, String path) {
 }
 
 task formatJavaSources() {
-    def jarName = "google-java-format-1.15.0-all-deps"
-    def jar = rootProject.file(".tools/${jarName}.jar")
+    doLast {
+        def jarName = "google-java-format-1.15.0-all-deps"
+        def jar = rootProject.file(".tools/${jarName}.jar")
 
-    if (!jar.exists()) {
-        getLogger().info("google-java-format JAR file not found. Skipping format task...")
-        return
-    }
-
-    boolean formattingChanges = false
-    rootProject.subprojects.forEach(sub -> {
-        def sources = walkForSources(sub.file("src/main/java").toPath())
-        sources.addAll(walkForSources(sub.file("src/test/java").toPath()))
-
-        final def formatter = new Formatter(JavaFormatterOptions.builder().style(JavaFormatterOptions.Style.AOSP).formatJavadoc(true).build())
-
-        for (def path : sources) {
-            println("Formatting: ${path}")
-            if (doJavaFormat(formatter, path)) {
-                formattingChanges = true
-            }
+        if (!jar.exists()) {
+            getLogger().info("google-java-format JAR file not found. Skipping format task...")
+            return
         }
-    })
 
-    if (!formattingChanges) {
-        getLogger().info("No formatting changes.")
-        return
-    }
+        boolean formattingChanges = false
+        rootProject.subprojects.forEach(sub -> {
+            def sources = walkForSources(sub.file("src/main/java").toPath())
+            sources.addAll(walkForSources(sub.file("src/test/java").toPath()))
 
-    // ---------------- Stage Changes -------------------
-    def out = new ByteArrayOutputStream()
-    def exit = rootProject.exec {
-        ignoreExitValue true
-        standardOutput out
-        errorOutput standardOutput
-        commandLine "git", "add", "."
-    }
+            final def formatter = new Formatter(JavaFormatterOptions.builder().style(JavaFormatterOptions.Style.AOSP).formatJavadoc(true).build())
 
-    if (exit.exitValue != 0) {
-        getLogger().error("Unable to stage changes. Process terminated with exit code ${exit.exitValue}")
-        getLogger().error(out.toString())
-        return
-    }
+            for (def path : sources) {
+                if (doJavaFormat(formatter, path)) {
+                    formattingChanges = true
+                }
+            }
+        })
 
-    // ----------------- Commit Changes --------------------
-    out = new ByteArrayOutputStream()
-    exit = rootProject.exec {
-        ignoreExitValue true
-        standardOutput out
-        errorOutput standardOutput
-        commandLine "git", "commit", "-m", "[Gradle] Format java source code"
-    }
+        if (!formattingChanges) {
+            getLogger().info("No formatting changes.")
+            return
+        }
 
-    if (exit.exitValue == 0) {
-        getLogger().info("Changes committed successfully.")
-    } else {
-        getLogger().error("Failed to commit changes. Process terminated with exit code ${exit.exitValue}")
-        getLogger().error(out.toString())
+        // ---------------- Stage Changes -------------------
+        def out = new ByteArrayOutputStream()
+        def exit = rootProject.exec {
+            ignoreExitValue true
+            standardOutput out
+            errorOutput standardOutput
+            commandLine "git", "add", "."
+        }
+
+        if (exit.exitValue != 0) {
+            getLogger().error("Unable to stage changes. Process terminated with exit code ${exit.exitValue}")
+            getLogger().error(out.toString())
+            return
+        }
+
+        // ----------------- Commit Changes --------------------
+        out = new ByteArrayOutputStream()
+        exit = rootProject.exec {
+            ignoreExitValue true
+            standardOutput out
+            errorOutput standardOutput
+            commandLine "git", "commit", "-m", "[Gradle] Format java source code"
+        }
+
+        if (exit.exitValue == 0) {
+            getLogger().info("Changes committed successfully.")
+        } else {
+            getLogger().error("Failed to commit changes. Process terminated with exit code ${exit.exitValue}")
+            getLogger().error(out.toString())
+        }
     }
 }
