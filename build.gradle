@@ -174,7 +174,7 @@ task formatJavaSources() {
         final def formatter = new Formatter(JavaFormatterOptions.builder().style(JavaFormatterOptions.Style.AOSP).formatJavadoc(true).build())
 
         for (def path : sources) {
-            getLogger().info("Formatting: ${path}")
+            println("Formatting: ${path}")
             if (doJavaFormat(formatter, path)) {
                 formattingChanges = true
             }
