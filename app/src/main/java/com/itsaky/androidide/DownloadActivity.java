@@ -27,8 +27,6 @@ import android.view.View.OnClickListener;
 import androidx.core.content.ContextCompat;
 import androidx.transition.TransitionManager;
 
-import abhishekti7.unicorn.filepicker.UnicornFilePicker;
-
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ThreadUtils;
@@ -53,6 +51,8 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import abhishekti7.unicorn.filepicker.UnicornFilePicker;
 
 public class DownloadActivity extends StudioActivity {
 

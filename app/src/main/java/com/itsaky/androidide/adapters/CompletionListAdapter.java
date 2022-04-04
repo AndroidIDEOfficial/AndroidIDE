@@ -46,10 +46,10 @@ import com.itsaky.apiinfo.models.MethodInfo;
 import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionItemKind;
 
+import java.util.List;
+
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter;
-
-import java.util.List;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {
 

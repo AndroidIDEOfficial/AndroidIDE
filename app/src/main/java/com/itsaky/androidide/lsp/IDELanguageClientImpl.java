@@ -52,14 +52,14 @@ import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
 import com.itsaky.toaster.Toaster;
 
-import io.github.rosemoe.sora.text.Content;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import io.github.rosemoe.sora.text.Content;
 
 /** AndroidIDE specific implementation of the LanguageClient */
 public class IDELanguageClientImpl implements ILanguageClient {

@@ -17,7 +17,6 @@
 
 package com.itsaky.lsp.models
 
-import java.lang.IllegalArgumentException
 import java.nio.file.Path
 
 data class Location (var file: Path, var range: Range)

@@ -18,7 +18,7 @@
 package com.itsaky.lsp.models
 
 import java.nio.file.Path
-import java.util.Collections
+import java.util.*
 
 data class ParameterInformation (var label: String, var documentation: MarkupContent) {
     constructor() : this("", MarkupContent())

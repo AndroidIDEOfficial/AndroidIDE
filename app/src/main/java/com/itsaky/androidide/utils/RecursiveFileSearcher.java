@@ -26,9 +26,6 @@ import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 
-import io.github.rosemoe.sora.text.CharPosition;
-import io.github.rosemoe.sora.text.Content;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
@@ -38,6 +35,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.Content;
 
 /**
  * This class provides API to search in files recursively

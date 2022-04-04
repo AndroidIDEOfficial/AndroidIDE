@@ -17,7 +17,6 @@ package com.google.googlejavaformat.java.javadoc;
 import static com.google.googlejavaformat.java.javadoc.JavadocLexer.lex;
 import static com.google.googlejavaformat.java.javadoc.Token.Type.BR_TAG;
 import static com.google.googlejavaformat.java.javadoc.Token.Type.PARAGRAPH_OPEN_TAG;
-
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.compile;
 

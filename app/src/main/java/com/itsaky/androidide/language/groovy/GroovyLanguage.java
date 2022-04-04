@@ -26,6 +26,11 @@ import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+
+import java.io.StringReader;
+
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -35,11 +40,6 @@ import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-
-import java.io.StringReader;
 
 public class GroovyLanguage extends IDELanguage {
 

@@ -27,8 +27,6 @@ import android.view.View;
 
 import androidx.transition.TransitionManager;
 
-import abhishekti7.unicorn.filepicker.UnicornFilePicker;
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.transition.MaterialContainerTransform;
 import com.itsaky.androidide.app.StudioActivity;
@@ -53,6 +51,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+
+import abhishekti7.unicorn.filepicker.UnicornFilePicker;
 
 public class MainActivity extends StudioActivity
         implements View.OnClickListener, ProjectWriterCallback {

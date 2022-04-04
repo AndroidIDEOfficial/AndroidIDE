@@ -22,11 +22,11 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.DiagnosticItem;
 
-import io.github.rosemoe.sora.lang.Language;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import io.github.rosemoe.sora.lang.Language;
 
 /**
  * Base class for language implementations in the IDE.

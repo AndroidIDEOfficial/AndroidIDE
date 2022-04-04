@@ -17,6 +17,7 @@
 package com.itsaky.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.utils.EditHelper;
@@ -31,6 +32,7 @@ import com.squareup.javapoet.TypeName;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +41,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;

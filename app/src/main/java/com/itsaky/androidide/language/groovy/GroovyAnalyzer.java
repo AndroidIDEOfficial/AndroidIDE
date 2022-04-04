@@ -32,17 +32,17 @@ import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
 
-import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
-import io.github.rosemoe.sora.lang.styling.CodeBlock;
-import io.github.rosemoe.sora.lang.styling.MappedSpans;
-import io.github.rosemoe.sora.lang.styling.Styles;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
 
 import java.io.IOException;
 import java.util.Stack;
+
+import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
+import io.github.rosemoe.sora.lang.styling.CodeBlock;
+import io.github.rosemoe.sora.lang.styling.MappedSpans;
+import io.github.rosemoe.sora.lang.styling.Styles;
 
 public class GroovyAnalyzer extends SimpleAnalyzeManager<Void> {
 

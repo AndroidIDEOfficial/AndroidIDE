@@ -17,7 +17,9 @@
  **************************************************************************************/
 package com.itsaky.androidide.fragments.preferences;
 
-import static com.itsaky.androidide.managers.PreferenceManager.*;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_CONFIRM_PROJECT_OPEN;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_OPEN_PROJECTS;
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_TERMINAL_USE_SYSTEM_SHELL;
 
 import android.os.Bundle;
 

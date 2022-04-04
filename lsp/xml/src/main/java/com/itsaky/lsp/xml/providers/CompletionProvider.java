@@ -39,8 +39,6 @@ import com.itsaky.lsp.xml.R;
 import com.itsaky.sdk.SDKInfo;
 import com.itsaky.widgets.models.Widget;
 
-import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.Contract;
@@ -51,6 +49,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 
 /**
  * Completion provider for the XML Language

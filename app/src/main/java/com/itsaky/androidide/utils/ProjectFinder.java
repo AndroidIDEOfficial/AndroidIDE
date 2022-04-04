@@ -25,14 +25,14 @@ import android.text.TextUtils;
 import com.blankj.utilcode.util.FileIOUtils;
 import com.itsaky.androidide.project.AndroidProject;
 
-import fr.arnaudguyon.xmltojsonlib.XmlToJson;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.regex.Pattern;
+
+import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 
 public class ProjectFinder {
 

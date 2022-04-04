@@ -28,14 +28,14 @@ import androidx.appcompat.view.menu.MenuBuilder;
 
 import com.itsaky.androidide.utils.Logger;
 
-import io.github.rosemoe.sora.event.ClickEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
-
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
+import io.github.rosemoe.sora.event.ClickEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
 /**
  * Text action mode actions for the editor.

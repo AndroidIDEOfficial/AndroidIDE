@@ -117,12 +117,6 @@ import com.itsaky.lsp.models.Range;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
 
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.Unsubscribe;
-
-import me.piruin.quickaction.ActionItem;
-import me.piruin.quickaction.QuickAction;
-
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
@@ -138,6 +132,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.Unsubscribe;
+import me.piruin.quickaction.ActionItem;
+import me.piruin.quickaction.QuickAction;
 
 public class EditorActivity extends StudioActivity
         implements FileTreeFragment.FileActionListener,

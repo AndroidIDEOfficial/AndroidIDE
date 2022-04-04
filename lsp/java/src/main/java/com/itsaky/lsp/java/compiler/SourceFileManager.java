@@ -25,11 +25,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import javax.tools.*;
+import javax.tools.Diagnostic;
+import javax.tools.FileObject;
+import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
 
 public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {
 

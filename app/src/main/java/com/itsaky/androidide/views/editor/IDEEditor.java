@@ -62,12 +62,6 @@ import com.itsaky.lsp.util.DiagnosticUtil;
 import com.itsaky.lsp.util.PathUtils;
 import com.itsaky.toaster.Toaster;
 
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.event.SelectionChangeEvent;
-import io.github.rosemoe.sora.event.Unsubscribe;
-import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
-
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
@@ -76,6 +70,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.event.Unsubscribe;
+import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 
 public class IDEEditor extends CodeEditor {
 

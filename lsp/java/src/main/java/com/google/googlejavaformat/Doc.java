@@ -15,7 +15,6 @@
 package com.google.googlejavaformat;
 
 import static com.google.common.collect.Iterables.getLast;
-
 import static java.lang.Math.max;
 
 import com.google.common.base.MoreObjects;

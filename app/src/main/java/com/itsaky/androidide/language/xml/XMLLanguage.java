@@ -30,6 +30,13 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.Token;
+
+import java.io.StringReader;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
@@ -37,13 +44,6 @@ import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.Token;
-
-import java.io.StringReader;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 
 public class XMLLanguage extends IDELanguage {
 

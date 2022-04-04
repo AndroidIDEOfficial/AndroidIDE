@@ -33,6 +33,13 @@ import com.itsaky.androidide.adapters.TextActionItemAdapter;
 import com.itsaky.androidide.databinding.LayoutEditorActionsBinding;
 import com.itsaky.androidide.utils.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 import io.github.rosemoe.sora.event.HandleStateChangeEvent;
 import io.github.rosemoe.sora.event.ScrollEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
@@ -41,13 +48,6 @@ import io.github.rosemoe.sora.event.Unsubscribe;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.EditorTouchEventHandler;
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 /**
  * Presents text actions in a popup widow.

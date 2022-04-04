@@ -41,7 +41,6 @@ import static com.sun.source.tree.Tree.Kind.NEW_CLASS;
 import static com.sun.source.tree.Tree.Kind.STRING_LITERAL;
 import static com.sun.source.tree.Tree.Kind.UNION_TYPE;
 import static com.sun.source.tree.Tree.Kind.VARIABLE;
-
 import static java.util.stream.Collectors.toList;
 
 import com.google.auto.value.AutoOneOf;

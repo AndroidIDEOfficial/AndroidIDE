@@ -27,11 +27,11 @@ import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.language.logs.LogLanguageImpl;
 import com.itsaky.androidide.models.LogLine;
 
-import io.github.rosemoe.sora.lang.Language;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import io.github.rosemoe.sora.lang.Language;
 
 public class LogViewFragment extends NonEditableEditorFragment {
 

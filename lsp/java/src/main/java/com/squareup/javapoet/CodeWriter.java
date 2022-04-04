@@ -19,7 +19,6 @@ import static com.squareup.javapoet.Util.checkArgument;
 import static com.squareup.javapoet.Util.checkNotNull;
 import static com.squareup.javapoet.Util.checkState;
 import static com.squareup.javapoet.Util.stringLiteralWithDoubleQuotes;
-
 import static java.lang.String.join;
 
 import java.io.IOException;

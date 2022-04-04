@@ -19,8 +19,20 @@ package com.itsaky.lsp.java.visitors;
 
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.utils.FindHelper;
-import com.sun.source.tree.*;
-import com.sun.source.util.*;
+import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.IdentifierTree;
+import com.sun.source.tree.MemberReferenceTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.NewClassTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.VariableTree;
+import com.sun.source.util.JavacTask;
+import com.sun.source.util.SourcePositions;
+import com.sun.source.util.TreePath;
+import com.sun.source.util.TreePathScanner;
+import com.sun.source.util.Trees;
 
 import javax.lang.model.element.Name;
 

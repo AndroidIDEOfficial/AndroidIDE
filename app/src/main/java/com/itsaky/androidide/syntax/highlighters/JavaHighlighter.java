@@ -23,14 +23,14 @@ import android.text.style.ForegroundColorSpan;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
 import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 public class JavaHighlighter implements Highlighter {
 

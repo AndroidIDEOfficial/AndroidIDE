@@ -17,7 +17,24 @@
 
 package com.itsaky.androidide.utils;
 
-import static com.itsaky.lsp.models.HighlightTokenKind.*;
+import static com.itsaky.lsp.models.HighlightTokenKind.ANNOTATION;
+import static com.itsaky.lsp.models.HighlightTokenKind.CONSTRUCTOR;
+import static com.itsaky.lsp.models.HighlightTokenKind.ENUM;
+import static com.itsaky.lsp.models.HighlightTokenKind.ENUM_TYPE;
+import static com.itsaky.lsp.models.HighlightTokenKind.EXCEPTION_PARAMETER;
+import static com.itsaky.lsp.models.HighlightTokenKind.FIELD;
+import static com.itsaky.lsp.models.HighlightTokenKind.INSTANCE_INIT;
+import static com.itsaky.lsp.models.HighlightTokenKind.INTERFACE;
+import static com.itsaky.lsp.models.HighlightTokenKind.LOCAL_VARIABLE;
+import static com.itsaky.lsp.models.HighlightTokenKind.METHOD_DECLARATION;
+import static com.itsaky.lsp.models.HighlightTokenKind.METHOD_INVOCATION;
+import static com.itsaky.lsp.models.HighlightTokenKind.PACKAGE_NAME;
+import static com.itsaky.lsp.models.HighlightTokenKind.PARAMETER;
+import static com.itsaky.lsp.models.HighlightTokenKind.RESOURCE_VARIABLE;
+import static com.itsaky.lsp.models.HighlightTokenKind.STATIC_FIELD;
+import static com.itsaky.lsp.models.HighlightTokenKind.STATIC_INIT;
+import static com.itsaky.lsp.models.HighlightTokenKind.TYPE_NAME;
+import static com.itsaky.lsp.models.HighlightTokenKind.TYPE_PARAMETER;
 
 import com.itsaky.lsp.models.HighlightToken;
 import com.itsaky.lsp.models.HighlightTokenKind;

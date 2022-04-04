@@ -16,7 +16,6 @@ package com.google.googlejavaformat.java;
 
 import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_VERSION;
 import static com.google.common.base.StandardSystemProperty.JAVA_SPECIFICATION_VERSION;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.common.collect.ImmutableList;
