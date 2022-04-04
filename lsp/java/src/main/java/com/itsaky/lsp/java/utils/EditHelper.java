@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.utils;
 
+import com.itsaky.lsp.java.compiler.CompilerProvider;
+import com.itsaky.lsp.java.rewrite.AddImport;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
@@ -28,8 +30,15 @@ import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
+
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
@@ -40,6 +49,21 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 public class EditHelper {
+
+    public static List<TextEdit> addImportIfNeeded(
+            CompilerProvider compiler, Path file, Set<String> imports, String className) {
+        final String pkgName = Extractors.packageName(className);
+        final String star = pkgName + ".*";
+        if ("java.lang".equals(pkgName)
+                || imports.contains(className)
+                || imports.contains(star)
+                || file == null) {
+            return Collections.emptyList();
+        }
+
+        AddImport addImport = new AddImport(file, className);
+        return Arrays.asList(Objects.requireNonNull(addImport.rewrite(compiler).get(file)));
+    }
 
     public static TextEdit removeTree(
             final JavacTask task, final CompilationUnitTree root, final Tree remove) {

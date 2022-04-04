@@ -127,8 +127,8 @@ public class ProjectFinder {
                         }
                     }
                 }
-            } else if (iconRes.startsWith("@mipmap")) {
-                final String iconName = iconRes.replace("@mipmap/", "");
+            } else if (iconRes.startsWith("@drawable")) {
+                final String iconName = iconRes.replace("@drawable/", "");
                 File[] drawables = listMipmaps(res);
                 for (File drawable : drawables) {
                     File[] icons = listFilesNotEndingWith(drawable, ".xml");

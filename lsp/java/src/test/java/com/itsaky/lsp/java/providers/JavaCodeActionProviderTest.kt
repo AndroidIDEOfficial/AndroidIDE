@@ -17,6 +17,7 @@
 
 package com.itsaky.lsp.java.providers
 
+import androidx.core.util.Pair
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.api.ILanguageServer
 import com.itsaky.lsp.api.LoggingTest
@@ -25,11 +26,14 @@ import com.itsaky.lsp.models.CodeActionParams
 import com.itsaky.lsp.models.DiagnosticItem
 import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.models.Range
+import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.TypeName
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.*
+import javax.lang.model.element.Modifier
 
 /**
  * @author Akash Yadav

@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -31,11 +32,10 @@ import javax.lang.model.util.SimpleElementVisitor8;
 
 /** A fully-qualified class name for top-level and member classes. */
 public final class ClassName extends TypeName implements Comparable<ClassName> {
-    public static final ClassName OBJECT = ClassName.get(Object.class);
-
     /** The name representing the default Java package. */
     private static final String NO_PACKAGE = "";
 
+    public static final ClassName OBJECT = ClassName.get(Object.class);
     /** The package name of this class, or "" if this is in the default package. */
     final String packageName;
 
@@ -44,11 +44,10 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
 
     /** This class name, like "Entry" for java.util.Map.Entry. */
     final String simpleName;
-
-    private List<String> simpleNames;
-
     /** The full class name like "java.util.Map.Entry". */
     final String canonicalName;
+
+    private List<String> simpleNames;
 
     private ClassName(String packageName, ClassName enclosingClassName, String simpleName) {
         this(packageName, enclosingClassName, simpleName, Collections.emptyList());
@@ -67,103 +66,6 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
                 enclosingClassName != null
                         ? (enclosingClassName.canonicalName + '.' + simpleName)
                         : (packageName.isEmpty() ? simpleName : packageName + '.' + simpleName);
-    }
-
-    @Override
-    public ClassName annotated(List<AnnotationSpec> annotations) {
-        return new ClassName(
-                packageName, enclosingClassName, simpleName, concatAnnotations(annotations));
-    }
-
-    @Override
-    public ClassName withoutAnnotations() {
-        if (!isAnnotated()) return this;
-        ClassName resultEnclosingClassName =
-                enclosingClassName != null ? enclosingClassName.withoutAnnotations() : null;
-        return new ClassName(packageName, resultEnclosingClassName, simpleName);
-    }
-
-    @Override
-    public boolean isAnnotated() {
-        return super.isAnnotated()
-                || (enclosingClassName != null && enclosingClassName.isAnnotated());
-    }
-
-    /**
-     * Returns the package name, like {@code "java.util"} for {@code Map.Entry}. Returns the empty
-     * string for the default package.
-     */
-    public String packageName() {
-        return packageName;
-    }
-
-    /**
-     * Returns the enclosing class, like {@link Map} for {@code Map.Entry}. Returns null if this
-     * class is not nested in another class.
-     */
-    public ClassName enclosingClassName() {
-        return enclosingClassName;
-    }
-
-    /**
-     * Returns the top class in this nesting group. Equivalent to chained calls to {@link
-     * #enclosingClassName()} until the result's enclosing class is null.
-     */
-    public ClassName topLevelClassName() {
-        return enclosingClassName != null ? enclosingClassName.topLevelClassName() : this;
-    }
-
-    /** Return the binary name of a class. */
-    public String reflectionName() {
-        return enclosingClassName != null
-                ? (enclosingClassName.reflectionName() + '$' + simpleName)
-                : (packageName.isEmpty() ? simpleName : packageName + '.' + simpleName);
-    }
-
-    public List<String> simpleNames() {
-        if (simpleNames != null) {
-            return simpleNames;
-        }
-
-        if (enclosingClassName == null) {
-            simpleNames = Collections.singletonList(simpleName);
-        } else {
-            List<String> mutableNames = new ArrayList<>();
-            mutableNames.addAll(enclosingClassName().simpleNames());
-            mutableNames.add(simpleName);
-            simpleNames = Collections.unmodifiableList(mutableNames);
-        }
-        return simpleNames;
-    }
-
-    /**
-     * Returns a class that shares the same enclosing package or class. If this class is enclosed by
-     * another class, this is equivalent to {@code enclosingClassName().nestedClass(name)}.
-     * Otherwise it is equivalent to {@code get(packageName(), name)}.
-     */
-    public ClassName peerClass(String name) {
-        return new ClassName(packageName, enclosingClassName, name);
-    }
-
-    /**
-     * Returns a new {@link ClassName} instance for the specified {@code name} as nested inside this
-     * class.
-     */
-    public ClassName nestedClass(String name) {
-        return new ClassName(packageName, this, name);
-    }
-
-    /** Returns the simple name of this class, like {@code "Entry"} for {@link Map.Entry}. */
-    public String simpleName() {
-        return simpleName;
-    }
-
-    /**
-     * Returns the full class name of this class. Like {@code "java.util.Map.Entry"} for {@link
-     * Map.Entry}.
-     */
-    public String canonicalName() {
-        return canonicalName;
     }
 
     public static ClassName get(Class<?> clazz) {
@@ -272,6 +174,103 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
     }
 
     @Override
+    public ClassName annotated(List<AnnotationSpec> annotations) {
+        return new ClassName(
+                packageName, enclosingClassName, simpleName, concatAnnotations(annotations));
+    }
+
+    @Override
+    public ClassName withoutAnnotations() {
+        if (!isAnnotated()) return this;
+        ClassName resultEnclosingClassName =
+                enclosingClassName != null ? enclosingClassName.withoutAnnotations() : null;
+        return new ClassName(packageName, resultEnclosingClassName, simpleName);
+    }
+
+    @Override
+    public boolean isAnnotated() {
+        return super.isAnnotated()
+                || (enclosingClassName != null && enclosingClassName.isAnnotated());
+    }
+
+    /**
+     * Returns the package name, like {@code "java.util"} for {@code Map.Entry}. Returns the empty
+     * string for the default package.
+     */
+    public String packageName() {
+        return packageName;
+    }
+
+    /**
+     * Returns the enclosing class, like {@link Map} for {@code Map.Entry}. Returns null if this
+     * class is not nested in another class.
+     */
+    public ClassName enclosingClassName() {
+        return enclosingClassName;
+    }
+
+    /**
+     * Returns the top class in this nesting group. Equivalent to chained calls to {@link
+     * #enclosingClassName()} until the result's enclosing class is null.
+     */
+    public ClassName topLevelClassName() {
+        return enclosingClassName != null ? enclosingClassName.topLevelClassName() : this;
+    }
+
+    /** Return the binary name of a class. */
+    public String reflectionName() {
+        return enclosingClassName != null
+                ? (enclosingClassName.reflectionName() + '$' + simpleName)
+                : (packageName.isEmpty() ? simpleName : packageName + '.' + simpleName);
+    }
+
+    public List<String> simpleNames() {
+        if (simpleNames != null) {
+            return simpleNames;
+        }
+
+        if (enclosingClassName == null) {
+            simpleNames = Collections.singletonList(simpleName);
+        } else {
+            List<String> mutableNames = new ArrayList<>();
+            mutableNames.addAll(enclosingClassName().simpleNames());
+            mutableNames.add(simpleName);
+            simpleNames = Collections.unmodifiableList(mutableNames);
+        }
+        return simpleNames;
+    }
+
+    /**
+     * Returns a class that shares the same enclosing package or class. If this class is enclosed by
+     * another class, this is equivalent to {@code enclosingClassName().nestedClass(name)}.
+     * Otherwise it is equivalent to {@code get(packageName(), name)}.
+     */
+    public ClassName peerClass(String name) {
+        return new ClassName(packageName, enclosingClassName, name);
+    }
+
+    /**
+     * Returns a new {@link ClassName} instance for the specified {@code name} as nested inside this
+     * class.
+     */
+    public ClassName nestedClass(String name) {
+        return new ClassName(packageName, this, name);
+    }
+
+    /** Returns the simple name of this class, like {@code "Entry"} for {@link Map.Entry}. */
+    public String simpleName() {
+        return simpleName;
+    }
+
+    /**
+     * Returns the full class name of this class. Like {@code "java.util.Map.Entry"} for {@link
+     * Map.Entry}.
+     */
+    public String canonicalName() {
+        return canonicalName;
+    }
+
+    @Override
     public int compareTo(ClassName o) {
         return canonicalName.compareTo(o.canonicalName);
     }
@@ -289,9 +288,21 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
             } else if (className.isAnnotated() || className == this) {
                 // We encountered the first enclosing class that must be emitted.
                 String qualifiedName = out.lookupName(className);
+
+                boolean printQualifiedNames = true;
+                if (out instanceof ImportCollectingCodeWriter) {
+                    final ImportCollectingCodeWriter importCollectingCodeWriter =
+                            (ImportCollectingCodeWriter) out;
+                    importCollectingCodeWriter.addImport(qualifiedName);
+                    printQualifiedNames = importCollectingCodeWriter.isPrintQualifiedNames();
+                }
+
                 int dot = qualifiedName.lastIndexOf('.');
                 if (dot != -1) {
-                    out.emitAndIndent(qualifiedName.substring(0, dot + 1));
+                    final String packageName = qualifiedName.substring(0, dot + 1);
+                    if (printQualifiedNames && !"java.lang.".equals(packageName)) {
+                        out.emitAndIndent(packageName);
+                    }
                     simpleName = qualifiedName.substring(dot + 1);
                     charsEmitted = true;
                 } else {

@@ -17,10 +17,12 @@
 
 package com.itsaky.lsp.java.providers;
 
+import static com.itsaky.lsp.java.utils.EditHelper.addImportIfNeeded;
 import static com.itsaky.lsp.java.utils.EditHelper.repeatSpaces;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
@@ -31,9 +33,8 @@ import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.parser.ParseTask;
-import com.itsaky.lsp.java.rewrite.AddImport;
 import com.itsaky.lsp.java.utils.EditHelper;
-import com.itsaky.lsp.java.utils.Extractors;
+import com.itsaky.lsp.java.utils.JavaPoetUtils;
 import com.itsaky.lsp.java.utils.ScopeHelper;
 import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.java.visitors.FindCompletionsAt;
@@ -45,7 +46,6 @@ import com.itsaky.lsp.models.CompletionItemKind;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.InsertTextFormat;
-import com.itsaky.lsp.models.TextEdit;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.sun.source.tree.ClassTree;
@@ -59,12 +59,12 @@ import com.sun.source.tree.SwitchTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,6 +75,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -784,23 +785,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         CompletionData data = new CompletionData();
         data.setClassName(className);
         i.setData(data);
-        i.setAdditionalTextEdits(checkForImports(imports, file, className));
+        i.setAdditionalTextEdits(addImportIfNeeded(compiler, file, imports, className));
         return i;
-    }
-
-    private List<TextEdit> checkForImports(
-            @NonNull Set<String> fileImports, Path path, String className) {
-        final String pkgName = Extractors.packageName(className);
-        final String star = pkgName + ".*";
-        if ("java.lang".equals(pkgName)
-                || fileImports.contains(className)
-                || fileImports.contains(star)
-                || path == null) {
-            return Collections.emptyList();
-        }
-
-        AddImport addImport = new AddImport(path, className);
-        return Arrays.asList(Objects.requireNonNull(addImport.rewrite(compiler).get(path)));
     }
 
     private CompletionItem snippetItem(String label, String snippet) {
@@ -919,18 +905,37 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             builder.addComment("TODO: Implement this method");
         }
 
-        final MethodSpec built = builder.build();
-        String insertText = built.toString();
+        final Set<String> imports = new HashSet<>();
+        final MethodSpec methodSpec = builder.build();
+        String insertText = JavaPoetUtils.print(methodSpec, imports, false);
         insertText = insertText.replace("\n", "\n" + repeatSpaces(indent));
 
-        // TODO Auto-import required classes instead of specifying qualified names.
         CompletionItem item = new CompletionItem();
-        item.setLabel(built.name);
+        item.setLabel(methodSpec.name);
         item.setKind(CompletionItemKind.METHOD);
         item.setDetail(method.getReturnType() + " " + method);
         item.setInsertText(insertText);
         item.setInsertTextFormat(InsertTextFormat.SNIPPET);
         item.setData(data(task, method, 1));
+
+        if (item.getAdditionalTextEdits() == null) {
+            item.setAdditionalTextEdits(new ArrayList<>());
+        }
+
+        if (!imports.isEmpty()) {
+            final Set<String> fileImports =
+                    task.root(completingFile).getImports().stream()
+                            .map(ImportTree::getQualifiedIdentifier)
+                            .map(Tree::toString)
+                            .collect(Collectors.toSet());
+            for (String className : imports) {
+                item.getAdditionalTextEdits()
+                        .addAll(
+                                addImportIfNeeded(
+                                        compiler, completingFile, fileImports, className));
+            }
+        }
+
         return item;
     }
 
@@ -940,7 +945,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
      * @param builder The method builder.
      * @return The super invocation statement string without ending ';'.
      */
-    private String createSuperCall(MethodSpec.Builder builder) {
+    @NonNull
+    private String createSuperCall(@NonNull MethodSpec.Builder builder) {
         final StringBuilder sb = new StringBuilder();
         sb.append("super.");
         sb.append(builder.name);
@@ -952,7 +958,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             }
         }
         sb.append(")");
-        return null;
+        return sb.toString ();
     }
 
     @Nullable

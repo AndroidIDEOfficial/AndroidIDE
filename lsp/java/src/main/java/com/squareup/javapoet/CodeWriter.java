@@ -41,7 +41,7 @@ import javax.lang.model.element.Modifier;
  * Converts a {@link JavaFile} to a string suitable to both human- and javac-consumption. This
  * honors imports, indentation, and deferred variable names.
  */
-final class CodeWriter {
+class CodeWriter {
     /** Sentinel value that indicates that no user-provided package has been set. */
     private static final String NO_PACKAGE = new String();
 

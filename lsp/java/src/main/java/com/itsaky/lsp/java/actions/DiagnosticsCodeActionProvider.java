@@ -28,7 +28,9 @@ import static com.itsaky.lsp.java.utils.CodeActionUtils.unwrapJCDiagnostic;
 
 import android.text.TextUtils;
 import android.util.Pair;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -50,12 +52,15 @@ import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Range;
 import com.sun.tools.javac.util.JCDiagnostic;
+
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
@@ -112,8 +117,10 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
             CompileTask task) {
         List<Pair<String, Rewrite>> rewrites = new ArrayList<>();
         for (DiagnosticItem d : diagnostics) {
-            List<Pair<String, Rewrite>> pairs = codeActionForDiagnostic(compiler, task, file, d);
-            pairs.removeIf(pair -> TextUtils.isEmpty(pair.first) || pair.second == null);
+            List<Pair<String, Rewrite>> pairs =
+                    codeActionForDiagnostic(compiler, task, file, d).stream()
+                            .filter(pair -> !TextUtils.isEmpty(pair.first) && pair.second != null)
+                            .collect(Collectors.toList());
             rewrites.addAll(pairs);
         }
         return rewrites;

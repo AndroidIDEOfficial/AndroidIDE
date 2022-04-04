@@ -18,11 +18,13 @@ package com.itsaky.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.utils.EditHelper;
+import com.itsaky.lsp.java.utils.JavaPoetUtils;
 import com.itsaky.lsp.java.visitors.FindAnonymousTypeDeclaration;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.lsp.models.CodeActionItem;
@@ -33,12 +35,21 @@ import com.itsaky.lsp.models.TextEdit;
 import com.squareup.javapoet.MethodSpec;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.ImportTree;
+import com.sun.source.tree.Tree;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.util.JCDiagnostic;
+
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringJoiner;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -86,13 +97,14 @@ public class ImplementAbstractMethods extends Rewrite {
                         thisTree = trees.getTree(thisClass);
                     }
 
+                    final Set<String> imports = new TreeSet<>();
                     int indent = EditHelper.indent(task.task, task.root(), thisTree) + 4;
                     for (Element member : elements.getAllMembers(thisClass)) {
                         if (member.getKind() == ElementKind.METHOD
                                 && member.getModifiers().contains(Modifier.ABSTRACT)) {
                             ExecutableElement method = (ExecutableElement) member;
                             final MethodSpec methodSpec = MethodSpec.overriding(method).build();
-                            String text = "\n" + methodSpec;
+                            String text = "\n" + JavaPoetUtils.print(methodSpec, imports, false);
                             text = text.replaceAll("\n", "\n" + EditHelper.repeatSpaces(indent));
                             insertText.add(text);
                         }
@@ -100,13 +112,42 @@ public class ImplementAbstractMethods extends Rewrite {
 
                     Position insert =
                             EditHelper.insertAtEndOfClass(task.task, task.root(), thisTree);
-                    TextEdit[] edits = {new TextEdit(new Range(insert, insert), insertText + "\n")};
-                    return Collections.singletonMap(file, edits);
+                    final List<TextEdit> edits = new ArrayList<>();
+                    edits.add(new TextEdit(new Range(insert, insert), insertText + "\n"));
+                    addImports(compiler, task, file, imports, edits);
+
+                    return Collections.singletonMap(file, edits.toArray(new TextEdit[0]));
                 });
     }
 
+    private void addImports(
+            CompilerProvider compiler,
+            CompileTask task,
+            Path file,
+            Set<String> imports,
+            List<TextEdit> edits) {
+        imports =
+                imports.stream()
+                        .filter(name -> !name.startsWith("java.lang."))
+                        .collect(Collectors.toSet());
+        for (String name : imports) {
+            final List<TextEdit> importEdits =
+                    EditHelper.addImportIfNeeded(compiler, file, getFileImports(task, file), name);
+            if (importEdits != null && !importEdits.isEmpty()) {
+                edits.addAll(importEdits);
+            }
+        }
+    }
+
+    private Set<String> getFileImports(@NonNull CompileTask task, Path file) {
+        return task.root(file).getImports().stream()
+                .map(ImportTree::getQualifiedIdentifier)
+                .map(Tree::toString)
+                .collect(Collectors.toSet());
+    }
+
     @Nullable
-    private ClassTree getClassTree(CompileTask task, Path file) {
+    private ClassTree getClassTree(@NonNull CompileTask task, Path file) {
         ClassTree thisTree = null;
         CompilationUnitTree root = task.root(file);
         if (root == null) {

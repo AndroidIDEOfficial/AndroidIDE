@@ -28,6 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -77,6 +78,100 @@ public final class MethodSpec {
         this.exceptions = Util.immutableList(builder.exceptions);
         this.defaultValue = builder.defaultValue;
         this.code = code;
+    }
+
+    public static Builder methodBuilder(String name) {
+        return new Builder(name);
+    }
+
+    public static Builder constructorBuilder() {
+        return new Builder(CONSTRUCTOR);
+    }
+
+    /**
+     * Returns a new method spec builder that overrides {@code method}.
+     *
+     * <p>This will copy its visibility modifiers, type parameters, return type, name, parameters,
+     * and throws declarations. An {@link Override} annotation will be added.
+     *
+     * <p>Note that in JavaPoet 1.2 through 1.7 this method retained annotations from the method and
+     * parameters of the overridden method. Since JavaPoet 1.8 annotations must be added separately.
+     */
+    public static Builder overriding(ExecutableElement method) {
+        checkNotNull(method, "method == null");
+
+        Element enclosingClass = method.getEnclosingElement();
+        if (enclosingClass.getModifiers().contains(Modifier.FINAL)) {
+            throw new IllegalArgumentException(
+                    "Cannot override method on final class " + enclosingClass);
+        }
+
+        Set<Modifier> modifiers = method.getModifiers();
+        if (modifiers.contains(Modifier.PRIVATE)
+                || modifiers.contains(Modifier.FINAL)
+                || modifiers.contains(Modifier.STATIC)) {
+            throw new IllegalArgumentException(
+                    "cannot override method with modifiers: " + modifiers);
+        }
+
+        String methodName = method.getSimpleName().toString();
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName);
+
+        methodBuilder.addAnnotation(Override.class);
+
+        modifiers = new LinkedHashSet<>(modifiers);
+        modifiers.remove(Modifier.ABSTRACT);
+        modifiers.remove(Modifier.DEFAULT);
+        methodBuilder.addModifiers(modifiers);
+
+        for (TypeParameterElement typeParameterElement : method.getTypeParameters()) {
+            TypeVariable var = (TypeVariable) typeParameterElement.asType();
+            methodBuilder.addTypeVariable(TypeVariableName.get(var));
+        }
+
+        methodBuilder.returns(TypeName.get(method.getReturnType()));
+        methodBuilder.addParameters(ParameterSpec.parametersOf(method));
+        methodBuilder.varargs(method.isVarArgs());
+
+        for (TypeMirror thrownType : method.getThrownTypes()) {
+            methodBuilder.addException(TypeName.get(thrownType));
+        }
+
+        return methodBuilder;
+    }
+
+    /**
+     * Returns a new method spec builder that overrides {@code method} as a member of {@code
+     * enclosing}. This will resolve type parameters: for example overriding {@link
+     * Comparable#compareTo} in a type that implements {@code Comparable<Movie>}, the {@code T}
+     * parameter will be resolved to {@code Movie}.
+     *
+     * <p>This will copy its visibility modifiers, type parameters, return type, name, parameters,
+     * and throws declarations. An {@link Override} annotation will be added.
+     *
+     * <p>Note that in JavaPoet 1.2 through 1.7 this method retained annotations from the method and
+     * parameters of the overridden method. Since JavaPoet 1.8 annotations must be added separately.
+     */
+    public static Builder overriding(
+            ExecutableElement method, DeclaredType enclosing, Types types) {
+        ExecutableType executableType = (ExecutableType) types.asMemberOf(enclosing, method);
+        List<? extends TypeMirror> resolvedParameterTypes = executableType.getParameterTypes();
+        List<? extends TypeMirror> resolvedThrownTypes = executableType.getThrownTypes();
+        TypeMirror resolvedReturnType = executableType.getReturnType();
+
+        Builder builder = overriding(method);
+        builder.returns(TypeName.get(resolvedReturnType));
+        for (int i = 0, size = builder.parameters.size(); i < size; i++) {
+            ParameterSpec parameter = builder.parameters.get(i);
+            TypeName type = TypeName.get(resolvedParameterTypes.get(i));
+            builder.parameters.set(i, parameter.toBuilder(type, parameter.name).build());
+        }
+        builder.exceptions.clear();
+        for (int i = 0, size = resolvedThrownTypes.size(); i < size; i++) {
+            builder.addException(TypeName.get(resolvedThrownTypes.get(i)));
+        }
+
+        return builder;
     }
 
     private boolean lastParameterIsArray(List<ParameterSpec> parameters) {
@@ -191,100 +286,6 @@ public final class MethodSpec {
         }
     }
 
-    public static Builder methodBuilder(String name) {
-        return new Builder(name);
-    }
-
-    public static Builder constructorBuilder() {
-        return new Builder(CONSTRUCTOR);
-    }
-
-    /**
-     * Returns a new method spec builder that overrides {@code method}.
-     *
-     * <p>This will copy its visibility modifiers, type parameters, return type, name, parameters,
-     * and throws declarations. An {@link Override} annotation will be added.
-     *
-     * <p>Note that in JavaPoet 1.2 through 1.7 this method retained annotations from the method and
-     * parameters of the overridden method. Since JavaPoet 1.8 annotations must be added separately.
-     */
-    public static Builder overriding(ExecutableElement method) {
-        checkNotNull(method, "method == null");
-
-        Element enclosingClass = method.getEnclosingElement();
-        if (enclosingClass.getModifiers().contains(Modifier.FINAL)) {
-            throw new IllegalArgumentException(
-                    "Cannot override method on final class " + enclosingClass);
-        }
-
-        Set<Modifier> modifiers = method.getModifiers();
-        if (modifiers.contains(Modifier.PRIVATE)
-                || modifiers.contains(Modifier.FINAL)
-                || modifiers.contains(Modifier.STATIC)) {
-            throw new IllegalArgumentException(
-                    "cannot override method with modifiers: " + modifiers);
-        }
-
-        String methodName = method.getSimpleName().toString();
-        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName);
-
-        methodBuilder.addAnnotation(Override.class);
-
-        modifiers = new LinkedHashSet<>(modifiers);
-        modifiers.remove(Modifier.ABSTRACT);
-        modifiers.remove(Modifier.DEFAULT);
-        methodBuilder.addModifiers(modifiers);
-
-        for (TypeParameterElement typeParameterElement : method.getTypeParameters()) {
-            TypeVariable var = (TypeVariable) typeParameterElement.asType();
-            methodBuilder.addTypeVariable(TypeVariableName.get(var));
-        }
-
-        methodBuilder.returns(TypeName.get(method.getReturnType()));
-        methodBuilder.addParameters(ParameterSpec.parametersOf(method));
-        methodBuilder.varargs(method.isVarArgs());
-
-        for (TypeMirror thrownType : method.getThrownTypes()) {
-            methodBuilder.addException(TypeName.get(thrownType));
-        }
-
-        return methodBuilder;
-    }
-
-    /**
-     * Returns a new method spec builder that overrides {@code method} as a member of {@code
-     * enclosing}. This will resolve type parameters: for example overriding {@link
-     * Comparable#compareTo} in a type that implements {@code Comparable<Movie>}, the {@code T}
-     * parameter will be resolved to {@code Movie}.
-     *
-     * <p>This will copy its visibility modifiers, type parameters, return type, name, parameters,
-     * and throws declarations. An {@link Override} annotation will be added.
-     *
-     * <p>Note that in JavaPoet 1.2 through 1.7 this method retained annotations from the method and
-     * parameters of the overridden method. Since JavaPoet 1.8 annotations must be added separately.
-     */
-    public static Builder overriding(
-            ExecutableElement method, DeclaredType enclosing, Types types) {
-        ExecutableType executableType = (ExecutableType) types.asMemberOf(enclosing, method);
-        List<? extends TypeMirror> resolvedParameterTypes = executableType.getParameterTypes();
-        List<? extends TypeMirror> resolvedThrownTypes = executableType.getThrownTypes();
-        TypeMirror resolvedReturnType = executableType.getReturnType();
-
-        Builder builder = overriding(method);
-        builder.returns(TypeName.get(resolvedReturnType));
-        for (int i = 0, size = builder.parameters.size(); i < size; i++) {
-            ParameterSpec parameter = builder.parameters.get(i);
-            TypeName type = TypeName.get(resolvedParameterTypes.get(i));
-            builder.parameters.set(i, parameter.toBuilder(type, parameter.name).build());
-        }
-        builder.exceptions.clear();
-        for (int i = 0, size = resolvedThrownTypes.size(); i < size; i++) {
-            builder.addException(TypeName.get(resolvedThrownTypes.get(i)));
-        }
-
-        return builder;
-    }
-
     public Builder toBuilder() {
         Builder builder = new Builder(name);
         builder.javadoc.add(javadoc);
@@ -301,19 +302,17 @@ public final class MethodSpec {
     }
 
     public static final class Builder {
-        public String name;
-
-        private final CodeBlock.Builder javadoc = CodeBlock.builder();
-        private TypeName returnType;
-        private final Set<TypeName> exceptions = new LinkedHashSet<>();
-        private final CodeBlock.Builder code = CodeBlock.builder();
-        private boolean varargs;
-        private CodeBlock defaultValue;
-
         public final List<TypeVariableName> typeVariables = new ArrayList<>();
         public final List<AnnotationSpec> annotations = new ArrayList<>();
         public final List<Modifier> modifiers = new ArrayList<>();
         public final List<ParameterSpec> parameters = new ArrayList<>();
+        private final CodeBlock.Builder javadoc = CodeBlock.builder();
+        private final Set<TypeName> exceptions = new LinkedHashSet<>();
+        private final CodeBlock.Builder code = CodeBlock.builder();
+        public String name;
+        private TypeName returnType;
+        private boolean varargs;
+        private CodeBlock defaultValue;
 
         private Builder(String name) {
             setName(name);

@@ -17,9 +17,11 @@
 package com.itsaky.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.utils.EditHelper;
+import com.itsaky.lsp.java.utils.JavaPoetUtils;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.Position;
@@ -27,15 +29,21 @@ import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
+import com.sun.source.tree.ImportTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -70,10 +78,11 @@ public class GenerateSettersAndGetters extends Rewrite {
             }
 
             final VariableElement variable = (VariableElement) element;
-            addGetter(variable, path.getLeaf(), edits);
+            final Tree leaf = path.getLeaf();
+            addGetter(compiler, variable, leaf, edits);
 
             if (!variable.getModifiers().contains(Modifier.FINAL)) {
-                addSetter(variable, path.getLeaf(), edits);
+                addSetter(compiler, variable, leaf, edits);
             }
         }
 
@@ -86,7 +95,10 @@ public class GenerateSettersAndGetters extends Rewrite {
     }
 
     private void addSetter(
-            @NonNull VariableElement variable, Tree leaf, @NonNull List<TextEdit> edits) {
+            CompilerProvider compiler,
+            @NonNull VariableElement variable,
+            Tree leaf,
+            @NonNull List<TextEdit> edits) {
         final int indent = EditHelper.indent(task.task, task.root(), leaf) + 4;
         final Position insertAt = EditHelper.insertAfter(task.task, task.root(), leaf);
         final String name = variable.getSimpleName().toString();
@@ -96,7 +108,8 @@ public class GenerateSettersAndGetters extends Rewrite {
                 .addParameter(TypeName.get(variable.asType()), name)
                 .addStatement("this.$N = $N", name, name);
 
-        String text = builder.build().toString();
+        final Set<String> imports = new TreeSet<>();
+        String text = JavaPoetUtils.print(builder.build(), imports);
         text = text.replace("\n", "\n".concat(EditHelper.repeatSpaces(indent)));
         text = text.concat("\n");
 
@@ -104,7 +117,10 @@ public class GenerateSettersAndGetters extends Rewrite {
     }
 
     private void addGetter(
-            @NonNull VariableElement variable, Tree leaf, @NonNull List<TextEdit> edits) {
+            CompilerProvider compiler,
+            @NonNull VariableElement variable,
+            Tree leaf,
+            @NonNull List<TextEdit> edits) {
         final int indent = EditHelper.indent(task.task, task.root(), leaf) + 4;
         final Position insertAt = EditHelper.insertAfter(task.task, task.root(), leaf);
         final String name = variable.getSimpleName().toString();
@@ -113,7 +129,8 @@ public class GenerateSettersAndGetters extends Rewrite {
                 .returns(TypeName.get(variable.asType()))
                 .addStatement("return $N", name);
 
-        String text = builder.build().toString();
+        final Set<String> imports = new TreeSet<>();
+        String text = JavaPoetUtils.print(builder.build(), imports);
         text = text.replace("\n", "\n".concat(EditHelper.repeatSpaces(indent)));
         text = text.concat("\n");
 
