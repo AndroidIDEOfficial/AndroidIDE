@@ -20,6 +20,8 @@ This is the changelog of all the releases of AndroidIDE.
 - Preference to disable use of `TYPE_TEXT_VARIATION_VISIBLE_PASSWORD` flag in editor.
 - Automatically trigger completion when attributes are inserted from completion window.
 - Code actions
+  - Add import
+  - Generate setters/getters
 - `DocumentsProvider` for providing access to files in `HOME` directory.
 
 ### Removals

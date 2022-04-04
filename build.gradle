@@ -172,7 +172,13 @@ task formatJavaSources() {
             def sources = walkForSources(sub.file("src/main/java").toPath())
             sources.addAll(walkForSources(sub.file("src/test/java").toPath()))
 
-            final def formatter = new Formatter(JavaFormatterOptions.builder().style(JavaFormatterOptions.Style.AOSP).formatJavadoc(true).build())
+            final def formatter = new Formatter(
+                    JavaFormatterOptions
+                            .builder()
+                            .style(JavaFormatterOptions.Style.AOSP)
+                            .formatJavadoc(true)
+                            .build()
+            )
 
             for (def path : sources) {
                 if (doJavaFormat(formatter, path)) {
