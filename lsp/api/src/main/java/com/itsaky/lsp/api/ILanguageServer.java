@@ -35,6 +35,7 @@ package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.lsp.models.CodeActionParams;
 import com.itsaky.lsp.models.CodeActionResult;
 import com.itsaky.lsp.models.DefinitionParams;
@@ -48,6 +49,7 @@ import com.itsaky.lsp.models.ReferenceResult;
 import com.itsaky.lsp.models.ServerCapabilities;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
+
 import java.nio.file.Path;
 import java.util.List;
 

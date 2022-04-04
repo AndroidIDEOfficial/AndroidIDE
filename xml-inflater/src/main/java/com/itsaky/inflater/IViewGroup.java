@@ -18,6 +18,7 @@
 package com.itsaky.inflater;
 
 import android.view.View;
+
 import java.util.List;
 import java.util.function.Consumer;
 

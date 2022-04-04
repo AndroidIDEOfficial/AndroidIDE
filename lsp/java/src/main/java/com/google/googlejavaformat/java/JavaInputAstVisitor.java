@@ -41,6 +41,7 @@ import static com.sun.source.tree.Tree.Kind.NEW_CLASS;
 import static com.sun.source.tree.Tree.Kind.STRING_LITERAL;
 import static com.sun.source.tree.Tree.Kind.UNION_TYPE;
 import static com.sun.source.tree.Tree.Kind.VARIABLE;
+
 import static java.util.stream.Collectors.toList;
 
 import com.google.auto.value.AutoOneOf;
@@ -144,6 +145,9 @@ import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
 import com.sun.tools.javac.tree.TreeScanner;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -157,8 +161,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
 import javax.lang.model.element.Name;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * An AST visitor that builds a stream of {@link Op}s to format from the given {@link

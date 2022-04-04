@@ -17,6 +17,7 @@ package com.google.googlejavaformat;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Range;
 import com.google.googlejavaformat.OpsBuilder.BlankLineWanted;
+
 import java.util.Optional;
 
 /** An output from the formatter. */

@@ -21,6 +21,7 @@
 package com.itsaky.androidide.utils;
 
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
@@ -31,6 +32,7 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.interfaces.ProjectWriterCallback;
 import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
+
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

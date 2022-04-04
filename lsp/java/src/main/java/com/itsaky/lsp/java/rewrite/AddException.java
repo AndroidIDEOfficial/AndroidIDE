@@ -18,6 +18,7 @@
 package com.itsaky.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.utils.FindHelper;
@@ -28,9 +29,11 @@ import com.sun.source.tree.LineMap;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
+
 import javax.lang.model.element.ExecutableElement;
 
 public class AddException extends Rewrite {

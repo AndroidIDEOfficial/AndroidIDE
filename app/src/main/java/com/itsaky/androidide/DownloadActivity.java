@@ -17,15 +17,18 @@
  */
 package com.itsaky.androidide;
 
-import abhishekti7.unicorn.filepicker.UnicornFilePicker;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+
 import androidx.core.content.ContextCompat;
 import androidx.transition.TransitionManager;
+
+import abhishekti7.unicorn.filepicker.UnicornFilePicker;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ThreadUtils;
@@ -45,6 +48,7 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.InputStreamLineReader;
 import com.itsaky.toaster.Toaster;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;

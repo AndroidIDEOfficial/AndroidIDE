@@ -18,6 +18,7 @@
 package com.itsaky.androidide.managers;
 
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
@@ -25,9 +26,11 @@ import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.io.IOException;
-import org.jetbrains.annotations.Contract;
 
 public class ToolsManager {
 

@@ -19,9 +19,12 @@ package com.itsaky.androidide.utils;
 
 import android.content.Context;
 import android.content.DialogInterface;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
+
 import org.jetbrains.annotations.Contract;
 
 /**

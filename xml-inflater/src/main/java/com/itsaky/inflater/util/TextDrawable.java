@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+
 import androidx.annotation.NonNull;
 
 public class TextDrawable extends Drawable {

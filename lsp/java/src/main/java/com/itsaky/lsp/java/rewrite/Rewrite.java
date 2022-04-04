@@ -18,11 +18,13 @@
 package com.itsaky.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.CodeActionKind;
 import com.itsaky.lsp.models.DocumentChange;
 import com.itsaky.lsp.models.TextEdit;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;

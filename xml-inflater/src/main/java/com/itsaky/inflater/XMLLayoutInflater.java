@@ -27,8 +27,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+
 import com.blankj.utilcode.util.ReflectUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Logger;
@@ -46,18 +48,20 @@ import com.itsaky.widgets.WidgetInfo;
 import com.itsaky.widgets.models.Widget;
 import com.itsaky.xml.INamespace;
 import com.itsaky.xml.impl.UiNamespace;
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Pattern;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
+
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 class XMLLayoutInflater extends BaseLayoutInflater {
 

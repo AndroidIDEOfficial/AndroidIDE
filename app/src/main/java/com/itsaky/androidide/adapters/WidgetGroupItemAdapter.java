@@ -18,12 +18,15 @@
 package com.itsaky.androidide.adapters;
 
 import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.models.IconTextListItem;
 import com.itsaky.androidide.models.UIWidgetGroup;
+
 import java.util.List;
 
 public class WidgetGroupItemAdapter extends SimpleIconTextAdapter

@@ -22,9 +22,12 @@ package com.itsaky.androidide.adapters;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.itsaky.androidide.databinding.LayoutOptionssheetItemBinding;
 import com.itsaky.androidide.models.SheetOption;
+
 import java.util.List;
 
 public class OptionsSheetAdapter extends RecyclerView.Adapter<OptionsSheetAdapter.VH> {

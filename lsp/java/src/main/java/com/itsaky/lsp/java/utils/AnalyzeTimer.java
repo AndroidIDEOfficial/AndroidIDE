@@ -18,7 +18,9 @@
 package com.itsaky.lsp.java.utils;
 
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
+
 import java.util.Objects;
 
 /**

@@ -18,12 +18,16 @@
 package com.itsaky.androidide.utils;
 
 import android.util.Log;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ThrowableUtils;
+
+import org.jetbrains.annotations.Contract;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.jetbrains.annotations.Contract;
 
 /**
  * Logger for the IDE.

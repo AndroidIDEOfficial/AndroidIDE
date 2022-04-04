@@ -18,10 +18,13 @@
 package com.itsaky.androidide.language.logs;
 
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
+
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
@@ -32,6 +35,7 @@ import io.github.rosemoe.sora.lang.styling.Styles;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
+
 import java.util.ArrayList;
 import java.util.List;
 

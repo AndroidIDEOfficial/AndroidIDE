@@ -17,6 +17,7 @@ package com.google.googlejavaformat;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 

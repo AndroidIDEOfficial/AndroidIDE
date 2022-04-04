@@ -20,6 +20,7 @@
 package com.itsaky.androidide.lsp;
 
 import android.view.View;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
@@ -50,7 +51,9 @@ import com.itsaky.lsp.models.Location;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
 import com.itsaky.toaster.Toaster;
+
 import io.github.rosemoe.sora.text.Content;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;

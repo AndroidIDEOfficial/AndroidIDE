@@ -958,7 +958,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             }
         }
         sb.append(")");
-        return sb.toString ();
+        return sb.toString();
     }
 
     @Nullable

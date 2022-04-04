@@ -18,7 +18,9 @@
 package com.itsaky.androidide.ui.edit;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
+
 import java.util.List;
 
 /**

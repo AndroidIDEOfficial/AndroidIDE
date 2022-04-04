@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -50,6 +51,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
+
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
@@ -114,8 +116,15 @@ import com.itsaky.lsp.models.InitializeParams;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
+
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
+
+import me.piruin.quickaction.ActionItem;
+import me.piruin.quickaction.QuickAction;
+
+import org.jetbrains.annotations.Contract;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -129,9 +138,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import me.piruin.quickaction.ActionItem;
-import me.piruin.quickaction.QuickAction;
-import org.jetbrains.annotations.Contract;
 
 public class EditorActivity extends StudioActivity
         implements FileTreeFragment.FileActionListener,

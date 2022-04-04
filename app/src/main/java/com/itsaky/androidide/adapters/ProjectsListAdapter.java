@@ -24,9 +24,11 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.ChangeBounds;
 import androidx.transition.TransitionManager;
+
 import com.blankj.utilcode.util.FileUtils;
 import com.bumptech.glide.Glide;
 import com.itsaky.androidide.R;
@@ -35,6 +37,7 @@ import com.itsaky.androidide.databinding.LayoutProjectsItemBinding;
 import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.toaster.Toaster;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;

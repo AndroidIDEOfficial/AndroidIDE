@@ -18,6 +18,7 @@
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.visitors.FindBiggerRange;

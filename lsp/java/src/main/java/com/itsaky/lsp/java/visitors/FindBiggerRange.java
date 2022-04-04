@@ -19,6 +19,7 @@ package com.itsaky.lsp.java.visitors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;

@@ -23,13 +23,16 @@ package com.itsaky.androidide.services;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.provider.Settings;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.SplashActivity;
 import com.itsaky.androidide.app.StudioApp;
+
 import java.util.Map;
 
 public class MessagingService extends FirebaseMessagingService {

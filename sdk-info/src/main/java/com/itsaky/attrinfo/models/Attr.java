@@ -20,15 +20,19 @@ package com.itsaky.attrinfo.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.xml.INamespace;
+
+import org.jetbrains.annotations.Contract;
+
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
-import org.jetbrains.annotations.Contract;
 
 /**
  * Represents an xml attribute which is read from {@code attrs.xml}.

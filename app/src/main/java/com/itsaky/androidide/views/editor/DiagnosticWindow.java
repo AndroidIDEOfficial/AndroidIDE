@@ -19,6 +19,7 @@ package com.itsaky.androidide.views.editor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.lsp.models.DiagnosticItem;
 
 /**

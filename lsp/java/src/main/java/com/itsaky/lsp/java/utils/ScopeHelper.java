@@ -20,9 +20,11 @@ package com.itsaky.lsp.java.utils;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.sun.source.tree.Scope;
 import com.sun.source.util.Trees;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;

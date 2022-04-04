@@ -25,7 +25,9 @@ import com.sun.source.util.JavacTask;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
+
 import java.util.List;
+
 import javax.lang.model.element.Element;
 
 public class FindReferences extends TreePathScanner<Void, List<TreePath>> {

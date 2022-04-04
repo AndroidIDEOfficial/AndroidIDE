@@ -17,8 +17,11 @@
 package com.itsaky.xml;
 
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.xml.impl.UiNamespace;
+
 import org.jetbrains.annotations.Contract;
 
 /**

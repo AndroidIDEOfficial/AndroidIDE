@@ -24,6 +24,7 @@ import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.tasks.BaseGradleTask;
+
 import java.util.Collections;
 import java.util.List;
 

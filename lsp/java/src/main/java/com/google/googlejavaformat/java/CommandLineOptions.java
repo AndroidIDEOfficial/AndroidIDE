@@ -16,6 +16,7 @@ package com.google.googlejavaformat.java;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableRangeSet;
+
 import java.util.Optional;
 
 /**

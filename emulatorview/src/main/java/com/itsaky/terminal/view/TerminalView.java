@@ -29,7 +29,9 @@ import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.Scroller;
+
 import androidx.annotation.RequiresApi;
+
 import com.itsaky.terminal.KeyHandler;
 import com.itsaky.terminal.TerminalEmulator;
 import com.itsaky.terminal.TerminalSession;

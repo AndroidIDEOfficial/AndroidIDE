@@ -20,6 +20,7 @@ package com.itsaky.lsp.java.compiler;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.utils.StringSearch;
 import com.sun.tools.javac.api.JavacTool;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -27,6 +28,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+
 import javax.tools.*;
 
 public class SourceFileManager extends ForwardingJavaFileManager<StandardJavaFileManager> {

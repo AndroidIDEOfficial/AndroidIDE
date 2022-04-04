@@ -20,11 +20,13 @@
 package com.itsaky.apiinfo.models;
 
 import android.text.TextUtils;
+
+import org.eclipse.jdt.core.Signature;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.jdt.core.Signature;
 
 /** Holds information about a class */
 public class ClassInfo extends Info {

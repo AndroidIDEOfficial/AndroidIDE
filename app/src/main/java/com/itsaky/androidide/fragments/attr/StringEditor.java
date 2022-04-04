@@ -21,13 +21,16 @@ import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.databinding.LayoutStringAttrEditorBinding;
 import com.itsaky.androidide.utils.TextWatcherAdapter;
 import com.itsaky.inflater.values.FrameworkValues;
 import com.itsaky.inflater.values.ValuesTableFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

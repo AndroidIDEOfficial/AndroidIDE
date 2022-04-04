@@ -35,10 +35,12 @@ import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;

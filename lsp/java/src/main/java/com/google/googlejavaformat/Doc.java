@@ -15,6 +15,7 @@
 package com.google.googlejavaformat;
 
 import static com.google.common.collect.Iterables.getLast;
+
 import static java.lang.Math.max;
 
 import com.google.common.base.MoreObjects;
@@ -22,6 +23,7 @@ import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Range;
 import com.google.googlejavaformat.Output.BreakTag;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

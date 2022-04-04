@@ -4,6 +4,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+
 import com.itsaky.terminal.TerminalSession;
 
 /**

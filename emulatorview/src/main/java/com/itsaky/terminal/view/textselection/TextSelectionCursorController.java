@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+
 import com.itsaky.terminal.TerminalBuffer;
 import com.itsaky.terminal.WcWidth;
 import com.itsaky.terminal.view.R;

@@ -19,10 +19,13 @@ package com.itsaky.androidide.adapters;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.itsaky.androidide.databinding.LayoutTextActionItemBinding;
 import com.itsaky.androidide.views.editor.IDEEditor;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;

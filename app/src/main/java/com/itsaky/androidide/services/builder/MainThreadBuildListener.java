@@ -18,10 +18,12 @@
 package com.itsaky.androidide.services.builder;
 
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.project.IDEModule;
 import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.tasks.GradleTask;
+
 import java.util.Objects;
 import java.util.Optional;
 

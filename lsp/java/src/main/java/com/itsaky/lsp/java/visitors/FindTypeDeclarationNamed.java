@@ -19,6 +19,7 @@ package com.itsaky.lsp.java.visitors;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.TreeScanner;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

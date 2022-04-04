@@ -18,8 +18,10 @@
 package com.itsaky.androidide.adapters;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.R;
 import com.itsaky.attrinfo.models.Attr;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

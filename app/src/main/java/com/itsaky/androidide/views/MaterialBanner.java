@@ -26,11 +26,13 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
+
 import com.itsaky.androidide.databinding.LayoutBannerBinding;
 
 public class MaterialBanner extends CoordinatorLayout {

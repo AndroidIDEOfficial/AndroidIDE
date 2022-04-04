@@ -31,6 +31,7 @@ import com.google.googlejavaformat.Input.Token;
 import com.google.googlejavaformat.Newlines;
 import com.google.googlejavaformat.OpsBuilder.BlankLineWanted;
 import com.google.googlejavaformat.Output;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

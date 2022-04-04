@@ -18,10 +18,13 @@ package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.app.BaseApplication;
+
 import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;

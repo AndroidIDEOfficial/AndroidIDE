@@ -22,7 +22,9 @@ import android.graphics.Typeface;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Switch;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 

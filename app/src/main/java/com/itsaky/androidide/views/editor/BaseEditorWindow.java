@@ -24,10 +24,13 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.R;
+
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 
 /**

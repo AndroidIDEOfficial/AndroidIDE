@@ -22,6 +22,7 @@ import static com.itsaky.lsp.models.HighlightTokenKind.*;
 import com.itsaky.lsp.models.HighlightToken;
 import com.itsaky.lsp.models.HighlightTokenKind;
 import com.itsaky.lsp.models.Position;
+
 import java.util.List;
 
 public class HighlightRangeHelper {

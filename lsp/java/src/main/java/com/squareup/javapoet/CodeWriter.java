@@ -19,6 +19,7 @@ import static com.squareup.javapoet.Util.checkArgument;
 import static com.squareup.javapoet.Util.checkNotNull;
 import static com.squareup.javapoet.Util.checkState;
 import static com.squareup.javapoet.Util.stringLiteralWithDoubleQuotes;
+
 import static java.lang.String.join;
 
 import java.io.IOException;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
+
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
 

@@ -15,6 +15,7 @@
 package com.google.googlejavaformat;
 
 import com.google.common.base.MoreObjects;
+
 import java.util.ArrayDeque;
 import java.util.List;
 

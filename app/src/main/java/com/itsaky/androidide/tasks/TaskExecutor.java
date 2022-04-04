@@ -20,6 +20,7 @@ package com.itsaky.androidide.tasks;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.utils.Logger;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -35,7 +36,8 @@ public class TaskExecutor {
                                 return callable.call();
                             } catch (Throwable th) {
                                 LOG.error(
-                                        "An error occurred while executing Callable in background thread.",
+                                        "An error occurred while executing Callable in background"
+                                                + " thread.",
                                         th);
                                 return null;
                             }
@@ -52,7 +54,8 @@ public class TaskExecutor {
                                 return callable.call();
                             } catch (Throwable th) {
                                 LOG.error(
-                                        "An error occurred while executing Callable in background thread.",
+                                        "An error occurred while executing Callable in background"
+                                                + " thread.",
                                         th);
                                 throw new CompletionException(th);
                             }

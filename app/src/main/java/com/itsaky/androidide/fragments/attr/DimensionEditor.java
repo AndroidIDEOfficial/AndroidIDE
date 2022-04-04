@@ -24,8 +24,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDimensionAttrEditorBinding;
@@ -33,6 +35,7 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TextWatcherAdapter;
 import com.itsaky.inflater.values.FrameworkValues;
 import com.itsaky.inflater.values.ValuesTableFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

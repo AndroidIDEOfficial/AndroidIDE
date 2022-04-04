@@ -17,8 +17,11 @@
 package com.sdsmdg.harjot.vectormaster.utilities.legacyparser;
 
 import android.graphics.Path;
+
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
+
 import java.util.ArrayList;
 
 /** This class is a duplicate of the PathParser.java in androidx.core.graphics package. */

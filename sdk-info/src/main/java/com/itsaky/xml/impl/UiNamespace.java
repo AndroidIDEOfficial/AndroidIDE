@@ -17,10 +17,14 @@
 package com.itsaky.xml.impl;
 
 import android.os.Parcel;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.xml.INamespace;
-import java.util.Objects;
+
 import org.jetbrains.annotations.Contract;
+
+import java.util.Objects;
 
 /**
  * @author Akash Yadav

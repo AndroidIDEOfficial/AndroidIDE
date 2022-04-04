@@ -20,7 +20,9 @@ package com.itsaky.inflater.adapters.android.widget;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ToggleButton;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ReflectUtils;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;

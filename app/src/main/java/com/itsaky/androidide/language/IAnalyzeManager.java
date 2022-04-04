@@ -18,7 +18,9 @@
 package com.itsaky.androidide.language;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.models.DiagnosticItem;
+
 import java.util.List;
 
 /**

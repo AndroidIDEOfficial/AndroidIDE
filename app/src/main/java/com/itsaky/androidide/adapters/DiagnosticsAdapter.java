@@ -21,13 +21,16 @@ package com.itsaky.androidide.adapters;
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDiagnosticGroupBinding;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.models.DiagnosticGroup;
+
 import java.util.List;
 
 public class DiagnosticsAdapter extends RecyclerView.Adapter<DiagnosticsAdapter.VH> {

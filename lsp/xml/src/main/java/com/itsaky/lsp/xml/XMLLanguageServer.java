@@ -18,6 +18,7 @@
 package com.itsaky.lsp.xml;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
@@ -41,10 +42,12 @@ import com.itsaky.lsp.util.NoDocumentHandler;
 import com.itsaky.lsp.xml.models.XMLServerSettings;
 import com.itsaky.lsp.xml.providers.CompletionProvider;
 import com.itsaky.sdk.SDKInfo;
+
+import org.jetbrains.annotations.Nullable;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Language server implementation for XML files.

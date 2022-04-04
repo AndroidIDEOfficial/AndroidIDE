@@ -18,6 +18,7 @@
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -31,6 +32,7 @@ import com.itsaky.lsp.models.Location;
 import com.itsaky.lsp.util.PathUtils;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;

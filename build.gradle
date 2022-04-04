@@ -1,5 +1,11 @@
-import com.github.sherter.googlejavaformatgradleplugin.GoogleJavaFormat
-import com.github.sherter.googlejavaformatgradleplugin.VerifyGoogleJavaFormat
+import com.google.googlejavaformat.java.Formatter
+import com.google.googlejavaformat.java.JavaFormatterOptions
+
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.util.stream.Collectors
 
 buildscript {
     ext.kotlin_version = '1.6.10'
@@ -29,18 +35,16 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.10'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.sherter.googlejavaformatgradleplugin:google-java-format-gradle-plugin:0.9-SNAPSHOT'
+        classpath 'com.google.googlejavaformat:google-java-format:1.15.0'
     }
 }
 
+//dependencies {
+//    implementation 'com.google.googlejavaformat:google-java-format:1.15.0'
+//}
+
 subprojects {
     apply from: "${rootDir}/gradle/dependencies.gradle"
-    apply plugin: 'com.github.sherter.google-java-format'
-
-    googleJavaFormat {
-        toolVersion = '1.15.0'
-        options style: 'AOSP'
-    }
 
     project.afterEvaluate {
         tasks.register("checkTranslations", task -> {
@@ -95,77 +99,6 @@ subprojects {
                 project.logger.info("Default strings.xml file does not exist for project '${project.name}'")
             }
         })
-        tasks.register("format", GoogleJavaFormat, task -> {
-            source 'src/main'
-            source 'src/test'
-            include '**/*.java'
-            exclude '**/*_template.java'
-
-            finalizedBy tasks.getByName("verifyFormatting")
-        })
-
-        tasks.register("verifyFormatting", VerifyGoogleJavaFormat, task -> {
-            source 'src/main'
-            source 'src/test'
-            include '**/*.java'
-            exclude '**/*_template.java'
-            ignoreFailures true
-
-            finalizedBy tasks.getByName("checkFormattingChanges")
-        })
-
-        tasks.register("checkFormattingChanges", task -> {
-            def exit = rootProject.exec {
-                ignoreExitValue true
-                standardOutput OutputStream.nullOutputStream()
-                errorOutput standardOutput
-                commandLine "git", "diff", "--exit-code"
-            }
-
-            if (exit.exitValue == 0) {
-                println "No changes in ${project.displayName}."
-            } else {
-                task.finalizedBy tasks.stageChanges
-                return
-            }
-        })
-
-        tasks.register("stageChanges", task -> {
-            task.dependsOn tasks.getByName("checkFormattingChanges")
-            def out = new ByteArrayOutputStream()
-            def exit = rootProject.exec {
-                ignoreExitValue true
-                standardOutput out
-                errorOutput standardOutput
-                commandLine "git", "add", "."
-            }
-
-            if (exit.exitValue == 0) {
-                task.finalizedBy tasks.commitFormattingChanges
-                return
-            } else {
-                println "Unable to stage changes. Process terminated with exit code ${exit.exitValue}"
-                println out.toString()
-            }
-        })
-
-        tasks.register("commitFormattingChanges", task -> {
-            task.dependsOn tasks.getByName("stageChanges")
-            def out = new ByteArrayOutputStream()
-            def exit = rootProject.exec {
-                ignoreExitValue true
-                standardOutput out
-                errorOutput standardOutput
-                commandLine "git", "commit", "-m", "[Gradle] Format java source code"
-            }
-
-            if (exit.exitValue == 0) {
-                println "Changes committed successfully."
-            } else {
-                println "Failed to commit changes. Process terminated with exit code ${exit.exitValue}"
-                println out.toString()
-            }
-        })
     }
 }
 
@@ -180,4 +113,107 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+Collection<String> walkForSources(Path dir) {
+    try {
+
+        if (!Files.exists(dir)) {
+            return Collections.emptySet()
+        }
+
+        return Files.walk(dir)
+                .filter(path -> !Files.isDirectory(path))
+                .filter(path -> Files.isReadable(path) && Files.isWritable(path))
+                .map(path -> path.toFile())
+                .map(file -> file.absolutePath)
+                .filter(path -> path.endsWith(".java"))
+                .filter(path -> !path.endsWith("_template.java"))
+                .collect(Collectors.toSet())
+    } catch (Throwable error) {
+        getLogger().error("Could not walk directory for java sources: ${dir.toString()}", error)
+        return Collections.emptySet()
+    }
+}
+
+boolean doJavaFormat(Formatter formatter, String path) {
+    try {
+        final def file = Paths.get(path)
+        final def content = Files.readAllBytes(file)
+        final def utf8Decoded = new String(content, StandardCharsets.UTF_8.name())
+        final def formatted = formatter.formatSource(utf8Decoded)
+        if (utf8Decoded == formatted) {
+            getLogger().info("{}: UP-TO-DATE", file)
+            return true
+        }
+
+        byte[] utf8Encoded = formatted.getBytes(StandardCharsets.UTF_8.name())
+        Files.write(file, utf8Encoded)
+        getLogger().lifecycle("{}: Formatted successfully!", file)
+        return true
+    } catch (Throwable th) {
+        getLogger().error("Failed to format ${path}", th)
+        return false
+    }
+}
+
+task formatJavaSources() {
+    def jarName = "google-java-format-1.15.0-all-deps"
+    def jar = rootProject.file(".tools/${jarName}.jar")
+
+    if (!jar.exists()) {
+        getLogger().info("google-java-format JAR file not found. Skipping format task...")
+        return
+    }
+
+    boolean formattingChanges = false
+    rootProject.subprojects.forEach(sub -> {
+        def sources = walkForSources(sub.file("src/main/java").toPath())
+        sources.addAll(walkForSources(sub.file("src/test/java").toPath()))
+
+        final def formatter = new Formatter(JavaFormatterOptions.builder().style(JavaFormatterOptions.Style.AOSP).formatJavadoc(true).build())
+
+        for (def path : sources) {
+            getLogger().info("Formatting: ${path}")
+            if (doJavaFormat(formatter, path)) {
+                formattingChanges = true
+            }
+        }
+    })
+
+    if (!formattingChanges) {
+        getLogger().info("No formatting changes.")
+        return
+    }
+
+    // ---------------- Stage Changes -------------------
+    def out = new ByteArrayOutputStream()
+    def exit = rootProject.exec {
+        ignoreExitValue true
+        standardOutput out
+        errorOutput standardOutput
+        commandLine "git", "add", "."
+    }
+
+    if (exit.exitValue != 0) {
+        getLogger().error("Unable to stage changes. Process terminated with exit code ${exit.exitValue}")
+        getLogger().error(out.toString())
+        return
+    }
+
+    // ----------------- Commit Changes --------------------
+    out = new ByteArrayOutputStream()
+    exit = rootProject.exec {
+        ignoreExitValue true
+        standardOutput out
+        errorOutput standardOutput
+        commandLine "git", "commit", "-m", "[Gradle] Format java source code"
+    }
+
+    if (exit.exitValue == 0) {
+        getLogger().info("Changes committed successfully.")
+    } else {
+        getLogger().error("Failed to commit changes. Process terminated with exit code ${exit.exitValue}")
+        getLogger().error(out.toString())
+    }
 }

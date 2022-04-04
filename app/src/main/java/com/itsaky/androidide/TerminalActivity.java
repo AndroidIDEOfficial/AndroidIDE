@@ -29,7 +29,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ClipboardUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.SizeUtils;
@@ -54,10 +56,12 @@ import com.itsaky.terminal.TerminalSessionClient;
 import com.itsaky.terminal.TextStyle;
 import com.itsaky.terminal.view.TerminalView;
 import com.itsaky.terminal.view.TerminalViewClient;
+
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Map;
-import org.json.JSONException;
 
 public class TerminalActivity extends StudioActivity {
 

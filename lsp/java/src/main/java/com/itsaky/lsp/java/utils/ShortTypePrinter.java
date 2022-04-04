@@ -2,6 +2,7 @@ package com.itsaky.lsp.java.utils;
 
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;

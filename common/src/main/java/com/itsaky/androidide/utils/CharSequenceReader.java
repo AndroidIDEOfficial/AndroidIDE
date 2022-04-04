@@ -17,6 +17,7 @@
 package com.itsaky.androidide.utils;
 
 import androidx.annotation.NonNull;
+
 import java.io.Reader;
 import java.io.Serializable;
 import java.util.Objects;

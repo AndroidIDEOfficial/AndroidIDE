@@ -21,21 +21,25 @@ import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATO
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TEXT_SELECTED;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
+
 import static io.github.rosemoe.sora.widget.schemes.EditorColorScheme.LITERAL;
 
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
+
 import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.MappedSpans;
 import io.github.rosemoe.sora.lang.styling.Styles;
-import java.io.IOException;
-import java.util.Stack;
+
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
+
+import java.io.IOException;
+import java.util.Stack;
 
 /**
  * Simple analyzer implementation for the XML files.

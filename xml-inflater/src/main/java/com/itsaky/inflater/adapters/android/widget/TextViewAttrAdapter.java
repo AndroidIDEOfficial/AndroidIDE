@@ -27,11 +27,14 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
+
 import java.util.regex.Pattern;
 
 /**

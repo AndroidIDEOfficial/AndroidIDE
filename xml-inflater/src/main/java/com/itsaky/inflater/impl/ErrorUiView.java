@@ -22,9 +22,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
 import com.itsaky.inflater.IView;
+
 import org.jetbrains.annotations.Contract;
 
 /**

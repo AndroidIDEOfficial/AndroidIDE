@@ -28,6 +28,7 @@ import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.withoutCompletion;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.language.IAnalyzeManager;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
@@ -37,19 +38,22 @@ import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticSeverity;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
+
 import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.MappedSpans;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.Styles;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.Token;
 import org.jetbrains.annotations.Contract;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * Code analyzer for the Java Language

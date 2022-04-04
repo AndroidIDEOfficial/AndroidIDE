@@ -20,8 +20,6 @@
 // Generated from GroovyLexer.g4 by ANTLR 4.9.2
 package com.itsaky.androidide.lexers.groovy;
 
-import java.io.IOException;
-import java.io.StringReader;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Lexer;
@@ -33,6 +31,9 @@ import org.antlr.v4.runtime.atn.ATNDeserializer;
 import org.antlr.v4.runtime.atn.LexerATNSimulator;
 import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class GroovyLexer extends Lexer {

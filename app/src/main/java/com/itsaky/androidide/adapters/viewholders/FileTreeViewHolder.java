@@ -26,12 +26,15 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+
 import androidx.core.content.ContextCompat;
+
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.LayoutFiletreeItemBinding;
 import com.itsaky.androidide.utils.Environment;
 import com.unnamed.b.atv.model.TreeNode;
+
 import java.io.File;
 
 public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {

@@ -27,10 +27,13 @@ import android.provider.DocumentsContract.Document;
 import android.provider.DocumentsContract.Root;
 import android.provider.DocumentsProvider;
 import android.webkit.MimeTypeMap;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

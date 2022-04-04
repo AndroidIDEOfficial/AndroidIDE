@@ -23,8 +23,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.colorpicker.ColorPickerView;
@@ -32,6 +34,7 @@ import com.itsaky.androidide.databinding.LayoutColorAttrEditorBinding;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.inflater.values.FrameworkValues;
 import com.itsaky.inflater.values.ValuesTableFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -20,6 +20,7 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.values.ValuesTable;
 import com.itsaky.inflater.values.ValuesTableFactory;
+
 import java.io.File;
 import java.util.Objects;
 import java.util.regex.Pattern;

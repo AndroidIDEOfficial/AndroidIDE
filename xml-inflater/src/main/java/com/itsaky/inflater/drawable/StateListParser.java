@@ -20,12 +20,15 @@ package com.itsaky.inflater.drawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.util.DisplayMetrics;
+
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.InflateException;
-import java.util.ArrayList;
+
 import org.xmlpull.v1.XmlPullParser;
+
+import java.util.ArrayList;
 
 /**
  * Parser for parsing &lt;selector&gt; drawables.

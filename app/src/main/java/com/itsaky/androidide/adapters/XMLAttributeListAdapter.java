@@ -24,12 +24,15 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutAttrEditorSheetItemBinding;
 import com.itsaky.androidide.models.XMLAttribute;
+
 import java.util.List;
 
 public class XMLAttributeListAdapter extends RecyclerView.Adapter<XMLAttributeListAdapter.VH> {

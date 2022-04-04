@@ -19,6 +19,7 @@ package com.itsaky.inflater.values;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.blankj.utilcode.util.FileUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.values.models.ArrayResource;
@@ -27,6 +28,11 @@ import com.itsaky.inflater.values.models.ColorResource;
 import com.itsaky.inflater.values.models.DimensionResource;
 import com.itsaky.inflater.values.models.IntegerResource;
 import com.itsaky.inflater.values.models.StringResource;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,9 +41,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Reads and manages values (colors, strings, integers, etc.) for a single module.

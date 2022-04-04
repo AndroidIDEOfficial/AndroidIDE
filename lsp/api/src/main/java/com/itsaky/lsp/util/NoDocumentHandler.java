@@ -18,11 +18,13 @@
 package com.itsaky.lsp.util;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
 import com.itsaky.lsp.models.DocumentSaveEvent;
+
 import java.nio.file.Path;
 
 /**

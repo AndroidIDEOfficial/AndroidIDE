@@ -19,9 +19,11 @@ package com.itsaky.androidide.project;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.values.ValuesTableFactory;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Collection;

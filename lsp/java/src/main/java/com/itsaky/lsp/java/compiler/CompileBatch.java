@@ -23,6 +23,7 @@ import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.parser.Parser;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.lang.model.element.Name;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;

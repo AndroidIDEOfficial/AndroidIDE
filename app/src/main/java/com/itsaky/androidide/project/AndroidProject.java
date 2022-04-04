@@ -22,7 +22,9 @@ package com.itsaky.androidide.project;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import com.itsaky.androidide.app.StudioApp;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

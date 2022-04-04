@@ -16,6 +16,7 @@ package com.google.googlejavaformat.java;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Iterables.getLast;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.common.base.MoreObjects;
@@ -40,12 +41,14 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Log.DeferredDiagnosticHandler;
 import com.sun.tools.javac.util.Options;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.DiagnosticListener;
@@ -465,7 +468,8 @@ public final class JavaInput extends Input {
             } else {
                 if (strings.size() != 1 && !tokText.equals(originalTokText)) {
                     throw new FormatterException(
-                            "Unicode escapes not allowed in whitespace or multi-character operators");
+                            "Unicode escapes not allowed in whitespace or multi-character"
+                                    + " operators");
                 }
                 for (String str : strings) {
                     toks.add(

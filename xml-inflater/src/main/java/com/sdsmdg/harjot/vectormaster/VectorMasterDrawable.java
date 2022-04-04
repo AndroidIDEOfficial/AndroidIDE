@@ -8,21 +8,25 @@ import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.sdsmdg.harjot.vectormaster.models.ClipPathModel;
 import com.sdsmdg.harjot.vectormaster.models.GroupModel;
 import com.sdsmdg.harjot.vectormaster.models.PathModel;
 import com.sdsmdg.harjot.vectormaster.models.VectorModel;
 import com.sdsmdg.harjot.vectormaster.utilities.Utils;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Stack;
+
 import org.jetbrains.annotations.Contract;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Stack;
 
 public class VectorMasterDrawable extends Drawable {
 

@@ -20,6 +20,7 @@ package com.itsaky.androidide.services.builder;
 import com.itsaky.androidide.project.IDEModule;
 import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.tasks.GradleTask;
+
 import java.util.Optional;
 
 /** A client should implement this interface to get callbacks about a build */

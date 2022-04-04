@@ -25,6 +25,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import androidx.core.content.ContextCompat;
 
 public class EmptyView extends RelativeLayout {

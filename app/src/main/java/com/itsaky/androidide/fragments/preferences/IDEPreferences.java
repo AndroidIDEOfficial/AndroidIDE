@@ -20,9 +20,11 @@ package com.itsaky.androidide.fragments.preferences;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
+
 import com.itsaky.androidide.AboutActivity;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;

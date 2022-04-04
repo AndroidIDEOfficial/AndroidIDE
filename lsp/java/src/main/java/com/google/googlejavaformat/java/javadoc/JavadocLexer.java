@@ -45,6 +45,7 @@ import static com.google.googlejavaformat.java.javadoc.Token.Type.PRE_OPEN_TAG;
 import static com.google.googlejavaformat.java.javadoc.Token.Type.TABLE_CLOSE_TAG;
 import static com.google.googlejavaformat.java.javadoc.Token.Type.TABLE_OPEN_TAG;
 import static com.google.googlejavaformat.java.javadoc.Token.Type.WHITESPACE;
+
 import static java.lang.String.format;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static java.util.regex.Pattern.DOTALL;
@@ -54,6 +55,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.PeekingIterator;
 import com.google.googlejavaformat.java.javadoc.Token.Type;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;

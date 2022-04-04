@@ -21,9 +21,11 @@
 package com.itsaky.androidide.fragments.preferences;
 
 import android.os.Bundle;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
+
 import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
@@ -31,6 +33,7 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
+
 import java.io.File;
 
 public class BuildPreferences extends BasePreferenceFragment

@@ -25,7 +25,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.core.content.ContextCompat;
+
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -43,8 +45,10 @@ import com.itsaky.apiinfo.models.Info;
 import com.itsaky.apiinfo.models.MethodInfo;
 import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionItemKind;
+
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter;
+
 import java.util.List;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {

@@ -22,7 +22,9 @@ import android.graphics.RectF;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.DesignerActivity;
 import com.itsaky.androidide.R;
@@ -36,6 +38,7 @@ import com.itsaky.inflater.impl.UiAttribute;
 import com.itsaky.inflater.impl.UiView;
 import com.itsaky.inflater.impl.UiViewGroup;
 import com.itsaky.xml.INamespace;
+
 import org.jetbrains.annotations.Contract;
 
 /**

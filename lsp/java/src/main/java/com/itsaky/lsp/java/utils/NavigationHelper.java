@@ -39,7 +39,9 @@ import com.itsaky.lsp.java.visitors.FindNameAt;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
+
 import java.nio.file.Path;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 

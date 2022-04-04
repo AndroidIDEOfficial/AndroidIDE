@@ -21,9 +21,12 @@ import android.animation.LayoutTransition;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IResourceTable;
+
 import org.jetbrains.annotations.Contract;
 
 /**

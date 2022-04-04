@@ -18,6 +18,7 @@
 package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
+
 import com.google.common.io.CharSink;
 import com.google.common.io.CharSource;
 import com.google.googlejavaformat.java.Formatter;
@@ -25,6 +26,7 @@ import com.google.googlejavaformat.java.JavaFormatterOptions;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.IServerSettings;
 import com.itsaky.lsp.java.models.JavaServerSettings;
+
 import java.io.StringWriter;
 import java.io.Writer;
 

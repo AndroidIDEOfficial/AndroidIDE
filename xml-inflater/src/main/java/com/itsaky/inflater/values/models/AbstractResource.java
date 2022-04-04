@@ -17,7 +17,9 @@
 package com.itsaky.inflater.values.models;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.inflater.values.IResource;
+
 import java.util.Objects;
 
 /**

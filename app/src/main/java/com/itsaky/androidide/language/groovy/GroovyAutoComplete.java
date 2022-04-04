@@ -20,14 +20,17 @@
 package com.itsaky.androidide.language.groovy;
 
 import android.os.Bundle;
+
 import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionItemKind;
 import com.itsaky.lsp.models.InsertTextFormat;
+
 import io.github.rosemoe.sora.lang.completion.CompletionHelper;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.util.MyCharacter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;

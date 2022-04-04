@@ -20,7 +20,9 @@ package com.itsaky.androidide.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
+
 import androidx.annotation.DrawableRes;
+
 import java.util.Objects;
 
 /**

@@ -3,6 +3,7 @@ package com.unnamed.b.atv.holder;
 import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
+
 import com.unnamed.b.atv.model.TreeNode;
 
 /** Created by Bogdan Melnychuk on 2/11/15. */

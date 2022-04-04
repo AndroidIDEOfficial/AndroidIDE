@@ -21,6 +21,7 @@ import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.util.StringUtils;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.lang.model.element.TypeElement;
 
 // Translated from https://golang.org/src/strings/search.go

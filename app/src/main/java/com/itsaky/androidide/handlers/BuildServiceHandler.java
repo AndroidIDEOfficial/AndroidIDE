@@ -18,6 +18,7 @@
 package com.itsaky.androidide.handlers;
 
 import android.view.View;
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.managers.PreferenceManager;
@@ -30,6 +31,7 @@ import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.build.ApkGeneratingTask;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;

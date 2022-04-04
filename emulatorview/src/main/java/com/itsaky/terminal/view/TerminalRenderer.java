@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+
 import com.itsaky.terminal.TerminalBuffer;
 import com.itsaky.terminal.TerminalEmulator;
 import com.itsaky.terminal.TerminalRow;

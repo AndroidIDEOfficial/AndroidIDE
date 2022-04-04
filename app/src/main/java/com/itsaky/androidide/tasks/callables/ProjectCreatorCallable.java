@@ -24,6 +24,7 @@ import com.itsaky.androidide.interfaces.ProjectWriterCallback;
 import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
 import com.itsaky.androidide.utils.ProjectWriter;
+
 import java.util.concurrent.Callable;
 
 public class ProjectCreatorCallable implements Callable<Void> {

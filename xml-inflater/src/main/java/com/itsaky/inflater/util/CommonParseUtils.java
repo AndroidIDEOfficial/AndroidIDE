@@ -26,13 +26,16 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.drawable.DrawableParserFactory;
+
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Objects;

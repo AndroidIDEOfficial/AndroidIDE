@@ -33,11 +33,12 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.compiler.parser;
 
+import org.eclipse.jdt.internal.compiler.ast.ASTNode;
+import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import org.eclipse.jdt.internal.compiler.ast.ASTNode;
-import org.eclipse.jdt.internal.compiler.classfmt.ClassFileConstants;
 
 public class ScannerHelper {
 

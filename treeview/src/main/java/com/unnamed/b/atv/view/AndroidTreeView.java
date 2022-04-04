@@ -9,10 +9,13 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+
 import androidx.annotation.DrawableRes;
+
 import com.unnamed.b.atv.R;
 import com.unnamed.b.atv.holder.SimpleViewHolder;
 import com.unnamed.b.atv.model.TreeNode;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;

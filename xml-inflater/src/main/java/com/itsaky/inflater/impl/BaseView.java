@@ -18,14 +18,17 @@
 package com.itsaky.inflater.impl;
 
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IAttributeAdapter;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.IViewGroup;
 import com.itsaky.xml.INamespace;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;

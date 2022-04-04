@@ -2,6 +2,7 @@ package com.google.googlejavaformat.java;
 
 import com.google.common.collect.ImmutableList;
 import com.sun.source.tree.AnnotationTree;
+
 import javax.annotation.processing.Generated;
 
 @Generated("com.google.auto.value.processor.AutoValueProcessor")

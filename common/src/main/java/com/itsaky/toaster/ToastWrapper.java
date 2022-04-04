@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.ViewAnimationUtils;
 import android.widget.LinearLayout;
+
 import com.google.android.material.animation.ArgbEvaluatorCompat;
 
 public class ToastWrapper extends LinearLayout {

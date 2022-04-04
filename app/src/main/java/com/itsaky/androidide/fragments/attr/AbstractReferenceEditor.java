@@ -19,12 +19,15 @@ package com.itsaky.androidide.fragments.attr;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.widget.AutoCompleteTextView;
+
 import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.adapters.AttrValueCompletionAdapter;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.utils.TextWatcherAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

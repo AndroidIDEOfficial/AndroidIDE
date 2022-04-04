@@ -18,7 +18,9 @@
 package com.itsaky.lsp.java.utils;
 
 import androidx.annotation.NonNull;
+
 import com.sun.source.util.JavacTask;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;

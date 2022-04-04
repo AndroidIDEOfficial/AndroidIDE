@@ -17,6 +17,7 @@
 package com.itsaky.lsp.java.models;
 
 import androidx.annotation.NonNull;
+
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.lsp.util.PrefBasedServerSettings;
 
