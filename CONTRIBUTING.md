@@ -19,7 +19,7 @@ If you face `AAPT2` issue while building AndroidIDE in the IDE itself, specify t
 ## Source code format
 The source code must have `4-space` indentation (soft tab).
 Java source code is formatted using `google-java-format` with `AOSP` style formatting.
-You can execute `./gradlew format` in terminal to format all Java source files using Google Java Format.
+You can execute `./gradlew formatJavaSources` in terminal to format all Java source files using Google Java Format.
 **This will commit the changes as well**.
 
 ## Issues & Pull requests
