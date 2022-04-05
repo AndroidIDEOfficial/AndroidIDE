@@ -22,11 +22,9 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ThrowableUtils;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.project.ProjectResourceTable;
-import com.itsaky.androidide.services.MessagingService;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.attrinfo.AttrInfo;
@@ -64,9 +62,6 @@ public class StudioApp extends BaseApplication {
         this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this::handleCrash);
         super.onCreate();
-
-        FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_UPDATE);
-        FirebaseMessaging.getInstance().subscribeToTopic(MessagingService.TOPIC_DEV_MSGS);
 
         getApiInformation();
     }

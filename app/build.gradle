@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion rootProject.ext.compileSdk
@@ -113,12 +111,6 @@ dependencies {
     implementation androidx.vectors
     implementation androidx.animated_vectors
     implementation google.material
-
-    // Firebase
-    implementation platform('com.google.firebase:firebase-bom:29.0.0')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-crashlytics'
-    implementation 'com.google.firebase:firebase-messaging'
 
     // Kotlin
     implementation "androidx.core:core-ktx:1.7.0"
