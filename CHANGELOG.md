@@ -7,6 +7,7 @@ This is the changelog of all the releases of AndroidIDE.
 ### Important notes
 <!--Breaking changes and other important stuff here-->
 - As 64-bit installation does not work on Android 12 (due to [restriction by the OS](https://source.android.com/devices/tech/debug/tagged-pointers)), 32-bit build tools need to be installed when installing AndroidIDE on devices running Android 12.
+- Google services and Firebase integration has been removed.
 
 ### Additions
 <!--New features-->
@@ -28,6 +29,7 @@ This is the changelog of all the releases of AndroidIDE.
 <!--Things that were removed-->
 - Removed initial view attributes from view tags completion in XMLCompletionProvider.
 - Vertical text action window has been removed.
+- Removed Google services and Firebase integration.
 
 ### Fixes
 <!--Bug fixes, etc-->
