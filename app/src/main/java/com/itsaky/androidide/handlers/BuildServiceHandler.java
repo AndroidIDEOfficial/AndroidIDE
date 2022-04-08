@@ -54,6 +54,10 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
         return service;
     }
 
+    public boolean isBuilding() {
+        return getService().isBuilding();
+    }
+
     @Override
     public void start() {
         Objects.requireNonNull(this.activity());
@@ -150,7 +154,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
                 .getApp()
                 .getPrefManager()
                 .putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-        activity().invalidateOptionsMenu();
+        activity().ensureToolbarMenu();
         activity().getBinding().buildProgressIndicator.setVisibility(View.GONE);
     }
 
@@ -169,7 +173,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
                 .getApp()
                 .getPrefManager()
                 .putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-        activity().invalidateOptionsMenu();
+        activity().ensureToolbarMenu();
         activity().getBinding().buildProgressIndicator.setVisibility(View.GONE);
     }
 

@@ -1,0 +1,69 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.itsaky.androidide.handlers
+
+import android.content.Context
+import com.itsaky.androidide.actions.ActionItem
+import com.itsaky.androidide.actions.ActionsRegistry
+import com.itsaky.androidide.actions.build.QuickRunAction
+import com.itsaky.androidide.actions.build.RunActionMenu
+import com.itsaky.androidide.actions.build.StopDaemonsAction
+import com.itsaky.androidide.actions.editor.CopyAction
+import com.itsaky.androidide.actions.editor.CutAction
+import com.itsaky.androidide.actions.editor.PasteAction
+import com.itsaky.androidide.actions.editor.SelectAllAction
+import com.itsaky.androidide.actions.etc.DaemonStatusAction
+import com.itsaky.androidide.actions.etc.FileTreeAction
+import com.itsaky.androidide.actions.etc.FindActionMenu
+import com.itsaky.androidide.actions.file.SaveFileAction
+import com.itsaky.androidide.actions.text.RedoAction
+import com.itsaky.androidide.actions.text.UndoAction
+
+/**
+ * Takes care of registering actions to the actions registry for the editor activity.
+ *
+ * @author Akash Yadav
+ */
+class EditorActivityActions {
+    companion object {
+        @JvmStatic
+        fun register(context: Context) {
+            val registry = ActionsRegistry.getInstance()
+
+            // Toolbar actions
+            registry.registerAction(UndoAction(context))
+            registry.registerAction(RedoAction(context))
+            registry.registerAction(QuickRunAction(context))
+            registry.registerAction(RunActionMenu(context))
+            registry.registerAction(SaveFileAction(context))
+            registry.registerAction(FindActionMenu(context))
+            registry.registerAction(FileTreeAction(context))
+            registry.registerAction(DaemonStatusAction(context))
+            registry.registerAction(StopDaemonsAction(context))
+
+            // editor text actions
+            registry.registerAction(SelectAllAction(context))
+            registry.registerAction(CutAction(context))
+            registry.registerAction(CopyAction(context))
+            registry.registerAction(PasteAction(context))
+        }
+
+        @JvmStatic
+        fun clear() = ActionsRegistry.getInstance().clearActions(ActionItem.Location.EDITOR_TOOLBAR)
+    }
+}

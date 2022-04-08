@@ -21,6 +21,7 @@ package com.itsaky.androidide;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.GradientDrawable;
@@ -58,6 +59,7 @@ import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.blankj.utilcode.util.ZipUtils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -65,6 +67,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.itsaky.androidide.actions.ActionData;
+import com.itsaky.androidide.actions.ActionsRegistry;
 import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
@@ -79,6 +83,7 @@ import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.BuildServiceHandler;
+import com.itsaky.androidide.handlers.EditorActivityActions;
 import com.itsaky.androidide.handlers.FileOptionsHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
@@ -154,24 +159,6 @@ public class EditorActivity extends StudioActivity
     private static final int ACTION_ID_OTHERS = 101;
     private static final int ACTION_ID_ALL = 102;
     private static final Logger LOG = Logger.newInstance("EditorActivity");
-    /**
-     * MenuItem(s) that are related to the build process
-     *
-     * <p>These items will be disabled once the build process starts and will be enabled after the
-     * execution
-     */
-    private final int[] BUILD_IDS = {
-        R.id.menuEditor_quickRun,
-        R.id.menuEditor_runDebug,
-        R.id.menuEditor_runRelease,
-        R.id.menuEditor_runBuild,
-        R.id.menuEditor_runBundle,
-        R.id.menuEditor_runClean,
-        R.id.menuEditor_runCleanBuild,
-        R.id.menuEditor_lint,
-        R.id.menuEditor_lintDebug,
-        R.id.menuEditor_lintRelease
-    };
 
     private ActivityEditorBinding mBinding;
     private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
@@ -234,6 +221,9 @@ public class EditorActivity extends StudioActivity
                 registerForActivityResult(
                         new ActivityResultContracts.StartActivityForResult(),
                         this::onGetUIDesignerResult);
+
+        EditorActivityActions.register(this);
+        ensureToolbarMenu();
     }
 
     private void setupDrawerToggle() {
@@ -354,13 +344,17 @@ public class EditorActivity extends StudioActivity
 
     @Override
     protected void onPause() {
-        dispatchOnPauseToEditors();
         super.onPause();
+        dispatchOnPauseToEditors();
+        EditorActivityActions.clear();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        EditorActivityActions.register(this);
+        ensureToolbarMenu();
 
         try {
             checkForCompilerModule();
@@ -383,88 +377,90 @@ public class EditorActivity extends StudioActivity
         super.onDestroy();
     }
 
-    @Override
-    @SuppressLint("AlwaysShowAction")
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        for (int id : BUILD_IDS) {
-            MenuItem item = menu.findItem(id);
-            if (item != null) {
-                boolean enabled = getBuildService() != null && !getBuildService().isBuilding();
-                item.setEnabled(enabled);
-                item.getIcon().setAlpha(enabled ? 255 : 76);
-            }
-        }
-
-        MenuItem run1 = menu.findItem(R.id.menuEditor_quickRun);
-        MenuItem run2 = menu.findItem(R.id.menuEditor_run);
-        MenuItem undo = menu.findItem(R.id.menuEditor_undo);
-        MenuItem redo = menu.findItem(R.id.menuEditor_redo);
-        MenuItem save = menu.findItem(R.id.menuEditor_save);
-        MenuItem def = menu.findItem(R.id.menuEditor_gotoDefinition);
-        MenuItem ref = menu.findItem(R.id.menuEditor_findReferences);
-        MenuItem comment = menu.findItem(R.id.menuEditor_commentLine);
-        MenuItem uncomment = menu.findItem(R.id.menuEditor_uncommentLine);
-        MenuItem findFile = menu.findItem(R.id.menuEditor_findFile);
-        MenuItem viewLayout = menu.findItem(R.id.menuEditor_viewLayout);
-
-        if (KeyboardUtils.isSoftInputVisible(this)) {
-            run1.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-            run2.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-            undo.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-            redo.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-            viewLayout.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-        } else {
-            run1.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-            run2.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-            undo.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-            redo.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
-            viewLayout.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        }
-
-        final var editor = getCurrentEditor();
-        final var file = editor != null ? editor.getFile() : null;
-        final var notNull = editor != null && file != null;
-        final var isJava = notNull && file.getName().endsWith(".java");
-        final var isXml = notNull && file.getName().endsWith(".xml");
-        final var filesModified = notNull && mViewModel != null && mViewModel.areFilesModified();
-        final var isLayout =
-                isXml
-                        && file.getParentFile() != null
-                        && Pattern.compile(FileOptionsHandler.LAYOUT_RES_PATH_REGEX)
-                                .matcher(file.getParentFile().getAbsolutePath())
-                                .matches();
-        final var nullableAlpha = notNull ? 255 : 76;
-        final var javaFileAlpha = isJava ? 255 : 76;
-        final var layoutFileAlpha = isLayout ? 255 : 76;
-        final var saveAlpha = filesModified ? 255 : 76;
-
-        undo.setEnabled(notNull);
-        redo.setEnabled(notNull);
-        save.setEnabled(filesModified);
-        comment.setEnabled(notNull);
-        uncomment.setEnabled(notNull);
-        findFile.setEnabled(notNull);
-        def.setEnabled(isJava);
-        ref.setEnabled(isJava);
-
-        undo.getIcon().setAlpha(nullableAlpha);
-        redo.getIcon().setAlpha(nullableAlpha);
-        save.getIcon().setAlpha(saveAlpha);
-        comment.getIcon().setAlpha(nullableAlpha);
-        uncomment.getIcon().setAlpha(nullableAlpha);
-        findFile.getIcon().setAlpha(nullableAlpha);
-        def.getIcon().setAlpha(javaFileAlpha);
-        ref.getIcon().setAlpha(javaFileAlpha);
-
-        viewLayout.setEnabled(isLayout);
-        viewLayout.getIcon().setAlpha(layoutFileAlpha);
-        viewLayout.setShowAsActionFlags(
-                isLayout ? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
-
-        return true;
-    }
+    //    @Override
+    //    @SuppressLint("AlwaysShowAction")
+    //    public boolean onPrepareOptionsMenu(Menu menu) {
+    //        for (int id : BUILD_IDS) {
+    //            MenuItem item = menu.findItem(id);
+    //            if (item != null) {
+    //                boolean enabled = getBuildService() != null &&
+    // !getBuildService().isBuilding();
+    //                item.setEnabled(enabled);
+    //                item.getIcon().setAlpha(enabled ? 255 : 76);
+    //            }
+    //        }
+    //
+    //        MenuItem run1 = menu.findItem(R.id.menuEditor_quickRun);
+    //        MenuItem run2 = menu.findItem(R.id.menuEditor_run);
+    //        MenuItem undo = menu.findItem(R.id.menuEditor_undo);
+    //        MenuItem redo = menu.findItem(R.id.menuEditor_redo);
+    //        MenuItem save = menu.findItem(R.id.menuEditor_save);
+    //        MenuItem def = menu.findItem(R.id.menuEditor_gotoDefinition);
+    //        MenuItem ref = menu.findItem(R.id.menuEditor_findReferences);
+    //        MenuItem comment = menu.findItem(R.id.menuEditor_commentLine);
+    //        MenuItem uncomment = menu.findItem(R.id.menuEditor_uncommentLine);
+    //        MenuItem findFile = menu.findItem(R.id.menuEditor_findFile);
+    //        MenuItem viewLayout = menu.findItem(R.id.menuEditor_viewLayout);
+    //
+    //        if (KeyboardUtils.isSoftInputVisible(this)) {
+    //            run1.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+    //            run2.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+    //            undo.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    //            redo.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    //
+    //            viewLayout.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+    //        } else {
+    //            run1.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    //            run2.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    //            undo.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+    //            redo.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+    //
+    //            viewLayout.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    //        }
+    //
+    //        final var editor = getCurrentEditor();
+    //        final var file = editor != null ? editor.getFile() : null;
+    //        final var notNull = editor != null && file != null;
+    //        final var isJava = notNull && file.getName().endsWith(".java");
+    //        final var isXml = notNull && file.getName().endsWith(".xml");
+    //        final var filesModified = notNull && mViewModel != null &&
+    // mViewModel.areFilesModified();
+    //        final var isLayout =
+    //                isXml
+    //                        && file.getParentFile() != null
+    //                        && Pattern.compile(FileOptionsHandler.LAYOUT_RES_PATH_REGEX)
+    //                                .matcher(file.getParentFile().getAbsolutePath())
+    //                                .matches();
+    //        final var nullableAlpha = notNull ? 255 : 76;
+    //        final var javaFileAlpha = isJava ? 255 : 76;
+    //        final var layoutFileAlpha = isLayout ? 255 : 76;
+    //        final var saveAlpha = filesModified ? 255 : 76;
+    //
+    //        undo.setEnabled(notNull);
+    //        redo.setEnabled(notNull);
+    //        save.setEnabled(filesModified);
+    //        comment.setEnabled(notNull);
+    //        uncomment.setEnabled(notNull);
+    //        findFile.setEnabled(notNull);
+    //        def.setEnabled(isJava);
+    //        ref.setEnabled(isJava);
+    //
+    //        undo.getIcon().setAlpha(nullableAlpha);
+    //        redo.getIcon().setAlpha(nullableAlpha);
+    //        save.getIcon().setAlpha(saveAlpha);
+    //        comment.getIcon().setAlpha(nullableAlpha);
+    //        uncomment.getIcon().setAlpha(nullableAlpha);
+    //        findFile.getIcon().setAlpha(nullableAlpha);
+    //        def.getIcon().setAlpha(javaFileAlpha);
+    //        ref.getIcon().setAlpha(javaFileAlpha);
+    //
+    //        viewLayout.setEnabled(isLayout);
+    //        viewLayout.getIcon().setAlpha(layoutFileAlpha);
+    //        viewLayout.setShowAsActionFlags(
+    //                isLayout ? MenuItem.SHOW_AS_ACTION_ALWAYS : MenuItem.SHOW_AS_ACTION_NEVER);
+    //
+    //        return true;
+    //    }
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -474,77 +470,21 @@ public class EditorActivity extends StudioActivity
             builder.setOptionalIconsVisible(true);
         }
 
-        getMenuInflater().inflate(R.menu.menu_editor, menu);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (getBuildService() == null) {
-            LOG.error("Build service is null. Cannot perform option menu actions.");
-            return false;
-        }
+    public void ensureToolbarMenu() {
+        final var menu = mBinding.editorToolbar.getMenu();
+        menu.clear();
 
-        int id = item.getItemId();
-        if (id == R.id.menuEditor_runDebug || id == R.id.menuEditor_quickRun) {
-            getBuildServiceHandler().assembleDebug(true);
-        } else if (id == R.id.menuEditor_runRelease) {
-            getBuildService().assembleRelease();
-        } else if (id == R.id.menuEditor_runClean) {
-            getBuildService().clean();
-        } else if (id == R.id.menuEditor_runCleanBuild) {
-            getBuildService().cleanAndRebuild();
-        } else if (id == R.id.menuEditor_runStopDaemons) {
-            getBuildService().stopAllDaemons();
-        } else if (id == R.id.menuEditor_runBuild) {
-            getBuildService().build();
-        } else if (id == R.id.menuEditor_runBundle) {
-            getBuildService().bundle();
-        } else if (id == R.id.menuEditor_lint) {
-            getBuildService().lint();
-        } else if (id == R.id.menuEditor_lintDebug) {
-            getBuildService().lintDebug();
-        } else if (id == R.id.menuEditor_lintRelease) {
-            getBuildService().lintRelease();
-        } else if (id == R.id.menuEditor_save) {
-            saveAll(true, true);
-        } else if (id == R.id.menuEditor_findProject) {
-            AlertDialog d = getFindInProjectDialog();
-            if (d != null) {
-                d.show();
-            }
-        } else if (id == R.id.menuEditor_viewLayout) {
-            previewLayout();
-        } else if (id == R.id.menuEditor_daemonStatus) {
-            showDaemonStatus();
-        } else if (id == R.id.menuEditor_files) {
-            if (!mBinding.editorDrawerLayout.isDrawerOpen(GravityCompat.END)) {
-                mBinding.editorDrawerLayout.openDrawer(GravityCompat.END);
-            }
-        } else if (getCurrentEditor() != null) { // Should be checked at last
-            if (id == R.id.menuEditor_undo) {
-                this.getCurrentEditor().undo();
-            } else if (id == R.id.menuEditor_redo) {
-                this.getCurrentEditor().redo();
-            } else if (id == R.id.menuEditor_gotoDefinition) {
-                this.getCurrentEditor().findDefinition();
-            } else if (id == R.id.menuEditor_findReferences) {
-                this.getCurrentEditor().findReferences();
-            } else if (id == R.id.menuEditor_commentLine) {
-                this.getCurrentEditor().commentLine();
-            } else if (id == R.id.menuEditor_uncommentLine) {
-                this.getCurrentEditor().uncommentLine();
-            } else if (id == R.id.menuEditor_findFile) {
-                this.getCurrentEditor().beginSearch();
-            } else if (id == R.id.menuEditor_formatCode) {
-                if (!this.getCurrentEditor().getEditor().formatCodeAsync()) {
-                    LOG.error("Unable to start format thread to format code...");
-                }
-            }
-        }
-
-        invalidateOptionsMenu();
-        return true;
+        final var data = new ActionData();
+        data.put(Context.class, EditorActivity.this);
+        data.put(CodeEditorView.class, getCurrentEditor());
+        ActionsRegistry.getInstance()
+                .fillMenu(
+                        data,
+                        com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR,
+                        menu);
     }
 
     @Override
@@ -728,7 +668,7 @@ public class EditorActivity extends StudioActivity
         editorView.onEditorSelected();
         mViewModel.setCurrentFile(position, editorView.getFile());
         refreshSymbolInput(editorView);
-        invalidateOptionsMenu();
+        ensureToolbarMenu();
     }
 
     @Override
@@ -740,6 +680,10 @@ public class EditorActivity extends StudioActivity
             if (editor != null) {
                 editor.ensureWindowsDismissed();
             }
+        }
+
+        if (mViewModel.getOpenedFileCount() <= 0) {
+            ensureToolbarMenu();
         }
     }
 
@@ -928,7 +872,8 @@ public class EditorActivity extends StudioActivity
             modified = modified || editor.isModified();
         }
 
-        mViewModel.setFilesModified(modified);
+        final boolean finalModified = modified;
+        ThreadUtils.runOnUiThread(() -> mViewModel.setFilesModified(finalModified));
     }
 
     public void install(@NonNull File apk) {
@@ -984,7 +929,7 @@ public class EditorActivity extends StudioActivity
 
         mBinding.editorContainer.setDisplayedChild(index);
 
-        invalidateOptionsMenu();
+        ensureToolbarMenu();
         try {
             return getEditorAtIndex(index);
         } catch (Throwable th) {
@@ -1049,7 +994,7 @@ public class EditorActivity extends StudioActivity
         }
 
         mBinding.tabs.requestLayout();
-        invalidateOptionsMenu();
+        ensureToolbarMenu();
     }
 
     public void closeAll() {
@@ -1086,7 +1031,7 @@ public class EditorActivity extends StudioActivity
             mBinding.tabs.requestLayout();
             mBinding.editorContainer.removeAllViews();
 
-            invalidateOptionsMenu();
+            ensureToolbarMenu();
 
             if (onSaved != null) {
                 onSaved.run();
@@ -1095,6 +1040,14 @@ public class EditorActivity extends StudioActivity
             // There are unsaved files
             notifyFilesUnsaved(unsavedFiles, () -> closeAll(onSaved));
         }
+    }
+
+    public boolean areFilesModified() {
+        return mViewModel.areFilesModified();
+    }
+
+    public EditorViewModel getViewModel() {
+        return mViewModel;
     }
 
     private void notifyFilesUnsaved(List<CodeEditorView> unsavedEditors, Runnable invokeAfter) {
@@ -1196,6 +1149,29 @@ public class EditorActivity extends StudioActivity
         }
 
         return -1;
+    }
+
+    public void previewLayout() {
+        try {
+
+            if (getCurrentEditor() == null || getCurrentEditor().getFile() == null) {
+                LOG.error("No file is opened. Cannot preview layout.");
+                return;
+            }
+
+            saveAll(false);
+
+            final Intent intent = new Intent(this, DesignerActivity.class);
+            intent.putExtra(
+                    DesignerActivity.KEY_LAYOUT_PATH,
+                    getCurrentEditor().getFile().getAbsolutePath());
+            intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, getResourceDirectories());
+            LOG.info("Launching UI Designer...");
+            mUIDesignerLauncher.launch(intent);
+        } catch (Throwable th) {
+            LOG.error(getString(R.string.err_cannot_preview_layout), th);
+            getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
+        }
     }
 
     /////////////////////////////////////////////////
@@ -1327,29 +1303,6 @@ public class EditorActivity extends StudioActivity
             LOG.error(
                     "UI Designer returned an invalid result code.",
                     "Result code: " + result.getResultCode());
-        }
-    }
-
-    private void previewLayout() {
-        try {
-
-            if (getCurrentEditor() == null || getCurrentEditor().getFile() == null) {
-                LOG.error("No file is opened. Cannot preview layout.");
-                return;
-            }
-
-            saveAll(false);
-
-            final Intent intent = new Intent(this, DesignerActivity.class);
-            intent.putExtra(
-                    DesignerActivity.KEY_LAYOUT_PATH,
-                    getCurrentEditor().getFile().getAbsolutePath());
-            intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, getResourceDirectories());
-            LOG.info("Launching UI Designer...");
-            mUIDesignerLauncher.launch(intent);
-        } catch (Throwable th) {
-            LOG.error(getString(R.string.err_cannot_preview_layout), th);
-            getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
         }
     }
 
@@ -1504,7 +1457,7 @@ public class EditorActivity extends StudioActivity
     }
 
     private void onSoftInputChanged() {
-        invalidateOptionsMenu();
+        ensureToolbarMenu();
         if (KeyboardUtils.isSoftInputVisible(this)) {
             TransitionManager.beginDelayedTransition(mBinding.getRoot(), new Slide(Gravity.TOP));
             symbolInput.setVisibility(View.VISIBLE);
@@ -1563,7 +1516,7 @@ public class EditorActivity extends StudioActivity
         builder.show();
     }
 
-    private AlertDialog getFindInProjectDialog() {
+    public AlertDialog getFindInProjectDialog() {
         return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
     }
 

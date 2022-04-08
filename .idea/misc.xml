@@ -30,11 +30,14 @@
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_copy.xml" value="0.188" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_github.xml" value="0.21837606837606838" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_linear_layout.xml" value="0.175" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_lint.xml" value="0.151" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_min_sdk.xml" value="0.147" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_password_input.xml" value="0.147" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_pick_color.xml" value="0.147" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_quickfix.xml" value="0.14" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_relative_layout.xml" value="0.175" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_run.xml" value="0.151" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_run_debug.xml" value="0.151" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_save.xml" value="0.26205128205128203" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_signature_help.xml" value="0.19907407407407407" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_text_actions.xml" value="0.147" />
@@ -127,6 +130,7 @@
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_create_project_content.xml" value="0.33" />
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_widget_item.xml" value="0.264" />
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/menu/menu_designer_widgets.xml" value="0.20854700854700856" />
+        <entry key="..\:/itsaky/.gradle/caches/transforms-3/e4862cae80f8754ca1a451ad3e00b14c/transformed/jetified-editor-0.10.11/res/drawable/round_select_all_20.xml" value="0.1305" />
       </map>
     </option>
   </component>
