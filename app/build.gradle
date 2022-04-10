@@ -93,6 +93,7 @@ dependencies {
     implementation common.quickaction
     implementation common.bll
     implementation common.xml2json
+    implementation common.powermenu
     implementation google.gson
     implementation google.guava
 

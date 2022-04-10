@@ -32,7 +32,7 @@ class SaveFileAction() : EditorRelatedAction() {
     private val log = Logger.newInstance("SaveFileAction")
 
     override val id: String = "editor_saveFile"
-    
+
     constructor(context: Context) : this() {
         label = context.getString(R.string.save)
         icon = ContextCompat.getDrawable(context, R.drawable.ic_save)
@@ -66,8 +66,8 @@ class SaveFileAction() : EditorRelatedAction() {
         }
     }
 
-    override fun postExec(data: ActionData, execResult: Boolean) {
-        if (execResult) {
+    override fun postExec(data: ActionData, result: Any) {
+        if (result is Boolean && result) {
             StudioApp.getInstance().toast(R.string.all_saved, Toaster.Type.SUCCESS)
         } else {
             log.error("Failed to save file")

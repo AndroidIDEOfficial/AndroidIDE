@@ -142,7 +142,10 @@ public class CursorCodeActionProvider implements ActionProvider {
                 continue;
             }
 
-            actions.addAll(createQuickFix(compiler, title, rewrite));
+            final CodeActionItem action = createQuickFix(compiler, title, rewrite);
+            if (action != null) {
+                actions.add(action);
+            }
         }
 
         logActionTime(started, actions);

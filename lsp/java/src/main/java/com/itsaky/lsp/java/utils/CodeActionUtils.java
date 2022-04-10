@@ -38,7 +38,6 @@ import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
-import com.sun.tools.javac.api.ClientCodeWrapper;
 import com.sun.tools.javac.util.JCDiagnostic;
 
 import org.jetbrains.annotations.Contract;
@@ -65,11 +64,11 @@ public class CodeActionUtils {
             Pattern.compile("unreported exception ((\\w+\\.)*\\w+)");
     private static final Logger LOG = newInstance("JavaCodeActionUtils");
 
-    public static List<CodeActionItem> createQuickFix(
+    public static CodeActionItem createQuickFix(
             final CompilerProvider compiler, String title, Rewrite rewrite) {
 
         if (rewrite == null) {
-            return Collections.emptyList();
+            return null;
         }
 
         return ((Rewrite) rewrite).asCodeActions(compiler, title);
@@ -214,12 +213,6 @@ public class CodeActionUtils {
     @Nullable
     @Contract(pure = true)
     public static JCDiagnostic unwrapJCDiagnostic(Diagnostic<? extends JavaFileObject> diagnostic) {
-        if (diagnostic instanceof JCDiagnostic) {
-            return (JCDiagnostic) diagnostic;
-        } else if (diagnostic instanceof ClientCodeWrapper.DiagnosticSourceUnwrapper) {
-            return ((ClientCodeWrapper.DiagnosticSourceUnwrapper) diagnostic).d;
-        }
-
-        return null;
+        return JavaDiagnosticUtils.asJCDiagnostic(diagnostic);
     }
 }

@@ -19,6 +19,7 @@ package com.itsaky.lsp.java;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ICompletionProvider;
@@ -26,6 +27,7 @@ import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.api.IServerSettings;
+import com.itsaky.lsp.java.actions.JavaCodeActionsMenu;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.java.models.JavaServerSettings;
@@ -56,6 +58,7 @@ import com.itsaky.lsp.models.ReferenceResult;
 import com.itsaky.lsp.models.ServerCapabilities;
 import com.itsaky.lsp.models.SignatureHelp;
 import com.itsaky.lsp.models.SignatureHelpParams;
+import com.itsaky.lsp.util.LSPEditorActions;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 
 import java.nio.file.Path;
@@ -86,7 +89,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         applySettings(getSettings());
     }
 
-    private JavaCompilerService getCompiler() {
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public JavaCompilerService getCompiler() {
         if (createCompiler) {
             LOG.info("Creating new compiler instance...");
             compiler = createCompiler();
@@ -145,6 +149,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         capabilities.setSignatureHelpAvailable(true);
         capabilities.setCodeAnalysisAvailable(true);
         capabilities.setSmartSelectionsEnabled(true);
+
+        LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
 
         initialized = true;
     }

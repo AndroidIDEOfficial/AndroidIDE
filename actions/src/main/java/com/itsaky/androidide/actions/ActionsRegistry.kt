@@ -75,6 +75,34 @@ abstract class ActionsRegistry {
      */
     abstract fun fillMenu(data: ActionData, location: ActionItem.Location, menu: Menu)
 
+    /** Get all the registered actions at the given location. */
+    abstract fun getActions(location: ActionItem.Location): Map<String, ActionItem>
     /** Clear all the registered actions. */
     abstract fun clearActions(location: ActionItem.Location)
+
+    /**
+     * Register a listener that will be called when any action is executed. The callbacks are called
+     * irrespective of the action's execution result.
+     *
+     * @param listener The listener to register.
+     */
+    abstract fun registerActionExecListener(listener: ActionExecListener)
+
+    /**
+     * Unregister the given listener.
+     *
+     * @param listener The listener to unregister.
+     */
+    abstract fun unregisterActionExecListener(listener: ActionExecListener)
+
+    /** Listener for listening to callbacks for action execution. */
+    interface ActionExecListener {
+
+        /**
+         * The given action was executed.
+         * @param action The action that was executed.
+         * @param result The result of the action execution.
+         */
+        fun onExec(action: ActionItem, result: Any)
+    }
 }

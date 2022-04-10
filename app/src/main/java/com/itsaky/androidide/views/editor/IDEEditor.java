@@ -19,15 +19,12 @@ package com.itsaky.androidide.views.editor;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
@@ -62,32 +59,29 @@ import com.itsaky.lsp.util.DiagnosticUtil;
 import com.itsaky.lsp.util.PathUtils;
 import com.itsaky.toaster.Toaster;
 
-import org.jetbrains.annotations.Contract;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
+import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
 public class IDEEditor extends CodeEditor {
 
     public static final String KEY_FILE = "editor_file";
     private static final Logger LOG = Logger.newInstance("IDEEditor");
+    private final ActionsPopupMenu mActionsPopup;
     private int mFileVersion;
     private File file;
     private ILanguageServer mLanguageServer;
     private IDELanguageClientImpl mLanguageClient;
     private SignatureHelpWindow mSignatureHelpWindow;
     private DiagnosticWindow mDiagnosticWindow;
-    private ITextActionPresenter mTextActionPresenter;
 
     public IDEEditor(Context context) {
         this(context, null);
@@ -104,8 +98,10 @@ public class IDEEditor extends CodeEditor {
     public IDEEditor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
+        mActionsPopup = new ActionsPopupMenu(context, this, Gravity.BOTTOM);
+
         setColorScheme(new SchemeAndroidIDE());
-        setTextActionPresenter(chooseTextActionPresenter());
+        getComponent(EditorTextActionWindow.class).setEnabled(false);
         subscribeEvent(SelectionChangeEvent.class, this::handleSelectionChange);
         subscribeEvent(ContentChangeEvent.class, this::handleContentChange);
 
@@ -124,18 +120,6 @@ public class IDEEditor extends CodeEditor {
         }
 
         return flags;
-    }
-
-    @NonNull
-    @Contract(" -> new")
-    public ITextActionPresenter chooseTextActionPresenter() {
-        final var prefs = StudioApp.getInstance().getPrefManager();
-        final var usePopup = prefs.getBoolean(PreferenceManager.KEY_EDITOR_USE_POPUP, false);
-        if (usePopup) {
-            return new EditorTextActionWindow(this);
-        } else {
-            return new EditorTextActionMode();
-        }
     }
 
     public void analyze() {
@@ -625,6 +609,7 @@ public class IDEEditor extends CodeEditor {
             LOG.info("No language server is available for this file");
         }
 
+        mActionsPopup.unsubscribeEvents();
         ensureWindowsDismissed();
     }
 
@@ -810,223 +795,6 @@ public class IDEEditor extends CodeEditor {
         return new Range(start, end);
     }
 
-    /**
-     * Get the text action presenter attached with this editor.
-     *
-     * @return The attached text action presenter.
-     */
-    @SuppressWarnings("unused")
-    public ITextActionPresenter getTextActionPresenter() {
-        return mTextActionPresenter;
-    }
-
-    /**
-     * Set the text action presenter of this editor.
-     *
-     * @param actionPresenter The presenter to set. Must not be <code>null</code>.
-     */
-    public void setTextActionPresenter(@NonNull ITextActionPresenter actionPresenter) {
-        Objects.requireNonNull(actionPresenter, "Cannot set text action presenter to null");
-
-        if (mTextActionPresenter != null) {
-            mTextActionPresenter.destroy();
-            mTextActionPresenter = null;
-        }
-
-        this.mTextActionPresenter = actionPresenter;
-
-        actionPresenter.bindEditor(this);
-        registerActionsTo(actionPresenter);
-    }
-
-    /**
-     * Register the editor's actions to the given action presenter.
-     *
-     * @param actionPresenter The action presenter to register actions to.
-     */
-    public void registerActionsTo(@NonNull ITextActionPresenter actionPresenter) {
-        Objects.requireNonNull(
-                actionPresenter, "Cannot register actions to null text action presenter");
-
-        var index = -1;
-
-        TypedArray array =
-                getContext()
-                        .getTheme()
-                        .obtainStyledAttributes(
-                                new int[] {
-                                    android.R.attr.actionModeSelectAllDrawable,
-                                    android.R.attr.actionModeCutDrawable,
-                                    android.R.attr.actionModeCopyDrawable,
-                                    android.R.attr.actionModePasteDrawable,
-                                });
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_quickfix),
-                        R.string.msg_code_actions,
-                        TextAction.QUICKFIX,
-                        index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_expand_selection),
-                        R.string.action_expand_selection,
-                        TextAction.EXPAND_SELECTION,
-                        index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        tintDrawable(array.getDrawable(0)),
-                        android.R.string.selectAll,
-                        TextAction.SELECT_ALL,
-                        index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        tintDrawable(array.getDrawable(1)),
-                        android.R.string.cut,
-                        TextAction.CUT,
-                        index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        tintDrawable(array.getDrawable(2)),
-                        android.R.string.copy,
-                        TextAction.COPY,
-                        index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        tintDrawable(array.getDrawable(3)),
-                        android.R.string.paste,
-                        TextAction.PASTE,
-                        index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_goto_definition),
-                        R.string.menu_navigate_definition,
-                        TextAction.GOTO_DEFINITION,
-                        index++));
-
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_find_references),
-                        R.string.menu_navigate_references,
-                        TextAction.FIND_REFERENCES,
-                        index++));
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_comment_line),
-                        R.string.menu_comment_line,
-                        TextAction.COMMENT_LINE,
-                        index++));
-
-        //noinspection UnusedAssignment
-        actionPresenter.registerAction(
-                new TextAction(
-                        createTextActionDrawable(R.drawable.ic_uncomment_line),
-                        R.string.menu_uncomment_line,
-                        TextAction.UNCOMMENT_LINE,
-                        index++));
-
-        array.recycle();
-    }
-
-    /**
-     * Called by text action presenters to check if the action with the given ID should be shown or
-     * not.
-     *
-     * @param actionId The action ID to check.
-     * @return <code>true</code> if the action should be shown, <code>false</code> otherwise.
-     */
-    public boolean shouldShowTextAction(int actionId) {
-        final var capabilities = mLanguageServer != null ? mLanguageServer.getCapabilities() : null;
-        final var notNull = capabilities != null;
-        final var expand = notNull && capabilities.getSmartSelectionsEnabled();
-        final var definitions = notNull && capabilities.getDefinitionsAvailable();
-        final var references = notNull && capabilities.getReferencesAvailable();
-        final var commentUncomment =
-                getFile() != null
-                        && (getFile().getName().endsWith(".java")
-                                || getFile().getName().endsWith(".gradle")
-                                || getFile().getName().endsWith(".xml"));
-        switch (actionId) {
-            case TextAction.CUT:
-            case TextAction.PASTE:
-                return isEditable();
-            case TextAction.GOTO_DEFINITION:
-                return definitions;
-            case TextAction.EXPAND_SELECTION:
-                return expand;
-            case TextAction.FIND_REFERENCES:
-                return references;
-            case TextAction.COMMENT_LINE:
-            case TextAction.UNCOMMENT_LINE:
-                return commentUncomment;
-        }
-
-        return true;
-    }
-
-    /**
-     * Performs the given text action in this editor.
-     *
-     * @param action The action to perform.
-     */
-    public void performTextAction(@NonNull TextAction action) {
-        Objects.requireNonNull(action, "Cannot perform null text action");
-
-        switch (action.id) {
-            case TextAction.SELECT_ALL:
-                selectAll();
-                break;
-            case TextAction.CUT:
-                cutText();
-                break;
-            case TextAction.COPY:
-                copyText();
-                break;
-            case TextAction.PASTE:
-                pasteText();
-                break;
-            case TextAction.GOTO_DEFINITION:
-                findDefinition();
-                break;
-            case TextAction.FIND_REFERENCES:
-                findReferences();
-                break;
-            case TextAction.COMMENT_LINE:
-                commentLine();
-                break;
-            case TextAction.UNCOMMENT_LINE:
-                uncommentLine();
-                break;
-            case TextAction.EXPAND_SELECTION:
-                expandSelection();
-                break;
-            case TextAction.QUICKFIX:
-                getTextActionPresenter()
-                        .computeCodeActions(this)
-                        .whenComplete(
-                                ((codeActionResult, throwable) -> {
-                                    if (codeActionResult == null
-                                            || throwable != null
-                                            || codeActionResult.getActions().isEmpty()) {
-                                        LOG.info("No code actions found");
-                                        notifyNoCodeActions();
-                                        return;
-                                    }
-
-                                    ThreadUtils.runOnUiThread(
-                                            () -> showCodeActions(codeActionResult.getActions()));
-                                }));
-                getTextActionPresenter().dismiss();
-                break;
-        }
-    }
-
     private void notifyNoCodeActions() {
         ThreadUtils.runOnUiThread(
                 () -> StudioApp.getInstance().toast(R.string.msg_no_actions, Toaster.Type.ERROR));
@@ -1042,8 +810,10 @@ public class IDEEditor extends CodeEditor {
             getSignatureHelpWindow().dismiss();
         }
 
-        if (mTextActionPresenter != null) {
-            mTextActionPresenter.dismiss();
+        if (mActionsPopup != null) {
+            if (mActionsPopup.isShowing()) {
+                mActionsPopup.dismissPopup();
+            }
         }
     }
 
@@ -1068,15 +838,6 @@ public class IDEEditor extends CodeEditor {
                     }
                 });
         builder.show();
-    }
-
-    private Drawable createTextActionDrawable(int icon) {
-        return ContextCompat.getDrawable(getContext(), icon);
-    }
-
-    private Drawable tintDrawable(@NonNull Drawable drawable) {
-        drawable.setTint(ContextCompat.getColor(getContext(), R.color.primaryIconColor));
-        return drawable;
     }
 
     private void handleSelectionChange(
@@ -1159,149 +920,5 @@ public class IDEEditor extends CodeEditor {
         }
 
         return mDiagnosticWindow;
-    }
-
-    /**
-     * A text action presenter presents text actions (cut, copy, paste, etc). <br>
-     *
-     * <p><strong>The presenter handles its visibility itself.</strong>
-     *
-     * @author Akash Yadav
-     */
-    public interface ITextActionPresenter {
-        /**
-         * Bind the action presenter with the given editor instance.
-         *
-         * @param editor The editor to bind with.
-         */
-        void bindEditor(@NonNull IDEEditor editor);
-
-        /**
-         * Register the text action with this presenter.
-         *
-         * @param action The action to register.
-         */
-        void registerAction(@NonNull TextAction action);
-
-        /**
-         * Look for the action with the given id in the actions registry.
-         *
-         * @param id The id to look for.
-         * @return The registered text action. Maybe <code>null</code>.
-         */
-        @Nullable
-        TextAction findAction(int id);
-
-        /** Invalidate the registered actions. */
-        void invalidateActions();
-
-        /** Dismiss the presenter. */
-        void dismiss();
-
-        /**
-         * Destroy this action presenter. The presenter should unsubscribe from any subscribed
-         * events and release any held resources.
-         */
-        void destroy();
-
-        default boolean canShowAction(
-                @NonNull IDEEditor editor, @NonNull IDEEditor.TextAction action) {
-            // all the actions are visible by default
-            // so we need to get a confirmation from the editor
-            if (action.visible) {
-                return editor.shouldShowTextAction(action.id);
-            }
-
-            return false;
-        }
-
-        default CompletableFuture<CodeActionResult> computeCodeActions(IDEEditor editor) {
-            if (editor.getFile() == null) {
-                throw new CompletionException(
-                        new NullPointerException(
-                                "Cannot compute code actions. " + "No file is set to editor."));
-            }
-
-            final var file = editor.getFile().toPath();
-            final var range = editor.getCursorRange();
-            List<DiagnosticItem> diagnostics =
-                    editor.getEditorLanguage() instanceof IDELanguage
-                            ? ((IDELanguage) editor.getEditorLanguage()).getDiagnostics()
-                            : Collections.emptyList();
-
-            final var diagnostic =
-                    DiagnosticUtil.binarySearchDiagnostic(
-                            diagnostics, editor.getCursorAsLSPPosition());
-            diagnostics =
-                    diagnostic == null
-                            ? Collections.emptyList()
-                            : Collections.singletonList(diagnostic);
-            final var params = new CodeActionParams(file, range, diagnostics);
-            try {
-                return editor.codeActions(params);
-            } catch (Throwable e) {
-                throw new CompletionException(e);
-            }
-        }
-    }
-
-    /**
-     * A model class for text actions.
-     *
-     * @author Akash Yadav
-     */
-    public static class TextAction implements Comparable<TextAction> {
-
-        public static final int QUICKFIX = 9;
-        public static final int EXPAND_SELECTION = 4;
-        public static final int GOTO_DEFINITION = 5;
-        public static final int FIND_REFERENCES = 6;
-        public static final int COMMENT_LINE = 7;
-        public static final int UNCOMMENT_LINE = 8;
-
-        // common action IDs
-        public static final int PASTE = 3;
-        public static final int COPY = 2;
-        public static final int CUT = 1;
-        public static final int SELECT_ALL = 0;
-        /** The ID of this text action; */
-        public final int id;
-        /** The index at which this action should be placed. */
-        public final int index;
-        /** The drawable resource id for this text action. */
-        public Drawable icon;
-        /** The string resource id for this text action. */
-        @StringRes public int titleId;
-        /** Whether this action should be visible to user. */
-        public boolean visible = true;
-
-        public TextAction(Drawable icon, int titleId, int id, int index) {
-            this.icon = icon;
-            this.titleId = titleId;
-            this.id = id;
-            this.index = index;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (!(o instanceof TextAction)) {
-                return false;
-            }
-            TextAction that = (TextAction) o;
-            return id == that.id;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(id);
-        }
-
-        @Override
-        public int compareTo(TextAction o) {
-            return Integer.compare(this.index, o.index);
-        }
     }
 }

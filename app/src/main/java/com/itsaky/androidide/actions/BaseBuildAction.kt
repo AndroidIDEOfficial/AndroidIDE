@@ -43,7 +43,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
         }
     }
     
-    override fun postExec(data: ActionData, execResult: Boolean) {
+    override fun postExec(data: ActionData, result: Any) {
         val context = getActivity(data) ?: return
         context.ensureToolbarMenu()
     }

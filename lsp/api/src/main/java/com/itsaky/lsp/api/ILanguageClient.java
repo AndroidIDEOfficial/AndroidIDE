@@ -17,9 +17,12 @@
 
 package com.itsaky.lsp.api;
 
+import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.ShowDocumentParams;
 import com.itsaky.lsp.models.ShowDocumentResult;
+
+import java.io.File;
 
 /**
  * A language client handles notifications and events from a {@link ILanguageServer}.
@@ -34,6 +37,8 @@ public interface ILanguageClient {
      * @param result The diagnostic result.
      */
     void publishDiagnostics(DiagnosticResult result);
+
+    void performCodeAction(File file, CodeActionItem actionItem);
 
     /**
      * Notification sent by the language server to tell the client that it should open the given

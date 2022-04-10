@@ -83,7 +83,7 @@ import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.BuildServiceHandler;
-import com.itsaky.androidide.handlers.EditorActivityActions;
+import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.handlers.FileOptionsHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;

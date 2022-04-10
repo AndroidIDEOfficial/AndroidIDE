@@ -18,6 +18,7 @@
 package com.itsaky.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
 
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.parser.ParseTask;
@@ -36,8 +37,9 @@ import java.util.Map;
 
 public class AddImport extends Rewrite {
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public final String className;
     final Path file;
-    final String className;
 
     public AddImport(Path file, String className) {
         this.file = file;

@@ -216,6 +216,14 @@ public class IDELanguageClientImpl implements ILanguageClient {
         activity().handleSearchResults(results);
     }
 
+    @Override
+    public void performCodeAction(File file, CodeActionItem actionItem) {
+        final var editor = activity().getEditorForFile(file);
+        if (editor != null) {
+            performCodeAction(editor.getEditor(), actionItem);
+        }
+    }
+
     /**
      * Perform the given {@link CodeActionItem}
      *

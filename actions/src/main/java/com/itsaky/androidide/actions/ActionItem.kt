@@ -46,7 +46,7 @@ interface ActionItem {
      * @param data The data containing various information about the event.
      * @return `true` if this action was executed successfully, `false` otherwise.
      */
-    fun execAction(data: ActionData): Boolean
+    fun execAction(data: ActionData): Any
 
     /**
      * Called just after the [execAction] method executes **successfully** (i.e. returns `true`).
@@ -54,7 +54,7 @@ interface ActionItem {
      *
      * @param data The data containing various information about the event.
      */
-    fun postExec(data: ActionData, execResult: Boolean) {}
+    fun postExec(data: ActionData, result: Any) = Unit
 
     /** Location where an action item will be shown. */
     enum class Location(val id: String) {

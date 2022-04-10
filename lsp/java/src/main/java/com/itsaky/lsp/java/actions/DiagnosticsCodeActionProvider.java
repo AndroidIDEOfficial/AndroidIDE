@@ -93,7 +93,10 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
         final List<CodeActionItem> result = new ArrayList<>();
         for (Pair<String, Rewrite> pair : actions) {
             try {
-                result.addAll(pair.second.asCodeActions(compiler, pair.first));
+                final CodeActionItem action = pair.second.asCodeActions(compiler, pair.first);
+                if (action != null) {
+                    result.add(action);
+                }
             } catch (Throwable throwable) {
                 LOG.error("Unable to create rewrite for quickfix", throwable);
             }
@@ -144,8 +147,6 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
                 return handleUnchecked(task, d);
             case "compiler.err.unreported.exception.need.to.catch.or.throw":
                 return handleUnreportedException(task, d);
-            case "compiler.err.cant.resolve.location":
-                return handleNonImportedClass(compiler, task, file, d);
             case "compiler.err.var.not.initialized.in.default.constructor":
                 return handleVarNotInitialized(task, d);
             case "compiler.err.does.not.override.abstract":
@@ -198,35 +199,7 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
         title = "Generate constructor";
         return Collections.singletonList(Pair.create(title, rewrite));
     }
-
-    @NonNull
-    private List<Pair<String, Rewrite>> handleNonImportedClass(
-            @NonNull CompilerProvider compiler,
-            CompileTask task,
-            Path file,
-            @NonNull DiagnosticItem d) {
-        CharSequence simpleName = extractRange(task, d.getRange());
-        List<Pair<String, Rewrite>> allImports = new ArrayList<>();
-        final List<String> classes = compiler.publicTopLevelTypes();
-
-        for (int i = 0; i < classes.size(); i++) {
-            String klass = classes.get(i);
-            if (klass.contains("/")) {
-                klass = klass.replace("/", ".");
-            }
-
-            if (!klass.endsWith("." + simpleName)) {
-                continue;
-            }
-
-            String actionTitle = "Import '" + klass + "'";
-            final Rewrite addImport = new AddImport(file, klass);
-            allImports.add(Pair.create(actionTitle, addImport));
-        }
-
-        return allImports;
-    }
-
+    
     @NonNull
     private List<Pair<String, Rewrite>> handleUnreportedException(
             CompileTask task, @NonNull DiagnosticItem d) {

@@ -49,10 +49,10 @@ public abstract class Rewrite {
      */
     public abstract Map<Path, TextEdit[]> rewrite(CompilerProvider compiler);
 
-    public List<CodeActionItem> asCodeActions(CompilerProvider compiler, String title) {
+    public CodeActionItem asCodeActions(CompilerProvider compiler, String title) {
         final Map<Path, TextEdit[]> edits = rewrite(compiler);
         if (edits == null || edits.isEmpty()) {
-            return Collections.emptyList();
+            return null;
         }
 
         final List<DocumentChange> changes = new ArrayList<>(0);
@@ -73,7 +73,7 @@ public abstract class Rewrite {
         action.setKind(CodeActionKind.QuickFix);
         action.setChanges(changes);
         applyCommands(action);
-        return Collections.singletonList(action);
+        return action;
     }
 
     protected void applyCommands(@NonNull CodeActionItem action) {}

@@ -57,6 +57,8 @@ dependencies {
     annotationProcessor 'com.google.auto.value:auto-value:1.9'
 
     compileOnly androidx.appcompat
+    compileOnly google.material
+    compileOnly project(':actions')
     compileOnly project(':common')
 
     implementation project(path: ':lsp:api')
