@@ -135,6 +135,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
                     ThreadUtils.runOnUiThread {
                         val result = action.execAction(data)
                         action.postExec(data, result)
+                        notifyActionExec(action, result)
                     }
                 } else {
                     execInBackground(action, data, it)
@@ -163,7 +164,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
             }
         }
     }
-
+    
     private fun notifyActionExec(action: ActionItem, result: Any) {
         for (listener in listeners) {
             listener.onExec(action, result)
