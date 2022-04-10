@@ -27,5 +27,7 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
         addAction(AddImportAction())
         addAction(ImplementAbstractMethodsAction())
         addAction(VariableToStatementAction())
+        addAction(FieldToBlockAction())
+        addAction(RemoveClassAction())
     }
 }

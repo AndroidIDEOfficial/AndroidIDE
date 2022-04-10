@@ -42,8 +42,7 @@ class ImplementAbstractMethodsAction : BaseCodeAction() {
             return
         }
 
-        if (!hasRequiredData(
-            data, DiagnosticItem::class.java, JavaLanguageServer::class.java, File::class.java)) {
+        if (!hasRequiredData(data, DiagnosticItem::class.java)) {
             markInvisible()
             return
         }

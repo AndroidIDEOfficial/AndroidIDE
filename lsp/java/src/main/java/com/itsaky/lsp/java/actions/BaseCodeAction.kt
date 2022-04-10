@@ -23,6 +23,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.lsp.java.FileStore
+import com.itsaky.lsp.java.JavaLanguageServer
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 import java.nio.file.Path
@@ -39,6 +40,12 @@ abstract class BaseCodeAction : ActionItem {
     override var location: ActionItem.Location = ActionItem.Location.EDITOR_CODE_ACTIONS
 
     override fun prepare(data: ActionData) {
+
+        if (!hasRequiredData(data, JavaLanguageServer::class.java, File::class.java)) {
+            markInvisible()
+            return
+        }
+
         val file = requireFile(data)
         visible = FileStore.isJavaFile(file.toPath())
         enabled = visible

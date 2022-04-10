@@ -36,11 +36,8 @@ import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.rewrite.AddException;
 import com.itsaky.lsp.java.rewrite.AddSuppressWarningAnnotation;
-import com.itsaky.lsp.java.rewrite.ConvertFieldToBlock;
-import com.itsaky.lsp.java.rewrite.ConvertVariableToStatement;
 import com.itsaky.lsp.java.rewrite.CreateMissingMethod;
 import com.itsaky.lsp.java.rewrite.GenerateRecordConstructor;
-import com.itsaky.lsp.java.rewrite.RemoveClass;
 import com.itsaky.lsp.java.rewrite.RemoveException;
 import com.itsaky.lsp.java.rewrite.RemoveMethod;
 import com.itsaky.lsp.java.rewrite.Rewrite;
@@ -126,10 +123,6 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
     private List<Pair<String, Rewrite>> codeActionForDiagnostic(
             CompilerProvider compiler, CompileTask task, Path file, @NonNull DiagnosticItem d) {
         switch (d.getCode()) {
-            case "unused_field":
-                return handleUnusedField(task, file, d);
-            case "unused_class":
-                return handleUnusedClass(task, file, d);
             case "unused_method":
                 return handleUnusedMethod(task, d);
             case "unused_throws":
@@ -234,34 +227,6 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
                         unusedMethod.methodName,
                         unusedMethod.erasedParameterTypes);
         title = "Remove method";
-        return Collections.singletonList(Pair.create(title, rewrite));
-    }
-
-    @NonNull
-    private List<Pair<String, Rewrite>> handleUnusedClass(
-            CompileTask task, Path file, @NonNull DiagnosticItem d) {
-        Rewrite rewrite;
-        String title;
-        rewrite = new RemoveClass(file, findPosition(task, d.getRange().getStart()));
-        title = "Remove class";
-        return Collections.singletonList(Pair.create(title, rewrite));
-    }
-
-    @NonNull
-    private List<Pair<String, Rewrite>> handleUnusedField(
-            CompileTask task, Path file, @NonNull DiagnosticItem d) {
-        Rewrite rewrite =
-                new ConvertFieldToBlock(file, findPosition(task, d.getRange().getStart()));
-        String title = "Convert to block";
-        return Collections.singletonList(Pair.create(title, rewrite));
-    }
-
-    @NonNull
-    private List<Pair<String, Rewrite>> handleUnusedLocal(
-            CompileTask task, Path file, @NonNull DiagnosticItem d) {
-        Rewrite rewrite =
-                new ConvertVariableToStatement(file, findPosition(task, d.getRange().getStart()));
-        String title = "Convert to statement";
         return Collections.singletonList(Pair.create(title, rewrite));
     }
 }

@@ -20,61 +20,52 @@ package com.itsaky.lsp.java.actions
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
-import com.itsaky.lsp.java.rewrite.ConvertVariableToStatement
+import com.itsaky.lsp.java.rewrite.RemoveClass
 import com.itsaky.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.lsp.models.DiagnosticItem
-import java.io.File
 
 /** @author Akash Yadav */
-class VariableToStatementAction : BaseCodeAction() {
-    override val id: String = "lsp_java_variableToStatement"
-    override var label: String = "Convert to statement"
-    private val diagnosticCode = "unused_local"
+class RemoveClassAction : BaseCodeAction() {
+    override val id: String = "lsp_java_removeClass"
+    override var label: String = "Remove class"
+    private val diagnosticCode = "unused_class"
     private val log = Logger.newInstance(javaClass.simpleName)
 
-    @Suppress("UNCHECKED_CAST")
     override fun prepare(data: ActionData) {
         super.prepare(data)
 
-        if (!visible) {
-            return
-        }
-
-        if (!hasRequiredData(data, DiagnosticItem::class.java)) {
+        if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
             markInvisible()
             return
         }
 
-        val diagnostic = data.get(DiagnosticItem::class.java)!!
+        val diagnostic = data[DiagnosticItem::class.java]!!
         if (diagnosticCode != diagnostic.code) {
             markInvisible()
             return
         }
-
-        visible = true
-        enabled = true
     }
 
     override fun execAction(data: ActionData): Any {
         val diagnostic = data[DiagnosticItem::class.java]!!
         val server = data[JavaLanguageServer::class.java]!!
-        val compiler = server.compiler!!
-        val path = requirePath(data)
+        val file = requirePath(data)
 
-        return compiler.compile(path).get {
-            ConvertVariableToStatement(path, findPosition(it, diagnostic.range.start))
+        return server.compiler.compile(file).get {
+            RemoveClass(file, findPosition(it, diagnostic.range.start))
         }
     }
 
     override fun postExec(data: ActionData, result: Any) {
-        if (result !is ConvertVariableToStatement) {
-            log.warn("Unable to convert variable to statement")
+        if (result !is RemoveClass) {
+            log.warn("Unable to remove class")
             return
         }
 
-        val file = data[File::class.java]
         val server = data[JavaLanguageServer::class.java]!!
         val client = server.client!!
-        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+        val file = requireFile(data)
+
+        client.performCodeAction(file, result.asCodeActions(server.compiler!!, label))
     }
 }

@@ -40,28 +40,18 @@ class AddImportAction : BaseCodeAction() {
     override fun prepare(data: ActionData) {
         super.prepare(data)
 
-        if (!visible) {
+        if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
+            markInvisible()
             return
         }
 
-        val diagnostic =
-            data.get(DiagnosticItem::class.java)
-                ?: run {
-                    markInvisible()
-                    return
-                }
-
+        val diagnostic = data.get(DiagnosticItem::class.java)!!
         if (diagnosticCode != diagnostic.code || diagnostic.extra !is Diagnostic<*>) {
             markInvisible()
             return
         }
 
-        val server =
-            data.get(JavaLanguageServer::class.java)
-                ?: run {
-                    markInvisible()
-                    return
-                }
+        val server = data.get(JavaLanguageServer::class.java)!!
 
         @Suppress("UNCHECKED_CAST")
         val jcDiagnostic =

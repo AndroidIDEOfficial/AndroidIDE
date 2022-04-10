@@ -23,7 +23,6 @@ import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.rewrite.ConvertFieldToBlock
 import com.itsaky.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.lsp.models.DiagnosticItem
-import java.io.File
 
 /** @author Akash Yadav */
 class FieldToBlockAction : BaseCodeAction() {
@@ -40,8 +39,7 @@ class FieldToBlockAction : BaseCodeAction() {
             return
         }
 
-        if (!hasRequiredData(
-            data, JavaLanguageServer::class.java, DiagnosticItem::class.java, File::class.java)) {
+        if (!hasRequiredData(data, DiagnosticItem::class.java)) {
             markInvisible()
             return
         }
