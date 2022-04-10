@@ -45,7 +45,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
     
     override fun postExec(data: ActionData, result: Any) {
         val context = getActivity(data) ?: return
-        context.ensureToolbarMenu()
+        context.invalidateOptionsMenu()
     }
 
     fun shouldPrepare() = visible && enabled

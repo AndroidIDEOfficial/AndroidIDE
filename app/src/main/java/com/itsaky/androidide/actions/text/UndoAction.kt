@@ -22,7 +22,6 @@ import androidx.core.content.ContextCompat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
-import com.itsaky.androidide.views.editor.CodeEditorView
 
 /** @author Akash Yadav */
 class UndoAction() : EditorRelatedAction() {
@@ -34,8 +33,19 @@ class UndoAction() : EditorRelatedAction() {
         icon = ContextCompat.getDrawable(context, R.drawable.ic_undo)
     }
 
-    override fun execAction(data: ActionData): Boolean {
-        val editor = data.get(CodeEditorView::class.java)
+    override fun prepare(data: ActionData) {
+        super.prepare(data)
+
+        if (!visible) {
+            return
+        }
+
+        val editor = getEditor(data)!!
+        enabled = editor.canUndo()
+    }
+
+    override fun execAction(data: ActionData): Any {
+        val editor = getEditor(data)
         return if (editor != null) {
             editor.undo()
             true

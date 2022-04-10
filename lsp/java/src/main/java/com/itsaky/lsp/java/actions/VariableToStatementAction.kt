@@ -20,18 +20,16 @@ package com.itsaky.lsp.java.actions
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
-import com.itsaky.lsp.java.rewrite.ImplementAbstractMethods
-import com.itsaky.lsp.java.utils.JavaDiagnosticUtils
+import com.itsaky.lsp.java.rewrite.ConvertVariableToStatement
+import com.itsaky.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.lsp.models.DiagnosticItem
 import java.io.File
-import javax.tools.Diagnostic
-import javax.tools.JavaFileObject
 
 /** @author Akash Yadav */
-class ImplementAbstractMethodsAction : BaseCodeAction() {
-    override val id: String = "lsp_java_implementAbstractMethods"
-    override var label: String = "Implement abstract method(s)"
-    private var diagnosticCode = "compiler.err.does.not.override.abstract"
+class VariableToStatementAction : BaseCodeAction() {
+    override val id: String = "lsp_java_variableToStatement"
+    override var label: String = "Convert to statement"
+    private val diagnosticCode = "unused_local"
     private val log = Logger.newInstance(javaClass.simpleName)
 
     @Suppress("UNCHECKED_CAST")
@@ -43,49 +41,41 @@ class ImplementAbstractMethodsAction : BaseCodeAction() {
         }
 
         if (!hasRequiredData(
-            data, DiagnosticItem::class.java, JavaLanguageServer::class.java, File::class.java)) {
+            data, JavaLanguageServer::class.java, DiagnosticItem::class.java, File::class.java)) {
             markInvisible()
             return
         }
 
         val diagnostic = data.get(DiagnosticItem::class.java)!!
-        if (diagnosticCode != diagnostic.code || diagnostic.extra !is Diagnostic<*>) {
+        if (diagnosticCode != diagnostic.code) {
             markInvisible()
             return
         }
-
-        JavaDiagnosticUtils.asJCDiagnostic(diagnostic.extra as Diagnostic<out JavaFileObject>)
-            ?: run {
-                markInvisible()
-                return
-            }
 
         visible = true
         enabled = true
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun execAction(data: ActionData): Any {
-        val diagnostic =
-            JavaDiagnosticUtils.asJCDiagnostic(
-                data.get(DiagnosticItem::class.java)!!.extra as Diagnostic<out JavaFileObject>)
-        return ImplementAbstractMethods(diagnostic!!)
+        val diagnostic = data[DiagnosticItem::class.java]!!
+        val server = data[JavaLanguageServer::class.java]!!
+        val compiler = server.compiler!!
+        val path = requirePath(data)
+
+        return compiler.compile(path).get {
+            ConvertVariableToStatement(path, findPosition(it, diagnostic.range.start))
+        }
     }
 
     override fun postExec(data: ActionData, result: Any) {
-        if (result !is ImplementAbstractMethods) {
-            log.warn("Unable to perform action. Invalid result from execAction(..)")
+        if (result !is ConvertVariableToStatement) {
+            log.warn("Unable to convert variable to statement")
             return
         }
 
-        val server = data.get(JavaLanguageServer::class.java)!!
-        val client = server.client
-        if (client == null) {
-            log.error("No client set to java language server")
-            return
-        }
-
-        client.performCodeAction(
-            data.get(File::class.java)!!, result.asCodeActions(server.compiler, label))
+        val file = data[File::class.java]
+        val server = data[JavaLanguageServer::class.java]!!
+        val client = server.client!!
+        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
     }
 }

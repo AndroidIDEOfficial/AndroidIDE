@@ -26,5 +26,6 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
         addAction(UncommentAction())
         addAction(AddImportAction())
         addAction(ImplementAbstractMethodsAction())
+        addAction(VariableToStatementAction())
     }
 }

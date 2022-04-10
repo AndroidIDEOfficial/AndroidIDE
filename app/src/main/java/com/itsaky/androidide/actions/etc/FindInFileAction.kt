@@ -35,7 +35,7 @@ class FindInFileAction() : EditorRelatedAction() {
     }
 
     override fun execAction(data: ActionData): Boolean {
-        val editor = getEditor(data) ?: return false
+        val editor = getEditorView(data) ?: return false
         editor.beginSearch()
         return true
     }

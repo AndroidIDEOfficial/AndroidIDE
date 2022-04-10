@@ -54,7 +54,9 @@ interface ActionItem {
      *
      * @param data The data containing various information about the event.
      */
-    fun postExec(data: ActionData, result: Any) = Unit
+    fun postExec(data: ActionData, result: Any) = Any()
+
+    fun getShowAsActionFlags(data: ActionData): Int = -1
 
     /** Location where an action item will be shown. */
     enum class Location(val id: String) {

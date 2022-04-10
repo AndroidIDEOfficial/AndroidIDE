@@ -24,7 +24,6 @@ import static com.itsaky.lsp.java.utils.CodeActionUtils.extractRange;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.findClassNeedingConstructor;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.findMethod;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.findPosition;
-import static com.itsaky.lsp.java.utils.CodeActionUtils.unwrapJCDiagnostic;
 
 import android.text.TextUtils;
 import android.util.Pair;
@@ -36,13 +35,11 @@ import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.rewrite.AddException;
-import com.itsaky.lsp.java.rewrite.AddImport;
 import com.itsaky.lsp.java.rewrite.AddSuppressWarningAnnotation;
 import com.itsaky.lsp.java.rewrite.ConvertFieldToBlock;
 import com.itsaky.lsp.java.rewrite.ConvertVariableToStatement;
 import com.itsaky.lsp.java.rewrite.CreateMissingMethod;
 import com.itsaky.lsp.java.rewrite.GenerateRecordConstructor;
-import com.itsaky.lsp.java.rewrite.ImplementAbstractMethods;
 import com.itsaky.lsp.java.rewrite.RemoveClass;
 import com.itsaky.lsp.java.rewrite.RemoveException;
 import com.itsaky.lsp.java.rewrite.RemoveMethod;
@@ -51,7 +48,6 @@ import com.itsaky.lsp.java.utils.MethodPtr;
 import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Range;
-import com.sun.tools.javac.util.JCDiagnostic;
 
 import java.nio.file.Path;
 import java.time.Instant;
@@ -60,9 +56,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
 
 /**
  * Provides code actions for diagnostics.
@@ -149,8 +142,6 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
                 return handleUnreportedException(task, d);
             case "compiler.err.var.not.initialized.in.default.constructor":
                 return handleVarNotInitialized(task, d);
-            case "compiler.err.does.not.override.abstract":
-                return handleDoesNotOverrideAbstract(d);
             case "compiler.err.cant.resolve.location.args":
                 return handleMissingMethod(task, file, d);
             default:
@@ -169,23 +160,6 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
     }
 
     @NonNull
-    private List<Pair<String, Rewrite>> handleDoesNotOverrideAbstract(@NonNull DiagnosticItem d) {
-        Rewrite rewrite;
-        String title;
-        //noinspection unchecked
-        final Diagnostic<? extends JavaFileObject> diagnostic =
-                (Diagnostic<? extends JavaFileObject>) d.getExtra();
-        JCDiagnostic jcDiagnostic = unwrapJCDiagnostic(diagnostic);
-        if (jcDiagnostic == null) {
-            return Collections.singletonList(Pair.create("", null));
-        }
-
-        rewrite = new ImplementAbstractMethods(jcDiagnostic);
-        title = "Implement abstract methods";
-        return Collections.singletonList(Pair.create(title, rewrite));
-    }
-
-    @NonNull
     private List<Pair<String, Rewrite>> handleVarNotInitialized(
             CompileTask task, @NonNull DiagnosticItem d) {
         Rewrite rewrite;
@@ -199,7 +173,7 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
         title = "Generate constructor";
         return Collections.singletonList(Pair.create(title, rewrite));
     }
-    
+
     @NonNull
     private List<Pair<String, Rewrite>> handleUnreportedException(
             CompileTask task, @NonNull DiagnosticItem d) {

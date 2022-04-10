@@ -26,6 +26,8 @@ import com.itsaky.androidide.actions.EditorActivityAction
 /** @author Akash Yadav */
 class FindInProjectAction() : EditorActivityAction() {
 
+    override var requiresUIThread: Boolean = true
+
     constructor(context: Context) : this() {
         label = context.getString(R.string.menu_find_project)
         icon = ContextCompat.getDrawable(context, R.drawable.ic_search_project)

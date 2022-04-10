@@ -34,6 +34,7 @@
 package com.itsaky.androidide.views.editor;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -291,6 +292,10 @@ public class CodeEditorView extends FrameLayout {
         // File must be set only after setting the language server
         // This will make sure that textDocument/didOpen is sent
         binding.editor.setFile(getFile());
+
+        if (getContext() instanceof Activity) {
+            ((Activity) getContext()).invalidateOptionsMenu();
+        }
     }
 
     private void configureEditorIfNeeded() {

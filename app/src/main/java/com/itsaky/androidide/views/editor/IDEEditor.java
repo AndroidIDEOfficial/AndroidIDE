@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.views.editor;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -869,6 +870,10 @@ public class IDEEditor extends CodeEditor {
      * @param event The content change event.
      */
     private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
+        if (getContext() instanceof Activity) {
+            ((Activity) getContext()).invalidateOptionsMenu();
+        }
+
         if (getFile() == null || mLanguageServer == null) {
             return;
         }

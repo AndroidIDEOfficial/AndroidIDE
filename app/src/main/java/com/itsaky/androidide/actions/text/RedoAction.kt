@@ -17,12 +17,14 @@
 
 package com.itsaky.androidide.actions.text
 
+import android.app.Activity
 import android.content.Context
+import android.view.MenuItem
 import androidx.core.content.ContextCompat
+import com.blankj.utilcode.util.KeyboardUtils
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
-import com.itsaky.androidide.views.editor.CodeEditorView
 
 /** @author Akash Yadav */
 class RedoAction() : EditorRelatedAction() {
@@ -34,14 +36,28 @@ class RedoAction() : EditorRelatedAction() {
 
     override val id: String = "editor_redo"
 
-    override fun execAction(data: ActionData): Boolean {
-        val editor = data.get(CodeEditorView::class.java)
+    override fun prepare(data: ActionData) {
+        super.prepare(data)
 
-        return if (editor != null) {
-            editor.redo()
-            true
+        if (!visible) {
+            return
+        }
+
+        val editor = getEditor(data)!!
+        enabled = editor.canRedo()
+    }
+
+    override fun execAction(data: ActionData): Boolean {
+        val editor = getEditor(data)!!
+        editor.redo()
+        return true
+    }
+
+    override fun getShowAsActionFlags(data: ActionData): Int {
+        return if (KeyboardUtils.isSoftInputVisible(data.get(Context::class.java) as Activity)) {
+            MenuItem.SHOW_AS_ACTION_IF_ROOM
         } else {
-            false
+            MenuItem.SHOW_AS_ACTION_NEVER
         }
     }
 }

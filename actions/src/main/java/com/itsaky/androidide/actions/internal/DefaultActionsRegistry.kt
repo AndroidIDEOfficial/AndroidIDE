@@ -125,6 +125,10 @@ class DefaultActionsRegistry : ActionsRegistry() {
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
         }
 
+        if (action.getShowAsActionFlags(data) != -1) {
+            item.setShowAsAction(action.getShowAsActionFlags(data))
+        }
+
         if (action !is ActionMenu) {
             item.setOnMenuItemClickListener {
                 if (action.requiresUIThread) {
@@ -154,8 +158,8 @@ class DefaultActionsRegistry : ActionsRegistry() {
             }
 
             ThreadUtils.runOnUiThread {
-                action.postExec(data, result)
-                notifyActionExec(action, result)
+                action.postExec(data, result ?: false)
+                notifyActionExec(action, result ?: false)
             }
         }
     }

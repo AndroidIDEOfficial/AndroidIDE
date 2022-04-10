@@ -154,7 +154,6 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
                 .getApp()
                 .getPrefManager()
                 .putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-        activity().ensureToolbarMenu();
         activity().getBinding().buildProgressIndicator.setVisibility(View.GONE);
     }
 
@@ -173,7 +172,6 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
                 .getApp()
                 .getPrefManager()
                 .putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false);
-        activity().ensureToolbarMenu();
         activity().getBinding().buildProgressIndicator.setVisibility(View.GONE);
     }
 
