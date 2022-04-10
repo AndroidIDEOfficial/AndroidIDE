@@ -126,8 +126,6 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
     private List<Pair<String, Rewrite>> codeActionForDiagnostic(
             CompilerProvider compiler, CompileTask task, Path file, @NonNull DiagnosticItem d) {
         switch (d.getCode()) {
-            case "unused_local":
-                return handleUnusedLocal(task, file, d);
             case "unused_field":
                 return handleUnusedField(task, file, d);
             case "unused_class":
