@@ -29,5 +29,6 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
         addAction(VariableToStatementAction())
         addAction(FieldToBlockAction())
         addAction(RemoveClassAction())
+        addAction(RemoveMethodAction())
     }
 }
