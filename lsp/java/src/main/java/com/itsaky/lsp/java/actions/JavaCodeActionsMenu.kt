@@ -30,5 +30,6 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
         addAction(FieldToBlockAction())
         addAction(RemoveClassAction())
         addAction(RemoveMethodAction())
+        addAction(RemoveUnusedThrowsAction())
     }
 }

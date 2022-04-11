@@ -19,8 +19,6 @@ package com.itsaky.lsp.java.actions;
 
 import static com.itsaky.androidide.utils.Logger.newInstance;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.extractExceptionName;
-import static com.itsaky.lsp.java.utils.CodeActionUtils.extractNotThrownExceptionName;
-import static com.itsaky.lsp.java.utils.CodeActionUtils.extractRange;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.findClassNeedingConstructor;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.findMethod;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.findPosition;
@@ -38,8 +36,6 @@ import com.itsaky.lsp.java.rewrite.AddException;
 import com.itsaky.lsp.java.rewrite.AddSuppressWarningAnnotation;
 import com.itsaky.lsp.java.rewrite.CreateMissingMethod;
 import com.itsaky.lsp.java.rewrite.GenerateRecordConstructor;
-import com.itsaky.lsp.java.rewrite.RemoveException;
-import com.itsaky.lsp.java.rewrite.RemoveMethod;
 import com.itsaky.lsp.java.rewrite.Rewrite;
 import com.itsaky.lsp.java.utils.MethodPtr;
 import com.itsaky.lsp.models.CodeActionItem;
@@ -123,10 +119,6 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
     private List<Pair<String, Rewrite>> codeActionForDiagnostic(
             CompilerProvider compiler, CompileTask task, Path file, @NonNull DiagnosticItem d) {
         switch (d.getCode()) {
-            case "unused_method":
-                return handleUnusedMethod(task, d);
-            case "unused_throws":
-                return handleUnusedThrows(task, d);
             case "compiler.warn.unchecked.call.mbr.of.raw.type":
                 return handleUnchecked(task, d);
             case "compiler.err.unreported.exception.need.to.catch.or.throw":
@@ -194,39 +186,6 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
                         warnedMethod.methodName,
                         warnedMethod.erasedParameterTypes);
         title = "Suppress 'unchecked' warning";
-        return Collections.singletonList(Pair.create(title, rewrite));
-    }
-
-    @NonNull
-    private List<Pair<String, Rewrite>> handleUnusedThrows(
-            CompileTask task, @NonNull DiagnosticItem d) {
-        Rewrite rewrite;
-        String title;
-        final CharSequence shortExceptionName = extractRange(task, d.getRange());
-        final String notThrown = extractNotThrownExceptionName(d.getMessage());
-        final MethodPtr methodWithExtraThrow = findMethod(task, d.getRange());
-        rewrite =
-                new RemoveException(
-                        methodWithExtraThrow.className,
-                        methodWithExtraThrow.methodName,
-                        methodWithExtraThrow.erasedParameterTypes,
-                        notThrown);
-        title = "Remove '" + shortExceptionName + "'";
-        return Collections.singletonList(Pair.create(title, rewrite));
-    }
-
-    @NonNull
-    private List<Pair<String, Rewrite>> handleUnusedMethod(
-            CompileTask task, @NonNull DiagnosticItem d) {
-        Rewrite rewrite;
-        String title;
-        final MethodPtr unusedMethod = findMethod(task, d.getRange());
-        rewrite =
-                new RemoveMethod(
-                        unusedMethod.className,
-                        unusedMethod.methodName,
-                        unusedMethod.erasedParameterTypes);
-        title = "Remove method";
         return Collections.singletonList(Pair.create(title, rewrite));
     }
 }
