@@ -26,13 +26,6 @@ android {
         jvmTarget = "11"
     }
 
-    lintOptions {
-        abortOnError false
-        disable "VectorPath",
-                "NestedWeights",
-                "ContentDescription",
-                "SmallSp"
-    }
 
     buildFeatures {
         viewBinding true
@@ -68,16 +61,15 @@ android {
             signingConfig signingConfigs.release
         }
     }
-
     packagingOptions {
-        exclude 'META-INF/eclipse.inf'
-        exclude 'about_files/LICENSE-2.0.txt'
-        exclude 'plugin.xml'
-        exclude 'plugin.properties'
-        exclude 'about.mappings'
-        exclude 'about.properties'
-        exclude 'about.ini'
-        exclude 'modeling32.png'
+        resources {
+            excludes += ['META-INF/eclipse.inf', 'about_files/LICENSE-2.0.txt', 'plugin.xml', 'plugin.properties', 'about.mappings', 'about.properties', 'about.ini', 'modeling32.png']
+        }
+    }
+
+    lint {
+        abortOnError false
+        disable 'VectorPath', 'NestedWeights', 'ContentDescription', 'SmallSp'
     }
 }
 
