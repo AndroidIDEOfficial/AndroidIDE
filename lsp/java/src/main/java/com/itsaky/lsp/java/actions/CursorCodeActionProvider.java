@@ -83,17 +83,15 @@ import javax.lang.model.util.Elements;
  *
  * @author Akash Yadav
  */
-public class CursorCodeActionProvider implements ActionProvider {
+public class CursorCodeActionProvider {
 
     private static final Logger LOG = newInstance("JavaCursorCodeActionProvider");
 
     @NonNull
-    @Override
-    public List<CodeActionItem> provideActions(
+    public List<CodeActionItem> provideActions (
             @NonNull CompilerProvider compiler,
             @NonNull Path file,
-            @NonNull Range range,
-            @NonNull List<DiagnosticItem> diagnostics) {
+            @NonNull Range range) {
         logStarted(file, range);
 
         Instant started = Instant.now();

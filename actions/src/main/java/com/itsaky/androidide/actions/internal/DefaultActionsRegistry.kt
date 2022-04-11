@@ -164,7 +164,7 @@ class DefaultActionsRegistry : ActionsRegistry() {
             }
         }
     }
-    
+
     private fun notifyActionExec(action: ActionItem, result: Any) {
         for (listener in listeners) {
             listener.onExec(action, result)

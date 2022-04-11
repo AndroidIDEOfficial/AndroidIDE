@@ -32,5 +32,7 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
         addAction(RemoveMethodAction())
         addAction(RemoveUnusedThrowsAction())
         addAction(CreateMissingMethodAction())
+        addAction(SuppressUncheckedWarningAction())
+        addAction(AddThrowsAction())
     }
 }

@@ -20,9 +20,7 @@ package com.itsaky.lsp.java.providers;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.Logger;
-import com.itsaky.lsp.java.actions.ActionProvider;
 import com.itsaky.lsp.java.actions.CursorCodeActionProvider;
-import com.itsaky.lsp.java.actions.DiagnosticsCodeActionProvider;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.models.CodeActionParams;
 import com.itsaky.lsp.models.CodeActionResult;
@@ -38,15 +36,8 @@ public class CodeActionProvider {
 
     @NonNull
     public CodeActionResult codeActions(@NonNull CodeActionParams params) {
-        final ActionProvider actionProvider;
-        if (params.getDiagnostics().isEmpty()) {
-            actionProvider = new CursorCodeActionProvider();
-        } else {
-            actionProvider = new DiagnosticsCodeActionProvider();
-        }
-
         return new CodeActionResult(
-                actionProvider.provideActions(
-                        compiler, params.getFile(), params.getRange(), params.getDiagnostics()));
+                new CursorCodeActionProvider()
+                        .provideActions(compiler, params.getFile(), params.getRange()));
     }
 }
