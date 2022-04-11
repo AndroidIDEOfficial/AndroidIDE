@@ -17,6 +17,9 @@
 
 package com.itsaky.lsp.java.rewrite;
 
+import static com.itsaky.lsp.java.rewrite.ConvertVariableToStatement.findVariable;
+import static com.itsaky.lsp.java.rewrite.ConvertVariableToStatement.isExpressionStatement;
+
 import androidx.annotation.NonNull;
 
 import com.itsaky.lsp.java.compiler.CompilerProvider;
@@ -51,12 +54,12 @@ public class ConvertFieldToBlock extends Rewrite {
         Trees trees = Trees.instance(task.task);
         SourcePositions pos = trees.getSourcePositions();
         LineMap lines = task.root.getLineMap();
-        VariableTree variable = ConvertVariableToStatement.findVariable(task, position);
+        VariableTree variable = findVariable(task, position);
         if (variable == null) {
             return CANCELLED;
         }
         ExpressionTree expression = variable.getInitializer();
-        if (!ConvertVariableToStatement.isExpressionStatement(expression)) {
+        if (!isExpressionStatement(expression)) {
             return CANCELLED;
         }
         long start = pos.getStartPosition(task.root, variable);
