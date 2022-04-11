@@ -21,7 +21,6 @@ import static com.itsaky.androidide.utils.Logger.newInstance;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.extractExceptionName;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.findClassNeedingConstructor;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.findMethod;
-import static com.itsaky.lsp.java.utils.CodeActionUtils.findPosition;
 
 import android.text.TextUtils;
 import android.util.Pair;
@@ -34,7 +33,6 @@ import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
 import com.itsaky.lsp.java.rewrite.AddException;
 import com.itsaky.lsp.java.rewrite.AddSuppressWarningAnnotation;
-import com.itsaky.lsp.java.rewrite.CreateMissingMethod;
 import com.itsaky.lsp.java.rewrite.GenerateRecordConstructor;
 import com.itsaky.lsp.java.rewrite.Rewrite;
 import com.itsaky.lsp.java.utils.MethodPtr;
@@ -125,21 +123,9 @@ public class DiagnosticsCodeActionProvider implements ActionProvider {
                 return handleUnreportedException(task, d);
             case "compiler.err.var.not.initialized.in.default.constructor":
                 return handleVarNotInitialized(task, d);
-            case "compiler.err.cant.resolve.location.args":
-                return handleMissingMethod(task, file, d);
             default:
                 return Collections.singletonList(Pair.create("", null));
         }
-    }
-
-    @NonNull
-    private List<Pair<String, Rewrite>> handleMissingMethod(
-            CompileTask task, Path file, @NonNull DiagnosticItem d) {
-        Rewrite rewrite;
-        String title;
-        rewrite = new CreateMissingMethod(file, findPosition(task, d.getRange().getStart()));
-        title = "Create missing method";
-        return Collections.singletonList(Pair.create(title, rewrite));
     }
 
     @NonNull
