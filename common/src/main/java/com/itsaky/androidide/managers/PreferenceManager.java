@@ -40,7 +40,6 @@ public class PreferenceManager {
     public static final String KEY_EDITOR_TAB_SIZE = "idepref_editor_tabSize";
     public static final String KEY_EDITOR_AUTO_SAVE = "idepref_editor_autoSave";
     public static final String KEY_EDITOR_FONT_LIGATURES = "idepref_editor_fontLigatures";
-    public static final String KEY_EDITOR_USE_POPUP = "idepref_editor_usePopup";
     public static final String KEY_EDITOR_FLAG_PASSWORD = "idepref_editor_flagPassword";
     public static final String KEY_GRADLE_CMD_STACK_TRACE = "idepref_gradleCmd_stacktrace";
     public static final String KEY_GRADLE_CMD_DEBUG = "idepref_gradleCmd_debug";

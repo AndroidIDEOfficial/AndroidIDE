@@ -29,7 +29,6 @@ import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_L
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FONT_SIZE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_PRINTABLE_CHARS;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_TAB_SIZE;
-import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_USE_POPUP;
 import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_COMPLETIONS_MATCH_LOWER;
 import static com.itsaky.lsp.java.models.JavaServerSettings.KEY_JAVA_PREF_GOOGLE_CODE_STYLE;
 
@@ -68,7 +67,6 @@ public class EditorPreferences extends BasePreferenceFragment
         final var drawHex = new SwitchPreference(getContext());
         final var fontLigatures = new SwitchPreference(getContext());
         final var autoSave = new SwitchPreference(getContext());
-        final var usePopupActions = new SwitchPreference(getContext());
         final var useGoogleCodeStyle = new SwitchPreference(getContext());
         final var visiblePasswordFlag = new SwitchPreference(getContext());
 
@@ -102,11 +100,6 @@ public class EditorPreferences extends BasePreferenceFragment
         fontLigatures.setTitle(getString(R.string.idepref_editor_ligatures_title));
         fontLigatures.setSummary(getString(R.string.idepref_editor_ligatures_summary));
 
-        usePopupActions.setIcon(R.drawable.ic_text_actions);
-        usePopupActions.setKey(KEY_EDITOR_USE_POPUP);
-        usePopupActions.setTitle(getString(R.string.title_use_popup_actions));
-        usePopupActions.setSummary(getString(R.string.msg_use_popup_actions));
-
         autoSave.setIcon(R.drawable.ic_save);
         autoSave.setKey(KEY_EDITOR_AUTO_SAVE);
         autoSave.setTitle(getString(R.string.idepref_editor_autoSave_title));
@@ -133,7 +126,6 @@ public class EditorPreferences extends BasePreferenceFragment
         commonCategory.addPreference(tabSize);
         commonCategory.addPreference(completionsMatchLower);
         commonCategory.addPreference(visiblePasswordFlag);
-        commonCategory.addPreference(usePopupActions);
         commonCategory.addPreference(nonPrintable);
         commonCategory.addPreference(drawHex);
         commonCategory.addPreference(autoSave);
@@ -145,7 +137,6 @@ public class EditorPreferences extends BasePreferenceFragment
 
         fontSize.setOnPreferenceClickListener(this);
         fontLigatures.setOnPreferenceChangeListener(this);
-        usePopupActions.setOnPreferenceChangeListener(this);
         nonPrintable.setOnPreferenceClickListener(this);
         tabSize.setOnPreferenceClickListener(this);
         drawHex.setOnPreferenceChangeListener(this);
@@ -155,7 +146,6 @@ public class EditorPreferences extends BasePreferenceFragment
         visiblePasswordFlag.setOnPreferenceChangeListener(this);
 
         fontLigatures.setChecked(getPrefManager().getBoolean(KEY_EDITOR_FONT_LIGATURES, true));
-        usePopupActions.setChecked(getPrefManager().getBoolean(KEY_EDITOR_USE_POPUP, false));
         drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
         autoSave.setChecked(getPrefManager().getBoolean(KEY_EDITOR_AUTO_SAVE, false));
         completionsMatchLower.setChecked(
