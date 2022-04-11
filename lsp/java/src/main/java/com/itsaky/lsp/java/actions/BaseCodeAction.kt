@@ -69,7 +69,7 @@ abstract class BaseCodeAction : ActionItem {
     fun newDialogBuilder(data: ActionData): MaterialAlertDialogBuilder {
         val klass = Class.forName("com.itsaky.androidide.utils.DialogUtils")
         val method = klass.getDeclaredMethod("newMaterialDialogBuilder", Context::class.java)
-        return method.invoke(data.get(Context::class.java)!!) as MaterialAlertDialogBuilder
+        return method.invoke(null, data.get(Context::class.java)!!) as MaterialAlertDialogBuilder
     }
 
     fun hasRequiredData(data: ActionData, vararg types: Class<*>): Boolean {
