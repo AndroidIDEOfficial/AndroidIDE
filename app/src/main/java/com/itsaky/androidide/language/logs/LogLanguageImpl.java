@@ -107,7 +107,7 @@ public class LogLanguageImpl extends IDELanguage {
             for (int i = 0; i < lines.size() && !delegate.isCancelled(); i++) {
                 if (i == 0) colors.addNormalIfNull();
                 LogLine line = lines.get(i);
-                colors.addIfNeeded(i, 0, SchemeAndroidIDE.get(line.priority));
+                colors.addIfNeeded(i, 0, SchemeAndroidIDE.forLogPriority(line.priority));
                 lastLine = i;
             }
             colors.determine(lastLine);

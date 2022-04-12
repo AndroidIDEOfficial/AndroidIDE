@@ -17,6 +17,11 @@
  */
 package com.itsaky.androidide.syntax.colorschemes;
 
+import static com.itsaky.androidide.models.LogLine.DEBUG;
+import static com.itsaky.androidide.models.LogLine.ERROR;
+import static com.itsaky.androidide.models.LogLine.INFO;
+import static com.itsaky.androidide.models.LogLine.WARNING;
+
 import android.graphics.Color;
 
 import io.github.rosemoe.sora.lang.styling.TextStyle;
@@ -62,6 +67,87 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     public static final int LOCAL_VARIABLE = current++;
     public static final int TODO_COMMENT = current++;
     public static final int FIXME_COMMENT = current++;
+
+    /**
+     * Delegates to {@link TextStyle#makeStyle(int)}
+     *
+     * @param id The color id.
+     * @return The style flags.
+     */
+    public static long get(int id) {
+        return TextStyle.makeStyle(id);
+    }
+
+    /**
+     * Create style for keywords. Convenient method to avoid calling {@link TextStyle#makeStyle(int,
+     * int, boolean, boolean, boolean)}
+     *
+     * @return The default style for keywords.
+     */
+    public static long forKeyword() {
+        return TextStyle.makeStyle(KEYWORD, 0, true, false, false);
+    }
+
+    /**
+     * Create style for string literals. The returned style sets the {@link
+     * TextStyle#NO_COMPLETION_BIT}.
+     *
+     * @return The style for string literals.
+     */
+    public static long forString() {
+        return TextStyle.makeStyle(LITERAL, true);
+    }
+
+    /**
+     * Create color style for default comments.
+     *
+     * @return The style for {@link #COMMENT}.
+     */
+    public static long forComment() {
+        return TextStyle.makeStyle(COMMENT, true);
+    }
+
+    /**
+     * Create style for the given id without completions.
+     *
+     * @param id The id to create style for.
+     * @return The style for the id.
+     */
+    public static long withoutCompletion(int id) {
+        return TextStyle.makeStyle(id, true);
+    }
+
+    /**
+     * Make style for the given log priority.
+     *
+     * @param priority The priority.
+     * @return The style.
+     */
+    public static long forLogPriority(int priority) {
+        return get(getLogPriorityId(priority));
+    }
+
+    /**
+     * Get the appropriate color id for the given log line priority.
+     *
+     * @param priority The log line priority.
+     * @return The color id.
+     */
+    public static int getLogPriorityId(int priority) {
+        if (priority == ERROR) {
+            return LOG_ERROR;
+        }
+
+        if (priority == WARNING) {
+            return LOG_WARNING;
+        }
+
+        if (priority == INFO) {
+            return LOG_INFO;
+        }
+
+        return DEBUG;
+    }
 
     @Override
     public void applyDefault() {
@@ -119,60 +205,16 @@ public class SchemeAndroidIDE extends EditorColorScheme {
         setColor(DIAGNOSTIC_INFO, 0xff4CAF50);
         setColor(DIAGNOSTIC_HINT, 0xffffffff);
 
+        setColor(LOG_ERROR, 0xfff44336);
+        setColor(LOG_WARNING, 0xffFFEB3B);
+        setColor(LOG_INFO, 0xff4CAF50);
+        setColor(LOG_DEBUG, 0xfff5f5f5);
+
         setColor(STDERR, 0xfff44336);
         setColor(STDOUT, 0xff4CAF50);
 
         setColor(TODO_COMMENT, 0xffffc400);
         setColor(FIXME_COMMENT, 0xffffab00);
         setColor(COMMENT, 0xffbdbdbd);
-    }
-
-    /**
-     * Delegates to {@link TextStyle#makeStyle(int)}
-     *
-     * @param id The color id.
-     * @return The style flags.
-     */
-    public static long get(int id) {
-        return TextStyle.makeStyle(id);
-    }
-
-    /**
-     * Create style for keywords. Convenient method to avoid calling {@link TextStyle#makeStyle(int,
-     * int, boolean, boolean, boolean)}
-     *
-     * @return The default style for keywords.
-     */
-    public static long forKeyword() {
-        return TextStyle.makeStyle(KEYWORD, 0, true, false, false);
-    }
-
-    /**
-     * Create style for string literals. The returned style sets the {@link
-     * TextStyle#NO_COMPLETION_BIT}.
-     *
-     * @return The style for string literals.
-     */
-    public static long forString() {
-        return TextStyle.makeStyle(LITERAL, true);
-    }
-
-    /**
-     * Create color style for default comments.
-     *
-     * @return The style for {@link #COMMENT}.
-     */
-    public static long forComment() {
-        return TextStyle.makeStyle(COMMENT, true);
-    }
-
-    /**
-     * Create style for the given id without completions.
-     *
-     * @param id The id to create style for.
-     * @return The style for the id.
-     */
-    public static long withoutCompletion(int id) {
-        return TextStyle.makeStyle(id, true);
     }
 }
