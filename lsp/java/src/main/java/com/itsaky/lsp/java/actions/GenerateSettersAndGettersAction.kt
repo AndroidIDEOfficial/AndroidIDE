@@ -17,6 +17,7 @@
 
 package com.itsaky.lsp.java.actions
 
+import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.utils.Logger
@@ -221,7 +222,10 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
             }
         }
 
-        editor.text.insert(insert.line, insert.column, sb)
+        ThreadUtils.runOnUiThread {
+            editor.text.insert(insert.line, insert.column, sb)
+            editor.formatCodeAsync()
+        }
     }
 
     private fun createGetter(variable: VariableElement, indent: Int): String {
