@@ -21,6 +21,7 @@ import com.google.common.collect.Iterables.toArray
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
+import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.rewrite.AddImport
 import com.itsaky.lsp.java.rewrite.Rewrite
 import com.itsaky.lsp.java.utils.JavaDiagnosticUtils
@@ -30,12 +31,14 @@ import javax.tools.Diagnostic
 import javax.tools.JavaFileObject
 
 /** @author Akash Yadav */
-class AddImportAction : BaseCodeAction() {
+class AddImportAction() : BaseCodeAction() {
+
     override val id: String = "lsp_java_addImport"
     override var label: String = "Import class(es)"
     private val diagnosticCode = "compiler.err.cant.resolve.location"
-
     private val log = Logger.newInstance("AddImportAction")
+
+    override val titleTextRes: Int = R.string.action_import_classes
 
     override fun prepare(data: ActionData) {
         super.prepare(data)

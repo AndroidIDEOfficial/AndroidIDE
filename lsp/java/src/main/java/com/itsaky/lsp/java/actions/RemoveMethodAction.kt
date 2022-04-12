@@ -20,6 +20,7 @@ package com.itsaky.lsp.java.actions
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
+import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.rewrite.RemoveMethod
 import com.itsaky.lsp.java.utils.CodeActionUtils.findMethod
 import com.itsaky.lsp.models.DiagnosticItem
@@ -27,9 +28,11 @@ import com.itsaky.lsp.models.DiagnosticItem
 /** @author Akash Yadav */
 class RemoveMethodAction : BaseCodeAction() {
     override val id: String = "lsp_java_removeMethod"
-    override var label: String = "Remove method"
+    override var label: String = ""
     private val diagnosticCode = "unused_method"
     private val log = Logger.newInstance(javaClass.simpleName)
+
+    override val titleTextRes: Int = R.string.action_remove_method
 
     override fun prepare(data: ActionData) {
         super.prepare(data)

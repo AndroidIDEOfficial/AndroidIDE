@@ -18,11 +18,14 @@
 package com.itsaky.lsp.java.actions
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.lsp.java.R
 
 /** @author Akash Yadav */
 class UncommentAction : BaseCodeAction() {
     override val id: String = "lsp_java_uncommentLine"
-    override var label: String = "Uncomment line"
+    override var label: String = ""
+
+    override val titleTextRes: Int = R.string.action_uncomment_line
 
     override fun execAction(data: ActionData): Boolean {
         val editor = requireEditor(data)

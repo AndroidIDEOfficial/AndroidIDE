@@ -20,6 +20,7 @@ package com.itsaky.lsp.java.actions
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
+import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.rewrite.GenerateRecordConstructor
 import com.itsaky.lsp.java.utils.CodeActionUtils
 import com.itsaky.lsp.models.DiagnosticItem
@@ -27,9 +28,10 @@ import com.itsaky.lsp.models.DiagnosticItem
 /** @author Akash Yadav */
 class GenerateConstructorAction : BaseCodeAction() {
     override val id = "lsp_java_generateConstructor"
-    override var label: String = "Generate constructor"
+    override var label: String = ""
     private val diagnosticCode = "compiler.err.var.not.initialized.in.default.constructor"
     private val log = Logger.newInstance(javaClass.simpleName)
+    override val titleTextRes: Int = R.string.action_generate_constructor
 
     override fun prepare(data: ActionData) {
         super.prepare(data)

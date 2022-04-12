@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="action_import_classes">Import class(es)</string>
+    <string name="action_generate_setters_getters">Generate setters/getters</string>
+    <string name="action_add_throws">Add \'throws\'</string>
+    <string name="action_comment_line">Comment line</string>
+    <string name="action_create_missing_method">Create missing method</string>
+    <string name="action_convert_to_block">Convert to block</string>
+    <string name="action_generate_constructor">Generate constructor</string>
+    <string name="action_implement_abstract_methods">Implement abstract method(s)</string>
+    <string name="action_remove_class">Remove class</string>
+    <string name="action_remove_method">Remove method</string>
+    <string name="action_remove_unused_throws">Remove unused throws</string>
+    <string name="action_suppress_unchecked_warning">Suppress \'unchecked\' warning</string>
+    <string name="action_uncomment_line">Uncomment line</string>
+    <string name="action_convert_to_statement">Convert to statement</string>
+</resources>

@@ -20,6 +20,7 @@ package com.itsaky.lsp.java.actions
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
+import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.rewrite.ImplementAbstractMethods
 import com.itsaky.lsp.java.utils.JavaDiagnosticUtils
 import com.itsaky.lsp.models.DiagnosticItem
@@ -30,9 +31,11 @@ import javax.tools.JavaFileObject
 /** @author Akash Yadav */
 class ImplementAbstractMethodsAction : BaseCodeAction() {
     override val id: String = "lsp_java_implementAbstractMethods"
-    override var label: String = "Implement abstract method(s)"
+    override var label: String = ""
     private var diagnosticCode = "compiler.err.does.not.override.abstract"
     private val log = Logger.newInstance(javaClass.simpleName)
+
+    override val titleTextRes: Int = R.string.action_implement_abstract_methods
 
     @Suppress("UNCHECKED_CAST")
     override fun prepare(data: ActionData) {

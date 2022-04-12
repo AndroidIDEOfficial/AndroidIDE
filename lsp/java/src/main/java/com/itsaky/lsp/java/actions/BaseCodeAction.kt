@@ -39,11 +39,18 @@ abstract class BaseCodeAction : ActionItem {
     override var requiresUIThread: Boolean = false
     override var location: ActionItem.Location = ActionItem.Location.EDITOR_CODE_ACTIONS
 
+    protected abstract val titleTextRes: Int
+
     override fun prepare(data: ActionData) {
 
-        if (!hasRequiredData(data, JavaLanguageServer::class.java, File::class.java)) {
+        if (!hasRequiredData(
+            data, Context::class.java, JavaLanguageServer::class.java, File::class.java)) {
             markInvisible()
             return
+        }
+
+        if (titleTextRes != -1) {
+            label = data[Context::class.java]!!.getString(titleTextRes)
         }
 
         val file = requireFile(data)

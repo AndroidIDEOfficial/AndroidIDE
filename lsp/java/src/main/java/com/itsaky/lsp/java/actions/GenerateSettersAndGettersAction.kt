@@ -22,6 +22,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
+import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.utils.EditHelper
 import com.itsaky.lsp.java.utils.JavaPoetUtils.Companion.print
@@ -44,8 +45,10 @@ import javax.lang.model.element.VariableElement
 /** @author Akash Yadav */
 class GenerateSettersAndGettersAction : BaseCodeAction() {
     override val id: String = "lsp_java_generateSettersAndGetters"
-    override var label: String = "Generate setters/getters"
+    override var label: String = ""
     private val log = Logger.newInstance(javaClass.simpleName)
+
+    override val titleTextRes: Int = R.string.action_generate_setters_getters
 
     override fun prepare(data: ActionData) {
         super.prepare(data)

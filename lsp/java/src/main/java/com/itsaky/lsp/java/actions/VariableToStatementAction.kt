@@ -20,6 +20,7 @@ package com.itsaky.lsp.java.actions
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
+import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.rewrite.ConvertVariableToStatement
 import com.itsaky.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.lsp.models.DiagnosticItem
@@ -28,9 +29,11 @@ import java.io.File
 /** @author Akash Yadav */
 class VariableToStatementAction : BaseCodeAction() {
     override val id: String = "lsp_java_variableToStatement"
-    override var label: String = "Convert to statement"
+    override var label: String = ""
     private val diagnosticCode = "unused_local"
     private val log = Logger.newInstance(javaClass.simpleName)
+    
+    override val titleTextRes: Int = R.string.action_convert_to_statement
 
     @Suppress("UNCHECKED_CAST")
     override fun prepare(data: ActionData) {

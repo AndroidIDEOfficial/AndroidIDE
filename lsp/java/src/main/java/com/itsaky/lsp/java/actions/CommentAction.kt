@@ -18,18 +18,21 @@
 package com.itsaky.lsp.java.actions
 
 import com.itsaky.androidide.actions.ActionData
+import com.itsaky.lsp.java.R
 
 /** @author Akash Yadav */
 class CommentAction : BaseCodeAction() {
     override val id: String = "lsp_java_commentLine"
-    override var label: String = "Comment line"
+    override var label: String = ""
+
+    override val titleTextRes: Int = R.string.action_comment_line
 
     override fun execAction(data: ActionData): Boolean {
         val editor = requireEditor(data)
         val text = editor.text
         val cursor = editor.cursor
         var line = cursor.leftLine
-        
+
         text.beginBatchEdit()
         while (line >= cursor.leftLine && line <= cursor.rightLine) {
             if (!text.getLineString(line).trim { it <= ' ' }.startsWith("//")) {
