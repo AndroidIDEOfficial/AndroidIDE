@@ -17,6 +17,7 @@
 
 package com.itsaky.lsp.java.actions
 
+import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
@@ -112,7 +113,10 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
         }
 
         if (result.isEmpty()) {
-            BaseApplication.getBaseInstance().toast("No fields found", Toaster.Type.INFO)
+            BaseApplication.getBaseInstance()
+                .toast(
+                    data[Context::class.java]!!.getString(R.string.msg_no_fields_found),
+                    Toaster.Type.INFO)
             return
         }
 
@@ -120,7 +124,7 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
 
         val checkedNames = mutableSetOf<String>()
         val builder = newDialogBuilder(data)
-        builder.setTitle("Select fields")
+        builder.setTitle(data[Context::class.java]!!.getString(R.string.msg_select_fields))
         builder.setMultiChoiceItems(names, BooleanArray(result.size)) { _, which, checked ->
             checkedNames.apply {
                 val item = names[which]
@@ -131,11 +135,14 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
                 }
             }
         }
-        builder.setPositiveButton("Ok") { dialog, _ ->
+        builder.setPositiveButton(android.R.string.ok) { dialog, _ ->
             dialog.dismiss()
 
             if (checkedNames.isEmpty()) {
-                BaseApplication.getBaseInstance().toast("No fields selected", Toaster.Type.ERROR)
+                BaseApplication.getBaseInstance()
+                    .toast(
+                        data[Context::class.java]!!.getString(R.string.msg_no_fields_selected),
+                        Toaster.Type.ERROR)
                 return@setPositiveButton
             }
 
@@ -149,7 +156,7 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
                 }
             }
         }
-        builder.setNegativeButton("Cancel", null)
+        builder.setNegativeButton(android.R.string.cancel, null)
         builder.show()
     }
 

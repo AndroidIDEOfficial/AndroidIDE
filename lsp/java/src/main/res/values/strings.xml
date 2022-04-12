@@ -30,4 +30,7 @@
     <string name="action_suppress_unchecked_warning">Suppress \'unchecked\' warning</string>
     <string name="action_uncomment_line">Uncomment line</string>
     <string name="action_convert_to_statement">Convert to statement</string>
+    <string name="msg_select_fields">Select fields</string>
+    <string name="msg_no_fields_selected">No fields selected</string>
+    <string name="msg_no_fields_found">No fields found</string>
 </resources>
