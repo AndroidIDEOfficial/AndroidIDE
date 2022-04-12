@@ -235,7 +235,6 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
         val imports = mutableSetOf<String>()
         var text = "\n" + print(builder.build(), imports)
         text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
-        text = "$text\n"
 
         return text
     }
@@ -252,7 +251,6 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
         val imports = mutableSetOf<String>()
         var text = "\n" + print(builder.build(), imports)
         text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
-        text = "$text\n"
 
         return text
     }
