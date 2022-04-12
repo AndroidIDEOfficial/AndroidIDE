@@ -36,6 +36,7 @@ import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.JavaLanguageServer;
 import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.util.DiagnosticUtil;
 import com.itsaky.lsp.xml.XMLLanguageServer;
 
@@ -118,6 +119,7 @@ public class ActionsPopupMenu extends PopupMenu implements ActionsRegistry.Actio
                 CodeEditor.class, editor); // For LSP actions, as they cannot access IDEEditor class
         data.put(File.class, editor.getFile());
         data.put(DiagnosticItem.class, getDiagnosticAtCursor());
+        data.put(Range.class, editor.getCursorRange());
         data.put(
                 JavaLanguageServer.class,
                 (JavaLanguageServer) StudioApp.getInstance().getJavaLanguageServer());

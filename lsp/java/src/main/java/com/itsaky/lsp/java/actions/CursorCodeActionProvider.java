@@ -113,26 +113,6 @@ public class CursorCodeActionProvider {
             @NonNull TreeMap<String, Rewrite> rewrites,
             @NonNull CompileTask task) {
 
-        // 1-based line and column index
-        final int startLine = range.getStart().getLine() + 1;
-        final int startColumn = range.getStart().getColumn() + 1;
-        final int endLine = range.getEnd().getLine() + 1;
-        final int endColumn = range.getEnd().getColumn() + 1;
-        final LineMap lines = task.root().getLineMap();
-        final long start = lines.getPosition(startLine, startColumn);
-        final long end = lines.getPosition(endLine, endColumn);
-
-        if (start != -1 && isBlankLine(task.root(), start) && !isInMethod(task, start)) {
-            rewrites.putAll(overrideInheritedMethods(task, file, start));
-        }
-
-        if (start != -1 && end != -1) {
-            final List<TreePath> variables = findVariables(task, start, end);
-            if (!variables.isEmpty()) {
-                rewrites.putAll(createSettersAndGetters(file, task, variables));
-            }
-        }
-
         List<CodeActionItem> actions = new ArrayList<>();
         for (String title : rewrites.keySet()) {
             final Rewrite rewrite = rewrites.get(title);
@@ -156,7 +136,7 @@ public class CursorCodeActionProvider {
     private Map<String, ? extends Rewrite> createSettersAndGetters(
             @NonNull Path file, CompileTask task, List<TreePath> variables) {
         return Collections.singletonMap(
-                "Create setters/getters", new GenerateSettersAndGetters(file, task, variables));
+                "Create setters/getters", new GenerateSettersAndGetters(file, variables));
     }
 
     @NonNull

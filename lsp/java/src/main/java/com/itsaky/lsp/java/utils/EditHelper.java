@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.utils;
 
+import androidx.annotation.NonNull;
+
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.rewrite.AddImport;
 import com.itsaky.lsp.models.Position;
@@ -147,6 +149,11 @@ public class EditHelper {
     public static int indent(
             final JavacTask task, final CompilationUnitTree root, final Tree leaf) {
         SourcePositions pos = Trees.instance(task).getSourcePositions();
+        return indent(root, leaf, pos);
+    }
+
+    private static int indent(
+            @NonNull CompilationUnitTree root, Tree leaf, @NonNull SourcePositions pos) {
         LineMap lines = root.getLineMap();
         long startClass = pos.getStartPosition(root, leaf);
         long startLine = lines.getStartPosition(lines.getLineNumber(startClass));
