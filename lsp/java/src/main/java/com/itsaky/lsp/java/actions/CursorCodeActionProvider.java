@@ -36,8 +36,6 @@ package com.itsaky.lsp.java.actions;
 
 import static com.itsaky.androidide.utils.Logger.newInstance;
 import static com.itsaky.lsp.java.utils.CodeActionUtils.createQuickFix;
-import static com.itsaky.lsp.java.utils.CodeActionUtils.isBlankLine;
-import static com.itsaky.lsp.java.utils.CodeActionUtils.isInMethod;
 
 import androidx.annotation.NonNull;
 
@@ -45,21 +43,16 @@ import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
-import com.itsaky.lsp.java.rewrite.GenerateSettersAndGetters;
 import com.itsaky.lsp.java.rewrite.OverrideInheritedMethod;
 import com.itsaky.lsp.java.rewrite.Rewrite;
 import com.itsaky.lsp.java.utils.MethodPtr;
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt;
 import com.itsaky.lsp.java.visitors.FindVariablesBetween;
 import com.itsaky.lsp.models.CodeActionItem;
-import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.LineMap;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.Trees;
-
-import org.jetbrains.annotations.Contract;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -88,10 +81,8 @@ public class CursorCodeActionProvider {
     private static final Logger LOG = newInstance("JavaCursorCodeActionProvider");
 
     @NonNull
-    public List<CodeActionItem> provideActions (
-            @NonNull CompilerProvider compiler,
-            @NonNull Path file,
-            @NonNull Range range) {
+    public List<CodeActionItem> provideActions(
+            @NonNull CompilerProvider compiler, @NonNull Path file, @NonNull Range range) {
         logStarted(file, range);
 
         Instant started = Instant.now();
@@ -129,14 +120,6 @@ public class CursorCodeActionProvider {
         logActionTime(started, actions);
 
         return actions;
-    }
-
-    @NonNull
-    @Contract(pure = true)
-    private Map<String, ? extends Rewrite> createSettersAndGetters(
-            @NonNull Path file, CompileTask task, List<TreePath> variables) {
-        return Collections.singletonMap(
-                "Create setters/getters", new GenerateSettersAndGetters(file, variables));
     }
 
     @NonNull
