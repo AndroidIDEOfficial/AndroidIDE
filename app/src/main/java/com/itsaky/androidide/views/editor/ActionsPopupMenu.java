@@ -20,6 +20,7 @@ package com.itsaky.androidide.views.editor;
 import static com.itsaky.androidide.utils.Logger.newInstance;
 
 import android.content.Context;
+import android.graphics.RectF;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -77,12 +78,6 @@ public class ActionsPopupMenu extends PopupMenu implements ActionsRegistry.Actio
     }
 
     @Override
-    public void show() {
-        super.show();
-        showing = true;
-    }
-
-    @Override
     public void dismiss() {}
 
     @Override
@@ -132,20 +127,26 @@ public class ActionsPopupMenu extends PopupMenu implements ActionsRegistry.Actio
         registry.fillMenu(data, ActionItem.Location.EDITOR_TEXT_ACTIONS, getMenu());
     }
 
-    public void show(int x, int y) {
+    @Override
+    public void show() {
         fillMenu();
 
         if (isShowing()) {
             dismissPopup();
         }
 
-        LOG.debug("Show editor text actions at location:", x, y);
         try {
             final var field = PopupMenu.class.getDeclaredField("mPopup");
             field.setAccessible(true);
             final var popup = field.get(this);
             assert popup != null;
             final var show = popup.getClass().getDeclaredMethod("show", int.class, int.class);
+
+            final var location = computePopupLocation();
+            final var x = location[0];
+            final var y = location[1];
+            LOG.debug("Show editor text actions at location:", x, y);
+
             show.invoke(popup, x, y);
             showing = true;
         } catch (Throwable e) {
@@ -154,6 +155,49 @@ public class ActionsPopupMenu extends PopupMenu implements ActionsRegistry.Actio
         }
     }
 
+    private int getHeight() {
+        return getMenu().size() * SizeUtils.dp2px(48);
+    }
+
+    private int selectTop(@NonNull RectF rect) {
+        var rowHeight = editor.getRowHeight();
+        if (rect.top - rowHeight * 3 / 2F > getHeight()) {
+            return (int) (rect.top - rowHeight * 3 / 2 - getHeight());
+        } else {
+            return (int) (rect.bottom + rowHeight / 2);
+        }
+    }
+
+    private int[] computePopupLocation() {
+        int top;
+        var cursor = this.editor.getCursor();
+        if (cursor.isSelected()) {
+            var leftRect = this.editor.getLeftHandleDescriptor().position;
+            var rightRect = this.editor.getRightHandleDescriptor().position;
+            var top1 = selectTop(leftRect);
+            var top2 = selectTop(rightRect);
+            top = Math.min(top1, top2);
+        } else {
+            top = selectTop(this.editor.getInsertHandleDescriptor().position);
+        }
+        top = Math.max(0, Math.min(top, this.editor.getHeight() - getHeight() - 5));
+        float handleLeftX =
+                this.editor.getOffset(
+                        this.editor.getCursor().getLeftLine(),
+                        this.editor.getCursor().getLeftColumn());
+        float handleRightX =
+                this.editor.getOffset(
+                        this.editor.getCursor().getRightLine(),
+                        this.editor.getCursor().getRightColumn());
+        int panelX = (int) ((handleLeftX + handleRightX) / 2f);
+        top -= editor.getRowHeight() - SizeUtils.dp2px(2);
+
+        panelX += editor.getOffsetX();
+        top += editor.getOffsetY();
+
+        return new int[] {panelX, top};
+    }
+    
     protected void onSelectionChanged(SelectionChangeEvent event, Unsubscribe unsubscribe) {
         if (touchHandler.hasAnyHeldHandle()) {
             return;
@@ -205,14 +249,7 @@ public class ActionsPopupMenu extends PopupMenu implements ActionsRegistry.Actio
     }
 
     public void displayWindow() {
-        final var loc =
-                editor.getLayout()
-                        .getCharLayoutOffset(
-                                editor.getCursor().getLeftLine(),
-                                editor.getCursor().getLeftColumn());
-        final int x = (int) loc[1];
-        final int y = (int) loc[0] - editor.getRowHeight() - SizeUtils.dp2px(2);
-        show(x, y);
+        show();
     }
 
     private void postDisplay() {
