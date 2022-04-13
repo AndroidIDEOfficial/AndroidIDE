@@ -196,6 +196,10 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         int endOfLine = endOfLine(contents, (int) cursor);
         contents.insert(endOfLine, ';');
         CompletionResult list = compileAndComplete(file, contents.toString(), cursor);
+        if (list == null) {
+            list = new CompletionResult();
+        }
+
         addTopLevelSnippets(task, list);
         logCompletionTiming(started, list.getItems(), list.isIncomplete());
         return list;
