@@ -87,6 +87,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.NoType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Types;
@@ -889,7 +890,9 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         final List<? extends AnnotationMirror> mirrors = method.getAnnotationMirrors();
         if (mirrors != null && !mirrors.isEmpty()) {
             for (final AnnotationMirror mirror : mirrors) {
-                builder.addAnnotation(AnnotationSpec.get(mirror));
+                if (mirror.getAnnotationType().getKind() != TypeKind.NULL) {
+                    builder.addAnnotation(AnnotationSpec.get(mirror));
+                }
             }
         }
 
