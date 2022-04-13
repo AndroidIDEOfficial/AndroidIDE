@@ -47,6 +47,7 @@ import com.itsaky.androidide.actions.editor.SelectAllAction
 import com.itsaky.androidide.actions.etc.DaemonStatusAction
 import com.itsaky.androidide.actions.etc.FileTreeAction
 import com.itsaky.androidide.actions.etc.FindActionMenu
+import com.itsaky.androidide.actions.etc.PreviewLayoutAction
 import com.itsaky.androidide.actions.file.SaveFileAction
 import com.itsaky.androidide.actions.text.RedoAction
 import com.itsaky.androidide.actions.text.UndoAction
@@ -68,6 +69,7 @@ class EditorActivityActions {
             registry.registerAction(QuickRunAction(context))
             registry.registerAction(RunActionMenu(context))
             registry.registerAction(SaveFileAction(context))
+            registry.registerAction(PreviewLayoutAction(context))
             registry.registerAction(FindActionMenu(context))
             registry.registerAction(FileTreeAction(context))
             registry.registerAction(DaemonStatusAction(context))
