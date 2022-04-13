@@ -139,6 +139,7 @@ public class ActionsPopupMenu extends PopupMenu implements ActionsRegistry.Actio
             dismissPopup();
         }
 
+        LOG.debug("Show editor text actions at location:", x, y);
         try {
             final var field = PopupMenu.class.getDeclaredField("mPopup");
             field.setAccessible(true);
@@ -210,7 +211,7 @@ public class ActionsPopupMenu extends PopupMenu implements ActionsRegistry.Actio
                                 editor.getCursor().getLeftLine(),
                                 editor.getCursor().getLeftColumn());
         final int x = (int) loc[1];
-        final int y = (int) (loc[0] - SizeUtils.dp2px(24));
+        final int y = (int) loc[0] - editor.getRowHeight() - SizeUtils.dp2px(2);
         show(x, y);
     }
 
