@@ -205,10 +205,22 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
                 val thisDeclaredType = thisClass.asType() as DeclaredType
                 val spec = JavaPoetUtils.buildMethod(superMethod, types, thisDeclaredType).build()
 
+                val newImports = mutableSetOf<String>()
                 sb.append("\n")
-                sb.append(JavaPoetUtils.print(spec, imports, false))
+                sb.append(JavaPoetUtils.print(spec, newImports, false))
                 sb.replace(Regex(Regex.escape("\n")), "\n${EditHelper.repeatSpaces(indent)}")
                 sb.append("\n")
+
+                val fileImports =
+                    task.root(file).imports.map { it.qualifiedIdentifier.toString() }.toSet()
+                val filePackage = task.root(file).`package`.packageName.toString()
+                newImports.removeIf {
+                    it.startsWith("java.lang.") ||
+                        it.startsWith(filePackage) ||
+                        fileImports.contains(it)
+                }
+
+                imports.addAll(newImports)
             }
 
             ThreadUtils.runOnUiThread {
