@@ -196,7 +196,10 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
             val classTree = typeFinder.scan(task.root(), position)
             val thisClass = trees.getElement(typeFinder.path) as TypeElement
             val indent = EditHelper.indent(task.task, task.root(), classTree) + 4
-
+            val fileImports =
+                task.root(file).imports.map { it.qualifiedIdentifier.toString() }.toSet()
+            val filePackage = task.root(file).`package`.packageName.toString()
+            
             for (pointer in checkedMethods) {
                 val superMethod =
                     FindHelper.findMethod(
@@ -211,9 +214,6 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
                 sb.replace(Regex(Regex.escape("\n")), "\n${EditHelper.repeatSpaces(indent)}")
                 sb.append("\n")
 
-                val fileImports =
-                    task.root(file).imports.map { it.qualifiedIdentifier.toString() }.toSet()
-                val filePackage = task.root(file).`package`.packageName.toString()
                 newImports.removeIf {
                     it.startsWith("java.lang.") ||
                         it.startsWith(filePackage) ||
