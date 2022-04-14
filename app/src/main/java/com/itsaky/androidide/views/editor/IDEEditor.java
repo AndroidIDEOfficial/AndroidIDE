@@ -21,7 +21,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
@@ -76,7 +75,7 @@ public class IDEEditor extends CodeEditor {
 
     public static final String KEY_FILE = "editor_file";
     private static final Logger LOG = Logger.newInstance("IDEEditor");
-    private final ActionsPopupMenu mActionsPopup;
+    private final EditorActionsMenu mActionsPopup;
     private int mFileVersion;
     private File file;
     private ILanguageServer mLanguageServer;
@@ -99,7 +98,8 @@ public class IDEEditor extends CodeEditor {
     public IDEEditor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
-        mActionsPopup = new ActionsPopupMenu(context, this, Gravity.BOTTOM);
+        mActionsPopup = new EditorActionsMenu(this);
+        mActionsPopup.init ();
 
         setColorScheme(new SchemeAndroidIDE());
         getComponent(EditorTextActionWindow.class).setEnabled(false);
@@ -813,7 +813,7 @@ public class IDEEditor extends CodeEditor {
 
         if (mActionsPopup != null) {
             if (mActionsPopup.isShowing()) {
-                mActionsPopup.dismissPopup();
+                mActionsPopup.dismiss();
             }
         }
     }
