@@ -35,6 +35,7 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
         addAction(SuppressUncheckedWarningAction())
         addAction(AddThrowsAction())
         addAction(GenerateSettersAndGettersAction())
+        addAction(OverrideSuperclassMethodsAction())
         addAction(GenerateConstructorAction())
     }
 }

@@ -19,6 +19,7 @@ package com.itsaky.lsp.java.providers;
 
 import static com.itsaky.lsp.java.utils.EditHelper.addImportIfNeeded;
 import static com.itsaky.lsp.java.utils.EditHelper.repeatSpaces;
+import static com.itsaky.lsp.java.utils.JavaPoetUtils.buildMethod;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,7 +47,6 @@ import com.itsaky.lsp.models.CompletionItemKind;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.InsertTextFormat;
-import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
@@ -76,7 +76,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -86,8 +85,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.NoType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Types;
@@ -886,32 +883,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
         // Print the method details and the annotations
         final int indent = EditHelper.indent(FileStore.contents(completingFile), (int) this.cursor);
-        final MethodSpec.Builder builder = MethodSpec.overriding(method, type, types);
-        final List<? extends AnnotationMirror> mirrors = method.getAnnotationMirrors();
-        if (mirrors != null && !mirrors.isEmpty()) {
-            for (final AnnotationMirror mirror : mirrors) {
-                if (mirror.getAnnotationType().getKind() != TypeKind.NULL) {
-                    builder.addAnnotation(AnnotationSpec.get(mirror));
-                }
-            }
-        }
-
-        boolean addComment = true;
-        // Add super call if the method is not abstract
-        if (!method.getModifiers().contains(Modifier.ABSTRACT)) {
-            if (method.getReturnType() instanceof NoType) {
-                builder.addStatement(createSuperCall(builder));
-            } else {
-                addComment = false;
-                builder.addComment("TODO: Implement this method");
-                builder.addStatement("return " + createSuperCall(builder));
-            }
-        }
-
-        if (addComment) {
-            builder.addComment("TODO: Implement this method");
-        }
-
+        final MethodSpec.Builder builder = buildMethod(method, types, type);
         final Set<String> imports = new HashSet<>();
         final MethodSpec methodSpec = builder.build();
         String insertText = JavaPoetUtils.print(methodSpec, imports, false);
@@ -944,28 +916,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         }
 
         return item;
-    }
-
-    /**
-     * Create a superclass method invocation statement.
-     *
-     * @param builder The method builder.
-     * @return The super invocation statement string without ending ';'.
-     */
-    @NonNull
-    private String createSuperCall(@NonNull MethodSpec.Builder builder) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("super.");
-        sb.append(builder.name);
-        sb.append("(");
-        for (int i = 0; i < builder.parameters.size(); i++) {
-            sb.append(builder.parameters.get(i).name);
-            if (i != builder.parameters.size() - 1) {
-                sb.append(", ");
-            }
-        }
-        sb.append(")");
-        return sb.toString();
     }
 
     @Nullable

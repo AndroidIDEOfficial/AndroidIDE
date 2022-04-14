@@ -152,6 +152,13 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
                 ->
                 if (error != null) {
                     log.error("Unable to generate setters and getters", error)
+                    ThreadUtils.runOnUiThread {
+                        BaseApplication.getBaseInstance()
+                            .toast(
+                                data[Context::class.java]!!.getString(
+                                    R.string.msg_cannot_generate_setters_getters),
+                                Toaster.Type.ERROR)
+                    }
                     return@whenComplete
                 }
             }
@@ -201,7 +208,7 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
 
             log.debug("Creating setters/getters for fields", fields.map { it.name })
 
-            generateForFields(data, task, type, fields.map { TreePath(typeFinder.storedPath, it) })
+            generateForFields(data, task, type, fields.map { TreePath(typeFinder.path, it) })
         }
     }
 

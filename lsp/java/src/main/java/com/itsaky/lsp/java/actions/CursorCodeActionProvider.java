@@ -139,7 +139,7 @@ public class CursorCodeActionProvider {
         if (classTree == null) {
             return Collections.emptyMap();
         }
-
+        
         final TreePath classPath = trees.getPath(task.root(), classTree);
         final Elements elements = task.task.getElements();
         final TypeElement classElement = (TypeElement) trees.getElement(classPath);

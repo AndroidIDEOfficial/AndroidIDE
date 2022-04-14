@@ -33,4 +33,10 @@
     <string name="msg_select_fields">Select fields</string>
     <string name="msg_no_fields_selected">No fields selected</string>
     <string name="msg_no_fields_found">No fields found</string>
+    <string name="action_override_superclass_methods">Override superclass methods</string>
+    <string name="msg_no_methods_selected">No methods selected</string>
+    <string name="msg_cannot_override_methods">Unable to override methods</string>
+    <string name="msg_cannot_generate_setters_getters">Unable to generate setters and getters</string>
+    <string name="msg_select_methods">Select methods to override</string>
+    <string name="msg_no_overridable_methods">Unable to find any overridable method</string>
 </resources>

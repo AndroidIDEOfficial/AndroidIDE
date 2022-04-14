@@ -29,7 +29,7 @@ public class FindTypeDeclarationAt extends TreePathScanner<ClassTree, Long> {
     private final SourcePositions pos;
     private CompilationUnitTree root;
 
-    private TreePath stored;
+    private TreePath path;
 
     public FindTypeDeclarationAt(JavacTask task) {
         pos = Trees.instance(task).getSourcePositions();
@@ -48,7 +48,7 @@ public class FindTypeDeclarationAt extends TreePathScanner<ClassTree, Long> {
             return smaller;
         }
         if (pos.getStartPosition(root, t) <= find && find < pos.getEndPosition(root, t)) {
-            this.stored = getCurrentPath();
+            this.path = getCurrentPath();
             return t;
         }
         return null;
@@ -60,7 +60,7 @@ public class FindTypeDeclarationAt extends TreePathScanner<ClassTree, Long> {
         return b;
     }
 
-    public TreePath getStoredPath() {
-        return stored;
+    public TreePath getPath() {
+        return path;
     }
 }
