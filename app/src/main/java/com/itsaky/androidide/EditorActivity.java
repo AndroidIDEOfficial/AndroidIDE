@@ -268,6 +268,13 @@ public class EditorActivity extends StudioActivity
                                 newState == BottomSheetBehavior.STATE_EXPANDED
                                         ? View.INVISIBLE
                                         : View.VISIBLE);
+
+                        if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                            final var editor = getCurrentEditor();
+                            if (editor != null && editor.getEditor() != null) {
+                                editor.getEditor().ensureWindowsDismissed();
+                            }
+                        }
                     }
 
                     @Override

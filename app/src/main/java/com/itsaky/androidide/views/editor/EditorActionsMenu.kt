@@ -307,7 +307,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
         val paddingHorizontal = text.paddingStart + text.paddingEnd
         val drawablePadding = text.compoundDrawablePadding
         val extraWidth = dp30 * 2 // 30dp for start and end drawables both
-
+        
         for (i in 0 until getMenu().size()) {
             val item = getMenu().getItem(i)
             val title = item.title.toString()
