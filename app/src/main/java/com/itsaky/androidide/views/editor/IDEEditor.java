@@ -38,8 +38,6 @@ import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.CodeActionItem;
-import com.itsaky.lsp.models.CodeActionParams;
-import com.itsaky.lsp.models.CodeActionResult;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
@@ -60,7 +58,6 @@ import com.itsaky.lsp.util.PathUtils;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -99,7 +96,7 @@ public class IDEEditor extends CodeEditor {
         super(context, attrs, defStyleAttr, defStyleRes);
 
         mActionsPopup = new EditorActionsMenu(this);
-        mActionsPopup.init ();
+        mActionsPopup.init();
 
         setColorScheme(new SchemeAndroidIDE());
         getComponent(EditorTextActionWindow.class).setEnabled(false);
@@ -656,33 +653,6 @@ public class IDEEditor extends CodeEditor {
                 formatCodeAsync();
                 break;
         }
-    }
-
-    /**
-     * Request code actions from server at the given position containing given diagnostics
-     *
-     * @return A {@link CompletableFuture}. May return {@code null}.
-     */
-    public CompletableFuture<CodeActionResult> codeActions() {
-        return codeActions(Collections.emptyList());
-    }
-
-    /**
-     * Requests code actions for the given diagnostics to the language server.
-     *
-     * @param diagnostics The diagnostics to request code actions for.
-     * @return The {@link CodeActionResult} from the server.
-     */
-    public CompletableFuture<CodeActionResult> codeActions(List<DiagnosticItem> diagnostics) {
-        return codeActions(new CodeActionParams(getFile().toPath(), getCursorRange(), diagnostics));
-    }
-
-    public CompletableFuture<CodeActionResult> codeActions(CodeActionParams params) {
-        if (mLanguageServer == null || mLanguageClient == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        return CompletableFuture.supplyAsync(() -> mLanguageServer.codeActions(params));
     }
 
     /**

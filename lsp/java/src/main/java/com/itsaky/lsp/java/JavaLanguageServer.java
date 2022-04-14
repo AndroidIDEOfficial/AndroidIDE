@@ -31,7 +31,6 @@ import com.itsaky.lsp.java.actions.JavaCodeActionsMenu;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.java.models.JavaServerSettings;
-import com.itsaky.lsp.java.providers.CodeActionProvider;
 import com.itsaky.lsp.java.providers.CodeFormatProvider;
 import com.itsaky.lsp.java.providers.CompletionProvider;
 import com.itsaky.lsp.java.providers.DefinitionProvider;
@@ -40,8 +39,6 @@ import com.itsaky.lsp.java.providers.JavaSelectionProvider;
 import com.itsaky.lsp.java.providers.ReferenceProvider;
 import com.itsaky.lsp.java.providers.SignatureProvider;
 import com.itsaky.lsp.java.utils.AnalyzeTimer;
-import com.itsaky.lsp.models.CodeActionParams;
-import com.itsaky.lsp.models.CodeActionResult;
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
@@ -220,16 +217,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         }
 
         return new CompletionProvider(getCompiler(), this.settings);
-    }
-
-    @NonNull
-    @Override
-    public CodeActionResult codeActions(@NonNull CodeActionParams params) {
-        if (!settings.codeActionsEnabled()) {
-            return new CodeActionResult();
-        }
-
-        return new CodeActionProvider(getCompiler()).codeActions(params);
     }
 
     @NonNull

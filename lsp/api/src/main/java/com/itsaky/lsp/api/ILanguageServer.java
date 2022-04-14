@@ -36,8 +36,6 @@ package com.itsaky.lsp.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.lsp.models.CodeActionParams;
-import com.itsaky.lsp.models.CodeActionResult;
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
@@ -131,15 +129,6 @@ public interface ILanguageServer {
      */
     @NonNull
     ICompletionProvider getCompletionProvider();
-
-    /**
-     * Compute code actions for the given params.
-     *
-     * @param params The params for computing code actions.
-     * @return The code action result.
-     */
-    @NonNull
-    CodeActionResult codeActions(@NonNull CodeActionParams params);
 
     /**
      * Find references using the given params.

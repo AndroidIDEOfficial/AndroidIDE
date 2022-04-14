@@ -43,8 +43,6 @@ import com.sun.tools.javac.util.JCDiagnostic;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -24,8 +24,6 @@ import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.api.IServerSettings;
-import com.itsaky.lsp.models.CodeActionParams;
-import com.itsaky.lsp.models.CodeActionResult;
 import com.itsaky.lsp.models.DefinitionParams;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
@@ -139,13 +137,7 @@ public class XMLLanguageServer implements ILanguageServer {
 
         return new CompletionProvider(this.sdkInfo, this.getSettings());
     }
-
-    @NonNull
-    @Override
-    public CodeActionResult codeActions(@NonNull CodeActionParams params) {
-        return new CodeActionResult();
-    }
-
+    
     @NonNull
     @Override
     public ReferenceResult findReferences(@NonNull ReferenceParams params) {
