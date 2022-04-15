@@ -97,6 +97,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
         list.clipToOutline = true
         list.isVerticalFadingEdgeEnabled = true
         list.isVerticalScrollBarEnabled = true
+        list.divider = null
         list.layoutParams =
             ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
