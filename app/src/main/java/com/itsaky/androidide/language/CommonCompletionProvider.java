@@ -123,7 +123,9 @@ public class CommonCompletionProvider {
                                             file);
                             params.setContent(content);
                             params.setPrefix(prefix);
-                            return completer.complete(params);
+                            final var result = completer.complete(params);
+                            Collections.sort(result.getItems());
+                            return result;
                         });
 
         try {
