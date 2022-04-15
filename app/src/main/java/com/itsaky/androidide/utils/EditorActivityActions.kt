@@ -42,6 +42,7 @@ import com.itsaky.androidide.actions.build.RunActionMenu
 import com.itsaky.androidide.actions.build.StopDaemonsAction
 import com.itsaky.androidide.actions.editor.CopyAction
 import com.itsaky.androidide.actions.editor.CutAction
+import com.itsaky.androidide.actions.editor.ExpandSelectionAction
 import com.itsaky.androidide.actions.editor.PasteAction
 import com.itsaky.androidide.actions.editor.SelectAllAction
 import com.itsaky.androidide.actions.etc.DaemonStatusAction
@@ -77,6 +78,7 @@ class EditorActivityActions {
             registry.registerAction(StopDaemonsAction(context))
 
             // editor text actions
+            registry.registerAction(ExpandSelectionAction(context))
             registry.registerAction(SelectAllAction(context))
             registry.registerAction(CutAction(context))
             registry.registerAction(CopyAction(context))
