@@ -23,7 +23,11 @@ import android.content.res.ColorStateList
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ListView
 import androidx.appcompat.view.menu.MenuBuilder
@@ -89,7 +93,10 @@ open class EditorActionsMenu(val editor: IDEEditor) :
         subscribe()
         applyBackground()
 
-        list.divider = null
+        list.clipChildren = true
+        list.clipToOutline = true
+        list.isVerticalFadingEdgeEnabled = true
+        list.isVerticalScrollBarEnabled = true
         list.layoutParams =
             ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -170,7 +177,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
     protected open fun applyBackground() {
         val drawable = GradientDrawable()
         drawable.shape = GradientDrawable.RECTANGLE
-        drawable.cornerRadius = 8f
+        drawable.cornerRadius = 16f
         drawable.color =
             ColorStateList.valueOf(
                 ContextCompat.getColor(editor.context, R.color.content_background))
@@ -307,7 +314,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
         val paddingHorizontal = text.paddingStart + text.paddingEnd
         val drawablePadding = text.compoundDrawablePadding
         val extraWidth = dp30 * 2 // 30dp for start and end drawables both
-        
+
         for (i in 0 until getMenu().size()) {
             val item = getMenu().getItem(i)
             val title = item.title.toString()
@@ -367,7 +374,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
         if (item.hasSubMenu() && item.subMenu is SubMenuBuilder) {
             (item.subMenu as SubMenuBuilder).setCallback(this)
         }
-        
+
         this.editor.post {
             TransitionManager.beginDelayedTransition(this.list, ChangeBounds())
             this.list.adapter = ActionsListAdapter(item.subMenu, editor.context)
