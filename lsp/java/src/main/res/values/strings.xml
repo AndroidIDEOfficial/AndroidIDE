@@ -39,4 +39,6 @@
     <string name="msg_cannot_generate_setters_getters">Unable to generate setters and getters</string>
     <string name="msg_select_methods">Select methods to override</string>
     <string name="msg_no_overridable_methods">Unable to find any overridable method</string>
+    <string name="action_goto_definition">Go to definition</string>
+    <string name="action_find_references">Find references</string>
 </resources>

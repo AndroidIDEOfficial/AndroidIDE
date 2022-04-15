@@ -24,6 +24,8 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
     init {
         addAction(CommentAction())
         addAction(UncommentAction())
+        addAction(GoToDefinitionAction())
+        addAction(FindReferencesAction())
         addAction(AddImportAction())
         addAction(ImplementAbstractMethodsAction())
         addAction(VariableToStatementAction())
