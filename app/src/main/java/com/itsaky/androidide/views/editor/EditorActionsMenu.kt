@@ -97,6 +97,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
         list.clipToOutline = true
         list.isVerticalFadingEdgeEnabled = true
         list.isVerticalScrollBarEnabled = true
+        list.setFadingEdgeLength(SizeUtils.dp2px(42f))
         list.divider = null
         list.layoutParams =
             ViewGroup.LayoutParams(
@@ -182,6 +183,8 @@ open class EditorActionsMenu(val editor: IDEEditor) :
         drawable.color =
             ColorStateList.valueOf(
                 ContextCompat.getColor(editor.context, R.color.content_background))
+        drawable.setStroke(
+            SizeUtils.dp2px(1f), ContextCompat.getColor(editor.context, R.color.primaryLightColor))
         list.background = drawable
     }
 
