@@ -167,7 +167,7 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
         builder.show()
     }
 
-    private fun generateForFields(data: ActionData, names: MutableSet<String>) {
+    fun generateForFields(data: ActionData, names: MutableSet<String>) {
         val server = data[JavaLanguageServer::class.java]!!
         val range = data[Range::class.java]!!
         val file = requirePath(data)

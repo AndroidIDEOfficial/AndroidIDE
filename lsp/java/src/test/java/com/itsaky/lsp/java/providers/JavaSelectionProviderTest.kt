@@ -17,9 +17,7 @@
 package com.itsaky.lsp.java.providers
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.lsp.api.CursorDependentTest
-import com.itsaky.lsp.api.ILanguageServer
-import com.itsaky.lsp.java.JavaLanguageServerProvider
+import com.itsaky.lsp.java.BaseJavaTest
 import com.itsaky.lsp.models.DocumentChangeEvent
 import com.itsaky.lsp.models.ExpandSelectionParams
 import com.itsaky.lsp.models.Position
@@ -31,79 +29,73 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/**
- * @author Akash Yadav
- */
+/** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
-class JavaSelectionProviderTest : CursorDependentTest() {
-    
-    private val server: ILanguageServer = JavaLanguageServerProvider.INSTANCE.server()
-    override fun getServer(): ILanguageServer = server
-    
+class JavaSelectionProviderTest : BaseJavaTest() {
+
     @Before
     fun init() {
         LOG.debug("Initializing JavaSelectionProviderTest")
     }
-    
+
     @Test
     fun testSimpleSelectionExpansion() {
         openFile("SimpleSelectionExpansionTest")
         cursor = requireCursor()
         deleteCursorText()
-        server.documentHandler.onContentChange(DocumentChangeEvent(file!!, contents.toString(), 1))
-        
+        mServer.documentHandler.onContentChange(DocumentChangeEvent(file!!, contents.toString(), 1))
+
         val range = findRange()
-        val expanded = server
-            .expandSelection(ExpandSelectionParams(file!!, range))
-        
+        val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
+
         assertThat(expanded).isEqualTo(Range(Position(4, 27), Position(4, 41)))
     }
-    
+
     @Test
     fun testMethodSelection() {
         openFile("MethodBodySelectionExpansionTest")
-        
+
         val start = Position(3, 43)
         val end = Position(5, 5)
         val range = Range(start, end)
-        
-        val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+
+        val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
         assertThat(expanded).isEqualTo(Range(Position(3, 4), end))
     }
-    
+
     @Test
     fun testTryCatchSelection() {
         openFile("TrySelectionExpansionTest")
-        
+
         // Test expand selection if catch block is selected
         val start = Position(7, 10)
         val end = Position(8, 9)
         val range = Range(start, end)
-        
-        val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+
+        val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
         assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
     }
-    
+
     @Test
     fun testTryFinallySelection() {
         openFile("TrySelectionExpansionTest")
-        
+
         // Test expand selection if catch block is selected
         val start = Position(8, 18)
         val end = Position(10, 9)
         val range = Range(start, end)
-        
-        val expanded = server.expandSelection(ExpandSelectionParams(file!!, range))
+
+        val expanded = mServer.expandSelection(ExpandSelectionParams(file!!, range))
         assertThat(expanded).isEqualTo(Range(Position(4, 8), Position(10, 9)))
     }
-    
+
     private fun findRange(): Range {
         val pos = Content(contents!!).indexer.getCharPosition(cursor)
         val position = Position(pos.line, pos.column, pos.index)
         return Range(position, position)
     }
-    
+
     override fun openFile(fileName: String) {
         super.openFile("selection/${fileName}")
     }

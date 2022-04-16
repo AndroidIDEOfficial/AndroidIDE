@@ -18,9 +18,7 @@
 package com.itsaky.lsp.java.actions
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.lsp.api.ILanguageServer
-import com.itsaky.lsp.api.LoggingTest
-import com.itsaky.lsp.java.JavaLanguageServerProvider
+import com.itsaky.lsp.java.BaseJavaTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -29,11 +27,7 @@ import org.robolectric.annotation.Config
 /** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
-class AddImportTest : LoggingTest() {
-
-    private val server = JavaLanguageServerProvider.INSTANCE.server()
-
-    override fun getServer(): ILanguageServer = server
+class AddImportTest : BaseJavaTest() {
 
     @Suppress("UNCHECKED_CAST")
     @Test
@@ -41,9 +35,9 @@ class AddImportTest : LoggingTest() {
         openFile("AddImportAction")
 
         val diagnostic =
-            server.analyze(file!!).first { it.code == "compiler.err.cant.resolve.location" }
+            mServer.analyze(file!!).first { it.code == "compiler.err.cant.resolve.location" }
         val file = this.file!!.toFile()
-        val data = createActionData(diagnostic, file, this.file!!, this.server)
+        val data = createActionData(diagnostic, file, this.file!!, this.mServer)
 
         val action = AddImportAction()
         action.prepare(data)

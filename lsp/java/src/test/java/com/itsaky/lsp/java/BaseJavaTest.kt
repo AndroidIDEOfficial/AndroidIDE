@@ -15,20 +15,14 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.actions;
+package com.itsaky.lsp.java
 
-import org.junit.Test;
+import com.itsaky.lsp.api.CursorDependentTest
+import com.itsaky.lsp.api.ILanguageServer
 
-import static org.junit.Assert.*;
+/** @author Akash Yadav */
+open class BaseJavaTest : CursorDependentTest() {
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
-public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect () {
-        assertEquals (4, 2 + 2);
-    }
+    protected val mServer = JavaLanguageServerProvider.INSTANCE.server()
+    override fun getServer(): ILanguageServer = mServer
 }

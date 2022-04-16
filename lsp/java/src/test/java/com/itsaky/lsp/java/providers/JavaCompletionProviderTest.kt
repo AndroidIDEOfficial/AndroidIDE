@@ -17,9 +17,7 @@
 package com.itsaky.lsp.java.providers
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.lsp.api.CursorDependentTest
-import com.itsaky.lsp.api.ILanguageServer
-import com.itsaky.lsp.java.JavaLanguageServerProvider
+import com.itsaky.lsp.java.BaseJavaTest
 import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.models.Position
 import org.junit.Test
@@ -27,77 +25,60 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/**
- * @author Akash Yadav
- */
+/** @author Akash Yadav */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.DEFAULT_VALUE_STRING)
-class JavaCompletionProviderTest : CursorDependentTest() {
-    private val server: ILanguageServer = JavaLanguageServerProvider.INSTANCE.server()
-    override fun getServer(): ILanguageServer = server
-    
+class JavaCompletionProviderTest : BaseJavaTest() {
+
     @Test
     fun testLocals() {
         openFile("LocalsCompletionTest")
-        
+
         val pos = cursorPosition()
         val items = completionTitles(pos)
-        assertThat(items)
-            .containsAtLeast(
-                "aaString",
-                "aaInt",
-                "aaFloat", "aaDouble", "args")
+        assertThat(items).containsAtLeast("aaString", "aaInt", "aaFloat", "aaDouble", "args")
     }
-    
+
     @Test
     fun testMembers() {
         // Complete members of String
         openFile("MembersCompletionTest")
-        
+
         val pos = cursorPosition()
         val items = completionTitles(pos)
         assertThat(items)
-            .containsAtLeast(
-                "getClass",
-                "toLowerCase",
-                "toUpperCase", "substring", "charAt")
+            .containsAtLeast("getClass", "toLowerCase", "toUpperCase", "substring", "charAt")
     }
-    
+
     @Test
     fun testLambdaVariableMemberAccess() {
         // Complete members of Throwable
         openFile("LambdaMembersCompletionTest")
-        
+
         val pos = cursorPosition()
         val items = completionTitles(pos)
         assertThat(items)
-            .containsAtLeast(
-                "getMessage",
-                "getCause",
-                "getStackTrace", "printStackTrace")
+            .containsAtLeast("getMessage", "getCause", "getStackTrace", "printStackTrace")
     }
-    
+
     @Test
     fun testStaticAccess() {
         // Complete static members of String
         openFile("StaticMembersCompletionTest")
-        
+
         val pos = cursorPosition()
         val items = completionTitles(pos)
         assertThat(items)
-            .containsAtLeast(
-                "format",
-                "join",
-                "valueOf", "CASE_INSENSITIVE_ORDER", "class")
+            .containsAtLeast("format", "join", "valueOf", "CASE_INSENSITIVE_ORDER", "class")
     }
-    
+
     override fun openFile(fileName: String) {
         super.openFile("completion/${fileName}")
     }
-    
+
     private fun completionTitles(pos: Position): List<CharSequence> {
-        return server.completionProvider
-            .complete(CompletionParams(pos, file!!))
-            .items.map { it.label }
+        return mServer.completionProvider.complete(CompletionParams(pos, file!!)).items.map {
+            it.label
+        }
     }
 }
