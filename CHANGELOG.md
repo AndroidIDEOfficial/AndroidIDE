@@ -1,12 +1,13 @@
 # AndroidIDE Changelog
-
 This is the changelog of all the releases of AndroidIDE.
 
 ## **v2.0.1-beta** (in development)
 
 ### Important notes
 <!--Breaking changes and other important stuff here-->
-- As 64-bit installation does not work on Android 12 (due to [restriction by the OS](https://source.android.com/devices/tech/debug/tagged-pointers)), 32-bit build tools need to be installed when installing AndroidIDE on devices running Android 12.
+- As 64-bit installation does not work on Android 12 (due
+  to [restriction by the OS](https://source.android.com/devices/tech/debug/tagged-pointers)), 32-bit
+  build tools need to be installed when installing AndroidIDE on devices running Android 12.
 - Google services and Firebase integration has been removed.
 
 ### Additions
@@ -16,13 +17,20 @@ This is the changelog of all the releases of AndroidIDE.
   [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView),
   [`ToggleButton`](https://developer.android.com/reference/android/widget/ToggleButton),
   [`Switch`](https://developer.android.com/reference/android/widget/Switch),
-  [`GridLayout`](https://developer.android.com/reference/android/widget/GridLayout) in layout
+  [`GridLayout`](https://developer.android.com/reference/android/widget/GridLayout),
+  [`ListView`](https://developer.android.com/reference/android/widget/ListView) (#145) in layout
   inflater.
 - Preference to disable use of `TYPE_TEXT_VARIATION_VISIBLE_PASSWORD` flag in editor.
 - Automatically trigger completion when attributes are inserted from completion window.
-- Code actions
-  - Add import
-  - Generate setters/getters
+- New java code actions :
+    - Add import
+    - Add 'throws'
+    - Generate constructor
+    - Generate setters/getters
+    - Field to block
+    - Remove unused class
+    - Remove unused method
+    - Remove unused 'throws'
 - `DocumentsProvider` for providing access to files in `HOME` directory.
 
 ### Removals
@@ -30,6 +38,7 @@ This is the changelog of all the releases of AndroidIDE.
 - Removed initial view attributes from view tags completion in XMLCompletionProvider.
 - Vertical text action window has been removed.
 - Removed Google services and Firebase integration.
+- Removed the horizontal text actions menu from the editor in favour of the new actions menu.
 
 ### Fixes
 <!--Bug fixes, etc-->
@@ -40,12 +49,17 @@ This is the changelog of all the releases of AndroidIDE.
 - Popup windows created by editor are not dismissed even when the file is closed.
 - No build output when activity is recreated (#121).
 - Crash in UI Designer when activity is recreated (#124).
+- Invalid syntax highlighting for application logs (#152).
+- Illegal argument exception while overriding methods in Java completion provider.
 
 ### Improvements
 <!--Things that were improved and worth mentioning-->
 - Do not import classes from `java.lang` package when completion items are selected.
 - XML completion provider now uses 'Match completions in lower case' preference.
-- Dismiss all windows shown by editor when file tab is unselected
+- Dismiss all windows shown by editor when file tab is unselected or when the bottom sheet is expanded.
+- Improved the editor actions menu.
+- Sort completion items according to their kind and sort text.
+- Restore file tree state when application is resumed (#150).  
 - Updated templates to work with Android 12 (#144).
 - Updated Chinese translation. Thanks to @mikofe (#128).
 - Updated French translation. Thanks to @Se-Lyan (#136).
