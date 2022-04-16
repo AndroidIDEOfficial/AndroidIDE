@@ -1,20 +1,26 @@
 # AndroidIDE Changelog
+
 This is the changelog of all the releases of AndroidIDE.
 
 ## **v2.0.1-beta** (in development)
 
 ### Important notes
+
 <!--Breaking changes and other important stuff here-->
+
 - As 64-bit installation does not work on Android 12 (due
   to [restriction by the OS](https://source.android.com/devices/tech/debug/tagged-pointers)), 32-bit
   build tools need to be installed when installing AndroidIDE on devices running Android 12.
 - Google services and Firebase integration has been removed.
 
 ### Additions
+
 <!--New features-->
+
 - Code formatter for Java source code.
 - Support for
-  [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView),
+  [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView)
+  ,
   [`ToggleButton`](https://developer.android.com/reference/android/widget/ToggleButton),
   [`Switch`](https://developer.android.com/reference/android/widget/Switch),
   [`GridLayout`](https://developer.android.com/reference/android/widget/GridLayout),
@@ -31,17 +37,22 @@ This is the changelog of all the releases of AndroidIDE.
     - Remove unused class
     - Remove unused method
     - Remove unused 'throws'
+- You can now override multiple superclass methods at once.
 - `DocumentsProvider` for providing access to files in `HOME` directory.
 
 ### Removals
+
 <!--Things that were removed-->
+
 - Removed initial view attributes from view tags completion in XMLCompletionProvider.
 - Vertical text action window has been removed.
 - Removed Google services and Firebase integration.
 - Removed the horizontal text actions menu from the editor in favour of the new actions menu.
 
 ### Fixes
+
 <!--Bug fixes, etc-->
+
 - Cash in attribute editors when adding an attribute.
 - Crash when selecting diagnostic item from diagnostics list.
 - Some diagnostic items are not shown in diagnostic window (#96).
@@ -53,27 +64,33 @@ This is the changelog of all the releases of AndroidIDE.
 - Illegal argument exception while overriding methods in Java completion provider.
 
 ### Improvements
+
 <!--Things that were improved and worth mentioning-->
+
 - Do not import classes from `java.lang` package when completion items are selected.
 - XML completion provider now uses 'Match completions in lower case' preference.
-- Dismiss all windows shown by editor when file tab is unselected or when the bottom sheet is expanded.
+- Dismiss all windows shown by editor when file tab is unselected or when the bottom sheet is
+  expanded.
 - Improved the editor actions menu.
 - Sort completion items according to their kind and sort text.
-- Restore file tree state when application is resumed (#150).  
+- Restore file tree state when application is resumed (#150).
 - Updated templates to work with Android 12 (#144).
 - Updated Chinese translation. Thanks to @mikofe (#128).
 - Updated French translation. Thanks to @Se-Lyan (#136).
 - Updated German translation (#144).
 
 ## **v2.0.0-beta**
+
 AndroidIDE v2.0.0-beta is here with new features and improvements.
 
 ### Important Notes
+
 - This is a pre-release and is not so stable. There are some features that are partially
   implemented.
 - The minimum SDK has been raised to `26` (`Android O`).
 
 ### Additions
+
 - XML Layout Designer with ability to preview XML drawables.
 - Added packages for terminal.
 - libGDx project template. Thanks to @Smooth-E (#81).
@@ -93,10 +110,12 @@ AndroidIDE v2.0.0-beta is here with new features and improvements.
 - Russian translation. Thanks to @Smooth-E (#97).
 
 ### Removals
+
 - Autosave of files is removed. However, a preference has been added for the same which, when
   enabled, saves the files automatically before close.
 
 ### Fixes
+
 - File does not close and crashes if reopened and closed again.
 - Flickering of whole auto completion window.
 - Flickering of completion item due to API info.
@@ -108,6 +127,7 @@ AndroidIDE v2.0.0-beta is here with new features and improvements.
 - `LogSender` class not included in JLS workspace.
 
 ### Improvements
+
 - Show crash report when the IDE crashes.
 - The Java language server is now embedded in the IDE itself.
 - The AndroidIDE Gradle plugin is now packaged with the IDE.
@@ -119,6 +139,7 @@ AndroidIDE v2.0.0-beta is here with new features and improvements.
 - Allow installation of files from file tree.
 
 ### New Contributors
+
 * @BanDroid
 * @Rosemoe
 * @Premjit-Chowdhury
