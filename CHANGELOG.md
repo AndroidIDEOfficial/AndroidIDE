@@ -1,22 +1,33 @@
 # AndroidIDE Changelog
-
 This is the changelog of all the releases of AndroidIDE.
 
-## **v2.0.1-beta** (in development)
+## **v2.0.2-beta** (in development)
 
 ### Important notes
-
 <!--Breaking changes and other important stuff here-->
 
+### Additions
+<!--New features-->
+
+### Removals
+<!--Things that were removed-->
+
+### Fixes
+<!--Bug fixes, etc-->
+
+### Improvements
+<!--Things that were improved and worth mentioning-->
+
+## **v2.0.1-beta**
+AndroidIDE v2.0.1-beta is here with new features, improvements and bug fixes.
+
+### Important notes
 - As 64-bit installation does not work on Android 12 (due
   to [restriction by the OS](https://source.android.com/devices/tech/debug/tagged-pointers)), 32-bit
   build tools need to be installed when installing AndroidIDE on devices running Android 12.
 - Google services and Firebase integration has been removed.
 
 ### Additions
-
-<!--New features-->
-
 - Code formatter for Java source code.
 - Support for
   [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView)
@@ -41,18 +52,12 @@ This is the changelog of all the releases of AndroidIDE.
 - `DocumentsProvider` for providing access to files in `HOME` directory.
 
 ### Removals
-
-<!--Things that were removed-->
-
 - Removed initial view attributes from view tags completion in XMLCompletionProvider.
 - Vertical text action window has been removed.
 - Removed Google services and Firebase integration.
 - Removed the horizontal text actions menu from the editor in favour of the new actions menu.
 
 ### Fixes
-
-<!--Bug fixes, etc-->
-
 - Cash in attribute editors when adding an attribute.
 - Crash when selecting diagnostic item from diagnostics list.
 - Some diagnostic items are not shown in diagnostic window (#96).
@@ -64,9 +69,6 @@ This is the changelog of all the releases of AndroidIDE.
 - Illegal argument exception while overriding methods in Java completion provider.
 
 ### Improvements
-
-<!--Things that were improved and worth mentioning-->
-
 - Do not import classes from `java.lang` package when completion items are selected.
 - XML completion provider now uses 'Match completions in lower case' preference.
 - Dismiss all windows shown by editor when file tab is unselected or when the bottom sheet is

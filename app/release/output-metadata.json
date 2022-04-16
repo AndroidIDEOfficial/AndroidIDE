@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.itsaky.androidide",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 201,
+      "versionName": "2.0.1-beta",
+      "outputFile": "app-release.apk"
+    }
+  ],
+  "elementType": "File"
+}
