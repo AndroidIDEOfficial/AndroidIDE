@@ -15,8 +15,8 @@ buildscript {
         buildTools = "31.0.0"
         minSdk = 26
         targetSdk = 28
-        versionCode = 201
-        versionName = "2.0.1-beta"
+        versionCode = 202
+        versionName = "2.0.2-beta"
         packageName = "com.itsaky.androidide"
 
         javaSourceVersion = JavaVersion.VERSION_11
