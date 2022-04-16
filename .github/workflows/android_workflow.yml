@@ -27,7 +27,7 @@ jobs:
       - name: Build debug apk
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: clean build test
+          arguments: :app:clean :app:build test
           distributions-cache-enabled: true
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
