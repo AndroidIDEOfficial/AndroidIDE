@@ -69,6 +69,7 @@ dependencies {
 
     testImplementation project(':lsp:testing')
     testImplementation project(':common')
+    testImplementation project(':actions')
     testImplementation tests.junit
     testImplementation tests.google_truth
     testImplementation tests.robolectric

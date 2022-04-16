@@ -44,9 +44,11 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation project(':lsp:api')
+    implementation project(':actions')
     implementation project(':common')
     implementation common.editor
     implementation tests.junit
     implementation tests.google_truth
     implementation tests.robolectric
+    implementation project(path: ':actions')
 }

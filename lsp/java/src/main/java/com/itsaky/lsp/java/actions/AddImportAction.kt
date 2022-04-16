@@ -67,7 +67,14 @@ class AddImportAction() : BaseCodeAction() {
         var found = false
         val simpleName = jcDiagnostic.args[1]
         for (name in server.compiler.publicTopLevelTypes()) {
-            if (name.endsWith(".$simpleName")) {
+            var klass = name
+            
+            // This will be true in a test environment
+            if (klass.contains("/")) {
+                klass = name.replace('/', '.')
+            }
+
+            if (klass.endsWith(".$simpleName")) {
                 found = true
                 // There is at least one class to import
                 break
