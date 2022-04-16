@@ -354,6 +354,10 @@ public class EditorActivity extends StudioActivity
         super.onPause();
         dispatchOnPauseToEditors();
         EditorActivityActions.clear();
+
+        if (mFileTreeFragment != null) {
+            mFileTreeFragment.saveTreeState();
+        }
     }
 
     @Override
@@ -365,7 +369,10 @@ public class EditorActivity extends StudioActivity
         try {
             checkForCompilerModule();
             dispatchOnResumeToEditors();
-            mFileTreeFragment.listProjectFiles();
+
+            if (mFileTreeFragment != null) {
+                mFileTreeFragment.listProjectFiles();
+            }
         } catch (Throwable th) {
             LOG.error("Failed to update files list", th);
             getApp().toast(R.string.msg_failed_list_files, Toaster.Type.ERROR);

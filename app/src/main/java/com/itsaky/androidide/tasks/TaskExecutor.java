@@ -29,6 +29,10 @@ public class TaskExecutor {
 
     private final Logger LOG = Logger.newInstance("TaskExecutor");
 
+    public static <R> void execAsync(Callable<R> callable, Callback<R> callback) {
+        new TaskExecutor().executeAsync(callable, callback);
+    }
+
     public <R> void executeAsync(Callable<R> callable, Callback<R> callback) {
         CompletableFuture.supplyAsync(
                         () -> {

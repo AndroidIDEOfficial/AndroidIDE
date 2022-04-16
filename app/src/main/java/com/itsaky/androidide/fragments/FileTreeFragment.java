@@ -1,7 +1,5 @@
-/************************************************************************************
+/*
  * This file is part of AndroidIDE.
- *
- *
  *
  * AndroidIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
- **************************************************************************************/
+ */
 package com.itsaky.androidide.fragments;
+
+import static com.unnamed.b.atv.view.AndroidTreeView.NODES_PATH_SEPARATOR;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,7 @@ import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.FileTreeCallable;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.Logger;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
@@ -50,15 +52,20 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FileTreeFragment extends BottomSheetDialogFragment
         implements TreeNode.TreeNodeClickListener, TreeNode.TreeNodeLongClickListener {
 
+    private static final String KEY_STORED_TREE_STATE = "fileTree_state";
+    private static final Logger LOG = Logger.newInstance("FileTreeFragment");
     private LayoutEditorFileTreeBinding binding;
     private AndroidTreeView mFileTreeView;
     private FileActionListener mFileActionListener;
     private AndroidProject mProject;
     private TreeNode mRoot;
+    private String mTreeState;
 
     public FileTreeFragment() {}
 
@@ -69,6 +76,52 @@ public class FileTreeFragment extends BottomSheetDialogFragment
         FileTreeFragment frag = new FileTreeFragment();
         frag.setArguments(bundle);
         return frag;
+    }
+
+    public void saveTreeState() {
+        if (mFileTreeView != null) {
+            mTreeState = mFileTreeView.getSaveState();
+        } else {
+            LOG.error("Unable to save tree state. TreeView is null.");
+            mTreeState = null;
+        }
+    }
+
+    private void tryRestoreState() {
+        tryRestoreState(mTreeState);
+    }
+
+    private void tryRestoreState(String state) {
+        if (!TextUtils.isEmpty(state) && mFileTreeView != null) {
+
+            LOG.debug("Restoring tree view state:", "'" + state + "'");
+
+            mFileTreeView.collapseAll();
+            final var openNodesArray = state.split(NODES_PATH_SEPARATOR);
+            final var openNodes = new HashSet<>(Arrays.asList(openNodesArray));
+            restoreNodeState(mRoot, openNodes);
+        } else {
+            LOG.error(
+                    "Unable to restore tree state",
+                    "treeState=" + state,
+                    "treeView=" + mFileTreeView);
+        }
+    }
+
+    private void restoreNodeState(@NonNull TreeNode root, Set<String> openNodes) {
+        final var children = root.getChildren();
+        for (int i = 0, childrenSize = children.size(); i < childrenSize; i++) {
+            final var node = children.get(i);
+            if (openNodes.contains(node.getPath())) {
+                listNode(
+                        node,
+                        () -> {
+                            updateChevron(node);
+                            expandNode(node);
+                            restoreNodeState(node, openNodes);
+                        });
+            }
+        }
     }
 
     @Override
@@ -88,6 +141,10 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mProject = requireArguments().getParcelable("project");
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_STORED_TREE_STATE)) {
+            mTreeState = savedInstanceState.getString(KEY_STORED_TREE_STATE, null);
+        }
 
         listProjectFiles();
     }
@@ -121,41 +178,48 @@ public class FileTreeFragment extends BottomSheetDialogFragment
                 expandNode(node);
             } else {
                 setLoading(node);
-                listNode(node);
+                listNode(
+                        node,
+                        () -> {
+                            updateChevron(node);
+                            expandNode(node);
+                        });
             }
         }
     }
 
-    private void listNode(@NonNull TreeNode node) {
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveTreeState();
+        outState.putString(KEY_STORED_TREE_STATE, mTreeState);
+    }
+
+    private void listNode(@NonNull TreeNode node, Runnable whenDone) {
+
+        if (whenDone == null) {
+            whenDone = () -> {};
+        }
+
         node.getChildren().clear();
         node.setExpanded(false);
-        new TaskExecutor()
-                .executeAsync(
-                        () -> {
-                            getNodeFromFiles(
-                                    node.getValue()
-                                            .listFiles(
-                                                    /* new FileTreeCallable.HiddenFilesFilter() */ ),
-                                    node);
-                            TreeNode temp = node;
-                            while (temp.size() == 1) {
-                                temp = temp.childAt(0);
-                                if (!temp.getValue().isDirectory()) {
-                                    break;
-                                }
-                                getNodeFromFiles(
-                                        temp.getValue()
-                                                .listFiles(
-                                                        /* new FileTreeCallable.HiddenFilesFilter() */ ),
-                                        temp);
-                                temp.setExpanded(true);
-                            }
-                            return null;
-                        },
-                        __ -> {
-                            updateChevron(node);
-                            expandNode(node);
-                        });
+
+        final var finalWhenDone = whenDone;
+        TaskExecutor.execAsync(
+                () -> {
+                    getNodeFromFiles(node.getValue().listFiles(), node);
+                    TreeNode temp = node;
+                    while (temp.size() == 1) {
+                        temp = temp.childAt(0);
+                        if (!temp.getValue().isDirectory()) {
+                            break;
+                        }
+                        getNodeFromFiles(temp.getValue().listFiles(), temp);
+                        temp.setExpanded(true);
+                    }
+                    return null;
+                },
+                __ -> finalWhenDone.run());
     }
 
     private void getNodeFromFiles(File[] files, TreeNode parent) {
@@ -246,7 +310,11 @@ public class FileTreeFragment extends BottomSheetDialogFragment
                                 tree.setDefaultNodeClickListener(FileTreeFragment.this);
                                 tree.setDefaultNodeLongClickListener(FileTreeFragment.this);
                                 getScrollView().removeAllViews();
-                                getScrollView().addView(tree.getView());
+
+                                final var view = tree.getView();
+                                getScrollView().addView(view);
+
+                                view.post(this::tryRestoreState);
                             }
                         });
     }
