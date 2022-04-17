@@ -21,6 +21,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.models.DiagnosticCode
 import com.itsaky.lsp.java.rewrite.AddSuppressWarningAnnotation
 import com.itsaky.lsp.java.utils.CodeActionUtils
 import com.itsaky.lsp.models.DiagnosticItem
@@ -29,7 +30,7 @@ import com.itsaky.lsp.models.DiagnosticItem
 class SuppressUncheckedWarningAction : BaseCodeAction() {
     override val id = "lsp_java_suppressUncheckedWarning"
     override var label: String = ""
-    private val diagnosticCode = "compiler.warn.unchecked.call.mbr.of.raw.type"
+    private val diagnosticCode = DiagnosticCode.UNCHECKED.id
     private val log = Logger.newInstance(javaClass.simpleName)
 
     override val titleTextRes: Int = R.string.action_suppress_unchecked_warning

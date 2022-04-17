@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.compiler.CompileTask;
+import com.itsaky.lsp.java.models.DiagnosticCode;
 import com.itsaky.lsp.java.visitors.DiagnosticVisitor;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticSeverity;
@@ -97,9 +98,9 @@ public class DiagnosticsProvider {
     private static void addDiagnosticsByVisiting(
             CompileTask task, CompilationUnitTree root, List<DiagnosticItem> result) {
         Map<TreePath, String> notThrown = new HashMap<>();
-        DiagnosticVisitor warnUnused = new DiagnosticVisitor(task.task);
-        warnUnused.scan(root, notThrown);
-        for (Element unusedEl : warnUnused.notUsed()) {
+        DiagnosticVisitor diagnosticScanner = new DiagnosticVisitor(task.task);
+        diagnosticScanner.scan(root, notThrown);
+        for (Element unusedEl : diagnosticScanner.notUsed()) {
             result.add(warnUnused(task, unusedEl));
         }
         for (TreePath location : notThrown.keySet()) {
@@ -136,7 +137,7 @@ public class DiagnosticsProvider {
         final DiagnosticItem d = new DiagnosticItem();
         d.setMessage(String.format("'%s' is not thrown in the body of the method", name));
         d.setRange(new Range(getPosition(start, lines), getPosition(end, lines)));
-        d.setCode("unused_throws");
+        d.setCode(DiagnosticCode.UNUSED_THROWS.getId());
         d.setSeverity(DiagnosticSeverity.INFO);
         return d;
     }
@@ -175,35 +176,35 @@ public class DiagnosticsProvider {
         }
 
         String message = String.format("'%s' is not used", name);
-        String code;
+        DiagnosticCode code;
         DiagnosticSeverity severity;
         if (leaf instanceof VariableTree) {
             Tree parent = path.getParentPath().getLeaf();
             if (parent instanceof MethodTree) {
-                code = "unused_param";
+                code = DiagnosticCode.UNUSED_PARAM;
                 severity = DiagnosticSeverity.HINT;
             } else if (parent instanceof BlockTree) {
-                code = "unused_local";
+                code = DiagnosticCode.UNUSED_LOCAL;
                 severity = DiagnosticSeverity.INFO;
             } else if (parent instanceof ClassTree) {
-                code = "unused_field";
+                code = DiagnosticCode.UNUSED_FIELD;
                 severity = DiagnosticSeverity.INFO;
             } else {
-                code = "unused_other";
+                code = DiagnosticCode.UNUSED_OTHER;
                 severity = DiagnosticSeverity.HINT;
             }
         } else if (leaf instanceof MethodTree) {
-            code = "unused_method";
+            code = DiagnosticCode.UNUSED_METHOD;
             severity = DiagnosticSeverity.INFO;
         } else if (leaf instanceof ClassTree) {
-            code = "unused_class";
+            code = DiagnosticCode.UNUSED_CLASS;
             severity = DiagnosticSeverity.INFO;
         } else {
-            code = "unused_other";
+            code = DiagnosticCode.UNUSED_OTHER;
             severity = DiagnosticSeverity.INFO;
         }
 
-        return asDiagnosticItem(severity, code, message, start, end, root);
+        return asDiagnosticItem(severity, code.getId(), message, start, end, root);
     }
 
     @NonNull

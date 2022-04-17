@@ -22,6 +22,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.models.DiagnosticCode
 import com.itsaky.lsp.java.rewrite.AddImport
 import com.itsaky.lsp.java.rewrite.Rewrite
 import com.itsaky.lsp.java.utils.JavaDiagnosticUtils
@@ -35,7 +36,7 @@ class AddImportAction() : BaseCodeAction() {
 
     override val id: String = "lsp_java_addImport"
     override var label: String = "Import class(es)"
-    private val diagnosticCode = "compiler.err.cant.resolve.location"
+    private val diagnosticCode = DiagnosticCode.NOT_IMPORTED.id
     private val log = Logger.newInstance("AddImportAction")
 
     override val titleTextRes: Int = R.string.action_import_classes

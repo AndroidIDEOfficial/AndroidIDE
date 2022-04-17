@@ -21,6 +21,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.models.DiagnosticCode
 import com.itsaky.lsp.java.rewrite.RemoveException
 import com.itsaky.lsp.java.utils.CodeActionUtils
 import com.itsaky.lsp.models.DiagnosticItem
@@ -29,7 +30,7 @@ import com.itsaky.lsp.models.DiagnosticItem
 class RemoveUnusedThrowsAction : BaseCodeAction() {
     override val id: String = "lsp_java_removeUnusedThrows"
     override var label: String = ""
-    private val diagnosticCode = "unused_throws"
+    private val diagnosticCode = DiagnosticCode.UNUSED_THROWS.id
     private val log = Logger.newInstance(javaClass.simpleName)
 
     override val titleTextRes: Int = R.string.action_remove_unused_throws

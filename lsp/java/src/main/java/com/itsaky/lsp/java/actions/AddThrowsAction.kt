@@ -21,6 +21,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.models.DiagnosticCode
 import com.itsaky.lsp.java.rewrite.AddException
 import com.itsaky.lsp.java.utils.CodeActionUtils
 import com.itsaky.lsp.models.DiagnosticItem
@@ -29,7 +30,7 @@ import com.itsaky.lsp.models.DiagnosticItem
 class AddThrowsAction : BaseCodeAction() {
     override val id = "lsp_java_addThrows"
     override var label: String = ""
-    private val diagnosticCode = "compiler.err.unreported.exception.need.to.catch.or.throw"
+    private val diagnosticCode = DiagnosticCode.NOT_THROWN.id
     private val log = Logger.newInstance(javaClass.simpleName)
 
     override val titleTextRes: Int = R.string.action_add_throws

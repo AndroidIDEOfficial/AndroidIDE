@@ -21,6 +21,7 @@ import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.models.DiagnosticCode
 import com.itsaky.lsp.java.rewrite.CreateMissingMethod
 import com.itsaky.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.lsp.models.DiagnosticItem
@@ -29,7 +30,7 @@ import com.itsaky.lsp.models.DiagnosticItem
 class CreateMissingMethodAction : BaseCodeAction() {
     override val id: String = "lsp_java_createMissingMethod"
     override var label: String = ""
-    private val diagnosticCode = "compiler.err.cant.resolve.location.args"
+    private val diagnosticCode = DiagnosticCode.MISSING_METHOD.id
     private val log = Logger.newInstance(javaClass.simpleName)
 
     override val titleTextRes: Int = R.string.action_create_missing_method
