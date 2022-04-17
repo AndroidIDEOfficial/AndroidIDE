@@ -8,7 +8,8 @@ ext {
             bll: 'com.github.Rosemoe:BlockLinkedList:1.0.0',
             xml2json: 'com.github.smart-fun:XmlToJson:1.5.1',
             jsoup: 'org.jsoup:jsoup:1.14.2',
-            antlr4: 'org.antlr:antlr4-runtime:4.9.2'
+            antlr4: 'org.antlr:antlr4-runtime:4.9.2',
+            javaparser: 'com.github.javaparser:javaparser-symbol-solver-core:3.24.2'
     ]
 
     androidx = [

@@ -24,15 +24,19 @@ import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.compiler.CompileTask
+import com.itsaky.lsp.java.compiler.CompilerProvider
+import com.itsaky.lsp.java.parser.ParseTask
 import com.itsaky.lsp.java.rewrite.AddImport
 import com.itsaky.lsp.java.utils.EditHelper
 import com.itsaky.lsp.java.utils.FindHelper
-import com.itsaky.lsp.java.utils.JavaPoetUtils
+import com.itsaky.lsp.java.utils.JavaParserUtils
 import com.itsaky.lsp.java.utils.MethodPtr
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.models.Range
 import com.itsaky.toaster.Toaster
+import com.sun.source.tree.MethodTree
 import com.sun.source.util.Trees
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.*
@@ -42,6 +46,8 @@ import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.ExecutableType
+import javax.tools.JavaFileObject
 
 /**
  * Allows the user to override multiple methods from superclass at once.
@@ -199,18 +205,26 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
             val fileImports =
                 task.root(file).imports.map { it.qualifiedIdentifier.toString() }.toSet()
             val filePackage = task.root(file).`package`.packageName.toString()
-            
+
             for (pointer in checkedMethods) {
                 val superMethod =
                     FindHelper.findMethod(
                         task, pointer.className, pointer.methodName, pointer.erasedParameterTypes)
 
                 val thisDeclaredType = thisClass.asType() as DeclaredType
-                val spec = JavaPoetUtils.buildMethod(superMethod, types, thisDeclaredType).build()
-
-                val newImports = mutableSetOf<String>()
+                val executableType =
+                    types.asMemberOf(thisDeclaredType, superMethod) as ExecutableType
+                val source = findSource(server.compiler, task, superMethod)
+                val method =
+                    if (source != null) {
+                        JavaParserUtils.printMethod(superMethod, executableType, source)
+                    } else {
+                        JavaParserUtils.printMethod(superMethod, executableType, superMethod)
+                    }
+                
+                val newImports = JavaParserUtils.collectImports(executableType)
                 sb.append("\n")
-                sb.append(JavaPoetUtils.print(spec, newImports, false))
+                sb.append(method.toString())
                 sb.replace(Regex(Regex.escape("\n")), "\n${EditHelper.repeatSpaces(indent)}")
                 sb.append("\n")
 
@@ -237,7 +251,7 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
         data: ActionData,
         sb: StringBuilder,
         imports: MutableSet<String>,
-        position: Position
+        position: Position,
     ) {
         val server = data[JavaLanguageServer::class.java]!!
         val editor = data[CodeEditor::class.java]!!
@@ -285,5 +299,20 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
             }
             .mapIndexed { index, params -> "${methods[index].methodName}$params" }
             .toTypedArray()
+    }
+
+    private fun findSource(
+        compiler: CompilerProvider,
+        task: CompileTask,
+        method: ExecutableElement,
+    ): MethodTree? {
+        val superClass = method.enclosingElement as TypeElement
+        val superClassName = superClass.qualifiedName.toString()
+        val methodName = method.simpleName.toString()
+        val erasedParameterTypes = FindHelper.erasedParameterTypes(task, method)
+        val sourceFile: Optional<JavaFileObject> = compiler.findAnywhere(superClassName)
+        if (!sourceFile.isPresent) return null
+        val parse: ParseTask = compiler.parse(sourceFile.get())
+        return FindHelper.findMethod(parse, superClassName, methodName, erasedParameterTypes)
     }
 }

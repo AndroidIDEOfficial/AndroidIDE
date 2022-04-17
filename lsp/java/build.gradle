@@ -47,6 +47,7 @@ android {
 
 dependencies {
     implementation common.editor
+    implementation common.javaparser
     implementation common.utilcode
     implementation androidx.annotation
     implementation google.guava_jre

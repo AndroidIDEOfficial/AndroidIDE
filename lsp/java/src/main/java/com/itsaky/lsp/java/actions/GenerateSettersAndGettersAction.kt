@@ -19,6 +19,11 @@ package com.itsaky.lsp.java.actions
 
 import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
+import com.github.javaparser.StaticJavaParser
+import com.github.javaparser.ast.body.MethodDeclaration
+import com.github.javaparser.ast.expr.SimpleName
+import com.github.javaparser.ast.stmt.Statement
+import com.github.javaparser.ast.type.VoidType
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.utils.Logger
@@ -26,12 +31,11 @@ import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.utils.EditHelper
-import com.itsaky.lsp.java.utils.JavaPoetUtils.Companion.print
+import com.itsaky.lsp.java.utils.JavaParserUtils
+import com.itsaky.lsp.java.utils.TypeUtils.toType
 import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.lsp.models.Range
 import com.itsaky.toaster.Toaster
-import com.squareup.javapoet.MethodSpec
-import com.squareup.javapoet.TypeName
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.Tree
 import com.sun.source.tree.VariableTree
@@ -247,34 +251,39 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
 
     private fun createGetter(variable: VariableElement, indent: Int): String {
         val name: String = variable.simpleName.toString()
-        val builder = MethodSpec.methodBuilder(createName(name, "get"))
-        builder
-            .addModifiers(Modifier.PUBLIC)
-            .returns(TypeName.get(variable.asType()))
-            .addStatement("return \$N", name)
+        val method = MethodDeclaration()
+        val body = method.createBody()
+        method.name = SimpleName(createName(name, "get"))
+        method.type = toType(variable.asType())
+        body.addStatement(createReturnStmt(name))
+        method.setBody(body)
 
-        val imports = mutableSetOf<String>()
-        var text = "\n" + print(builder.build(), imports)
+        var text = "\n" + JavaParserUtils.prettyPrint(method) { false }
         text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
 
         return text
     }
+
+    private fun createReturnStmt(name: String) =
+        StaticJavaParser.parseStatement("return this.$name;")
 
     private fun createSetter(variable: VariableElement, indent: Int): String {
         val name: String = variable.simpleName.toString()
-        val builder = MethodSpec.methodBuilder(createName(name, "set"))
-        builder
-            .addModifiers(Modifier.PUBLIC)
-            .returns(TypeName.VOID)
-            .addParameter(TypeName.get(variable.asType()), name)
-            .addStatement("this.\$N = \$N", name, name)
+        val method = MethodDeclaration()
+        val body = method.createBody()
+        method.name = SimpleName(createName(name, "set"))
+        method.type = VoidType()
+        method.addParameter(toType(variable.asType()), name)
+        body.addStatement(createAssignmentStmt(name))
 
-        val imports = mutableSetOf<String>()
-        var text = "\n" + print(builder.build(), imports)
+        var text = "\n" + method.toString()
         text = text.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
 
         return text
     }
+
+    private fun createAssignmentStmt(name: String) =
+        StaticJavaParser.parseStatement("this.$name = $name;")
 
     private fun createName(name: String, prefix: String): String {
         val sb = StringBuilder(name)
