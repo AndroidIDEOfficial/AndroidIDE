@@ -33,12 +33,12 @@
      <string name="msg_select_fields">Selecionar campos</string>
      <string name="msg_no_fields_selected">Nenhum campo selecionado</string>
      <string name="msg_no_fields_found">Nenhum campo encontrado</string>
-     <string name="action_override_superclass_methods">Substituir métodos de superclasse</string>
+     <string name="action_override_superclass_methods">Sobrepor métodos de superclasse</string>
      <string name="msg_no_methods_selected">Nenhum método selecionado</string>
      <string name="msg_cannot_override_methods">Não é possível substituir métodos</string>
      <string name="msg_cannot_generate_setters_getters">Não é possível gerar setters e getters</string>
-     <string name="msg_select_methods">Selecione métodos para substituir</string>
-     <string name="msg_no_overridable_methods">Não foi possível encontrar nenhum método substituível</string>
+     <string name="msg_select_methods">Selecione métodos para sobrepor</string>
+     <string name="msg_no_overridable_methods">Não foi possível encontrar nenhum método sobreponível</string>
      <string name="action_goto_definition">Ir para definição</string>
      <string name="action_find_references">Encontrar referências</string>
 </resources>
