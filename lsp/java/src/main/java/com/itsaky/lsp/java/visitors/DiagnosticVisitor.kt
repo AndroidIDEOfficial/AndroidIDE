@@ -20,6 +20,7 @@ import com.itsaky.androidide.utils.Logger
 import com.sun.source.tree.BlockTree
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
+import com.sun.source.tree.DoWhileLoopTree
 import com.sun.source.tree.ForLoopTree
 import com.sun.source.tree.IdentifierTree
 import com.sun.source.tree.IfTree
@@ -32,6 +33,7 @@ import com.sun.source.tree.ThrowTree
 import com.sun.source.tree.Tree
 import com.sun.source.tree.TryTree
 import com.sun.source.tree.VariableTree
+import com.sun.source.tree.WhileLoopTree
 import com.sun.source.util.JavacTask
 import com.sun.source.util.TreePath
 import com.sun.source.util.TreeScanner
@@ -298,7 +300,9 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
                 when (val parent = path!!.parentPath.leaf) {
                     is IfTree -> fromIfTree(node, parent)
                     is TryTree -> fromTryTree(node, parent)
-                    is ForLoopTree -> fromForLoopTree(parent, node)
+                    is ForLoopTree -> fromForTree(parent, node)
+                    is WhileLoopTree -> fromWhileTree(parent, node)
+                    is DoWhileLoopTree -> fromDoWhileTree(parent, node)
                     else -> null
                 }
 
@@ -309,7 +313,21 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
         return super.visitBlock(node, p)
     }
 
-    private fun fromForLoopTree(parent: ForLoopTree, node: BlockTree?) =
+    private fun fromDoWhileTree(parent: DoWhileLoopTree, node: BlockTree?) =
+        if (parent.statement == node) {
+            "do"
+        } else {
+            null
+        }
+
+    private fun fromWhileTree(parent: WhileLoopTree, node: BlockTree?) =
+        if (parent.statement == node) {
+            "while"
+        } else {
+            null
+        }
+
+    private fun fromForTree(parent: ForLoopTree, node: BlockTree?) =
         if (parent.statement == node) {
             "for"
         } else {
