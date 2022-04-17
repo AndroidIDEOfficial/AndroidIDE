@@ -106,6 +106,47 @@ public class IDEEditor extends CodeEditor {
         setInputType(createInputFlags());
     }
 
+    private void handleSelectionChange(
+            @NonNull SelectionChangeEvent event, Unsubscribe unsubscribe) {
+        if (event.isSelected() || !(getEditorLanguage() instanceof IDELanguage)) {
+            // do not show diagnostics when text is selected
+            // or if we cannot get diagnostics
+            return;
+        }
+
+        final var diagnostics = ((IDELanguage) getEditorLanguage()).getDiagnostics();
+        final var line = event.getLeft().line;
+        final var column = event.getLeft().column;
+
+        // diagnostics are expected to be sorted, so, we do a binary search
+        final var diagnostic = binarySearchDiagnostic(diagnostics, line, column);
+        getDiagnosticWindow().showDiagnostic(diagnostic);
+    }
+
+    /**
+     * Notify the language server that the content of this file has been changed.
+     *
+     * @param event The content change event.
+     */
+    private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
+        if (getContext() instanceof Activity) {
+            ((Activity) getContext()).invalidateOptionsMenu();
+        }
+
+        if (getFile() == null || mLanguageServer == null) {
+            return;
+        }
+
+        final var documentHandler = mLanguageServer.getDocumentHandler();
+        final var file = getFile().toPath();
+        if (documentHandler.accepts(file)) {
+            documentHandler.onContentChange(
+                    new DocumentChangeEvent(file, getText(), mFileVersion + 1));
+        }
+
+        checkForSignatureHelp(event);
+    }
+
     public static int createInputFlags() {
         var flags =
                 EditorInfo.TYPE_CLASS_TEXT
@@ -120,100 +161,18 @@ public class IDEEditor extends CodeEditor {
         return flags;
     }
 
-    public void analyze() {
-        if (mLanguageServer != null
-                && getFile() != null
-                && getEditorLanguage() instanceof IDELanguage) {
-            CompletableFuture.supplyAsync(() -> mLanguageServer.analyze(getFile().toPath()))
-                    .whenComplete(
-                            (diagnostics, throwable) -> {
-                                final var lang = (IDELanguage) getEditorLanguage();
-                                final var analyzer = lang.getAnalyzeManager();
-                                if (analyzer instanceof IAnalyzeManager) {
-                                    ((IAnalyzeManager) analyzer).updateDiagnostics(diagnostics);
-                                }
-                                analyzer.rerun();
-                            });
-        }
+    @Nullable
+    private DiagnosticItem binarySearchDiagnostic(
+            @NonNull List<DiagnosticItem> diagnostics, int line, int column) {
+        return DiagnosticUtil.binarySearchDiagnostic(diagnostics, line, column);
     }
 
-    /**
-     * Checks if the given range is valid for this editor's text.
-     *
-     * @param range The range to check.
-     * @return <code>true</code> if valid, <code>false</code> otherwise.
-     */
-    public boolean isValidRange(final Range range) {
-        if (range == null) {
-            return false;
+    private DiagnosticWindow getDiagnosticWindow() {
+        if (mDiagnosticWindow == null) {
+            mDiagnosticWindow = new DiagnosticWindow(this);
         }
 
-        final var start = range.getStart();
-        final var end = range.getEnd();
-
-        return isValidPosition(start)
-                && isValidPosition(end)
-                && start.compareTo(end) < 0; // make sure start position is before end position
-    }
-
-    /**
-     * Checks if the given position is valid for this editor's text.
-     *
-     * @param position The position to check.
-     * @return <code>true</code> if valid, <code>false</code> otherwise.
-     */
-    public boolean isValidPosition(final Position position) {
-        if (position == null) {
-            return false;
-        }
-
-        return isValidLine(position.getLine())
-                && isValidColumn(position.getLine(), position.getColumn());
-    }
-
-    /**
-     * Checks if the given line is valid for this editor's text.
-     *
-     * @param line The line to check.
-     * @return <code>true</code> if valid, <code>false</code> otherwise.
-     */
-    public boolean isValidLine(int line) {
-        return line >= 0 && line < getText().getLineCount();
-    }
-
-    /**
-     * Checks if the given column is valid for this editor's text.
-     *
-     * @param line The line of the column to check.
-     * @param column The column to check.
-     * @return <code>true</code> if valid, <code>false</code> otherwise.
-     */
-    public boolean isValidColumn(int line, int column) {
-        return column >= 0 && column < getText().getColumnCount(line);
-    }
-
-    /**
-     * Set selection to the given range.
-     *
-     * @param range The range to select.
-     */
-    public void setSelection(@NonNull Range range) {
-        if (isValidRange(range)) {
-            setSelectionRegion(
-                    range.getStart().getLine(),
-                    range.getStart().getColumn(),
-                    range.getEnd().getLine(),
-                    range.getEnd().getColumn());
-        }
-    }
-
-    /**
-     * Set the selection of this editor to the given position.
-     *
-     * @param position The position to select.
-     */
-    public void setSelection(@NonNull Position position) {
-        setSelection(position.getLine(), position.getColumn());
+        return mDiagnosticWindow;
     }
 
     /**
@@ -250,6 +209,104 @@ public class IDEEditor extends CodeEditor {
         } else {
             getExtraArguments().remove(KEY_FILE);
         }
+    }
+
+    public void analyze() {
+        if (mLanguageServer != null
+                && getFile() != null
+                && getEditorLanguage() instanceof IDELanguage) {
+            CompletableFuture.supplyAsync(() -> mLanguageServer.analyze(getFile().toPath()))
+                    .whenComplete(
+                            (diagnostics, throwable) -> {
+                                final var lang = (IDELanguage) getEditorLanguage();
+                                final var analyzer = lang.getAnalyzeManager();
+                                if (analyzer instanceof IAnalyzeManager) {
+                                    ((IAnalyzeManager) analyzer).updateDiagnostics(diagnostics);
+                                }
+                                analyzer.rerun();
+                            });
+        }
+    }
+
+    /**
+     * Checks if the content change event should trigger signature help. Signature help trigger
+     * characters are :
+     *
+     * <ul>
+     *   <li><code>'('</code> (parentheses)
+     *   <li><code>','</code> (comma)
+     * </ul>
+     *
+     * @param event The content change event.
+     */
+    private void checkForSignatureHelp(@NonNull ContentChangeEvent event) {
+        if (event.getAction() != ContentChangeEvent.ACTION_INSERT
+                || event.getChangedText().length() != 1) {
+            return;
+        }
+
+        final var ch = event.getChangedText().charAt(0);
+        if (ch == '(' || ch == ',') {
+            signatureHelp();
+        }
+    }
+
+    /**
+     * If any language server is set, requests signature help at the cursor's position. On a valid
+     * response, shows the signature help in a popup window.
+     */
+    @SuppressWarnings("unused") // accessed using reflection in CompletionItem class
+    public void signatureHelp() {
+        if (mLanguageServer != null && getFile() != null) {
+            final CompletableFuture<SignatureHelp> future =
+                    CompletableFuture.supplyAsync(
+                            () ->
+                                    mLanguageServer.signatureHelp(
+                                            new SignatureHelpParams(
+                                                    getFile().toPath(),
+                                                    new Position(
+                                                            getCursor().getLeftLine(),
+                                                            getCursor().getLeftColumn()))));
+
+            future.whenComplete(
+                    (help, error) -> {
+                        if (help == null
+                                || mLanguageClient == null
+                                || future.isCancelled()
+                                || future.isCompletedExceptionally()) {
+                            LOG.error("An error occurred while finding signature help", error);
+                            return;
+                        }
+
+                        ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
+                    });
+        }
+    }
+
+    /**
+     * Shows the given signature help in the editor.
+     *
+     * @param help The signature help data to show.
+     */
+    public void showSignatureHelp(SignatureHelp help) {
+        getSignatureHelpWindow().setupAndDisplay(help);
+    }
+
+    private SignatureHelpWindow getSignatureHelpWindow() {
+        if (mSignatureHelpWindow == null) {
+            mSignatureHelpWindow = new SignatureHelpWindow(this);
+        }
+
+        return mSignatureHelpWindow;
+    }
+
+    /**
+     * Set the selection of this editor to the given position.
+     *
+     * @param position The position to select.
+     */
+    public void setSelection(@NonNull Position position) {
+        setSelection(position.getLine(), position.getColumn());
     }
 
     /**
@@ -452,6 +509,85 @@ public class IDEEditor extends CodeEditor {
     }
 
     /**
+     * Set selection to the given range.
+     *
+     * @param range The range to select.
+     */
+    public void setSelection(@NonNull Range range) {
+        if (isValidRange(range)) {
+            setSelectionRegion(
+                    range.getStart().getLine(),
+                    range.getStart().getColumn(),
+                    range.getEnd().getLine(),
+                    range.getEnd().getColumn());
+        }
+    }
+
+    /**
+     * Dismisses the given dialog on the UI thread.
+     *
+     * @param dialog The dialog to dismiss.
+     */
+    private void dismissOnUiThread(@NonNull final Dialog dialog) {
+        ThreadUtils.runOnUiThread(dialog::dismiss);
+    }
+
+    /**
+     * Checks if the given range is valid for this editor's text.
+     *
+     * @param range The range to check.
+     * @return <code>true</code> if valid, <code>false</code> otherwise.
+     */
+    public boolean isValidRange(final Range range) {
+        if (range == null) {
+            return false;
+        }
+
+        final var start = range.getStart();
+        final var end = range.getEnd();
+
+        return isValidPosition(start)
+                && isValidPosition(end)
+                && start.compareTo(end) < 0; // make sure start position is before end position
+    }
+
+    /**
+     * Checks if the given position is valid for this editor's text.
+     *
+     * @param position The position to check.
+     * @return <code>true</code> if valid, <code>false</code> otherwise.
+     */
+    public boolean isValidPosition(final Position position) {
+        if (position == null) {
+            return false;
+        }
+
+        return isValidLine(position.getLine())
+                && isValidColumn(position.getLine(), position.getColumn());
+    }
+
+    /**
+     * Checks if the given line is valid for this editor's text.
+     *
+     * @param line The line to check.
+     * @return <code>true</code> if valid, <code>false</code> otherwise.
+     */
+    public boolean isValidLine(int line) {
+        return line >= 0 && line < getText().getLineCount();
+    }
+
+    /**
+     * Checks if the given column is valid for this editor's text.
+     *
+     * @param line The line of the column to check.
+     * @param column The column to check.
+     * @return <code>true</code> if valid, <code>false</code> otherwise.
+     */
+    public boolean isValidColumn(int line, int column) {
+        return column >= 0 && column < getText().getColumnCount(line);
+    }
+
+    /**
      * If any language server instance is set, finds the references to of the token at the current
      * cursor position.
      *
@@ -533,56 +669,6 @@ public class IDEEditor extends CodeEditor {
                 });
     }
 
-    /**
-     * If any language server is set, requests signature help at the cursor's position. On a valid
-     * response, shows the signature help in a popup window.
-     */
-    @SuppressWarnings("unused") // accessed using reflection in CompletionItem class
-    public void signatureHelp() {
-        if (mLanguageServer != null && getFile() != null) {
-            final CompletableFuture<SignatureHelp> future =
-                    CompletableFuture.supplyAsync(
-                            () ->
-                                    mLanguageServer.signatureHelp(
-                                            new SignatureHelpParams(
-                                                    getFile().toPath(),
-                                                    new Position(
-                                                            getCursor().getLeftLine(),
-                                                            getCursor().getLeftColumn()))));
-
-            future.whenComplete(
-                    (help, error) -> {
-                        if (help == null
-                                || mLanguageClient == null
-                                || future.isCancelled()
-                                || future.isCompletedExceptionally()) {
-                            LOG.error("An error occurred while finding signature help", error);
-                            return;
-                        }
-
-                        ThreadUtils.runOnUiThread(() -> showSignatureHelp(help));
-                    });
-        }
-    }
-
-    /**
-     * Shows the given signature help in the editor.
-     *
-     * @param help The signature help data to show.
-     */
-    public void showSignatureHelp(SignatureHelp help) {
-        getSignatureHelpWindow().setupAndDisplay(help);
-    }
-
-    /**
-     * Dismisses the given dialog on the UI thread.
-     *
-     * @param dialog The dialog to dismiss.
-     */
-    private void dismissOnUiThread(@NonNull final Dialog dialog) {
-        ThreadUtils.runOnUiThread(dialog::dismiss);
-    }
-
     /** If any language server is set, notify the server that the file in this editor was saved. */
     public void didSave() {
         if (mLanguageServer != null && getFile() != null) {
@@ -611,6 +697,23 @@ public class IDEEditor extends CodeEditor {
         ensureWindowsDismissed();
     }
 
+    /** Ensures that all the windows are dismissed. */
+    public void ensureWindowsDismissed() {
+        if (getDiagnosticWindow().isShowing()) {
+            getDiagnosticWindow().dismiss();
+        }
+
+        if (getSignatureHelpWindow().isShowing()) {
+            getSignatureHelpWindow().dismiss();
+        }
+
+        if (mActionsPopup != null) {
+            if (mActionsPopup.isShowing()) {
+                mActionsPopup.dismiss();
+            }
+        }
+    }
+
     public void onEditorSelected() {
         if (getFile() == null) {
             return;
@@ -619,17 +722,6 @@ public class IDEEditor extends CodeEditor {
         final var path = getFile().toPath();
         if (mLanguageServer != null) {
             mLanguageServer.getDocumentHandler().onFileSelected(path);
-        }
-    }
-
-    /**
-     * Tells the language client to perform the given code action item.
-     *
-     * @param action The action to perform.
-     */
-    public void performCodeAction(CodeActionItem action) {
-        if (mLanguageClient != null) {
-            mLanguageClient.performCodeAction(this, action);
         }
     }
 
@@ -694,16 +786,6 @@ public class IDEEditor extends CodeEditor {
     }
 
     /**
-     * Get the cursor's position in the form of {@link Position}.
-     *
-     * @return The {@link Position} of the cursor.
-     */
-    @SuppressWarnings("unused")
-    public Position getCursorAsLSPPosition() {
-        return new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
-    }
-
-    /**
      * Get the cursor's selection range in the form of {@link Range}.
      *
      * @return The {@link Range} of the cursor.
@@ -713,6 +795,16 @@ public class IDEEditor extends CodeEditor {
         final var start = new Position(cursor.getLeftLine(), cursor.getLeftColumn());
         final var end = new Position(cursor.getRightLine(), cursor.getRightColumn());
         return new Range(start, end);
+    }
+
+    /**
+     * Get the cursor's position in the form of {@link Position}.
+     *
+     * @return The {@link Position} of the cursor.
+     */
+    @SuppressWarnings("unused")
+    public Position getCursorAsLSPPosition() {
+        return new Position(getCursor().getLeftLine(), getCursor().getLeftColumn());
     }
 
     /**
@@ -765,135 +857,15 @@ public class IDEEditor extends CodeEditor {
 
         return new Range(start, end);
     }
-
-    private void notifyNoCodeActions() {
-        ThreadUtils.runOnUiThread(
-                () -> StudioApp.getInstance().toast(R.string.msg_no_actions, Toaster.Type.ERROR));
-    }
-
-    /** Ensures that all the windows are dismissed. */
-    public void ensureWindowsDismissed() {
-        if (getDiagnosticWindow().isShowing()) {
-            getDiagnosticWindow().dismiss();
-        }
-
-        if (getSignatureHelpWindow().isShowing()) {
-            getSignatureHelpWindow().dismiss();
-        }
-
-        if (mActionsPopup != null) {
-            if (mActionsPopup.isShowing()) {
-                mActionsPopup.dismiss();
-            }
-        }
-    }
-
-    public void showCodeActions(List<CodeActionItem> actions) {
-        if (actions == null || actions.isEmpty()) {
-            StudioApp.getInstance()
-                    .toast(getContext().getString(R.string.msg_no_actions), Toaster.Type.ERROR);
-            return;
-        }
-
-        final var titles = actions.stream().map(CodeActionItem::getTitle).toArray(String[]::new);
-        final var builder = DialogUtils.newMaterialDialogBuilder(getContext());
-        builder.setTitle("Select code action...");
-        builder.setItems(
-                titles,
-                (dialog, which) -> {
-                    final var action = actions.get(which);
-                    if (action != null) {
-                        performCodeAction(action);
-                    } else {
-                        LOG.error("Cannot perform code action. Action is null.");
-                    }
-                });
-        builder.show();
-    }
-
-    private void handleSelectionChange(
-            @NonNull SelectionChangeEvent event, Unsubscribe unsubscribe) {
-        if (event.isSelected() || !(getEditorLanguage() instanceof IDELanguage)) {
-            // do not show diagnostics when text is selected
-            // or if we cannot get diagnostics
-            return;
-        }
-
-        final var diagnostics = ((IDELanguage) getEditorLanguage()).getDiagnostics();
-        final var line = event.getLeft().line;
-        final var column = event.getLeft().column;
-
-        // diagnostics are expected to be sorted, so, we do a binary search
-        final var diagnostic = binarySearchDiagnostic(diagnostics, line, column);
-        getDiagnosticWindow().showDiagnostic(diagnostic);
-    }
-
-    @Nullable
-    private DiagnosticItem binarySearchDiagnostic(
-            @NonNull List<DiagnosticItem> diagnostics, int line, int column) {
-        return DiagnosticUtil.binarySearchDiagnostic(diagnostics, line, column);
-    }
-
+    
     /**
-     * Notify the language server that the content of this file has been changed.
+     * Tells the language client to perform the given code action item.
      *
-     * @param event The content change event.
+     * @param action The action to perform.
      */
-    private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
-        if (getContext() instanceof Activity) {
-            ((Activity) getContext()).invalidateOptionsMenu();
+    public void performCodeAction(CodeActionItem action) {
+        if (mLanguageClient != null) {
+            mLanguageClient.performCodeAction(this, action);
         }
-
-        if (getFile() == null || mLanguageServer == null) {
-            return;
-        }
-
-        final var documentHandler = mLanguageServer.getDocumentHandler();
-        final var file = getFile().toPath();
-        if (documentHandler.accepts(file)) {
-            documentHandler.onContentChange(
-                    new DocumentChangeEvent(file, getText(), mFileVersion + 1));
-        }
-
-        checkForSignatureHelp(event);
-    }
-
-    /**
-     * Checks if the content change event should trigger signature help. Signature help trigger
-     * characters are :
-     *
-     * <ul>
-     *   <li><code>'('</code> (parentheses)
-     *   <li><code>','</code> (comma)
-     * </ul>
-     *
-     * @param event The content change event.
-     */
-    private void checkForSignatureHelp(@NonNull ContentChangeEvent event) {
-        if (event.getAction() != ContentChangeEvent.ACTION_INSERT
-                || event.getChangedText().length() != 1) {
-            return;
-        }
-
-        final var ch = event.getChangedText().charAt(0);
-        if (ch == '(' || ch == ',') {
-            signatureHelp();
-        }
-    }
-
-    private SignatureHelpWindow getSignatureHelpWindow() {
-        if (mSignatureHelpWindow == null) {
-            mSignatureHelpWindow = new SignatureHelpWindow(this);
-        }
-
-        return mSignatureHelpWindow;
-    }
-
-    private DiagnosticWindow getDiagnosticWindow() {
-        if (mDiagnosticWindow == null) {
-            mDiagnosticWindow = new DiagnosticWindow(this);
-        }
-
-        return mDiagnosticWindow;
     }
 }
