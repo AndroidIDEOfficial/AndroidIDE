@@ -28,7 +28,7 @@
      <string name="action_remove_method">Remover método</string>
      <string name="action_remove_unused_throws">Remover throws não utilizados</string>
      <string name="action_suppress_unchecked_warning">Eliminar aviso \'unchecked\'</string>
-     <string name="action_uncomment_line">Retirar linha</string>
+     <string name="action_uncomment_line">Remover linha</string>
      <string name="action_convert_to_statement">Converter em um código válido</string>
      <string name="msg_select_fields">Selecionar campos</string>
      <string name="msg_no_fields_selected">Nenhum campo selecionado</string>
