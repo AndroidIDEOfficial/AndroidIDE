@@ -46,6 +46,9 @@ enum class DiagnosticCode(val id: String) {
     /** Unknown unused element. */
     UNUSED_OTHER("ide.java.unused.other"),
 
+    /** A block with no statements i.e. an empty block */
+    EMPTY_BLOCK("ide.java.empty.block"),
+
     // ------------ Compiler warnings and errors ------------
     UNCHECKED("compiler.warn.unchecked.call.mbr.of.raw.type"),
     DOES_NOT_OVERRIDE_ABSTRACT("compiler.err.does.not.override.abstract"),
