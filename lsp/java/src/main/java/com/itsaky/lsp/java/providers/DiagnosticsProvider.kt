@@ -112,7 +112,7 @@ object DiagnosticsProvider {
         val start = positions.getStartPosition(root, thisTree)
         val end = positions.getEndPosition(root, thisTree)
         diagnostic.code = code.id
-        diagnostic.message = "'$name' has empty body"
+        diagnostic.message = "'$name' statement has empty body"
         diagnostic.severity = DiagnosticSeverity.WARNING
         diagnostic.range = Range(getPosition(start, lines), getPosition(end, lines))
 
