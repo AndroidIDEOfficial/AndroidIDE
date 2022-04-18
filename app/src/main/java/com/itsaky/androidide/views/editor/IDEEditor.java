@@ -25,6 +25,7 @@ import android.view.inputmethod.EditorInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
@@ -34,10 +35,8 @@ import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Logger;
 import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.models.CodeActionItem;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
@@ -65,6 +64,7 @@ import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.event.Unsubscribe;
 import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.IDEEditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 
@@ -73,6 +73,7 @@ public class IDEEditor extends CodeEditor {
     public static final String KEY_FILE = "editor_file";
     private static final Logger LOG = Logger.newInstance("IDEEditor");
     private final EditorActionsMenu mActionsPopup;
+    private IDEEditorSearcher mSearcher;
     private int mFileVersion;
     private File file;
     private ILanguageServer mLanguageServer;
@@ -99,6 +100,7 @@ public class IDEEditor extends CodeEditor {
         mActionsPopup.init();
 
         setColorScheme(new SchemeAndroidIDE());
+        setSearcher(new IDEEditorSearcher(this));
         getComponent(EditorTextActionWindow.class).setEnabled(false);
         subscribeEvent(SelectionChangeEvent.class, this::handleSelectionChange);
         subscribeEvent(ContentChangeEvent.class, this::handleContentChange);
@@ -857,15 +859,23 @@ public class IDEEditor extends CodeEditor {
 
         return new Range(start, end);
     }
-    
-    /**
-     * Tells the language client to perform the given code action item.
-     *
-     * @param action The action to perform.
-     */
-    public void performCodeAction(CodeActionItem action) {
-        if (mLanguageClient != null) {
-            mLanguageClient.performCodeAction(this, action);
+
+    @Override
+    public IDEEditorSearcher getSearcher() {
+        return mSearcher;
+    }
+
+    protected void setSearcher(@NonNull IDEEditorSearcher searcher) {
+        mSearcher = searcher;
+    }
+
+    @Override
+    public void beginSearchMode() {
+        final var callback = new SearchActionMode(this);
+        if (getContext() instanceof AppCompatActivity) {
+            startActionMode (callback);
+        } else {
+            LOG.error("Unable start search action mode. Activity must inherit AppCompatActivity.");
         }
     }
 }

@@ -349,6 +349,10 @@
     <string name="idepref_visiblePassword_title">Visible password flag</string>
     <string name="idepref_visiblePassword_summary">Use for visible password input type flag in editor. This makes sure that no suggestions are proposed by soft keyboard.</string>
     <string name="msg_no_actions">No code actions found</string>
+    <string name="previous">Previous</string>
+    <string name="msg_editor_find_case_sensitive">Case sensitive</string>
+    <string name="msg_editor_find_regex">Regex</string>
+    <string name="msg_replacing">Replacing...</string>
 </resources>
 
 

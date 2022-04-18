@@ -39,6 +39,8 @@
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_run.xml" value="0.151" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_run_debug.xml" value="0.151" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_save.xml" value="0.26205128205128203" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_search_next.xml" value="0.147" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_search_previous.xml" value="0.147" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_signature_help.xml" value="0.19907407407407407" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_submenu_arrow.xml" value="0.1305" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_text_actions.xml" value="0.147" />
@@ -66,11 +68,13 @@
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_crash_report.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_diagnostic_info.xml" value="0.20512820512820512" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_diagnostic_window.xml" value="0.25" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_dialog_text_input.xml" value="0.23854166666666668" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_dimension_attr_editor.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_divider.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_editor_actions.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_editor_bottom_sheet.xml" value="0.19572649572649573" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_editor_code_actions.xml" value="0.25" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_editor_find_replace.xml" value="0.23854166666666668" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_editor_text_actions.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_filetree_item.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/layout/layout_popup_menu_item.xml" value="0.264" />

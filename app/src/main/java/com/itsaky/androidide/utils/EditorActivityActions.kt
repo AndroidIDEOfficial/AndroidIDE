@@ -45,6 +45,9 @@ import com.itsaky.androidide.actions.editor.CutAction
 import com.itsaky.androidide.actions.editor.ExpandSelectionAction
 import com.itsaky.androidide.actions.editor.PasteAction
 import com.itsaky.androidide.actions.editor.SelectAllAction
+import com.itsaky.androidide.actions.editor.find.GoToNextAction
+import com.itsaky.androidide.actions.editor.find.GoToPreviousAction
+import com.itsaky.androidide.actions.editor.find.ReplaceAction
 import com.itsaky.androidide.actions.etc.DaemonStatusAction
 import com.itsaky.androidide.actions.etc.FileTreeAction
 import com.itsaky.androidide.actions.etc.FindActionMenu
@@ -84,6 +87,11 @@ class EditorActivityActions {
             registry.registerAction(CopyAction(context))
             registry.registerAction(PasteAction(context))
             registry.registerAction(FormatCodeAction(context))
+
+            // editor search actions
+            registry.registerAction(GoToNextAction(context))
+            registry.registerAction(GoToPreviousAction(context))
+            registry.registerAction(ReplaceAction(context))
         }
 
         @JvmStatic
