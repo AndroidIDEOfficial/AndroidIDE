@@ -29,14 +29,10 @@ import com.sun.tools.javac.util.Names;
 public class NBNames {
 
     public static final Context.Key<NBNames> nbNamesKey =
-        new Context.Key<NBNames>();
+            new Context.Key<> ();
 
     public static void preRegister(Context context) {
-        context.put(nbNamesKey, new Context.Factory<NBNames>() {
-            public NBNames make(Context c) {
-                return new NBNames(c);
-            }
-        });
+        context.put(nbNamesKey, (Context.Factory<NBNames>) NBNames::new);
     }
 
     public static NBNames instance(Context context) {

@@ -43,6 +43,18 @@ import com.sun.tools.javac.util.DefinedBy;
 import com.sun.tools.javac.util.DefinedBy.Api;
 import com.sun.tools.javac.util.Log;
 
+import org.netbeans.lib.nbjavac.services.NBAttr;
+import org.netbeans.lib.nbjavac.services.NBClassFinder;
+import org.netbeans.lib.nbjavac.services.NBEnter;
+import org.netbeans.lib.nbjavac.services.NBJavaCompiler;
+import org.netbeans.lib.nbjavac.services.NBJavacTrees;
+import org.netbeans.lib.nbjavac.services.NBLog;
+import org.netbeans.lib.nbjavac.services.NBMemberEnter;
+import org.netbeans.lib.nbjavac.services.NBParserFactory;
+import org.netbeans.lib.nbjavac.services.NBResolve;
+import org.netbeans.lib.nbjavac.services.NBTreeMaker;
+
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -184,17 +196,14 @@ public class ReusableCompiler {
         }
 
         private void registerNBServices() {
-//            NBClassReader.preRegister(this);
-//            NBAttr.preRegister(this);
-//            NBClassWriter.preRegister(this);
-//            NBParserFactory.preRegister(this);
-//            NBTreeMaker.preRegister(this);
-//            NBJavacTrees.preRegister(this);
-//            NBResolve.preRegister(this);
-//            NBEnter.preRegister(this);
-//            NBMemberEnter.preRegister(this, false);
-//            NBClassFinder.preRegister (this);
-//            NBNames.preRegister (this);
+            NBAttr.preRegister(this);
+            NBParserFactory.preRegister(this);
+            NBTreeMaker.preRegister(this);
+            NBJavacTrees.preRegister(this);
+            NBResolve.preRegister(this);
+            NBEnter.preRegister(this);
+            NBMemberEnter.preRegister(this, false);
+            NBClassFinder.preRegister(this);
 
             put(LazyTreeLoader.lazyTreeLoaderKey, new IDELazyTreeLoader());
         }
@@ -247,7 +256,7 @@ public class ReusableCompiler {
          * Reusable JavaCompiler; exposes a method to clean up the component from leftovers
          * associated with previous compilations.
          */
-        static class ReusableJavaCompiler extends JavaCompiler {
+        static class ReusableJavaCompiler extends NBJavaCompiler {
 
             static final Factory<JavaCompiler> factory = ReusableJavaCompiler::new;
 
@@ -274,14 +283,14 @@ public class ReusableCompiler {
          * Reusable Log; exposes a method to clean up the component from leftovers associated with
          * previous compilations.
          */
-        static class ReusableLog extends Log {
+        static class ReusableLog extends NBLog {
 
             static final Factory<Log> factory = ReusableLog::new;
 
             Context context;
 
             ReusableLog(Context context) {
-                super(context/*, new PrintWriter(System.err)*/);
+                super(context, new PrintWriter(System.err));
                 this.context = context;
             }
 

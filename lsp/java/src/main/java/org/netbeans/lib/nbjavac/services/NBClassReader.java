@@ -19,7 +19,6 @@
 package org.netbeans.lib.nbjavac.services;
 
 import com.sun.tools.javac.code.ClassFinder.BadClassFile;
-import java.util.Set;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Symbol.ClassSymbol;
 import com.sun.tools.javac.jvm.ClassFile;
@@ -30,33 +29,30 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.tools.ForwardingJavaFileObject;
 import javax.tools.JavaFileObject;
 
 /**
- *
  * @author lahvac
  */
 public class NBClassReader extends ClassReader {
 
-    public static void preRegister(Context context) {
-        context.put(classReaderKey, new Context.Factory<ClassReader>() {
-            @Override
-            public ClassReader make(Context c) {
-                return new NBClassReader(c);
-            }
-        });
-    }
-
     private final Names names;
     private final NBNames nbNames;
     private final Log log;
+
+    public static void preRegister(Context context) {
+        context.put(classReaderKey, (Context.Factory<ClassReader>) NBClassReader::new);
+    }
 
     public NBClassReader(Context context) {
         super(context);
@@ -66,7 +62,10 @@ public class NBClassReader extends ClassReader {
         log = Log.instance(context);
 
         NBAttributeReader[] readers = {
-            new NBAttributeReader(nbNames._org_netbeans_EnclosingMethod, Version.V45_3, CLASS_OR_MEMBER_ATTRIBUTE) {
+            new NBAttributeReader(
+                    nbNames._org_netbeans_EnclosingMethod,
+                    Version.V45_3,
+                    CLASS_OR_MEMBER_ATTRIBUTE) {
                 public void read(Symbol sym, int attrLen) {
                     int newbp = bp + attrLen;
                     readEnclosingMethodAttr(sym);
@@ -75,8 +74,7 @@ public class NBClassReader extends ClassReader {
             },
         };
 
-        for (NBAttributeReader r: readers)
-            attributeReaders.put(r.getName(), r);
+        for (NBAttributeReader r : readers) attributeReaders.put(r.getName(), r);
     }
 
     @Override
@@ -97,14 +95,15 @@ public class NBClassReader extends ClassReader {
                         data[6] = (byte) (maxMajor >> 8);
                         data[7] = (byte) (maxMajor & 0xFF);
                         byte[] dataFin = data;
-                        c.classfile = new ForwardingJavaFileObject(origFile) {
-                            @Override
-                            public InputStream openInputStream() throws IOException {
-                                return new ByteArrayInputStream(dataFin);
-                            }
-                        };
+                        c.classfile =
+                                new ForwardingJavaFileObject(origFile) {
+                                    @Override
+                                    public InputStream openInputStream() throws IOException {
+                                        return new ByteArrayInputStream(dataFin);
+                                    }
+                                };
                         super.readClassFile(c);
-                        return ;
+                        return;
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(NBClassReader.class.getName()).log(Level.FINE, null, ex);
@@ -134,10 +133,9 @@ public class NBClassReader extends ClassReader {
         private NBAttributeReader(Name name, Version version, Set<AttributeKind> kinds) {
             super(name, version, kinds);
         }
-        
+
         private Name getName() {
             return name;
         }
     }
-
 }

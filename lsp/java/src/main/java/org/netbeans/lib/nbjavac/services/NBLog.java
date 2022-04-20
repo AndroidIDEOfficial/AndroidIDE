@@ -37,7 +37,7 @@ import javax.tools.JavaFileObject;
  *
  * @author Tomas Zezula
  */
-public final class NBLog extends Log {
+public class NBLog extends Log {
 
     private static final String ERR_NOT_IN_PROFILE = "not.in.profile";  //NOI18N
 
@@ -47,7 +47,7 @@ public final class NBLog extends Log {
     private JavaFileObject partialReparseFile;
     private Set<Integer> seenPartialReparsePositions = new HashSet<>();
 
-    private NBLog(
+    protected NBLog(
             final Context context,
             final PrintWriter output) {
         super(context, output);
