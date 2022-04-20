@@ -174,8 +174,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     @NonNull
     @Override
     public CompletionResult complete(@NonNull CompletionParams params) {
-        return complete(
-                params.getFile(), params.getPosition().getLine(), params.getPosition().getColumn());
+        return complete(params.getFile(), params.getPosition().getLine(), params.getPosition().getColumn());
     }
 
     public CompletionResult complete(@NonNull Path file, int line, int column) {

@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
+import com.sun.tools.javac.api.JavacTaskImpl;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -30,7 +31,7 @@ import javax.tools.JavaFileObject;
 
 public class CompileTask implements AutoCloseable {
 
-    public final JavacTask task;
+    public final JavacTaskImpl task;
     public final List<CompilationUnitTree> roots;
     public final List<Diagnostic<? extends JavaFileObject>> diagnostics;
 

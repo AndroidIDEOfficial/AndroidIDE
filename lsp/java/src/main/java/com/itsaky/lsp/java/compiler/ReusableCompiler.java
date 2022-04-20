@@ -19,6 +19,7 @@
 package com.itsaky.lsp.java.compiler;
 
 import com.itsaky.androidide.utils.Logger;
+import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
@@ -26,6 +27,7 @@ import com.sun.tools.javac.api.JavacTaskImpl;
 import com.sun.tools.javac.api.JavacTool;
 import com.sun.tools.javac.api.JavacTrees;
 import com.sun.tools.javac.api.MultiTaskListener;
+import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Types;
 import com.sun.tools.javac.comp.Annotate;
 import com.sun.tools.javac.comp.Check;
@@ -35,6 +37,7 @@ import com.sun.tools.javac.comp.Modules;
 import com.sun.tools.javac.main.Arguments;
 import com.sun.tools.javac.main.JavaCompiler;
 import com.sun.tools.javac.model.JavacElements;
+import com.sun.tools.javac.model.LazyTreeLoader;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.DefinedBy;
 import com.sun.tools.javac.util.DefinedBy.Api;
@@ -144,33 +147,27 @@ public class ReusableCompiler {
         return new Borrow(task);
     }
 
-    class Borrow implements AutoCloseable {
-
-        final JavacTask task;
-        boolean closed;
-
-        Borrow(JavacTask task) {
-            this.task = task;
+    private static class IDELazyTreeLoader extends LazyTreeLoader {
+        @Override
+        public boolean loadTreeFor(Symbol.ClassSymbol clazz, boolean persist) {
+            LOG.debug("loadTreeFor:", clazz, persist);
+            return true;
         }
 
         @Override
-        public void close() {
-            if (closed) {
-                return;
-            }
-            // not returning the context to the pool if task crashes with an exception
-            // the task/context may be in a broken state
-            currentContext.clear();
-            try {
-                Method method = JavacTaskImpl.class.getDeclaredMethod("cleanup");
-                method.setAccessible(true);
-                method.invoke(task);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Unable to call cleanup() on JavacTaskImpl", e);
-            }
+        public boolean loadParamNames(Symbol.ClassSymbol clazz) {
+            LOG.debug("loadParamNames:", clazz);
+            return true;
+        }
 
-            checkedOut = false;
-            closed = true;
+        @Override
+        public void couplingError(Symbol.ClassSymbol clazz, Tree t) {
+            LOG.debug("Coupling error:", clazz, t);
+        }
+
+        @Override
+        public void updateContext(Context context) {
+            LOG.debug("updateContext:", context);
         }
     }
 
@@ -183,6 +180,35 @@ public class ReusableCompiler {
             this.arguments = arguments;
             put(Log.logKey, ReusableLog.factory);
             put(JavaCompiler.compilerKey, ReusableJavaCompiler.factory);
+            registerNBServices();
+        }
+
+        private void registerNBServices() {
+//            NBClassReader.preRegister(this);
+//            NBAttr.preRegister(this);
+//            NBClassWriter.preRegister(this);
+//            NBParserFactory.preRegister(this);
+//            NBTreeMaker.preRegister(this);
+//            NBJavacTrees.preRegister(this);
+//            NBResolve.preRegister(this);
+//            NBEnter.preRegister(this);
+//            NBMemberEnter.preRegister(this, false);
+//            NBClassFinder.preRegister (this);
+//            NBNames.preRegister (this);
+
+            put(LazyTreeLoader.lazyTreeLoaderKey, new IDELazyTreeLoader());
+        }
+
+        @Override
+        @DefinedBy(Api.COMPILER_TREE)
+        public void started(TaskEvent e) {
+            // do nothing
+        }
+
+        @Override
+        @DefinedBy(Api.COMPILER_TREE)
+        public void finished(TaskEvent e) {
+            // do nothing
         }
 
         void clear() {
@@ -209,18 +235,6 @@ public class ReusableCompiler {
             }
         }
 
-        @Override
-        @DefinedBy(Api.COMPILER_TREE)
-        public void finished(TaskEvent e) {
-            // do nothing
-        }
-
-        @Override
-        @DefinedBy(Api.COMPILER_TREE)
-        public void started(TaskEvent e) {
-            // do nothing
-        }
-
         <T> void drop(Key<T> k) {
             ht.remove(k);
         }
@@ -242,17 +256,17 @@ public class ReusableCompiler {
             }
 
             @Override
+            protected void checkReusable() {
+                // do nothing - it's ok to reuse the compiler
+            }
+
+            @Override
             public void close() {
                 // do nothing
             }
 
             void clear() {
                 newRound();
-            }
-
-            @Override
-            protected void checkReusable() {
-                // do nothing - it's ok to reuse the compiler
             }
         }
 
@@ -267,7 +281,7 @@ public class ReusableCompiler {
             Context context;
 
             ReusableLog(Context context) {
-                super(context);
+                super(context/*, new PrintWriter(System.err)*/);
                 this.context = context;
             }
 
@@ -297,6 +311,36 @@ public class ReusableCompiler {
                             }
                         };
             }
+        }
+    }
+
+    class Borrow implements AutoCloseable {
+
+        final JavacTaskImpl task;
+        boolean closed;
+
+        Borrow(JavacTaskImpl task) {
+            this.task = task;
+        }
+
+        @Override
+        public void close() {
+            if (closed) {
+                return;
+            }
+            // not returning the context to the pool if task crashes with an exception
+            // the task/context may be in a broken state
+            currentContext.clear();
+            try {
+                Method method = JavacTaskImpl.class.getDeclaredMethod("cleanup");
+                method.setAccessible(true);
+                method.invoke(task);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException("Unable to call cleanup() on JavacTaskImpl", e);
+            }
+
+            checkedOut = false;
+            closed = true;
         }
     }
 }

@@ -23,6 +23,7 @@ import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.parser.Parser;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.util.JavacTask;
+import com.sun.tools.javac.api.JavacTaskImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class CompileBatch implements AutoCloseable {
     private static final Path FILE_NOT_FOUND = Paths.get("");
     final JavaCompilerService parent;
     final ReusableCompiler.Borrow borrow;
-    final JavacTask task;
+    final JavacTaskImpl task;
     final List<CompilationUnitTree> roots;
     /** Indicates the task that requested the compilation is finished with it. */
     boolean closed;
@@ -57,18 +58,13 @@ public class CompileBatch implements AutoCloseable {
         borrow = batchTask(parent, files);
         task = borrow.task;
         roots = new ArrayList<>();
-
-        // Compile all roots
-        try {
-            for (CompilationUnitTree t : borrow.task.parse()) {
-                roots.add(t);
-            }
-            // The results of borrow.task.analyze() are unreliable when errors are present
-            // You can get at `Element` values using `Trees`
-            borrow.task.analyze();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    
+        for (CompilationUnitTree t : borrow.task.parse()) {
+            roots.add(t);
         }
+        // The results of borrow.task.analyze() are unreliable when errors are present
+        // You can get at `Element` values using `Trees`
+        borrow.task.analyze();
     }
 
     private static ReusableCompiler.Borrow batchTask(

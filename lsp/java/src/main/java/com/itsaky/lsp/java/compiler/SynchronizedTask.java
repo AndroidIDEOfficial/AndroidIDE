@@ -82,7 +82,7 @@ public class SynchronizedTask {
             }
             run.run();
         } catch (Throwable th) {
-            LOG.error("An error occurred in SynchronizedTask.doCompile()");
+            LOG.error("An error occurred in SynchronizedTask.doCompile()", th);
         } finally {
             isWriting = false;
             semaphore.release();
