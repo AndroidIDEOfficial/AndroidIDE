@@ -43,12 +43,6 @@ android {
             includeAndroidResources = true
         }
     }
-    
-    packagingOptions {
-        resources {
-            excludes += ['README.md', 'SECURITY.md', 'LICENSE.txt']
-        }
-    }
 }
 
 dependencies {
@@ -69,7 +63,6 @@ dependencies {
 
     implementation project(path: ':lsp:api')
     implementation files ("libs/nb-javac-17.0.0.0-android.jar")
-//    implementation fileTree(dir: 'libs', include: ['*.aar', '*.jar'])
 
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
