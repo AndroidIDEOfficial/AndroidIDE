@@ -248,7 +248,7 @@ public final class StringWrapper {
      * @param columnLimit the number of columns to wrap at
      * @param startColumn the column position of the beginning of the original text
      * @param trailing extra space to leave after the last line, to accommodate a ; or )
-     * @param components the text to reflow. This is a list of “words” of a single literal. Its
+     * @param components the text to reflow. This is a list of "words" of a single literal. Its
      *     first and last quotes have been stripped
      * @param first0 true if the text includes the beginning of its enclosing concat chain
      */

@@ -42,4 +42,5 @@
     <string name="action_goto_definition">Go to definition</string>
     <string name="action_find_references">Find references</string>
     <string name="action_generate_toString">Generate toString()</string>
+    <string name="msg_cannot_generate_toString">Unable to generate toString() implementation</string>
 </resources>

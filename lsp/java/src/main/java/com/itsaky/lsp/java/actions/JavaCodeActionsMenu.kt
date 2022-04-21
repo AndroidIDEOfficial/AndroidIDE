@@ -34,6 +34,7 @@ import com.itsaky.lsp.java.actions.diagnostics.SuppressUncheckedWarningAction
 import com.itsaky.lsp.java.actions.diagnostics.VariableToStatementAction
 import com.itsaky.lsp.java.actions.generators.GenerateConstructorAction
 import com.itsaky.lsp.java.actions.generators.GenerateSettersAndGettersAction
+import com.itsaky.lsp.java.actions.generators.GenerateToStringMethodAction
 import com.itsaky.lsp.java.actions.generators.OverrideSuperclassMethodsAction
 
 /** @author Akash Yadav */
@@ -56,5 +57,6 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
         addAction(GenerateSettersAndGettersAction())
         addAction(OverrideSuperclassMethodsAction())
         addAction(GenerateConstructorAction())
+        addAction(GenerateToStringMethodAction())
     }
 }

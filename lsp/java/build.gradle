@@ -53,9 +53,6 @@ dependencies {
     implementation google.guava_jre
     implementation google.gson
     
-    implementation 'com.google.auto.value:auto-value-annotations:1.9'
-    annotationProcessor 'com.google.auto.value:auto-value:1.9'
-    
     compileOnly androidx.appcompat
     compileOnly google.material
     compileOnly project (':actions')
@@ -63,6 +60,7 @@ dependencies {
     
     implementation project (path: ':lsp:api')
     implementation project (path: ':javac')
+    implementation project (path: ':google-java-format')
     
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

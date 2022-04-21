@@ -113,11 +113,10 @@ class GenerateSettersAndGettersAction : FieldBasedAction() {
             if (element !is VariableElement) {
                 continue
             }
-
+            
             val leaf = path.leaf
             val indent = EditHelper.indent(task.task, task.root(file), leaf) + 4
             sb.append(createGetter(element, indent))
-
             if (!element.modifiers.contains(Modifier.FINAL)) {
                 sb.append(createSetter(element, indent))
             }
