@@ -27,15 +27,22 @@ import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.R.string
 import com.itsaky.lsp.java.actions.FieldBasedAction
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.utils.EditHelper
 import com.itsaky.lsp.models.Range
 import com.itsaky.toaster.Toaster
+import com.itsaky.toaster.Toaster.Type.ERROR
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.VariableTree
 import com.sun.source.util.TreePath
 import com.sun.tools.javac.api.JavacTrees
+import com.sun.tools.javac.code.Symbol.ClassSymbol
+import com.sun.tools.javac.code.Symbol.MethodSymbol
+import com.sun.tools.javac.tree.JCTree
+import com.sun.tools.javac.tree.TreeInfo
+import com.sun.tools.javac.util.Names
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.concurrent.*
 import javax.lang.model.element.VariableElement
@@ -96,6 +103,17 @@ class GenerateToStringMethodAction : FieldBasedAction() {
         type: ClassTree,
         paths: List<TreePath>
     ) {
+        if (isToStringOverridden(task, type)) {
+            ThreadUtils.runOnUiThread {
+                BaseApplication.getBaseInstance()
+                    .toast(
+                        data[Context::class.java]!!.getString(string.msg_toString_overridden),
+                        ERROR)
+            }
+            log.warn("toString() method has already been overridden in class ${type.simpleName}")
+            return
+        }
+
         val file = requirePath(data)
         val editor = data[CodeEditor::class.java]!!
         val trees = JavacTrees.instance(task.task)
@@ -141,6 +159,17 @@ class GenerateToStringMethodAction : FieldBasedAction() {
             editor.text.insert(insert.line, insert.column, text)
             editor.formatCodeAsync()
         }
+    }
+
+    private fun isToStringOverridden(task: CompileTask, type: ClassTree): Boolean {
+        val names = Names.instance(task.task.context)
+        val sym = TreeInfo.symbolFor(type as JCTree) as ClassSymbol
+        val toStrings =
+            sym.members().getSymbolsByName(names.toString).filterIsInstance<MethodSymbol>().filter {
+                it.params.isEmpty()
+            }
+
+        return toStrings.isNotEmpty()
     }
 
     private fun createReturnStatement(string: String): ReturnStmt {

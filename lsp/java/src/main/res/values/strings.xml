@@ -43,4 +43,5 @@
     <string name="action_find_references">Find references</string>
     <string name="action_generate_toString">Generate toString()</string>
     <string name="msg_cannot_generate_toString">Unable to generate toString() implementation</string>
+    <string name="msg_toString_overridden">toString() is already overridden</string>
 </resources>
