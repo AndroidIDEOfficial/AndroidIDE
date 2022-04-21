@@ -14,18 +14,18 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.lsp.java.actions
+package com.itsaky.lsp.java.actions.common
 
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.actions.BaseCodeAction
 
 /** @author Akash Yadav */
-class UncommentAction : BaseCodeAction() {
-    override val id: String = "lsp_java_uncommentLine"
+class CommentAction : BaseCodeAction() {
+    override val id: String = "lsp_java_commentLine"
     override var label: String = ""
 
-    override val titleTextRes: Int = R.string.action_uncomment_line
+    override val titleTextRes: Int = R.string.action_comment_line
 
     override fun execAction(data: ActionData): Boolean {
         val editor = requireEditor(data)
@@ -35,10 +35,8 @@ class UncommentAction : BaseCodeAction() {
 
         text.beginBatchEdit()
         while (line >= cursor.leftLine && line <= cursor.rightLine) {
-            val l = text.getLineString(line)
-            if (l.trim { it <= ' ' }.startsWith("//")) {
-                val i = l.indexOf("//")
-                text.delete(line, i, line, i + 2)
+            if (!text.getLineString(line).trim { it <= ' ' }.startsWith("//")) {
+                text.insert(line, 0, "//")
             }
             line++
         }

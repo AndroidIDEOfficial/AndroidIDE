@@ -14,25 +14,26 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.lsp.java.actions
+package com.itsaky.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.models.DiagnosticCode
-import com.itsaky.lsp.java.rewrite.GenerateRecordConstructor
-import com.itsaky.lsp.java.utils.CodeActionUtils
+import com.itsaky.lsp.java.rewrite.CreateMissingMethod
+import com.itsaky.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.lsp.models.DiagnosticItem
 
 /** @author Akash Yadav */
-class GenerateConstructorAction : BaseCodeAction() {
-    override val id = "lsp_java_generateConstructor"
+class CreateMissingMethodAction : BaseCodeAction() {
+    override val id: String = "lsp_java_createMissingMethod"
     override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.MISSING_CONSTRUCTOR.id
+    private val diagnosticCode = DiagnosticCode.MISSING_METHOD.id
     private val log = Logger.newInstance(javaClass.simpleName)
-    override val titleTextRes: Int = R.string.action_generate_constructor
+
+    override val titleTextRes: Int = R.string.action_create_missing_method
 
     override fun prepare(data: ActionData) {
         super.prepare(data)
@@ -53,17 +54,14 @@ class GenerateConstructorAction : BaseCodeAction() {
         val diagnostic = data[DiagnosticItem::class.java]!!
         val server = data[JavaLanguageServer::class.java]!!
         val file = requirePath(data)
-        return server.compiler.compile(file).get { task ->
-            val needsConstructor =
-                CodeActionUtils.findClassNeedingConstructor(task, diagnostic.range)
-                    ?: return@get false
-            return@get GenerateRecordConstructor(needsConstructor)
+        return server.compiler.compile(file).get {
+            CreateMissingMethod(file, findPosition(it, diagnostic.range.start))
         }
     }
 
     override fun postExec(data: ActionData, result: Any) {
-        if (result !is GenerateRecordConstructor) {
-            log.warn("Unable to generate constructor")
+        if (result !is CreateMissingMethod) {
+            log.warn("Unable to create missing method")
             return
         }
 

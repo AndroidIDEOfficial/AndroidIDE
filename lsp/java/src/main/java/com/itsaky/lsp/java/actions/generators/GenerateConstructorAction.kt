@@ -14,26 +14,25 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.lsp.java.actions
+package com.itsaky.lsp.java.actions.generators
 
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.models.DiagnosticCode
-import com.itsaky.lsp.java.rewrite.RemoveClass
-import com.itsaky.lsp.java.utils.CodeActionUtils.findPosition
+import com.itsaky.lsp.java.rewrite.GenerateRecordConstructor
+import com.itsaky.lsp.java.utils.CodeActionUtils
 import com.itsaky.lsp.models.DiagnosticItem
 
 /** @author Akash Yadav */
-class RemoveClassAction : BaseCodeAction() {
-    override val id: String = "lsp_java_removeClass"
+class GenerateConstructorAction : BaseCodeAction() {
+    override val id = "lsp_java_generateConstructor"
     override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.UNUSED_CLASS.id
+    private val diagnosticCode = DiagnosticCode.MISSING_CONSTRUCTOR.id
     private val log = Logger.newInstance(javaClass.simpleName)
-
-    override val titleTextRes: Int = R.string.action_remove_class
+    override val titleTextRes: Int = R.string.action_generate_constructor
 
     override fun prepare(data: ActionData) {
         super.prepare(data)
@@ -54,15 +53,17 @@ class RemoveClassAction : BaseCodeAction() {
         val diagnostic = data[DiagnosticItem::class.java]!!
         val server = data[JavaLanguageServer::class.java]!!
         val file = requirePath(data)
-
-        return server.compiler.compile(file).get {
-            RemoveClass(file, findPosition(it, diagnostic.range.start))
+        return server.compiler.compile(file).get { task ->
+            val needsConstructor =
+                CodeActionUtils.findClassNeedingConstructor(task, diagnostic.range)
+                    ?: return@get false
+            return@get GenerateRecordConstructor(needsConstructor)
         }
     }
 
     override fun postExec(data: ActionData, result: Any) {
-        if (result !is RemoveClass) {
-            log.warn("Unable to remove class")
+        if (result !is GenerateRecordConstructor) {
+            log.warn("Unable to generate constructor")
             return
         }
 
@@ -70,6 +71,6 @@ class RemoveClassAction : BaseCodeAction() {
         val client = server.client!!
         val file = requireFile(data)
 
-        client.performCodeAction(file, result.asCodeActions(server.compiler!!, label))
+        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
     }
 }

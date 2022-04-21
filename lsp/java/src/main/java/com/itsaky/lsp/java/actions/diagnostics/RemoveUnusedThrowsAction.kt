@@ -14,26 +14,26 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.lsp.java.actions
+package com.itsaky.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.models.DiagnosticCode
-import com.itsaky.lsp.java.rewrite.AddSuppressWarningAnnotation
+import com.itsaky.lsp.java.rewrite.RemoveException
 import com.itsaky.lsp.java.utils.CodeActionUtils
 import com.itsaky.lsp.models.DiagnosticItem
 
 /** @author Akash Yadav */
-class SuppressUncheckedWarningAction : BaseCodeAction() {
-    override val id = "lsp_java_suppressUncheckedWarning"
+class RemoveUnusedThrowsAction : BaseCodeAction() {
+    override val id: String = "lsp_java_removeUnusedThrows"
     override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.UNCHECKED.id
+    private val diagnosticCode = DiagnosticCode.UNUSED_THROWS.id
     private val log = Logger.newInstance(javaClass.simpleName)
 
-    override val titleTextRes: Int = R.string.action_suppress_unchecked_warning
+    override val titleTextRes: Int = R.string.action_remove_unused_throws
 
     override fun prepare(data: ActionData) {
         super.prepare(data)
@@ -51,19 +51,24 @@ class SuppressUncheckedWarningAction : BaseCodeAction() {
     }
 
     override fun execAction(data: ActionData): Any {
-        val diagnostic = data[DiagnosticItem::class.java]!!
+        val d = data[DiagnosticItem::class.java]!!
         val server = data[JavaLanguageServer::class.java]!!
         val file = requirePath(data)
         return server.compiler.compile(file).get { task ->
-            val warnedMethod = CodeActionUtils.findMethod(task, diagnostic.range)
-            return@get AddSuppressWarningAnnotation(
-                warnedMethod.className, warnedMethod.methodName, warnedMethod.erasedParameterTypes)
+            val notThrown = CodeActionUtils.extractNotThrownExceptionName(d.message)
+            val methodWithExtraThrow = CodeActionUtils.findMethod(task, d.range)
+
+            return@get RemoveException(
+                methodWithExtraThrow.className,
+                methodWithExtraThrow.methodName,
+                methodWithExtraThrow.erasedParameterTypes,
+                notThrown)
         }
     }
 
     override fun postExec(data: ActionData, result: Any) {
-        if (result !is AddSuppressWarningAnnotation) {
-            log.warn("Unable to suppress 'unchecked' warning")
+        if (result !is RemoveException) {
+            log.warn("Unable to remove unused throws")
             return
         }
 

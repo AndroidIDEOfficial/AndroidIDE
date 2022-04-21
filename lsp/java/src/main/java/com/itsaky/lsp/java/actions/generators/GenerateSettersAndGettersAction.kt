@@ -14,142 +14,50 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.lsp.java.actions
+package com.itsaky.lsp.java.actions.generators
 
 import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
 import com.github.javaparser.StaticJavaParser
 import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.expr.SimpleName
-import com.github.javaparser.ast.stmt.Statement
 import com.github.javaparser.ast.type.VoidType
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.actions.FieldBasedAction
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.utils.EditHelper
 import com.itsaky.lsp.java.utils.JavaParserUtils
 import com.itsaky.lsp.java.utils.TypeUtils.toType
-import com.itsaky.lsp.java.visitors.FindTypeDeclarationAt
 import com.itsaky.lsp.models.Range
 import com.itsaky.toaster.Toaster
 import com.sun.source.tree.ClassTree
-import com.sun.source.tree.Tree
-import com.sun.source.tree.VariableTree
 import com.sun.source.util.TreePath
 import com.sun.source.util.Trees
 import io.github.rosemoe.sora.widget.CodeEditor
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletionException
+import java.util.concurrent.*
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.VariableElement
 
-/** @author Akash Yadav */
-class GenerateSettersAndGettersAction : BaseCodeAction() {
+/**
+ * Allows the user to select fields from the current class, then generates setters and getters for
+ * the selected fields.
+ *
+ * @author Akash Yadav
+ */
+class GenerateSettersAndGettersAction : FieldBasedAction() {
     override val id: String = "lsp_java_generateSettersAndGetters"
     override var label: String = ""
     private val log = Logger.newInstance(javaClass.simpleName)
 
     override val titleTextRes: Int = R.string.action_generate_setters_getters
 
-    override fun prepare(data: ActionData) {
-        super.prepare(data)
+    override fun onGetFields(fields: List<String>, data: ActionData) {
 
-        if (!visible || !hasRequiredData(data, Range::class.java, CodeEditor::class.java)) {
-            markInvisible()
-            return
-        }
-
-        visible = true
-        enabled = true
-    }
-
-    override fun execAction(data: ActionData): Any {
-        val range = data[Range::class.java]!!
-        val server = data[JavaLanguageServer::class.java]!!
-        val file = requirePath(data)
-
-        return server.compiler.compile(file).get { task ->
-            // 1-based line and column index
-            val startLine = range.start.line + 1
-            val startColumn = range.start.column + 1
-            val endLine = range.end.line + 1
-            val endColumn = range.end.column + 1
-            val lines = task.root().lineMap
-            val start = lines.getPosition(startLine.toLong(), startColumn.toLong())
-            val end = lines.getPosition(endLine.toLong(), endColumn.toLong())
-
-            if (start == (-1).toLong() || end == (-1).toLong()) {
-                return@get false
-            }
-
-            val typeFinder = FindTypeDeclarationAt(task.task)
-            var type = typeFinder.scan(task.root(file), start)
-            if (type == null) {
-                type = typeFinder.scan(task.root(file), end)
-            }
-
-            if (type == null) {
-                return@get false
-            }
-
-            val fieldNames =
-                type.members
-                    .filter { it.kind == Tree.Kind.VARIABLE } // Collect fields
-                    .map { it as VariableTree } // Map the fields as VariableTree
-                    .filter {
-                        !it.modifiers.flags.contains(Modifier.STATIC)
-                    } // Remove all fields that are static
-                    .map { "${it.name}: ${it.type}" } // Get the names
-            log.debug("Found ${fieldNames.size} variables in class ${type.simpleName}")
-
-            return@get fieldNames
-        }
-    }
-
-    override fun postExec(data: ActionData, result: Any) {
-        if (result !is List<*>) {
-            log.warn("Unable to generate setters/getters")
-            return
-        }
-
-        if (result.isEmpty()) {
-            BaseApplication.getBaseInstance()
-                .toast(
-                    data[Context::class.java]!!.getString(R.string.msg_no_fields_found),
-                    Toaster.Type.INFO)
-            return
-        }
-
-        @Suppress("UNCHECKED_CAST") val names = (result as List<String>).toTypedArray()
-
-        val checkedNames = mutableSetOf<String>()
-        val builder = newDialogBuilder(data)
-        builder.setTitle(data[Context::class.java]!!.getString(R.string.msg_select_fields))
-        builder.setMultiChoiceItems(names, BooleanArray(result.size)) { _, which, checked ->
-            checkedNames.apply {
-                val item = names[which]
-                if (checked) {
-                    add(item)
-                } else {
-                    remove(item)
-                }
-            }
-        }
-        builder.setPositiveButton(android.R.string.ok) { dialog, _ ->
-            dialog.dismiss()
-
-            if (checkedNames.isEmpty()) {
-                BaseApplication.getBaseInstance()
-                    .toast(
-                        data[Context::class.java]!!.getString(R.string.msg_no_fields_selected),
-                        Toaster.Type.ERROR)
-                return@setPositiveButton
-            }
-
+        showFieldSelector(fields, data) { checkedNames ->
             CompletableFuture.runAsync { generateForFields(data, checkedNames) }.whenComplete {
                 _,
                 error,
@@ -167,47 +75,19 @@ class GenerateSettersAndGettersAction : BaseCodeAction() {
                 }
             }
         }
-        builder.setNegativeButton(android.R.string.cancel, null)
-        builder.show()
     }
 
-    fun generateForFields(data: ActionData, names: MutableSet<String>) {
+    private fun generateForFields(data: ActionData, names: MutableSet<String>) {
         val server = data[JavaLanguageServer::class.java]!!
         val range = data[Range::class.java]!!
         val file = requirePath(data)
 
         server.compiler.compile(file).run { task ->
-            // 1-based line and column index
-            val startLine = range.start.line + 1
-            val startColumn = range.start.column + 1
-            val endLine = range.end.line + 1
-            val endColumn = range.end.column + 1
-            val lines = task.root().lineMap
-            val start = lines.getPosition(startLine.toLong(), startColumn.toLong())
-            val end = lines.getPosition(endLine.toLong(), endColumn.toLong())
+            val triple = findFields(task, file, range)
+            val typeFinder = triple.first
+            val type = triple.second
+            val fields = triple.third
 
-            if (start == (-1).toLong() || end == (-1).toLong()) {
-                throw CompletionException(
-                    RuntimeException("Unable to find position for the given selection range"))
-            }
-
-            val typeFinder = FindTypeDeclarationAt(task.task)
-            var type = typeFinder.scan(task.root(file), start)
-            if (type == null) {
-                type = typeFinder.scan(task.root(file), end)
-            }
-
-            if (type == null) {
-                throw CompletionException(
-                    RuntimeException("Unable to find class declaration within cursor range"))
-            }
-
-            val fields =
-                type.members
-                    .filter { it.kind == Tree.Kind.VARIABLE }
-                    .map { it as VariableTree }
-                    .filter { !it.modifiers.flags.contains(Modifier.STATIC) }
-                    .toMutableList()
             fields.removeIf { !names.contains("${it.name}: ${it.type}") }
 
             log.debug("Creating setters/getters for fields", fields.map { it.name })

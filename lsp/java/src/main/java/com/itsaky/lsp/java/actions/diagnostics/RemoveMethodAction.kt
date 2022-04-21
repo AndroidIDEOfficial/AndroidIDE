@@ -14,26 +14,26 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.lsp.java.actions
+package com.itsaky.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.models.DiagnosticCode
-import com.itsaky.lsp.java.rewrite.CreateMissingMethod
-import com.itsaky.lsp.java.utils.CodeActionUtils.findPosition
+import com.itsaky.lsp.java.rewrite.RemoveMethod
+import com.itsaky.lsp.java.utils.CodeActionUtils.findMethod
 import com.itsaky.lsp.models.DiagnosticItem
 
 /** @author Akash Yadav */
-class CreateMissingMethodAction : BaseCodeAction() {
-    override val id: String = "lsp_java_createMissingMethod"
+class RemoveMethodAction : BaseCodeAction() {
+    override val id: String = "lsp_java_removeMethod"
     override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.MISSING_METHOD.id
+    private val diagnosticCode = DiagnosticCode.UNUSED_METHOD.id
     private val log = Logger.newInstance(javaClass.simpleName)
 
-    override val titleTextRes: Int = R.string.action_create_missing_method
+    override val titleTextRes: Int = R.string.action_remove_method
 
     override fun prepare(data: ActionData) {
         super.prepare(data)
@@ -54,14 +54,17 @@ class CreateMissingMethodAction : BaseCodeAction() {
         val diagnostic = data[DiagnosticItem::class.java]!!
         val server = data[JavaLanguageServer::class.java]!!
         val file = requirePath(data)
+
         return server.compiler.compile(file).get {
-            CreateMissingMethod(file, findPosition(it, diagnostic.range.start))
+            val unusedMethod = findMethod(it, diagnostic.range)
+            RemoveMethod(
+                unusedMethod.className, unusedMethod.methodName, unusedMethod.erasedParameterTypes)
         }
     }
 
     override fun postExec(data: ActionData, result: Any) {
-        if (result !is CreateMissingMethod) {
-            log.warn("Unable to create missing method")
+        if (result !is RemoveMethod) {
+            log.warn("Unable to remove method")
             return
         }
 
@@ -69,6 +72,6 @@ class CreateMissingMethodAction : BaseCodeAction() {
         val client = server.client!!
         val file = requireFile(data)
 
-        client.performCodeAction(file, result.asCodeActions(server.compiler, label))
+        client.performCodeAction(file, result.asCodeActions(server.compiler!!, label))
     }
 }

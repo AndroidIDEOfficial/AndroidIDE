@@ -41,4 +41,5 @@
     <string name="msg_no_overridable_methods">Unable to find any overridable method</string>
     <string name="action_goto_definition">Go to definition</string>
     <string name="action_find_references">Find references</string>
+    <string name="action_generate_toString">Generate toString()</string>
 </resources>

@@ -19,6 +19,7 @@ package com.itsaky.lsp.java.actions
 
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.java.BaseJavaTest
+import com.itsaky.lsp.java.actions.diagnostics.AddImportAction
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner

@@ -18,6 +18,23 @@
 package com.itsaky.lsp.java.actions
 
 import com.itsaky.lsp.actions.CodeActionsMenu
+import com.itsaky.lsp.java.actions.common.CommentAction
+import com.itsaky.lsp.java.actions.common.FindReferencesAction
+import com.itsaky.lsp.java.actions.common.GoToDefinitionAction
+import com.itsaky.lsp.java.actions.common.UncommentAction
+import com.itsaky.lsp.java.actions.diagnostics.AddImportAction
+import com.itsaky.lsp.java.actions.diagnostics.AddThrowsAction
+import com.itsaky.lsp.java.actions.diagnostics.CreateMissingMethodAction
+import com.itsaky.lsp.java.actions.diagnostics.FieldToBlockAction
+import com.itsaky.lsp.java.actions.diagnostics.ImplementAbstractMethodsAction
+import com.itsaky.lsp.java.actions.diagnostics.RemoveClassAction
+import com.itsaky.lsp.java.actions.diagnostics.RemoveMethodAction
+import com.itsaky.lsp.java.actions.diagnostics.RemoveUnusedThrowsAction
+import com.itsaky.lsp.java.actions.diagnostics.SuppressUncheckedWarningAction
+import com.itsaky.lsp.java.actions.diagnostics.VariableToStatementAction
+import com.itsaky.lsp.java.actions.generators.GenerateConstructorAction
+import com.itsaky.lsp.java.actions.generators.GenerateSettersAndGettersAction
+import com.itsaky.lsp.java.actions.generators.OverrideSuperclassMethodsAction
 
 /** @author Akash Yadav */
 class JavaCodeActionsMenu : CodeActionsMenu() {

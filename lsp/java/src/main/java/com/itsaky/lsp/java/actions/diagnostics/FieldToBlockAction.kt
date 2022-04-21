@@ -14,36 +14,41 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.lsp.java.actions
+package com.itsaky.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.Logger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
+import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.models.DiagnosticCode
-import com.itsaky.lsp.java.rewrite.AddException
-import com.itsaky.lsp.java.utils.CodeActionUtils
+import com.itsaky.lsp.java.rewrite.ConvertFieldToBlock
+import com.itsaky.lsp.java.utils.CodeActionUtils.findPosition
 import com.itsaky.lsp.models.DiagnosticItem
 
 /** @author Akash Yadav */
-class AddThrowsAction : BaseCodeAction() {
-    override val id = "lsp_java_addThrows"
+class FieldToBlockAction : BaseCodeAction() {
+
+    override val id: String = "lsp_java_fieldToBlock"
     override var label: String = ""
-    private val diagnosticCode = DiagnosticCode.NOT_THROWN.id
+    private val diagnosticCode = DiagnosticCode.UNUSED_FIELD.id
     private val log = Logger.newInstance(javaClass.simpleName)
 
-    override val titleTextRes: Int = R.string.action_add_throws
+    override val titleTextRes: Int = R.string.action_convert_to_block
 
     override fun prepare(data: ActionData) {
         super.prepare(data)
 
-        if (!visible || !hasRequiredData(data, DiagnosticItem::class.java)) {
+        if (!visible) {
+            return
+        }
+
+        if (!hasRequiredData(data, DiagnosticItem::class.java)) {
             markInvisible()
             return
         }
 
-        val diagnostic = data[DiagnosticItem::class.java]!!
+        val diagnostic = data.get(DiagnosticItem::class.java)!!
         if (diagnosticCode != diagnostic.code) {
             markInvisible()
             return
@@ -51,23 +56,18 @@ class AddThrowsAction : BaseCodeAction() {
     }
 
     override fun execAction(data: ActionData): Any {
-        val diagnostic = data[DiagnosticItem::class.java]!!
         val server = data[JavaLanguageServer::class.java]!!
+        val diagnostic = data[DiagnosticItem::class.java]!!
         val file = requirePath(data)
-        return server.compiler.compile(file).get { task ->
-            val needsThrow = CodeActionUtils.findMethod(task, diagnostic.range)
-            val exceptionName = CodeActionUtils.extractExceptionName(diagnostic.message)
-            return@get AddException(
-                needsThrow.className,
-                needsThrow.methodName,
-                needsThrow.erasedParameterTypes,
-                exceptionName)
+
+        return server.compiler.compile(file).get {
+            ConvertFieldToBlock(file, findPosition(it, diagnostic.range.start))
         }
     }
 
     override fun postExec(data: ActionData, result: Any) {
-        if (result !is AddException) {
-            log.warn("Unable to add 'throws' expression")
+        if (result !is ConvertFieldToBlock) {
+            log.warn("Unable to convert field to block")
             return
         }
 
