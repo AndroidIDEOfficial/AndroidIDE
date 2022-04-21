@@ -38,6 +38,7 @@ import com.sun.source.util.JavacTask
 import com.sun.source.util.TreePath
 import com.sun.source.util.TreeScanner
 import com.sun.source.util.Trees
+import com.sun.tools.javac.api.JavacTaskImpl
 import java.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
@@ -47,7 +48,7 @@ import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeKind
 import javax.lang.model.type.TypeMirror
 
-class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePath?, String>>() {
+class DiagnosticVisitor(task: JavacTaskImpl?) : TreeScanner<Void?, MutableMap<TreePath?, String>>() {
     private val log = Logger.newInstance(javaClass.simpleName)
     private val trees = Trees.instance(task)
     private val privateDeclarations = mutableMapOf<Element, TreePath>()
@@ -99,11 +100,13 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
     }
 
     private fun foundPrivateDeclaration() {
-        privateDeclarations[trees.getElement(path)] = path!!
+        val element = trees.getElement(path) ?: return
+        privateDeclarations[element] = path!!
     }
 
     private fun foundLocalVariable() {
-        localVariables[trees.getElement(path)] = path!!
+        val element = trees.getElement(path) ?: return
+        localVariables[element] = path!!
     }
 
     private fun foundReference() {
@@ -201,7 +204,7 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
         return super.visitCompilationUnit(t, notThrown)
     }
 
-    override fun visitVariable(t: VariableTree, notThrown: MutableMap<TreePath?, String>): Void? {
+    override fun visitVariable(t: VariableTree?, notThrown: MutableMap<TreePath?, String>): Void? {
         when {
             isLocalVariable(path!!) -> {
                 foundLocalVariable()
@@ -213,7 +216,11 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
         return null
     }
 
-    override fun visitMethod(t: MethodTree, notThrown: MutableMap<TreePath?, String>): Void? {
+    override fun visitMethod(t: MethodTree?, notThrown: MutableMap<TreePath?, String>): Void? {
+        if (t == null) {
+            return null
+        }
+        
         // Create a new method scope
         val pushDeclared = declaredExceptions
         val pushObserved = observedExceptions
@@ -235,7 +242,7 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
         return null
     }
 
-    override fun visitClass(t: ClassTree, notThrown: MutableMap<TreePath?, String>): Void? {
+    override fun visitClass(t: ClassTree?, notThrown: MutableMap<TreePath?, String>): Void? {
         if (isReachable(path!!)) {
             super.visitClass(t, notThrown)
         } else {
@@ -245,7 +252,7 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
     }
 
     override fun visitIdentifier(
-        t: IdentifierTree,
+        t: IdentifierTree?,
         notThrown: MutableMap<TreePath?, String>
     ): Void? {
         foundReference()
@@ -253,7 +260,7 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
     }
 
     override fun visitMemberSelect(
-        t: MemberSelectTree,
+        t: MemberSelectTree?,
         notThrown: MutableMap<TreePath?, String>
     ): Void? {
         foundReference()
@@ -261,19 +268,23 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
     }
 
     override fun visitMemberReference(
-        t: MemberReferenceTree,
+        t: MemberReferenceTree?,
         notThrown: MutableMap<TreePath?, String>
     ): Void? {
         foundReference()
         return super.visitMemberReference(t, notThrown)
     }
 
-    override fun visitNewClass(t: NewClassTree, notThrown: MutableMap<TreePath?, String>): Void? {
+    override fun visitNewClass(t: NewClassTree?, notThrown: MutableMap<TreePath?, String>): Void? {
         foundReference()
         return super.visitNewClass(t, notThrown)
     }
 
-    override fun visitThrow(t: ThrowTree, notThrown: MutableMap<TreePath?, String>): Void? {
+    override fun visitThrow(t: ThrowTree?, notThrown: MutableMap<TreePath?, String>): Void? {
+        if (t == null) {
+            return  null
+        }
+        
         val path = TreePath(path, t.expression)
         val type = trees.getTypeMirror(path)
         addThrown(type)
@@ -281,7 +292,7 @@ class DiagnosticVisitor(task: JavacTask?) : TreeScanner<Void?, MutableMap<TreePa
     }
 
     override fun visitMethodInvocation(
-        t: MethodInvocationTree,
+        t: MethodInvocationTree?,
         notThrown: MutableMap<TreePath?, String>
     ): Void? {
         val target = trees.getElement(path)
