@@ -19,6 +19,7 @@
 package com.itsaky.lsp.java.compiler;
 
 import com.itsaky.androidide.utils.Logger;
+import com.itsaky.lsp.java.utils.TestUtils;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TaskEvent;
@@ -205,7 +206,9 @@ public class ReusableCompiler {
             NBMemberEnter.preRegister(this, false);
             NBClassFinder.preRegister(this);
 
-            put(LazyTreeLoader.lazyTreeLoaderKey, new IDELazyTreeLoader());
+            if (!TestUtils.isTestEnvironment()) {
+                put(LazyTreeLoader.lazyTreeLoaderKey, new IDELazyTreeLoader());
+            }
         }
 
         @Override

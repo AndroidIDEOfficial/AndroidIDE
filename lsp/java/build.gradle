@@ -20,24 +20,24 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
-
+    
     defaultConfig {
         minSdkVersion rootProject.ext.minSdk
         targetSdkVersion rootProject.ext.targetSdk
     }
-
+    
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile ('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
+    
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
+    
     testOptions {
         unitTests {
             includeAndroidResources = true
@@ -55,21 +55,22 @@ dependencies {
     
     implementation 'com.google.auto.value:auto-value-annotations:1.9'
     annotationProcessor 'com.google.auto.value:auto-value:1.9'
-
+    
     compileOnly androidx.appcompat
     compileOnly google.material
-    compileOnly project(':actions')
-    compileOnly project(':common')
-
-    implementation project(path: ':lsp:api')
-    implementation files ("libs/nb-javac-17.0.0.0-android.jar")
-
+    compileOnly project (':actions')
+    compileOnly project (':common')
+    
+    implementation project (path: ':lsp:api')
+    implementation project (path: ':javac')
+    
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
-    testImplementation project(':lsp:testing')
-    testImplementation project(':common')
-    testImplementation project(':actions')
+    
+    testImplementation project (':lsp:testing')
+    testImplementation project (':common')
+    testImplementation project (':actions')
+    testImplementation project (':javac')
     testImplementation tests.junit
     testImplementation tests.google_truth
     testImplementation tests.robolectric
@@ -79,5 +80,5 @@ dependencies {
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral ()
 }

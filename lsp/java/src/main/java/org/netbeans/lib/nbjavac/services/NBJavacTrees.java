@@ -42,11 +42,7 @@ public class NBJavacTrees extends JavacTrees {
     private final Map<Element, TreePath> element2paths = new HashMap<>();
     
     public static void preRegister(Context context) {
-        context.put(JavacTrees.class, new Context.Factory<JavacTrees>() {
-            public JavacTrees make(Context c) {
-                return new NBJavacTrees(c);
-            }
-        });
+        context.put(JavacTrees.class, (Context.Factory<JavacTrees>) NBJavacTrees::new);
     }
     protected NBJavacTrees(Context context) {
         super(context);
@@ -80,5 +76,4 @@ public class NBJavacTrees extends JavacTrees {
             }
         };
     }
-
 }
