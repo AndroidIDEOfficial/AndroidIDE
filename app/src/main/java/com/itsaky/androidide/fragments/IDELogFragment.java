@@ -17,9 +17,12 @@
 
 package com.itsaky.androidide.fragments;
 
+import androidx.annotation.NonNull;
+
+import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.utils.Logger;
 
-public class IDELogFragment extends SimpleOutputFragment {
+public class IDELogFragment extends LogViewFragment {
 
     private final Logger.LogListener listener = this::log;
 
@@ -27,7 +30,13 @@ public class IDELogFragment extends SimpleOutputFragment {
         Logger.addLogListener(listener);
     }
 
+    @Override
+    protected String onCreateLogString(@NonNull LogLine line) {
+        return line.toSimpleString();
+    }
+
     private void log(int priority, String tag, String message) {
-        appendOutput(String.format("%s: %s", tag, message));
+        final var line = new LogLine(Logger.priorityChar(priority), tag, message);
+        appendLog(line);
     }
 }

@@ -57,18 +57,18 @@ public class Logger {
         return instance == null ? instance = createInstance("AndroidIDE") : instance;
     }
 
+    @NonNull
+    @Contract("_ -> new")
+    private static Logger createInstance(String tag) {
+        return new Logger(tag);
+    }
+
     public static void addLogListener(LogListener listener) {
         logListeners.add(Objects.requireNonNull(listener));
     }
 
     public static void removeLogListener(LogListener listener) {
         logListeners.remove(Objects.requireNonNull(listener));
-    }
-
-    @NonNull
-    @Contract("_ -> new")
-    private static Logger createInstance(String tag) {
-        return new Logger(tag);
     }
 
     @NonNull
@@ -96,6 +96,23 @@ public class Logger {
         }
     }
 
+    @NonNull
+    @Contract(pure = true)
+    public static String priorityChar(int priority) {
+        switch (priority) {
+            case INFO:
+                return "I";
+            case VERBOSE:
+                return "V";
+            case ERROR:
+                return "E";
+            case WARNING:
+                return "W";
+            default:
+                return "D";
+        }
+    }
+
     public Logger warn(Object... messages) {
         final var msg = generateMessage(messages);
         Log.w(TAG, msg);
@@ -103,11 +120,29 @@ public class Logger {
         return this;
     }
 
-    public Logger debug(Object... messages) {
-        final var msg = generateMessage(messages);
-        Log.d(TAG, msg);
-        notifyListener(DEBUG, msg);
-        return this;
+    @NonNull
+    protected String generateMessage(Object... messages) {
+        StringBuilder sb = new StringBuilder();
+        if (messages == null) {
+            return "null";
+        }
+
+        for (Object msg : messages) {
+            sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
+            sb.append(
+                    msg instanceof Throwable
+                            ? ThrowableUtils.getFullStackTrace(((Throwable) msg))
+                            : msg);
+            sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
+        }
+
+        return sb.toString();
+    }
+
+    private void notifyListener(int priority, String msg) {
+        for (final var listener : logListeners) {
+            listener.log(priority, TAG, msg);
+        }
     }
 
     public Logger error(Object... messages) {
@@ -136,6 +171,13 @@ public class Logger {
         debug(getCallerClassDescription());
     }
 
+    public Logger debug(Object... messages) {
+        final var msg = generateMessage(messages);
+        Log.d(TAG, msg);
+        notifyListener(DEBUG, msg);
+        return this;
+    }
+
     protected String getCallerClassDescription() {
         final var elements = Thread.currentThread().getStackTrace();
         for (int i = 1, elementsLength = elements.length; i < elementsLength; i++) {
@@ -150,31 +192,6 @@ public class Logger {
         }
 
         return "<Logger> <Cannot get caller information>";
-    }
-
-    @NonNull
-    protected String generateMessage(Object... messages) {
-        StringBuilder sb = new StringBuilder();
-        if (messages == null) {
-            return "null";
-        }
-
-        for (Object msg : messages) {
-            sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
-            sb.append(
-                    msg instanceof Throwable
-                            ? ThrowableUtils.getFullStackTrace(((Throwable) msg))
-                            : msg);
-            sb.append(msg instanceof Throwable ? "\n" : MSG_SEPARATOR);
-        }
-
-        return sb.toString();
-    }
-
-    private void notifyListener(int priority, String msg) {
-        for (final var listener : logListeners) {
-            listener.log(priority, TAG, msg);
-        }
     }
 
     /** A listener which can be used to listen to log events. */

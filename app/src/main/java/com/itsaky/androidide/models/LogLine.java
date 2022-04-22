@@ -29,8 +29,12 @@ import java.util.Locale;
 
 public class LogLine {
 
+    // It makes things easier in LogLanguageImpl
+    public static final int INFO = SchemeAndroidIDE.LOG_INFO;
+    public static final int DEBUG = SchemeAndroidIDE.LOG_DEBUG;
+    public static final int ERROR = SchemeAndroidIDE.LOG_ERROR;
+    public static final int WARNING = SchemeAndroidIDE.LOG_WARNING;
     public String unformatted;
-
     public String date;
     public String time;
     public String pid;
@@ -38,16 +42,12 @@ public class LogLine {
     public String priorityChar;
     public String tag;
     public String message;
-
     public int priority;
-
     public boolean formatted;
 
-    // It makes things easier in LogLanguageImpl
-    public static final int INFO = SchemeAndroidIDE.LOG_INFO;
-    public static final int DEBUG = SchemeAndroidIDE.LOG_DEBUG;
-    public static final int ERROR = SchemeAndroidIDE.LOG_ERROR;
-    public static final int WARNING = SchemeAndroidIDE.LOG_WARNING;
+    public LogLine(String priorityChar, String tag, String message) {
+        this("", "", "", "", priorityChar, tag, message);
+    }
 
     public LogLine(
             String date,
@@ -58,11 +58,6 @@ public class LogLine {
             String tag,
             String message) {
         this(date, time, pid, tid, priorityChar, tag, message, true);
-    }
-
-    public LogLine(String unformatted) {
-        this.unformatted = unformatted;
-        this.formatted = false;
     }
 
     public LogLine(
@@ -89,6 +84,27 @@ public class LogLine {
         }
     }
 
+    private int parsePriority(String s) {
+        if (s == null || s.trim().length() > 1) {
+            return DEBUG;
+        }
+        char c = s.toLowerCase(Locale.US).charAt(0);
+        if (c == 'w') {
+            return WARNING;
+        } else if (c == 'e') {
+            return ERROR;
+        } else if (c == 'i') {
+            return INFO;
+        } else {
+            return DEBUG;
+        }
+    }
+
+    public LogLine(String unformatted) {
+        this.unformatted = unformatted;
+        this.formatted = false;
+    }
+
     @NonNull
     public static LogLine forLogString(@NonNull final String log) {
         try {
@@ -104,22 +120,6 @@ public class LogLine {
                     );
         } catch (Throwable th) {
             return new LogLine(log);
-        }
-    }
-
-    private int parsePriority(String s) {
-        if (s == null || s.trim().length() > 1) {
-            return DEBUG;
-        }
-        char c = s.toLowerCase(Locale.US).charAt(0);
-        if (c == 'w') {
-            return WARNING;
-        } else if (c == 'e') {
-            return ERROR;
-        } else if (c == 'i') {
-            return INFO;
-        } else {
-            return DEBUG;
         }
     }
 
@@ -142,6 +142,12 @@ public class LogLine {
                 ? String.format(
                         "%-6s %-13s %-6s %-6s %-2s %-40s %s",
                         date, time, pid, tid, priorityChar, tag, message)
+                : this.unformatted;
+    }
+
+    public String toSimpleString() {
+        return this.formatted
+                ? String.format("%-30s %-2s %s", tag, priorityChar, message)
                 : this.unformatted;
     }
 }

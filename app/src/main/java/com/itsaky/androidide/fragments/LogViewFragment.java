@@ -52,6 +52,12 @@ public class LogViewFragment extends NonEditableEditorFragment {
         }
     }
 
+    private void applyToLanguage(LogLine line) {
+        if (language instanceof LogLanguageImpl) {
+            ((LogLanguageImpl) this.language).addLine(line);
+        }
+    }
+
     public void appendLog(LogLine line) {
         if (getEditor() == null) {
             unsavedLines.add(line);
@@ -60,15 +66,13 @@ public class LogViewFragment extends NonEditableEditorFragment {
 
         applyToLanguage(line);
 
-        final var lineString = line.toString();
+        final var lineString = onCreateLogString(line);
         final var msg = lineString.endsWith("\n") ? lineString : lineString + "\n";
         ThreadUtils.runOnUiThread(() -> getEditor().append(msg));
     }
 
-    private void applyToLanguage(LogLine line) {
-        if (language instanceof LogLanguageImpl) {
-            ((LogLanguageImpl) this.language).addLine(line);
-        }
+    protected String onCreateLogString(@NonNull LogLine line) {
+        return line.toString();
     }
 
     protected Language getLanguage() {
