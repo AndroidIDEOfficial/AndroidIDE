@@ -147,7 +147,7 @@ public class LogLine {
 
     public String toSimpleString() {
         return this.formatted
-                ? String.format("%-30s %-2s %s", tag, priorityChar, message)
+                ? String.format("%-20s %-2s %s", tag, priorityChar, message)
                 : this.unformatted;
     }
 }
