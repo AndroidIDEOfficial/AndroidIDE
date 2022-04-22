@@ -39,17 +39,35 @@ jobs:
           distributions-cache-enabled: true
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
-
+      - name: Get branch name and short commit hash
+        id: vars
+        shell: bash
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Upload APK
         uses: actions/upload-artifact@v2
         if: ${{ !github.head_ref }}
         with:
           name: apk-debug
           path: app/build/outputs/apk/debug/app-debug.apk
-
       - name: Upload translation report
         uses: actions/upload-artifact@v2
         if: ${{ !github.head_ref }}
         with:
           name: translation-report
           path: build/translation-reports/
+      - name: Rename APK
+        run: mv app/build/outputs/apk/debug/app-debug.apk ./AndroidIDE-${{ steps.vars.outputs.branch }}-${{ steps.vars.outputs.sha_short }}.apk
+      - name: Upload APK to telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          document: ./AndroidIDE-${{ steps.vars.outputs.branch }}-${{ steps.vars.outputs.sha_short }}.apk
+          format: markdown
+          message: |
+            *AndroidIDE CI Build*
+            *Branch*: ${{ steps.vars.outputs.branch }}
+            *Commit*: ${{ github.event.head_commit.message }} [${{ steps.vars.outputs.sha_short }}](${{ steps.vars.outputs.sha_short }})
+        continue-on-error: true
