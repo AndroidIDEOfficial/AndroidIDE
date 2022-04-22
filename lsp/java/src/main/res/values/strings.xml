@@ -44,4 +44,7 @@
     <string name="action_generate_toString">Generate toString()</string>
     <string name="msg_cannot_generate_toString">Unable to generate toString() implementation</string>
     <string name="msg_toString_overridden">toString() is already overridden</string>
+    <string name="action_generate_missing_constructor">Generate missing constructor</string>
+    <string name="msg_cannot_generate_constructor">Unable to generate constructor</string>
+    <string name="msg_constructor_available">A constructor with same parameter types is already available</string>
 </resources>

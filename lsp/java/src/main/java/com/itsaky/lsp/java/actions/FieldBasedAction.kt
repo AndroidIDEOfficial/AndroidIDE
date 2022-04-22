@@ -118,7 +118,7 @@ abstract class FieldBasedAction : BaseCodeAction() {
             log.error("Unable to find fields in the current class")
             return
         }
-
+        
         if (result.isEmpty()) {
             BaseApplication.getBaseInstance()
                 .toast(

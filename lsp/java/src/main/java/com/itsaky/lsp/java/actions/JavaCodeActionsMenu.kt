@@ -33,6 +33,7 @@ import com.itsaky.lsp.java.actions.diagnostics.RemoveUnusedThrowsAction
 import com.itsaky.lsp.java.actions.diagnostics.SuppressUncheckedWarningAction
 import com.itsaky.lsp.java.actions.diagnostics.VariableToStatementAction
 import com.itsaky.lsp.java.actions.generators.GenerateConstructorAction
+import com.itsaky.lsp.java.actions.generators.GenerateMissingConstructorAction
 import com.itsaky.lsp.java.actions.generators.GenerateSettersAndGettersAction
 import com.itsaky.lsp.java.actions.generators.GenerateToStringMethodAction
 import com.itsaky.lsp.java.actions.generators.OverrideSuperclassMethodsAction
@@ -56,6 +57,7 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
         addAction(AddThrowsAction())
         addAction(GenerateSettersAndGettersAction())
         addAction(OverrideSuperclassMethodsAction())
+        addAction(GenerateMissingConstructorAction())
         addAction(GenerateConstructorAction())
         addAction(GenerateToStringMethodAction())
     }
