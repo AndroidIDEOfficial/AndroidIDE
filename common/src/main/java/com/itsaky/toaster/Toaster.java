@@ -29,6 +29,8 @@ import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import com.blankj.utilcode.util.SizeUtils;
+import com.blankj.utilcode.util.ThreadUtils;
+import com.itsaky.androidide.common.databinding.LayoutToastBinding;
 
 public class Toaster {
 
@@ -39,7 +41,7 @@ public class Toaster {
     public static final int LONG = 3500;
     private final Context mContext;
     private final Drawable mDrawable;
-    private com.itsaky.androidide.common.databinding.LayoutToastBinding binding;
+    private LayoutToastBinding binding;
     private Gravity mGravity;
     private Type mType;
     private AnimatedVectorDrawableCompat mIcon;
@@ -73,6 +75,10 @@ public class Toaster {
     }
 
     public void show() {
+        ThreadUtils.runOnUiThread(this::showInternal);
+    }
+
+    public void showInternal() {
         int dp16 = SizeUtils.dp2px(16);
         mIconColor =
                 mType == Type.SUCCESS
