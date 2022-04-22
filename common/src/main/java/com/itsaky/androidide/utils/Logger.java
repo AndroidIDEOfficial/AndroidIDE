@@ -47,7 +47,7 @@ public class Logger {
     private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
     private static final List<LogListener> logListeners = new ArrayList<>();
     private static Logger instance;
-    private String TAG;
+    private final String TAG;
 
     private Logger(String tag) {
         TAG = tag;

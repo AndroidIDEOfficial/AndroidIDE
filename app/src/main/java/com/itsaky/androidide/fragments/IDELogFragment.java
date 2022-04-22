@@ -35,7 +35,18 @@ public class IDELogFragment extends LogViewFragment {
         return line.toSimpleString();
     }
 
-    private void log(int priority, String tag, String message) {
+    private void log(int priority, String tag, @NonNull String message) {
+        if (message.contains("\n")) {
+            final var split = message.split("\n");
+            for (var line : split) {
+                logLine(priority, tag, line);
+            }
+        } else {
+            logLine(priority, tag, message);
+        }
+    }
+
+    private void logLine(int priority, String tag, String message) {
         final var line = new LogLine(Logger.priorityChar(priority), tag, message);
         appendLog(line);
     }
