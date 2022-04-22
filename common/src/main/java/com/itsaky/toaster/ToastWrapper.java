@@ -79,7 +79,7 @@ public class ToastWrapper extends LinearLayout {
     }
 
     protected void startRevealAnimation() {
-        setBackgroundDrawable(mToaster.getBackroundDrawable());
+        setBackgroundDrawable(mToaster.getBackgroundDrawable ());
         int x = (getLeft()); // + getRight()) / 2;
         int y = (getTop() + getBottom()) / 2;
         int endRadius = Math.max(getHeight(), getWidth());

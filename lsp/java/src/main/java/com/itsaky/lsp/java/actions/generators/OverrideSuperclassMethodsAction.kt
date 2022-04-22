@@ -187,7 +187,7 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
         builder.setNegativeButton(android.R.string.cancel, null)
         builder.show()
     }
-
+    
     private fun overrideMethods(data: ActionData, checkedMethods: MutableList<MethodPtr>) {
         val server = data[JavaLanguageServer::class.java]!!
         val file = requirePath(data)
