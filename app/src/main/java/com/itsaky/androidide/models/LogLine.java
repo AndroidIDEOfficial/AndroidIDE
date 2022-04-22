@@ -140,14 +140,30 @@ public class LogLine {
     public String toString() {
         return this.formatted
                 ? String.format(
-                        "%-6s %-13s %-6s %-6s %-2s %-40s %s",
-                        date, time, pid, tid, priorityChar, tag, message)
+                        "%-6s %-13s %-6s %-6s %-2s %-35s %s",
+                        date, time, pid, tid, priorityChar, trimIfNeeded (tag, 35), message)
                 : this.unformatted;
     }
 
     public String toSimpleString() {
         return this.formatted
-                ? String.format("%-20s %-2s %s", tag, priorityChar, message)
+                ? String.format("%-25s %-2s %s", trimIfNeeded(tag, 25), priorityChar, message)
                 : this.unformatted;
+    }
+
+    @NonNull
+    private String trimIfNeeded(String tag, int maxLength) {
+        final var sb = new StringBuilder(tag);
+        final var length = tag.length();
+        if (length > maxLength) {
+            final var start = length - maxLength;
+            sb.delete(0, start);
+
+            // When the tag is long enough, prefix the tag with '..'
+            sb.setCharAt(0, '.');
+            sb.setCharAt(1, '.');
+        }
+
+        return sb.toString();
     }
 }
