@@ -38,7 +38,7 @@ import javax.lang.model.element.Element;
  * @author lahvac
  */
 public class NBJavacTrees extends JavacTrees {
-
+    
     private final Map<Element, TreePath> element2paths = new HashMap<>();
 
     public static void preRegister(Context context) {
