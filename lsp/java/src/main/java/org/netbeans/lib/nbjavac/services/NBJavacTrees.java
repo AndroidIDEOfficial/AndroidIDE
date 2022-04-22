@@ -98,41 +98,6 @@ public class NBJavacTrees extends JavacTrees {
         };
     }
 
-    public Symbol.MethodSymbol findMethod(
-            @NonNull Symbol.ClassSymbol type, Name name, List<Type> paramTypes) {
-        final Iterator<Symbol> itr = type.members().getSymbolsByName(name).iterator();
-
-        Symbol sym;
-        do {
-            if (!itr.hasNext()) {
-                return null;
-            }
-            sym = (Symbol) itr.next();
-        } while (sym.kind != com.sun.tools.javac.code.Kinds.Kind.MTH
-                || !hasParameterTypes((Symbol.MethodSymbol) sym, paramTypes));
-
-        return (Symbol.MethodSymbol) sym;
-    }
-
-    public boolean hasParameterTypes(
-            Symbol.MethodSymbol method, com.sun.tools.javac.util.List<Type> paramTypes) {
-        if (paramTypes == null) {
-            return true;
-        } else if (method.params().size() != paramTypes.size()) {
-            return false;
-        } else {
-            com.sun.tools.javac.util.List<Type> methodParamTypes =
-                    method.asType().getParameterTypes();
-            if (!Type.isErroneous(paramTypes)
-                    && this.types.isSubtypes(paramTypes, methodParamTypes)) {
-                return true;
-            } else {
-                methodParamTypes = this.types.erasureRecursive(methodParamTypes);
-                return this.types.isSameTypes(paramTypes, methodParamTypes);
-            }
-        }
-    }
-
     void addPathForElement(Element elem, TreePath path) {
         element2paths.put(elem, path);
     }
