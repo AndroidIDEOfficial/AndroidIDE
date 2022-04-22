@@ -18,30 +18,21 @@
  */
 package org.netbeans.lib.nbjavac.services;
 
-import androidx.annotation.NonNull;
-
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.api.JavacTrees;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Type;
-import com.sun.tools.javac.code.Types;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
 import com.sun.tools.javac.tree.TreeInfo;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.List;
-import com.sun.tools.javac.util.Name;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.tools.JavaCompiler;
 
 /**
  * @author lahvac
@@ -49,7 +40,6 @@ import javax.tools.JavaCompiler;
 public class NBJavacTrees extends JavacTrees {
 
     private final Map<Element, TreePath> element2paths = new HashMap<>();
-    private final Types types;
 
     public static void preRegister(Context context) {
         context.put(JavacTrees.class, (Context.Factory<JavacTrees>) NBJavacTrees::new);
@@ -57,19 +47,6 @@ public class NBJavacTrees extends JavacTrees {
 
     protected NBJavacTrees(Context context) {
         super(context);
-        this.types = Types.instance(context);
-    }
-
-    public static NBJavacTrees instance(JavaCompiler.CompilationTask task) {
-        return (NBJavacTrees) JavacTrees.instance(task);
-    }
-
-    public static NBJavacTrees instance(ProcessingEnvironment environment) {
-        return (NBJavacTrees) JavacTrees.instance(environment);
-    }
-
-    public static NBJavacTrees instance(Context context) {
-        return (NBJavacTrees) JavacTrees.instance(context);
     }
 
     @Override
