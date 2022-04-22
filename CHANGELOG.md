@@ -7,13 +7,26 @@ This is the changelog of all the releases of AndroidIDE.
 <!--Breaking changes and other important stuff here-->
 
 ### Additions
-<!--New features-->
+- Warn about empty body for the following statements :
+  - `if`
+  - `else`
+  - `try`
+  - `catch`
+  - `finally`
+  - `for`
+  - `while`
+  - `do while`
+- New java code actions :
+  - `Generate toString()`: Overrides the `toString()` method for the current class. Always accessible.
+- Highlight IDE logs based on the log line priority.
+- Added Brazilian Portuguese translations. Thanks to @Hakaisu (#165).
 
 ### Removals
 <!--Things that were removed-->
 
 ### Fixes
-<!--Bug fixes, etc-->
+- Crash when performing 'Replace all' action in editor (#158).
+- Always show toasts on UI thread (#160).
 
 ### Improvements
 <!--Things that were improved and worth mentioning-->
