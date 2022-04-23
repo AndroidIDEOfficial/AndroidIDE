@@ -30,7 +30,7 @@ This is the changelog of all the releases of AndroidIDE.
 - Always show toasts on UI thread (#160).
 
 ### Improvements
-<!--Things that were improved and worth mentioning-->
+- Do not show 'Cut' & 'Paste' action if editor is not editable.
 
 ## **v2.0.1-beta**
 AndroidIDE v2.0.1-beta is here with new features, improvements and bug fixes.
