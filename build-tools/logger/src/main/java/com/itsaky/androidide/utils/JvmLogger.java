@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Locale;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -36,17 +37,18 @@ public class JvmLogger extends ILogger {
     private static final Logger LOG = Logger.getLogger("main");
 
     static {
-        setRootFormat();
+        initLogger();
     }
 
     protected JvmLogger(String tag) {
         super(tag);
     }
 
-    private static void setRootFormat() {
-        var root = Logger.getLogger("");
-
-        for (var h : root.getHandlers()) {
+    private static void initLogger() {
+        LOG.addHandler(new ConsoleHandler());
+        LOG.setLevel(Level.FINEST);
+        for (var h : LOG.getHandlers()) {
+            h.setLevel(Level.FINEST);
             h.setFormatter(new LogFormat());
         }
     }

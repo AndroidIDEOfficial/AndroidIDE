@@ -26,4 +26,7 @@ java {
 
 dependencies {
     compileOnly project(path: ':build-tools:framework-stubs')
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
 }
