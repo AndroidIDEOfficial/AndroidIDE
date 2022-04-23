@@ -15,33 +15,12 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
-}
+package com.itsaky.androidide.tooling.api.messages
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-}
+import com.itsaky.androidide.tooling.api.Message
+import java.io.File
 
-dependencies {
-    implementation project (path: ':build-tools:logger')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-}
-
-repositories {
-    mavenCentral ()
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
+/**
+ * Message sent from client to server to
+ * @author Akash Yadav */
+data class InitializeProject(val directory: File) : Message() {}

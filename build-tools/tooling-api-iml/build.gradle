@@ -17,9 +17,37 @@
 
 plugins {
     id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.itsaky.androidide.tooling.impl.Main'
+        )
+    }
+}
+
+dependencies {
+    implementation project (path: ':build-tools:logger')
+    implementation project (path: ':build-tools:tooling-api')
+    
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 }
