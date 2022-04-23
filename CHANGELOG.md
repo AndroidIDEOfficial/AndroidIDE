@@ -26,6 +26,7 @@ This is the changelog of all the releases of AndroidIDE.
 
 ### Fixes
 - Crash when performing 'Replace all' action in editor (#158).
+- Crash when layout inflation fails (#168). 
 - Always show toasts on UI thread (#160).
 
 ### Improvements
