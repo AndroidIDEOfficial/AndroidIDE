@@ -29,5 +29,5 @@ dependencies {
     implementation 'com.google.auto.value:auto-value-annotations:1.9'
     annotationProcessor 'com.google.auto.value:auto-value:1.9'
     
-    implementation project (path: ':javac')
+    implementation project (path: ':build-tools:javac')
 }

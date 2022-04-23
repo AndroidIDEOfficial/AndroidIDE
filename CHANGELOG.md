@@ -44,8 +44,7 @@ AndroidIDE v2.0.1-beta is here with new features, improvements and bug fixes.
 ### Additions
 - Code formatter for Java source code.
 - Support for
-  [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView)
-  ,
+  [`GestureOverlayView`](https://developer.android.com/reference/android/gesture/GestureOverlayView),
   [`ToggleButton`](https://developer.android.com/reference/android/widget/ToggleButton),
   [`Switch`](https://developer.android.com/reference/android/widget/Switch),
   [`GridLayout`](https://developer.android.com/reference/android/widget/GridLayout),

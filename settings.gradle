@@ -1,17 +1,20 @@
 rootProject.name = "AndroidIDE"
+include ':actions'
 include ':app'
-include ':treeview'
-include ':emulatorview'
-include ':sdk-info'
-include ':xml-inflater'
-include ':lexers'
 include ':common'
+include ':emulatorview'
+include ':lexers'
+include ':sdk-info'
+include ':treeview'
+include ':xml-inflater'
+
 include ':gradle-plugin'
 
 include ':lsp:api'
 include ':lsp:java'
 include ':lsp:xml'
 include ':lsp:testing'
-include ':actions'
-include ':javac'
-include ':google-java-format'
+
+include ':build-tools'
+include ':build-tools:javac'
+include ':build-tools:google-java-format'

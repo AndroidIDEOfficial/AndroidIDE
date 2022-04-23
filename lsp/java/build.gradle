@@ -59,8 +59,8 @@ dependencies {
     compileOnly project (':common')
     
     implementation project (path: ':lsp:api')
-    implementation project (path: ':javac')
-    implementation project (path: ':google-java-format')
+    implementation project (path: ':build-tools:javac')
+    implementation project (path: ':build-tools:google-java-format')
     
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -68,7 +68,7 @@ dependencies {
     testImplementation project (':lsp:testing')
     testImplementation project (':common')
     testImplementation project (':actions')
-    testImplementation project (':javac')
+    testImplementation project (':build-tools:javac')
     testImplementation tests.junit
     testImplementation tests.google_truth
     testImplementation tests.robolectric
