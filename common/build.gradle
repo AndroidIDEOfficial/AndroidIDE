@@ -39,4 +39,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     
     api androidx.multidex
+    
+    api project (path: ':build-tools:logger')
 }
