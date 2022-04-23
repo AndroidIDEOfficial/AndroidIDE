@@ -34,8 +34,6 @@
  */
 package com.itsaky.androidide.utils;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,7 +46,7 @@ import java.util.Objects;
  *
  * @author Akash Yadav
  */
-public class ILogger {
+public abstract class ILogger {
 
     public static final int DEBUG = 0;
     public static final int WARNING = 1;
@@ -58,9 +56,9 @@ public class ILogger {
     private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
     private static final List<LogListener> logListeners = new ArrayList<>();
     private static ILogger instance;
-    private final String TAG;
+    protected final String TAG;
 
-    private ILogger (String tag) {
+    protected ILogger(String tag) {
         TAG = tag;
     }
 
@@ -69,7 +67,11 @@ public class ILogger {
     }
 
     private static ILogger createInstance(String tag) {
-        return new ILogger (tag);
+        return newPlatformDependentLogger(tag);
+    }
+
+    private static ILogger newPlatformDependentLogger(String tag) {
+        return LogUtils.isJvm() ? new JvmLogger(tag) : new AndroidLogger(tag);
     }
 
     public static void addLogListener(LogListener listener) {
@@ -116,11 +118,33 @@ public class ILogger {
         }
     }
 
-    public ILogger warn(Object... messages) {
-        final var msg = generateMessage(messages);
-        Log.w(TAG, msg);
-        notifyListener(WARNING, msg);
+    /**
+     * Log error messages.
+     *
+     * @param messages The messages to log.
+     * @return This logger instance.
+     */
+    public ILogger error(Object... messages) {
+        return log(ERROR, messages);
+    }
+
+    /**
+     * Log messages with the given priority.
+     *
+     * @param priority The priority of the log messages.
+     * @param messages The messages to log.
+     * @return This logger instance.
+     */
+    public ILogger log(int priority, Object... messages) {
+        logAndNotify(priority, generateMessage(messages));
         return this;
+    }
+
+    private void logAndNotify(int priority, String msg) {
+        doLog(priority, msg);
+        for (final var listener : logListeners) {
+            listener.log(priority, TAG, msg);
+        }
     }
 
     protected String generateMessage(Object... messages) {
@@ -139,31 +163,47 @@ public class ILogger {
         return sb.toString();
     }
 
-    private void notifyListener(int priority, String msg) {
-        for (final var listener : logListeners) {
-            listener.log(priority, TAG, msg);
-        }
+    /**
+     * Log the message to an appropriate stream where the user can see the log messages.
+     *
+     * @param priority The priority for this log message.
+     * @param message The full generated message for this log. Might contain new lines.
+     * @see ILogger#DEBUG
+     * @see ILogger#ERROR
+     * @see ILogger#WARNING
+     * @see ILogger#VERBOSE
+     * @see ILogger#INFO
+     */
+    protected abstract void doLog(int priority, String message);
+
+    /**
+     * Log warning messages.
+     *
+     * @param messages The messages to log.
+     * @return This logger instance.
+     */
+    public ILogger warn(Object... messages) {
+        return log(WARNING, messages);
     }
 
-    public ILogger error(Object... messages) {
-        final var msg = generateMessage(messages);
-        Log.e(TAG, msg);
-        notifyListener(ERROR, msg);
-        return this;
-    }
-
+    /**
+     * Log verbose messages.
+     *
+     * @param messages The messages to log.
+     * @return This logger instance.
+     */
     public ILogger verbose(Object... messages) {
-        final var msg = generateMessage(messages);
-        Log.v(TAG, msg);
-        notifyListener(VERBOSE, msg);
-        return this;
+        return log(VERBOSE, messages);
     }
 
+    /**
+     * Log information messages.
+     *
+     * @param messages The messages to log.
+     * @return This logger instance.
+     */
     public ILogger info(Object... messages) {
-        final var msg = generateMessage(messages);
-        Log.i(TAG, msg);
-        notifyListener(INFO, msg);
-        return this;
+        return log(INFO, messages);
     }
 
     /** Logs the name of method and class which calls this method. */
@@ -171,11 +211,14 @@ public class ILogger {
         debug(getCallerClassDescription());
     }
 
+    /**
+     * Log debug messages.
+     *
+     * @param messages The messages to log.
+     * @return This logger instance.
+     */
     public ILogger debug(Object... messages) {
-        final var msg = generateMessage(messages);
-        Log.d(TAG, msg);
-        notifyListener(DEBUG, msg);
-        return this;
+        return log(DEBUG, messages);
     }
 
     protected String getCallerClassDescription() {

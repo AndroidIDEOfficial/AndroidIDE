@@ -31,6 +31,18 @@ import java.util.StringTokenizer;
 class LogUtils {
     private static final String LINE_SEP = System.getProperty("line.separator");
 
+    /**
+     * @return <code>true</code> if the current platform is JVM, <code>false</code> otherwise.
+     */
+    public static boolean isJvm() {
+        try {
+            Class.forName("android.content.Context");
+            return false;
+        } catch (ClassNotFoundException e) {
+            return true;
+        }
+    }
+
     public static String getFullStackTrace(Throwable throwable) {
         final List<Throwable> throwableList = new ArrayList<>();
         while (throwable != null && !throwableList.contains(throwable)) {

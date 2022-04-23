@@ -18,8 +18,7 @@
 package com.itsaky.androidide.utils;
 
 /**
- * {@link ILogger} implementation for the Android Runtime (ART).
- *
  * @author Akash Yadav
  */
-public class LoggerImpl {}
+public class LoggerTest {
+}
