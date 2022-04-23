@@ -226,8 +226,8 @@
      <string name="idepref_build_customgradlecommands_summary">Escolha comandos adicionais que serão adicionados durante a execução de cada tarefa</string>
      <string name="idepref_editor_fontsize_title">Tamanho da fonte</string>
      <string name="idepref_editor_fontsize_summary">Tamanho da fonte do editor</string>
-     <string name="idepref_editor_paintingflags_title">Bandeiras de pintura não imprimíveis</string>
-     <string name="idepref_editor_paintingflags_summary">Escolha quais caracteres não imprimíveis devem ser desenhados pelo editor</string>
+     <string name="idepref_editor_paintingflags_title">Non-printable painting flags</string>
+     <string name="idepref_editor_paintingflags_summary">Escolha quais caracteres non-printable devem ser desenhados pelo editor.</string>
      <string name="idepref_editor_drawhexcolors_title">Desenhar sequências de cores hexadecimais</string>
      <string name="idepref_editor_drawhexcolors_summary">O editor deve desenhar uma string de cor hexadecimal?</string>
      <string name="idepref_editor_title">Editor</string>
@@ -346,7 +346,11 @@
      <string name="title_format_code">Formatar código</string>
      <string name="idepref_java_useGoogleStyle_title">Use a formatação de código no estilo Java do Google</string>
      <string name="idepref_java_useGoogleStyle_summary">Use a configuração de formatação de código Java Style do Google para formatar o código fonte Java.</string>
-     <string name="idepref_visiblePassword_title">Bandeira de dica de senha</string>
-     <string name="idepref_visiblePassword_summary">Isto garante que nenhuma dica de senha seja exibida pelo teclado.</string>
+     <string name="idepref_visiblePassword_title">Dica de senha</string>
+     <string name="idepref_visiblePassword_summary">Quando ativado, nenhuma dica de senha será mostrada pelo teclado.</string>
      <string name="msg_no_actions">Nenhuma ação de código encontrada</string>
+     <string name="previous">Anterior</string>
+     <string name="msg_editor_find_case_sensitive">Maiúsculas e minúsculas</string>
+     <string name="msg_editor_find_regex">Regex</string>
+     <string name="msg_replacing">Substituindo...</string>
 </resources>
