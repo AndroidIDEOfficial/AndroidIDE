@@ -140,112 +140,6 @@ public class DesignerActivity extends StudioActivity
             };
 
     @Override
-    protected View bindLayout() {
-        this.mBinding = ActivityDesignerBinding.inflate(getLayoutInflater());
-        return mBinding.getRoot();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setSupportActionBar(mBinding.toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-
-        final var toggle =
-                new ActionBarDrawerToggle(
-                        this,
-                        mBinding.getRoot(),
-                        mBinding.toolbar,
-                        R.string.app_name,
-                        R.string.app_name) {
-
-                    @Override
-                    public void onDrawerSlide(View drawerView, float slideOffset) {
-                        super.onDrawerSlide(drawerView, slideOffset);
-                        if (isTablet) {
-                            mBinding.mainContainer.setTranslationX(
-                                    drawerView.getWidth() * slideOffset);
-                        }
-                    }
-                };
-        mBinding.getRoot().addDrawerListener(toggle);
-        toggle.syncState();
-
-        final var extras = getIntent().getExtras();
-        final var path = extras.getString(KEY_LAYOUT_PATH, null);
-        final var name = path.substring(path.lastIndexOf(File.separator) + 1);
-        final var resDirs = extras.getStringArrayList(KEY_RES_DIRS);
-        getSupportActionBar().setTitle(name);
-
-        try {
-            this.layout = new File(path);
-            LOG.debug("Inflating layout file:", this.layout);
-            LOG.debug("Resource directories:", TextUtils.join(",\n", resDirs));
-
-            //noinspection deprecation
-            final var pd =
-                    ProgressDialog.show(this, null, getString(R.string.please_wait), true, false);
-            getApp().createInflaterConfig(
-                            this, resDirs.stream().map(File::new).collect(Collectors.toSet()))
-                    .whenComplete(
-                            (config, throwable) -> {
-                                if (config == null || throwable != null) {
-                                    LOG.error("Unable to create inflater configuration", throwable);
-                                    return;
-                                }
-
-                                ThreadUtils.runOnUiThread(
-                                        () -> {
-                                            pd.dismiss();
-                                            inflatePath(path, config);
-                                        });
-                            });
-        } catch (Throwable th) {
-            mBinding.layoutContainer.removeAllViews();
-            mBinding.layoutContainer.addView(createErrorText(th));
-            LOG.error(getString(R.string.err_cannot_inflate_layout), th);
-            inflationFailed = true;
-        }
-
-        setupWidgets();
-
-        // Always open the drawer if this device is a tablet.
-        if (isTablet) {
-            mBinding.getRoot().setScrimColor(Color.TRANSPARENT);
-            mBinding.getRoot().openDrawer(GravityCompat.START);
-            mBinding.getRoot().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
-        }
-    }
-
-    private void inflatePath(String path, LayoutInflaterConfiguration config) {
-        this.layoutInflater = ILayoutInflater.newInstance(config);
-        this.layoutInflater.resetContextProvider(this);
-        this.layoutInflater.registerInflateListener(this.mInflateListener);
-        final IView view = this.layoutInflater.inflatePath(path, mBinding.layoutContainer);
-
-        if (this.inflatedRoot != null) {
-            this.inflatedRoot.asView().setOnDragListener(getOnDragListener(this.inflatedRoot));
-        }
-
-        mBinding.layoutContainer.addView(view.asView());
-        mBinding.layoutContainer.setOnClickListener(
-                v -> mBinding.getRoot().openDrawer(GravityCompat.START));
-
-        tryDismiss();
-    }
-
-    private void tryDismiss() {
-        final var manager = getSupportFragmentManager();
-        final var frag = manager.findFragmentByTag(EDITOR_SHEET_DIALOG_TAG);
-        if (frag != null) {
-            final var transaction = manager.beginTransaction();
-            transaction.remove(frag);
-            transaction.commit();
-        }
-    }
-
-    @Override
     public void onBackPressed() {
 
         if (inflationFailed) {
@@ -309,6 +203,102 @@ public class DesignerActivity extends StudioActivity
     }
 
     @Override
+    public void onDragStarted(View view) {
+        mBinding.getRoot().closeDrawer(GravityCompat.START);
+    }
+
+    @Override
+    public boolean onDeletionFailed(@NonNull IView view) {
+        final var v = view.asView();
+        if (mBinding.layoutContainer.indexOfChild(v) >= 0) {
+            mBinding.layoutContainer.removeView(v);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setSupportActionBar(mBinding.toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        final var toggle =
+                new ActionBarDrawerToggle(
+                        this,
+                        mBinding.getRoot(),
+                        mBinding.toolbar,
+                        R.string.app_name,
+                        R.string.app_name) {
+
+                    @Override
+                    public void onDrawerSlide(View drawerView, float slideOffset) {
+                        super.onDrawerSlide(drawerView, slideOffset);
+                        if (isTablet) {
+                            mBinding.mainContainer.setTranslationX(
+                                    drawerView.getWidth() * slideOffset);
+                        }
+                    }
+                };
+        mBinding.getRoot().addDrawerListener(toggle);
+        toggle.syncState();
+
+        final var extras = getIntent().getExtras();
+        final var path = extras.getString(KEY_LAYOUT_PATH, null);
+        final var name = path.substring(path.lastIndexOf(File.separator) + 1);
+        final var resDirs = extras.getStringArrayList(KEY_RES_DIRS);
+        getSupportActionBar().setTitle(name);
+
+        try {
+            this.layout = new File(path);
+            LOG.debug("Inflating layout file:", this.layout);
+            LOG.debug("Resource directories:", TextUtils.join(",\n", resDirs));
+
+            //noinspection deprecation
+            final var pd =
+                    ProgressDialog.show(this, null, getString(R.string.please_wait), true, false);
+            getApp().createInflaterConfig(
+                            this, resDirs.stream().map(File::new).collect(Collectors.toSet()))
+                    .whenComplete(
+                            (config, throwable) -> {
+                                if (config == null || throwable != null) {
+                                    LOG.error("Unable to create inflater configuration", throwable);
+                                    return;
+                                }
+
+                                ThreadUtils.runOnUiThread(
+                                        () -> {
+                                            pd.dismiss();
+                                            inflatePath(path, config);
+                                        });
+                            });
+        } catch (Throwable th) {
+            onLayoutInflationFailed(th);
+        }
+
+        setupWidgets();
+
+        // Always open the drawer if this device is a tablet.
+        if (isTablet) {
+            mBinding.getRoot().setScrimColor(Color.TRANSPARENT);
+            mBinding.getRoot().openDrawer(GravityCompat.START);
+            mBinding.getRoot().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
+        }
+    }
+
+    @Override
+    protected View bindLayout() {
+        this.mBinding = ActivityDesignerBinding.inflate(getLayoutInflater());
+        return mBinding.getRoot();
+    }
+
+    @Override
     protected void onDestroy() {
         LOG.logThis();
         if (isAttrEditorShowing()) {
@@ -333,6 +323,55 @@ public class DesignerActivity extends StudioActivity
         }
 
         super.onDestroy();
+    }
+ 
+    private boolean isAttrEditorShowing() {
+        return getAttrEditorSheet().getDialog() != null
+                && getAttrEditorSheet().getDialog().isShowing();
+    }
+
+    private AttrEditorSheet getAttrEditorSheet() {
+        return this.mEditorSheet == null
+                ? mEditorSheet = new AttrEditorSheet().setLayout(this.layout)
+                : mEditorSheet;
+    }
+
+    protected void onLayoutInflationFailed(Throwable th) {
+        mBinding.layoutContainer.removeAllViews();
+        mBinding.layoutContainer.addView(createErrorText(th));
+        LOG.error(getString(R.string.err_cannot_inflate_layout), th);
+        inflationFailed = true;
+    }
+
+    private void inflatePath(String path, LayoutInflaterConfiguration config) {
+        try {
+            this.layoutInflater = ILayoutInflater.newInstance(config);
+            this.layoutInflater.resetContextProvider(this);
+            this.layoutInflater.registerInflateListener(this.mInflateListener);
+            final IView view = this.layoutInflater.inflatePath(path, mBinding.layoutContainer);
+
+            if (this.inflatedRoot != null) {
+                this.inflatedRoot.asView().setOnDragListener(getOnDragListener(this.inflatedRoot));
+            }
+
+            mBinding.layoutContainer.addView(view.asView());
+            mBinding.layoutContainer.setOnClickListener(
+                    v -> mBinding.getRoot().openDrawer(GravityCompat.START));
+
+            tryDismiss();
+        } catch (Throwable error) {
+            onLayoutInflationFailed(error);
+        }
+    }
+
+    private void tryDismiss() {
+        final var manager = getSupportFragmentManager();
+        final var frag = manager.findFragmentByTag(EDITOR_SHEET_DIALOG_TAG);
+        if (frag != null) {
+            final var transaction = manager.beginTransaction();
+            transaction.remove(frag);
+            transaction.commit();
+        }
     }
 
     private void setupInflatedView(@NonNull IView view) {
@@ -369,11 +408,6 @@ public class DesignerActivity extends StudioActivity
         if (!getSupportFragmentManager().isDestroyed()) {
             getAttrEditorSheet().show(getSupportFragmentManager(), EDITOR_SHEET_DIALOG_TAG);
         }
-    }
-
-    private boolean isAttrEditorShowing() {
-        return getAttrEditorSheet().getDialog() != null
-                && getAttrEditorSheet().getDialog().isShowing();
     }
 
     private void setupWidgets() {
@@ -487,11 +521,6 @@ public class DesignerActivity extends StudioActivity
         return error;
     }
 
-    @Override
-    public void onDragStarted(View view) {
-        mBinding.getRoot().closeDrawer(GravityCompat.START);
-    }
-
     @NonNull
     @Contract("_ -> new")
     private View.OnDragListener getOnDragListener(IViewGroup group) {
@@ -504,26 +533,5 @@ public class DesignerActivity extends StudioActivity
 
     private void setDragDataToInflatedView(@NonNull IView view) {
         view.setExtraData(new WidgetDragData(true, view, null));
-    }
-
-    private AttrEditorSheet getAttrEditorSheet() {
-        return this.mEditorSheet == null
-                ? mEditorSheet = new AttrEditorSheet().setLayout(this.layout)
-                : mEditorSheet;
-    }
-
-    @Override
-    public boolean onDeletionFailed(@NonNull IView view) {
-        final var v = view.asView();
-        if (mBinding.layoutContainer.indexOfChild(v) >= 0) {
-            mBinding.layoutContainer.removeView(v);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Context getContext() {
-        return this;
     }
 }
