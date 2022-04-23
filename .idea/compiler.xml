@@ -7,7 +7,7 @@
         <processorPath useClasspath="false">
           <entry name="$PROJECT_DIR$/../../../itsaky/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.9/fd4ec236e20ae0895c30e83260f611bcbc185086/auto-value-1.9.jar" />
         </processorPath>
-        <module name="AndroidIDE.google-java-format" />
+        <module name="AndroidIDE.build-tools.google-java-format" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
