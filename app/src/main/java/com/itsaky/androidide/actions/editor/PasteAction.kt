@@ -33,9 +33,19 @@ class PasteAction() : BaseEditorAction() {
         arr.recycle()
     }
 
-    override val id: String
-        get() = "ideEditor_paste"
-
+    override val id: String = "ideEditor_paste"
+    
+    override fun prepare(data: ActionData) {
+        super.prepare(data)
+        
+        if (!visible) {
+            return
+        }
+        
+        visible = getEditor(data)?.isEditable ?: false
+        enabled = visible
+    }
+    
     override fun execAction(data: ActionData): Boolean {
         val editor = getEditor(data) ?: return false
         editor.pasteText()
