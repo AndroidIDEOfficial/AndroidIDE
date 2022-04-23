@@ -32,7 +32,7 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,7 +57,7 @@ import java.util.LinkedList;
 public class IDEDocumentsProvider extends DocumentsProvider {
 
     private static final String ALL_MIME_TYPES = "*/*";
-    private static final Logger LOG = Logger.newInstance("IDEDocumentsProvider");
+    private static final ILogger LOG = ILogger.newInstance("IDEDocumentsProvider");
     private static final File BASE_DIR = getBaseDir();
     // The default columns to return information about a root if no specific
     // columns are requested in a query.

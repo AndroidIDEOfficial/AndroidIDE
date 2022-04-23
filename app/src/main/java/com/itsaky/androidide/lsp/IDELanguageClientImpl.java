@@ -39,7 +39,7 @@ import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageClient;
@@ -65,7 +65,7 @@ import io.github.rosemoe.sora.text.Content;
 public class IDELanguageClientImpl implements ILanguageClient {
 
     protected static final Gson gson = new Gson();
-    protected static final Logger LOG = Logger.newInstance("AbstractLanguageClient");
+    protected static final ILogger LOG = ILogger.newInstance("AbstractLanguageClient");
     private static IDELanguageClientImpl mInstance;
     private final Map<File, List<DiagnosticItem>> diagnostics = new HashMap<>();
     protected EditorActivityProvider activityProvider;

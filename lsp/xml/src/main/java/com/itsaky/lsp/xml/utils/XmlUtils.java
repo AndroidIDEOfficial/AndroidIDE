@@ -20,7 +20,7 @@ package com.itsaky.lsp.xml.utils;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.CharSequenceReader;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -32,7 +32,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 public class XmlUtils {
 
     private static final XmlPullParserFactory parserFactory;
-    private static final Logger LOG = Logger.newInstance("XmlUtils");
+    private static final ILogger LOG = ILogger.newInstance("XmlUtils");
 
     static {
         try {

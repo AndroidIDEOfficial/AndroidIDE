@@ -47,7 +47,7 @@ import com.itsaky.androidide.actions.ActionsRegistry.Companion.getInstance
 import com.itsaky.androidide.actions.editor.SelectAllAction
 import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.language.IDELanguage
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.models.DiagnosticItem
 import com.itsaky.lsp.models.Range
@@ -81,7 +81,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
 
     private val touchHandler: EditorTouchEventHandler = editor.eventHandler
     private val receipts: MutableList<SubscriptionReceipt<*>> = mutableListOf()
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
     private val list: ListView = ListView(editor.context)
     private var mLastScroll: Long = 0
     private var mLastPosition: Int = 0

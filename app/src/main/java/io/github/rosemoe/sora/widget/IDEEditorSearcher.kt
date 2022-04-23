@@ -22,7 +22,7 @@ package io.github.rosemoe.sora.widget
 import android.app.ProgressDialog
 import android.widget.Toast
 import com.itsaky.androidide.R.string
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.views.editor.IDEEditor
 import io.github.rosemoe.sora.text.TextUtils
 import io.github.rosemoe.sora.util.IntPair
@@ -36,7 +36,7 @@ import java.util.concurrent.*
  */
 open class IDEEditorSearcher(editor: IDEEditor) : EditorSearcher(editor) {
 
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     protected fun getEditor(): CodeEditor {
         try {

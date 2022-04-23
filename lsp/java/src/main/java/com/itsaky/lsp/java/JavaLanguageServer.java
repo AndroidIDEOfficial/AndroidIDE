@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
@@ -66,7 +66,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
-    private static final Logger LOG = Logger.newInstance("JavaLanguageServer");
+    private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
     private final AnalyzeTimer analyzeTimer;
     private ILanguageClient client;
     private IServerSettings settings;

@@ -39,7 +39,7 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.slider.Slider;
 import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.common.databinding.LayoutColorPickerBinding;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 /**
  * A color picker view.
@@ -57,7 +57,7 @@ public class ColorPickerView extends LinearLayout {
     private final LayoutColorPickerBinding binding;
     private final int DEFAULT_COLOR;
 
-    private static final Logger LOG = Logger.newInstance("ColorPickerView");
+    private static final ILogger LOG = ILogger.newInstance("ColorPickerView");
 
     private final Slider.OnChangeListener mValueChangeListener =
             (slider, value, fromUser) -> {

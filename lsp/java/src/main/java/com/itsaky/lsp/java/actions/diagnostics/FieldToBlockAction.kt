@@ -17,7 +17,7 @@
 package com.itsaky.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
@@ -32,7 +32,7 @@ class FieldToBlockAction : BaseCodeAction() {
     override val id: String = "lsp_java_fieldToBlock"
     override var label: String = ""
     private val diagnosticCode = DiagnosticCode.UNUSED_FIELD.id
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     override val titleTextRes: Int = R.string.action_convert_to_block
 

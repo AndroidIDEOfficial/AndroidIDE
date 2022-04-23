@@ -19,7 +19,7 @@ package com.itsaky.androidide.language;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.CompletionItem;
@@ -66,7 +66,7 @@ public class CommonCompletionProvider {
                 String s2 = p2.getSortText() == null ? p2.getLabel() : p2.getSortText();
                 return s1.compareTo(s2);
             };
-    private static final Logger LOG = Logger.newInstance("CommonCompletionProvider");
+    private static final ILogger LOG = ILogger.newInstance("CommonCompletionProvider");
     private final ILanguageServer server;
     private CompletableFuture<CompletionResult> future;
 

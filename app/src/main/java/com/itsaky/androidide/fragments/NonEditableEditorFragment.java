@@ -28,7 +28,7 @@ import androidx.fragment.app.Fragment;
 
 import com.itsaky.androidide.databinding.FragmentNonEditableEditorBinding;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.editor.IDEEditor;
 
@@ -36,7 +36,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage;
 
 public abstract class NonEditableEditorFragment extends Fragment {
 
-    private static final Logger LOG = Logger.newInstance("NonEditableEditorFragment");
+    private static final ILogger LOG = ILogger.newInstance("NonEditableEditorFragment");
     private FragmentNonEditableEditorBinding binding;
 
     @Nullable

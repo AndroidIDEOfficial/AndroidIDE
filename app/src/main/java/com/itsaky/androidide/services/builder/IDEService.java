@@ -41,7 +41,7 @@ import com.itsaky.androidide.tasks.gradle.BaseGradleTasks;
 import com.itsaky.androidide.tasks.gradle.resources.UpdateResourceClassesTask;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.InputStreamLineReader;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.toaster.Toaster;
 
 import org.jetbrains.annotations.Contract;
@@ -75,7 +75,7 @@ public class IDEService {
     public static final int TASK_LINT = GradleTask.TASK_LINT;
     public static final int TASK_LINT_DEBUG = GradleTask.TASK_LINT_DEBUG;
     public static final int TASK_LINT_RELEASE = GradleTask.TASK_LINT_RELEASE;
-    public static final Logger LOG = Logger.newInstance("IDEService");
+    public static final ILogger LOG = ILogger.newInstance("IDEService");
     private final File projectRoot;
     private final IProcessExecutor processExecutor;
     private BuildListener listener;

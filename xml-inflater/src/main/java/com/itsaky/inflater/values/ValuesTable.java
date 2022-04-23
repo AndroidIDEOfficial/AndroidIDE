@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileUtils;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.inflater.values.models.ArrayResource;
 import com.itsaky.inflater.values.models.BooleanResource;
 import com.itsaky.inflater.values.models.ColorResource;
@@ -49,7 +49,7 @@ import java.util.Objects;
  */
 public class ValuesTable {
 
-    private static final Logger LOG = Logger.newInstance("ValuesTable");
+    private static final ILogger LOG = ILogger.newInstance("ValuesTable");
     // TODO Parse styles and styleables
     private final Map<String, IResource> arrays;
     private final Map<String, IResource> strings;

@@ -33,7 +33,7 @@ import com.itsaky.androidide.language.IAnalyzeManager;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticSeverity;
 import com.itsaky.lsp.models.Position;
@@ -62,7 +62,7 @@ import io.github.rosemoe.sora.lang.styling.Styles;
  */
 public class JavaAnalyzer extends SimpleAnalyzeManager<Void> implements IAnalyzeManager {
 
-    private static final Logger LOG = Logger.newInstance("JavaAnalyzer");
+    private static final ILogger LOG = ILogger.newInstance("JavaAnalyzer");
     private final List<DiagnosticItem> ideDiagnostics = new ArrayList<>();
     private List<DiagnosticItem> diagnostics = new ArrayList<>();
 

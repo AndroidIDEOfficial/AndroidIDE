@@ -25,7 +25,7 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.databinding.LayoutEditorFindReplaceBinding
 import com.itsaky.androidide.utils.DialogUtils
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 
 /**
  * Shows dialog to replace one or all the matched text in editor searcher.
@@ -34,7 +34,7 @@ import com.itsaky.androidide.utils.Logger
 class ReplaceAction() : SearchActionModeAction() {
 
     override val id: String = "editor.search.replace"
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     constructor(context: Context) : this() {
         label = context.getString(R.string.replace)

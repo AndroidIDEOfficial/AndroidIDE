@@ -30,7 +30,7 @@ import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
 
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -46,7 +46,7 @@ import io.github.rosemoe.sora.lang.styling.Styles;
 
 public class GroovyAnalyzer extends SimpleAnalyzeManager<Void> {
 
-    private static final Logger LOG = Logger.newInstance("GroovyAnalyzer");
+    private static final ILogger LOG = ILogger.newInstance("GroovyAnalyzer");
 
     @Override
     protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {

@@ -19,7 +19,7 @@ package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.visitors.FindBiggerRange;
 import com.itsaky.lsp.models.ExpandSelectionParams;
@@ -33,7 +33,7 @@ import com.sun.source.tree.CompilationUnitTree;
  */
 public class JavaSelectionProvider {
 
-    private static final Logger LOG = Logger.newInstance("JavaSelectionProvider");
+    private static final ILogger LOG = ILogger.newInstance("JavaSelectionProvider");
     private final CompilerProvider compiler;
 
     public JavaSelectionProvider(CompilerProvider compiler) {

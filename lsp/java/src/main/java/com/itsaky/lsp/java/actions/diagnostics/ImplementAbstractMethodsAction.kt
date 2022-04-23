@@ -17,7 +17,7 @@
 package com.itsaky.lsp.java.actions.diagnostics
 
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
@@ -34,7 +34,7 @@ class ImplementAbstractMethodsAction : BaseCodeAction() {
     override val id: String = "lsp_java_implementAbstractMethods"
     override var label: String = ""
     private var diagnosticCode = DiagnosticCode.DOES_NOT_OVERRIDE_ABSTRACT.id
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     override val titleTextRes: Int = R.string.action_implement_abstract_methods
 

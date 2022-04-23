@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.CharSequenceReader;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
@@ -48,7 +48,7 @@ public class FileStore {
     // TODO organize by package name for speed of list(...)
     private static final TreeMap<Path, Info> javaSources = new TreeMap<>();
 
-    private static final Logger LOG = Logger.newInstance("FileStore");
+    private static final ILogger LOG = ILogger.newInstance("FileStore");
 
     public static void shutdown() {
         workspaceRoots.clear();

@@ -16,7 +16,7 @@
  */
 package com.itsaky.lsp.api
 
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.api.util.ReflectiveLogListener
 import java.util.*
 
@@ -31,18 +31,18 @@ abstract class LoggingTest : BaseLanguageServerTest() {
         
         init {
             logListener = ReflectiveLogListener(LoggingTest::class.java)
-            Logger.addLogListener(logListener)
+            ILogger.addLogListener(logListener)
         }
         
         @Suppress("unused")
         @JvmStatic
         fun log(priority: Int, tag: String, message: String) {
-            System.out.printf(Locale.ROOT, "%-8s%-26s%-20s", Logger.priorityText(priority), tag, message)
+            System.out.printf(Locale.ROOT, "%-8s%-26s%-20s", ILogger.priorityText(priority), tag, message)
             println()
         }
     }
     
     @Suppress("PropertyName")
     @JvmField
-    protected val LOG = Logger.newInstance(javaClass.simpleName)
+    protected val LOG = ILogger.newInstance(javaClass.simpleName)
 }

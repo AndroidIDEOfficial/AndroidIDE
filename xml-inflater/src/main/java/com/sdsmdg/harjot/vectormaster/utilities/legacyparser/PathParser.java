@@ -20,14 +20,14 @@ import android.graphics.Path;
 
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.util.ArrayList;
 
 /** This class is a duplicate of the PathParser.java in androidx.core.graphics package. */
 public class PathParser {
 
-    private static final Logger LOG = Logger.newInstance("PathParser");
+    private static final ILogger LOG = ILogger.newInstance("PathParser");
 
     // Copy from Arrays.copyOfRange() which is only available from API level 9.
     /**

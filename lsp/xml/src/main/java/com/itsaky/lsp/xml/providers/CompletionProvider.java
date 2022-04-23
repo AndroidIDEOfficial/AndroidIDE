@@ -23,7 +23,7 @@ import androidx.annotation.Nullable;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
@@ -59,7 +59,7 @@ import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
  */
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
-    private static final Logger LOG = Logger.newInstance("XMLCompletionProvider");
+    private static final ILogger LOG = ILogger.newInstance("XMLCompletionProvider");
     private static final String APP_NS = "http://schemas.android.com/apk/res/auto";
     private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
     private static final String TOOLS_NS = "http://schemas.android.com/tools";

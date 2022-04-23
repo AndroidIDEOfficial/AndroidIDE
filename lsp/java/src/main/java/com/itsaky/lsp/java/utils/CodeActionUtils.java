@@ -17,12 +17,12 @@
 
 package com.itsaky.lsp.java.utils;
 
-import static com.itsaky.androidide.utils.Logger.newInstance;
+import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.rewrite.Rewrite;
@@ -60,7 +60,7 @@ public class CodeActionUtils {
             Pattern.compile("^'((\\w+\\.)*\\w+)' is not thrown");
     private static final Pattern UNREPORTED_EXCEPTION =
             Pattern.compile("unreported exception ((\\w+\\.)*\\w+)");
-    private static final Logger LOG = newInstance("JavaCodeActionUtils");
+    private static final ILogger LOG = newInstance("JavaCodeActionUtils");
 
     public static CodeActionItem createQuickFix(
             final CompilerProvider compiler, String title, Rewrite rewrite) {

@@ -23,13 +23,13 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 import com.itsaky.androidide.app.StudioApp
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster
 
 /** @author Akash Yadav */
 class SaveFileAction() : EditorRelatedAction() {
 
-    private val log = Logger.newInstance("SaveFileAction")
+    private val log = ILogger.newInstance("SaveFileAction")
 
     override val id: String = "editor_saveFile"
 

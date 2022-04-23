@@ -152,5 +152,5 @@ public class HighlightRangeHelper {
         return false;
     }
 
-    private static final Logger LOG = Logger.newInstance("HighlightRangeHelper");
+    private static final ILogger LOG = ILogger.newInstance("HighlightRangeHelper");
 }

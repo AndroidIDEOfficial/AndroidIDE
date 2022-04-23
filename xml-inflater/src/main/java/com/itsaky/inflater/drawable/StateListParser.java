@@ -22,7 +22,7 @@ import android.graphics.drawable.StateListDrawable;
 import android.util.DisplayMetrics;
 
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.InflateException;
 
@@ -37,7 +37,7 @@ import java.util.ArrayList;
  */
 public class StateListParser extends IDrawableParser {
 
-    private static final Logger LOG = Logger.newInstance("StateListParser");
+    private static final ILogger LOG = ILogger.newInstance("StateListParser");
 
     protected StateListParser(
             XmlPullParser parser,

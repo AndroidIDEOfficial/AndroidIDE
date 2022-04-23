@@ -21,7 +21,7 @@ import static android.text.TextUtils.substring;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.models.HighlightToken;
@@ -231,5 +231,5 @@ public class SemanticHighlighter extends TreePathScanner<Void, List<HighlightTok
         return super.visitMethod(tree, colors);
     }
 
-    private static final Logger LOG = Logger.newInstance("JavaSemanticHighlighter");
+    private static final ILogger LOG = ILogger.newInstance("JavaSemanticHighlighter");
 }

@@ -22,7 +22,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IAttributeAdapter;
 import com.itsaky.inflater.IView;
@@ -53,7 +53,7 @@ public abstract class BaseView implements IView {
     protected Object stored;
     private boolean isPlaceholder;
 
-    protected final Logger LOG = Logger.newInstance(getClass().getSimpleName());
+    protected final ILogger LOG = ILogger.newInstance(getClass().getSimpleName());
 
     public BaseView(String qualifiedName, View view) {
         this(qualifiedName, view, false);

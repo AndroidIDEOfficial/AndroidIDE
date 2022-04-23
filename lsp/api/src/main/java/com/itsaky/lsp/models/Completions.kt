@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.models
 
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
@@ -66,7 +66,7 @@ data class CompletionItem(
     constructor() : this("", "", null, null, null, null, CompletionItemKind.NONE, ArrayList(), null)
 
     companion object {
-        private val LOG = Logger.newInstance("CompletionItem")
+        private val LOG = ILogger.newInstance("CompletionItem")
     }
 
     fun setLabel(label: String) {

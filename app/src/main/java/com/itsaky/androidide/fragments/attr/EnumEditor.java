@@ -25,14 +25,14 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 /**
  * @author Akash Yadav
  */
 public class EnumEditor extends FixedValueEditor {
 
-    private static final Logger LOG = Logger.newInstance("EnumEditor");
+    private static final ILogger LOG = ILogger.newInstance("EnumEditor");
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

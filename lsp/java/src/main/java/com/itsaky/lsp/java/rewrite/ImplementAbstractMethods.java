@@ -19,7 +19,7 @@ package com.itsaky.lsp.java.rewrite;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
@@ -59,7 +59,7 @@ import javax.lang.model.util.Elements;
 
 public class ImplementAbstractMethods extends Rewrite {
 
-    private static final Logger LOG = Logger.newInstance("main");
+    private static final ILogger LOG = ILogger.newInstance("main");
     private final String className;
     private final String classFile;
     private final long position;

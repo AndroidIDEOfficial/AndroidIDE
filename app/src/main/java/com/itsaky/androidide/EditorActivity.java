@@ -106,7 +106,7 @@ import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.viewmodel.EditorViewModel;
@@ -159,7 +159,7 @@ public class EditorActivity extends StudioActivity
     private static final int ACTION_ID_CLOSE = 100;
     private static final int ACTION_ID_OTHERS = 101;
     private static final int ACTION_ID_ALL = 102;
-    private static final Logger LOG = Logger.newInstance("EditorActivity");
+    private static final ILogger LOG = ILogger.newInstance("EditorActivity");
 
     private ActivityEditorBinding mBinding;
     private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;

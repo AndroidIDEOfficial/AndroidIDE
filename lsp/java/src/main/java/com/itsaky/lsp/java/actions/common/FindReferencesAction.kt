@@ -17,7 +17,7 @@
 package com.itsaky.lsp.java.actions.common
 
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -33,7 +33,7 @@ class FindReferencesAction : BaseCodeAction() {
     override val id: String = "lsp_java_findReferences"
     override var label: String = "Find references"
     override var requiresUIThread: Boolean = true
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     override fun prepare(data: ActionData) {
         super.prepare(data)

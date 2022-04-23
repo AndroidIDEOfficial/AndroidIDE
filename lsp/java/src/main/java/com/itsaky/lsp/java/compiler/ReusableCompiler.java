@@ -18,7 +18,7 @@
 // Forked from JavacTaskImpl
 package com.itsaky.lsp.java.compiler;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.utils.TestUtils;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
@@ -94,7 +94,7 @@ import javax.tools.JavaFileObject;
  */
 public class ReusableCompiler {
 
-    private static final Logger LOG = Logger.newInstance("ReusableCompiler");
+    private static final ILogger LOG = ILogger.newInstance("ReusableCompiler");
     private static final JavacTool systemProvider = JavacTool.create();
 
     private final List<String> currentOptions = new ArrayList<>();

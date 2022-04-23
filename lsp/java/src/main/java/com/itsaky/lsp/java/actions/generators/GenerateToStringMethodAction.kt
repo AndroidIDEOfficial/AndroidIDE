@@ -24,7 +24,7 @@ import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.stmt.ReturnStmt
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.R.string
@@ -57,7 +57,7 @@ class GenerateToStringMethodAction : FieldBasedAction() {
     override val id: String = "lsp_java_generateToString"
     override var label: String = ""
 
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     override fun onGetFields(fields: List<String>, data: ActionData) {
         showFieldSelector(fields, data) { selected ->

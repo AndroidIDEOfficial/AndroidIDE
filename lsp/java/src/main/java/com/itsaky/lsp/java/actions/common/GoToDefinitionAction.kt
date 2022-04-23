@@ -17,7 +17,7 @@
 package com.itsaky.lsp.java.actions.common
 
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -34,7 +34,7 @@ class GoToDefinitionAction : BaseCodeAction() {
     override val id: String = "lsp_java_gotoDefinition"
     override var label: String = "Go to definition"
     override var requiresUIThread: Boolean = true
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     override fun prepare(data: ActionData) {
         super.prepare(data)

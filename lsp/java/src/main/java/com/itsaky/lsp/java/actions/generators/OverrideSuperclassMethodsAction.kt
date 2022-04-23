@@ -20,7 +20,7 @@ import android.content.Context
 import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
@@ -58,7 +58,7 @@ class OverrideSuperclassMethodsAction : BaseCodeAction() {
     override val titleTextRes: Int = R.string.action_override_superclass_methods
     override val id: String = "lsp_java_overrideSuperclassMethods"
     override var label: String = "Override superclass methods"
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
     private var position: Long = -1
 
     override fun prepare(data: ActionData) {

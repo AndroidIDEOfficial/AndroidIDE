@@ -19,7 +19,7 @@ package com.itsaky.lsp.java.providers;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
@@ -50,7 +50,7 @@ import javax.tools.JavaFileObject;
 
 public class DefinitionProvider {
     public static final List<Location> NOT_SUPPORTED = Collections.emptyList();
-    private static final Logger LOG = Logger.newInstance("JavaDefinitionProvider");
+    private static final ILogger LOG = ILogger.newInstance("JavaDefinitionProvider");
     private final CompilerProvider compiler;
     private Path file;
     private int line, column;

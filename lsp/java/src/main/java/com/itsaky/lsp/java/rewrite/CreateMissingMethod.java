@@ -19,7 +19,7 @@ package com.itsaky.lsp.java.rewrite;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.compiler.CompileTask;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
@@ -52,7 +52,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 public class CreateMissingMethod extends Rewrite {
-    private static final Logger LOG = Logger.newInstance("main");
+    private static final ILogger LOG = ILogger.newInstance("main");
     final Path file;
     final int position;
     int argCount = -1;

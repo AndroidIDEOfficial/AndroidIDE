@@ -43,7 +43,7 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.BootstrapInstaller;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.androidide.views.virtualkeys.SpecialButton;
 import com.itsaky.androidide.views.virtualkeys.VirtualKeyButton;
@@ -66,7 +66,7 @@ import java.util.Map;
 public class TerminalActivity extends StudioActivity {
 
     public static final String KEY_WORKING_DIRECTORY = "terminal_workingDirectory";
-    private static final Logger LOG = Logger.newInstance("TerminalActivity");
+    private static final ILogger LOG = ILogger.newInstance("TerminalActivity");
     private static final byte[] SOURCES_LIST_CONTENT =
             "deb https://androidide.com/packages/ stable main".getBytes();
     private final Client client = new Client();

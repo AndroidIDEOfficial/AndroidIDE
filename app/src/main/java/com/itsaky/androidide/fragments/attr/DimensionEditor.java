@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutDimensionAttrEditorBinding;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TextWatcherAdapter;
 import com.itsaky.inflater.values.FrameworkValues;
 import com.itsaky.inflater.values.ValuesTableFactory;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 public class DimensionEditor extends AbstractReferenceEditor {
 
-    private static final Logger LOG = Logger.newInstance("DimensionEditor");
+    private static final ILogger LOG = ILogger.newInstance("DimensionEditor");
     public TextWatcherAdapter dimensionInputWatcher;
 
     private LayoutDimensionAttrEditorBinding binding;

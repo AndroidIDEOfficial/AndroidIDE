@@ -17,11 +17,11 @@
 
 package com.itsaky.lsp.util;
 
-import static com.itsaky.androidide.utils.Logger.newInstance;
+import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.itsaky.androidide.actions.ActionItem;
 import com.itsaky.androidide.actions.ActionsRegistry;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.actions.CodeActionsMenu;
 
 /**
@@ -29,7 +29,7 @@ import com.itsaky.lsp.actions.CodeActionsMenu;
  */
 public class LSPEditorActions {
 
-    private static final Logger LOG = newInstance("LSPEditorActions");
+    private static final ILogger LOG = newInstance("LSPEditorActions");
 
     public static void ensureActionsMenuRegistered(Class<? extends CodeActionsMenu> klass) {
         final var registry = ActionsRegistry.getInstance();

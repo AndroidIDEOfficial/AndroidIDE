@@ -77,7 +77,7 @@ import com.github.javaparser.ast.type.TypeParameter
 import com.github.javaparser.printer.DefaultPrettyPrinter
 import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration
 import com.github.javaparser.printer.configuration.PrinterConfiguration
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.utils.TypeUtils.toType
 import com.itsaky.lsp.java.visitors.PrettyPrintingVisitor
 import com.sun.source.tree.AnnotationTree
@@ -115,7 +115,7 @@ import org.jetbrains.annotations.Contract
 
 object JavaParserUtils {
 
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     /**
      * Collects all the type names from the given node.

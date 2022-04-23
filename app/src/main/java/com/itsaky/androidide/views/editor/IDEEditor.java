@@ -35,7 +35,7 @@ import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DefinitionResult;
@@ -71,7 +71,7 @@ import io.github.rosemoe.sora.widget.component.EditorTextActionWindow;
 public class IDEEditor extends CodeEditor {
 
     public static final String KEY_FILE = "editor_file";
-    private static final Logger LOG = Logger.newInstance("IDEEditor");
+    private static final ILogger LOG = ILogger.newInstance("IDEEditor");
     private final EditorActionsMenu mActionsPopup;
     private IDEEditorSearcher mSearcher;
     private int mFileVersion;

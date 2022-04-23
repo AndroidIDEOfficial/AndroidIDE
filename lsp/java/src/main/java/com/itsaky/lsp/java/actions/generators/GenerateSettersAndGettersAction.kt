@@ -24,7 +24,7 @@ import com.github.javaparser.ast.expr.SimpleName
 import com.github.javaparser.ast.type.VoidType
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.actions.FieldBasedAction
@@ -51,7 +51,7 @@ import javax.lang.model.element.VariableElement
 class GenerateSettersAndGettersAction : FieldBasedAction() {
     override val id: String = "lsp_java_generateSettersAndGetters"
     override var label: String = ""
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     override val titleTextRes: Int = R.string.action_generate_setters_getters
 

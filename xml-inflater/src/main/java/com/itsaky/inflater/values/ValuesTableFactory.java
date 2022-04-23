@@ -16,7 +16,7 @@
  */
 package com.itsaky.inflater.values;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.io.File;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public class ValuesTableFactory {
 
     private static final Map<File, ValuesTable> valueTables = new HashMap<>();
-    private static final Logger LOG = Logger.newInstance("ValuesTableFactory");
+    private static final ILogger LOG = ILogger.newInstance("ValuesTableFactory");
 
     public static ValuesTable getTable(final File resDir) {
         return valueTables.getOrDefault(resDir, null);

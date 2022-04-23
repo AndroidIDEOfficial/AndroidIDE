@@ -20,7 +20,7 @@ package com.itsaky.androidide.project;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.values.ValuesTableFactory;
 
@@ -32,7 +32,7 @@ import java.util.Locale;
 
 public class ProjectResourceTable implements IResourceTable {
 
-    private static final Logger LOG = Logger.newInstance("ProjectResourceFinder");
+    private static final ILogger LOG = ILogger.newInstance("ProjectResourceFinder");
     private File resDir;
     private File color;
     private File layout;

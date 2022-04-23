@@ -17,7 +17,7 @@
 package com.itsaky.lsp.java.actions.generators
 
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
@@ -31,7 +31,7 @@ class GenerateMissingConstructorAction : BaseCodeAction() {
     override val id = "lsp_java_generateMissingConstructor"
     override var label: String = ""
     private val diagnosticCode = DiagnosticCode.MISSING_CONSTRUCTOR.id
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
     override val titleTextRes: Int = R.string.action_generate_missing_constructor
 
     override fun prepare(data: ActionData) {

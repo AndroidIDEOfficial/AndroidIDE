@@ -27,7 +27,7 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.models.ApkMetadata;
 import com.itsaky.androidide.tasks.BaseGradleTask;
 import com.itsaky.androidide.utils.JSONUtility;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.io.File;
 import java.util.Collections;
@@ -37,7 +37,7 @@ import java.util.Set;
 
 public abstract class ApkGeneratingTask extends BaseGradleTask {
 
-    private static final Logger LOG = Logger.newInstance("ApkGeneratingTask");
+    private static final ILogger LOG = ILogger.newInstance("ApkGeneratingTask");
 
     /**
      * Get the directories where APKs are generated. These directories must contain an

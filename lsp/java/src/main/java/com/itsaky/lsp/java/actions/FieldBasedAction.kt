@@ -20,7 +20,7 @@ package com.itsaky.lsp.java.actions
 import android.content.Context
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.compiler.CompileTask
@@ -42,7 +42,7 @@ import javax.lang.model.element.Modifier.STATIC
  */
 abstract class FieldBasedAction : BaseCodeAction() {
 
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     override fun prepare(data: ActionData) {
         super.prepare(data)

@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ import java.util.Arrays;
  */
 public class FlagEditor extends FixedValueEditor {
 
-    private static final Logger LOG = Logger.newInstance("FlagEditor");
+    private static final ILogger LOG = ILogger.newInstance("FlagEditor");
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

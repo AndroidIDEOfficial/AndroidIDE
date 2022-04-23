@@ -24,7 +24,7 @@ import com.github.javaparser.ast.Modifier
 import com.github.javaparser.ast.body.ConstructorDeclaration
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.app.BaseApplication
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R.string
@@ -168,5 +168,5 @@ class GenerateConstructorAction : FieldBasedAction() {
     override val titleTextRes: Int = string.action_generate_constructor
     override val id: String = "lsp_java_generateConstructor"
     override var label: String = ""
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 }

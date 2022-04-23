@@ -18,7 +18,7 @@ package com.itsaky.lsp.java.actions.diagnostics
 
 import com.google.common.collect.Iterables.toArray
 import com.itsaky.androidide.actions.ActionData
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R
 import com.itsaky.lsp.java.actions.BaseCodeAction
@@ -37,7 +37,7 @@ class AddImportAction() : BaseCodeAction() {
     override val id: String = "lsp_java_addImport"
     override var label: String = "Import class(es)"
     private val diagnosticCode = DiagnosticCode.NOT_IMPORTED.id
-    private val log = Logger.newInstance("AddImportAction")
+    private val log = ILogger.newInstance("AddImportAction")
 
     override val titleTextRes: Int = R.string.action_import_classes
 

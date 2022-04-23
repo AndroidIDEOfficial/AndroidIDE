@@ -21,7 +21,7 @@ package com.itsaky.androidide.shell;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -40,7 +40,7 @@ public class ShellServer extends Thread {
     private BufferedReader output;
     private Process process;
 
-    private static final Logger LOG = Logger.newInstance("ShellServer");
+    private static final ILogger LOG = ILogger.newInstance("ShellServer");
 
     public ShellServer(
             Callback callback,

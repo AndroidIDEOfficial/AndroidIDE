@@ -36,7 +36,7 @@ import com.google.gson.JsonObject;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.LayoutCompletionItemBinding;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.apiinfo.models.ClassInfo;
@@ -53,7 +53,7 @@ import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter;
 
 public class CompletionListAdapter extends EditorCompletionAdapter {
 
-    private static final Logger LOG = Logger.newInstance("CompletionListAdapter");
+    private static final ILogger LOG = ILogger.newInstance("CompletionListAdapter");
 
     @Override
     public void attachValues(

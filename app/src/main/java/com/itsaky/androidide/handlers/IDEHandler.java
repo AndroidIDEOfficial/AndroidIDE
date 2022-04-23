@@ -20,7 +20,7 @@ package com.itsaky.androidide.handlers;
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.project.IDEProject;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 /**
  * A handler is an implementation that handles a specific feature, data or anything else in
@@ -28,7 +28,7 @@ import com.itsaky.androidide.utils.Logger;
  */
 public abstract class IDEHandler {
 
-    protected static final Logger LOG = Logger.instance();
+    protected static final ILogger LOG = ILogger.instance();
 
     protected Provider provider;
 

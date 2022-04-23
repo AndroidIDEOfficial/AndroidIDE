@@ -25,7 +25,7 @@ import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.project.ProjectResourceTable;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.inflater.ILayoutInflater;
@@ -44,7 +44,7 @@ import java.util.concurrent.CompletionException;
 
 public class StudioApp extends BaseApplication {
 
-    private static final Logger LOG = Logger.newInstance("StudioApp");
+    private static final ILogger LOG = ILogger.newInstance("StudioApp");
     private static StudioApp instance;
     private static SDKInfo sdkInfo;
     private final ILanguageServer mJavaLanguageServer = new JavaLanguageServer();

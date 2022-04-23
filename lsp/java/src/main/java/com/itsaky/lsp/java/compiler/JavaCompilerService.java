@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.java.compiler;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.parser.ParseTask;
 import com.itsaky.lsp.java.parser.Parser;
@@ -53,7 +53,7 @@ public class JavaCompilerService implements CompilerProvider {
 
     private static final Cache<String, Boolean> cacheContainsWord = new Cache<>();
     private static final Cache<Void, List<String>> cacheContainsType = new Cache<>();
-    private static final Logger LOG = Logger.newInstance("JavaCompilerService");
+    private static final ILogger LOG = ILogger.newInstance("JavaCompilerService");
     protected final ScanClassPath classPathScanner = new ScanClassPath();
     protected final Set<Path> classPath, docPath;
     protected final Set<String> jdkClasses = classPathScanner.jdkTopLevelClasses(),

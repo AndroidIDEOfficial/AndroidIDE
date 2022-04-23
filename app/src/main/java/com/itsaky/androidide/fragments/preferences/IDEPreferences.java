@@ -30,7 +30,7 @@ import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.toaster.Toaster;
 
 public class IDEPreferences extends BasePreferenceFragment
@@ -43,7 +43,7 @@ public class IDEPreferences extends BasePreferenceFragment
     public static final String KEY_ISSUES = "idepref_issues";
     public static final String KEY_CHANGELOG = "idepref_changelog";
     public static final String KEY_ABOUT = "idepref_about";
-    private static final Logger LOG = Logger.newInstance("IDEPreferences");
+    private static final ILogger LOG = ILogger.newInstance("IDEPreferences");
     private GeneralPreferences mGeneralPrefs;
     private BuildPreferences mBuildPreferences;
     private EditorPreferences mEditorPreferences;

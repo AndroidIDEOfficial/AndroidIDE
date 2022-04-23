@@ -44,7 +44,7 @@ import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.FileTreeCallable;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.toaster.Toaster;
 import com.unnamed.b.atv.model.TreeNode;
@@ -59,7 +59,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
         implements TreeNode.TreeNodeClickListener, TreeNode.TreeNodeLongClickListener {
 
     private static final String KEY_STORED_TREE_STATE = "fileTree_state";
-    private static final Logger LOG = Logger.newInstance("FileTreeFragment");
+    private static final ILogger LOG = ILogger.newInstance("FileTreeFragment");
     private LayoutEditorFileTreeBinding binding;
     private AndroidTreeView mFileTreeView;
     private FileActionListener mFileActionListener;

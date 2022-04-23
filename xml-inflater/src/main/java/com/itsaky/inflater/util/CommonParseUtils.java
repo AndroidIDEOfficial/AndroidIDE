@@ -32,7 +32,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.inflater.IResourceTable;
 import com.itsaky.inflater.drawable.DrawableParserFactory;
 
@@ -54,7 +54,7 @@ public class CommonParseUtils {
     protected IResourceTable resourceFinder;
     protected final DisplayMetrics displayMetrics;
 
-    private static final Logger LOG = Logger.newInstance("CommonParseUtils");
+    private static final ILogger LOG = ILogger.newInstance("CommonParseUtils");
 
     public CommonParseUtils(@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         this.resourceFinder = resourceFinder;

@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.itsaky.androidide.adapters.AttrValueCompletionAdapter;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TextWatcherAdapter;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class AbstractReferenceEditor extends BaseValueEditorFragment {
 
-    private static final Logger LOG = Logger.newInstance("ReferenceEditor");
+    private static final ILogger LOG = ILogger.newInstance("ReferenceEditor");
     public TextWatcherAdapter resInputWatcher;
 
     @Override

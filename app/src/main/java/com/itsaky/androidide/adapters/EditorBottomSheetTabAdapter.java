@@ -30,14 +30,14 @@ import com.itsaky.androidide.fragments.IDELogFragment;
 import com.itsaky.androidide.fragments.LogViewFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.SimpleOutputFragment;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EditorBottomSheetTabAdapter extends FragmentStateAdapter {
 
-    private static final Logger LOG = Logger.newInstance("EditorBottomSheetTabAdapter");
+    private static final ILogger LOG = ILogger.newInstance("EditorBottomSheetTabAdapter");
     private final List<Tab> fragments;
 
     public EditorBottomSheetTabAdapter(@NonNull FragmentActivity fragmentActivity) {

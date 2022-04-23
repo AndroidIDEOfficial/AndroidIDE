@@ -31,7 +31,7 @@ import android.widget.RelativeLayout;
 import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IAttributeAdapter;
 import com.itsaky.inflater.IDTable;
@@ -47,7 +47,7 @@ import com.itsaky.xml.INamespace;
  */
 public class ViewAttrAdapter extends CommonParseUtils implements IAttributeAdapter {
 
-    protected static final Logger LOG = Logger.newInstance("BaseViewAttrAdapter");
+    protected static final ILogger LOG = ILogger.newInstance("BaseViewAttrAdapter");
 
     public ViewAttrAdapter(@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
         super(resourceFinder, displayMetrics);

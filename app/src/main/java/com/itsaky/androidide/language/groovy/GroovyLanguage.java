@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.groovy.GroovyLexer;
 import com.itsaky.androidide.utils.CharSequenceReader;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
@@ -43,7 +43,7 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class GroovyLanguage extends IDELanguage {
 
-    private static final Logger LOG = Logger.newInstance("GroovyLanguage");
+    private static final ILogger LOG = ILogger.newInstance("GroovyLanguage");
     private final GroovyAnalyzer analyzer;
     private final GroovyAutoComplete completer;
     private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};

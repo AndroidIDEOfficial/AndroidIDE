@@ -18,15 +18,13 @@
 package com.itsaky.lsp.java.compiler;
 
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.parser.Parser;
 import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTaskImpl;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -44,7 +42,7 @@ import javax.tools.JavaFileObject;
 
 public class CompileBatch implements AutoCloseable {
 
-    private static final Logger LOG = Logger.newInstance("CompileBatch");
+    private static final ILogger LOG = ILogger.newInstance("CompileBatch");
     private static final Path FILE_NOT_FOUND = Paths.get("");
     final JavaCompilerService parent;
     final ReusableCompiler.Borrow borrow;

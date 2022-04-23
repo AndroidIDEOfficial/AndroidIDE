@@ -30,11 +30,11 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.databinding.LayoutProgressSheetBinding;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 public class ProgressSheet extends BaseBottomSheetFragment {
 
-    private final Logger LOG = Logger.newInstance("ProgressSheet");
+    private final ILogger LOG = ILogger.newInstance("ProgressSheet");
     private LayoutProgressSheetBinding binding;
     private String message = "";
     private String subMessage = "";

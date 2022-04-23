@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.java.parser;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.compiler.SourceFileManager;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
@@ -486,5 +486,5 @@ public class Parser {
         return "";
     }
 
-    private static final Logger LOG = Logger.newInstance("JavaParser");
+    private static final ILogger LOG = ILogger.newInstance("JavaParser");
 }

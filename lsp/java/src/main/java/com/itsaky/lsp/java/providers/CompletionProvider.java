@@ -24,7 +24,7 @@ import static com.itsaky.lsp.java.utils.JavaPoetUtils.buildMethod;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IServerSettings;
@@ -153,7 +153,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         "float",
         "double",
     };
-    private static final Logger LOG = Logger.newInstance("JavaCompletionProvider");
+    private static final ILogger LOG = ILogger.newInstance("JavaCompletionProvider");
     private final CompilerProvider compiler;
     private Path completingFile;
     private long cursor;

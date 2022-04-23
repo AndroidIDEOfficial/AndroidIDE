@@ -29,7 +29,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.itsaky.androidide.DesignerActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.models.UIWidget;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IView;
 import com.itsaky.inflater.IViewGroup;
@@ -57,7 +57,7 @@ public class WidgetDragListener implements View.OnDragListener {
 
     public static final String ANDROID_NS = "android";
 
-    private static final Logger LOG = Logger.newInstance("WidgetDragListener");
+    private static final ILogger LOG = ILogger.newInstance("WidgetDragListener");
 
     public WidgetDragListener(
             @NonNull Context context, IViewGroup viewGroup, OnViewAddedListener addedListener) {

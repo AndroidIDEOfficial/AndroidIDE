@@ -15,23 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.utils
+package com.itsaky.androidide.utils;
 
 /**
- * A stop watch helps to log duration between the time when the instance of the stopwatch instance
- * was created and the time when [StopWatch.log] or [StopWatch.lap] method is called.
+ * {@link ILogger} implementation for the Android Runtime (ART).
  *
- * @param label The label for the log message.
  * @author Akash Yadav
  */
-class StopWatch(val label: String, val start: Long = System.currentTimeMillis()) {
-    private val log = ILogger.newInstance(javaClass.simpleName)
-
-    fun log() {
-        log.debug("$label completed in ${System.currentTimeMillis() - start}ms")
-    }
-
-    fun lap(message: String) {
-        log.debug("$message in ${System.currentTimeMillis() - start}ms")
-    }
-}
+public class LoggerImpl {}

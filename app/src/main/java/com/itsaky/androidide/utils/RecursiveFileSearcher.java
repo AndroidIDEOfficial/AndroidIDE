@@ -46,7 +46,7 @@ import io.github.rosemoe.sora.text.Content;
  */
 public class RecursiveFileSearcher {
 
-    private static final Logger logger = Logger.newInstance("RecursiveFileSearcher");
+    private static final ILogger logger = ILogger.newInstance("RecursiveFileSearcher");
 
     /**
      * Search the given text in files recursively in given search directories

@@ -20,14 +20,14 @@ package com.itsaky.androidide.fragments;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.models.LogLine;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 public class IDELogFragment extends LogViewFragment {
 
-    private final Logger.LogListener listener = this::log;
+    private final ILogger.LogListener listener = this::log;
 
     public IDELogFragment() {
-        Logger.addLogListener(listener);
+        ILogger.addLogListener(listener);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class IDELogFragment extends LogViewFragment {
     }
 
     private void logLine(int priority, String tag, String message) {
-        final var line = new LogLine(Logger.priorityChar(priority), tag, message);
+        final var line = new LogLine(ILogger.priorityChar(priority), tag, message);
         appendLog(line);
     }
 }

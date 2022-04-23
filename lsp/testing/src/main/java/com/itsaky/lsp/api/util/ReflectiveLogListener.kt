@@ -16,12 +16,12 @@
  */
 package com.itsaky.lsp.api.util
 
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 
 /**
  * @author Akash Yadav
  */
-class ReflectiveLogListener(private val receiver: Class<out Any>) : Logger.LogListener {
+class ReflectiveLogListener(private val receiver: Class<out Any>) : ILogger.LogListener {
     override fun log(priority: Int, tag: String, message: String) {
         val method = receiver.getDeclaredMethod("log", Int::class.java, String::class.java, String::class.java)
         method.isAccessible = true

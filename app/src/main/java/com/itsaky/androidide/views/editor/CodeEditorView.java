@@ -56,7 +56,7 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.LSPUtils;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.models.Range;
@@ -84,7 +84,7 @@ import io.github.rosemoe.sora.text.Content;
 @SuppressLint("ViewConstructor") // This view is always dynamically created.
 public class CodeEditorView extends FrameLayout {
 
-    private static final Logger LOG = Logger.newInstance("CodeEditorView");
+    private static final ILogger LOG = ILogger.newInstance("CodeEditorView");
     private final File file;
     private final LayoutCodeEditorBinding binding;
     private boolean isModified;

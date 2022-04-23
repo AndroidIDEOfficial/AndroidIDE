@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.common.reflect.ClassPath;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import org.jetbrains.annotations.Contract;
 
@@ -47,7 +47,7 @@ import java.util.stream.Stream;
 
 public class ScanClassPath {
 
-    private static final Logger LOG = Logger.newInstance("ScanClassPath");
+    private static final ILogger LOG = ILogger.newInstance("ScanClassPath");
 
     public Set<String> jdkTopLevelClasses() {
         LOG.info("Searching for top-level classes in the JDK");

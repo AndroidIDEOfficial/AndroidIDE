@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.java.visitors;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.sun.source.tree.CaseTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ErroneousTree;
@@ -139,5 +139,5 @@ public class FindCompletionsAt extends TreePathScanner<TreePath, Long> {
         return b;
     }
 
-    private static final Logger LOG = Logger.newInstance("FindCompletionsAt");
+    private static final ILogger LOG = ILogger.newInstance("FindCompletionsAt");
 }

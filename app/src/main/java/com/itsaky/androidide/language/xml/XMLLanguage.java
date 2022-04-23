@@ -26,7 +26,7 @@ import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.JavaCharacter;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
 
@@ -47,7 +47,7 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class XMLLanguage extends IDELanguage {
 
-    private static final Logger LOG = Logger.newInstance("XMLLanguage");
+    private static final ILogger LOG = ILogger.newInstance("XMLLanguage");
     private final CommonCompletionProvider completer;
     private final NewlineHandler[] newlineHandlers;
     private XMLAnalyzer analyzer;

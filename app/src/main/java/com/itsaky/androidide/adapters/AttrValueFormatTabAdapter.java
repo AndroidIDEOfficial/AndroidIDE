@@ -27,7 +27,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.itsaky.androidide.fragments.attr.BaseValueEditorFragment;
 import com.itsaky.androidide.models.XMLAttribute;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ import java.util.Objects;
 @SuppressWarnings("deprecation")
 public class AttrValueFormatTabAdapter extends FragmentStatePagerAdapter {
 
-    private static final Logger LOG = Logger.newInstance("AttrValueEditorTabAdapter");
+    private static final ILogger LOG = ILogger.newInstance("AttrValueEditorTabAdapter");
     private final List<Fragment> mFragments = new ArrayList<>();
     private final List<String> mTitles = new ArrayList<>();
     private final XMLAttribute attribute;

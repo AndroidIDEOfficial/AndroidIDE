@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.ImageUtils;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.inflater.IResourceTable;
 import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
 
@@ -49,7 +49,7 @@ import java.io.StringReader;
  */
 public abstract class DrawableParserFactory {
 
-    private static final Logger LOG = Logger.newInstance("IDrawableParser");
+    private static final ILogger LOG = ILogger.newInstance("IDrawableParser");
 
     /**
      * Create a new drawable parser for the given file. If the given file is not an XML Document,

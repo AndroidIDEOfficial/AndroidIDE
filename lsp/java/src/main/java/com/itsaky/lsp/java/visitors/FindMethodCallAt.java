@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.java.visitors;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
@@ -260,5 +260,5 @@ public class FindMethodCallAt extends TreePathScanner<MethodInvocationTree, Inte
         return null;
     }
 
-    private static final Logger LOG = Logger.newInstance("main");
+    private static final ILogger LOG = ILogger.newInstance("main");
 }

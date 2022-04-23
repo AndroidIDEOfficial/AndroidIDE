@@ -38,7 +38,7 @@ import com.itsaky.androidide.fragments.attr.BaseValueEditorFragment;
 import com.itsaky.androidide.models.IconTextListItem;
 import com.itsaky.androidide.models.XMLAttribute;
 import com.itsaky.androidide.utils.DialogUtils;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.attrinfo.models.Attr;
 import com.itsaky.inflater.IAttribute;
 import com.itsaky.inflater.IView;
@@ -63,7 +63,7 @@ public class AttrEditorSheet extends BottomSheetDialogFragment
                 BaseValueEditorFragment.OnValueChangeListener {
 
     private static final List<IconTextListItem> VIEW_ACTIONS = new ArrayList<>();
-    private static final Logger LOG = Logger.newInstance("AttrBottomSheet");
+    private static final ILogger LOG = ILogger.newInstance("AttrBottomSheet");
     private AttributeListSheet mAttrListSheet;
     private AttrValueEditorSheet mValueEditorSheet;
     private IView selectedView;

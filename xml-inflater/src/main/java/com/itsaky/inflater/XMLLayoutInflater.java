@@ -33,7 +33,7 @@ import androidx.annotation.StringRes;
 
 import com.blankj.utilcode.util.ReflectUtils;
 import com.itsaky.androidide.app.BaseApplication;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.attrinfo.AttrInfo;
 import com.itsaky.inflater.adapters.android.view.ViewAttrAdapter;
 import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
@@ -72,7 +72,7 @@ class XMLLayoutInflater extends BaseLayoutInflater {
 
     private ContextProvider contextProvider;
 
-    private static final Logger LOG = Logger.newInstance("XMLLayoutInflater");
+    private static final ILogger LOG = ILogger.newInstance("XMLLayoutInflater");
     public static final String ATTR_ADAPTER_SUFFIX = "AttrAdapter";
 
     XMLLayoutInflater(@NonNull LayoutInflaterConfiguration config) {

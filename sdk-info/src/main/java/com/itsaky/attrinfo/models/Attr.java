@@ -23,7 +23,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.xml.INamespace;
 
 import org.jetbrains.annotations.Contract;
@@ -76,7 +76,7 @@ public class Attr implements Parcelable {
                     return new Attr[size];
                 }
             };
-    private static final Logger LOG = Logger.newInstance("AttrInfo::Attr");
+    private static final ILogger LOG = ILogger.newInstance("AttrInfo::Attr");
     public INamespace namespace;
     public String name;
     public Set<String> possibleValues;

@@ -48,7 +48,7 @@ import java.util.Objects;
  *
  * @author Akash Yadav
  */
-public class Logger {
+public class ILogger {
 
     public static final int DEBUG = 0;
     public static final int WARNING = 1;
@@ -57,19 +57,19 @@ public class Logger {
     public static final int VERBOSE = 4;
     private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
     private static final List<LogListener> logListeners = new ArrayList<>();
-    private static Logger instance;
+    private static ILogger instance;
     private final String TAG;
 
-    private Logger(String tag) {
+    private ILogger (String tag) {
         TAG = tag;
     }
 
-    public static Logger instance() {
+    public static ILogger instance() {
         return instance == null ? instance = createInstance("AndroidIDE") : instance;
     }
 
-    private static Logger createInstance(String tag) {
-        return new Logger(tag);
+    private static ILogger createInstance(String tag) {
+        return new ILogger (tag);
     }
 
     public static void addLogListener(LogListener listener) {
@@ -80,7 +80,7 @@ public class Logger {
         logListeners.remove(Objects.requireNonNull(listener));
     }
 
-    public static Logger newInstance(String tag) {
+    public static ILogger newInstance(String tag) {
         return createInstance(tag);
     }
 
@@ -116,7 +116,7 @@ public class Logger {
         }
     }
 
-    public Logger warn(Object... messages) {
+    public ILogger warn(Object... messages) {
         final var msg = generateMessage(messages);
         Log.w(TAG, msg);
         notifyListener(WARNING, msg);
@@ -145,21 +145,21 @@ public class Logger {
         }
     }
 
-    public Logger error(Object... messages) {
+    public ILogger error(Object... messages) {
         final var msg = generateMessage(messages);
         Log.e(TAG, msg);
         notifyListener(ERROR, msg);
         return this;
     }
 
-    public Logger verbose(Object... messages) {
+    public ILogger verbose(Object... messages) {
         final var msg = generateMessage(messages);
         Log.v(TAG, msg);
         notifyListener(VERBOSE, msg);
         return this;
     }
 
-    public Logger info(Object... messages) {
+    public ILogger info(Object... messages) {
         final var msg = generateMessage(messages);
         Log.i(TAG, msg);
         notifyListener(INFO, msg);
@@ -171,7 +171,7 @@ public class Logger {
         debug(getCallerClassDescription());
     }
 
-    public Logger debug(Object... messages) {
+    public ILogger debug(Object... messages) {
         final var msg = generateMessage(messages);
         Log.d(TAG, msg);
         notifyListener(DEBUG, msg);
@@ -184,7 +184,7 @@ public class Logger {
             final var element = elements[i];
             final var klass = element.getClassName();
             final var method = element.getMethodName();
-            if (Logger.class.getName().equals(klass) || klass.contains("java.lang.Thread")) {
+            if (ILogger.class.getName().equals(klass) || klass.contains("java.lang.Thread")) {
                 continue;
             }
 

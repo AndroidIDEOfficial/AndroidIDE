@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * Utility class for {@link Logger}.
+ * Utility class for {@link ILogger}.
  *
  * @author Akash Yadav
  */

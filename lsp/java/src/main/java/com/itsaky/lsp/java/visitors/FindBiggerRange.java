@@ -20,7 +20,7 @@ package com.itsaky.lsp.java.visitors;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
 import com.sun.source.tree.CompilationUnitTree;
@@ -57,7 +57,7 @@ public class FindBiggerRange extends TreeScanner<Range, Range> {
 
         final Range treeRange = getRange(tree);
         if (treeRange != null && range.isSmallerThan(treeRange)) {
-            Logger.newInstance("FindBiggerRange")
+            ILogger.newInstance("FindBiggerRange")
                     .debug("Selecting tree", tree, tree.getClass(), tree.getKind());
             return treeRange;
         }

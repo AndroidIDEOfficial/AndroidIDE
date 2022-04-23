@@ -19,7 +19,7 @@
 package com.itsaky.androidide.tasks;
 
 import com.blankj.utilcode.util.ThreadUtils;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
@@ -27,7 +27,7 @@ import java.util.concurrent.CompletionException;
 
 public class TaskExecutor {
 
-    private final Logger LOG = Logger.newInstance("TaskExecutor");
+    private final ILogger LOG = ILogger.newInstance("TaskExecutor");
 
     public static <R> void execAsync(Callable<R> callable, Callback<R> callback) {
         new TaskExecutor().executeAsync(callable, callback);

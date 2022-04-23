@@ -31,7 +31,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 public abstract class StudioActivity extends AppCompatActivity {
     private boolean toRequestStorage = true;
@@ -39,7 +39,7 @@ public abstract class StudioActivity extends AppCompatActivity {
     public static final String TAG = "StudioActivity";
     public static final int REQCODE_STORAGE = 1009;
 
-    protected static Logger LOG = Logger.newInstance("StudioActivity");
+    protected static ILogger LOG = ILogger.newInstance("StudioActivity");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

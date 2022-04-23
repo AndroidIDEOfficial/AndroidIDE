@@ -16,7 +16,7 @@
  */
 package com.itsaky.lsp.java.visitors
 
-import com.itsaky.androidide.utils.Logger
+import com.itsaky.androidide.utils.ILogger
 import com.sun.source.tree.BlockTree
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
@@ -49,7 +49,7 @@ import javax.lang.model.type.TypeMirror
 
 class DiagnosticVisitor(task: JavacTaskImpl?) :
     TreeScanner<Void?, MutableMap<TreePath?, String>>() {
-    private val log = Logger.newInstance(javaClass.simpleName)
+    private val log = ILogger.newInstance(javaClass.simpleName)
     private val trees = Trees.instance(task)
     private val privateDeclarations = mutableMapOf<Element, TreePath>()
     private val localVariables = mutableMapOf<Element, TreePath>()

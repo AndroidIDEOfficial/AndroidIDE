@@ -26,7 +26,7 @@ import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.lexers.java.JavaParser;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.DiagnosticItem;
@@ -52,7 +52,7 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class JavaLanguage extends IDELanguage {
 
-    private static final Logger LOG = Logger.newInstance("JavaLanguage");
+    private static final ILogger LOG = ILogger.newInstance("JavaLanguage");
     private final NewlineHandler[] newlineHandlers;
     private JavaAnalyzer analyzer;
     private CommonCompletionProvider completer;

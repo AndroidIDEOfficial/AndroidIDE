@@ -18,7 +18,7 @@
 package com.itsaky.lsp.java.utils;
 
 import com.itsaky.androidide.utils.CharSequenceReader;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.util.StringUtils;
 
@@ -522,5 +522,5 @@ public class StringSearch {
 
     private static final ThreadLocal<char[]> SKIP_CHAR_BUFFER =
             ThreadLocal.withInitial(StringSearch::charArray);
-    private static final Logger LOG = Logger.newInstance("StringSearch");
+    private static final ILogger LOG = ILogger.newInstance("StringSearch");
 }

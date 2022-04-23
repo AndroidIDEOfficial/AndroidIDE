@@ -25,7 +25,7 @@ import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.Logger;
+import com.itsaky.androidide.utils.ILogger;
 
 import org.jetbrains.annotations.Contract;
 
@@ -36,7 +36,7 @@ public class ToolsManager {
 
     public static final int LOG_SENDER_VERSION = 2;
     public static final String KEY_LOG_SENDER_VERSION = "tools_logsenderVersion";
-    private static final Logger LOG = Logger.newInstance("ToolsManager");
+    private static final ILogger LOG = ILogger.newInstance("ToolsManager");
     public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
     public static String COMMON_ASSET_DATA_DIR = "data/common";
     private static PreferenceManager prefs;
