@@ -13,12 +13,14 @@ package org.eclipse.lsp4j.jsonrpc.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
 import com.itsaky.androidide.tooling.api.model.IdeProject;
+import com.itsaky.androidide.tooling.api.model.internal.DefaultIdeProject;
 
 import org.eclipse.lsp4j.jsonrpc.MessageIssueException;
 import org.eclipse.lsp4j.jsonrpc.json.adapters.CollectionTypeAdapter;
@@ -31,7 +33,6 @@ import org.eclipse.lsp4j.jsonrpc.messages.CancelParams;
 import org.eclipse.lsp4j.jsonrpc.messages.Message;
 import org.eclipse.lsp4j.jsonrpc.messages.MessageIssue;
 import org.eclipse.lsp4j.jsonrpc.messages.ResponseErrorCode;
-import org.eclipse.lsp4j.jsonrpc.utils.IdeProjectInstanceCreator;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -70,7 +71,9 @@ public class MessageJsonHandler {
                 .registerTypeAdapterFactory(new TupleTypeAdapters.TwoTypeAdapterFactory())
                 .registerTypeAdapterFactory(new EnumTypeAdapter.Factory())
                 .registerTypeAdapterFactory(new MessageTypeAdapter.Factory(this))
-                .registerTypeAdapter(IdeProject.class, new IdeProjectInstanceCreator());
+                .registerTypeAdapter(
+                        IdeProject.class,
+                        (InstanceCreator<IdeProject>) type -> new DefaultIdeProject());
     }
 
     /**

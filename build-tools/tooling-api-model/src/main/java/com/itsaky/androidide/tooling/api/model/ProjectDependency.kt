@@ -23,14 +23,15 @@ import java.io.File
  * A project dependency. Holds data about the jar, sources and javadoc files of a dependency. Also
  * some other useful metadata.
  *
+ * If you do any changes here, please update IdeProjectCopier too.
+ *
  * @author Akash Yadav
  */
-class ProjectDependency(
-    private val group: String,
-    private val artifact: String,
-    private val version: String,
-    private val jar: File
-) {
-    private val sourcesJar: File? = null
-    private val javadocJar: File? = null
+class ProjectDependency {
+    var group: String? = null
+    var artifact: String? = null
+    var version: String? = null
+    var jar: File? = null
+    var sourcesJar: File? = null
+    var javadocJar: File? = null
 }

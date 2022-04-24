@@ -18,10 +18,14 @@
 package com.itsaky.androidide.tooling.plugin;
 
 import com.itsaky.androidide.tooling.api.model.IdeProject;
+import com.itsaky.androidide.tooling.api.model.ProjectDependency;
 import com.itsaky.androidide.tooling.api.model.internal.DefaultIdeProject;
 
 import org.gradle.api.Project;
 import org.gradle.tooling.provider.model.ToolingModelBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Akash Yadav
@@ -44,5 +48,25 @@ public class IdeProjectModelBuilder implements ToolingModelBuilder {
         ideProject.setPath(project.getPath());
         ideProject.setDisplayName(project.getDisplayName());
         ideProject.setProjectDir(project.getProjectDir());
+        ideProject.setBuildDir(project.getBuildDir());
+        ideProject.setBuildFile(project.getBuildFile());
+        ideProject.setDependencies(getDependencies(project));
+        ideProject.setSubProjects(getSubProjects(project));
+    }
+
+    private List<ProjectDependency> getDependencies(Project project) {
+        return null;
+    }
+
+    private List<IdeProject> getSubProjects(Project project) {
+        final var projects = new ArrayList<IdeProject>();
+        project.getSubprojects()
+                .forEach(
+                        sub -> {
+                            final var subProject = new DefaultIdeProject();
+                            fillProjectDetails(sub, subProject);
+                            projects.add(subProject);
+                        });
+        return projects;
     }
 }

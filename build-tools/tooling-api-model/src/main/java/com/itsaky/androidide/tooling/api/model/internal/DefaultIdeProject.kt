@@ -18,12 +18,16 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.itsaky.androidide.tooling.api.model.IdeProject
+import com.itsaky.androidide.tooling.api.model.ProjectDependency
 import java.io.File
 
 /** @author Akash Yadav */
 class DefaultIdeProject : IdeProject {
-
     override var path: String? = null
     override var displayName: String? = null
     override var projectDir: File? = null
+    override var buildDir: File? = null
+    override var buildFile: File? = null
+    override var subProjects: MutableList<IdeProject> = mutableListOf()
+    override var dependencies: MutableList<ProjectDependency> = mutableListOf()
 }

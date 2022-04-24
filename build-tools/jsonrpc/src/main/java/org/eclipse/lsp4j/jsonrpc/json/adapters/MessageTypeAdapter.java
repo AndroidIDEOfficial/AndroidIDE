@@ -26,8 +26,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.google.gson.stream.MalformedJsonException;
-import com.itsaky.androidide.tooling.api.model.IdeProject;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultIdeProject;
 
 import org.eclipse.lsp4j.jsonrpc.MessageIssueException;
 import org.eclipse.lsp4j.jsonrpc.json.JsonRpcMethod;
@@ -45,7 +43,6 @@ import org.eclipse.lsp4j.jsonrpc.messages.ResponseMessage;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -97,13 +94,9 @@ public class MessageTypeAdapter extends TypeAdapter<Message> {
             } else {
                 out.name("result");
                 Object result = responseMessage.getResult();
-                if (result == null) writeNullValue(out);
-                else {
-                    if (Proxy.isProxyClass(result.getClass())) {
-                        LOG.debug("Copying IdeProject instance...");
-                        result = copyProject((IdeProject) result);
-                    }
-                    
+                if (result == null) {
+                    writeNullValue(out);
+                } else {
                     gson.toJson(result, result.getClass(), out);
                 }
             }
@@ -212,14 +205,6 @@ public class MessageTypeAdapter extends TypeAdapter<Message> {
         out.setSerializeNulls(true);
         out.nullValue();
         out.setSerializeNulls(previousSerializeNulls);
-    }
-
-    private Object copyProject(IdeProject result) {
-        final var project = new DefaultIdeProject();
-        project.setProjectDir(result.getProjectDir());
-        project.setDisplayName(result.getDisplayName());
-        project.setPath(result.getPath());
-        return project;
     }
 
     /**

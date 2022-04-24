@@ -28,24 +28,26 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 interface IdeProject : Serializable {
-    /**
-     * Get the path of this project. For example: ':app'.
-     *
-     * @return The path of this project.
-     */
+    /** The path of this project. For example: ':app'. */
     val path: String?
 
-    /**
-     * Get the display name of this project.
-     *
-     * @return The display name of this project.
-     */
+    /** The display name of this project. */
     val displayName: String?
 
-    /**
-     * Get the project directory of this project.
-     *
-     * @return The directory of this project.
-     */
+    /** The project directory of this project. */
     val projectDir: File?
+
+    /** Get the build directory of this project. */
+    val buildDir: File?
+
+    /** The buildscript file (build.gradle) of this project. */
+    val buildFile: File?
+
+    /** Subprojects of this project. */
+    val subProjects: List<IdeProject>
+    
+    /**
+     * Dependencies of this project.
+     */
+    val dependencies: List<ProjectDependency>
 }
