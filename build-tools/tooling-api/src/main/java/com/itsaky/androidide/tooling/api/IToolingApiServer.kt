@@ -18,7 +18,7 @@
 package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.api.messages.ServerInitializedResponse
+import com.itsaky.androidide.tooling.api.messages.ProjectInitializedResponse
 import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
@@ -32,7 +32,7 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 interface IToolingApiServer {
 
     @JsonRequest("initProject")
-    fun initialize(params: InitializeProjectParams): CompletableFuture<ServerInitializedResponse>
+    fun initialize(params: InitializeProjectParams): CompletableFuture<ProjectInitializedResponse>
 
     @JsonRequest("isInitialized") fun isInitialized(): CompletableFuture<Boolean>
 }

@@ -22,4 +22,6 @@ package com.itsaky.androidide.tooling.api.messages
  *
  * @author Akash Yadav
  */
-class ServerInitializedResponse {}
+class ProjectInitializedResponse {
+
+}

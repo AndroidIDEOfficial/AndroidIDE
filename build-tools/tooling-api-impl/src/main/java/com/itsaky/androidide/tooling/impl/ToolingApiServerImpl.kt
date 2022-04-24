@@ -20,10 +20,10 @@ package com.itsaky.androidide.tooling.impl
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.api.messages.ServerInitializedResponse
+import com.itsaky.androidide.tooling.api.messages.ProjectInitializedResponse
 import com.itsaky.androidide.utils.ILogger
-import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
+import java.util.concurrent.*
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -38,11 +38,10 @@ internal class ToolingApiServerImpl : IToolingApiServer {
 
     override fun initialize(
         params: InitializeProjectParams
-    ): CompletableFuture<ServerInitializedResponse> {
+    ): CompletableFuture<ProjectInitializedResponse> {
         return CompletableFutures.computeAsync {
             initialized = true
-            log.debug("Tooling API server initialized")
-            return@computeAsync ServerInitializedResponse()
+            return@computeAsync ProjectInitializedResponse()
         }
     }
 

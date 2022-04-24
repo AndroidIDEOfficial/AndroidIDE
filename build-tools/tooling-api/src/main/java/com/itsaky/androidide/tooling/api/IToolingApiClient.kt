@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.tooling.api
 
-import com.itsaky.androidide.tooling.api.messages.ProjectInitializedParams
-import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 
 /**
@@ -26,9 +24,4 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
  *
  * @author Akash Yadav
  */
-@JsonSegment("client")
-interface IToolingApiClient {
-
-    @JsonNotification("projectInitialized")
-    fun onProjectInitialized(params: ProjectInitializedParams)
-}
+@JsonSegment("client") interface IToolingApiClient {}
