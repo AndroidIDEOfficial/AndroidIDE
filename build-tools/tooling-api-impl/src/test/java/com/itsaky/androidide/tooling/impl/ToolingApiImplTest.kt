@@ -21,8 +21,6 @@ import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.api.model.IdeProject
-import com.itsaky.androidide.tooling.impl.util.IdeProjectInstanceCreator
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
 import java.io.File
@@ -58,15 +56,8 @@ class ToolingApiImplTest {
 
         Thread(Reader(proc.errorStream)).start()
         val launcher =
-            Launcher.Builder<IToolingApiServer>()
-                .setInput(proc.inputStream)
-                .setOutput(proc.outputStream)
-                .setLocalService(client)
-                .setRemoteInterface(IToolingApiServer::class.java)
-                .configureGson {
-                    it.registerTypeAdapter(IdeProject::class.java, IdeProjectInstanceCreator())
-                }
-                .create()
+            Launcher.createLauncher(
+                client, IToolingApiServer::class.java, proc.inputStream, proc.outputStream)
 
         launcher.startListening()
 
