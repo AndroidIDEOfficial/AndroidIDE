@@ -21,12 +21,14 @@ import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.model.IdeProject
+import com.itsaky.androidide.tooling.api.model.internal.DefaultIdeProject
 import com.itsaky.androidide.tooling.impl.util.InitScriptHandler
 import com.itsaky.androidide.utils.ILogger
 import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.ConfigurableLauncher
 import org.gradle.tooling.GradleConnector
+import org.gradle.tooling.model.idea.IdeaProject
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -50,7 +52,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             }
 
             val connection = this.connector!!.connect()
-            val model = connection.model(IdeProject::class.java)
+            val model = connection.model(IdeaProject::class.java)
             applyArguments(model)
 
             val project = model.get()
@@ -58,7 +60,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             log.debug("IdeProject instance created by Gradle plugin:", project)
 
             initialized = true
-            return@computeAsync project
+            return@computeAsync DefaultIdeProject()
         }
     }
 
