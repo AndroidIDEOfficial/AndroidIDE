@@ -46,6 +46,7 @@ public class PreferenceManager {
     public static final String KEY_GRADLE_CMD_SCAN = "idepref_gradleCmd_scan";
     public static final String KEY_GRADLE_CMD_INFO = "idepref_gradleCmd_info";
     public static final String KEY_GRADLE_CMD_WARNING_MODE = "idepref_gradleCmd_warningMode";
+    public static final String KEY_GRADLE_CMD_STACK_BUILD_CACHE = "idepref_gradleCmd_buildCache";
     public static final String KEY_LAST_OPENED_PROJECT = "ide_last_project";
     public static final String NO_OPENED_PROJECT = "<NO_OPENED_PROJECT>";
     private final SharedPreferences prefs;
@@ -158,13 +159,21 @@ public class PreferenceManager {
     public boolean isGradleWarningEnabled() {
         return getBoolean(KEY_GRADLE_CMD_WARNING_MODE);
     }
-
+    
+    public boolean isGradleBuildCacheEnabled() {
+        return getBoolean(KEY_GRADLE_CMD_STACK_BUILD_CACHE);
+    }
+    
     public PreferenceManager setGradleWarningEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLE_CMD_WARNING_MODE, enabled);
     }
 
     public PreferenceManager setGradleStacktraceEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLE_CMD_STACK_TRACE, enabled);
+    }
+    
+    public PreferenceManager setGradleBuildCacheEnabled(boolean enabled) {
+        return putBoolean(KEY_GRADLE_CMD_STACK_BUILD_CACHE, enabled);
     }
 
     public int getEditorTabSize() {

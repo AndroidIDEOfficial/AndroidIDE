@@ -257,6 +257,9 @@ public class IDEService {
             args.add("--warning-mode");
             args.add("all");
         }
+        if (prefs.isGradleBuildCacheEnabled()) {
+            args.add("--build-cache");
+        }
 
         return args.toArray(new String[0]);
     }
