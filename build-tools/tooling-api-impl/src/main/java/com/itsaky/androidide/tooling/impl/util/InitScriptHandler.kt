@@ -32,16 +32,14 @@ object InitScriptHandler {
     private val log = ILogger.newInstance(javaClass.simpleName)
     private const val initDir = ".androidide/init"
     private var modelsJar = File(".")
-    private var pluginJar = File(".")
 
     fun getInitScript(): File {
         // Assuming that the HOME variable is always set in AndroidIDE.
         val home = getHome()
         val script = File(home, "$initDir/init.gradle")
         this.modelsJar = File(home, "$initDir/model.jar")
-        this.pluginJar = File(home, "$initDir/plugin.jar")
 
-        log.debug("Init script:: $script", "models:$modelsJar", "plugin:$pluginJar")
+        log.debug("Init script:: $script", "models:$modelsJar")
 
         return if (script.exists() && !isJvm()) {
             script
@@ -75,7 +73,7 @@ object InitScriptHandler {
             
             initscript {
                 dependencies {
-                    classpath files ("${modelsJar.absolutePath}", "${pluginJar.absolutePath}")
+                    classpath files ("${modelsJar.absolutePath}")
                 }
             }
             

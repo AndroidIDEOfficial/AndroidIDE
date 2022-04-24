@@ -35,8 +35,8 @@ jar {
 }
 
 shadowJar {
-    archiveBaseName.set('tooling-api')
-    archiveClassifier.set('all')
+    archiveBaseName.set ('tooling-api')
+    archiveClassifier.set ('all')
 }
 
 task copyJarToAssets (type: Copy) {
@@ -57,9 +57,6 @@ dependencies {
     implementation project (path: ':build-tools:logger')
     implementation project (path: ':build-tools:tooling-api')
     implementation project (path: ':build-tools:tooling-api-model')
-    
-    // To dynamically get the name of plugin class
-    compileOnly project (path: ':build-tools:tooling-api-plugin')
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.gradle:gradle-tooling-api:7.3.3'
