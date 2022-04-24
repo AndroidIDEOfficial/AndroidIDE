@@ -52,6 +52,8 @@ class ToolingApiImplTest {
 
     private fun launchServer(client: IToolingApiClient): IToolingApiServer {
         val builder = ProcessBuilder("java", "-jar", "./build/libs/tooling-api-all.jar")
+        log.debug(System.getenv())
+        builder.environment().put("ANDROID_SDK_ROOT", findAndroidHome())
         val proc = builder.start()
 
         Thread(Reader(proc.errorStream)).start()
@@ -62,6 +64,25 @@ class ToolingApiImplTest {
         launcher.startListening()
 
         return launcher.remoteProxy
+    }
+
+    private fun findAndroidHome(): String? {
+        var fromEnv = System.getenv("ANDROID_SDK_ROOT")
+        if (fromEnv != null) {
+            return fromEnv
+        }
+
+        fromEnv = System.getenv("ANDROID_HOME")
+        if (fromEnv != null) {
+            return fromEnv
+        }
+
+        val home = System.getProperty("user.home")
+        if (System.getProperty("os.name").contains("Windows")) {
+            return "$home/AppData/Local/Android/Sdk"
+        }
+        
+        return "$home/android-sdk"
     }
 
     private class TestClient : IToolingApiClient {

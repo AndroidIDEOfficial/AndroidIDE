@@ -31,8 +31,13 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 @JsonSegment("server")
 interface IToolingApiServer {
 
-    @JsonRequest("initProject")
-    fun initialize(params: InitializeProjectParams): CompletableFuture<IdeProject>
+    /** Initialize the server with the project directory. */
+    @JsonRequest("initializeProject")
+    fun initialize(params: InitializeProjectParams): CompletableFuture<Void>
 
+    /** Is the server initialized? */
     @JsonRequest("isInitialized") fun isInitialized(): CompletableFuture<Boolean>
+
+    /** Get the root project. */
+    @JsonRequest fun getRootProject(): CompletableFuture<IdeProject>
 }

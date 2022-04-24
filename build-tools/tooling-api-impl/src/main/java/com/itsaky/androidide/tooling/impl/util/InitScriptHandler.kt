@@ -18,9 +18,7 @@
 package com.itsaky.androidide.tooling.impl.util
 
 import com.itsaky.androidide.utils.ILogger
-import java.io.ByteArrayInputStream
 import java.io.File
-import java.io.FileOutputStream
 
 /**
  * Handles the init script required by the tooling API.
@@ -34,18 +32,7 @@ object InitScriptHandler {
     private var modelsJar = File(".")
 
     fun getInitScript(): File {
-        // Assuming that the HOME variable is always set in AndroidIDE.
-        val home = getHome()
-        val script = File(home, "$initDir/init.gradle")
-        this.modelsJar = File(home, "$initDir/model.jar")
-
-        log.debug("Init script:: $script", "models:$modelsJar")
-
-        return if (script.exists() && !isJvm()) {
-            script
-        } else {
-            writeInitScript(script)
-        }
+        return File (".")
     }
 
     private fun getHome(): String {
@@ -64,42 +51,5 @@ object InitScriptHandler {
         } catch (e: ClassNotFoundException) {
             true
         }
-    }
-
-    private fun writeInitScript(script: File): File {
-        var contents =
-            """
-            import com.itsaky.androidide.tooling.plugin.AndroidIDEToolingApiPlugin
-            
-            initscript {
-                dependencies {
-                    classpath files ("${modelsJar.absolutePath}")
-                }
-            }
-            
-            allprojects {
-                apply plugin: AndroidIDEToolingApiPlugin
-            }
-        """.trimIndent()
-
-        if (File.separatorChar == '\\') { // If testing on Windows
-            contents = contents.replace('\\', '/')
-        }
-
-        script.parentFile.mkdirs()
-        val out = FileOutputStream(script)
-        val input = ByteArrayInputStream(contents.toByteArray())
-        val data = ByteArray(1024)
-
-        var read = input.read(data)
-        while (read != -1) {
-            out.write(data, 0, read)
-            read = input.read(data)
-        }
-
-        input.close()
-        out.close()
-
-        return script
     }
 }
