@@ -15,13 +15,17 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.messages
+plugins {
+    id 'java-library'
+}
 
-/**
- * Notification sent by server to notify client that the server has been initialized.
- *
- * @author Akash Yadav
- */
-class ProjectInitializedResponse {
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
+dependencies {
+    implementation google.gson
+    implementation project (path: ':build-tools:logger')
+    implementation project (path: ':build-tools:tooling-api-model')
 }

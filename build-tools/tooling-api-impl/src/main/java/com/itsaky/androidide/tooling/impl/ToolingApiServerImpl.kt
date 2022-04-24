@@ -20,10 +20,13 @@ package com.itsaky.androidide.tooling.impl
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.api.messages.ProjectInitializedResponse
+import com.itsaky.androidide.tooling.api.model.IdeProject
+import com.itsaky.androidide.tooling.impl.util.InitScriptHandler
 import com.itsaky.androidide.utils.ILogger
-import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import java.util.concurrent.*
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures
+import org.gradle.tooling.ConfigurableLauncher
+import org.gradle.tooling.GradleConnector
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -34,14 +37,28 @@ internal class ToolingApiServerImpl : IToolingApiServer {
 
     private var initialized = false
     private var client: IToolingApiClient? = null
+    private var connector: GradleConnector? = null
     private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override fun initialize(
-        params: InitializeProjectParams
-    ): CompletableFuture<ProjectInitializedResponse> {
+    override fun initialize(params: InitializeProjectParams): CompletableFuture<IdeProject> {
         return CompletableFutures.computeAsync {
+            this.connector = GradleConnector.newConnector().forProjectDirectory(params.directory)
+            if (this.connector == null) {
+                throw CompletionException(
+                    RuntimeException(
+                        "Unable to create gradle connector for project directory: ${params.directory}"))
+            }
+
+            val connection = this.connector!!.connect()
+            val model = connection.model(IdeProject::class.java)
+            applyArguments(model)
+
+            val project = model.get()
+
+            log.debug("IdeProject instance created by Gradle plugin:", project)
+
             initialized = true
-            return@computeAsync ProjectInitializedResponse()
+            return@computeAsync project
         }
     }
 
@@ -51,5 +68,9 @@ internal class ToolingApiServerImpl : IToolingApiServer {
 
     fun connect(client: IToolingApiClient) {
         this.client = client
+    }
+
+    private fun applyArguments(launcher: ConfigurableLauncher<*>) {
+        launcher.withArguments("--init-script", InitScriptHandler.getInitScript().absolutePath)
     }
 }

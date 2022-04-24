@@ -1,0 +1,49 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+plugins {
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+task copyToTestDir (type: Copy) {
+    from "$project.buildDir.absolutePath/libs/tooling-api-model.jar"
+    into "${project.rootProject.findProject (":build-tools:tooling-api-impl").file ("src/test/test-home/.androidide/init").absolutePath}/"
+    rename {
+        "model.jar"
+    }
+    
+    outputs.upToDateWhen {
+        false
+    }
+}
+
+project.tasks.jar {
+    finalizedBy copyToTestDir
+    outputs.upToDateWhen {
+        false
+    }
+}
+
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
