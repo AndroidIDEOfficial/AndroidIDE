@@ -16,6 +16,7 @@
  */
 
 plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
 }
@@ -27,9 +28,28 @@ java {
 
 jar {
     manifest {
-        attributes(
+        attributes (
                 'Main-Class': 'com.itsaky.androidide.tooling.impl.Main'
         )
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('tooling-api')
+    archiveClassifier.set('all')
+}
+
+task copyJarToAssets (type: Copy) {
+    from project.file ("${project.buildDir}/libs/tooling-api-all.jar")
+    into project.rootProject.file ("app/src/main/assets/data/common/")
+}
+
+project.tasks.jar.finalizedBy shadowJar
+project.tasks.shadowJar.finalizedBy copyJarToAssets
+
+repositories {
+    maven {
+        url 'https://repo.gradle.org/gradle/libs-releases/'
     }
 }
 
@@ -38,6 +58,12 @@ dependencies {
     implementation project (path: ':build-tools:tooling-api')
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.gradle:gradle-tooling-api:7.3.3'
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    
+    runtimeOnly 'org.slf4j:slf4j-api:1.7.30'
 }
 
 compileKotlin {

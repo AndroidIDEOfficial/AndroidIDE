@@ -17,5 +17,32 @@
 
 package com.itsaky.androidide.tooling.impl;
 
+import static com.itsaky.androidide.utils.ILogger.newInstance;
+
+import com.itsaky.androidide.tooling.api.IToolingApiClient;
+import com.itsaky.androidide.utils.ILogger;
+
+import org.eclipse.lsp4j.jsonrpc.Launcher;
+
+import java.util.concurrent.ExecutionException;
+
 public class Main {
+    private static final ILogger LOG = newInstance("ToolingApiMain");
+    public final Object lock = new Object();
+
+    public static void main(String[] args) {
+        LOG.debug("Starting Tooling API server...");
+        final var server = new ToolingApiServerImpl();
+        final var launcher =
+                Launcher.createLauncher(server, IToolingApiClient.class, System.in, System.out);
+        final var future = launcher.startListening();
+        server.connect(launcher.getRemoteProxy());
+
+        LOG.debug("Server started. Will run until shutdown message is received...");
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            LOG.error("An error occurred while waiting for shutdown message", e);
+        }
+    }
 }
