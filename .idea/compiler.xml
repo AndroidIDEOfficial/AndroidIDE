@@ -11,6 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="AndroidIDE.build-tools.jsonrpc" target="11" />
       <module name="AndroidIDE.build-tools.tooling-api-plugin" target="11" />
       <module name="AndroidIDE.google-java-format" target="1.8" />
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
