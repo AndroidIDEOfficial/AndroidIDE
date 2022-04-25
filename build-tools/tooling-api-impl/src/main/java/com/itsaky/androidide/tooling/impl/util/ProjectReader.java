@@ -20,11 +20,9 @@ package com.itsaky.androidide.tooling.impl.util;
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.android.builder.model.v2.models.AndroidProject;
-import com.itsaky.androidide.tooling.api.model.IAndroidProject;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidProject;
+import com.itsaky.androidide.tooling.api.model.IGradleProject;
 import com.itsaky.androidide.utils.ILogger;
 
-import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.model.GradleProject;
 
@@ -35,34 +33,24 @@ public class ProjectReader {
 
     private static final ILogger LOG = newInstance("test");
 
-    public static IAndroidProject read(ProjectConnection connection) {
+    public static IGradleProject read(ProjectConnection connection) {
         final var watch = new StopWatch("Read eclipse project from connection");
         final var gradle = connection.getModel(GradleProject.class);
-        
-        LOG.debug(System.getenv());
-        LOG.debug(System.getProperties());
-        for (var sub : gradle.getChildren()) {
-            var subConnection =
-                    GradleConnector.newConnector()
-                            .forProjectDirectory(sub.getProjectDirectory())
-                            .connect();
-            final var modelBuilder =
-                    subConnection
-                            .model(AndroidProject.class)
-                            .withArguments("-Pandroid.injected.build.model.v2=true");
-            final var project = modelBuilder.get();
-            LOG.debug(project);
+        if (gradle == null) {
+            LOG.error("Cannot build model for", GradleProject.class);
+            return null;
         }
 
+        final var android =
+                connection
+                        .model(AndroidProject.class)
+                        .withArguments("-Pandroid.injected.build.model.v2=true")
+                        .get();
+        LOG.debug(android);
         watch.log();
 
-        //        return read(project);
         return null;
     }
 
-    public static IAndroidProject read(AndroidProject android) {
-        final var project = new DefaultAndroidProject ();
-        LOG.debug(android);
-        return project;
-    }
+    public static IGradleProject read(AndroidProject android) {}
 }
