@@ -76,11 +76,11 @@
      <string name="build_debug">assembleDebug</string>
      <string name="build_output">Saída de compilação</string>
      <string name="build_release">assembleRelease</string>
-     <string name="lint_tasks">Compilações Lint</string>
+     <string name="lint_tasks">Construções Lint</string>
      <string name="clean_amp_build">Limpar e construir</string>
      <string name="clean_project">Limpar</string>
      <string name="create_aab">Criar AAB</string>
-     <string name="build_tasks">Tipos de compilações</string>
+     <string name="build_tasks">Tipos de construções</string>
      <string name="stop_gradle_daemons">Parar daemons Gradle</string>
      <string name="quick_run_debug">Execução rápida</string>
      <string name="msg_sync_needed">Os arquivos Gradle foram alterados.  Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
