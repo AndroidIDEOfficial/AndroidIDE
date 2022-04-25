@@ -1,12 +1,14 @@
 name: Android CI
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
-  workflow_dispatch:
+    branches: [ main ]
 
 jobs:
   build:
-    name: Build debug apk
+    name: Build APK
     runs-on: ubuntu-latest
     steps:
       - name: Cancel previous runs
@@ -14,28 +16,40 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-      - uses: actions/checkout@v2
-    
-      - name: set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: gradle
+      - name: Clone repo
+        uses: actions/checkout@v2
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
 
       - name: Build debug apk
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: assembleDebug
+          arguments: :app:clean :app:build
           distributions-cache-enabled: true
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
 
-      - name: Upload debug apk
+      - name: Generate translation report
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: :app:checkTranslations
+          distributions-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
+
+      - name: Upload APK
         uses: actions/upload-artifact@v2
+        if: ${{ !github.head_ref }}
         with:
           name: apk-debug
-          path: app/build/outputs/apk/debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload translation report
+        uses: actions/upload-artifact@v2
+        if: ${{ !github.head_ref }}
+        with:
+          name: translation-report
+          path: build/translation-reports/
