@@ -22,7 +22,7 @@ import com.itsaky.androidide.tooling.api.model.ProjectDependency
 import java.io.File
 
 /** @author Akash Yadav */
-class DefaultIdeProject : IAndroidProject {
+class DefaultAndroidProject : IAndroidProject {
     override var path: String? = null
     override var displayName: String? = null
     override var projectDir: File? = null

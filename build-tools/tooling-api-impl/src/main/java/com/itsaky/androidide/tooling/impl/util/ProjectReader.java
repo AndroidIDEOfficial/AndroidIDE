@@ -21,7 +21,7 @@ import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.android.builder.model.v2.models.AndroidProject;
 import com.itsaky.androidide.tooling.api.model.IAndroidProject;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultIdeProject;
+import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidProject;
 import com.itsaky.androidide.utils.ILogger;
 
 import org.gradle.tooling.GradleConnector;
@@ -61,7 +61,7 @@ public class ProjectReader {
     }
 
     public static IAndroidProject read(AndroidProject android) {
-        final var project = new DefaultIdeProject();
+        final var project = new DefaultAndroidProject ();
         LOG.debug(android);
         return project;
     }

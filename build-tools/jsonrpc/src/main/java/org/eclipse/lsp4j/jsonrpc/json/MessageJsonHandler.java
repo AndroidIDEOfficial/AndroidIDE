@@ -20,7 +20,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
 import com.itsaky.androidide.tooling.api.model.IAndroidProject;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultIdeProject;
+import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidProject;
 
 import org.eclipse.lsp4j.jsonrpc.MessageIssueException;
 import org.eclipse.lsp4j.jsonrpc.json.adapters.CollectionTypeAdapter;
@@ -73,7 +73,7 @@ public class MessageJsonHandler {
                 .registerTypeAdapterFactory(new MessageTypeAdapter.Factory(this))
                 .registerTypeAdapter(
                         IAndroidProject.class,
-                        (InstanceCreator<IAndroidProject>) type -> new DefaultIdeProject());
+                        (InstanceCreator<IAndroidProject>) type -> new DefaultAndroidProject ());
     }
 
     /**
