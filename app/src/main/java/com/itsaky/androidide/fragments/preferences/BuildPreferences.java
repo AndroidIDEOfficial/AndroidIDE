@@ -88,7 +88,7 @@ public class BuildPreferences extends BasePreferenceFragment
 
     private void showGradleCommandsDialog() {
         final String[] labels = {
-            "--stacktrace", "--info", "--debug", "--scan", "--warning-mode all", "--build-cache"
+            "--stacktrace", "--info", "--debug", "--scan", "--warning-mode all", "--build-cache", ",--offline"
         };
         final boolean[] checked = {
             getPrefManager().isStackTraceEnabled(),
@@ -97,6 +97,7 @@ public class BuildPreferences extends BasePreferenceFragment
             getPrefManager().isGradleScanEnabled(),
             getPrefManager().isGradleWarningEnabled(),
             getPrefManager().isGradleBuildCacheEnabled(),
+            getPrefManager().isGradleOfflineModeEnabled()
         };
         final MaterialAlertDialogBuilder builder =
                 DialogUtils.newMaterialDialogBuilder(getContext());
@@ -117,6 +118,9 @@ public class BuildPreferences extends BasePreferenceFragment
                         getPrefManager().setGradleWarningEnabled(p3);
                     } else if (p2 == 5) {
                         getPrefManager().setGradleBuildCacheEnabled(p3);
+                    }
+                    else if (p2 == 6) {
+                        getPrefManager().setGradleOfflineModeEnabled(p3);
                     }
                 });
         builder.setPositiveButton(android.R.string.ok, null);
@@ -156,3 +160,4 @@ public class BuildPreferences extends BasePreferenceFragment
                 : progressSheet;
     }
 }
+

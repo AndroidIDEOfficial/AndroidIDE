@@ -159,7 +159,7 @@ public class IDEEditor extends CodeEditor {
                 .getBoolean(PreferenceManager.KEY_EDITOR_FLAG_PASSWORD, true)) {
             flags |= EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
         }
-
+        
         return flags;
     }
 
@@ -879,3 +879,5 @@ public class IDEEditor extends CodeEditor {
         }
     }
 }
+
+

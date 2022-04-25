@@ -61,6 +61,7 @@ import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.models.Range;
 
+import io.github.rosemoe.sora.widget.component.Magnifier;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
@@ -305,6 +306,9 @@ public class CodeEditorView extends FrameLayout {
         boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED;
         boolean inputFlagsChanged =
                 isFirstCreate || ConstantsBridge.EDITOR_PREF_VISIBLE_PASSWORD_CHANGED;
+        boolean wordWrapChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED;
+        boolean magnifierChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED;
+       
         final PreferenceManager prefs = StudioApp.getInstance().getPrefManager();
 
         if (sizeChanged) {
@@ -361,6 +365,18 @@ public class CodeEditorView extends FrameLayout {
             // (PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
             ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = false;
         }
+        
+        if(wordWrapChanged) {
+            var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_WORD_WRAP, false);
+            binding.editor.setWordwrap(enabled);
+            ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED = false;
+         }
+         
+         if(magnifierChanged) {
+             var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_USE_MAGNIFER, true);
+            binding.editor.getComponent(Magnifier.class).setEnabled(enabled);
+            ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED = false;
+          }
 
         isFirstCreate = false;
     }
@@ -423,3 +439,6 @@ public class CodeEditorView extends FrameLayout {
         notifySaved();
     }
 }
+
+
+
