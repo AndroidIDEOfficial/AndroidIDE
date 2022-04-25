@@ -18,7 +18,7 @@
 package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.api.model.IdeProject
+import com.itsaky.androidide.tooling.api.model.IAndroidProject
 import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
@@ -39,5 +39,5 @@ interface IToolingApiServer {
     @JsonRequest("isInitialized") fun isInitialized(): CompletableFuture<Boolean>
 
     /** Get the root project. */
-    @JsonRequest fun getRootProject(): CompletableFuture<IdeProject>
+    @JsonRequest fun getRootProject(): CompletableFuture<IAndroidProject>
 }

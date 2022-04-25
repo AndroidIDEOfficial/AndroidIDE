@@ -18,7 +18,7 @@
 package com.itsaky.androidide.tooling.api.model
 
 /**
- * A task in an [IdeProject].
+ * A task in an [IAndroidProject].
  *
  * @author Akash Yadav
  */

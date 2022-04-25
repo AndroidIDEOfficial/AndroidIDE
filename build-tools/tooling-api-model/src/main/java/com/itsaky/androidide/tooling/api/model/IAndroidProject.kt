@@ -23,11 +23,11 @@ import java.io.Serializable
  * Currently initialized project.
  *
  * The instance of this class is created from a [Proxy][java.lang.reflect.Proxy]. If you add any
- * property to this class, make sure you update the [IdeProject.copy] method too.
+ * property to this class, make sure you update the [IAndroidProject.copy] method too.
  *
  * @author Akash Yadav
  */
-interface IdeProject : Serializable {
+interface IAndroidProject : Serializable {
     /** The path of this project. For example: ':app'. */
     val path: String?
 
@@ -44,7 +44,7 @@ interface IdeProject : Serializable {
     val buildFile: File?
 
     /** Subprojects of this project. */
-    val subProjects: List<IdeProject>
+    val subProjects: List<IAndroidProject>
     
     /**
      * Dependencies of this project.

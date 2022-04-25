@@ -19,7 +19,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.MalformedJsonException;
-import com.itsaky.androidide.tooling.api.model.IdeProject;
+import com.itsaky.androidide.tooling.api.model.IAndroidProject;
 import com.itsaky.androidide.tooling.api.model.internal.DefaultIdeProject;
 
 import org.eclipse.lsp4j.jsonrpc.MessageIssueException;
@@ -72,8 +72,8 @@ public class MessageJsonHandler {
                 .registerTypeAdapterFactory(new EnumTypeAdapter.Factory())
                 .registerTypeAdapterFactory(new MessageTypeAdapter.Factory(this))
                 .registerTypeAdapter(
-                        IdeProject.class,
-                        (InstanceCreator<IdeProject>) type -> new DefaultIdeProject());
+                        IAndroidProject.class,
+                        (InstanceCreator<IAndroidProject>) type -> new DefaultIdeProject());
     }
 
     /**

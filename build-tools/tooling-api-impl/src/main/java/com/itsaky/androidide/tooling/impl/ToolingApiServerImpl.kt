@@ -20,23 +20,16 @@ package com.itsaky.androidide.tooling.impl
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.api.model.IdeProject
-import com.itsaky.androidide.tooling.api.model.internal.DefaultIdeProject
+import com.itsaky.androidide.tooling.api.model.IAndroidProject
 import com.itsaky.androidide.tooling.impl.util.InitScriptHandler
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
 import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
-import org.gradle.tooling.BuildAction
 import org.gradle.tooling.ConfigurableLauncher
 import org.gradle.tooling.GradleConnector
-import org.gradle.tooling.ModelBuilder
-import org.gradle.tooling.ProjectConnection
-import org.gradle.tooling.model.GradleProject
 import org.gradle.tooling.model.HierarchicalElement
-import org.gradle.tooling.model.eclipse.EclipseProject
-import org.gradle.tooling.model.idea.IdeaProject
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -48,7 +41,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
     private var initialized = false
     private var client: IToolingApiClient? = null
     private var connector: GradleConnector? = null
-    private var project: IdeProject? = null
+    private var project: IAndroidProject? = null
     private val log = ILogger.newInstance(javaClass.simpleName)
 
     override fun initialize(params: InitializeProjectParams): CompletableFuture<Void> {
@@ -90,7 +83,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
         return CompletableFuture.supplyAsync { initialized }
     }
 
-    override fun getRootProject(): CompletableFuture<IdeProject> {
+    override fun getRootProject(): CompletableFuture<IAndroidProject> {
         return CompletableFutures.computeAsync {
             assertProjectInitialized()
 

@@ -20,7 +20,7 @@ package com.itsaky.androidide.tooling.impl.util;
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.android.builder.model.v2.models.AndroidProject;
-import com.itsaky.androidide.tooling.api.model.IdeProject;
+import com.itsaky.androidide.tooling.api.model.IAndroidProject;
 import com.itsaky.androidide.tooling.api.model.internal.DefaultIdeProject;
 import com.itsaky.androidide.utils.ILogger;
 
@@ -35,10 +35,10 @@ public class ProjectReader {
 
     private static final ILogger LOG = newInstance("test");
 
-    public static IdeProject read(ProjectConnection connection) {
+    public static IAndroidProject read(ProjectConnection connection) {
         final var watch = new StopWatch("Read eclipse project from connection");
         final var gradle = connection.getModel(GradleProject.class);
-
+        
         LOG.debug(System.getenv());
         LOG.debug(System.getProperties());
         for (var sub : gradle.getChildren()) {
@@ -60,7 +60,7 @@ public class ProjectReader {
         return null;
     }
 
-    public static IdeProject read(AndroidProject android) {
+    public static IAndroidProject read(AndroidProject android) {
         final var project = new DefaultIdeProject();
         LOG.debug(android);
         return project;
