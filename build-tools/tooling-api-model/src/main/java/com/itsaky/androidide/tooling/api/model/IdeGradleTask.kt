@@ -17,11 +17,11 @@
 package com.itsaky.androidide.tooling.api.model
 
 /**
- * Default implementation for [IGradleTask].
+ * Default implementation for [IdeGradleTask].
  *
  * @author Akash Yadav
  */
-open class IGradleTask(
+open class IdeGradleTask(
     val name: String,
     val description: String?,
     val group: String?,
@@ -29,4 +29,4 @@ open class IGradleTask(
     displayName: String?,
     isPublic: Boolean?,
     val projectPath: String?
-) : ILaunchable(displayName, isPublic)
+) : IdeLaunchable(displayName, isPublic)

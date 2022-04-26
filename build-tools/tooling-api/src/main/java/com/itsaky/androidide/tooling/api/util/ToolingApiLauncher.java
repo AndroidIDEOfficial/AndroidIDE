@@ -20,10 +20,10 @@ package com.itsaky.androidide.tooling.api.util;
 import com.google.gson.GsonBuilder;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
-import com.itsaky.androidide.tooling.api.model.IAndroidModule;
-import com.itsaky.androidide.tooling.api.model.IGradleProject;
-import com.itsaky.androidide.tooling.api.model.IGradleTask;
-import com.itsaky.androidide.tooling.api.model.ILaunchable;
+import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
+import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
+import com.itsaky.androidide.tooling.api.model.IdeLaunchable;
 
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 
@@ -54,13 +54,13 @@ public class ToolingApiLauncher {
 
     public static void configureGson(GsonBuilder builder) {
         builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(IGradleProject.class, "gsonType")
-                        .registerSubtype(IGradleProject.class, IGradleProject.class.getName())
-                        .registerSubtype(IAndroidModule.class, IAndroidModule.class.getName()));
+                RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType")
+                        .registerSubtype(IdeGradleProject.class, IdeGradleProject.class.getName())
+                        .registerSubtype(IdeAndroidModule.class, IdeAndroidModule.class.getName()));
         builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(ILaunchable.class, "gsonType")
-                        .registerSubtype(ILaunchable.class, ILaunchable.class.getName())
-                        .registerSubtype(IGradleTask.class, IGradleTask.class.getName()));
+                RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType")
+                        .registerSubtype(IdeLaunchable.class, IdeLaunchable.class.getName())
+                        .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName()));
     }
 
     public static Launcher<IToolingApiClient> createServerLauncher(

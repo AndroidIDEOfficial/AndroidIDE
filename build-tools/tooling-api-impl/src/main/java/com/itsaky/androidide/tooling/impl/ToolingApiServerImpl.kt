@@ -20,7 +20,7 @@ package com.itsaky.androidide.tooling.impl
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.api.model.IGradleProject
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.impl.util.InitScriptHandler
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
@@ -41,10 +41,10 @@ internal class ToolingApiServerImpl : IToolingApiServer {
     private var initialized = false
     private var client: IToolingApiClient? = null
     private var connector: GradleConnector? = null
-    private var project: IGradleProject? = null
+    private var project: IdeGradleProject? = null
     private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override fun initialize(params: InitializeProjectParams): CompletableFuture<IGradleProject?> {
+    override fun initialize(params: InitializeProjectParams): CompletableFuture<IdeGradleProject?> {
         return CompletableFutures.computeAsync {
             val stopWatch = StopWatch("Connection to project")
             this.connector = GradleConnector.newConnector().forProjectDirectory(params.directory)
@@ -84,7 +84,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
         return CompletableFuture.supplyAsync { initialized }
     }
 
-    override fun getRootProject(): CompletableFuture<IGradleProject> {
+    override fun getRootProject(): CompletableFuture<IdeGradleProject> {
         return CompletableFutures.computeAsync {
             assertProjectInitialized()
 

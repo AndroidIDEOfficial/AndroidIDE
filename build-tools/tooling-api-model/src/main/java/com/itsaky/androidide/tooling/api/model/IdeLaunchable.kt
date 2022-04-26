@@ -16,36 +16,10 @@
  */
 package com.itsaky.androidide.tooling.api.model
 
-import java.io.File
-
 /**
- * Default implementation for [IGradleProject].
+ * Default implementation for [IdeLaunchable].
+ *
  * @author Akash Yadav
  */
-open class IGradleProject(
-    val name: String?,
-    val description: String?,
-    val projectPath: String?,
-    val projectDir: File?,
-    val buildDir: File?,
-    val buildScript: File?,
-    val parent: IGradleProject?,
-    val subprojects: List<IGradleProject>,
-    val tasks: List<IGradleTask>,
-) {
-
-    fun findByPath(path: String): IGradleProject? {
-        if (path == this.projectPath) {
-            return this
-        }
-
-        for (sub in subprojects) {
-            val subSub = sub.findByPath(path)
-            if (subSub != null) {
-                return subSub
-            }
-        }
-
-        return null
-    }
+open class IdeLaunchable(val displayName: String?, val isPublic: Boolean?) {
 }

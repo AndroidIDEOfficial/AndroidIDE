@@ -26,19 +26,19 @@ import com.android.builder.model.v2.models.AndroidProject
 import java.io.File
 
 /**
- * Default implementation of [IAndroidModule].
+ * Default implementation of [IdeAndroidModule].
  *
  * @author Akash Yadav
  */
-class IAndroidModule(
+class IdeAndroidModule(
     name: String?,
     description: String?,
     projectDir: File?,
     buildDir: File?,
     buildScript: File?,
-    parent: IGradleProject?,
-    subprojects: List<IGradleProject>,
-    tasks: List<IGradleTask>,
+    parent: IdeGradleProject?,
+    subprojects: List<IdeGradleProject>,
+    tasks: List<IdeGradleTask>,
     override var path: String,
     override var androidTestNamespace: String?,
     override var bootClasspath: Collection<File>,
@@ -58,12 +58,12 @@ class IAndroidModule(
     override var variants: Collection<Variant>,
     override var viewBindingOptions: ViewBindingOptions?
 ) :
-    IGradleProject(
+    IdeGradleProject(
         name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks),
     AndroidProject {
     
-    fun copy(): IAndroidModule {
-        return IAndroidModule(
+    fun copy(): IdeAndroidModule {
+        return IdeAndroidModule(
             name,
             description,
             projectDir,

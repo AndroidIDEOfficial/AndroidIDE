@@ -21,8 +21,8 @@ import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.android.builder.model.v2.models.AndroidProject;
 import com.google.gson.GsonBuilder;
-import com.itsaky.androidide.tooling.api.model.IGradleProject;
-import com.itsaky.androidide.tooling.api.model.IGradleTask;
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
+import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.utils.ILogger;
@@ -40,7 +40,7 @@ public class ProjectReader {
 
     private static final ILogger LOG = newInstance("test");
 
-    public static IGradleProject read(ProjectConnection connection) {
+    public static IdeGradleProject read(ProjectConnection connection) {
         final var watch = new StopWatch("Read project from connection");
         final var gradle = connection.getModel(GradleProject.class);
         if (gradle == null) {
@@ -79,7 +79,7 @@ public class ProjectReader {
         ToolingApiLauncher.configureGson(gsonBuilder);
         LOG.debug(
                 "Built",
-                IGradleProject.class.getName(),
+                IdeGradleProject.class.getName(),
                 "model:",
                 gsonBuilder.create().toJson(root));
 
@@ -92,7 +92,7 @@ public class ProjectReader {
         launcher.addArguments(String.format("-P%s=%s", property, value));
     }
 
-    private static IGradleProject buildFromModel(
+    private static IdeGradleProject buildFromModel(
             GradleProject gradle, boolean fillSubprojects, boolean fillTasks) {
         final var builder = new ProjectBuilder();
         builder.setName(gradle.getName());
@@ -119,8 +119,8 @@ public class ProjectReader {
         return project;
     }
 
-    private static IGradleTask buildFromModel(IGradleProject project, GradleTask task) {
-        return new IGradleTask (
+    private static IdeGradleTask buildFromModel(IdeGradleProject project, GradleTask task) {
+        return new IdeGradleTask (
                 task.getName(),
                 task.getDescription(),
                 task.getGroup(),

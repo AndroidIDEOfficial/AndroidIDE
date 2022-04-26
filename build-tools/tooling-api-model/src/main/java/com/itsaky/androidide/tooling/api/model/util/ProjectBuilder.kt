@@ -25,9 +25,9 @@ import com.android.builder.model.v2.ide.SourceProvider
 import com.android.builder.model.v2.ide.SourceSetContainer
 import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
-import com.itsaky.androidide.tooling.api.model.IAndroidModule
-import com.itsaky.androidide.tooling.api.model.IGradleProject
-import com.itsaky.androidide.tooling.api.model.IGradleTask
+import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject
+import com.itsaky.androidide.tooling.api.model.IdeGradleTask
 import java.io.File
 
 /**
@@ -42,9 +42,9 @@ class ProjectBuilder {
     var projectDir: File? = null
     var buildDir: File? = null
     var buildScript: File? = null
-    var parent: IGradleProject? = null
-    var subprojects: List<IGradleProject> = mutableListOf()
-    var tasks: List<IGradleTask> = mutableListOf()
+    var parent: IdeGradleProject? = null
+    var subprojects: List<IdeGradleProject> = mutableListOf()
+    var tasks: List<IdeGradleTask> = mutableListOf()
     var androidTestNamespace: String = ""
     var bootClasspath: Collection<File> = mutableListOf()
     var buildFolder: File = File("<no_path>")
@@ -63,13 +63,13 @@ class ProjectBuilder {
     var variants: Collection<Variant> = mutableListOf()
     var viewBindingOptions: ViewBindingOptions? = null
 
-    fun buildGradleProject(): IGradleProject {
-        return IGradleProject(
+    fun buildGradleProject(): IdeGradleProject {
+        return IdeGradleProject(
             name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks)
     }
 
-    fun buildAndroidModule(): IAndroidModule =
-        IAndroidModule(
+    fun buildAndroidModule(): IdeAndroidModule =
+        IdeAndroidModule(
             name,
             description,
             projectDir,
