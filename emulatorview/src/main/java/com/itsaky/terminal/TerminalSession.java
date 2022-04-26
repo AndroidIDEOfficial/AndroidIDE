@@ -1,11 +1,12 @@
 package com.itsaky.terminal;
 
-import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -71,7 +72,7 @@ public final class TerminalSession extends TerminalOutput {
     /** Set by the application for user identification of session, not by terminal. */
     public String mSessionName;
 
-    final Handler mMainThreadHandler = new MainThreadHandler();
+    final Handler mMainThreadHandler = new Handler(Looper.getMainLooper(), new MainThreadHandler ());
 
     private final String mShellPath;
     private final String mCwd;
@@ -349,14 +350,12 @@ public final class TerminalSession extends TerminalOutput {
         }
         return result;
     }
-
-    @SuppressLint("HandlerLeak")
-    class MainThreadHandler extends Handler {
+    class MainThreadHandler implements Handler.Callback {
 
         final byte[] mReceiveBuffer = new byte[4 * 1024];
 
         @Override
-        public void handleMessage(Message msg) {
+        public boolean handleMessage(Message msg) {
             int bytesRead = mProcessToTerminalIOQueue.read(mReceiveBuffer, false);
             if (bytesRead > 0) {
                 mEmulator.append(mReceiveBuffer, bytesRead);
@@ -382,7 +381,9 @@ public final class TerminalSession extends TerminalOutput {
                 notifyScreenUpdate();
 
                 mClient.onSessionFinished(TerminalSession.this);
+                return true;
             }
+            return false;
         }
     }
 }
