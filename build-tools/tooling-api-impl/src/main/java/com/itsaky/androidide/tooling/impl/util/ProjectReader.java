@@ -23,9 +23,8 @@ import com.android.builder.model.v2.models.AndroidProject;
 import com.google.gson.GsonBuilder;
 import com.itsaky.androidide.tooling.api.model.IGradleProject;
 import com.itsaky.androidide.tooling.api.model.IGradleTask;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultGradleTask;
-import com.itsaky.androidide.tooling.api.model.internal.util.ProjectBuilder;
-import com.itsaky.androidide.tooling.api.util.ToolingClientLauncher;
+import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
+import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.utils.ILogger;
 
 import org.gradle.tooling.ConfigurableLauncher;
@@ -77,7 +76,7 @@ public class ProjectReader {
         }
 
         final var gsonBuilder = new GsonBuilder();
-        ToolingClientLauncher.configureGson(gsonBuilder);
+        ToolingApiLauncher.configureGson(gsonBuilder);
         LOG.debug(
                 "Built",
                 IGradleProject.class.getName(),
@@ -121,7 +120,7 @@ public class ProjectReader {
     }
 
     private static IGradleTask buildFromModel(IGradleProject project, GradleTask task) {
-        return new DefaultGradleTask(
+        return new IGradleTask (
                 task.getName(),
                 task.getDescription(),
                 task.getGroup(),

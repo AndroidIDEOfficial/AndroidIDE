@@ -14,32 +14,38 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.androidide.tooling.api.model
 
 import java.io.File
-import java.io.Serializable
 
 /**
- * An Gradle Project.
+ * Default implementation for [IGradleProject].
  * @author Akash Yadav
  */
-abstract class IGradleProject : Serializable {
-    abstract val name: String?
-    abstract val description: String?
-    abstract val projectPath: String?
-    abstract val projectDir: File?
-    abstract val buildDir: File?
-    abstract val buildScript: File?
-    
-    abstract val parent: IGradleProject?
-    abstract val subprojects: List<IGradleProject>
-    abstract val tasks: List<IGradleTask>
+open class IGradleProject(
+    val name: String?,
+    val description: String?,
+    val projectPath: String?,
+    val projectDir: File?,
+    val buildDir: File?,
+    val buildScript: File?,
+    val parent: IGradleProject?,
+    val subprojects: List<IGradleProject>,
+    val tasks: List<IGradleTask>,
+) {
 
-    /**
-     * Finds the project with the given project path.
-     *
-     * @return The found [IGradleProject] or `null`.
-     */
-    abstract fun findByPath(path: String): IGradleProject?
+    fun findByPath(path: String): IGradleProject? {
+        if (path == this.projectPath) {
+            return this
+        }
+
+        for (sub in subprojects) {
+            val subSub = sub.findByPath(path)
+            if (subSub != null) {
+                return subSub
+            }
+        }
+
+        return null
+    }
 }

@@ -258,7 +258,6 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
                                     + srcType.getName()
                                     + "; did you forget to register a subtype?");
                 }
-                ILogger.newInstance("RuntimeTAf").debug(srcType, label, delegate, value);
                 JsonObject jsonObject = delegate.toJsonTree(value).getAsJsonObject();
 
                 if (maintainType) {
@@ -276,7 +275,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
                                     + typeFieldName);
                 }
                 clone.add(typeFieldName, new JsonPrimitive(label));
-
+                
                 for (Map.Entry<String, JsonElement> e : jsonObject.entrySet()) {
                     clone.add(e.getKey(), e.getValue());
                 }

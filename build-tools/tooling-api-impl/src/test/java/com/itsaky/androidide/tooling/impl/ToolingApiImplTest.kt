@@ -21,7 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
-import com.itsaky.androidide.tooling.api.util.ToolingClientLauncher
+import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
 import java.io.File
@@ -58,7 +58,7 @@ class ToolingApiImplTest {
         
         Thread(Reader(proc.errorStream)).start()
         val launcher =
-            ToolingClientLauncher.createLauncher(client, proc.inputStream, proc.outputStream)
+            ToolingApiLauncher.createClientLauncher(client, proc.inputStream, proc.outputStream)
 
         launcher.startListening()
 

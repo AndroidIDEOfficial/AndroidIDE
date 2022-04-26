@@ -19,10 +19,8 @@ package com.itsaky.androidide.tooling.impl;
 
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
-import com.itsaky.androidide.tooling.api.IToolingApiClient;
+import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.utils.ILogger;
-
-import org.eclipse.lsp4j.jsonrpc.Launcher;
 
 import java.util.concurrent.ExecutionException;
 
@@ -33,8 +31,7 @@ public class Main {
     public static void main(String[] args) {
         LOG.debug("Starting Tooling API server...");
         final var server = new ToolingApiServerImpl();
-        final var launcher =
-                Launcher.createLauncher(server, IToolingApiClient.class, System.in, System.out);
+        final var launcher = ToolingApiLauncher.createServerLauncher(server, System.in, System.out);
         final var future = launcher.startListening();
         server.connect(launcher.getRemoteProxy());
 

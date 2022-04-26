@@ -14,15 +14,12 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.androidide.tooling.api.model
 
 /**
- * A launchable is an action that can be launched. For example, an [IGradleTask].
+ * Default implementation for [ILaunchable].
  *
  * @author Akash Yadav
  */
-abstract class ILaunchable {
-    abstract val displayName: String?
-    abstract val isPublic: Boolean?
+open class ILaunchable(val displayName: String?, val isPublic: Boolean?) {
 }

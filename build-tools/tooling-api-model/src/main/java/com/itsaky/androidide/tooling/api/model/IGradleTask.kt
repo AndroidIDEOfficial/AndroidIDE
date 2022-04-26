@@ -14,18 +14,19 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.itsaky.androidide.tooling.api.model
 
 /**
- * Base class for all tasks.
+ * Default implementation for [IGradleTask].
  *
  * @author Akash Yadav
  */
-abstract class IGradleTask : ILaunchable() {
-    abstract val name: String?
-    abstract val description: String?
-    abstract val group: String?
-    abstract val path: String?
-    abstract val projectPath: String?
-}
+open class IGradleTask(
+    val name: String,
+    val description: String?,
+    val group: String?,
+    val path: String,
+    displayName: String?,
+    isPublic: Boolean?,
+    val projectPath: String?
+) : ILaunchable(displayName, isPublic)
