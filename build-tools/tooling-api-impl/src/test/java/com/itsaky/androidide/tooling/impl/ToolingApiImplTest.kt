@@ -18,9 +18,11 @@
 package com.itsaky.androidide.tooling.impl
 
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.GsonBuilder
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
@@ -38,14 +40,20 @@ class ToolingApiImplTest {
     private val log = ILogger.newInstance(javaClass.simpleName)
 
     @Test
-    fun testLaunch() {
+    fun testProjectInit() {
         val client = TestClient()
         val server = launchServer(client)
 
         val project = server.initialize(InitializeProjectParams(getTestProject())).get()
+        assertThat(project).isNotNull()
+        assertThat(project).isInstanceOf(IdeGradleProject::class.java)
+
+        val builder = GsonBuilder()
+        ToolingApiLauncher.configureGson(builder)
+        val gson = builder.create()
+        log.debug("Got initialized project:", gson.toJson(project))
 
         val isInitialized = server.isInitialized().get()
-
         log.debug("Is server initialized: $isInitialized")
         assertThat(isInitialized).isTrue()
     }
@@ -55,7 +63,7 @@ class ToolingApiImplTest {
         log.debug(System.getenv())
         builder.environment().put("ANDROID_SDK_ROOT", findAndroidHome())
         val proc = builder.start()
-        
+
         Thread(Reader(proc.errorStream)).start()
         val launcher =
             ToolingApiLauncher.createClientLauncher(client, proc.inputStream, proc.outputStream)

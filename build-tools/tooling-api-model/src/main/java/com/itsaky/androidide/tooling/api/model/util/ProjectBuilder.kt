@@ -45,7 +45,7 @@ class ProjectBuilder {
     var parent: IdeGradleProject? = null
     var subprojects: List<IdeGradleProject> = mutableListOf()
     var tasks: List<IdeGradleTask> = mutableListOf()
-    var androidTestNamespace: String = ""
+    var androidTestNamespace: String? = ""
     var bootClasspath: Collection<File> = mutableListOf()
     var buildFolder: File = File("<no_path>")
     var buildName: String = ""
@@ -58,8 +58,8 @@ class ProjectBuilder {
     var namespace: String = ""
     var productFlavorSourceSets: Collection<SourceSetContainer> = mutableListOf()
     var projectType: ProjectType = APPLICATION
-    var resourcePrefix: String = ""
-    var testFixturesNamespace: String = ""
+    var resourcePrefix: String? = ""
+    var testFixturesNamespace: String? = ""
     var variants: Collection<Variant> = mutableListOf()
     var viewBindingOptions: ViewBindingOptions? = null
 
