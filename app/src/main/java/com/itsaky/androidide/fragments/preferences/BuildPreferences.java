@@ -88,7 +88,7 @@ public class BuildPreferences extends BasePreferenceFragment
 
     private void showGradleCommandsDialog() {
         final String[] labels = {
-            "--stacktrace", "--info", "--debug", "--scan", "--warning-mode all", "--build-cache", ",--offline"
+            "--stacktrace", "--info", "--debug", "--scan", "--warning-mode all", "--build-cache", "--offline"
         };
         final boolean[] checked = {
             getPrefManager().isStackTraceEnabled(),
