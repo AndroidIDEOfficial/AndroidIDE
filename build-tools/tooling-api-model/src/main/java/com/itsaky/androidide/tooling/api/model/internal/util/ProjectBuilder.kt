@@ -28,7 +28,7 @@ import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.itsaky.androidide.tooling.api.model.IAndroidModule
 import com.itsaky.androidide.tooling.api.model.IGradleProject
-import com.itsaky.androidide.tooling.api.model.ITask
+import com.itsaky.androidide.tooling.api.model.IGradleTask
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidModule
 import com.itsaky.androidide.tooling.api.model.internal.DefaultGradleProject
 import java.io.File
@@ -47,7 +47,7 @@ class ProjectBuilder {
     var buildScript: File? = null
     var parent: IGradleProject? = null
     var subprojects: List<IGradleProject> = mutableListOf()
-    var tasks: List<ITask> = mutableListOf()
+    var tasks: List<IGradleTask> = mutableListOf()
     var androidTestNamespace: String = ""
     var bootClasspath: Collection<File> = mutableListOf()
     var buildFolder: File = File("<no_path>")

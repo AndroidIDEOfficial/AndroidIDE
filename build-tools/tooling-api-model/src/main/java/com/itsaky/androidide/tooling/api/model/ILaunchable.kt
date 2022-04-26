@@ -22,7 +22,7 @@ package com.itsaky.androidide.tooling.api.model
  *
  * @author Akash Yadav
  */
-interface ILaunchable {
-    val displayName: String?
-    val isPublic: Boolean?
+abstract class ILaunchable {
+    abstract val displayName: String?
+    abstract val isPublic: Boolean?
 }

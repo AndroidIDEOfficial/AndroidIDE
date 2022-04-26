@@ -18,9 +18,14 @@
 package com.itsaky.androidide.tooling.api.model
 
 /**
- * A task in an [IGradleProject].
+ * Base class for all tasks.
+ *
  * @author Akash Yadav
  */
-interface IGradleTask : ITask {
-    val projectPath: String?
+abstract class IGradleTask : ILaunchable() {
+    abstract val name: String?
+    abstract val description: String?
+    abstract val group: String?
+    abstract val path: String?
+    abstract val projectPath: String?
 }

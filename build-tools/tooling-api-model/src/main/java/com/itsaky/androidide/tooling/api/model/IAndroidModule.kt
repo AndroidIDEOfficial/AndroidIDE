@@ -20,8 +20,8 @@ package com.itsaky.androidide.tooling.api.model
 import com.android.builder.model.v2.models.AndroidProject
 
 /**
- * A module in an [IAndroidProject].
+ * An Android module in an [IGradleProject].
  *
  * @author Akash Yadav
  */
-interface IAndroidModule : IGradleProject, AndroidProject {}
+interface IAndroidModule : AndroidProject {}

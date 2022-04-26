@@ -24,22 +24,22 @@ import java.io.Serializable
  * An Gradle Project.
  * @author Akash Yadav
  */
-interface IGradleProject : Serializable {
-    val name: String?
-    val description: String?
-    val projectPath: String?
-    val projectDir: File?
-    val buildDir: File?
-    val buildScript: File?
+abstract class IGradleProject : Serializable {
+    abstract val name: String?
+    abstract val description: String?
+    abstract val projectPath: String?
+    abstract val projectDir: File?
+    abstract val buildDir: File?
+    abstract val buildScript: File?
     
-    val parent: IGradleProject?
-    val subprojects: List<IGradleProject>
-    val tasks: List<ITask>
+    abstract val parent: IGradleProject?
+    abstract val subprojects: List<IGradleProject>
+    abstract val tasks: List<IGradleTask>
 
     /**
      * Finds the project with the given project path.
      *
      * @return The found [IGradleProject] or `null`.
      */
-    fun findByPath(path: String): IGradleProject?
+    abstract fun findByPath(path: String): IGradleProject?
 }

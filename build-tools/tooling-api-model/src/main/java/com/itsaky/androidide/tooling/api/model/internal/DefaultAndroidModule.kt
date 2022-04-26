@@ -25,7 +25,7 @@ import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.itsaky.androidide.tooling.api.model.IAndroidModule
 import com.itsaky.androidide.tooling.api.model.IGradleProject
-import com.itsaky.androidide.tooling.api.model.ITask
+import com.itsaky.androidide.tooling.api.model.IGradleTask
 import java.io.File
 
 /**
@@ -41,7 +41,7 @@ class DefaultAndroidModule(
     buildScript: File?,
     parent: IGradleProject?,
     subprojects: List<IGradleProject>,
-    tasks: List<ITask>,
+    tasks: List<IGradleTask>,
     override var path: String,
     override var androidTestNamespace: String?,
     override var bootClasspath: Collection<File>,

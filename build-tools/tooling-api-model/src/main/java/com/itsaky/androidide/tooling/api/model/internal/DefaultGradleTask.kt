@@ -24,12 +24,12 @@ import com.itsaky.androidide.tooling.api.model.IGradleTask
  *
  * @author Akash Yadav
  */
-class DefaultGradleTask(
-    name: String,
-    description: String?,
-    group: String?,
-    path: String,
-    displayName: String?,
-    isPublic: Boolean,
+open class DefaultGradleTask(
+    override val name: String,
+    override val description: String?,
+    override val group: String?,
+    override val path: String,
+    override val displayName: String?,
+    override val isPublic: Boolean?,
     override val projectPath: String?
-) : DefaultTask(name, description, group, path, displayName, isPublic), IGradleTask {}
+) : IGradleTask()

@@ -25,4 +25,4 @@ import com.itsaky.androidide.tooling.api.model.ILaunchable
  * @author Akash Yadav
  */
 class DefaultLaunchable(override val displayName: String?, override val isPublic: Boolean?) :
-    ILaunchable {}
+    ILaunchable() {}

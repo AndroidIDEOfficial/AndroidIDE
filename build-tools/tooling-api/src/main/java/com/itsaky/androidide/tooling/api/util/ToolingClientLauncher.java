@@ -20,22 +20,17 @@ package com.itsaky.androidide.tooling.api.util;
 import com.google.gson.GsonBuilder;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
-import com.itsaky.androidide.tooling.api.model.IAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IGradleProject;
 import com.itsaky.androidide.tooling.api.model.ILaunchable;
-import com.itsaky.androidide.tooling.api.model.ITask;
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidModule;
 import com.itsaky.androidide.tooling.api.model.internal.DefaultGradleProject;
 import com.itsaky.androidide.tooling.api.model.internal.DefaultGradleTask;
 import com.itsaky.androidide.tooling.api.model.internal.DefaultLaunchable;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultTask;
-import com.itsaky.androidide.tooling.api.model.internal.util.ProjectBuilder;
 
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
 
 /**
  * Utility class for launching {@link com.itsaky.androidide.tooling.api.IToolingApiClient}.
@@ -56,13 +51,20 @@ public class ToolingClientLauncher {
 
     public static void configureGson(GsonBuilder builder) {
         builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(IGradleProject.class)
-                        .registerSubtype(DefaultGradleProject.class)
-                        .registerSubtype(DefaultAndroidModule.class));
-
+                RuntimeTypeAdapterFactory.of(
+                                IGradleProject.class, IGradleProject.class.getSimpleName())
+                        .registerSubtype(
+                                DefaultGradleProject.class,
+                                DefaultGradleProject.class.getSimpleName())
+                        .registerSubtype(
+                                DefaultAndroidModule.class,
+                                DefaultAndroidModule.class.getSimpleName()));
+        
         builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(ILaunchable.class)
-                        .registerSubtype(DefaultTask.class)
-                        .registerSubtype(DefaultGradleTask.class));
+                RuntimeTypeAdapterFactory.of(ILaunchable.class, ILaunchable.class.getSimpleName())
+                        .registerSubtype(
+                                DefaultLaunchable.class, DefaultLaunchable.class.getSimpleName())
+                        .registerSubtype(
+                                DefaultGradleTask.class, DefaultGradleTask.class.getSimpleName()));
     }
 }
