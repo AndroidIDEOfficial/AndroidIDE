@@ -1,8 +1,8 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources tools:ignore="ExtraTranslation" xmlns:tools="http://schemas.android.com/tools">
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndriudIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь:</string>
+    <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь:</string>
     <string name="title_developers">Разработчики</string>
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
     <string name="title_open_source_licenses">Лицензирование открытого кода</string>
@@ -20,7 +20,7 @@
     <string name="title_github">GitHub</string>
     <string name="need_help">Нужна помощь?</string>
     <string name="other">Другое</string>
-    <string name="share_with_friends">Поделиться с Друзьями</string>
+    <string name="share_with_friends">Поделиться с друзьями</string>
     <string name="ide_preferences">Настройки IDE</string>
     <string name="discussions_on_telegram">Обсуждение в Telegram</string>
     <string name="msg_empty_view">Мне нечего вам показать&#8230;</string>
@@ -120,7 +120,7 @@
     <string name="msg_no_projects">Похоже, вы ещё не создали ни одного проекта.</string>
     <string name="msg_create_new_project_greeting">Начните свой новый замечательный проект!</string>
     <string name="title_confirm_open_project">Открыть последний проект?</string>
-    <string name="msg_confirm_open_project">Хотите отурыть последний проект? Последний рах вы работали над:\n%s</string>
+    <string name="msg_confirm_open_project">Хотите открыть последний проект? Последний раз вы работали над:\n%s</string>
     <string name="msg_init_project_failed">Не удалось инициализировать проект!</string>
     <string name="group_project">Проект</string>
     <string name="title_close_project">Закрыть этот проект</string>
@@ -187,14 +187,14 @@
     <string name="msg_invalid_name">Неподходящее имя!</string>
     <string name="text_create">Создать</string>
     <string name="msg_can_contain_slashes">Если путь содержит разделительные символы (\'/\'), необходимые (родительские) директории будут созданы, если их ещё не существует.</string>
-    <string name="folder_name">Имя Папки</string>
-    <string name="file_name">Имя Файла</string>
+    <string name="folder_name">Имя папки</string>
+    <string name="file_name">Имя файла</string>
     <string name="new_name">Новое имя</string>
     <string name="new_file">Новый файл</string>
     <string name="new_java_class">Новый Java класс</string>
     <string name="new_xml_resource">Новый ресурс XML</string>
     <string name="new_folder">Новая Папка</string>
-    <string name="title_confirm_delete">Подтвердите Удаление</string>
+    <string name="title_confirm_delete">Подтвердите удаление</string>
     <string name="msg_confirm_delete">Уверены, что хотите удалить:\n%s?</string>
     <string name="copied">Успешно скопировано!</string>
     <string name="msg_rename_file">Введите новое имя файла/папки.</string>
@@ -274,7 +274,7 @@
 
     <!-- Error Messages used while Logging -->
     <string name="err_installation">Ошибка установки</string>
-    <string name="err_completion">Ошибка компиляцииr</string>
+    <string name="err_completion">Ошибка компиляции</string>
     <string name="err_no_server_implementation">Не найдено имплементаций LanguageServer.</string>
     <string name="err_init_server">Ошибка инициализации LanguageServer</string>
     <string name="err_init_sdkinfo">Ошибка инициализации информации о SDK</string>
@@ -337,7 +337,7 @@
     <string name="title_generating_xml">Генерация кода XML</string>
     <string name="title_code_generation_failed">Генерация кода не удалась</string>
     <string name="msg_code_generation_failed">Не удалось сгенерировать код XML. Уверены, что все равно хотите выйти?</string>
-    <string name="msg_invalid_designer_result">Дизайнер Интарфейсов возвратил недопустимое значение</string>
+    <string name="msg_invalid_designer_result">Дизайнер интерфейсов возвратил недопустимое значение</string>
     <string name="msg_swipe_up">Провведите вверх, для просмотра сообщений сборки, логов и прочего.</string>
     <string name="msg_ide_crashed">AndroidIDE приостановило работу из-за непридвиденной ошибки</string>
     <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже :</string>
@@ -360,7 +360,7 @@
     <string name="idepref_editor_autoSave_summary">Сохранение файлов перед закрытием - ЭКСПЕРЕМЕНТАЛЬНАЯ опция. Подразумевается, что вы будете сохранять файлы самостоятельно.</string>
     <string name="idepref_java_matchLower_summary">Если включено, при печати как строчным, так и верхним регистром, атодополнение будет предлагать классы, переменные и методы.</string>
     <string name="idepref_editor_ligatures_title">Лигатуры шрифтов</string>
-    <string name="idepref_editor_ligatures_summary">Включить / выключить лигатуры шрифтов</string>
+    <string name="idepref_editor_ligatures_summary">Включить/выключить лигатуры шрифтов</string>
 
 
     <string name="yes">Да</string>
