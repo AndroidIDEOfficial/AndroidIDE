@@ -201,7 +201,7 @@ public class AboutActivity extends StudioActivity {
         sb.append(getString(R.string.license_jdk));
         sb.append(String.format("<br><a href=\"%1$s\">%1$s</a>", JDK_SOURCE));
         sb.append("<br><br>");
-        binding.items.licenses.setText(Html.fromHtml(sb.toString()));
+        binding.items.licenses.setText(Html.fromHtml(sb.toString(), Html.FROM_HTML_MODE_LEGACY));
         binding.items.licenses.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
