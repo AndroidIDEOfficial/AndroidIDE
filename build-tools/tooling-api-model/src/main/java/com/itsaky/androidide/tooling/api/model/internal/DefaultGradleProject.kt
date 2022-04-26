@@ -18,7 +18,7 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.itsaky.androidide.tooling.api.model.IGradleProject
-import com.itsaky.androidide.tooling.api.model.IGradleTask
+import com.itsaky.androidide.tooling.api.model.ITask
 import java.io.File
 
 /**
@@ -26,21 +26,19 @@ import java.io.File
  * @author Akash Yadav
  */
 open class DefaultGradleProject(
-    override val name: String,
-    override val description: String,
-    override val path: String,
-    override val projectDir: File,
-    override val buildDir: File,
-    override val buildScript: File,
+    override val name: String?,
+    override val description: String?,
+    override val projectPath: String?,
+    override val projectDir: File?,
+    override val buildDir: File?,
+    override val buildScript: File?,
     override val parent: IGradleProject?,
     override val subprojects: List<IGradleProject>,
-    override val tasks: List<IGradleTask>,
+    override val tasks: List<ITask>,
 ) : IGradleProject {
 
-    override val isAndroidModule: Boolean = false
-
     override fun findByPath(path: String): IGradleProject? {
-        if (path == this.path) {
+        if (path == this.projectPath) {
             return this
         }
 

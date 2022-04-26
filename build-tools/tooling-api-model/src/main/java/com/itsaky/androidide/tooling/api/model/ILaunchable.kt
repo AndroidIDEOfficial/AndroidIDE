@@ -23,6 +23,6 @@ package com.itsaky.androidide.tooling.api.model
  * @author Akash Yadav
  */
 interface ILaunchable {
-    val displayName: String
-    val isPublic: Boolean
+    val displayName: String?
+    val isPublic: Boolean?
 }

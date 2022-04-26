@@ -20,11 +20,19 @@ package com.itsaky.androidide.tooling.impl.util;
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.android.builder.model.v2.models.AndroidProject;
+import com.google.gson.GsonBuilder;
 import com.itsaky.androidide.tooling.api.model.IGradleProject;
+import com.itsaky.androidide.tooling.api.model.IGradleTask;
+import com.itsaky.androidide.tooling.api.model.internal.DefaultGradleTask;
+import com.itsaky.androidide.tooling.api.model.internal.util.ProjectBuilder;
+import com.itsaky.androidide.tooling.api.util.ToolingClientLauncher;
 import com.itsaky.androidide.utils.ILogger;
 
+import org.gradle.tooling.ConfigurableLauncher;
+import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.model.GradleProject;
+import org.gradle.tooling.model.GradleTask;
 
 /**
  * @author Akash Yadav
@@ -34,23 +42,92 @@ public class ProjectReader {
     private static final ILogger LOG = newInstance("test");
 
     public static IGradleProject read(ProjectConnection connection) {
-        final var watch = new StopWatch("Read eclipse project from connection");
+        final var watch = new StopWatch("Read project from connection");
         final var gradle = connection.getModel(GradleProject.class);
         if (gradle == null) {
             LOG.error("Cannot build model for", GradleProject.class);
             return null;
+        } else {
+            watch.lap("Built " + GradleProject.class.getName() + " model");
         }
 
-        final var android =
-                connection
-                        .model(AndroidProject.class)
-                        .withArguments("-Pandroid.injected.build.model.v2=true")
-                        .get();
-        LOG.debug(android);
-        watch.log();
+        final var root = buildFromModel(gradle, false, true);
 
-        return null;
+        for (var sub : gradle.getChildren()) {
+            LOG.debug("Creating project connection for sub-project:", sub.getPath());
+            final var subConnection =
+                    GradleConnector.newConnector()
+                            .forProjectDirectory(sub.getProjectDirectory())
+                            .connect();
+            watch.lapFromLast("Project connection for sub project created");
+
+            final var modelBuilder = subConnection.model(AndroidProject.class);
+            addProperty(modelBuilder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
+
+            final AndroidProject android;
+            try {
+                android = modelBuilder.get();
+            } catch (Throwable e) {
+                LOG.error("Unable to get AndroidProject model", e.getMessage());
+                continue;
+            }
+
+            watch.lapFromLast("Built " + AndroidProject.class.getName() + " model");
+            LOG.debug("AndroidProject model for", sub.getPath(), "is", android);
+        }
+
+        final var gsonBuilder = new GsonBuilder();
+        ToolingClientLauncher.configureGson(gsonBuilder);
+        LOG.debug(
+                "Built",
+                IGradleProject.class.getName(),
+                "model:",
+                gsonBuilder.create().toJson(root));
+
+        watch.log();
+        return root;
     }
 
-    public static IGradleProject read(AndroidProject android) {}
+    private static void addProperty(
+            ConfigurableLauncher<?> launcher, String property, Object value) {
+        launcher.addArguments(String.format("-P%s=%s", property, value));
+    }
+
+    private static IGradleProject buildFromModel(
+            GradleProject gradle, boolean fillSubprojects, boolean fillTasks) {
+        final var builder = new ProjectBuilder();
+        builder.setName(gradle.getName());
+        builder.setDescription(gradle.getDescription());
+        builder.setPath(gradle.getPath());
+        builder.setProjectDir(gradle.getProjectDirectory());
+        builder.setBuildDir(gradle.getBuildDirectory());
+        builder.setBuildScript(gradle.getBuildScript().getSourceFile());
+
+        final var project = builder.buildGradleProject();
+
+        if (fillSubprojects) {
+            for (final var subGradle : gradle.getChildren()) {
+                project.getSubprojects().add(buildFromModel(subGradle, true, fillTasks));
+            }
+        }
+
+        if (fillTasks) {
+            for (final var task : gradle.getTasks()) {
+                project.getTasks().add(buildFromModel(project, task));
+            }
+        }
+
+        return project;
+    }
+
+    private static IGradleTask buildFromModel(IGradleProject project, GradleTask task) {
+        return new DefaultGradleTask(
+                task.getName(),
+                task.getDescription(),
+                task.getGroup(),
+                task.getPath(),
+                task.getDisplayName(),
+                task.isPublic(),
+                project.getProjectPath());
+    }
 }

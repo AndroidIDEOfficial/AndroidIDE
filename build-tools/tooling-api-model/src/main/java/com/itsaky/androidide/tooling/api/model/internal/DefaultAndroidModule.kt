@@ -25,7 +25,7 @@ import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.itsaky.androidide.tooling.api.model.IAndroidModule
 import com.itsaky.androidide.tooling.api.model.IGradleProject
-import com.itsaky.androidide.tooling.api.model.IGradleTask
+import com.itsaky.androidide.tooling.api.model.ITask
 import java.io.File
 
 /**
@@ -34,15 +34,15 @@ import java.io.File
  * @author Akash Yadav
  */
 class DefaultAndroidModule(
-    override var name: String,
-    override var description: String,
+    name: String?,
+    description: String?,
+    projectDir: File?,
+    buildDir: File?,
+    buildScript: File?,
+    parent: IGradleProject?,
+    subprojects: List<IGradleProject>,
+    tasks: List<ITask>,
     override var path: String,
-    override var projectDir: File,
-    override var buildDir: File,
-    override var buildScript: File,
-    override var parent: IGradleProject?,
-    override var subprojects: List<IGradleProject>,
-    override var tasks: List<IGradleTask>,
     override var androidTestNamespace: String?,
     override var bootClasspath: Collection<File>,
     override var buildFolder: File,
@@ -65,19 +65,17 @@ class DefaultAndroidModule(
         name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks),
     IAndroidModule {
 
-    override val isAndroidModule: Boolean = true
-
     fun copy(): IAndroidModule {
         return DefaultAndroidModule(
             name,
             description,
-            path,
             projectDir,
             buildDir,
             buildScript,
             parent,
             subprojects,
             tasks,
+            path,
             androidTestNamespace,
             bootClasspath,
             buildFolder,

@@ -25,18 +25,16 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 interface IGradleProject : Serializable {
-    val name: String
-    val description: String
-    val path: String
-    val projectDir: File
-    val buildDir: File
-    val buildScript: File
+    val name: String?
+    val description: String?
+    val projectPath: String?
+    val projectDir: File?
+    val buildDir: File?
+    val buildScript: File?
     
     val parent: IGradleProject?
     val subprojects: List<IGradleProject>
-    val tasks: List<IGradleTask>
-
-    val isAndroidModule: Boolean
+    val tasks: List<ITask>
 
     /**
      * Finds the project with the given project path.

@@ -28,7 +28,7 @@ import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.itsaky.androidide.tooling.api.model.IAndroidModule
 import com.itsaky.androidide.tooling.api.model.IGradleProject
-import com.itsaky.androidide.tooling.api.model.IGradleTask
+import com.itsaky.androidide.tooling.api.model.ITask
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidModule
 import com.itsaky.androidide.tooling.api.model.internal.DefaultGradleProject
 import java.io.File
@@ -39,32 +39,32 @@ import java.io.File
  * @author Akash Yadav
  */
 class ProjectBuilder {
-    private var name: String = ""
-    private var description: String = ""
-    private var path: String = ""
-    private var projectDir: File = File("<no_path>")
-    private var buildDir: File = File("<no_path>")
-    private var buildScript: File = File("<no_path>")
-    private var parent: IGradleProject? = null
-    private var subprojects: List<IGradleProject> = mutableListOf()
-    private var tasks: List<IGradleTask> = mutableListOf()
-    private var androidTestNamespace: String = ""
-    private var bootClasspath: Collection<File> = mutableListOf()
-    private var buildFolder: File = File("<no_path>")
-    private var buildName: String = ""
-    private var buildTypeSourceSets: Collection<SourceSetContainer> = mutableListOf()
-    private var dynamicFeatures: Collection<String>? = mutableListOf()
-    private var flags: AndroidGradlePluginProjectFlags = NoOpAndroidGradlePluginProjectFlags()
-    private var javaCompileOptions: JavaCompileOptions = DefaultJavaCompileOptions()
-    private var lintRuleJars: List<File> = mutableListOf()
-    private var mainSourceSet: SourceSetContainer = DefaultSourceSetContainer()
-    private var namespace: String = ""
-    private var productFlavorSourceSets: Collection<SourceSetContainer> = mutableListOf()
-    private var projectType: ProjectType = APPLICATION
-    private var resourcePrefix: String = ""
-    private var testFixturesNamespace: String = ""
-    private var variants: Collection<Variant> = mutableListOf()
-    private var viewBindingOptions: ViewBindingOptions? = null
+    var name: String? = null
+    var description: String? = null
+    var path: String = ":"
+    var projectDir: File? = null
+    var buildDir: File? = null
+    var buildScript: File? = null
+    var parent: IGradleProject? = null
+    var subprojects: List<IGradleProject> = mutableListOf()
+    var tasks: List<ITask> = mutableListOf()
+    var androidTestNamespace: String = ""
+    var bootClasspath: Collection<File> = mutableListOf()
+    var buildFolder: File = File("<no_path>")
+    var buildName: String = ""
+    var buildTypeSourceSets: Collection<SourceSetContainer> = mutableListOf()
+    var dynamicFeatures: Collection<String>? = mutableListOf()
+    var flags: AndroidGradlePluginProjectFlags = NoOpAndroidGradlePluginProjectFlags()
+    var javaCompileOptions: JavaCompileOptions = DefaultJavaCompileOptions()
+    var lintRuleJars: List<File> = mutableListOf()
+    var mainSourceSet: SourceSetContainer = DefaultSourceSetContainer()
+    var namespace: String = ""
+    var productFlavorSourceSets: Collection<SourceSetContainer> = mutableListOf()
+    var projectType: ProjectType = APPLICATION
+    var resourcePrefix: String = ""
+    var testFixturesNamespace: String = ""
+    var variants: Collection<Variant> = mutableListOf()
+    var viewBindingOptions: ViewBindingOptions? = null
 
     fun buildGradleProject(): IGradleProject {
         return DefaultGradleProject(
@@ -75,13 +75,13 @@ class ProjectBuilder {
         DefaultAndroidModule(
             name,
             description,
-            path,
             projectDir,
             buildDir,
             buildScript,
             parent,
             subprojects,
             tasks,
+            path,
             androidTestNamespace,
             bootClasspath,
             buildFolder,

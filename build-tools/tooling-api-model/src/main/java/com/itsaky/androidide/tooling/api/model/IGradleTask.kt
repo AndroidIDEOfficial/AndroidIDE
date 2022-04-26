@@ -21,11 +21,6 @@ package com.itsaky.androidide.tooling.api.model
  * A task in an [IGradleProject].
  * @author Akash Yadav
  */
-interface IGradleTask : ILaunchable {
-    val name: String
-    val description: String
-    val group: String
-    val path: String
-
-    val project: IGradleProject
+interface IGradleTask : ITask {
+    val projectPath: String?
 }

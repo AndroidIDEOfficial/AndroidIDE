@@ -21,12 +21,12 @@ import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.util.ToolingClientLauncher
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
-import org.eclipse.lsp4j.jsonrpc.Launcher
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -42,7 +42,7 @@ class ToolingApiImplTest {
         val client = TestClient()
         val server = launchServer(client)
 
-        server.initialize(InitializeProjectParams(getTestProject())).get()
+        val project = server.initialize(InitializeProjectParams(getTestProject())).get()
 
         val isInitialized = server.isInitialized().get()
 
@@ -55,11 +55,10 @@ class ToolingApiImplTest {
         log.debug(System.getenv())
         builder.environment().put("ANDROID_SDK_ROOT", findAndroidHome())
         val proc = builder.start()
-
+        
         Thread(Reader(proc.errorStream)).start()
         val launcher =
-            Launcher.createLauncher(
-                client, IToolingApiServer::class.java, proc.inputStream, proc.outputStream)
+            ToolingClientLauncher.createLauncher(client, proc.inputStream, proc.outputStream)
 
         launcher.startListening()
 
@@ -81,7 +80,7 @@ class ToolingApiImplTest {
         if (System.getProperty("os.name").contains("Windows")) {
             return "$home/AppData/Local/Android/Sdk"
         }
-        
+
         return "$home/android-sdk"
     }
 
