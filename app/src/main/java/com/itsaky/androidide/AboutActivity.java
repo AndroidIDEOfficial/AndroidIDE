@@ -208,8 +208,7 @@ public class AboutActivity extends StudioActivity {
     private String getFooter() {
         final String arch = android.os.Build.SUPPORTED_ABIS[0];
         try {
-            final String version =
-                    getPackageManager().getPackageInfo("com.itsaky.androidide", 0).versionName;
+            final String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             return getString(R.string.about_footer, version, arch);
         } catch (Throwable th) {
             return getString(R.string.about_footer_alternate, arch);
