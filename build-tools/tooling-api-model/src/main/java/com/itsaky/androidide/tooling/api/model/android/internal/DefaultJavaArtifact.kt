@@ -29,9 +29,10 @@ class DefaultJavaArtifact(
     override val compileTaskName: String,
     override val generatedSourceFolders: Collection<File>,
     override val ideSetupTaskNames: Set<String>,
-    override val modelSyncFiles: Collection<ModelSyncFile>,
     override val multiFlavorSourceProvider: SourceProvider?,
     override val variantSourceProvider: SourceProvider?,
     override val mockablePlatformJar: File?,
     override val runtimeResourceFolder: File?
-) : JavaArtifact
+) : JavaArtifact {
+    override val modelSyncFiles: Collection<ModelSyncFile> = emptyList()
+}

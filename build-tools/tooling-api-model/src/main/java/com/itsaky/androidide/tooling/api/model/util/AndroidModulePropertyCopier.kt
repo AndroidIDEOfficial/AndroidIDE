@@ -55,7 +55,7 @@ import com.itsaky.androidide.tooling.api.model.android.internal.DefaultViewBindi
  * @author Akash Yadav
  */
 object AndroidModulePropertyCopier {
-    
+
     fun copy(module: IdeAndroidModule): IdeAndroidModule {
         module.buildTypeSourceSets = copy(module.buildTypeSourceSets)
         module.flags = copy(module.flags)
@@ -108,7 +108,6 @@ object AndroidModulePropertyCopier {
             artifact.compileTaskName,
             artifact.generatedSourceFolders,
             artifact.ideSetupTaskNames,
-            copy(artifact.modelSyncFiles),
             copy(artifact.multiFlavorSourceProvider),
             copy(artifact.variantSourceProvider),
             artifact.mockablePlatformJar,
@@ -139,14 +138,12 @@ object AndroidModulePropertyCopier {
             copy(artifact.minSdkVersion)!!,
             artifact.signingConfigName,
             artifact.sourceGenTaskName,
-            copy(artifact.targetSdkVersionOverride),
             copy(artifact.testInfo),
             artifact.assembleTaskName,
             artifact.classesFolders,
             artifact.compileTaskName,
             artifact.generatedSourceFolders,
             artifact.ideSetupTaskNames,
-            copy(artifact.modelSyncFiles),
             copy(artifact.multiFlavorSourceProvider),
             copy(artifact.variantSourceProvider))
     }

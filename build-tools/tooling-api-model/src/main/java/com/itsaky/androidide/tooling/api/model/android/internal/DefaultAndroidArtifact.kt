@@ -44,7 +44,9 @@ class DefaultAndroidArtifact(
     override val compileTaskName: String,
     override val generatedSourceFolders: Collection<File>,
     override val ideSetupTaskNames: Set<String>,
-    override val modelSyncFiles: Collection<ModelSyncFile>,
     override val multiFlavorSourceProvider: SourceProvider?,
     override val variantSourceProvider: SourceProvider?
-) : AndroidArtifact
+) : AndroidArtifact {
+    override val targetSdkVersionOverride: ApiVersion? = null
+    override val modelSyncFiles: Collection<ModelSyncFile> = emptyList()
+}
