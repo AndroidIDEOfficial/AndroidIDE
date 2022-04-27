@@ -21,11 +21,8 @@ import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
 import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanFlag
 
 /** @author Akash Yadav */
-class DefaultAndroidGradlePluginProjectFlags(
-    override val booleanFlagMap: Map<BooleanFlag, Boolean>?
-) : AndroidGradlePluginProjectFlags {
-    constructor() : this(emptyMap())
-
+class DefaultAndroidGradlePluginProjectFlags : AndroidGradlePluginProjectFlags {
+    override var booleanFlagMap: Map<BooleanFlag, Boolean>? = null
     override fun toString(): String {
         return "DefaultAndroidGradlePluginProjectFlags(booleanFlagMap=$booleanFlagMap)"
     }

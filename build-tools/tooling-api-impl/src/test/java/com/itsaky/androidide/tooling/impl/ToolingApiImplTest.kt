@@ -46,6 +46,7 @@ class ToolingApiImplTest {
         val server = launchServer(client)
 
         val project = server.initialize(InitializeProjectParams(getTestProject())).get()
+        log.debug(project)
         assertThat(project).isNotNull()
         assertThat(project!!).isInstanceOf(IdeGradleProject::class.java)
 

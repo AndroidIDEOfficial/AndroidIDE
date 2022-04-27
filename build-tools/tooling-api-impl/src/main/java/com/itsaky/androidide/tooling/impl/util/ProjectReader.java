@@ -47,7 +47,9 @@ public class ProjectReader {
             return null;
         }
 
-        return buildProjectModel(connection, gradleModel);
+        final var project = buildProjectModel(connection, gradleModel);
+        LOG.debug(project);
+        return project;
     }
 
     private static IdeGradleProject buildProjectModel(
@@ -78,6 +80,7 @@ public class ProjectReader {
             GradleProject gradle, AndroidProject android) {
         LOG.debug("Building android module model for project:", gradle.getPath());
         final var builder = new ProjectBuilder();
+        final var copier = AndroidModulePropertyCopier.INSTANCE;
         builder.setName(gradle.getName());
         builder.setDescription(gradle.getDescription());
         builder.setPath(gradle.getPath());
@@ -85,20 +88,20 @@ public class ProjectReader {
         builder.setBuildDir(gradle.getBuildDirectory());
         builder.setBuildScript(gradle.getBuildScript().getSourceFile());
         builder.setProjectType(android.getProjectType());
-        builder.setMainSourceSet(android.getMainSourceSet());
-        builder.setBuildTypeSourceSets(android.getBuildTypeSourceSets());
-        builder.setProductFlavorSourceSets(android.getProductFlavorSourceSets());
-        builder.setVariants(android.getVariants());
+        builder.setMainSourceSet(copier.copy(android.getMainSourceSet()));
+        builder.setBuildTypeSourceSets(copier.copy(android.getBuildTypeSourceSets()));
+        builder.setProductFlavorSourceSets(copier.copy(android.getProductFlavorSourceSets()));
+        builder.setVariants(copier.copyVariants(android.getVariants()));
         builder.setBootClasspath(android.getBootClasspath());
-        builder.setJavaCompileOptions(android.getJavaCompileOptions());
+        builder.setJavaCompileOptions(copier.copy(android.getJavaCompileOptions()));
         builder.setBuildFolder(android.getBuildFolder());
         builder.setResourcePrefix(android.getResourcePrefix());
         builder.setDynamicFeatures(android.getDynamicFeatures());
-        builder.setViewBindingOptions(android.getViewBindingOptions());
-        builder.setFlags(android.getFlags());
+        builder.setViewBindingOptions(copier.copy(android.getViewBindingOptions()));
+        builder.setFlags(copier.copy(android.getFlags()));
         builder.setLintRuleJars(android.getLintRuleJars());
 
-        final var module = AndroidModulePropertyCopier.INSTANCE.copy(builder.buildAndroidModule());
+        final var module = builder.buildAndroidModule();
         addSubprojects(gradle, module);
         addTasks(gradle, module);
 

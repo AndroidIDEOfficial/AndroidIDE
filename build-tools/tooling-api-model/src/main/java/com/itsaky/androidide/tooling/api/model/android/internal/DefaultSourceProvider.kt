@@ -21,34 +21,20 @@ import com.android.builder.model.v2.ide.SourceProvider
 import java.io.File
 
 /** @author Akash Yadav */
-class DefaultSourceProvider(
-    override val aidlDirectories: Collection<File>?,
-    override val assetsDirectories: Collection<File>?,
-    override val javaDirectories: Collection<File>,
-    override val jniLibsDirectories: Collection<File>,
-    override val kotlinDirectories: Collection<File>,
-    override val manifestFile: File,
-    override val mlModelsDirectories: Collection<File>?,
-    override val name: String,
-    override val renderscriptDirectories: Collection<File>?,
-    override val resDirectories: Collection<File>?,
-    override val resourcesDirectories: Collection<File>,
-    override val shadersDirectories: Collection<File>?
-) : SourceProvider {
-    constructor() :
-        this(
-            null,
-            null,
-            emptyList(),
-            emptyList(),
-            emptyList(),
-            File("."),
-            null,
-            "",
-            null,
-            null,
-            emptyList(),
-            null)
+class DefaultSourceProvider() : SourceProvider {
+
+    override var aidlDirectories: Collection<File>? = null
+    override var assetsDirectories: Collection<File>? = null
+    override var javaDirectories: Collection<File> = emptyList()
+    override var jniLibsDirectories: Collection<File> = emptyList()
+    override var kotlinDirectories: Collection<File> = emptyList()
+    override var manifestFile: File = File(".")
+    override var mlModelsDirectories: Collection<File>? = null
+    override var name: String = ""
+    override var renderscriptDirectories: Collection<File>? = null
+    override var resDirectories: Collection<File>? = null
+    override var resourcesDirectories: Collection<File> = emptyList()
+    override var shadersDirectories: Collection<File>? = null
 
     override fun toString(): String {
         return "DefaultSourceProvider(aidlDirectories=$aidlDirectories, assetsDirectories=$assetsDirectories, javaDirectories=$javaDirectories, jniLibsDirectories=$jniLibsDirectories, kotlinDirectories=$kotlinDirectories, manifestFile=$manifestFile, mlModelsDirectories=$mlModelsDirectories, name='$name', renderscriptDirectories=$renderscriptDirectories, resDirectories=$resDirectories, resourcesDirectories=$resourcesDirectories, shadersDirectories=$shadersDirectories)"

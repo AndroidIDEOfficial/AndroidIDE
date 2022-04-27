@@ -20,12 +20,10 @@ package com.itsaky.androidide.tooling.api.model.android.internal
 import com.android.builder.model.v2.ide.TestedTargetVariant
 
 /** @author Akash Yadav */
-class DefaultTestedTargetVariant(
-    override val targetProjectPath: String,
-    override val targetVariant: String
-) : TestedTargetVariant {
-    constructor() : this("", "")
-    
+class DefaultTestedTargetVariant : TestedTargetVariant {
+    override var targetProjectPath: String = ""
+    override var targetVariant: String = ""
+
     override fun toString(): String {
         return "DefaultTestedTargetVariant(targetProjectPath='$targetProjectPath', targetVariant='$targetVariant')"
     }

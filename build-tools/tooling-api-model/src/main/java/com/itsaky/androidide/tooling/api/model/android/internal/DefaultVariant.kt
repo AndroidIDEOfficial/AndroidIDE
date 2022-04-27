@@ -23,33 +23,19 @@ import com.android.builder.model.v2.ide.TestedTargetVariant
 import com.android.builder.model.v2.ide.Variant
 
 /** @author Akash Yadav */
-class DefaultVariant(
-    override val androidTestArtifact: AndroidArtifact?,
-    override val buildType: String?,
-    override val desugaredMethods: List<String>,
-    override val displayName: String,
-    override val isInstantAppCompatible: Boolean,
-    override val mainArtifact: AndroidArtifact,
-    override val name: String,
-    override val productFlavors: List<String>,
-    override val testFixturesArtifact: AndroidArtifact?,
-    override val testedTargetVariant: TestedTargetVariant?,
-    override val unitTestArtifact: JavaArtifact?
-) : Variant {
-    constructor() :
-        this(
-            null,
-            null,
-            emptyList(),
-            "",
-            false,
-            DefaultAndroidArtifact(),
-            "",
-            emptyList(),
-            null,
-            null,
-            null)
-    
+class DefaultVariant : Variant {
+    override var androidTestArtifact: AndroidArtifact? = null
+    override var buildType: String? = null
+    override var desugaredMethods: List<String> = emptyList()
+    override var displayName: String = ""
+    override var isInstantAppCompatible: Boolean = false
+    override var mainArtifact: AndroidArtifact = DefaultAndroidArtifact()
+    override var name: String = ""
+    override var productFlavors: List<String> = emptyList()
+    override var testFixturesArtifact: AndroidArtifact? = null
+    override var testedTargetVariant: TestedTargetVariant? = null
+    override var unitTestArtifact: JavaArtifact? = null
+
     override fun toString(): String {
         return "DefaultVariant(androidTestArtifact=$androidTestArtifact, buildType=$buildType, desugaredMethods=$desugaredMethods, displayName='$displayName', isInstantAppCompatible=$isInstantAppCompatible, mainArtifact=$mainArtifact, name='$name', productFlavors=$productFlavors, testFixturesArtifact=$testFixturesArtifact, testedTargetVariant=$testedTargetVariant, unitTestArtifact=$unitTestArtifact)"
     }

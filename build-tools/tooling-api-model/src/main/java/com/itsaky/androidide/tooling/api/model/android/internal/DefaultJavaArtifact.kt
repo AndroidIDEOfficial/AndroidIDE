@@ -23,21 +23,19 @@ import com.android.builder.model.v2.ide.SourceProvider
 import java.io.File
 
 /** @author Akash Yadav */
-class DefaultJavaArtifact(
-    override val assembleTaskName: String,
-    override val classesFolders: Set<File>,
-    override val compileTaskName: String,
-    override val generatedSourceFolders: Collection<File>,
-    override val ideSetupTaskNames: Set<String>,
-    override val multiFlavorSourceProvider: SourceProvider?,
-    override val variantSourceProvider: SourceProvider?,
-    override val mockablePlatformJar: File?,
-    override val runtimeResourceFolder: File?
-) : JavaArtifact {
-    override val modelSyncFiles: Collection<ModelSyncFile> = emptyList()
+class DefaultJavaArtifact : JavaArtifact {
+    override var modelSyncFiles: Collection<ModelSyncFile> = emptyList()
 
-    constructor() : this("", emptySet(), "", emptyList(), emptySet(), null, null, null, null)
-    
+    override var assembleTaskName: String = ""
+    override var classesFolders: Set<File> = emptySet()
+    override var compileTaskName: String = ""
+    override var generatedSourceFolders: Collection<File> = emptyList()
+    override var ideSetupTaskNames: Set<String> = emptySet()
+    override var multiFlavorSourceProvider: SourceProvider? = null
+    override var variantSourceProvider: SourceProvider? = null
+    override var mockablePlatformJar: File? = null
+    override var runtimeResourceFolder: File? = null
+
     override fun toString(): String {
         return "DefaultJavaArtifact(assembleTaskName='$assembleTaskName', classesFolders=$classesFolders, compileTaskName='$compileTaskName', generatedSourceFolders=$generatedSourceFolders, ideSetupTaskNames=$ideSetupTaskNames, multiFlavorSourceProvider=$multiFlavorSourceProvider, variantSourceProvider=$variantSourceProvider, mockablePlatformJar=$mockablePlatformJar, runtimeResourceFolder=$runtimeResourceFolder, modelSyncFiles=$modelSyncFiles)"
     }

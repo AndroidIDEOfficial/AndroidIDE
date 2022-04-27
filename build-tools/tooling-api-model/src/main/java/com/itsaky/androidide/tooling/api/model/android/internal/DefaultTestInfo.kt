@@ -22,14 +22,12 @@ import com.android.builder.model.v2.ide.TestInfo.Execution
 import java.io.File
 
 /** @author Akash Yadav */
-class DefaultTestInfo(
-    override val additionalRuntimeApks: Collection<File>,
-    override val animationsDisabled: Boolean,
-    override val execution: Execution?,
-    override val instrumentedTestTaskName: String
-) : TestInfo {
-    constructor() : this(emptyList(), false, null, "")
-    
+class DefaultTestInfo : TestInfo {
+    override var additionalRuntimeApks: Collection<File> = emptyList()
+    override var animationsDisabled: Boolean = false
+    override var execution: Execution? = null
+    override var instrumentedTestTaskName: String = ""
+
     override fun toString(): String {
         return "DefaultTestInfo(additionalRuntimeApks=$additionalRuntimeApks, animationsDisabled=$animationsDisabled, execution=$execution, instrumentedTestTaskName='$instrumentedTestTaskName')"
     }

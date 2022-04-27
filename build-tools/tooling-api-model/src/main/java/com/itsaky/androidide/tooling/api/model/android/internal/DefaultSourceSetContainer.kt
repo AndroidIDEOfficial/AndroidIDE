@@ -21,14 +21,12 @@ import com.android.builder.model.v2.ide.SourceProvider
 import com.android.builder.model.v2.ide.SourceSetContainer
 
 /** @author Akash Yadav */
-class DefaultSourceSetContainer(
-    override val androidTestSourceProvider: SourceProvider?,
-    override val sourceProvider: SourceProvider,
-    override val testFixturesSourceProvider: SourceProvider?,
-    override val unitTestSourceProvider: SourceProvider?
-) : SourceSetContainer {
-    constructor() : this(null, DefaultSourceProvider(), null, null)
-    
+class DefaultSourceSetContainer : SourceSetContainer {
+    override var androidTestSourceProvider: SourceProvider? = null
+    override var sourceProvider: SourceProvider = DefaultSourceProvider()
+    override var testFixturesSourceProvider: SourceProvider? = null
+    override var unitTestSourceProvider: SourceProvider? = null
+
     override fun toString(): String {
         return "DefaultSourceSetContainer(androidTestSourceProvider=$androidTestSourceProvider, sourceProvider=$sourceProvider, testFixturesSourceProvider=$testFixturesSourceProvider, unitTestSourceProvider=$unitTestSourceProvider)"
     }

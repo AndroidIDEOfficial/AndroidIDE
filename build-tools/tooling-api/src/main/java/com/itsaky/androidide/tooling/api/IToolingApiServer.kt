@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.tooling.api
 
+import com.android.builder.model.v2.ide.SourceSetContainer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import java.util.concurrent.*
@@ -39,5 +40,5 @@ interface IToolingApiServer {
     @JsonRequest("isInitialized") fun isInitialized(): CompletableFuture<Boolean>
 
     /** Get the root project. */
-    @JsonRequest fun getRootProject(): CompletableFuture<IdeGradleProject>
+    @JsonRequest("getRootProject") fun getRootProject(): CompletableFuture<IdeGradleProject>
 }

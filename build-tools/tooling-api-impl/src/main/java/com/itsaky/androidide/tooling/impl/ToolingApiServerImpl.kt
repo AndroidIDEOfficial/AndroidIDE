@@ -25,11 +25,10 @@ import com.itsaky.androidide.tooling.impl.util.InitScriptHandler
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
-import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.ConfigurableLauncher
 import org.gradle.tooling.GradleConnector
-import org.gradle.tooling.model.HierarchicalElement
+import java.util.concurrent.*
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -55,7 +54,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
                     RuntimeException(
                         "Unable to create gradle connector for project directory: ${params.directory}"))
             }
-
+            
             val connection = this.connector!!.connect()
             stopWatch.lapFromLast("Project connection established")
 
@@ -71,15 +70,6 @@ internal class ToolingApiServerImpl : IToolingApiServer {
         }
     }
 
-    private fun ensureIsRoot(element: HierarchicalElement): HierarchicalElement {
-        var el = element
-        while (el.parent != null) {
-            el = el.parent
-        }
-
-        return el
-    }
-
     override fun isInitialized(): CompletableFuture<Boolean> {
         return CompletableFuture.supplyAsync { initialized }
     }
@@ -87,8 +77,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
     override fun getRootProject(): CompletableFuture<IdeGradleProject> {
         return CompletableFutures.computeAsync {
             assertProjectInitialized()
-
-            return@computeAsync null
+            return@computeAsync this.project
         }
     }
 

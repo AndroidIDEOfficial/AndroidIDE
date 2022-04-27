@@ -20,9 +20,10 @@ package com.itsaky.androidide.tooling.api.model.android.internal
 import com.android.builder.model.v2.ide.ApiVersion
 
 /** @author Akash Yadav */
-class DefaultApiVersion(override val apiLevel: Int, override val codename: String?) : ApiVersion {
-    constructor() : this (-1, null)
-    
+class DefaultApiVersion : ApiVersion {
+    override var apiLevel: Int = -1
+    override var codename: String? = null
+
     override fun toString(): String {
         return "DefaultApiVersion(apiLevel=$apiLevel, codename=$codename)"
     }

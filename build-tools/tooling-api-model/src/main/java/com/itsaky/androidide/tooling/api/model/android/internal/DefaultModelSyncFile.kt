@@ -23,13 +23,12 @@ import com.android.builder.model.v2.ModelSyncFile.ModelSyncType.BASIC
 import java.io.File
 
 /** @author Akash Yadav */
-class DefaultModelSyncFile(
-    override val modelSyncType: ModelSyncType,
-    override val syncFile: File,
-    override val taskName: String
-) : ModelSyncFile {
-    constructor() : this(BASIC, File("."), "")
-    
+class DefaultModelSyncFile : ModelSyncFile {
+
+    override var modelSyncType: ModelSyncType = BASIC
+    override var syncFile: File = File(".")
+    override var taskName: String = ""
+
     override fun toString(): String {
         return "DefaultModelSyncFile(modelSyncType=$modelSyncType, syncFile=$syncFile, taskName='$taskName')"
     }

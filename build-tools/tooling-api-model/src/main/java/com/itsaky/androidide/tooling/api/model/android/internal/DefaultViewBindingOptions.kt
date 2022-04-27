@@ -20,9 +20,9 @@ package com.itsaky.androidide.tooling.api.model.android.internal
 import com.android.builder.model.v2.ide.ViewBindingOptions
 
 /** @author Akash Yadav */
-class DefaultViewBindingOptions(override val isEnabled: Boolean) : ViewBindingOptions {
-    constructor() : this(false)
-    
+class DefaultViewBindingOptions : ViewBindingOptions {
+    override var isEnabled: Boolean = false
+
     override fun toString(): String {
         return "DefaultViewBindingOptions(isEnabled=$isEnabled)"
     }

@@ -21,13 +21,11 @@ import com.android.builder.model.v2.ide.BundleInfo
 import java.io.File
 
 /** @author Akash Yadav */
-class DefaultBundleInfo(
-    override val apkFromBundleTaskName: String,
-    override val apkFromBundleTaskOutputListingFile: File,
-    override val bundleTaskName: String,
-    override val bundleTaskOutputListingFile: File
-) : BundleInfo {
-    constructor() : this("", File("."), "", File("."))
+class DefaultBundleInfo : BundleInfo {
+    override var apkFromBundleTaskName: String = ""
+    override var apkFromBundleTaskOutputListingFile: File = File(".")
+    override var bundleTaskName: String = ""
+    override var bundleTaskOutputListingFile: File = File(".")
     
     override fun toString(): String {
         return "DefaultBundleInfo(apkFromBundleTaskName='$apkFromBundleTaskName', apkFromBundleTaskOutputListingFile=$apkFromBundleTaskOutputListingFile, bundleTaskName='$bundleTaskName', bundleTaskOutputListingFile=$bundleTaskOutputListingFile)"

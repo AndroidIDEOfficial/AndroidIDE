@@ -27,49 +27,27 @@ import com.android.builder.model.v2.ide.TestInfo
 import java.io.File
 
 /** @author Akash Yadav */
-class DefaultAndroidArtifact(
-    override val abiFilters: Set<String>?,
-    override val assembleTaskOutputListingFile: File?,
-    override val bundleInfo: BundleInfo?,
-    override val codeShrinker: CodeShrinker?,
-    override val generatedResourceFolders: Collection<File>,
-    override val isSigned: Boolean,
-    override val maxSdkVersion: Int?,
-    override val minSdkVersion: ApiVersion,
-    override val signingConfigName: String?,
-    override val sourceGenTaskName: String,
-    override val testInfo: TestInfo?,
-    override val assembleTaskName: String,
-    override val classesFolders: Set<File>,
-    override val compileTaskName: String,
-    override val generatedSourceFolders: Collection<File>,
-    override val ideSetupTaskNames: Set<String>,
-    override val multiFlavorSourceProvider: SourceProvider?,
-    override val variantSourceProvider: SourceProvider?
-) : AndroidArtifact {
+class DefaultAndroidArtifact : AndroidArtifact {
 
-    constructor() :
-        this(
-            emptySet(),
-            null,
-            null,
-            null,
-            emptyList(),
-            false,
-            null,
-            DefaultApiVersion(),
-            null,
-            "",
-            null,
-            "",
-            emptySet(),
-            "",
-            emptyList(),
-            emptySet(),
-            null,
-            null)
-
-    override val targetSdkVersionOverride: ApiVersion? = null
+    override var abiFilters: Set<String>? = null
+    override var assembleTaskOutputListingFile: File? = null
+    override var bundleInfo: BundleInfo? = null
+    override var codeShrinker: CodeShrinker? = null
+    override var generatedResourceFolders: Collection<File> = emptyList()
+    override var isSigned: Boolean = false
+    override var maxSdkVersion: Int? = null
+    override var minSdkVersion: ApiVersion = DefaultApiVersion()
+    override var signingConfigName: String? = null
+    override var sourceGenTaskName: String = ""
+    override var testInfo: TestInfo? = null
+    override var assembleTaskName: String = ""
+    override var classesFolders: Set<File> = emptySet()
+    override var compileTaskName: String = ""
+    override var generatedSourceFolders: Collection<File> = emptyList()
+    override var ideSetupTaskNames: Set<String> = emptySet()
+    override var multiFlavorSourceProvider: SourceProvider? = null
+    override var variantSourceProvider: SourceProvider? = null
+    override var targetSdkVersionOverride: ApiVersion? = null
     override val modelSyncFiles: Collection<ModelSyncFile> = emptyList()
 
     override fun toString(): String {

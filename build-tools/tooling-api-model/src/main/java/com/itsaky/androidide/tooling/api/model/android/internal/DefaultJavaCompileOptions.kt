@@ -20,13 +20,11 @@ package com.itsaky.androidide.tooling.api.model.android.internal
 import com.android.builder.model.v2.ide.JavaCompileOptions
 
 /** @author Akash Yadav */
-class DefaultJavaCompileOptions(
-    override val encoding: String,
-    override val isCoreLibraryDesugaringEnabled: Boolean,
-    override val sourceCompatibility: String,
-    override val targetCompatibility: String
-) : JavaCompileOptions {
-    constructor() : this("", false, "", "")
+class DefaultJavaCompileOptions : JavaCompileOptions {
+    override var encoding: String = ""
+    override var isCoreLibraryDesugaringEnabled: Boolean = false
+    override var sourceCompatibility: String = ""
+    override var targetCompatibility: String = ""
 
     override fun toString(): String {
         return "DefaultJavaCompileOptions(encoding='$encoding', isCoreLibraryDesugaringEnabled=$isCoreLibraryDesugaringEnabled, sourceCompatibility='$sourceCompatibility', targetCompatibility='$targetCompatibility')"

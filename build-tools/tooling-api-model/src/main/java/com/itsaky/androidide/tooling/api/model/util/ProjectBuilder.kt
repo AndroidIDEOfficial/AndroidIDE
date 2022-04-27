@@ -17,21 +17,22 @@
 package com.itsaky.androidide.tooling.api.model.util
 
 import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
-import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanFlag
 import com.android.builder.model.v2.ide.JavaCompileOptions
 import com.android.builder.model.v2.ide.ProjectType
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
-import com.android.builder.model.v2.ide.SourceProvider
 import com.android.builder.model.v2.ide.SourceSetContainer
 import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultAndroidGradlePluginProjectFlags
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultJavaCompileOptions
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultSourceSetContainer
 import java.io.File
 
 /**
- * Builds instances of [IAndroidProject]
+ * Builds instances of [IdeGradleProject].
  *
  * @author Akash Yadav
  */
@@ -49,7 +50,7 @@ class ProjectBuilder {
     var buildFolder: File = File("<no_path>")
     var buildTypeSourceSets: Collection<SourceSetContainer> = mutableListOf()
     var dynamicFeatures: Collection<String>? = mutableListOf()
-    var flags: AndroidGradlePluginProjectFlags = NoOpAndroidGradlePluginProjectFlags()
+    var flags: AndroidGradlePluginProjectFlags = DefaultAndroidGradlePluginProjectFlags()
     var javaCompileOptions: JavaCompileOptions = DefaultJavaCompileOptions()
     var lintRuleJars: List<File> = mutableListOf()
     var mainSourceSet: SourceSetContainer = DefaultSourceSetContainer()
@@ -88,37 +89,4 @@ class ProjectBuilder {
             resourcePrefix,
             variants,
             viewBindingOptions)
-
-    class NoOpAndroidGradlePluginProjectFlags : AndroidGradlePluginProjectFlags {
-        override val booleanFlagMap: Map<BooleanFlag, Boolean> = mutableMapOf()
-    }
-
-    class DefaultJavaCompileOptions : JavaCompileOptions {
-        override val encoding: String = "UTF-8"
-        override val isCoreLibraryDesugaringEnabled: Boolean = false
-        override val sourceCompatibility: String = "11"
-        override val targetCompatibility: String = "11"
-    }
-
-    class DefaultSourceSetContainer : SourceSetContainer {
-        override val androidTestSourceProvider: SourceProvider? = null
-        override val sourceProvider: SourceProvider = DefaultSourceProvider()
-        override val testFixturesSourceProvider: SourceProvider? = null
-        override val unitTestSourceProvider: SourceProvider? = null
-
-        class DefaultSourceProvider : SourceProvider {
-            override val aidlDirectories: Collection<File>? = null
-            override val assetsDirectories: Collection<File>? = null
-            override val javaDirectories = mutableListOf<File>()
-            override val jniLibsDirectories: Collection<File> = mutableListOf()
-            override val kotlinDirectories: Collection<File> = mutableListOf()
-            override val manifestFile = File("<no_path>")
-            override val mlModelsDirectories: Collection<File>? = null
-            override val name: String = ""
-            override val renderscriptDirectories: Collection<File>? = null
-            override val resDirectories: Collection<File>? = null
-            override val resourcesDirectories: Collection<File> = mutableListOf()
-            override val shadersDirectories: Collection<File>? = null
-        }
-    }
 }
