@@ -17,18 +17,47 @@
 
 package com.itsaky.androidide.tooling.api.util;
 
+import com.android.builder.model.AndroidArtifact;
+import com.android.builder.model.v2.ModelSyncFile;
+import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags;
+import com.android.builder.model.v2.ide.ApiVersion;
+import com.android.builder.model.v2.ide.BundleInfo;
+import com.android.builder.model.v2.ide.JavaArtifact;
+import com.android.builder.model.v2.ide.JavaCompileOptions;
+import com.android.builder.model.v2.ide.SourceProvider;
+import com.android.builder.model.v2.ide.SourceSetContainer;
+import com.android.builder.model.v2.ide.TestInfo;
+import com.android.builder.model.v2.ide.TestedTargetVariant;
+import com.android.builder.model.v2.ide.Variant;
+import com.android.builder.model.v2.ide.ViewBindingOptions;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
 import com.itsaky.androidide.tooling.api.model.IdeLaunchable;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultAndroidArtifact;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultAndroidGradlePluginProjectFlags;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultApiVersion;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultBundleInfo;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultJavaArtifact;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultJavaCompileOptions;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultModelSyncFile;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultSourceProvider;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultSourceSetContainer;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultTestInfo;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultTestedTargetVariant;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultVariant;
+import com.itsaky.androidide.tooling.api.model.android.internal.DefaultViewBindingOptions;
 
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
+import java.util.function.Function;
 
 /**
  * Utility class for launching {@link IToolingApiClient} and {@link IToolingApiServer}.
@@ -53,14 +82,39 @@ public class ToolingApiLauncher {
     }
 
     public static void configureGson(GsonBuilder builder) {
+        builder.registerTypeAdapter(
+                AndroidArtifact.class, creator(it -> new DefaultAndroidArtifact()));
+        builder.registerTypeAdapter(
+                AndroidGradlePluginProjectFlags.class,
+                creator(it -> new DefaultAndroidGradlePluginProjectFlags()));
+        builder.registerTypeAdapter(ApiVersion.class, creator(it -> new DefaultApiVersion()));
+        builder.registerTypeAdapter(BundleInfo.class, creator(it -> new DefaultBundleInfo()));
+        builder.registerTypeAdapter(JavaArtifact.class, creator(it -> new DefaultJavaArtifact()));
+        builder.registerTypeAdapter(
+                JavaCompileOptions.class, creator(it -> new DefaultJavaCompileOptions()));
+        builder.registerTypeAdapter(ModelSyncFile.class, creator(it -> new DefaultModelSyncFile()));
+        builder.registerTypeAdapter(
+                SourceProvider.class, creator(it -> new DefaultSourceProvider()));
+        builder.registerTypeAdapter(
+                SourceSetContainer.class, creator(it -> new DefaultSourceSetContainer()));
+        builder.registerTypeAdapter(
+                TestedTargetVariant.class, creator(it -> new DefaultTestedTargetVariant()));
+        builder.registerTypeAdapter(TestInfo.class, creator(it -> new DefaultTestInfo()));
+        builder.registerTypeAdapter(Variant.class, creator(it -> new DefaultVariant()));
+        builder.registerTypeAdapter(
+                ViewBindingOptions.class, creator(it -> new DefaultViewBindingOptions()));
         builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType")
+                RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType", true)
                         .registerSubtype(IdeAndroidModule.class, IdeAndroidModule.class.getName())
                         .registerSubtype(IdeGradleProject.class, IdeGradleProject.class.getName()));
         builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType")
+                RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType", true)
                         .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName())
                         .registerSubtype(IdeLaunchable.class, IdeLaunchable.class.getName()));
+    }
+
+    private static <T> InstanceCreator<T> creator(Function<Type, T> create) {
+        return create::apply;
     }
 
     public static Launcher<IToolingApiClient> createServerLauncher(

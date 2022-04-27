@@ -26,4 +26,6 @@ class DefaultSourceSetContainer(
     override val sourceProvider: SourceProvider,
     override val testFixturesSourceProvider: SourceProvider?,
     override val unitTestSourceProvider: SourceProvider?
-) : SourceSetContainer
+) : SourceSetContainer {
+    constructor() : this(null, DefaultSourceProvider(), null, null)
+}

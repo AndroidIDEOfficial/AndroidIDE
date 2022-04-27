@@ -35,4 +35,18 @@ class DefaultVariant(
     override val testFixturesArtifact: AndroidArtifact?,
     override val testedTargetVariant: TestedTargetVariant?,
     override val unitTestArtifact: JavaArtifact?
-) : Variant
+) : Variant {
+    constructor() :
+        this(
+            null,
+            null,
+            emptyList(),
+            "",
+            false,
+            DefaultAndroidArtifact(),
+            "",
+            emptyList(),
+            null,
+            null,
+            null)
+}

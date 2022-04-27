@@ -22,6 +22,7 @@ import com.google.gson.GsonBuilder
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.utils.ILogger
@@ -46,7 +47,7 @@ class ToolingApiImplTest {
 
         val project = server.initialize(InitializeProjectParams(getTestProject())).get()
         assertThat(project).isNotNull()
-        assertThat(project).isInstanceOf(IdeGradleProject::class.java)
+        assertThat(project!!).isInstanceOf(IdeGradleProject::class.java)
 
         val builder = GsonBuilder()
         ToolingApiLauncher.configureGson(builder)
@@ -56,8 +57,18 @@ class ToolingApiImplTest {
         val isInitialized = server.isInitialized().get()
         log.debug("Is server initialized: $isInitialized")
         assertThat(isInitialized).isTrue()
+
+        val app = project.findByPath(":app")
+        assertThat(app).isNotNull()
+        assertThat(app).isInstanceOf(IdeAndroidModule::class.java)
+
+        val javaLibrary = project.findByPath(":java-library")
+        assertThat(javaLibrary).isNotNull()
+        assertThat(javaLibrary).isInstanceOf(IdeGradleProject::class.java)
+
+        assertThat(project.findByPath(":does-not-exist")).isNull()
     }
-    
+
     private fun launchServer(client: IToolingApiClient): IToolingApiServer {
         val builder = ProcessBuilder("java", "-jar", "./build/libs/tooling-api-all.jar")
         log.debug(System.getenv())

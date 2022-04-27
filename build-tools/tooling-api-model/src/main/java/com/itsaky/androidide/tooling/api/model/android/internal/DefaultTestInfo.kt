@@ -27,4 +27,6 @@ class DefaultTestInfo(
     override val animationsDisabled: Boolean,
     override val execution: Execution?,
     override val instrumentedTestTaskName: String
-) : TestInfo {}
+) : TestInfo {
+    constructor() : this(emptyList(), false, null, "")
+}

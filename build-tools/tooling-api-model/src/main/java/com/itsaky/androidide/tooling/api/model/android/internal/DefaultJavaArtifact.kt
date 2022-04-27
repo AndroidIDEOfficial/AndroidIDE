@@ -35,4 +35,6 @@ class DefaultJavaArtifact(
     override val runtimeResourceFolder: File?
 ) : JavaArtifact {
     override val modelSyncFiles: Collection<ModelSyncFile> = emptyList()
+
+    constructor() : this("", emptySet(), "", emptyList(), emptySet(), null, null, null, null)
 }

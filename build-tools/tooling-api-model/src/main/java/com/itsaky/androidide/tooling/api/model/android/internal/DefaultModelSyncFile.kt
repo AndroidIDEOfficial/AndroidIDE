@@ -19,6 +19,7 @@ package com.itsaky.androidide.tooling.api.model.android.internal
 
 import com.android.builder.model.v2.ModelSyncFile
 import com.android.builder.model.v2.ModelSyncFile.ModelSyncType
+import com.android.builder.model.v2.ModelSyncFile.ModelSyncType.BASIC
 import java.io.File
 
 /** @author Akash Yadav */
@@ -26,4 +27,6 @@ class DefaultModelSyncFile(
     override val modelSyncType: ModelSyncType,
     override val syncFile: File,
     override val taskName: String
-) : ModelSyncFile {}
+) : ModelSyncFile {
+    constructor() : this(BASIC, File("."), "")
+}

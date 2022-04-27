@@ -34,4 +34,19 @@ class DefaultSourceProvider(
     override val resDirectories: Collection<File>?,
     override val resourcesDirectories: Collection<File>,
     override val shadersDirectories: Collection<File>?
-) : SourceProvider
+) : SourceProvider {
+    constructor() :
+        this(
+            null,
+            null,
+            emptyList(),
+            emptyList(),
+            emptyList(),
+            File("."),
+            null,
+            "",
+            null,
+            null,
+            emptyList(),
+            null)
+}

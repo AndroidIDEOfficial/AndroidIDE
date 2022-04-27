@@ -47,6 +47,28 @@ class DefaultAndroidArtifact(
     override val multiFlavorSourceProvider: SourceProvider?,
     override val variantSourceProvider: SourceProvider?
 ) : AndroidArtifact {
+
+    constructor() :
+        this(
+            emptySet(),
+            null,
+            null,
+            null,
+            emptyList(),
+            false,
+            null,
+            DefaultApiVersion(),
+            null,
+            "",
+            null,
+            "",
+            emptySet(),
+            "",
+            emptyList(),
+            emptySet(),
+            null,
+            null)
+
     override val targetSdkVersionOverride: ApiVersion? = null
     override val modelSyncFiles: Collection<ModelSyncFile> = emptyList()
 }

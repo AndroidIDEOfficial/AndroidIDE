@@ -23,4 +23,6 @@ import com.android.builder.model.v2.ide.TestedTargetVariant
 class DefaultTestedTargetVariant(
     override val targetProjectPath: String,
     override val targetVariant: String
-) : TestedTargetVariant {}
+) : TestedTargetVariant {
+    constructor() : this("", "")
+}

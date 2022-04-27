@@ -25,4 +25,6 @@ class DefaultJavaCompileOptions(
     override val isCoreLibraryDesugaringEnabled: Boolean,
     override val sourceCompatibility: String,
     override val targetCompatibility: String
-) : JavaCompileOptions
+) : JavaCompileOptions {
+    constructor() : this("", false, "", "")
+}

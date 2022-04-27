@@ -20,4 +20,6 @@ package com.itsaky.androidide.tooling.api.model.android.internal
 import com.android.builder.model.v2.ide.ViewBindingOptions
 
 /** @author Akash Yadav */
-class DefaultViewBindingOptions(override val isEnabled: Boolean) : ViewBindingOptions {}
+class DefaultViewBindingOptions(override val isEnabled: Boolean) : ViewBindingOptions {
+    constructor() : this(false)
+}

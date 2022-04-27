@@ -23,4 +23,6 @@ import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanF
 /** @author Akash Yadav */
 class DefaultAndroidGradlePluginProjectFlags(
     override val booleanFlagMap: Map<BooleanFlag, Boolean>?
-) : AndroidGradlePluginProjectFlags
+) : AndroidGradlePluginProjectFlags {
+    constructor() : this(emptyMap())
+}
