@@ -55,27 +55,28 @@ import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.utils.LSPUtils;
+import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.models.Range;
 
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.lang.EmptyLanguage;
+import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.widget.component.Magnifier;
+
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.lang.EmptyLanguage;
-import io.github.rosemoe.sora.text.Content;
 
 /**
  * A view that handles opened code editors.
@@ -170,29 +171,27 @@ public class CodeEditorView extends FrameLayout {
     }
 
     public boolean save() {
-
-        if (getFile() == null) {
+        final var file = getFile();
+        if (file == null) {
             LOG.error("Cannot save file. File instance is null.");
             return false;
         }
 
-        final var file = getFile();
         if (!isModified() && file.exists()) {
-            LOG.info(getFile().getName());
+            LOG.info(file.getName());
             LOG.info("File was not modified. Skipping save operation.");
             return false;
         }
 
         final var text = getEditor().getText().toString();
 
-        boolean result = FileIOUtils.writeFileFromString(file, text);
-
-        if (result != false) {
+        try {
+            FileUtil.writeFile(file, text);
             notifySaved();
             isModified = false;
-            return result;
-        } else {
-            LOG.error("Failed to save file", file);
+            return true;
+        } catch (IOException io) {
+            LOG.error("Failed to save file", file, io);
             return false;
         }
     }
