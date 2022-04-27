@@ -64,7 +64,7 @@ public class ProjectReader {
 
             return buildAndroidProjectModel(gradleModel, android);
         } catch (Throwable error) {
-            LOG.warn("Project", gradleModel.getPath(), "is most likely not a gradle project");
+            LOG.warn("Project", gradleModel.getPath(), "is most likely not an Android project");
             try {
                 return buildGradleProjectModel(gradleModel);
             } catch (Throwable e) {
