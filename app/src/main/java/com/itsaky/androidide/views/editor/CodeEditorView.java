@@ -176,23 +176,23 @@ public class CodeEditorView extends FrameLayout {
             return false;
         }
 
-        final var path = getFile().toPath();
-        if (!isModified() && Files.exists(path)) {
+        final var file = getFile();
+        if (!isModified() && file.exists()) {
             LOG.info(getFile().getName());
             LOG.info("File was not modified. Skipping save operation.");
             return false;
         }
 
-        final var lines = getLines(getEditor().getText());
-        try {
+        final var text = getEditor().getText().toString();
 
-            Files.write(getFile().toPath(), lines);
+        boolean result = FileIOUtils.writeFileFromString(file, text);
+
+        if (result != false) {
             notifySaved();
             isModified = false;
-
-            return true;
-        } catch (Throwable e) {
-            LOG.error("Failed to save file", getFile(), "\n", e);
+            return result;
+        } else {
+            LOG.error("Failed to save file", file);
             return false;
         }
     }
@@ -307,8 +307,9 @@ public class CodeEditorView extends FrameLayout {
         boolean inputFlagsChanged =
                 isFirstCreate || ConstantsBridge.EDITOR_PREF_VISIBLE_PASSWORD_CHANGED;
         boolean wordWrapChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED;
-        boolean magnifierChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED;
-       
+        boolean magnifierChanged =
+                isFirstCreate || ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED;
+
         final PreferenceManager prefs = StudioApp.getInstance().getPrefManager();
 
         if (sizeChanged) {
@@ -365,18 +366,18 @@ public class CodeEditorView extends FrameLayout {
             // (PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
             ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = false;
         }
-        
-        if(wordWrapChanged) {
+
+        if (wordWrapChanged) {
             var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_WORD_WRAP, false);
             binding.editor.setWordwrap(enabled);
             ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED = false;
-         }
-         
-         if(magnifierChanged) {
-             var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_USE_MAGNIFER, true);
+        }
+
+        if (magnifierChanged) {
+            var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_USE_MAGNIFER, true);
             binding.editor.getComponent(Magnifier.class).setEnabled(enabled);
             ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED = false;
-          }
+        }
 
         isFirstCreate = false;
     }
@@ -439,6 +440,3 @@ public class CodeEditorView extends FrameLayout {
         notifySaved();
     }
 }
-
-
-
