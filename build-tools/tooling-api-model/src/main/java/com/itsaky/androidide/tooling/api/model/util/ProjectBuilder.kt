@@ -45,21 +45,17 @@ class ProjectBuilder {
     var parent: IdeGradleProject? = null
     var subprojects: List<IdeGradleProject> = mutableListOf()
     var tasks: List<IdeGradleTask> = mutableListOf()
-    var androidTestNamespace: String? = ""
     var bootClasspath: Collection<File> = mutableListOf()
     var buildFolder: File = File("<no_path>")
-    var buildName: String = ""
     var buildTypeSourceSets: Collection<SourceSetContainer> = mutableListOf()
     var dynamicFeatures: Collection<String>? = mutableListOf()
     var flags: AndroidGradlePluginProjectFlags = NoOpAndroidGradlePluginProjectFlags()
     var javaCompileOptions: JavaCompileOptions = DefaultJavaCompileOptions()
     var lintRuleJars: List<File> = mutableListOf()
     var mainSourceSet: SourceSetContainer = DefaultSourceSetContainer()
-    var namespace: String = ""
     var productFlavorSourceSets: Collection<SourceSetContainer> = mutableListOf()
     var projectType: ProjectType = APPLICATION
     var resourcePrefix: String? = ""
-    var testFixturesNamespace: String? = ""
     var variants: Collection<Variant> = mutableListOf()
     var viewBindingOptions: ViewBindingOptions? = null
 
@@ -79,21 +75,17 @@ class ProjectBuilder {
             subprojects,
             tasks,
             path,
-            androidTestNamespace,
             bootClasspath,
             buildFolder,
-            buildName,
             buildTypeSourceSets,
             dynamicFeatures,
             flags,
             javaCompileOptions,
             lintRuleJars,
             mainSourceSet,
-            namespace,
             productFlavorSourceSets,
             projectType,
             resourcePrefix,
-            testFixturesNamespace,
             variants,
             viewBindingOptions)
 

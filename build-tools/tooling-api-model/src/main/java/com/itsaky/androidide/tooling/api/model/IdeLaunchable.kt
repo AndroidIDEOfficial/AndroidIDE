@@ -22,4 +22,5 @@ package com.itsaky.androidide.tooling.api.model
  * @author Akash Yadav
  */
 open class IdeLaunchable(val displayName: String?, val isPublic: Boolean?) {
+    protected val gsonType: String = javaClass.name
 }

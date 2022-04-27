@@ -40,28 +40,24 @@ class IdeAndroidModule(
     subprojects: List<IdeGradleProject>,
     tasks: List<IdeGradleTask>,
     override var path: String,
-    override var androidTestNamespace: String?,
     override var bootClasspath: Collection<File>,
     override var buildFolder: File,
-    override var buildName: String,
     override var buildTypeSourceSets: Collection<SourceSetContainer>,
     override var dynamicFeatures: Collection<String>?,
     override var flags: AndroidGradlePluginProjectFlags,
     override var javaCompileOptions: JavaCompileOptions,
     override var lintRuleJars: List<File>,
     override var mainSourceSet: SourceSetContainer,
-    override var namespace: String,
     override var productFlavorSourceSets: Collection<SourceSetContainer>,
     override var projectType: ProjectType,
     override var resourcePrefix: String?,
-    override var testFixturesNamespace: String?,
     override var variants: Collection<Variant>,
     override var viewBindingOptions: ViewBindingOptions?
 ) :
     IdeGradleProject(
         name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks),
     AndroidProject {
-    
+
     fun copy(): IdeAndroidModule {
         return IdeAndroidModule(
             name,
@@ -73,22 +69,24 @@ class IdeAndroidModule(
             subprojects,
             tasks,
             path,
-            androidTestNamespace,
             bootClasspath,
             buildFolder,
-            buildName,
             buildTypeSourceSets,
             dynamicFeatures,
             flags,
             javaCompileOptions,
             lintRuleJars,
             mainSourceSet,
-            namespace,
             productFlavorSourceSets,
             projectType,
             resourcePrefix,
-            testFixturesNamespace,
             variants,
             viewBindingOptions)
     }
+
+    // These properties are not supported on newer versions
+    override val androidTestNamespace: String? = null
+    override val buildName: String = ""
+    override val namespace: String = ""
+    override val testFixturesNamespace: String? = ""
 }

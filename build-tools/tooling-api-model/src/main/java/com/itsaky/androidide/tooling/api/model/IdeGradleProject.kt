@@ -34,6 +34,8 @@ open class IdeGradleProject(
     val tasks: List<IdeGradleTask>,
 ) {
 
+    protected val gsonType: String = javaClass.name
+
     fun findByPath(path: String): IdeGradleProject? {
         if (path == this.projectPath) {
             return this

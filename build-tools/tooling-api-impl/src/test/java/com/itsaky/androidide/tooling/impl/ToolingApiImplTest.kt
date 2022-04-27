@@ -57,7 +57,7 @@ class ToolingApiImplTest {
         log.debug("Is server initialized: $isInitialized")
         assertThat(isInitialized).isTrue()
     }
-
+    
     private fun launchServer(client: IToolingApiClient): IToolingApiServer {
         val builder = ProcessBuilder("java", "-jar", "./build/libs/tooling-api-all.jar")
         log.debug(System.getenv())

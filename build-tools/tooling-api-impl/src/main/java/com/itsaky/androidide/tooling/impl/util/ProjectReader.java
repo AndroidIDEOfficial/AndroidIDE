@@ -73,6 +73,7 @@ public class ProjectReader {
 
             return buildAndroidProjectModel(gradleModel, android);
         } catch (Throwable error) {
+            LOG.error("Unable to build android project model", error);
             try {
                 return buildGradleProjectModel(gradleModel);
             } catch (Throwable e) {
@@ -84,6 +85,7 @@ public class ProjectReader {
 
     private static IdeAndroidModule buildAndroidProjectModel(
             GradleProject gradle, AndroidProject android) {
+        LOG.debug("Building android module model for project:", gradle.getPath());
         final var builder = new ProjectBuilder();
         builder.setName(gradle.getName());
         builder.setDescription(gradle.getDescription());
@@ -91,11 +93,7 @@ public class ProjectReader {
         builder.setProjectDir(gradle.getProjectDirectory());
         builder.setBuildDir(gradle.getBuildDirectory());
         builder.setBuildScript(gradle.getBuildScript().getSourceFile());
-        builder.setBuildName(android.getBuildName());
         builder.setProjectType(android.getProjectType());
-        builder.setNamespace(android.getNamespace());
-        builder.setAndroidTestNamespace(android.getAndroidTestNamespace());
-        builder.setTestFixturesNamespace(android.getTestFixturesNamespace());
         builder.setMainSourceSet(android.getMainSourceSet());
         builder.setBuildTypeSourceSets(android.getBuildTypeSourceSets());
         builder.setProductFlavorSourceSets(android.getProductFlavorSourceSets());
@@ -186,6 +184,11 @@ public class ProjectReader {
                             .connect();
             final var sub = buildProjectModel(connection, subGradle);
             if (sub != null) {
+                LOG.debug(
+                        "Is project",
+                        sub.getProjectPath(),
+                        "an Android module?:",
+                        sub instanceof IdeAndroidModule);
                 project.getSubprojects().add(sub);
             }
         }
