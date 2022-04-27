@@ -34,16 +34,12 @@ import org.gradle.tooling.UnknownModelException;
 import org.gradle.tooling.model.GradleProject;
 import org.gradle.tooling.model.GradleTask;
 
-import java.io.File;
-import java.util.function.Function;
-
 /**
  * @author Akash Yadav
  */
 public class ProjectReader {
 
     private static final ILogger LOG = newInstance("test");
-    private static Function<File, File> fileCopier = it -> new File(it.getAbsolutePath());
 
     public static IdeGradleProject read(ProjectConnection connection) {
         final var gradleModel = connection.getModel(GradleProject.class);
@@ -68,7 +64,7 @@ public class ProjectReader {
 
             return buildAndroidProjectModel(gradleModel, android);
         } catch (Throwable error) {
-            LOG.error("Unable to build android project model", error);
+            LOG.warn("Project", gradleModel.getPath(), "is most likely not a gradle project");
             try {
                 return buildGradleProjectModel(gradleModel);
             } catch (Throwable e) {
