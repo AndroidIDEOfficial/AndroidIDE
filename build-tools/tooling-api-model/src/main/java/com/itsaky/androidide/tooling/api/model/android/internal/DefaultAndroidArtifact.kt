@@ -71,4 +71,8 @@ class DefaultAndroidArtifact(
 
     override val targetSdkVersionOverride: ApiVersion? = null
     override val modelSyncFiles: Collection<ModelSyncFile> = emptyList()
+
+    override fun toString(): String {
+        return "DefaultAndroidArtifact(abiFilters=$abiFilters, assembleTaskOutputListingFile=$assembleTaskOutputListingFile, bundleInfo=$bundleInfo, codeShrinker=$codeShrinker, generatedResourceFolders=$generatedResourceFolders, isSigned=$isSigned, maxSdkVersion=$maxSdkVersion, minSdkVersion=$minSdkVersion, signingConfigName=$signingConfigName, sourceGenTaskName='$sourceGenTaskName', testInfo=$testInfo, assembleTaskName='$assembleTaskName', classesFolders=$classesFolders, compileTaskName='$compileTaskName', generatedSourceFolders=$generatedSourceFolders, ideSetupTaskNames=$ideSetupTaskNames, multiFlavorSourceProvider=$multiFlavorSourceProvider, variantSourceProvider=$variantSourceProvider, targetSdkVersionOverride=$targetSdkVersionOverride, modelSyncFiles=$modelSyncFiles)"
+    }
 }

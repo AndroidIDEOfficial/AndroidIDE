@@ -29,4 +29,8 @@ class DefaultTestInfo(
     override val instrumentedTestTaskName: String
 ) : TestInfo {
     constructor() : this(emptyList(), false, null, "")
+    
+    override fun toString(): String {
+        return "DefaultTestInfo(additionalRuntimeApks=$additionalRuntimeApks, animationsDisabled=$animationsDisabled, execution=$execution, instrumentedTestTaskName='$instrumentedTestTaskName')"
+    }
 }

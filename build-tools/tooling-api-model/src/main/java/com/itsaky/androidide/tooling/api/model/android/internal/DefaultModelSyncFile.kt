@@ -29,4 +29,8 @@ class DefaultModelSyncFile(
     override val taskName: String
 ) : ModelSyncFile {
     constructor() : this(BASIC, File("."), "")
+    
+    override fun toString(): String {
+        return "DefaultModelSyncFile(modelSyncType=$modelSyncType, syncFile=$syncFile, taskName='$taskName')"
+    }
 }

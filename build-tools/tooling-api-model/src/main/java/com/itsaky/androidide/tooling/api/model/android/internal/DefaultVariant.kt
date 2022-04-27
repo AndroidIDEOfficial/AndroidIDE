@@ -49,4 +49,8 @@ class DefaultVariant(
             null,
             null,
             null)
+    
+    override fun toString(): String {
+        return "DefaultVariant(androidTestArtifact=$androidTestArtifact, buildType=$buildType, desugaredMethods=$desugaredMethods, displayName='$displayName', isInstantAppCompatible=$isInstantAppCompatible, mainArtifact=$mainArtifact, name='$name', productFlavors=$productFlavors, testFixturesArtifact=$testFixturesArtifact, testedTargetVariant=$testedTargetVariant, unitTestArtifact=$unitTestArtifact)"
+    }
 }

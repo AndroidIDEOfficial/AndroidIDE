@@ -25,4 +25,8 @@ class DefaultAndroidGradlePluginProjectFlags(
     override val booleanFlagMap: Map<BooleanFlag, Boolean>?
 ) : AndroidGradlePluginProjectFlags {
     constructor() : this(emptyMap())
+
+    override fun toString(): String {
+        return "DefaultAndroidGradlePluginProjectFlags(booleanFlagMap=$booleanFlagMap)"
+    }
 }

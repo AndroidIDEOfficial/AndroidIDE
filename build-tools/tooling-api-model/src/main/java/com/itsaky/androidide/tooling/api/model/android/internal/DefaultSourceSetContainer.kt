@@ -28,4 +28,8 @@ class DefaultSourceSetContainer(
     override val unitTestSourceProvider: SourceProvider?
 ) : SourceSetContainer {
     constructor() : this(null, DefaultSourceProvider(), null, null)
+    
+    override fun toString(): String {
+        return "DefaultSourceSetContainer(androidTestSourceProvider=$androidTestSourceProvider, sourceProvider=$sourceProvider, testFixturesSourceProvider=$testFixturesSourceProvider, unitTestSourceProvider=$unitTestSourceProvider)"
+    }
 }

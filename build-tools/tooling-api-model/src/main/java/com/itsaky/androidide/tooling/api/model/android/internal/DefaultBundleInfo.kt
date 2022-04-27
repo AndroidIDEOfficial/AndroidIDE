@@ -28,4 +28,8 @@ class DefaultBundleInfo(
     override val bundleTaskOutputListingFile: File
 ) : BundleInfo {
     constructor() : this("", File("."), "", File("."))
+    
+    override fun toString(): String {
+        return "DefaultBundleInfo(apkFromBundleTaskName='$apkFromBundleTaskName', apkFromBundleTaskOutputListingFile=$apkFromBundleTaskOutputListingFile, bundleTaskName='$bundleTaskName', bundleTaskOutputListingFile=$bundleTaskOutputListingFile)"
+    }
 }

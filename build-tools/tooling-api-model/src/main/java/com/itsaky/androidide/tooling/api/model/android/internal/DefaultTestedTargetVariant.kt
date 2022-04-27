@@ -25,4 +25,8 @@ class DefaultTestedTargetVariant(
     override val targetVariant: String
 ) : TestedTargetVariant {
     constructor() : this("", "")
+    
+    override fun toString(): String {
+        return "DefaultTestedTargetVariant(targetProjectPath='$targetProjectPath', targetVariant='$targetVariant')"
+    }
 }

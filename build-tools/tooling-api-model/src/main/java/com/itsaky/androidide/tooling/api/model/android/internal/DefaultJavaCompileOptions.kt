@@ -27,4 +27,8 @@ class DefaultJavaCompileOptions(
     override val targetCompatibility: String
 ) : JavaCompileOptions {
     constructor() : this("", false, "", "")
+
+    override fun toString(): String {
+        return "DefaultJavaCompileOptions(encoding='$encoding', isCoreLibraryDesugaringEnabled=$isCoreLibraryDesugaringEnabled, sourceCompatibility='$sourceCompatibility', targetCompatibility='$targetCompatibility')"
+    }
 }

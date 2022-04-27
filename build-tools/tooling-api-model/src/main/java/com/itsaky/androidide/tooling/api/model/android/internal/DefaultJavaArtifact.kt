@@ -37,4 +37,8 @@ class DefaultJavaArtifact(
     override val modelSyncFiles: Collection<ModelSyncFile> = emptyList()
 
     constructor() : this("", emptySet(), "", emptyList(), emptySet(), null, null, null, null)
+    
+    override fun toString(): String {
+        return "DefaultJavaArtifact(assembleTaskName='$assembleTaskName', classesFolders=$classesFolders, compileTaskName='$compileTaskName', generatedSourceFolders=$generatedSourceFolders, ideSetupTaskNames=$ideSetupTaskNames, multiFlavorSourceProvider=$multiFlavorSourceProvider, variantSourceProvider=$variantSourceProvider, mockablePlatformJar=$mockablePlatformJar, runtimeResourceFolder=$runtimeResourceFolder, modelSyncFiles=$modelSyncFiles)"
+    }
 }
