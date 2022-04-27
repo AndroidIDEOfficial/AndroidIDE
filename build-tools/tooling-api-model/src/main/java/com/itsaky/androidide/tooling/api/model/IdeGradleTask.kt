@@ -29,4 +29,8 @@ open class IdeGradleTask(
     displayName: String?,
     isPublic: Boolean?,
     val projectPath: String?
-) : IdeLaunchable(displayName, isPublic)
+) : IdeLaunchable(displayName, isPublic) {
+    override fun toString(): String {
+        return "IdeGradleTask(name='$name', description=$description, group=$group, path='$path', projectPath=$projectPath)"
+    }
+}

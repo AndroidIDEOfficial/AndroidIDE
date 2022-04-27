@@ -50,4 +50,8 @@ open class IdeGradleProject(
 
         return null
     }
+    
+    override fun toString(): String {
+        return "IdeGradleProject(name=$name, description=$description, projectPath=$projectPath, projectDir=$projectDir, buildDir=$buildDir, buildScript=$buildScript, parent=$parent, subprojects=$subprojects, tasks=$tasks, gsonType='$gsonType')"
+    }
 }

@@ -83,7 +83,11 @@ class IdeAndroidModule(
             variants,
             viewBindingOptions)
     }
-
+    
+    override fun toString(): String {
+        return "IdeAndroidModule(path='$path', bootClasspath=$bootClasspath, buildFolder=$buildFolder, buildTypeSourceSets=$buildTypeSourceSets, dynamicFeatures=$dynamicFeatures, flags=$flags, javaCompileOptions=$javaCompileOptions, lintRuleJars=$lintRuleJars, mainSourceSet=$mainSourceSet, productFlavorSourceSets=$productFlavorSourceSets, projectType=$projectType, resourcePrefix=$resourcePrefix, variants=$variants, viewBindingOptions=$viewBindingOptions, androidTestNamespace=$androidTestNamespace, buildName='$buildName', namespace='$namespace', testFixturesNamespace=$testFixturesNamespace)"
+    }
+    
     // These properties are not supported on newer versions
     override val androidTestNamespace: String? = null
     override val buildName: String = ""
