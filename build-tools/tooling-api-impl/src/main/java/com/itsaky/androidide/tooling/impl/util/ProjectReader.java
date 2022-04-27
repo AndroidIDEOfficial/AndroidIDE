@@ -19,13 +19,11 @@ package com.itsaky.androidide.tooling.impl.util;
 
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
-import com.android.builder.model.v2.ide.SourceProvider;
-import com.android.builder.model.v2.ide.SourceSetContainer;
 import com.android.builder.model.v2.models.AndroidProject;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
-import com.itsaky.androidide.tooling.api.model.android.IdeSourceSetContainer;
+import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
 import com.itsaky.androidide.utils.ILogger;
 
@@ -35,11 +33,8 @@ import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.UnknownModelException;
 import org.gradle.tooling.model.GradleProject;
 import org.gradle.tooling.model.GradleTask;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.function.Function;
 
 /**
@@ -107,45 +102,11 @@ public class ProjectReader {
         builder.setFlags(android.getFlags());
         builder.setLintRuleJars(android.getLintRuleJars());
 
-        final var module = builder.buildAndroidModule();
+        final var module = AndroidModulePropertyCopier.INSTANCE.copy(builder.buildAndroidModule());
         addSubprojects(gradle, module);
         addTasks(gradle, module);
 
         return module;
-    }
-
-    private static SourceSetContainer copySourceSetContainer(SourceSetContainer source) {
-        return new IdeSourceSetContainer(
-                copySourceProvider(source.getAndroidTestSourceProvider()),
-                copySourceProvider(source.getSourceProvider()),
-                copySourceProvider(source.getTestFixturesSourceProvider()),
-                copySourceProvider(source.getUnitTestSourceProvider()));
-    }
-
-    private static SourceProvider copySourceProvider(SourceProvider androidTestSourceProvider) {
-        return null;
-        //        return new IdeSourceProvider(
-        //                copyCollection(androidTestSourceProvider.getAidlDirectories(),
-        // fileCopier),
-        //                copyCollection(androidTestSourceProvider.getAssetsDirectories(),
-        // fileCopier),
-        //                copyCollection(androidTestSourceProvider.getJavaDirectories(),
-        // fileCopier),
-        //                copyCollection(androidTestSourceProvider.getJniLibsDirectories(),
-        // fileCopier));
-    }
-
-    private static <E> Collection<E> copyCollection(
-            @Nullable Collection<E> source, Function<E, E> copier) {
-        final var result = new ArrayList<E>();
-        if (source == null) {
-            return result;
-        }
-
-        for (var el : source) {
-            result.add(copier.apply(el));
-        }
-        return result;
     }
 
     private static void addProperty(

@@ -54,13 +54,11 @@ public class ToolingApiLauncher {
 
     public static void configureGson(GsonBuilder builder) {
         builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType", true)
-                        .registerSubtype(IdeAndroidModule.class, IdeAndroidModule.class.getName())
-                        .registerSubtype(IdeGradleProject.class, IdeGradleProject.class.getName()));
+                RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType")
+                        .registerSubtype(IdeAndroidModule.class, IdeAndroidModule.class.getName()));
         builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType", true)
-                        .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName())
-                        .registerSubtype(IdeLaunchable.class, IdeLaunchable.class.getName()));
+                RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType")
+                        .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName()));
     }
 
     public static Launcher<IToolingApiClient> createServerLauncher(
