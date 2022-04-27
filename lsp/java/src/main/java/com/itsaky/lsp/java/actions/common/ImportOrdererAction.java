@@ -83,13 +83,15 @@ public class ImportOrdererAction extends BaseCodeAction {
     @Override
     public void postExec(ActionData data, Object result) {
         super.postExec(data, result);
-        if (result != null & result instanceof String) {
+        if (result instanceof String) {
             String text = (String) result;
-            if (text != null) {
+            if (!text.isEmpty()) {
                 CodeEditor editor = requireEditor(data);
                 editor.setText(text);
             }
         }
     }
 }
+
+
 
