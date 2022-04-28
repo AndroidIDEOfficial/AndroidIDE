@@ -257,6 +257,12 @@ public class IDEService {
             args.add("--warning-mode");
             args.add("all");
         }
+        if (prefs.isGradleBuildCacheEnabled()) {
+            args.add("--build-cache");
+        }
+        if (prefs.isGradleOfflineModeEnabled()) {
+            args.add("--offline");
+        }
 
         return args.toArray(new String[0]);
     }
@@ -484,3 +490,4 @@ public class IDEService {
         }
     }
 }
+

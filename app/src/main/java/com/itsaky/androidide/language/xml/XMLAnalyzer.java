@@ -138,7 +138,7 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
                     break;
                 case XMLLexer.TEXT:
                 default:
-                    colors.addIfNeeded(line, column, get(TEXT_SELECTED));
+                    colors.addIfNeeded(line, column, get(SchemeAndroidIDE.TEXT_NORMAL));
                     break;
             }
             first = false;
@@ -153,3 +153,4 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
         return styles;
     }
 }
+

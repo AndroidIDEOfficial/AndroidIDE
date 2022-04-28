@@ -16,7 +16,6 @@
  */
 plugins {
     id 'groovy-gradle-plugin'
-    id 'maven-publish'
 }
 
 group "com.itsaky.androidide"
@@ -29,30 +28,4 @@ gradlePlugin {
             implementationClass = "com.itsaky.androidide.gradle.plugin.AndroidIDEPlugin"
         }
     }
-}
-
-publishing {
-    repositories {
-        maven {
-            url new File (project.buildDir, "repo")
-        }
-    }
-}
-
-task zipRepo (type: Zip) {
-    def dest = file("${rootDir}/app/src/main/assets/data/common")
-    from fileTree(new File(project.buildDir, "repo"))
-    archiveFileName.set("gradle-plugin.zip")
-    destinationDirectory.set(dest)
-
-    outputs.upToDateWhen { false }
-}
-
-project.tasks.jar {
-    finalizedBy project.tasks.publish
-}
-
-project.tasks.publish {
-    finalizedBy zipRepo
-    outputs.upToDateWhen { false }
 }

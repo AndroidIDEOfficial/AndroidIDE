@@ -46,7 +46,8 @@ dependencies {
     implementation common.utilcode
 
     implementation project(':lsp:api')
-
+    implementation project (':build-tools:xml-formatter')
+    
     compileOnly project(':lexers')
     compileOnly project(':common')
     compileOnly project(':sdk-info')
