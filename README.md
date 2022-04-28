@@ -29,7 +29,6 @@
 - [ ] String Translator
 - [ ] Asset Studio (Drawable & Icon Maker)
 - [x] Git (*)
-- [ ] Plugins
 
 Items marked with `(*)` are partially implemented.
 `XML` language server supports only code completion at the moment. Git is currently available only in the terminal i.e. no GUI interface for `git`.
