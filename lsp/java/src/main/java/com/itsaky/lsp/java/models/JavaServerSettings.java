@@ -18,6 +18,8 @@ package com.itsaky.lsp.java.models;
 
 import androidx.annotation.NonNull;
 
+import com.google.googlejavaformat.java.JavaFormatterOptions;
+
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.lsp.util.PrefBasedServerSettings;
 
@@ -43,7 +45,7 @@ public class JavaServerSettings extends PrefBasedServerSettings {
         return instance;
     }
 
-    public int getCodeStyle() {
+    private int getCodeStyle() {
         final PreferenceManager prefs = getPrefs();
         if (prefs != null) {
             if (prefs.getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false)) {
@@ -53,4 +55,18 @@ public class JavaServerSettings extends PrefBasedServerSettings {
 
         return CODE_STYLE_AOSP;
     }
+
+    public JavaFormatterOptions.Style getStyle() {
+        if (getCodeStyle() == JavaServerSettings.CODE_STYLE_AOSP) {
+
+            return JavaFormatterOptions.Style.AOSP;
+        }
+
+        return JavaFormatterOptions.Style.GOOGLE;
+    }
+
+    public JavaFormatterOptions getFormatterOptions() {
+        return JavaFormatterOptions.builder().formatJavadoc(true).style(getStyle()).build();
+    }
 }
+

@@ -50,7 +50,7 @@ public class CodeFormatProvider {
         final long start = System.currentTimeMillis();
         try (final StringWriterCharSink sink = new StringWriterCharSink(); ) {
             final CharSource source = CharSource.wrap(input);
-            final Formatter formatter = new Formatter(getFormatterOptions());
+            final Formatter formatter = new Formatter(settings.getFormatterOptions());
             formatter.formatSource(source, sink);
             LOG.info("Java code formatted in", System.currentTimeMillis() - start + "ms");
             return sink.toString();
@@ -58,16 +58,6 @@ public class CodeFormatProvider {
             LOG.error("Failed to format code.", e);
             return input;
         }
-    }
-
-    private JavaFormatterOptions getFormatterOptions() {
-        return JavaFormatterOptions.builder()
-                .formatJavadoc(true)
-                .style(
-                        settings.getCodeStyle() == JavaServerSettings.CODE_STYLE_AOSP
-                                ? JavaFormatterOptions.Style.AOSP
-                                : JavaFormatterOptions.Style.GOOGLE)
-                .build();
     }
 
     private static class StringWriterCharSink extends CharSink implements AutoCloseable {
@@ -96,3 +86,5 @@ public class CodeFormatProvider {
         }
     }
 }
+
+

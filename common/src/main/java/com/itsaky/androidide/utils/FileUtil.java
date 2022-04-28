@@ -128,21 +128,19 @@ public class FileUtil {
 
     public static void writeFile(String path, String str) {
         createNewFile(path);
-        FileWriter fileWriter = null;
 
         try {
-            fileWriter = new FileWriter(new File(path), false);
-            fileWriter.write(str);
-            fileWriter.flush();
+            writeFile(new File(path), str);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (fileWriter != null) fileWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+    }
+
+    public static void writeFile(File path, String str) throws IOException {
+        FileWriter fileWriter = new FileWriter(path, false);
+        fileWriter.write(str);
+        fileWriter.flush();
+        fileWriter.close();
     }
 
     public static void copyFile(String sourcePath, String destPath) {

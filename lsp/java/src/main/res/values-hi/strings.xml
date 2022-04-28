@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+  
+<resources>
+    <string name="action_import_classes">इंपोर्ट क्लास/क्लासेज</string>
+    <string name="action_generate_setters_getters">जेनरेट सेटर्स/गेटर्स</string>
+    <string name="action_add_throws">एड \'थ्रोज\'</string>
+    <string name="action_comment_line">कमेंट लाइन</string>
+    <string name="action_create_missing_method">मिसिंग मैथड बनाएं</string>
+    <string name="action_convert_to_block">ब्लॉक में कनवर्ट करें</string>
+    <string name="action_generate_constructor">कंस्ट्रक्टर बनाएं</string>
+    <string name="action_implement_abstract_methods">एब्सट्रेक्ट मैथड/मैथड्स इंप्लीमेंट करे</string>
+    <string name="action_remove_class">क्लास हटाएं</string>
+    <string name="action_remove_method">मैथड हटाएं</string>
+    <string name="action_remove_unused_throws">अप्रयुक्त थ्रोज हटाएं</string>
+    <string name="action_suppress_unchecked_warning">\'अनचेक्ड\' चेतावनी को दबाएं</string>
+    <string name="action_uncomment_line">अनकमेंट लाइन</string>
+    <string name="action_convert_to_statement">स्टेटमेंट में बदलें</string>
+    <string name="msg_select_fields">फ़ील्डस चुनें</string>
+    <string name="msg_no_fields_selected">कोई फ़ील्डस नहीं चुना गया</string>
+    <string name="msg_no_fields_found">कोई फ़ील्डस नहीं मिला</string>
+    <string name="action_override_superclass_methods">सुपरक्लास मैथड्स को ओवरराइड करें</string>
+    <string name="msg_no_methods_selected">कोई मैथड्स नहीं चुना गया</string>
+    <string name="msg_cannot_override_methods">मैथड्स को ओवरराइड करने में असमर्थ</string>
+    <string name="msg_cannot_generate_setters_getters">सेटर्स और गेटर्स जेनरेट करने में असमर्थ</string>
+    <string name="msg_select_methods">ओवरराइड करने के मैथड्स चुनें</string>
+    <string name="msg_no_overridable_methods">किसी भी ओवरीडेबल मैथड को खोजने में असमर्थ</string>
+    <string name="action_goto_definition">परिभाषा पर जाएं</string>
+    <string name="action_find_references">संदर्भ खोजें</string>
+    <string name="action_generate_toString">जेनरेट toString()</string>
+    <string name="msg_cannot_generate_toString">toString() इंप्लीमेंटेशन जेनरेट करने में असमर्थ</string>
+    <string name="msg_toString_overridden">toString() पहले से ही ओवरराइड है</string>
+    <string name="action_generate_missing_constructor">मिसिंग कंस्ट्रक्टर जेनरेट करें</string>
+    <string name="msg_cannot_generate_constructor">कंस्ट्रक्टर जेनरेट करने में असमर्थ</string>
+    <string name="msg_constructor_available">एक समान पैरामीटर टाइप्स वाला कंस्ट्रक्टर पहले से ही उपलब्ध है</string>
+</resources>
