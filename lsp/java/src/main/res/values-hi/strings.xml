@@ -41,9 +41,9 @@
     <string name="msg_no_overridable_methods">किसी भी ओवरीडेबल मैथड को खोजने में असमर्थ</string>
     <string name="action_goto_definition">परिभाषा पर जाएं</string>
     <string name="action_find_references">संदर्भ खोजें</string>
-    <string name="action_generate_toString">जेनरेट टु स्ट्रिंग()</string>
-    <string name="msg_cannot_generate_toString">टु स्ट्रिंग() इंप्लीमेंटेशन जेनरेट करने में असमर्थ</string>
-    <string name="msg_toString_overridden">टु स्ट्रिंग() पहले से ही ओवरराइड है</string>
+    <string name="action_generate_toString">जेनरेट toString()</string>
+    <string name="msg_cannot_generate_toString">toString() इंप्लीमेंटेशन जेनरेट करने में असमर्थ</string>
+    <string name="msg_toString_overridden">toString() पहले से ही ओवरराइड है</string>
     <string name="action_generate_missing_constructor">मिसिंग कंस्ट्रक्टर जेनरेट करें</string>
     <string name="msg_cannot_generate_constructor">कंस्ट्रक्टर जेनरेट करने में असमर्थ</string>
     <string name="msg_constructor_available">एक समान पैरामीटर टाइप्स वाला कंस्ट्रक्टर पहले से ही उपलब्ध है</string>
