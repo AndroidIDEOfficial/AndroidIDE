@@ -25,10 +25,10 @@ import com.itsaky.androidide.tooling.impl.util.InitScriptHandler
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
+import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.ConfigurableLauncher
 import org.gradle.tooling.GradleConnector
-import java.util.concurrent.*
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -54,7 +54,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
                     RuntimeException(
                         "Unable to create gradle connector for project directory: ${params.directory}"))
             }
-            
+
             val connection = this.connector!!.connect()
             stopWatch.lapFromLast("Project connection established")
 

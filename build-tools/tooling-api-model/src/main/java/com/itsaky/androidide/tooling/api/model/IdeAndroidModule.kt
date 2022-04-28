@@ -22,6 +22,7 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePlug
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
 import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
+import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
 import java.io.File
 
@@ -58,6 +59,9 @@ class IdeAndroidModule(
         name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks),
     AndroidProject {
 
+    var variantDependencies: MutableMap<String, DefaultVariantDependencies> = mutableMapOf()
+    var variantDependencyJars: MutableMap<String, Collection<File>> = mutableMapOf()
+
     fun copy(): IdeAndroidModule {
         return IdeAndroidModule(
             name,
@@ -92,5 +96,5 @@ class IdeAndroidModule(
     override val androidTestNamespace: String? = null
     override val buildName: String = ""
     override val namespace: String = ""
-    override val testFixturesNamespace: String? = ""
+    override val testFixturesNamespace: String? = null
 }

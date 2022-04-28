@@ -21,7 +21,9 @@ import com.android.builder.model.v2.ModelSyncFile
 import com.android.builder.model.v2.ide.AndroidArtifact
 import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
 import com.android.builder.model.v2.ide.ApiVersion
+import com.android.builder.model.v2.ide.ArtifactDependencies
 import com.android.builder.model.v2.ide.BundleInfo
+import com.android.builder.model.v2.ide.GraphItem
 import com.android.builder.model.v2.ide.JavaArtifact
 import com.android.builder.model.v2.ide.JavaCompileOptions
 import com.android.builder.model.v2.ide.SourceProvider
@@ -30,11 +32,14 @@ import com.android.builder.model.v2.ide.TestInfo
 import com.android.builder.model.v2.ide.TestedTargetVariant
 import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
+import com.android.builder.model.v2.models.VariantDependencies
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidArtifact
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultApiVersion
+import com.itsaky.androidide.tooling.api.model.internal.DefaultArtifactDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultBundleInfo
+import com.itsaky.androidide.tooling.api.model.internal.DefaultGraphItem
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaArtifact
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
 import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
@@ -43,7 +48,10 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContaine
 import com.itsaky.androidide.tooling.api.model.internal.DefaultTestInfo
 import com.itsaky.androidide.tooling.api.model.internal.DefaultTestedTargetVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
+import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
+import com.itsaky.androidide.utils.ILogger
+import java.lang.reflect.Proxy
 
 /**
  * As the data is sent over streams, and the instances of properties specified in [IdeAndroidModule]
@@ -55,6 +63,8 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOption
  * @author Akash Yadav
  */
 object AndroidModulePropertyCopier {
+
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     fun copy(module: IdeAndroidModule): IdeAndroidModule {
         return IdeAndroidModule(
@@ -273,4 +283,38 @@ object AndroidModulePropertyCopier {
             shadersDirectories = provider.shadersDirectories
         }
     }
+
+    fun copy(variantDependencies: VariantDependencies): DefaultVariantDependencies {
+        return DefaultVariantDependencies().apply {
+            this.name = variantDependencies.name
+            this.mainArtifact = copy(variantDependencies.mainArtifact)!!
+            this.androidTestArtifact = copy(variantDependencies.androidTestArtifact)
+            this.testFixturesArtifact = copy(variantDependencies.testFixturesArtifact)
+            this.unitTestArtifact = copy(variantDependencies.unitTestArtifact)
+        }
+    }
+
+    private fun copy(artifact: ArtifactDependencies?): DefaultArtifactDependencies? =
+        DefaultArtifactDependencies().apply {
+            if (artifact == null) {
+                return null
+            }
+
+            this.compileDependencies = copy(artifact.compileDependencies)!!
+            this.runtimeDependencies = copy(artifact.runtimeDependencies)
+        }
+
+    private fun copy(graphs: List<GraphItem>?): List<DefaultGraphItem>? {
+        if (graphs == null) {
+            return null
+        }
+
+        return graphs.map { copy(it) }
+    }
+
+    private fun copy(graph: GraphItem): DefaultGraphItem =
+        DefaultGraphItem().apply {
+            this.dependencies = copy(graph.dependencies)!!
+            this.requestedCoordinates = graph.requestedCoordinates
+        }
 }

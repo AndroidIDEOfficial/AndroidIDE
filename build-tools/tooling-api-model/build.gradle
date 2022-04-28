@@ -32,6 +32,7 @@ repositories {
 }
 
 dependencies {
+    implementation project (path: ':build-tools:logger')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     api 'com.android.tools.build:builder-model:7.1.3'
 }

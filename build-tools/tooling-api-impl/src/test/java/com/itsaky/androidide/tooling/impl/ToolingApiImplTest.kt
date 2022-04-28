@@ -19,6 +19,7 @@ package com.itsaky.androidide.tooling.impl
 
 import com.android.builder.model.v2.ide.ProjectType
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.GsonBuilder
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
@@ -46,7 +47,7 @@ class ToolingApiImplTest {
         val server = launchServer(client)
 
         val project = server.initialize(InitializeProjectParams(getTestProject())).get()
-        log.debug(project)
+        log.debug(asJson(project))
         assertThat(project).isNotNull()
         assertThat(project!!).isInstanceOf(IdeGradleProject::class.java)
 
@@ -63,6 +64,16 @@ class ToolingApiImplTest {
         assertThat(javaLibrary).isInstanceOf(IdeGradleProject::class.java)
 
         assertThat(project.findByPath(":does-not-exist")).isNull()
+    }
+
+    private fun asJson(project: IdeGradleProject?): String {
+        if (project == null) {
+            return ""
+        }
+
+        val builder = GsonBuilder()
+        ToolingApiLauncher.configureGson(builder)
+        return builder.create().toJson(project)
     }
 
     private fun assertAndroidModule(android: IdeAndroidModule) {

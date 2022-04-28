@@ -20,11 +20,14 @@ package com.itsaky.androidide.tooling.impl.util;
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.android.builder.model.v2.models.AndroidProject;
+import com.android.builder.model.v2.models.ModelBuilderParameter;
+import com.android.builder.model.v2.models.VariantDependencies;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
+import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
 
 import org.gradle.tooling.ConfigurableLauncher;
@@ -40,7 +43,7 @@ import org.gradle.tooling.model.GradleTask;
 public class ProjectReader {
 
     private static final ILogger LOG = newInstance("test");
-
+    
     public static IdeGradleProject read(ProjectConnection connection) {
         final var gradleModel = connection.getModel(GradleProject.class);
         if (gradleModel == null) {
@@ -65,7 +68,15 @@ public class ProjectReader {
                         "Project " + gradleModel.getPath() + " is not an Android project.");
             }
 
-            return buildAndroidProjectModel(gradleModel, android);
+            final var module = buildAndroidProjectModel(gradleModel, android);
+
+            try {
+                tryReadDependencies(connection, module);
+            } catch (Throwable err) {
+                LOG.error("Unable to fetch dependencies for project", module.getProjectPath(), err);
+            }
+
+            return module;
         } catch (Throwable error) {
             LOG.warn("Project", gradleModel.getPath(), "is most likely not an Android project");
             try {
@@ -74,6 +85,29 @@ public class ProjectReader {
                 LOG.error("Unable to create model for project", e);
                 return null;
             }
+        }
+    }
+
+    private static void tryReadDependencies(
+            ProjectConnection connection, IdeAndroidModule android) {
+        for (final var variant : android.getVariants()) {
+            final var name = variant.getName();
+            final var modelFinder =
+                    connection.action(
+                            controller ->
+                                    controller.findModel(
+                                            VariantDependencies.class,
+                                            ModelBuilderParameter.class,
+                                            parameter -> parameter.setVariantName(name)));
+            addProperty(modelFinder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
+            addProperty(modelFinder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
+            modelFinder.addProgressListener(new LoggingProgressListener());
+            final var variantDependencies =
+                    AndroidModulePropertyCopier.INSTANCE.copy(modelFinder.run());
+            android.getVariantDependencies().put(name, variantDependencies);
+
+            android.getVariantDependencyJars()
+                    .put(name, LegacyProjectReader.INSTANCE.findDependencyJars(connection, name));
         }
     }
 
