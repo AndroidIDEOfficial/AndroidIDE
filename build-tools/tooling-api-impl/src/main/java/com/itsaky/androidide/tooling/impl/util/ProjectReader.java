@@ -43,16 +43,14 @@ import org.gradle.tooling.model.GradleTask;
 public class ProjectReader {
 
     private static final ILogger LOG = newInstance("test");
-    
+
     public static IdeGradleProject read(ProjectConnection connection) {
         final var gradleModel = connection.getModel(GradleProject.class);
         if (gradleModel == null) {
             return null;
         }
 
-        final var project = buildProjectModel(connection, gradleModel);
-        LOG.debug(project);
-        return project;
+        return buildProjectModel(connection, gradleModel);
     }
 
     private static IdeGradleProject buildProjectModel(
@@ -78,8 +76,8 @@ public class ProjectReader {
 
             return module;
         } catch (Throwable error) {
-            LOG.warn("Project", gradleModel.getPath(), "is most likely not an Android project");
             try {
+                LOG.info("Building IdeGradleProject model for project:", gradleModel.getPath());
                 return buildGradleProjectModel(gradleModel);
             } catch (Throwable e) {
                 LOG.error("Unable to create model for project", e);
@@ -113,7 +111,7 @@ public class ProjectReader {
 
     private static IdeAndroidModule buildAndroidProjectModel(
             GradleProject gradle, AndroidProject android) {
-        LOG.debug("Building android module model for project:", gradle.getPath());
+        LOG.debug("Building IdeAndroidModule for project:", gradle.getPath());
         final var builder = new ProjectBuilder();
         final var copier = AndroidModulePropertyCopier.INSTANCE;
         builder.setName(gradle.getName());
@@ -172,18 +170,12 @@ public class ProjectReader {
 
     private static void addSubprojects(GradleProject gradle, IdeGradleProject project) {
         for (final var subGradle : gradle.getChildren()) {
-            LOG.debug("Subproject of", gradle.getPath(), "->", subGradle.getPath());
             final var connection =
                     GradleConnector.newConnector()
                             .forProjectDirectory(subGradle.getProjectDirectory())
                             .connect();
             final var sub = buildProjectModel(connection, subGradle);
             if (sub != null) {
-                LOG.debug(
-                        "Is project",
-                        sub.getProjectPath(),
-                        "an Android module?:",
-                        sub instanceof IdeAndroidModule);
                 project.getSubprojects().add(sub);
             }
         }
