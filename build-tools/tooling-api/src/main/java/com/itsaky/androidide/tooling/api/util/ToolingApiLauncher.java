@@ -91,11 +91,7 @@ public class ToolingApiLauncher {
                         .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName())
                         .registerSubtype(IdeLaunchable.class, IdeLaunchable.class.getName()));
     }
-
-    private static <T> InstanceCreator<T> creator(Function<Type, T> create) {
-        return create::apply;
-    }
-
+    
     public static Launcher<IToolingApiClient> createServerLauncher(
             IToolingApiServer server, InputStream in, OutputStream out) {
         return createIOLauncher(server, IToolingApiClient.class, in, out);
