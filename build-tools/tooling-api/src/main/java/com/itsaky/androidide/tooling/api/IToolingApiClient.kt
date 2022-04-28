@@ -24,4 +24,4 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
  *
  * @author Akash Yadav
  */
-@JsonSegment("client") interface IToolingApiClient {}
+@JsonSegment("client") interface IToolingApiClient

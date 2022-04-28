@@ -26,11 +26,12 @@ java {
 }
 
 dependencies {
-    implementation project (path: ':build-tools:jsonrpc')
+//    implementation project (path: ':build-tools:jsonrpc')
     implementation project (path: ':build-tools:logger')
     implementation project (path: ':build-tools:tooling-api-model')
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.12.0"
     
     testImplementation tests.junit
     testImplementation tests.google_truth

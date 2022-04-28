@@ -16,19 +16,16 @@
  */
 package com.itsaky.androidide.tooling.api.model.util
 
-import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
-import com.android.builder.model.v2.ide.JavaCompileOptions
 import com.android.builder.model.v2.ide.ProjectType
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
-import com.android.builder.model.v2.ide.SourceSetContainer
-import com.android.builder.model.v2.ide.Variant
-import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
 import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
+import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
+import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
 import java.io.File
 
 /**
@@ -48,17 +45,17 @@ class ProjectBuilder {
     var tasks: List<IdeGradleTask> = mutableListOf()
     var bootClasspath: Collection<File> = mutableListOf()
     var buildFolder: File = File("<no_path>")
-    var buildTypeSourceSets: Collection<SourceSetContainer> = mutableListOf()
+    var buildTypeSourceSets: Collection<DefaultSourceSetContainer> = mutableListOf()
     var dynamicFeatures: Collection<String>? = mutableListOf()
-    var flags: AndroidGradlePluginProjectFlags = DefaultAndroidGradlePluginProjectFlags()
-    var javaCompileOptions: JavaCompileOptions = DefaultJavaCompileOptions()
+    var flags: DefaultAndroidGradlePluginProjectFlags = DefaultAndroidGradlePluginProjectFlags()
+    var javaCompileOptions: DefaultJavaCompileOptions = DefaultJavaCompileOptions()
     var lintRuleJars: List<File> = mutableListOf()
-    var mainSourceSet: SourceSetContainer = DefaultSourceSetContainer()
-    var productFlavorSourceSets: Collection<SourceSetContainer> = mutableListOf()
+    var mainSourceSet: DefaultSourceSetContainer = DefaultSourceSetContainer()
+    var productFlavorSourceSets: Collection<DefaultSourceSetContainer> = mutableListOf()
     var projectType: ProjectType = APPLICATION
     var resourcePrefix: String? = ""
-    var variants: Collection<Variant> = mutableListOf()
-    var viewBindingOptions: ViewBindingOptions? = null
+    var variants: Collection<DefaultVariant> = mutableListOf()
+    var viewBindingOptions: DefaultViewBindingOptions? = null
 
     fun buildGradleProject(): IdeGradleProject {
         return IdeGradleProject(

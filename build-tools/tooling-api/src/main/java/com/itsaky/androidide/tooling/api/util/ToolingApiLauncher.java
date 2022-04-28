@@ -82,27 +82,27 @@ public class ToolingApiLauncher {
     }
 
     public static void configureGson(GsonBuilder builder) {
-        builder.registerTypeAdapter(
-                AndroidArtifact.class, creator(it -> new DefaultAndroidArtifact()));
-        builder.registerTypeAdapter(
-                AndroidGradlePluginProjectFlags.class,
-                creator(it -> new DefaultAndroidGradlePluginProjectFlags()));
-        builder.registerTypeAdapter(ApiVersion.class, creator(it -> new DefaultApiVersion()));
-        builder.registerTypeAdapter(BundleInfo.class, creator(it -> new DefaultBundleInfo()));
-        builder.registerTypeAdapter(JavaArtifact.class, creator(it -> new DefaultJavaArtifact()));
-        builder.registerTypeAdapter(
-                JavaCompileOptions.class, creator(it -> new DefaultJavaCompileOptions()));
-        builder.registerTypeAdapter(ModelSyncFile.class, creator(it -> new DefaultModelSyncFile()));
-        builder.registerTypeAdapter(
-                SourceProvider.class, creator(it -> new DefaultSourceProvider()));
-        builder.registerTypeAdapter(
-                SourceSetContainer.class, creator(it -> new DefaultSourceSetContainer()));
-        builder.registerTypeAdapter(
-                TestedTargetVariant.class, creator(it -> new DefaultTestedTargetVariant()));
-        builder.registerTypeAdapter(TestInfo.class, creator(it -> new DefaultTestInfo()));
-        builder.registerTypeAdapter(Variant.class, creator(it -> new DefaultVariant()));
-        builder.registerTypeAdapter(
-                ViewBindingOptions.class, creator(it -> new DefaultViewBindingOptions()));
+//        builder.registerTypeAdapter(
+//                AndroidArtifact.class, creator(it -> new DefaultAndroidArtifact()));
+//        builder.registerTypeAdapter(
+//                AndroidGradlePluginProjectFlags.class,
+//                creator(it -> new DefaultAndroidGradlePluginProjectFlags()));
+//        builder.registerTypeAdapter(ApiVersion.class, creator(it -> new DefaultApiVersion()));
+//        builder.registerTypeAdapter(BundleInfo.class, creator(it -> new DefaultBundleInfo()));
+//        builder.registerTypeAdapter(JavaArtifact.class, creator(it -> new DefaultJavaArtifact()));
+//        builder.registerTypeAdapter(
+//                JavaCompileOptions.class, creator(it -> new DefaultJavaCompileOptions()));
+//        builder.registerTypeAdapter(ModelSyncFile.class, creator(it -> new DefaultModelSyncFile()));
+//        builder.registerTypeAdapter(
+//                SourceProvider.class, creator(it -> new DefaultSourceProvider()));
+//        builder.registerTypeAdapter(
+//                SourceSetContainer.class, creator(it -> new DefaultSourceSetContainer()));
+//        builder.registerTypeAdapter(
+//                TestedTargetVariant.class, creator(it -> new DefaultTestedTargetVariant()));
+//        builder.registerTypeAdapter(TestInfo.class, creator(it -> new DefaultTestInfo()));
+//        builder.registerTypeAdapter(Variant.class, creator(it -> new DefaultVariant()));
+//        builder.registerTypeAdapter(
+//                ViewBindingOptions.class, creator(it -> new DefaultViewBindingOptions()));
         builder.registerTypeAdapterFactory(
                 RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType", true)
                         .registerSubtype(IdeAndroidModule.class, IdeAndroidModule.class.getName())

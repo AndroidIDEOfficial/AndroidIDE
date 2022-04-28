@@ -57,41 +57,32 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOption
 object AndroidModulePropertyCopier {
 
     fun copy(module: IdeAndroidModule): IdeAndroidModule {
-        val new =
-            IdeAndroidModule(
-                module.name,
-                module.description,
-                module.projectDir,
-                module.buildDir,
-                module.buildScript,
-                module.parent,
-                module.subprojects,
-                module.tasks,
-                module.path,
-                module.bootClasspath,
-                module.buildFolder,
-                copy(module.buildTypeSourceSets),
-                module.dynamicFeatures,
-                copy(module.flags),
-                copy(module.javaCompileOptions),
-                module.lintRuleJars,
-                copy(module.mainSourceSet),
-                copy(module.productFlavorSourceSets),
-                module.projectType,
-                module.resourcePrefix,
-                copy(module.variants),
-                copy(module.viewBindingOptions))
-        //        module.buildTypeSourceSets = copy(module.buildTypeSourceSets)
-        //        module.flags = copy(module.flags)
-        //        module.javaCompileOptions = copy(module.javaCompileOptions)
-        //        module.mainSourceSet = copy(module.mainSourceSet)
-        //        module.productFlavorSourceSets = copy(module.productFlavorSourceSets)
-        //        module.variants = copy(module.variants)
-        //        module.viewBindingOptions = copy(module.viewBindingOptions)
-        return new
+        return IdeAndroidModule(
+            module.name,
+            module.description,
+            module.projectDir,
+            module.buildDir,
+            module.buildScript,
+            module.parent,
+            module.subprojects,
+            module.tasks,
+            module.path,
+            module.bootClasspath,
+            module.buildFolder,
+            copy(module.buildTypeSourceSets),
+            module.dynamicFeatures,
+            copy(module.flags),
+            copy(module.javaCompileOptions),
+            module.lintRuleJars,
+            copy(module.mainSourceSet),
+            copy(module.productFlavorSourceSets),
+            module.projectType,
+            module.resourcePrefix,
+            copy(module.variants),
+            copy(module.viewBindingOptions))
     }
 
-    fun copy(viewBindingOptions: ViewBindingOptions?): ViewBindingOptions? {
+    fun copy(viewBindingOptions: ViewBindingOptions?): DefaultViewBindingOptions? {
         return when (viewBindingOptions) {
             null -> null
             else -> DefaultViewBindingOptions().apply { isEnabled = viewBindingOptions.isEnabled }
@@ -99,15 +90,15 @@ object AndroidModulePropertyCopier {
     }
 
     @JvmName("copyVariants")
-    fun copy(variants: Collection<Variant>): Collection<Variant> {
-        val new = mutableListOf<Variant>()
+    fun copy(variants: Collection<Variant>): Collection<DefaultVariant> {
+        val new = mutableListOf<DefaultVariant>()
         for (variant in variants) {
             new.add(copy(variant))
         }
         return new
     }
 
-    fun copy(variant: Variant): Variant =
+    fun copy(variant: Variant): DefaultVariant =
         DefaultVariant().apply {
             androidTestArtifact = copy(variant.androidTestArtifact)
             buildType = variant.buildType
@@ -121,7 +112,7 @@ object AndroidModulePropertyCopier {
             testedTargetVariant = copy(variant.testedTargetVariant)
             unitTestArtifact = copy(variant.unitTestArtifact)
         }
-    fun copy(artifact: JavaArtifact?): JavaArtifact? {
+    fun copy(artifact: JavaArtifact?): DefaultJavaArtifact? {
         if (artifact == null) {
             return null
         }
@@ -139,7 +130,7 @@ object AndroidModulePropertyCopier {
         }
     }
 
-    fun copy(variant: TestedTargetVariant?): TestedTargetVariant? {
+    fun copy(variant: TestedTargetVariant?): DefaultTestedTargetVariant? {
         if (variant == null) {
             return null
         }
@@ -150,7 +141,7 @@ object AndroidModulePropertyCopier {
         }
     }
 
-    fun copy(artifact: AndroidArtifact?): AndroidArtifact? {
+    fun copy(artifact: AndroidArtifact?): DefaultAndroidArtifact? {
         if (artifact == null) {
             return null
         }
@@ -178,8 +169,8 @@ object AndroidModulePropertyCopier {
     }
 
     @JvmName("copyModelSyncFiles")
-    fun copy(modelSyncFiles: Collection<ModelSyncFile>): Collection<ModelSyncFile> {
-        val new = mutableListOf<ModelSyncFile>()
+    fun copy(modelSyncFiles: Collection<ModelSyncFile>): Collection<DefaultModelSyncFile> {
+        val new = mutableListOf<DefaultModelSyncFile>()
         for (file in modelSyncFiles) {
             new.add(copy(file))
         }
@@ -187,14 +178,14 @@ object AndroidModulePropertyCopier {
         return new
     }
 
-    fun copy(file: ModelSyncFile): ModelSyncFile =
+    fun copy(file: ModelSyncFile): DefaultModelSyncFile =
         DefaultModelSyncFile().apply {
             modelSyncType = file.modelSyncType
             syncFile = file.syncFile
             taskName = file.taskName
         }
 
-    fun copy(info: TestInfo?): TestInfo? {
+    fun copy(info: TestInfo?): DefaultTestInfo? {
         if (info == null) {
             return null
         }
@@ -207,7 +198,7 @@ object AndroidModulePropertyCopier {
         }
     }
 
-    fun copy(version: ApiVersion?): ApiVersion? =
+    fun copy(version: ApiVersion?): DefaultApiVersion? =
         if (version == null) null
         else
             DefaultApiVersion().apply {
@@ -215,7 +206,7 @@ object AndroidModulePropertyCopier {
                 codename = version.codename
             }
 
-    fun copy(bundleInfo: BundleInfo?): BundleInfo? {
+    fun copy(bundleInfo: BundleInfo?): DefaultBundleInfo? {
         if (bundleInfo == null) {
             return null
         }
@@ -228,7 +219,7 @@ object AndroidModulePropertyCopier {
         }
     }
 
-    fun copy(javaCompileOptions: JavaCompileOptions): JavaCompileOptions {
+    fun copy(javaCompileOptions: JavaCompileOptions): DefaultJavaCompileOptions {
         return DefaultJavaCompileOptions().apply {
             encoding = javaCompileOptions.encoding
             isCoreLibraryDesugaringEnabled = javaCompileOptions.isCoreLibraryDesugaringEnabled
@@ -237,14 +228,14 @@ object AndroidModulePropertyCopier {
         }
     }
 
-    fun copy(flags: AndroidGradlePluginProjectFlags): AndroidGradlePluginProjectFlags {
+    fun copy(flags: AndroidGradlePluginProjectFlags): DefaultAndroidGradlePluginProjectFlags {
         return DefaultAndroidGradlePluginProjectFlags().apply {
             booleanFlagMap = flags.booleanFlagMap
         }
     }
 
-    fun copy(containers: Collection<SourceSetContainer>): Collection<SourceSetContainer> {
-        val new = mutableListOf<SourceSetContainer>()
+    fun copy(containers: Collection<SourceSetContainer>): Collection<DefaultSourceSetContainer> {
+        val new = mutableListOf<DefaultSourceSetContainer>()
 
         for (container in containers) {
             new.add(copy(container))
@@ -253,7 +244,7 @@ object AndroidModulePropertyCopier {
         return new
     }
 
-    fun copy(container: SourceSetContainer): SourceSetContainer {
+    fun copy(container: SourceSetContainer): DefaultSourceSetContainer {
         return DefaultSourceSetContainer().apply {
             androidTestSourceProvider = copy(container.androidTestSourceProvider)
             sourceProvider = copy(container.sourceProvider)!!
@@ -262,7 +253,7 @@ object AndroidModulePropertyCopier {
         }
     }
 
-    fun copy(provider: SourceProvider?): SourceProvider? {
+    fun copy(provider: SourceProvider?): DefaultSourceProvider? {
         if (provider == null) {
             return null
         }
