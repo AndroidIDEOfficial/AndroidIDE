@@ -25,4 +25,5 @@ java {
 
 dependencies {
     implementation google.gson
+    implementation project (path: ':build-tools:logger')
 }

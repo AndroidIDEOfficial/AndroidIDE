@@ -39,7 +39,7 @@ import org.junit.runners.JUnit4
 class ToolingApiImplTest {
 
     private val log = ILogger.newInstance(javaClass.simpleName)
-
+    
     @Test
     fun testProjectInit() {
         val client = TestClient()
