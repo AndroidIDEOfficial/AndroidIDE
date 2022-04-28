@@ -51,6 +51,10 @@ public class ConstantsBridge {
     public static boolean EDITOR_PREF_FLAGS_CHANGED = false;
     public static boolean EDITOR_PREF_DRAW_HEX_CHANGED = false;
     public static boolean EDITOR_PREF_VISIBLE_PASSWORD_CHANGED = false;
+    public static boolean EDITOR_PREF_WORD_WRAP_CHANGED = false;
+    public static boolean EDITOR_PREF_USE_MAGNIFIER_CHANGED = false;
+    
     public static boolean CLASS_LOAD_SUCCESS = true;
     public static boolean SPLASH_TO_MAIN = false;
 }
+

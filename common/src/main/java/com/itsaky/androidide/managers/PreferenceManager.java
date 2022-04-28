@@ -41,11 +41,15 @@ public class PreferenceManager {
     public static final String KEY_EDITOR_AUTO_SAVE = "idepref_editor_autoSave";
     public static final String KEY_EDITOR_FONT_LIGATURES = "idepref_editor_fontLigatures";
     public static final String KEY_EDITOR_FLAG_PASSWORD = "idepref_editor_flagPassword";
+    public static final String KEY_EDITOR_WORD_WRAP = "idepref_editor_word_wrap";
+    public static final String KEY_EDITOR_USE_MAGNIFER = "idepref_editor_use_magnifier";
     public static final String KEY_GRADLE_CMD_STACK_TRACE = "idepref_gradleCmd_stacktrace";
     public static final String KEY_GRADLE_CMD_DEBUG = "idepref_gradleCmd_debug";
     public static final String KEY_GRADLE_CMD_SCAN = "idepref_gradleCmd_scan";
     public static final String KEY_GRADLE_CMD_INFO = "idepref_gradleCmd_info";
     public static final String KEY_GRADLE_CMD_WARNING_MODE = "idepref_gradleCmd_warningMode";
+    public static final String KEY_GRADLE_CMD_BUILD_CACHE = "idepref_gradleCmd_buildCache";
+    public static final String KEY_GRADLE_CMD_OFFLINE_MODE = "idepref_gradleCmd_offlineMode";
     public static final String KEY_LAST_OPENED_PROJECT = "ide_last_project";
     public static final String NO_OPENED_PROJECT = "<NO_OPENED_PROJECT>";
     private final SharedPreferences prefs;
@@ -158,7 +162,15 @@ public class PreferenceManager {
     public boolean isGradleWarningEnabled() {
         return getBoolean(KEY_GRADLE_CMD_WARNING_MODE);
     }
-
+    
+    public boolean isGradleBuildCacheEnabled() {
+        return getBoolean(KEY_GRADLE_CMD_BUILD_CACHE);
+    }
+    
+    public boolean isGradleOfflineModeEnabled() {
+        return getBoolean(KEY_GRADLE_CMD_OFFLINE_MODE);
+    }
+    
     public PreferenceManager setGradleWarningEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLE_CMD_WARNING_MODE, enabled);
     }
@@ -166,7 +178,15 @@ public class PreferenceManager {
     public PreferenceManager setGradleStacktraceEnabled(boolean enabled) {
         return putBoolean(KEY_GRADLE_CMD_STACK_TRACE, enabled);
     }
-
+    
+    public PreferenceManager setGradleBuildCacheEnabled(boolean enabled) {
+        return putBoolean(KEY_GRADLE_CMD_BUILD_CACHE, enabled);
+    }
+    
+	public PreferenceManager setGradleOfflineModeEnabled(boolean enabled) {
+        return putBoolean(KEY_GRADLE_CMD_OFFLINE_MODE, enabled);
+    }
+    
     public int getEditorTabSize() {
         return getInt(KEY_EDITOR_TAB_SIZE, 4);
     }
@@ -179,3 +199,5 @@ public class PreferenceManager {
         return getBoolean(KEY_CONFIRM_PROJECT_OPEN, false);
     }
 }
+
+
