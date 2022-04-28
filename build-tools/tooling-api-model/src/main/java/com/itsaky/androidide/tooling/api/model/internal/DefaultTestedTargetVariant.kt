@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.model.android.internal
+package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.TestedTargetVariant
 

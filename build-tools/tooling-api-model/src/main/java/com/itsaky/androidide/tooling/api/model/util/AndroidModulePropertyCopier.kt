@@ -31,19 +31,19 @@ import com.android.builder.model.v2.ide.TestedTargetVariant
 import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultAndroidArtifact
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultAndroidGradlePluginProjectFlags
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultApiVersion
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultBundleInfo
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultJavaArtifact
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultJavaCompileOptions
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultModelSyncFile
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultSourceProvider
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultSourceSetContainer
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultTestInfo
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultTestedTargetVariant
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultVariant
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultViewBindingOptions
+import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidArtifact
+import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
+import com.itsaky.androidide.tooling.api.model.internal.DefaultApiVersion
+import com.itsaky.androidide.tooling.api.model.internal.DefaultBundleInfo
+import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaArtifact
+import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
+import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
+import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceProvider
+import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
+import com.itsaky.androidide.tooling.api.model.internal.DefaultTestInfo
+import com.itsaky.androidide.tooling.api.model.internal.DefaultTestedTargetVariant
+import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
+import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
 
 /**
  * As the data is sent over streams, and the instances of properties specified in [IdeAndroidModule]

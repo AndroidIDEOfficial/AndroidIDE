@@ -15,15 +15,18 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.model.android.internal
+package com.itsaky.androidide.tooling.api.model.internal
 
-import com.android.builder.model.v2.ide.ViewBindingOptions
+import com.android.builder.model.v2.ide.JavaCompileOptions
 
 /** @author Akash Yadav */
-class DefaultViewBindingOptions : ViewBindingOptions {
-    override var isEnabled: Boolean = false
+class DefaultJavaCompileOptions : JavaCompileOptions {
+    override var encoding: String = ""
+    override var isCoreLibraryDesugaringEnabled: Boolean = false
+    override var sourceCompatibility: String = ""
+    override var targetCompatibility: String = ""
 
     override fun toString(): String {
-        return "DefaultViewBindingOptions(isEnabled=$isEnabled)"
+        return "DefaultJavaCompileOptions(encoding='$encoding', isCoreLibraryDesugaringEnabled=$isCoreLibraryDesugaringEnabled, sourceCompatibility='$sourceCompatibility', targetCompatibility='$targetCompatibility')"
     }
 }

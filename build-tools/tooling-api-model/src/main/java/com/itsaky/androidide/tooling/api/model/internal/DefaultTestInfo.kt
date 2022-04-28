@@ -15,15 +15,20 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.model.android.internal
+package com.itsaky.androidide.tooling.api.model.internal
 
-import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
-import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanFlag
+import com.android.builder.model.v2.ide.TestInfo
+import com.android.builder.model.v2.ide.TestInfo.Execution
+import java.io.File
 
 /** @author Akash Yadav */
-class DefaultAndroidGradlePluginProjectFlags : AndroidGradlePluginProjectFlags {
-    override var booleanFlagMap: Map<BooleanFlag, Boolean>? = null
+class DefaultTestInfo : TestInfo {
+    override var additionalRuntimeApks: Collection<File> = emptyList()
+    override var animationsDisabled: Boolean = false
+    override var execution: Execution? = null
+    override var instrumentedTestTaskName: String = ""
+
     override fun toString(): String {
-        return "DefaultAndroidGradlePluginProjectFlags(booleanFlagMap=$booleanFlagMap)"
+        return "DefaultTestInfo(additionalRuntimeApks=$additionalRuntimeApks, animationsDisabled=$animationsDisabled, execution=$execution, instrumentedTestTaskName='$instrumentedTestTaskName')"
     }
 }

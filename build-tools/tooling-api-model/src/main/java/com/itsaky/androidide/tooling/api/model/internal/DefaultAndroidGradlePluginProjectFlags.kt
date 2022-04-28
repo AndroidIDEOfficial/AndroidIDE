@@ -15,19 +15,15 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.model.android.internal
+package com.itsaky.androidide.tooling.api.model.internal
 
-import com.android.builder.model.v2.ide.BundleInfo
-import java.io.File
+import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
+import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanFlag
 
 /** @author Akash Yadav */
-class DefaultBundleInfo : BundleInfo {
-    override var apkFromBundleTaskName: String = ""
-    override var apkFromBundleTaskOutputListingFile: File = File(".")
-    override var bundleTaskName: String = ""
-    override var bundleTaskOutputListingFile: File = File(".")
-    
+class DefaultAndroidGradlePluginProjectFlags : AndroidGradlePluginProjectFlags {
+    override var booleanFlagMap: Map<BooleanFlag, Boolean>? = null
     override fun toString(): String {
-        return "DefaultBundleInfo(apkFromBundleTaskName='$apkFromBundleTaskName', apkFromBundleTaskOutputListingFile=$apkFromBundleTaskOutputListingFile, bundleTaskName='$bundleTaskName', bundleTaskOutputListingFile=$bundleTaskOutputListingFile)"
+        return "DefaultAndroidGradlePluginProjectFlags(booleanFlagMap=$booleanFlagMap)"
     }
 }

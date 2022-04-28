@@ -26,9 +26,9 @@ import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultAndroidGradlePluginProjectFlags
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultJavaCompileOptions
-import com.itsaky.androidide.tooling.api.model.android.internal.DefaultSourceSetContainer
+import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
+import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
+import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
 import java.io.File
 
 /**
