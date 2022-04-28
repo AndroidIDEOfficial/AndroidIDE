@@ -246,7 +246,10 @@
      <string name="pref_changelog">Registro de alterações</string>
      <string name="msg_editor_font_size">Por favor, escolha o tamanho da fonte padrão do editor:</string>
      <string name="msg_clear_cache">Isso excluirá o diretório de caches criado pelo Gradle.  Se você excluí-lo, a próxima compilação pode demorar um pouco mais do que o normal, pois o Gradle fará o download dos arquivos necessários novamente.\nIMPORTANTE: Isso também excluirá o AAPT2.  Você precisará reinstalá-lo, caso contrário, ocorrerá uma falha de compilação.\n\nTem certeza de que deseja excluir os caches?</string>
-
+     <string name="idepref_editor_word_wrap_title">Quebra de linha</string>
+     <string name="idepref_editor_word_wrap_summary">Usar quebras de linha no editor</string>
+     <string name="idepref_editor_use_magnifier_title">Ativar lupa</string>
+     <string name="idepref_editor_use_magnifier_summary">Zoom de texto na posição do cursor ao selecionar texto no editor</string>
 
     <!-- Error Messages used while Logging -->
      <string name="err_installation">Erro de instalação</string>
