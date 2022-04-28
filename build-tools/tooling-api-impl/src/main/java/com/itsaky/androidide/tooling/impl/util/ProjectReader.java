@@ -91,8 +91,7 @@ public class ProjectReader {
             ProjectConnection connection, IdeAndroidModule android) {
         for (final var variant : android.getVariants()) {
 
-            // Do not fill variant dependencies information for now
-            // fillVariantDependencies(connection, android, variant);
+            fillVariantDependencies(connection, android, variant);
 
             // FIXME: Don't know how to fetch dependency jars using v2 model classes.
             //        This should be replaced with something that uses v2 of the model builder API
