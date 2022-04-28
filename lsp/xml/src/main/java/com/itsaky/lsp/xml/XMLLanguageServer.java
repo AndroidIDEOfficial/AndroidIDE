@@ -38,6 +38,7 @@ import com.itsaky.lsp.models.SignatureHelpParams;
 import com.itsaky.lsp.util.NoCompletionsProvider;
 import com.itsaky.lsp.util.NoDocumentHandler;
 import com.itsaky.lsp.xml.models.XMLServerSettings;
+import com.itsaky.lsp.xml.providers.CodeFormatProvider;
 import com.itsaky.lsp.xml.providers.CompletionProvider;
 import com.itsaky.sdk.SDKInfo;
 
@@ -137,7 +138,7 @@ public class XMLLanguageServer implements ILanguageServer {
 
         return new CompletionProvider(this.sdkInfo, this.getSettings());
     }
-    
+
     @NonNull
     @Override
     public ReferenceResult findReferences(@NonNull ReferenceParams params) {
@@ -173,4 +174,11 @@ public class XMLLanguageServer implements ILanguageServer {
     public IDocumentHandler getDocumentHandler() {
         return this.documentHandler;
     }
+    
+   @NonNull
+    @Override
+    public CharSequence formatCode(CharSequence input) {
+        return new CodeFormatProvider().format(input);
+    }
+
 }
