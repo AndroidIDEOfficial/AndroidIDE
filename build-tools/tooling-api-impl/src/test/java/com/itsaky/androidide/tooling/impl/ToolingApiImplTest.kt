@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.tooling.impl
 
+import com.android.builder.model.v2.ide.ProjectType
 import com.google.common.truth.Truth.assertThat
-import com.google.gson.GsonBuilder
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
@@ -39,7 +39,7 @@ import org.junit.runners.JUnit4
 class ToolingApiImplTest {
 
     private val log = ILogger.newInstance(javaClass.simpleName)
-    
+
     @Test
     fun testProjectInit() {
         val client = TestClient()
@@ -50,24 +50,25 @@ class ToolingApiImplTest {
         assertThat(project).isNotNull()
         assertThat(project!!).isInstanceOf(IdeGradleProject::class.java)
 
-        val builder = GsonBuilder()
-        ToolingApiLauncher.configureGson(builder)
-        val gson = builder.create()
-        log.debug("Got initialized project:", gson.toJson(project))
-
         val isInitialized = server.isInitialized().get()
-        log.debug("Is server initialized: $isInitialized")
         assertThat(isInitialized).isTrue()
 
         val app = project.findByPath(":app")
         assertThat(app).isNotNull()
         assertThat(app).isInstanceOf(IdeAndroidModule::class.java)
+        assertAndroidModule(app as IdeAndroidModule)
 
         val javaLibrary = project.findByPath(":java-library")
         assertThat(javaLibrary).isNotNull()
         assertThat(javaLibrary).isInstanceOf(IdeGradleProject::class.java)
 
         assertThat(project.findByPath(":does-not-exist")).isNull()
+    }
+
+    private fun assertAndroidModule(android: IdeAndroidModule) {
+        assertThat(android.projectType).isEqualTo(ProjectType.APPLICATION)
+        assertThat(android.viewBindingOptions).isNotNull()
+        assertThat(android.viewBindingOptions!!.isEnabled).isFalse()
     }
 
     private fun launchServer(client: IToolingApiClient): IToolingApiServer {

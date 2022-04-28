@@ -57,6 +57,7 @@ public class ProjectReader {
         try {
             final var modelBuilder = connection.model(AndroidProject.class);
             addProperty(modelBuilder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
+            addProperty(modelBuilder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
             final var android = modelBuilder.get();
 
             if (android == null) {
