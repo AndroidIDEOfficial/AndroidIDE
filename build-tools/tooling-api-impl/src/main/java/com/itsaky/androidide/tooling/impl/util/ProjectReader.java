@@ -25,6 +25,7 @@ import com.android.builder.model.v2.models.VariantDependencies;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
+import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
 import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener;
@@ -89,24 +90,42 @@ public class ProjectReader {
     private static void tryReadDependencies(
             ProjectConnection connection, IdeAndroidModule android) {
         for (final var variant : android.getVariants()) {
-            final var name = variant.getName();
-            final var modelFinder =
-                    connection.action(
-                            controller ->
-                                    controller.findModel(
-                                            VariantDependencies.class,
-                                            ModelBuilderParameter.class,
-                                            parameter -> parameter.setVariantName(name)));
-            addProperty(modelFinder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
-            addProperty(modelFinder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
-            modelFinder.addProgressListener(new LoggingProgressListener());
-            final var variantDependencies =
-                    AndroidModulePropertyCopier.INSTANCE.copy(modelFinder.run());
-            android.getVariantDependencies().put(name, variantDependencies);
 
+            // Do not fill variant dependencies information for now
+            // fillVariantDependencies(connection, android, variant);
+
+            // FIXME: Don't know how to fetch dependency jars using v2 model classes.
+            //        This should be replaced with something that uses v2 of the model builder API
             android.getVariantDependencyJars()
-                    .put(name, LegacyProjectReader.INSTANCE.findDependencyJars(connection, name));
+                    .put(
+                            variant.getName(),
+                            LegacyProjectReader.INSTANCE.findVariantDependencyJars(
+                                    connection, variant.getName()));
         }
+    }
+
+    @SuppressWarnings("unused")
+    private static void fillVariantDependencies(
+            ProjectConnection connection, IdeAndroidModule android, DefaultVariant variant) {
+        final var name = variant.getName();
+        final var modelFinder =
+                connection.action(
+                        controller ->
+                                controller.findModel(
+                                        VariantDependencies.class,
+                                        ModelBuilderParameter.class,
+                                        parameter -> parameter.setVariantName(name)));
+        addProperty(modelFinder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
+        addProperty(modelFinder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
+        modelFinder.addProgressListener(new LoggingProgressListener());
+        final var variantDependencies =
+                AndroidModulePropertyCopier.INSTANCE.copy(modelFinder.run());
+        android.getVariantDependencies().put(name, variantDependencies);
+    }
+
+    private static void addProperty(
+            ConfigurableLauncher<?> launcher, String property, Object value) {
+        launcher.addArguments(String.format("-P%s=%s", property, value));
     }
 
     private static IdeAndroidModule buildAndroidProjectModel(
@@ -139,11 +158,6 @@ public class ProjectReader {
         addTasks(gradle, module);
 
         return module;
-    }
-
-    private static void addProperty(
-            ConfigurableLauncher<?> launcher, String property, Object value) {
-        launcher.addArguments(String.format("-P%s=%s", property, value));
     }
 
     private static IdeGradleProject buildGradleProjectModel(GradleProject gradle) {

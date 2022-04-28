@@ -31,7 +31,7 @@ import org.gradle.tooling.ProjectConnection
 /** @author Akash Yadav */
 object LegacyProjectReader {
 
-    fun findDependencyJars(connection: ProjectConnection, variantName: String): Set<File> {
+    fun findVariantDependencyJars(connection: ProjectConnection, variantName: String): Set<File> {
         val builder =
             connection.action { controller ->
                 controller.findModel(Variant::class.java, ModelBuilderParameter::class.java) {

@@ -47,6 +47,7 @@ class ToolingApiImplTest {
         val server = launchServer(client)
 
         val project = server.initialize(InitializeProjectParams(getTestProject())).get()
+        log.debug(project?.asJson())
         assertThat(project).isNotNull()
         assertThat(project!!).isInstanceOf(IdeGradleProject::class.java)
 
@@ -63,16 +64,6 @@ class ToolingApiImplTest {
         assertThat(javaLibrary).isInstanceOf(IdeGradleProject::class.java)
 
         assertThat(project.findByPath(":does-not-exist")).isNull()
-    }
-
-    private fun asJson(project: IdeGradleProject?): String {
-        if (project == null) {
-            return ""
-        }
-
-        val builder = GsonBuilder()
-        ToolingApiLauncher.configureGson(builder)
-        return builder.create().toJson(project)
     }
 
     private fun assertAndroidModule(android: IdeAndroidModule) {
@@ -136,4 +127,10 @@ class ToolingApiImplTest {
     }
 
     fun Any.getTestProject(): File = File("./src/test/test-project")
+
+    fun Any.asJson(): String {
+        val builder = GsonBuilder()
+        ToolingApiLauncher.configureGson(builder)
+        return builder.create().toJson(this)
+    }
 }
