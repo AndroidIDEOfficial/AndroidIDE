@@ -60,7 +60,6 @@ dependencies {
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.gradle:gradle-tooling-api:7.4.2'
-    implementation "org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.12.0"
     
     testImplementation tests.junit
     testImplementation tests.google_truth

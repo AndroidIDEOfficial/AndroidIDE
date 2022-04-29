@@ -357,6 +357,10 @@
     <string name="msg_editor_find_case_sensitive">Case sensitive</string>
     <string name="msg_editor_find_regex">Regex</string>
     <string name="msg_replacing">Replacing...</string>
+
+    <string name="title_gradle_service_notification_ticker">Gradle build service started</string>
+    <string name="title_gradle_service_notification">Gradle build service</string>
+    <string name="msg_gradle_service_notification">AndroidIDE\'s Gradle build service is running in the background.</string>
 </resources>
 
 

@@ -109,6 +109,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     
     // Local projects here
+    implementation project (':build-tools:builder-api')
     implementation project (':treeview')
     implementation project (':emulatorview')
     implementation project (':xml-inflater')
