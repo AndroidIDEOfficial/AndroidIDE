@@ -20,18 +20,36 @@ package com.itsaky.androidide.tooling.impl
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.BUILD_CANCELLED
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.BUILD_FAILED
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.CONNECTION_CLOSED
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.CONNECTION_ERROR
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.PROJECT_NOT_FOUND
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNKNOWN
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_BUILD_ARGUMENT
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_CONFIGURATION
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_GRADLE_VERSION
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
-import com.itsaky.androidide.tooling.impl.util.InitScriptHandler
+import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
+import org.gradle.tooling.BuildCancelledException
+import org.gradle.tooling.BuildException
 import org.gradle.tooling.ConfigurableLauncher
+import org.gradle.tooling.GradleConnectionException
 import org.gradle.tooling.GradleConnector
+import org.gradle.tooling.UnsupportedVersionException
+import org.gradle.tooling.exceptions.UnsupportedBuildArgumentException
+import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -48,35 +66,38 @@ internal class ToolingApiServerImpl : IToolingApiServer {
 
     override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
         return CompletableFutures.computeAsync {
-            val issues: MutableMap<String, DefaultProjectSyncIssues> = mutableMapOf()
             try {
                 log.debug("Got initialize request", params)
                 val stopWatch = StopWatch("Connection to project")
                 this.connector =
                     GradleConnector.newConnector().forProjectDirectory(File(params.directory))
                 stopWatch.lap("Connector created")
-    
+
                 if (this.connector == null) {
                     throw CompletionException(
                         RuntimeException(
                             "Unable to create gradle connector for project directory: ${params.directory}"))
                 }
-    
+
                 val connection = this.connector!!.connect()
                 stopWatch.lapFromLast("Project connection established")
-                
+
+                val issues: MutableMap<String, DefaultProjectSyncIssues> = mutableMapOf()
                 this.project = ProjectReader.read(connection, issues)
                 stopWatch.lapFromLast(
                     "Project read ${if(this.project == null) "failed" else "successful"}")
-    
+
                 connection.close()
                 stopWatch.log()
-    
+
                 initialized = true
+
+                return@computeAsync InitializeResult(project, issues)
             } catch (err: Throwable) {
                 log.error(err)
             }
-            return@computeAsync InitializeResult(project, issues)
+
+            return@computeAsync InitializeResult(project, emptyMap())
         }
     }
 
@@ -91,8 +112,50 @@ internal class ToolingApiServerImpl : IToolingApiServer {
         }
     }
 
+    override fun executeTasks(
+        message: TaskExecutionMessage
+    ): CompletableFuture<TaskExecutionResult> {
+        return CompletableFutures.computeAsync {
+            assertProjectInitialized()
+
+            var projectPath = message.projectPath
+            if (projectPath == null) {
+                projectPath = ":"
+            }
+
+            val project =
+                this.project!!.findByPath(projectPath)
+                    ?: return@computeAsync TaskExecutionResult(false, PROJECT_NOT_FOUND)
+
+            val connection = this.connector!!.forProjectDirectory(project.projectDir).connect()
+            val builder = connection.newBuild()
+            builder.addProgressListener(LoggingProgressListener())
+            applyArguments(builder)
+
+            try {
+                builder.run()
+            } catch (error: Throwable) {
+                return@computeAsync TaskExecutionResult(false, getTaskFailureType(error))
+            }
+
+            return@computeAsync TaskExecutionResult(false, UNKNOWN)
+        }
+    }
+
+    private fun getTaskFailureType(error: Throwable): Failure =
+        when (error) {
+            is BuildException -> BUILD_FAILED
+            is BuildCancelledException -> BUILD_CANCELLED
+            is GradleConnectionException -> CONNECTION_ERROR
+            is java.lang.IllegalStateException -> CONNECTION_CLOSED
+            is UnsupportedVersionException -> UNSUPPORTED_GRADLE_VERSION
+            is UnsupportedBuildArgumentException -> UNSUPPORTED_BUILD_ARGUMENT
+            is UnsupportedOperationConfigurationException -> UNSUPPORTED_CONFIGURATION
+            else -> UNKNOWN
+        }
+
     private fun assertProjectInitialized() {
-        if (!isInitialized().get()) {
+        if (!isInitialized().get() || project == null) {
             throw CompletionException(IllegalStateException("Project is not initialized!"))
         }
     }
@@ -101,7 +164,5 @@ internal class ToolingApiServerImpl : IToolingApiServer {
         this.client = client
     }
 
-    private fun applyArguments(launcher: ConfigurableLauncher<*>) {
-        launcher.withArguments("--init-script", InitScriptHandler.getInitScript().absolutePath)
-    }
+    private fun applyArguments(launcher: ConfigurableLauncher<*>) {}
 }

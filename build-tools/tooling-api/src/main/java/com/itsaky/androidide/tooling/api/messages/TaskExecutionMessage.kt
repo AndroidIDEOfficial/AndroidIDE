@@ -15,29 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.messages.result
+package com.itsaky.androidide.tooling.api.messages
 
 /**
- * Result for a task execution.
- *
- * @param result The result of the task execution.
- * @param failure The type of failure. Non-null only if [result] is `false`.
- *
+ * Message sent by client to execute given tasks using the Tooling API.
  * @author Akash Yadav
  */
-data class TaskExecutionResult(val result: Boolean, val failure: Failure?) {
-    enum class Failure {
-        PROJECT_NOT_FOUND,
-        UNKNOWN,
-        
-        UNSUPPORTED_GRADLE_VERSION,
-        UNSUPPORTED_CONFIGURATION,
-        UNSUPPORTED_BUILD_ARGUMENT,
-        
-        BUILD_FAILED,
-        BUILD_CANCELLED,
-        
-        CONNECTION_ERROR,
-        CONNECTION_CLOSED
-    }
-}
+data class TaskExecutionMessage(val projectPath: String?, val tasks: List<String>)

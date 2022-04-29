@@ -18,7 +18,9 @@
 package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
@@ -41,4 +43,8 @@ interface IToolingApiServer {
 
     /** Get the root project. */
     @JsonRequest("getRootProject") fun getRootProject(): CompletableFuture<IdeGradleProject>
+
+    /** Execute the tasks specified in the message. */
+    @JsonRequest("executeTasks")
+    fun executeTasks(message: TaskExecutionMessage): CompletableFuture<TaskExecutionResult>
 }
