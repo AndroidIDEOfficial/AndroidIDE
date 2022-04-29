@@ -17,6 +17,7 @@
  */
 package com.itsaky.androidide.fragments.preferences;
 
+import com.itsaky.androidide.managers.PreferenceManager;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_AUTO_SAVE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_DRAW_HEX;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_LINE_BREAK;
@@ -65,6 +66,8 @@ public class EditorPreferences extends BasePreferenceFragment
         final var nonPrintable = new Preference(getContext());
         final var tabSize = new Preference(getContext());
         final var drawHex = new SwitchPreference(getContext());
+        final var wordWrap = new SwitchPreference(getContext());
+        final var magnifier = new SwitchPreference(getContext());
         final var fontLigatures = new SwitchPreference(getContext());
         final var autoSave = new SwitchPreference(getContext());
         final var useGoogleCodeStyle = new SwitchPreference(getContext());
@@ -79,7 +82,17 @@ public class EditorPreferences extends BasePreferenceFragment
         fontSize.setKey(KEY_EDITOR_FONT_SIZE);
         fontSize.setTitle(R.string.idepref_editor_fontsize_title);
         fontSize.setSummary(R.string.idepref_editor_fontsize_summary);
-
+        
+        wordWrap.setIcon(R.drawable.ic_wrap_text);
+        wordWrap.setKey(PreferenceManager.KEY_EDITOR_WORD_WRAP);
+        wordWrap.setTitle(R.string.idepref_editor_word_wrap_title);
+        wordWrap.setSummary(R.string.idepref_editor_word_wrap_summary);
+        
+        magnifier.setIcon(R.drawable.ic_loupe);
+        magnifier.setKey(PreferenceManager.KEY_EDITOR_USE_MAGNIFER);
+        magnifier.setTitle(R.string.idepref_editor_use_magnifier_title);
+        magnifier.setSummary(R.string.idepref_editor_use_magnifier_summary);
+        
         nonPrintable.setIcon(R.drawable.ic_drawing);
         nonPrintable.setKey(KEY_EDITOR_PRINTABLE_CHARS);
         nonPrintable.setTitle(R.string.idepref_editor_paintingflags_title);
@@ -124,6 +137,8 @@ public class EditorPreferences extends BasePreferenceFragment
         commonCategory.addPreference(fontSize);
         commonCategory.addPreference(fontLigatures);
         commonCategory.addPreference(tabSize);
+        commonCategory.addPreference(wordWrap);
+        commonCategory.addPreference(magnifier);
         commonCategory.addPreference(completionsMatchLower);
         commonCategory.addPreference(visiblePasswordFlag);
         commonCategory.addPreference(nonPrintable);
@@ -144,6 +159,8 @@ public class EditorPreferences extends BasePreferenceFragment
         completionsMatchLower.setOnPreferenceChangeListener(this);
         useGoogleCodeStyle.setOnPreferenceChangeListener(this);
         visiblePasswordFlag.setOnPreferenceChangeListener(this);
+        wordWrap.setOnPreferenceChangeListener(this);
+        magnifier.setOnPreferenceChangeListener(this);
 
         fontLigatures.setChecked(getPrefManager().getBoolean(KEY_EDITOR_FONT_LIGATURES, true));
         drawHex.setChecked(getPrefManager().getBoolean(KEY_EDITOR_DRAW_HEX, true));
@@ -153,6 +170,9 @@ public class EditorPreferences extends BasePreferenceFragment
         useGoogleCodeStyle.setChecked(
                 getPrefManager().getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false));
         visiblePasswordFlag.setChecked(getPrefManager().getBoolean(KEY_EDITOR_FLAG_PASSWORD, true));
+        wordWrap.setChecked(getPrefManager().getBoolean(PreferenceManager.KEY_EDITOR_WORD_WRAP, false));
+        magnifier.setChecked(getPrefManager().getBoolean(PreferenceManager.KEY_EDITOR_USE_MAGNIFER, true));
+        
     }
 
     @Override
@@ -168,6 +188,12 @@ public class EditorPreferences extends BasePreferenceFragment
                 break;
             case KEY_EDITOR_FONT_LIGATURES:
                 ConstantsBridge.EDITOR_PREF_LIGATURES_CHANGED = true;
+                break;
+            case PreferenceManager.KEY_EDITOR_WORD_WRAP:
+                ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED = true;
+                break;
+            case PreferenceManager.KEY_EDITOR_USE_MAGNIFER:
+            	ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED = true;
                 break;
         }
 
@@ -294,3 +320,7 @@ public class EditorPreferences extends BasePreferenceFragment
         builder.show();
     }
 }
+
+
+
+

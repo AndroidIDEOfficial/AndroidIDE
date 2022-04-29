@@ -33,7 +33,6 @@
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_cannot_perform_fix">कोड क्रिया करने में असमर्थ </string>
     <string name="msg_performing_actions">सुधार कर रहे है &#8230;</string>
-    <string name="msg_code_actions">कोड क्रियाएं</string>
     <string name="msg_api_info_since">एपीआई %d से उपलब्ध है</string>
     <string name="msg_api_info_removed">एपीआई %d  में हटाया गया</string>
     <string name="msg_api_info_deprecated">एपीआई %d में बहिष्कृत हो गया हे</string>
@@ -343,7 +342,19 @@
     <string name="hint_string_value">स्ट्रिंग वैल्यू</string>
     <string name="hint_string_resource">स्ट्रिंग रिसोर्स</string>
     <string name="hint_resource_reference">कोई रिसोर्स संदर्भ</string>
+    <string name="msg_code_actions">कोड क्रियाएं</string>
+    <string name="title_format_code">फ़ॉर्मेट कोड</string>
+    <string name="idepref_java_useGoogleStyle_title">गुगल जावा स्टाइल कोड फ़ॉर्मेट का प्रयोग करें</string>
+    <string name="idepref_java_useGoogleStyle_summary">जावा सोर्स कोड को फ़ॉर्मेट करने के लिए गुगल जावा स्टाइल कोड फ़ॉर्मेट कॉन्फ़िगरेशन का उपयोग करें।</string>
+    <string name="idepref_visiblePassword_title">दृश्यमान पासवर्ड फ्लेग</string>
+    <string name="idepref_visiblePassword_summary">एडिटर में दृश्यमान पासवर्ड इनपुट टाइप फ्लेग के लिए उपयोग करें। यह सुनिश्चित करता है कि सॉफ्ट कीबोर्ड द्वारा कोई सुझाव प्रस्तावित नहीं किया गया है।</string>
+    <string name="msg_no_actions">कोई कोड एक्शंस नहीं मिला</string>
+    <string name="previous">पहले का</string>
+    <string name="msg_editor_find_case_sensitive">संवेदनशील अक्षर</string>
+    <string name="msg_editor_find_regex">रेजेक्स</string>
+    <string name="msg_replacing">बदला जा रहा है...</string>
 </resources>
+
 
 
 

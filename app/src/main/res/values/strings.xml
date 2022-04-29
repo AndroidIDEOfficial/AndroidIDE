@@ -231,6 +231,10 @@
     <string name="idepref_editor_paintingflags_summary">Choose what non-printable characters should be drawn by the editor</string>
     <string name="idepref_editor_drawhexcolors_title">Draw hex color strings</string>
     <string name="idepref_editor_drawhexcolors_summary">Should the editor draw hex color string?</string>
+    <string name="idepref_editor_word_wrap_title">Word Wrap</string>
+    <string name="idepref_editor_word_wrap_summary">Use wordwrap of the editor</string>
+    <string name="idepref_editor_use_magnifier_title">Enable Magnifier</string>
+    <string name="idepref_editor_use_magnifier_summary">Magnify text at cursor position while selecting text in editor</string>
     <string name="idepref_editor_title">Editor</string>
     <string name="idepref_build_title">Build &amp; Run</string>
     <string name="title_open_projects">Open last project</string>
@@ -355,8 +359,3 @@
     <string name="msg_editor_find_regex">Regex</string>
     <string name="msg_replacing">Replacing...</string>
 </resources>
-
-
-
-
-
