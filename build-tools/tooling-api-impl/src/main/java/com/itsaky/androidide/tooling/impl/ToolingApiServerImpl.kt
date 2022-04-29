@@ -138,6 +138,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             builder.setStandardInput("NoOp".byteInputStream())
             builder.setStandardError(System.err)
             builder.setStandardOutput(System.err)
+            builder.forTasks(*message.tasks.toTypedArray())
             applyArguments(builder)
 
             try {
