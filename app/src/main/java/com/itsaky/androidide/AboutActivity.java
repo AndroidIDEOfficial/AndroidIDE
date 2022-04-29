@@ -104,6 +104,7 @@ public class AboutActivity extends StudioActivity {
                 Pair.create("\u0939\u093f\u0928\u094d\u0926\u0940", "Premjit Chowdhury")); // हिन्दी
         list.add(Pair.create("Russian", "Smooth-E"));
         list.add(Pair.create("French", "Se-Lyan"));
+        list.add(Pair.create("Portuguese Brazilian", "Frederick'XS"));
 
         return list;
     }
