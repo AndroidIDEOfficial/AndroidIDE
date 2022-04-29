@@ -55,26 +55,28 @@ import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.utils.LSPUtils;
+import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.TypefaceUtils;
 import com.itsaky.inflater.values.ValuesTableFactory;
 import com.itsaky.lsp.models.Range;
+
+import io.github.rosemoe.sora.event.ContentChangeEvent;
+import io.github.rosemoe.sora.lang.EmptyLanguage;
+import io.github.rosemoe.sora.text.Content;
+import io.github.rosemoe.sora.widget.component.Magnifier;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-
-import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.lang.EmptyLanguage;
-import io.github.rosemoe.sora.text.Content;
 
 /**
  * A view that handles opened code editors.
@@ -169,29 +171,27 @@ public class CodeEditorView extends FrameLayout {
     }
 
     public boolean save() {
-
-        if (getFile() == null) {
+        final var file = getFile();
+        if (file == null) {
             LOG.error("Cannot save file. File instance is null.");
             return false;
         }
 
-        final var path = getFile().toPath();
-        if (!isModified() && Files.exists(path)) {
-            LOG.info(getFile().getName());
+        if (!isModified() && file.exists()) {
+            LOG.info(file.getName());
             LOG.info("File was not modified. Skipping save operation.");
             return false;
         }
 
-        final var lines = getLines(getEditor().getText());
-        try {
+        final var text = getEditor().getText().toString();
 
-            Files.write(getFile().toPath(), lines);
+        try {
+            FileUtil.writeFile(file, text);
             notifySaved();
             isModified = false;
-
             return true;
-        } catch (Throwable e) {
-            LOG.error("Failed to save file", getFile(), "\n", e);
+        } catch (IOException io) {
+            LOG.error("Failed to save file", file, io);
             return false;
         }
     }
@@ -305,6 +305,10 @@ public class CodeEditorView extends FrameLayout {
         boolean drawHexChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED;
         boolean inputFlagsChanged =
                 isFirstCreate || ConstantsBridge.EDITOR_PREF_VISIBLE_PASSWORD_CHANGED;
+        boolean wordWrapChanged = isFirstCreate || ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED;
+        boolean magnifierChanged =
+                isFirstCreate || ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED;
+
         final PreferenceManager prefs = StudioApp.getInstance().getPrefManager();
 
         if (sizeChanged) {
@@ -360,6 +364,18 @@ public class CodeEditorView extends FrameLayout {
             //            binding.editor.setLineColorsEnabled (prefs.getBoolean
             // (PreferenceManager.KEY_EDITOR_DRAW_HEX, true));
             ConstantsBridge.EDITOR_PREF_DRAW_HEX_CHANGED = false;
+        }
+
+        if (wordWrapChanged) {
+            var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_WORD_WRAP, false);
+            binding.editor.setWordwrap(enabled);
+            ConstantsBridge.EDITOR_PREF_WORD_WRAP_CHANGED = false;
+        }
+
+        if (magnifierChanged) {
+            var enabled = prefs.getBoolean(PreferenceManager.KEY_EDITOR_USE_MAGNIFER, true);
+            binding.editor.getComponent(Magnifier.class).setEnabled(enabled);
+            ConstantsBridge.EDITOR_PREF_USE_MAGNIFIER_CHANGED = false;
         }
 
         isFirstCreate = false;

@@ -1,0 +1,81 @@
+/*
+ *  This file is part of AndroidIDE.
+ *
+ *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AndroidIDE is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+jar {
+    manifest {
+        attributes (
+                'Main-Class': 'com.itsaky.androidide.tooling.impl.Main'
+        )
+    }
+}
+
+shadowJar {
+    archiveBaseName.set ('tooling-api')
+    archiveClassifier.set ('all')
+}
+
+task copyJarToAssets (type: Copy) {
+    from project.file ("${project.buildDir}/libs/tooling-api-all.jar")
+    into project.rootProject.file ("app/src/main/assets/data/common/")
+}
+
+project.tasks.jar.finalizedBy shadowJar
+project.tasks.shadowJar.finalizedBy copyJarToAssets
+
+repositories {
+    maven {
+        url 'https://repo.gradle.org/gradle/libs-releases/'
+    }
+}
+
+dependencies {
+    implementation project (path: ':build-tools:logger')
+    implementation project (path: ':build-tools:tooling-api')
+    implementation project (path: ':build-tools:tooling-api-model')
+    
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.gradle:gradle-tooling-api:7.4.2'
+    implementation "org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.12.0"
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    
+    runtimeOnly 'org.slf4j:slf4j-api:1.7.30'
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+}
