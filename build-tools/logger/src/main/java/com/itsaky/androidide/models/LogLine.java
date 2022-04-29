@@ -24,10 +24,10 @@ import java.util.Locale;
 public class LogLine {
 
     // It makes things easier in LogLanguageImpl
-    public static final int INFO;
-    public static final int DEBUG;
-    public static final int ERROR;
-    public static final int WARNING;
+    public static int INFO;
+    public static int DEBUG;
+    public static int ERROR;
+    public static int WARNING;
 
     static {
         try {
@@ -38,7 +38,10 @@ public class LogLine {
             ERROR = klass.getField("LOG_ERROR").getInt(null);
             WARNING = klass.getField("LOG_WARNING").getInt(null);
         } catch (Throwable err) {
-            throw new RuntimeException(err);
+            INFO = 0;
+            DEBUG = 1;
+            ERROR = 2;
+            WARNING = 3;
         }
     }
 
