@@ -118,6 +118,8 @@ internal class ToolingApiServerImpl : IToolingApiServer {
         return CompletableFutures.computeAsync {
             assertProjectInitialized()
 
+            log.debug("Received request to run tasks.", message)
+
             var projectPath = message.projectPath
             if (projectPath == null) {
                 projectPath = ":"
@@ -130,15 +132,17 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             val connection = this.connector!!.forProjectDirectory(project.projectDir).connect()
             val builder = connection.newBuild()
             builder.addProgressListener(LoggingProgressListener())
+            builder.setStandardInput("NoOp".byteInputStream())
+            builder.setStandardError(System.err)
+            builder.setStandardOutput(System.err)
             applyArguments(builder)
 
             try {
                 builder.run()
+                return@computeAsync TaskExecutionResult(true, null)
             } catch (error: Throwable) {
                 return@computeAsync TaskExecutionResult(false, getTaskFailureType(error))
             }
-
-            return@computeAsync TaskExecutionResult(false, UNKNOWN)
         }
     }
 

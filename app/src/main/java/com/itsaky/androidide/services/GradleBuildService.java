@@ -40,6 +40,7 @@ import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage;
+import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
@@ -47,8 +48,8 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.InputStreamLineReader;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -128,7 +129,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     @Override
     public CompletableFuture<TaskExecutionResult> executeTasks(@NonNull String... tasks) {
         checkServerStarted();
-        return null;
+        return server.executeTasks(new TaskExecutionMessage(":", Arrays.asList(tasks)));
     }
 
     @NonNull
@@ -136,7 +137,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     public CompletableFuture<TaskExecutionResult> executeProjectTasks(
             @NonNull String projectPath, @NonNull String... tasks) {
         checkServerStarted();
-        return null;
+        return server.executeTasks(new TaskExecutionMessage(projectPath, Arrays.asList(tasks)));
     }
 
     private void checkServerStarted() {
