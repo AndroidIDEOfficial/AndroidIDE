@@ -36,6 +36,24 @@ public class ClassBuilder {
 
         return JavaFile.builder(packageName, activity.build()).build().toString();
     }
+    
+    public static String createFragment(String packageName, String className) {
+        MethodSpec onViewCreated =
+        		MethodSpec.methodBuilder("onViewCreated")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(android.view.View.class,"view")
+                .addParameter(android.os.Bundle.class,"savedInstanceState")
+                .addStatement("super.onViewCreated(view,savedInstanceState)")
+                .build();
+                
+        TypeSpec.Builder fragment =
+        		newClassSpec(className).toBuilder()
+                		.superclass(androidx.fragment.app.Fragment.class)
+                        .addMethod(onViewCreated);
+        
+        return JavaFile.builder(packageName, fragment.build()).build().toString();
+    }
 
     // TODO: Allow user to choose number of spaces to indent
     // Most probably, get this from preferences
@@ -60,3 +78,4 @@ public class ClassBuilder {
                 .build();
     }
 }
+

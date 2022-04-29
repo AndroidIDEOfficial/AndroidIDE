@@ -180,7 +180,10 @@ public class FileOptionsHandler extends IDEHandler
                         } else if (id == binding.typeActivity.getId()) {
                             createFile(
                                     f, javaName, ProjectWriter.createActivity(pkgName, className));
-                        } else {
+                        } else if (id == binding.typeFragment.getId()) {
+                        	createFile(
+                            		f, javaName, ProjectWriter.createFragment(pkgName, className));
+                        }else {
                             createFile(f, name, "");
                         }
                     }
@@ -440,3 +443,4 @@ public class FileOptionsHandler extends IDEHandler
         builder.create().show();
     }
 }
+

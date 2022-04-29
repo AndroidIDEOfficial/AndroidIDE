@@ -106,6 +106,10 @@ public class ProjectWriter {
     public static String createActivity(String packageName, String className) {
         return ClassBuilder.createActivity(packageName, className);
     }
+    
+    public static String createFragment(String packageName, String className) {
+        return ClassBuilder.createFragment(packageName, className);
+    }
 
     public static void write(
             ProjectTemplate template, NewProjectDetails details, ProjectWriterCallback listener)
@@ -222,3 +226,4 @@ public class ProjectWriter {
                 });
     }
 }
+
