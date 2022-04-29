@@ -35,9 +35,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ToolsManager {
 
-    public static final int TOOLING_API_VERSION = 1;
     public static final int LOG_SENDER_VERSION = 2;
-    public static final String KEY_TOOLING_API_VERSION = "tools_toolingApiVersion";
     public static final String KEY_LOG_SENDER_VERSION = "tools_logsenderVersion";
     private static final ILogger LOG = ILogger.newInstance("ToolsManager");
     public static String ARCH_SPECIFIC_ASSET_DATA_DIR = "data/" + BaseApplication.getArch();
@@ -133,12 +131,13 @@ public class ToolsManager {
     }
 
     private static void extractToolingApi() {
-        final var currentVersion = prefs.getInt(KEY_TOOLING_API_VERSION, 0);
-        if (!Environment.TOOLING_API_JAR.exists() || currentVersion < TOOLING_API_VERSION) {
-            ResourceUtils.copyFileFromAssets(
-                    getCommonAsset("tooling-api-all.jar"),
-                    Environment.TOOLING_API_JAR.getAbsolutePath());
+        if (Environment.TOOLING_API_JAR.exists()) {
+            FileUtils.delete(Environment.TOOLING_API_JAR);
         }
+        
+        ResourceUtils.copyFileFromAssets(
+                getCommonAsset("tooling-api-all.jar"),
+                Environment.TOOLING_API_JAR.getAbsolutePath());
     }
 
     private static void writeInitScript() {

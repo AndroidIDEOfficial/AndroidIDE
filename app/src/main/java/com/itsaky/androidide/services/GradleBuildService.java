@@ -154,8 +154,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         toolingServerThread.start();
     }
 
-    protected void onServerStarted() {}
-
     protected void onServerExited(int exitCode) {
         LOG.warn("Tooling API process terminated with exit code:", exitCode);
         stopForeground(true);
