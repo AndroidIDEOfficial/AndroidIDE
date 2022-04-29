@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.tooling.api.model
 
+import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import java.io.File
 
 /**
@@ -50,7 +51,14 @@ open class IdeGradleProject(
 
         return null
     }
-    
+
+    fun findApplicationModules(): List<IdeAndroidModule> =
+        this.subprojects.filterIsInstance(IdeAndroidModule::class.java).filter {
+            it.projectType == APPLICATION
+        }
+
+    fun findFirstApplicationModule(): IdeAndroidModule? = findApplicationModules().firstOrNull()
+
     override fun toString(): String {
         return "IdeGradleProject(name=$name, description=$description, projectPath=$projectPath, projectDir=$projectDir, buildDir=$buildDir, buildScript=$buildScript, parent=$parent, subprojects=$subprojects, tasks=$tasks, gsonType='$gsonType')"
     }
