@@ -132,6 +132,9 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             val connection = this.connector!!.forProjectDirectory(project.projectDir).connect()
             val builder = connection.newBuild()
             builder.addProgressListener(LoggingProgressListener())
+
+            // System.in and System.out are used for communication between this server and the
+            // client.
             builder.setStandardInput("NoOp".byteInputStream())
             builder.setStandardError(System.err)
             builder.setStandardOutput(System.err)

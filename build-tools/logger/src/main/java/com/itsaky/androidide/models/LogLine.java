@@ -19,21 +19,29 @@ package com.itsaky.androidide.models;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-
-import com.itsaky.androidide.R;
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-
 import java.util.Locale;
 
 public class LogLine {
 
     // It makes things easier in LogLanguageImpl
-    public static final int INFO = SchemeAndroidIDE.LOG_INFO;
-    public static final int DEBUG = SchemeAndroidIDE.LOG_DEBUG;
-    public static final int ERROR = SchemeAndroidIDE.LOG_ERROR;
-    public static final int WARNING = SchemeAndroidIDE.LOG_WARNING;
+    public static final int INFO;
+    public static final int DEBUG;
+    public static final int ERROR;
+    public static final int WARNING;
+
+    static {
+        try {
+            final var klass =
+                    Class.forName("com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE");
+            INFO = klass.getField("LOG_INFO").getInt(null);
+            DEBUG = klass.getField("LOG_DEBUG").getInt(null);
+            ERROR = klass.getField("LOG_ERROR").getInt(null);
+            WARNING = klass.getField("LOG_WARNING").getInt(null);
+        } catch (Throwable err) {
+            throw new RuntimeException(err);
+        }
+    }
+
     public String unformatted;
     public String date;
     public String time;
@@ -66,7 +74,7 @@ public class LogLine {
             String pid,
             String tid,
             String priorityChar,
-            @NonNull String tag,
+            String tag,
             String message,
             boolean formatted) {
         this.date = date;
@@ -105,8 +113,7 @@ public class LogLine {
         this.formatted = false;
     }
 
-    @NonNull
-    public static LogLine forLogString(@NonNull final String log) {
+    public static LogLine forLogString(final String log) {
         try {
             final var split = log.split("\\s", 7);
             return new LogLine(
@@ -124,34 +131,26 @@ public class LogLine {
     }
 
     public int getColor(Context ctx) {
-        int id = R.color.log_normal;
+        int id = 0xffffffff;
         if (priority == WARNING) {
-            id = R.color.log_warning;
+            id = 0xffff7043;
         } else if (priority == ERROR) {
-            id = R.color.log_error;
+            id = 0xffc50e29;
         } else if (priority == INFO) {
-            id = R.color.log_info;
+            id = 0xff4caf50;
         }
-        return ContextCompat.getColor(ctx, id);
+        return id;
     }
 
-    @NonNull
     @Override
     public String toString() {
         return this.formatted
                 ? String.format(
                         "%-6s %-13s %-6s %-6s %-2s %-35s %s",
-                        date, time, pid, tid, priorityChar, trimIfNeeded (tag, 35), message)
+                        date, time, pid, tid, priorityChar, trimIfNeeded(tag, 35), message)
                 : this.unformatted;
     }
 
-    public String toSimpleString() {
-        return this.formatted
-                ? String.format("%-25s %-2s %s", trimIfNeeded(tag, 25), priorityChar, message)
-                : this.unformatted;
-    }
-
-    @NonNull
     private String trimIfNeeded(String tag, int maxLength) {
         final var sb = new StringBuilder(tag);
         final var length = tag.length();
@@ -165,5 +164,11 @@ public class LogLine {
         }
 
         return sb.toString();
+    }
+
+    public String toSimpleString() {
+        return this.formatted
+                ? String.format("%-25s %-2s %s", trimIfNeeded(tag, 25), priorityChar, message)
+                : this.unformatted;
     }
 }
