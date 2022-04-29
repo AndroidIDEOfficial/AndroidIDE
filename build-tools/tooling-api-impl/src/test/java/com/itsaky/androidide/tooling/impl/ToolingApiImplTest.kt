@@ -22,7 +22,7 @@ import com.google.common.truth.Truth.assertThat
 import com.google.gson.GsonBuilder
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
@@ -46,7 +46,7 @@ class ToolingApiImplTest {
         val client = TestClient()
         val server = launchServer(client)
 
-        val project = server.initialize(InitializeProjectParams(getTestProject())).get()
+        val project = server.initialize(InitializeProjectMessage(getTestProject())).get()
         log.debug(project?.asJson())
         assertThat(project).isNotNull()
         assertThat(project!!).isInstanceOf(IdeGradleProject::class.java)

@@ -24,4 +24,4 @@ import java.io.File
  *
  * @author Akash Yadav
  */
-data class InitializeProjectParams(val directory: File)
+data class InitializeProjectMessage(val directory: File)

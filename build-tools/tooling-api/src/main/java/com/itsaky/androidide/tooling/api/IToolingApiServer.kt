@@ -17,8 +17,7 @@
 
 package com.itsaky.androidide.tooling.api
 
-import com.android.builder.model.v2.ide.SourceSetContainer
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
@@ -34,7 +33,7 @@ interface IToolingApiServer {
 
     /** Initialize the server with the project directory. */
     @JsonRequest("initializeProject")
-    fun initialize(params: InitializeProjectParams): CompletableFuture<IdeGradleProject?>
+    fun initialize(params: InitializeProjectMessage): CompletableFuture<IdeGradleProject?>
 
     /** Is the server initialized? */
     @JsonRequest("isInitialized") fun isInitialized(): CompletableFuture<Boolean>
