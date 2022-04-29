@@ -19,7 +19,6 @@ package com.itsaky.androidide.builder
 
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
-import java.io.File
 import java.util.concurrent.*
 
 /**
@@ -29,7 +28,7 @@ import java.util.concurrent.*
  * @author Akash Yadav
  */
 interface BuildService {
-    
+
     /**
      * Initialize the project.
      *
@@ -37,7 +36,7 @@ interface BuildService {
      * @return A [CompletableFuture] which returns an [InitializeResult] when the project
      * initialization process finishes.
      */
-    fun initializeProject(rootDir: File): CompletableFuture<InitializeResult>
+    fun initializeProject(rootDir: String): CompletableFuture<InitializeResult>
 
     /**
      * Execute the given tasks.

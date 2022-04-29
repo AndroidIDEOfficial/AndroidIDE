@@ -27,6 +27,7 @@ import com.itsaky.androidide.tooling.impl.util.InitScriptHandler
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
+import java.io.File
 import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.ConfigurableLauncher
@@ -47,28 +48,34 @@ internal class ToolingApiServerImpl : IToolingApiServer {
 
     override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
         return CompletableFutures.computeAsync {
-            val stopWatch = StopWatch("Connection to project")
-            this.connector = GradleConnector.newConnector().forProjectDirectory(params.directory)
-            stopWatch.lap("Connector created")
-
-            if (this.connector == null) {
-                throw CompletionException(
-                    RuntimeException(
-                        "Unable to create gradle connector for project directory: ${params.directory}"))
-            }
-
-            val connection = this.connector!!.connect()
-            stopWatch.lapFromLast("Project connection established")
-
             val issues: MutableMap<String, DefaultProjectSyncIssues> = mutableMapOf()
-            this.project = ProjectReader.read(connection, issues)
-            stopWatch.lapFromLast(
-                "Project read ${if(this.project == null) "failed" else "successful"}")
-
-            connection.close()
-            stopWatch.log()
-
-            initialized = true
+            try {
+                log.debug("Got initialize request", params)
+                val stopWatch = StopWatch("Connection to project")
+                this.connector =
+                    GradleConnector.newConnector().forProjectDirectory(File(params.directory))
+                stopWatch.lap("Connector created")
+    
+                if (this.connector == null) {
+                    throw CompletionException(
+                        RuntimeException(
+                            "Unable to create gradle connector for project directory: ${params.directory}"))
+                }
+    
+                val connection = this.connector!!.connect()
+                stopWatch.lapFromLast("Project connection established")
+                
+                this.project = ProjectReader.read(connection, issues)
+                stopWatch.lapFromLast(
+                    "Project read ${if(this.project == null) "failed" else "successful"}")
+    
+                connection.close()
+                stopWatch.log()
+    
+                initialized = true
+            } catch (err: Throwable) {
+                log.error(err)
+            }
             return@computeAsync InitializeResult(project, issues)
         }
     }

@@ -1190,7 +1190,7 @@ public class EditorActivity extends StudioActivity
             return;
         }
 
-        final var future = mBuildService.initializeProject(projectDir);
+        final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
         future.whenComplete(
                 (result, error) -> {
                     if (result == null || error != null) {
@@ -1440,7 +1440,7 @@ public class EditorActivity extends StudioActivity
         // But still we do...
         mFileOptionsHandler.start();
         mBuildServiceHandler.start();
-//        getBuildServiceHandler().assembleDebug(false);
+        //        getBuildServiceHandler().assembleDebug(false);
     }
 
     private void initializeLanguageServers() {

@@ -17,11 +17,9 @@
 
 package com.itsaky.androidide.tooling.api.messages
 
-import java.io.File
-
 /**
  * Message sent from client to server to initialize the tooling API client in the given directory.
  *
  * @author Akash Yadav
  */
-data class InitializeProjectMessage(val directory: File)
+data class InitializeProjectMessage(val directory: String)

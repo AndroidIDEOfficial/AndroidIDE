@@ -119,7 +119,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     @NonNull
     @Override
-    public CompletableFuture<InitializeResult> initializeProject(@NonNull File rootDir) {
+    public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
         checkServerStarted();
         return server.initialize(new InitializeProjectMessage(rootDir));
     }

@@ -27,13 +27,13 @@ import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.utils.ILogger
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -46,7 +46,8 @@ class ToolingApiImplTest {
         val client = TestClient()
         val server = launchServer(client)
 
-        val result = server.initialize(InitializeProjectMessage(getTestProject())).get()
+        val result =
+            server.initialize(InitializeProjectMessage(getTestProject().absolutePath)).get()
         val project = result.project
         log.debug(result.syncIssues.asJson())
         assertThat(project).isNotNull()
