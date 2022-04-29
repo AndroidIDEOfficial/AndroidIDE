@@ -21,10 +21,12 @@ import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.android.builder.model.v2.models.AndroidProject;
 import com.android.builder.model.v2.models.ModelBuilderParameter;
+import com.android.builder.model.v2.models.ProjectSyncIssues;
 import com.android.builder.model.v2.models.VariantDependencies;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
+import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues;
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
@@ -38,6 +40,8 @@ import org.gradle.tooling.UnknownModelException;
 import org.gradle.tooling.model.GradleProject;
 import org.gradle.tooling.model.GradleTask;
 
+import java.util.Map;
+
 /**
  * @author Akash Yadav
  */
@@ -45,17 +49,20 @@ public class ProjectReader {
 
     private static final ILogger LOG = newInstance("test");
 
-    public static IdeGradleProject read(ProjectConnection connection) {
+    public static IdeGradleProject read(
+            ProjectConnection connection, Map<String, DefaultProjectSyncIssues> outIssues) {
         final var gradleModel = connection.getModel(GradleProject.class);
         if (gradleModel == null) {
             return null;
         }
 
-        return buildProjectModel(connection, gradleModel);
+        return buildProjectModel(connection, gradleModel, outIssues);
     }
 
     private static IdeGradleProject buildProjectModel(
-            ProjectConnection connection, GradleProject gradleModel) {
+            ProjectConnection connection,
+            GradleProject gradleModel,
+            Map<String, DefaultProjectSyncIssues> outIssues) {
         try {
             final var modelBuilder = connection.model(AndroidProject.class);
             addProperty(modelBuilder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
@@ -67,19 +74,17 @@ public class ProjectReader {
                         "Project " + gradleModel.getPath() + " is not an Android project.");
             }
 
-            final var module = buildAndroidProjectModel(gradleModel, android);
+            final var module = buildAndroidProjectModel(gradleModel, android, outIssues);
+            readDependencies(connection, module);
 
-            try {
-                tryReadDependencies(connection, module);
-            } catch (Throwable err) {
-                LOG.error("Unable to fetch dependencies for project", module.getProjectPath(), err);
-            }
+            final var issues = readSyncIssues(connection);
+            outIssues.put(gradleModel.getPath(), issues);
 
             return module;
         } catch (Throwable error) {
             try {
                 LOG.info("Building IdeGradleProject model for project:", gradleModel.getPath());
-                return buildGradleProjectModel(gradleModel);
+                return buildGradleProjectModel(gradleModel, outIssues);
             } catch (Throwable e) {
                 LOG.error("Unable to create model for project", e);
                 return null;
@@ -87,8 +92,16 @@ public class ProjectReader {
         }
     }
 
-    private static void tryReadDependencies(
-            ProjectConnection connection, IdeAndroidModule android) {
+    private static DefaultProjectSyncIssues readSyncIssues(ProjectConnection connection) {
+        final var builder = connection.model(ProjectSyncIssues.class);
+        addProperty(builder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
+        addProperty(builder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
+
+        final var issues = builder.get();
+        return AndroidModulePropertyCopier.INSTANCE.copy(issues);
+    }
+
+    private static void readDependencies(ProjectConnection connection, IdeAndroidModule android) {
         for (final var variant : android.getVariants()) {
 
             fillVariantDependencies(connection, android, variant);
@@ -128,7 +141,9 @@ public class ProjectReader {
     }
 
     private static IdeAndroidModule buildAndroidProjectModel(
-            GradleProject gradle, AndroidProject android) {
+            GradleProject gradle,
+            AndroidProject android,
+            Map<String, DefaultProjectSyncIssues> outIssues) {
         LOG.debug("Building IdeAndroidModule for project:", gradle.getPath());
         final var builder = new ProjectBuilder();
         final var copier = AndroidModulePropertyCopier.INSTANCE;
@@ -153,13 +168,14 @@ public class ProjectReader {
         builder.setLintRuleJars(android.getLintRuleJars());
 
         final var module = builder.buildAndroidModule();
-        addSubprojects(gradle, module);
+        addSubprojects(gradle, module, outIssues);
         addTasks(gradle, module);
 
         return module;
     }
 
-    private static IdeGradleProject buildGradleProjectModel(GradleProject gradle) {
+    private static IdeGradleProject buildGradleProjectModel(
+            GradleProject gradle, Map<String, DefaultProjectSyncIssues> outIssues) {
         final var builder = new ProjectBuilder();
         builder.setName(gradle.getName());
         builder.setDescription(gradle.getDescription());
@@ -169,7 +185,7 @@ public class ProjectReader {
         builder.setBuildScript(gradle.getBuildScript().getSourceFile());
 
         final var project = builder.buildGradleProject();
-        addSubprojects(gradle, project);
+        addSubprojects(gradle, project, outIssues);
         addTasks(gradle, project);
 
         return project;
@@ -181,13 +197,16 @@ public class ProjectReader {
         }
     }
 
-    private static void addSubprojects(GradleProject gradle, IdeGradleProject project) {
+    private static void addSubprojects(
+            GradleProject gradle,
+            IdeGradleProject project,
+            Map<String, DefaultProjectSyncIssues> outIssues) {
         for (final var subGradle : gradle.getChildren()) {
             final var connection =
                     GradleConnector.newConnector()
                             .forProjectDirectory(subGradle.getProjectDirectory())
                             .connect();
-            final var sub = buildProjectModel(connection, subGradle);
+            final var sub = buildProjectModel(connection, subGradle, outIssues);
             if (sub != null) {
                 project.getSubprojects().add(sub);
             }

@@ -14,32 +14,16 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
-}
 
-java {
-    sourceCompatibility rootProject.ext.javaSourceVersion
-    targetCompatibility rootProject.ext.javaTargetVersion
-}
+package com.itsaky.androidide.tooling.api.model.internal
 
-dependencies {
-    api project (path: ':build-tools:tooling-api')
-}
+import com.android.builder.model.v2.ide.SyncIssue
 
-repositories {
-    mavenCentral ()
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
+/** @author Akash Yadav */
+class DefaultSyncIssue(
+    override val data: String?,
+    override val message: String,
+    override val multiLineMessage: List<String?>?,
+    override val severity: Int,
+    override val type: Int
+) : SyncIssue

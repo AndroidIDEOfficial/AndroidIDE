@@ -17,7 +17,10 @@
 
 package com.itsaky.androidide.builder
 
+import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import java.io.File
+import java.util.concurrent.*
 
 /**
  * A build service provides API to initialize project, execute builds, query a build, cancel running
@@ -31,17 +34,21 @@ interface BuildService {
      * Initialize the project.
      *
      * @param rootDir The root directory of the project to initialize.
+     * @return A [CompletableFuture] which returns an [InitializeResult] when the project
+     * initialization process finishes.
      */
-    fun initializeProject(rootDir: File)
-    
+    fun initializeProject(rootDir: File): CompletableFuture<InitializeResult>
+
     /**
      * Execute the given tasks.
      *
      * @param tasks The tasks to execute. If the fully qualified path of the task is not specified,
      * then it will be executed in the root project directory.
+     * @return A [CompletableFuture] which returns a list of [TaskExecutionResult]. The result
+     * contains a list of tasks that were executed and the result of the whole execution.
      * @see BuildService.executeProjectTasks
      */
-    fun executeTasks(vararg tasks: String)
+    fun executeTasks(vararg tasks: String): CompletableFuture<TaskExecutionResult>
 
     /**
      * Execute the given tasks of the given project.
@@ -51,6 +58,11 @@ interface BuildService {
      * project. If the task name is not fully qualified, then it will be executed in the given
      * project path. For example, if the project path is ':app' and the task is 'assembleDebug',
      * then, ':app:assembleDebug' task will be executed.
+     * @return A [CompletableFuture] which returns a list of [TaskExecutionResult]. The result
+     * contains a list of tasks that were executed and the result of the whole execution.
      */
-    fun executeProjectTasks(projectPath: String, vararg tasks: String)
+    fun executeProjectTasks(
+        projectPath: String,
+        vararg tasks: String
+    ): CompletableFuture<TaskExecutionResult>
 }

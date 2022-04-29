@@ -28,10 +28,12 @@ import com.android.builder.model.v2.ide.JavaArtifact
 import com.android.builder.model.v2.ide.JavaCompileOptions
 import com.android.builder.model.v2.ide.SourceProvider
 import com.android.builder.model.v2.ide.SourceSetContainer
+import com.android.builder.model.v2.ide.SyncIssue
 import com.android.builder.model.v2.ide.TestInfo
 import com.android.builder.model.v2.ide.TestedTargetVariant
 import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
+import com.android.builder.model.v2.models.ProjectSyncIssues
 import com.android.builder.model.v2.models.VariantDependencies
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidArtifact
@@ -43,15 +45,16 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultGraphItem
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaArtifact
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
 import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
+import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
 import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceProvider
 import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
+import com.itsaky.androidide.tooling.api.model.internal.DefaultSyncIssue
 import com.itsaky.androidide.tooling.api.model.internal.DefaultTestInfo
 import com.itsaky.androidide.tooling.api.model.internal.DefaultTestedTargetVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
 import com.itsaky.androidide.utils.ILogger
-import java.lang.reflect.Proxy
 
 /**
  * As the data is sent over streams, and the instances of properties specified in [IdeAndroidModule]
@@ -294,7 +297,7 @@ object AndroidModulePropertyCopier {
         }
     }
 
-    private fun copy(artifact: ArtifactDependencies?): DefaultArtifactDependencies? =
+    fun copy(artifact: ArtifactDependencies?): DefaultArtifactDependencies? =
         DefaultArtifactDependencies().apply {
             if (artifact == null) {
                 return null
@@ -304,7 +307,7 @@ object AndroidModulePropertyCopier {
             this.runtimeDependencies = copy(artifact.runtimeDependencies)
         }
 
-    private fun copy(graphs: List<GraphItem>?): List<DefaultGraphItem>? {
+    fun copy(graphs: List<GraphItem>?): List<DefaultGraphItem>? {
         if (graphs == null) {
             return null
         }
@@ -312,9 +315,21 @@ object AndroidModulePropertyCopier {
         return graphs.map { copy(it) }
     }
 
-    private fun copy(graph: GraphItem): DefaultGraphItem =
+    fun copy(graph: GraphItem): DefaultGraphItem =
         DefaultGraphItem().apply {
             this.dependencies = copy(graph.dependencies)!!
             this.requestedCoordinates = graph.requestedCoordinates
         }
+
+    fun copy(issues: ProjectSyncIssues): DefaultProjectSyncIssues =
+        DefaultProjectSyncIssues(copy(issues.syncIssues))
+
+    @JvmName("copySyncIssue")
+    fun copy(syncIssues: Collection<SyncIssue>): Collection<DefaultSyncIssue> {
+        return syncIssues.map { copy(it) }
+    }
+
+    fun copy(issue: SyncIssue) =
+        DefaultSyncIssue(
+            issue.data, issue.message, issue.multiLineMessage, issue.severity, issue.type)
 }

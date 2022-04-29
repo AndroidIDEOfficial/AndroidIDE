@@ -20,7 +20,9 @@ package com.itsaky.androidide.tooling.impl
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
+import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
 import com.itsaky.androidide.tooling.impl.util.InitScriptHandler
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
@@ -43,7 +45,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
     private var project: IdeGradleProject? = null
     private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override fun initialize(params: InitializeProjectMessage): CompletableFuture<IdeGradleProject?> {
+    override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
         return CompletableFutures.computeAsync {
             val stopWatch = StopWatch("Connection to project")
             this.connector = GradleConnector.newConnector().forProjectDirectory(params.directory)
@@ -58,7 +60,8 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             val connection = this.connector!!.connect()
             stopWatch.lapFromLast("Project connection established")
 
-            this.project = ProjectReader.read(connection)
+            val issues: MutableMap<String, DefaultProjectSyncIssues> = mutableMapOf()
+            this.project = ProjectReader.read(connection, issues)
             stopWatch.lapFromLast(
                 "Project read ${if(this.project == null) "failed" else "successful"}")
 
@@ -66,7 +69,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             stopWatch.log()
 
             initialized = true
-            return@computeAsync this.project
+            return@computeAsync InitializeResult(project, issues)
         }
     }
 

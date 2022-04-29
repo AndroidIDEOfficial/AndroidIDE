@@ -14,32 +14,21 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
-}
 
-java {
-    sourceCompatibility rootProject.ext.javaSourceVersion
-    targetCompatibility rootProject.ext.javaTargetVersion
-}
+package com.itsaky.androidide.tooling.api.messages.result
 
-dependencies {
-    api project (path: ':build-tools:tooling-api')
-}
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject
+import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
 
-repositories {
-    mavenCentral ()
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
+/**
+ * Result received after an initialize project request.
+ *
+ * @param project The initialized project model.
+ * @param syncIssues The issues reported by the Android Gradle Plugin during the project sync.
+ *
+ * @author Akash Yadav
+ */
+data class InitializeResult(
+    val project: IdeGradleProject?,
+    val syncIssues: Map<String, DefaultProjectSyncIssues>
+)

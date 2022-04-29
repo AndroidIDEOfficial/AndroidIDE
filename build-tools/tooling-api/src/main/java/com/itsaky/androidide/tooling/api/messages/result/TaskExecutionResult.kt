@@ -14,32 +14,17 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
-}
 
-java {
-    sourceCompatibility rootProject.ext.javaSourceVersion
-    targetCompatibility rootProject.ext.javaTargetVersion
-}
+package com.itsaky.androidide.tooling.api.messages.result
 
-dependencies {
-    api project (path: ':build-tools:tooling-api')
-}
+import com.itsaky.androidide.tooling.api.model.IdeGradleTask
 
-repositories {
-    mavenCentral ()
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
+/**
+ * Result for a task execution.
+ *
+ * @param tasks The tasks that were executed.
+ * @param result The result of the task execution.
+ *
+ * @author Akash Yadav
+ */
+data class TaskExecutionResult(val tasks: List<IdeGradleTask>, val result: Boolean)
