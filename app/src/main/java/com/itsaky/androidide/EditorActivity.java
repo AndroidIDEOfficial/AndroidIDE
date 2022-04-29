@@ -110,7 +110,6 @@ import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.JSONUtility;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
@@ -1199,12 +1198,6 @@ public class EditorActivity extends StudioActivity
                                 error);
                         return;
                     }
-
-                    LOG.debug(
-                            "Initialized project:",
-                            JSONUtility.toolingGson.toJson(result.getProject()));
-                    LOG.debug(
-                            "Sync issues:", JSONUtility.toolingGson.toJson(result.getSyncIssues()));
                 });
     }
 
