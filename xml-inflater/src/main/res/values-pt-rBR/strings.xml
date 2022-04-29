@@ -1,6 +1,0 @@
-<resources>
-     <string name="msg_cannot_create_view">Não é possível criar visualização para a tag: %s</string>
-     <string name="err_cannot_read_values">Não foi possível ler os valores</string>
-     <string name="err_no_attr_adapter">Nenhuma implementação de adaptador de atributo encontrada para %s</string>
-     <string name="msg_view_not_supported">A visualização %s não é suportada atualmente.</string>
- </resources>
