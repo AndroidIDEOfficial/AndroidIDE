@@ -28,5 +28,18 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
  */
 @JsonSegment("client")
 interface IToolingApiClient {
+
+    /**
+     * Log the given log message.
+     *
+     * @param line The [LogLine] to log.
+     */
     @JsonNotification fun logMessage(line: LogLine)
+
+    /**
+     * Log the build output received from Gradle.
+     *
+     * @param line The line of the build output to log.
+     */
+    @JsonNotification fun logOutput(line: String)
 }

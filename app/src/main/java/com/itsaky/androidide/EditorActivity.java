@@ -155,7 +155,8 @@ public class EditorActivity extends StudioActivity
                 DiagnosticClickListener,
                 IDEHandler.Provider,
                 EditorActivityProvider,
-                OptionsListFragment.OnOptionsClickListener {
+                OptionsListFragment.OnOptionsClickListener,
+                GradleBuildService.OutputHandler {
 
     public static final String EXTRA_PROJECT = "project";
     public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
@@ -191,7 +192,9 @@ public class EditorActivity extends StudioActivity
                     mBuildService = ((GradleBuildService.GradleServiceBinder) service).getService();
                     LOG.info("Gradle build service has been started...");
 
-                    mBuildService.startToolingServer(() -> initializeProject());
+                    mBuildService
+                            .setOutputHandler(EditorActivity.this)
+                            .startToolingServer(() -> initializeProject());
                 }
 
                 @Override
@@ -313,6 +316,19 @@ public class EditorActivity extends StudioActivity
         return mViewModel.getAndroidProject();
     }
 
+    @Override
+    public void onOutput(String line) {
+        appendBuildOut(line);
+    }
+
+    public void appendBuildOut(final String str) {
+        final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
+
+        if (frag != null) {
+            frag.appendOutput(str);
+        }
+    }
+
     public void handleSearchResults(Map<File, List<SearchResult>> results) {
         setSearchResultAdapter(
                 new com.itsaky.androidide.adapters.SearchListAdapter(
@@ -337,14 +353,6 @@ public class EditorActivity extends StudioActivity
         final var logFragment = bottomSheetTabAdapter.getLogFragment();
         if (logFragment != null) {
             logFragment.appendLog(line);
-        }
-    }
-
-    public void appendBuildOut(final String str) {
-        final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
-
-        if (frag != null) {
-            frag.appendOutput(str);
         }
     }
 
@@ -916,7 +924,7 @@ public class EditorActivity extends StudioActivity
                     .show();
         }
     }
-    
+
     private IDEService getBuildService() {
         return mBuildServiceHandler.getService();
     }

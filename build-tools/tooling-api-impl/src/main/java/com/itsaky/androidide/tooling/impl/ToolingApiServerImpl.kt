@@ -39,8 +39,6 @@ import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
-import java.io.File
-import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.BuildCancelledException
 import org.gradle.tooling.BuildException
@@ -50,6 +48,8 @@ import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.exceptions.UnsupportedBuildArgumentException
 import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
+import java.io.File
+import java.util.concurrent.*
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -135,9 +135,10 @@ internal class ToolingApiServerImpl : IToolingApiServer {
 
             // System.in and System.out are used for communication between this server and the
             // client.
+            val out = LoggingOutputStream()
             builder.setStandardInput("NoOp".byteInputStream())
-            builder.setStandardError(System.err)
-            builder.setStandardOutput(System.err)
+            builder.setStandardError(out)
+            builder.setStandardOutput(out)
             builder.forTasks(*message.tasks.toTypedArray())
             applyArguments(builder)
 

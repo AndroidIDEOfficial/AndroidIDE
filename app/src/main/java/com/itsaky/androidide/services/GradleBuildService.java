@@ -70,6 +70,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     private Thread toolingServerThread;
     private NotificationManager notificationManager;
     private IToolingApiServer server;
+    private OutputHandler outputHandler;
 
     @Override
     public void onCreate() {
@@ -125,6 +126,13 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         SERVER_LOGGER.log(ILogger.priority(line.priorityChar), line.formattedTagAndMessage());
     }
 
+    @Override
+    public void logOutput(@NonNull String line) {
+        if (outputHandler != null) {
+            outputHandler.onOutput(line);
+        }
+    }
+
     @NonNull
     @Override
     public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
@@ -167,6 +175,11 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
         toolingServerThread = new Thread(new ToolingServerRunner(listener));
         toolingServerThread.start();
+    }
+
+    public GradleBuildService setOutputHandler(OutputHandler outputHandler) {
+        this.outputHandler = outputHandler;
+        return this;
     }
 
     protected void onServerExited(int exitCode) {
@@ -242,5 +255,16 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
         /** Called when the tooling API server has been successfully started. */
         void onServerStarted();
+    }
+
+    /** Handles output received from a Gradle build. */
+    public interface OutputHandler {
+
+        /**
+         * Called when the output line is received.
+         *
+         * @param line The line of the build output.
+         */
+        void onOutput(String line);
     }
 }
