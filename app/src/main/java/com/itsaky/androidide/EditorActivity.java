@@ -105,6 +105,7 @@ import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
@@ -1202,7 +1203,8 @@ public class EditorActivity extends StudioActivity
         final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
         future.whenComplete(
                 (result, error) -> {
-                    if (result == null || result.getProject() == null || error != null) {
+                    final var root = result == null ? null : result.getProject();
+                    if (result == null || root == null || error != null) {
                         LOG.error(
                                 "An error occurred initializing the project with Tooling API",
                                 error);
@@ -1210,28 +1212,51 @@ public class EditorActivity extends StudioActivity
                         return;
                     }
 
-                    final var app = mBuildService.findFirstAndroidModule(result.getProject());
-                    if (app == null) {
-                        LOG.error(
-                                "No Android application module is present in root project:",
-                                result.getProject().getName());
-                        return;
-                    }
-
-                    final var bootclasspaths = app.getBootClasspath();
-                    if (bootclasspaths.isEmpty()) {
-                        LOG.warn(
-                                "No project boot classpath found in application module:",
-                                app.getProjectPath());
-                        return;
-                    }
-
-                    // TODO Should we handle multiple boot classpaths?
-                    Environment.setBootClasspath(bootclasspaths.iterator().next());
-
-                    ThreadUtils.runOnUiThread(
-                            () -> mBinding.buildProgressIndicator.setVisibility(View.GONE));
+                    onProjectInitialized(root);
                 });
+    }
+
+    protected void onProjectInitialized(IdeGradleProject root) {
+        CompletableFuture.runAsync(
+                        () -> {
+                            final var app = mBuildService.findFirstAndroidModule(root);
+                            if (app == null) {
+                                LOG.error(
+                                        "No Android application module is present in root project:",
+                                        root.getName());
+                                return;
+                            }
+
+                            final var bootclasspaths = app.getBootClasspath();
+                            if (bootclasspaths.isEmpty()) {
+                                LOG.warn(
+                                        "No project boot classpath found in application module:",
+                                        app.getProjectPath());
+                                return;
+                            }
+
+                            // TODO Should we handle multiple boot classpaths?
+                            Environment.setBootClasspath(bootclasspaths.iterator().next());
+
+                            // Notify Java language server about updated dependencies
+                            final var debugDependencies =
+                                    app.getVariantDependencyJars().get("debug");
+                            getApp().getJavaLanguageServer()
+                                    .configurationChanged(
+                                            new JavaServerConfiguration(
+                                                    debugDependencies.stream()
+                                                            .filter(File::exists)
+                                                            .map(File::toPath)
+                                                            .collect(Collectors.toSet())));
+                        })
+                .whenComplete(
+                        (result, error) -> {
+                            if (error != null) {
+                                LOG.error("Post initialize task failed", error);
+                            }
+                        });
+
+        ThreadUtils.runOnUiThread(() -> mBinding.buildProgressIndicator.setVisibility(View.GONE));
     }
 
     private void setupDrawerToggle() {
