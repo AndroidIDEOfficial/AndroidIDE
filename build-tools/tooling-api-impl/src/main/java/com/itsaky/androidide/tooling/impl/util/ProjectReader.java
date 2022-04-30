@@ -30,7 +30,6 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
-import com.itsaky.androidide.tooling.impl.LoggingOutputStream;
 import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
 
@@ -41,7 +40,6 @@ import org.gradle.tooling.UnknownModelException;
 import org.gradle.tooling.model.GradleProject;
 import org.gradle.tooling.model.GradleTask;
 
-import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.Map;
 
@@ -114,16 +112,7 @@ public class ProjectReader {
 
     private static void readDependencies(ProjectConnection connection, IdeAndroidModule android) {
         for (final var variant : android.getVariants()) {
-
             fillVariantDependencies(connection, android, variant);
-
-            // FIXME: Don't know how to fetch dependency jars using v2 model classes.
-            //        This should be replaced with something that uses v2 of the model builder API
-            android.getVariantDependencyJars()
-                    .put(
-                            variant.getName(),
-                            LegacyProjectReader.INSTANCE.findVariantDependencyJars(
-                                    connection, variant.getName()));
         }
     }
 
@@ -231,7 +220,5 @@ public class ProjectReader {
                 project.getProjectPath());
     }
 
-    private static void configureBuilder(ConfigurableLauncher<?> launcher) {
-    
-    }
+    private static void configureBuilder(ConfigurableLauncher<?> launcher) {}
 }

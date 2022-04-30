@@ -54,7 +54,6 @@ class IdeAndroidModule(
     AndroidProject {
 
     var variantDependencies: MutableMap<String, DefaultVariantDependencies> = mutableMapOf()
-    var variantDependencyJars: MutableMap<String, Collection<File>> = mutableMapOf()
 
     fun copy(): IdeAndroidModule {
         return IdeAndroidModule(
@@ -78,7 +77,7 @@ class IdeAndroidModule(
     }
 
     override fun toString(): String {
-        return "IdeAndroidModule(dynamicFeatures=$dynamicFeatures, flags=$flags, javaCompileOptions=$javaCompileOptions, resourcePrefix=$resourcePrefix, variants=$variants, viewBindingOptions=$viewBindingOptions, lintChecksJars=$lintChecksJars, modelSyncFiles=$modelSyncFiles, variantDependencies=$variantDependencies, variantDependencyJars=$variantDependencyJars, androidTestNamespace=$androidTestNamespace, namespace='$namespace', testFixturesNamespace=$testFixturesNamespace)"
+        return "IdeAndroidModule(dynamicFeatures=$dynamicFeatures, flags=$flags, javaCompileOptions=$javaCompileOptions, resourcePrefix=$resourcePrefix, variants=$variants, viewBindingOptions=$viewBindingOptions, lintChecksJars=$lintChecksJars, modelSyncFiles=$modelSyncFiles, variantDependencies=$variantDependencies, androidTestNamespace=$androidTestNamespace, namespace='$namespace', testFixturesNamespace=$testFixturesNamespace)"
     }
 
     // These properties are not supported on newer versions
