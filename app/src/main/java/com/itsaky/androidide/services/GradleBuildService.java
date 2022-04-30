@@ -31,7 +31,6 @@ import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.builder.model.v2.ide.ProjectType;
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
@@ -58,7 +57,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 /**
  * A foreground service that handles interaction with the Gradle Tooling API.
@@ -182,7 +180,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     public CompletableFuture<TaskExecutionResult> executeTasks(@NonNull String... tasks) {
         checkServerStarted();
         ensureTmpdir();
-    
+
         if (isBuildInProgress) {
             logBuildInProgress();
             return failedFutureForBuildInProgress();
@@ -199,7 +197,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
             @NonNull String projectPath, @NonNull String... tasks) {
         checkServerStarted();
         ensureTmpdir();
-    
+
         if (isBuildInProgress) {
             logBuildInProgress();
             return failedFutureForBuildInProgress();
@@ -250,12 +248,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
      */
     @Nullable
     public IdeAndroidModule findFirstAndroidModule(IdeGradleProject root) {
-        final var found = findAndroidModules(root);
-        if (found.isEmpty()) {
-            return null;
-        }
-
-        return found.get(0);
+        return root.findFirstApplicationModule();
     }
 
     /**
@@ -268,11 +261,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
      */
     @NonNull
     public List<IdeAndroidModule> findAndroidModules(@NonNull IdeGradleProject root) {
-        return root.getSubprojects().stream()
-                .filter(module -> module instanceof IdeAndroidModule)
-                .map(module -> ((IdeAndroidModule) module))
-                .filter(android -> android.getProjectType() == ProjectType.APPLICATION)
-                .collect(Collectors.toList());
+        return root.findApplicationModules();
     }
 
     public void startToolingServer(@Nullable OnServerStartListener listener) {
