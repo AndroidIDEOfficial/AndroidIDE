@@ -31,7 +31,7 @@ class LoggingOutputStream : OutputStream() {
         lineBuilder.append(c)
 
         if (c == '\n' && Main.client != null) {
-            Main.client.logOutput(c.toString())
+            Main.client.logOutput(lineBuilder.toString())
             lineBuilder.clear()
         }
     }

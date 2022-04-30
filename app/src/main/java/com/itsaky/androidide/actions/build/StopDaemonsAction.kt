@@ -40,6 +40,10 @@ class StopDaemonsAction() : EditorActivityAction() {
 
     override fun execAction(data: ActionData): Boolean {
         val context = getActivity(data) ?: return false
+        
+        // FIXME This doesn't work if the build was started using the Tooling API
+        //  Instead of using this to stop the daemons, send a request to the tooling API
+        //  server to cancelled the current build.
         context.app.stopAllDaemons()
         return true
     }
