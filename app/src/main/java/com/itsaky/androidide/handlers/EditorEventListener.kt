@@ -60,15 +60,20 @@ class EditorEventListener : GradleBuildService.EventListener {
         analyzeCurrentFile()
         activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
         activity().binding.buildProgressIndicator.visibility = View.GONE
-        
-        // TODO If the tasks generate APKs, start the APK install intent
+
+        appendOutputSeparator()
+    }
+
+    private fun appendOutputSeparator() {
+        activity().appendBuildOut("\n\n")
     }
 
     override fun onBuildFailed(tasks: MutableList<String>) {
         analyzeCurrentFile()
-
         activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
         activity().binding.buildProgressIndicator.visibility = View.GONE
+
+        appendOutputSeparator()
     }
 
     override fun onOutput(line: String?) {

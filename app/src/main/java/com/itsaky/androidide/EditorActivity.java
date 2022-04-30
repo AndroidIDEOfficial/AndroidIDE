@@ -318,14 +318,6 @@ public class EditorActivity extends StudioActivity
         return mViewModel.getAndroidProject();
     }
 
-    public void appendBuildOut(final String str) {
-        final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
-
-        if (frag != null) {
-            frag.appendOutput(str);
-        }
-    }
-
     public void handleSearchResults(Map<File, List<SearchResult>> results) {
         setSearchResultAdapter(
                 new com.itsaky.androidide.adapters.SearchListAdapter(
@@ -960,6 +952,8 @@ public class EditorActivity extends StudioActivity
     @NonNull
     public CompletableFuture<TaskExecutionResult> execTasks(
             Consumer<TaskExecutionResult> resultHandler, String... tasks) {
+        ThreadUtils.runOnUiThread(
+                () -> appendBuildOut("Executing tasks: " + TextUtils.join(", ", tasks)));
         return mBuildService
                 .executeTasks(tasks)
                 .whenComplete(
@@ -1019,6 +1013,14 @@ public class EditorActivity extends StudioActivity
         };
     }
 
+    public void appendBuildOut(final String str) {
+        final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
+
+        if (frag != null) {
+            frag.appendOutput(str);
+        }
+    }
+
     public void install(@NonNull File apk) {
         LOG.debug("Installing APK:", apk);
         if (apk.exists()) {
@@ -1048,19 +1050,19 @@ public class EditorActivity extends StudioActivity
     public void bundle() {
         execTasks(null, "bundle");
     }
-    
+
     public void lint() {
         execTasks(null, "lint");
     }
-    
+
     public void lintDebug() {
         execTasks(null, "lintDebug");
     }
-    
+
     public void lintRelease() {
         execTasks(null, "lintRelease");
     }
-    
+
     public void cleanAndRebuild() {
         execTasks(null, "clean", "build");
     }
