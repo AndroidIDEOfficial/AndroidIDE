@@ -1207,7 +1207,27 @@ public class EditorActivity extends StudioActivity
                                 "An error occurred initializing the project with Tooling API",
                                 error);
                         // TODO Show sync issues to user
+                        return;
                     }
+
+                    final var app = mBuildService.findFirstAndroidModule(result.getProject());
+                    if (app == null) {
+                        LOG.error(
+                                "No Android application module is present in root project:",
+                                result.getProject().getName());
+                        return;
+                    }
+
+                    final var bootclasspaths = app.getBootClasspath();
+                    if (bootclasspaths.isEmpty()) {
+                        LOG.warn(
+                                "No project boot classpath found in application module:",
+                                app.getProjectPath());
+                        return;
+                    }
+
+                    // TODO Should we handle multiple boot classpaths?
+                    Environment.setBootClasspath(bootclasspaths.iterator().next());
 
                     ThreadUtils.runOnUiThread(
                             () -> mBinding.buildProgressIndicator.setVisibility(View.GONE));

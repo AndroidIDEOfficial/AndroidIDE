@@ -31,6 +31,7 @@ import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.builder.model.v2.ide.ProjectType;
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
@@ -44,6 +45,8 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage;
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
+import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
@@ -51,8 +54,10 @@ import com.itsaky.androidide.utils.InputStreamLineReader;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * A foreground service that handles interaction with the Gradle Tooling API.
@@ -166,6 +171,40 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     private void ensureTmpdir() {
         Environment.mkdirIfNotExits(Environment.TMP_DIR);
+    }
+
+    /**
+     * Find the first direct subproject of the given root project that is an {@link
+     * IdeAndroidModule}.
+     *
+     * @param root The project whose subprojects will be searched.
+     * @return The found {@link IdeAndroidModule} or <code>null</code>.
+     */
+    @Nullable
+    public IdeAndroidModule findFirstAndroidModule(IdeGradleProject root) {
+        final var found = findAndroidModules(root);
+        if (found.isEmpty()) {
+            return null;
+        }
+
+        return found.get(0);
+    }
+
+    /**
+     * Find all the direct children of the given root project that are {@link IdeAndroidModule} and
+     * their <code>projectType</code> is {@link
+     * com.android.builder.model.v2.ide.ProjectType#APPLICATION APPLICATION}
+     *
+     * @param root The project whose subprojects will be searched.
+     * @return The found application modules. Never <code>null</code>.
+     */
+    @NonNull
+    public List<IdeAndroidModule> findAndroidModules(@NonNull IdeGradleProject root) {
+        return root.getSubprojects().stream()
+                .filter(module -> module instanceof IdeAndroidModule)
+                .map(module -> ((IdeAndroidModule) module))
+                .filter(android -> android.getProjectType() == ProjectType.APPLICATION)
+                .collect(Collectors.toList());
     }
 
     public void startToolingServer(@Nullable OnServerStartListener listener) {
