@@ -86,6 +86,7 @@ import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
 import com.itsaky.androidide.handlers.BuildServiceHandler;
+import com.itsaky.androidide.handlers.EditorEventListener;
 import com.itsaky.androidide.handlers.FileOptionsHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
@@ -156,8 +157,7 @@ public class EditorActivity extends StudioActivity
                 DiagnosticClickListener,
                 IDEHandler.Provider,
                 EditorActivityProvider,
-                OptionsListFragment.OnOptionsClickListener,
-                GradleBuildService.OutputHandler {
+                OptionsListFragment.OnOptionsClickListener {
 
     public static final String EXTRA_PROJECT = "project";
     public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
@@ -166,7 +166,7 @@ public class EditorActivity extends StudioActivity
     private static final int ACTION_ID_OTHERS = 101;
     private static final int ACTION_ID_ALL = 102;
     private static final ILogger LOG = ILogger.newInstance("EditorActivity");
-
+    private final EditorEventListener mBuildEventListener = new EditorEventListener();
     private ActivityEditorBinding mBinding;
     private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
     private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
@@ -184,7 +184,6 @@ public class EditorActivity extends StudioActivity
     private ActivityResultLauncher<Intent> mUIDesignerLauncher;
     private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
     private EditorViewModel mViewModel;
-
     private GradleBuildService mBuildService;
     private final ServiceConnection mGradleServiceConnection =
             new ServiceConnection() {
@@ -194,7 +193,7 @@ public class EditorActivity extends StudioActivity
                     LOG.info("Gradle build service has been started...");
 
                     mBuildService
-                            .setOutputHandler(EditorActivity.this)
+                            .setEventListener(mBuildEventListener)
                             .startToolingServer(() -> initializeProject());
                 }
 
@@ -315,16 +314,6 @@ public class EditorActivity extends StudioActivity
         }
 
         return mViewModel.getAndroidProject();
-    }
-
-    @Override
-    public void onOutput(String line) {
-        appendBuildOut(line);
-
-        // TODO This can be handled better when ProgressEvents are received from Tooling API server
-        if (line.startsWith("> Task")) {
-            setStatus(line);
-        }
     }
 
     public void appendBuildOut(final String str) {
@@ -1023,6 +1012,7 @@ public class EditorActivity extends StudioActivity
         setupEditorBottomSheet();
         createQuickActions();
 
+        mBuildEventListener.setActivity(this);
         mBuildServiceHandler = new BuildServiceHandler(this);
         mFileOptionsHandler = new FileOptionsHandler(this);
 
@@ -1244,6 +1234,8 @@ public class EditorActivity extends StudioActivity
                             Environment.setBootClasspath(bootclasspaths.iterator().next());
 
                             // Notify Java language server about updated dependencies
+                            // TODO Java language server must also be notified about updated source
+                            //  paths
                             final var debugDependencies =
                                     app.getVariantDependencyJars().get("debug");
                             getApp().getJavaLanguageServer()

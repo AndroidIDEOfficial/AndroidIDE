@@ -19,7 +19,6 @@ package com.itsaky.androidide.handlers;
 
 import android.view.View;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.project.AndroidProject;
@@ -29,16 +28,12 @@ import com.itsaky.androidide.services.builder.BuildListener;
 import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.tasks.GradleTask;
 import com.itsaky.androidide.tasks.gradle.build.ApkGeneratingTask;
-import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BuildServiceHandler extends IDEHandler implements BuildListener {
@@ -50,12 +45,12 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
         super(provider);
     }
 
-    public IDEService getService() {
-        return service;
-    }
-
     public boolean isBuilding() {
         return getService().isBuilding();
+    }
+
+    public IDEService getService() {
+        return service;
     }
 
     @Override
@@ -145,7 +140,7 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
                 final String path = app.get().projectDir;
                 if (path != null) {
                     final File buildDir = new File(path, "build");
-                    installApks(((ApkGeneratingTask) task).getApks(buildDir));
+                    //                    installApks(((ApkGeneratingTask) task).getApks(buildDir));
                 }
             }
         }
@@ -193,32 +188,16 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
     }
 
     @Override
-    public void prepareBuild() {
-        boolean isFirstBuild =
-                activity()
-                        .getApp()
-                        .getPrefManager()
-                        .getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true);
-        activity()
-                .setStatus(
-                        activity()
-                                .getString(
-                                        isFirstBuild
-                                                ? R.string.preparing_first
-                                                : R.string.preparing));
-        if (isFirstBuild) {
-            activity().showFirstBuildNotice();
+    public void prepareBuild() {}
+
+    private void analyzeCurrentFile() {
+        final var editorView = activity().getCurrentEditor();
+        if (editorView != null) {
+            final var editor = editorView.getEditor();
+            if (editor != null) {
+                editor.analyze();
+            }
         }
-        activity().getBinding().buildProgressIndicator.setVisibility(View.VISIBLE);
-    }
-
-    public void setShouldInstallApk(boolean install) {
-        this.shouldInstallApk = install;
-    }
-
-    public void assembleDebug(boolean shouldInstallApk) {
-        setShouldInstallApk(shouldInstallApk);
-        getService().assembleDebug();
     }
 
     private boolean isClasspathValid(String path) {
@@ -232,49 +211,12 @@ public class BuildServiceHandler extends IDEHandler implements BuildListener {
                 && !file.getAbsolutePath().endsWith("/release/R.jar");
     }
 
-    private void installApks(final Set<File> apks) {
-        if (activity() == null || apks == null || apks.isEmpty()) {
-            LOG.error("Cannot install APK. Activity=" + activity(), "apks=" + apks);
-            return;
-        }
-
-        if (apks.size() == 1) {
-            activity().install(apks.iterator().next());
-        } else {
-            LOG.info("Multiple APKs found. Let the user select...");
-            final List<File> files = new ArrayList<>(apks);
-            final MaterialAlertDialogBuilder builder =
-                    DialogUtils.newMaterialDialogBuilder(activity());
-            builder.setTitle(activity().getString(R.string.title_install_apks));
-            builder.setItems(
-                    getNames(files),
-                    (d, w) -> {
-                        d.dismiss();
-                        activity().install(files.get(w));
-                    });
-            builder.show();
-        }
+    public void assembleDebug(boolean shouldInstallApk) {
+        setShouldInstallApk(shouldInstallApk);
+        getService().assembleDebug();
     }
 
-    private CharSequence[] getNames(final Collection<File> apks) {
-        final String[] names = new String[apks.size()];
-
-        int i = 0;
-        for (File apk : apks) {
-            names[i] = apk.getName();
-            ++i;
-        }
-
-        return names;
-    }
-
-    private void analyzeCurrentFile() {
-        final var editorView = activity().getCurrentEditor();
-        if (editorView != null) {
-            final var editor = editorView.getEditor();
-            if (editor != null) {
-                editor.analyze();
-            }
-        }
+    public void setShouldInstallApk(boolean install) {
+        this.shouldInstallApk = install;
     }
 }

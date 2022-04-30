@@ -75,7 +75,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     private Thread toolingServerThread;
     private NotificationManager notificationManager;
     private IToolingApiServer server;
-    private OutputHandler outputHandler;
+    private EventListener eventListener;
 
     @Override
     public void onCreate() {
@@ -133,8 +133,15 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     @Override
     public void logOutput(@NonNull String line) {
-        if (outputHandler != null) {
-            outputHandler.onOutput(line);
+        if (eventListener != null) {
+            eventListener.onOutput(line);
+        }
+    }
+
+    @Override
+    public void prepareBuild() {
+        if (eventListener != null) {
+            eventListener.prepareBuild();
         }
     }
 
@@ -216,8 +223,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         toolingServerThread.start();
     }
 
-    public GradleBuildService setOutputHandler(OutputHandler outputHandler) {
-        this.outputHandler = outputHandler;
+    public GradleBuildService setEventListener(EventListener eventListener) {
+        this.eventListener = eventListener;
         return this;
     }
 
@@ -297,7 +304,14 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
 
     /** Handles output received from a Gradle build. */
-    public interface OutputHandler {
+    public interface EventListener {
+
+        /**
+         * Called just before a build is started.
+         *
+         * @see IToolingApiClient#prepareBuild()
+         */
+        void prepareBuild();
 
         /**
          * Called when the output line is received.

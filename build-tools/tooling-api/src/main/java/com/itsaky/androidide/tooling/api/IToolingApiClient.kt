@@ -42,4 +42,7 @@ interface IToolingApiClient {
      * @param line The line of the build output to log.
      */
     @JsonNotification fun logOutput(line: String)
+
+    /** Called just before a build is started. */
+    @JsonNotification fun prepareBuild()
 }
