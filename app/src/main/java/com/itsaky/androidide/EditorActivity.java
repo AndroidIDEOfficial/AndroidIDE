@@ -1189,7 +1189,8 @@ public class EditorActivity extends StudioActivity
             return;
         }
 
-        mBinding.buildProgressIndicator.setVisibility(View.VISIBLE);
+        mBinding.buildProgressIndicator.post(
+                () -> mBinding.buildProgressIndicator.setVisibility(View.VISIBLE));
         final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
         future.whenComplete(
                 (result, error) -> {
