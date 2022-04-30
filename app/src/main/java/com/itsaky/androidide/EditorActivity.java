@@ -916,7 +916,7 @@ public class EditorActivity extends StudioActivity
                     .show();
         }
     }
-
+    
     private IDEService getBuildService() {
         return mBuildServiceHandler.getService();
     }

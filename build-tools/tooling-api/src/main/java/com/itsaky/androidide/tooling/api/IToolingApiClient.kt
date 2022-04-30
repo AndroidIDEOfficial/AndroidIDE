@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.tooling.api
 
+import com.itsaky.androidide.models.LogLine
+import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 
 /**
@@ -24,4 +26,7 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
  *
  * @author Akash Yadav
  */
-@JsonSegment("client") interface IToolingApiClient
+@JsonSegment("client")
+interface IToolingApiClient {
+    @JsonNotification fun logMessage(line: LogLine)
+}

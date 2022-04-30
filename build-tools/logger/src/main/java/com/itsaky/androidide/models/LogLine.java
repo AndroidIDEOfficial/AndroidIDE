@@ -56,6 +56,10 @@ public class LogLine {
     public int priority;
     public boolean formatted;
 
+    // For JSONRpc
+    @SuppressWarnings("unused")
+    private LogLine() {}
+
     public LogLine(String priorityChar, String tag, String message) {
         this("", "", "", "", priorityChar, tag, message);
     }

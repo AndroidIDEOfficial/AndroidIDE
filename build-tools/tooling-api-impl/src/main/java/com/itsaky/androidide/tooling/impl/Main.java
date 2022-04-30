@@ -19,27 +19,41 @@ package com.itsaky.androidide.tooling.impl;
 
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
+import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.JvmLogger;
 
 import java.util.concurrent.ExecutionException;
 
 public class Main {
     private static final ILogger LOG = newInstance("ToolingApiMain");
-    public final Object lock = new Object();
+    public static IToolingApiClient client;
+
+    static {
+        JvmLogger.interceptor = Main::onLog;
+    }
 
     public static void main(String[] args) {
         LOG.debug("Starting Tooling API server...");
         final var server = new ToolingApiServerImpl();
         final var launcher = ToolingApiLauncher.createServerLauncher(server, System.in, System.out);
         final var future = launcher.startListening();
-        server.connect(launcher.getRemoteProxy());
+        Main.client = launcher.getRemoteProxy();
+        server.connect(client);
 
         LOG.debug("Server started. Will run until shutdown message is received...");
         try {
             future.get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("An error occurred while waiting for shutdown message", e);
+        }
+    }
+
+    private static void onLog(LogLine line) {
+        if (client != null) {
+            client.logMessage(line);
         }
     }
 }

@@ -35,6 +35,7 @@ import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.builder.BuildService;
+import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.shell.CommonProcessExecutor;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
@@ -62,6 +63,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     private static final ILogger LOG = newInstance("GradleBuildService");
     private static final int NOTIFICATION_ID = R.string.app_name;
+    private static final ILogger SERVER_System_err = newInstance("ToolingApiErrorStream");
     private final ILogger SERVER_LOGGER = newInstance("ToolingApiServer");
     private final IBinder mBinder = new GradleServiceBinder();
     private boolean isToolingServerStarted = false;
@@ -118,6 +120,11 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         return mBinder;
     }
 
+    @Override
+    public void logMessage(@NonNull LogLine line) {
+        SERVER_LOGGER.debug(line.toSimpleString());
+    }
+
     @NonNull
     @Override
     public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
@@ -172,7 +179,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
 
     protected void onServerOutput(String line) {
-        SERVER_LOGGER.warn(line);
+        SERVER_System_err.error(line);
     }
 
     public class GradleServiceBinder extends Binder {
