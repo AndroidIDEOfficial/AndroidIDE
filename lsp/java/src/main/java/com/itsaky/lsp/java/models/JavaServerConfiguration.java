@@ -32,20 +32,16 @@ public class JavaServerConfiguration {
     private Set<Path> classPaths;
 
     public JavaServerConfiguration() {
-        this(Collections.emptySet());
+        this(Collections.emptySet(), Collections.emptySet());
     }
 
-    public JavaServerConfiguration(Set<Path> classPaths) {
+    public JavaServerConfiguration(Set<Path> classPaths, Set<Path> sourcePaths) {
         this.classPaths = classPaths;
     }
 
-    public Set<Path> getClassPaths() {
-        return classPaths;
-    }
-
-    public JavaServerConfiguration setClassPaths(Set<Path> classPaths) {
-        this.classPaths = classPaths;
-        return this;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClassPaths());
     }
 
     @Override
@@ -61,9 +57,13 @@ public class JavaServerConfiguration {
         return Objects.equals(getClassPaths(), that.getClassPaths());
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getClassPaths());
+    public Set<Path> getClassPaths() {
+        return classPaths;
+    }
+
+    public JavaServerConfiguration setClassPaths(Set<Path> classPaths) {
+        this.classPaths = classPaths;
+        return this;
     }
 
     @Override

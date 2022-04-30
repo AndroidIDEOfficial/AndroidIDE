@@ -104,8 +104,8 @@ import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
-import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
+import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
@@ -133,13 +133,13 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
@@ -685,23 +685,6 @@ public class EditorActivity extends StudioActivity
     @SuppressWarnings("UnusedReturnValue")
     public boolean saveAll() {
         return saveAll(true);
-    }
-
-    public void updateServices() {
-        new TaskExecutor()
-                .executeAsync(
-                        () -> {
-                            List<String> cps =
-                                    Objects.requireNonNull(getAndroidProject()).getClassPaths();
-                            getApp().getJavaLanguageServer()
-                                    .configurationChanged(
-                                            new JavaServerConfiguration(
-                                                    cps.stream()
-                                                            .map(Paths::get)
-                                                            .collect(Collectors.toSet())));
-                            return null;
-                        },
-                        __ -> setStatus(getString(R.string.msg_service_started)));
     }
 
     public void setStatus(final CharSequence text) {
@@ -1342,7 +1325,8 @@ public class EditorActivity extends StudioActivity
                                                     debugDependencies.stream()
                                                             .filter(File::exists)
                                                             .map(File::toPath)
-                                                            .collect(Collectors.toSet())));
+                                                            .collect(Collectors.toSet()),
+                                                    collectSourcePaths(app)));
                         })
                 .whenComplete(
                         (result, error) -> {
@@ -1352,6 +1336,17 @@ public class EditorActivity extends StudioActivity
                         });
 
         ThreadUtils.runOnUiThread(() -> mBinding.buildProgressIndicator.setVisibility(View.GONE));
+    }
+
+    private Set<Path> collectSourcePaths(IdeAndroidModule app) {
+        final var paths = new HashSet<Path>();
+        final var mainSourceProvider = app.getMainSourceSet().getSourceProvider();
+        paths.addAll(
+                mainSourceProvider.getJavaDirectories().stream()
+                        .map(File::toPath)
+                        .collect(Collectors.toList()));
+
+        return paths;
     }
 
     private void setupDrawerToggle() {
