@@ -99,7 +99,8 @@ object AndroidModulePropertyCopier {
             module.resourcePrefix,
             copy(module.variants),
             copy(module.viewBindingOptions),
-            module.lintChecksJars)
+            module.lintChecksJars,
+            copy(module.modelSyncFiles))
     }
 
     fun copy(viewBindingOptions: ViewBindingOptions?): DefaultViewBindingOptions? {
@@ -128,6 +129,7 @@ object AndroidModulePropertyCopier {
             testFixturesArtifact = copy(variant.testFixturesArtifact)
             testedTargetVariant = copy(variant.testedTargetVariant)
             unitTestArtifact = copy(variant.unitTestArtifact)
+            desugaredMethods = variant.desugaredMethods
         }
     fun copy(artifact: JavaArtifact?): DefaultJavaArtifact? {
         if (artifact == null) {
@@ -186,7 +188,7 @@ object AndroidModulePropertyCopier {
     }
 
     @JvmName("copyModelSyncFiles")
-    fun copy(modelSyncFiles: Collection<ModelSyncFile>): Collection<DefaultModelSyncFile> {
+    fun copy(modelSyncFiles: Collection<ModelSyncFile>): List<DefaultModelSyncFile> {
         val new = mutableListOf<DefaultModelSyncFile>()
         for (file in modelSyncFiles) {
             new.add(copy(file))
@@ -420,7 +422,7 @@ object AndroidModulePropertyCopier {
     fun copy(syncIssues: Collection<SyncIssue>): Collection<DefaultSyncIssue> {
         return syncIssues.map { copy(it) }
     }
-    
+
     fun copy(issue: SyncIssue) =
         DefaultSyncIssue(
             issue.data, issue.message, issue.multiLineMessage, issue.severity, issue.type)

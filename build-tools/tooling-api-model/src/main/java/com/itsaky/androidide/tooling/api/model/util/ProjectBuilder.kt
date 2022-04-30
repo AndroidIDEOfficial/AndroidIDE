@@ -16,14 +16,12 @@
  */
 package com.itsaky.androidide.tooling.api.model.util
 
-import com.android.builder.model.v2.ide.ProjectType
-import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
+import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
 import java.io.File
@@ -43,19 +41,15 @@ class ProjectBuilder {
     var parent: IdeGradleProject? = null
     var subprojects: List<IdeGradleProject> = mutableListOf()
     var tasks: List<IdeGradleTask> = mutableListOf()
-    var bootClasspath: Collection<File> = mutableListOf()
-    var buildFolder: File = File("<no_path>")
-    var buildTypeSourceSets: Collection<DefaultSourceSetContainer> = mutableListOf()
     var dynamicFeatures: Collection<String>? = mutableListOf()
-    var flags: DefaultAndroidGradlePluginProjectFlags = DefaultAndroidGradlePluginProjectFlags()
+    var flags: DefaultAndroidGradlePluginProjectFlags =
+        DefaultAndroidGradlePluginProjectFlags(emptyMap())
     var javaCompileOptions: DefaultJavaCompileOptions = DefaultJavaCompileOptions()
-    var lintChecksJars: List<File> = mutableListOf()
-    var mainSourceSet: DefaultSourceSetContainer = DefaultSourceSetContainer()
-    var productFlavorSourceSets: Collection<DefaultSourceSetContainer> = mutableListOf()
-    var projectType: ProjectType = APPLICATION
     var resourcePrefix: String? = ""
     var variants: Collection<DefaultVariant> = mutableListOf()
     var viewBindingOptions: DefaultViewBindingOptions? = null
+    var modelSyncFiles: List<DefaultModelSyncFile> = emptyList()
+    var lintChecksJars: List<File> = mutableListOf()
 
     fun buildGradleProject(): IdeGradleProject {
         return IdeGradleProject(
@@ -79,5 +73,6 @@ class ProjectBuilder {
             resourcePrefix,
             variants,
             viewBindingOptions,
-            lintChecksJars)
+            lintChecksJars,
+            modelSyncFiles)
 }

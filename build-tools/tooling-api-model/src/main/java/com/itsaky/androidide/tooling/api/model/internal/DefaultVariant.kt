@@ -18,12 +18,14 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.Variant
+import java.io.File
 
 /** @author Akash Yadav */
 class DefaultVariant : Variant {
     override var androidTestArtifact: DefaultAndroidArtifact? = null
     override var displayName: String = ""
     override var isInstantAppCompatible: Boolean = false
+    override var desugaredMethods: List<File> = emptyList()
     override var mainArtifact: DefaultAndroidArtifact = DefaultAndroidArtifact()
     override var name: String = ""
     override var testFixturesArtifact: DefaultAndroidArtifact? = null

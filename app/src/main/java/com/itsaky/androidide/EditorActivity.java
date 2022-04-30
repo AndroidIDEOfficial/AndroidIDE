@@ -1303,17 +1303,6 @@ public class EditorActivity extends StudioActivity
                                 return;
                             }
 
-                            final var bootclasspaths = app.getBootClasspath();
-                            if (bootclasspaths.isEmpty()) {
-                                LOG.warn(
-                                        "No project boot classpath found in application module:",
-                                        app.getProjectPath());
-                                return;
-                            }
-
-                            // TODO Should we handle multiple boot classpaths?
-                            Environment.setBootClasspath(bootclasspaths.iterator().next());
-
                             // Notify Java language server about updated dependencies
                             // TODO Java language server must also be notified about updated source
                             //  paths

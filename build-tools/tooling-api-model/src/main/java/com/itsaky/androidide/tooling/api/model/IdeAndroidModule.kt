@@ -19,6 +19,7 @@ package com.itsaky.androidide.tooling.api.model
 import com.android.builder.model.v2.models.AndroidProject
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
+import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
@@ -45,7 +46,8 @@ class IdeAndroidModule(
     override var resourcePrefix: String?,
     override var variants: Collection<DefaultVariant>,
     override var viewBindingOptions: DefaultViewBindingOptions?,
-    override val lintChecksJars: List<File>
+    override val lintChecksJars: List<File>,
+    override val modelSyncFiles: List<DefaultModelSyncFile>
 ) :
     IdeGradleProject(
         name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks),
@@ -71,11 +73,12 @@ class IdeAndroidModule(
             resourcePrefix,
             variants,
             viewBindingOptions,
-            lintChecksJars)
+            lintChecksJars,
+            modelSyncFiles)
     }
 
     override fun toString(): String {
-        return "IdeAndroidModule(dynamicFeatures=$dynamicFeatures, flags=$flags, javaCompileOptions=$javaCompileOptions, resourcePrefix=$resourcePrefix, variants=$variants, viewBindingOptions=$viewBindingOptions, lintChecksJars=$lintChecksJars, variantDependencies=$variantDependencies, variantDependencyJars=$variantDependencyJars, androidTestNamespace=$androidTestNamespace, namespace='$namespace', testFixturesNamespace=$testFixturesNamespace)"
+        return "IdeAndroidModule(dynamicFeatures=$dynamicFeatures, flags=$flags, javaCompileOptions=$javaCompileOptions, resourcePrefix=$resourcePrefix, variants=$variants, viewBindingOptions=$viewBindingOptions, lintChecksJars=$lintChecksJars, modelSyncFiles=$modelSyncFiles, variantDependencies=$variantDependencies, variantDependencyJars=$variantDependencyJars, androidTestNamespace=$androidTestNamespace, namespace='$namespace', testFixturesNamespace=$testFixturesNamespace)"
     }
 
     // These properties are not supported on newer versions

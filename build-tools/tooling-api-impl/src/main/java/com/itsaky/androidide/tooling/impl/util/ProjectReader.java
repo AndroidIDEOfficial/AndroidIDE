@@ -153,19 +153,14 @@ public class ProjectReader {
         builder.setProjectDir(gradle.getProjectDirectory());
         builder.setBuildDir(gradle.getBuildDirectory());
         builder.setBuildScript(gradle.getBuildScript().getSourceFile());
-        builder.setProjectType(android.getProjectType());
-        builder.setMainSourceSet(copier.copy(android.getMainSourceSet()));
-        builder.setBuildTypeSourceSets(copier.copy(android.getBuildTypeSourceSets()));
-        builder.setProductFlavorSourceSets(copier.copy(android.getProductFlavorSourceSets()));
         builder.setVariants(copier.copyVariants(android.getVariants()));
-        builder.setBootClasspath(android.getBootClasspath());
         builder.setJavaCompileOptions(copier.copy(android.getJavaCompileOptions()));
-        builder.setBuildFolder(android.getBuildFolder());
         builder.setResourcePrefix(android.getResourcePrefix());
         builder.setDynamicFeatures(android.getDynamicFeatures());
         builder.setViewBindingOptions(copier.copy(android.getViewBindingOptions()));
         builder.setFlags(copier.copy(android.getFlags()));
-        builder.setLintRuleJars(android.getLintRuleJars());
+        builder.setModelSyncFiles(copier.copyModelSyncFiles(android.getModelSyncFiles()));
+        builder.setLintChecksJars(android.getLintChecksJars());
 
         final var module = builder.buildAndroidModule();
         addSubprojects(gradle, module, outIssues);
