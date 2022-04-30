@@ -122,7 +122,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     @Override
     public void logMessage(@NonNull LogLine line) {
-        SERVER_LOGGER.debug(line.toSimpleString());
+        SERVER_LOGGER.log(ILogger.priority(line.priorityChar), line.formattedTagAndMessage());
     }
 
     @NonNull

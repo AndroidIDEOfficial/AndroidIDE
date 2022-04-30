@@ -17,10 +17,6 @@
  */
 package com.itsaky.androidide.models;
 
-import android.content.Context;
-
-import java.util.Locale;
-
 public class LogLine {
 
     // It makes things easier in LogLanguageImpl
@@ -50,9 +46,9 @@ public class LogLine {
     public String time;
     public String pid;
     public String tid;
-    public String priorityChar;
     public String tag;
     public String message;
+    public char priorityChar;
     public int priority;
     public boolean formatted;
 
@@ -60,7 +56,7 @@ public class LogLine {
     @SuppressWarnings("unused")
     private LogLine() {}
 
-    public LogLine(String priorityChar, String tag, String message) {
+    public LogLine(char priorityChar, String tag, String message) {
         this("", "", "", "", priorityChar, tag, message);
     }
 
@@ -69,7 +65,7 @@ public class LogLine {
             String time,
             String pid,
             String tid,
-            String priorityChar,
+            char priorityChar,
             String tag,
             String message) {
         this(date, time, pid, tid, priorityChar, tag, message, true);
@@ -80,7 +76,7 @@ public class LogLine {
             String time,
             String pid,
             String tid,
-            String priorityChar,
+            char priorityChar,
             String tag,
             String message,
             boolean formatted) {
@@ -99,11 +95,8 @@ public class LogLine {
         }
     }
 
-    private int parsePriority(String s) {
-        if (s == null || s.trim().length() > 1) {
-            return DEBUG;
-        }
-        char c = s.toLowerCase(Locale.US).charAt(0);
+    private int parsePriority(char s) {
+        final var c = Character.toLowerCase(s);
         if (c == 'w') {
             return WARNING;
         } else if (c == 'e') {
@@ -128,7 +121,7 @@ public class LogLine {
                     split[1], // time
                     split[2], // process id
                     split[3], // thread id
-                    split[4], // priority
+                    split[4].charAt(0), // priority
                     split[5], // tag
                     split[6] // message
                     );
@@ -137,7 +130,7 @@ public class LogLine {
         }
     }
 
-    public int getColor(Context ctx) {
+    public int getColor() {
         int id = 0xffffffff;
         if (priority == WARNING) {
             id = 0xffff7043;
@@ -176,6 +169,12 @@ public class LogLine {
     public String toSimpleString() {
         return this.formatted
                 ? String.format("%-25s %-2s %s", trimIfNeeded(tag, 25), priorityChar, message)
+                : this.unformatted;
+    }
+
+    public String formattedTagAndMessage() {
+        return this.formatted
+                ? String.format("%-25s %s", trimIfNeeded(tag, 25), message)
                 : this.unformatted;
     }
 }
