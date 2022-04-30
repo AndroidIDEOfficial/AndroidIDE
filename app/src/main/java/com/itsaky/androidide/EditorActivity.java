@@ -1189,6 +1189,7 @@ public class EditorActivity extends StudioActivity
             return;
         }
 
+        mBinding.buildProgressIndicator.setVisibility(View.VISIBLE);
         final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
         future.whenComplete(
                 (result, error) -> {
@@ -1197,33 +1198,10 @@ public class EditorActivity extends StudioActivity
                                 "An error occurred initializing the project with Tooling API",
                                 error);
                         // TODO Show sync issues to user
-                        return;
                     }
 
-                    final var project = result.getProject();
-                    final var application = project.findFirstApplicationModule();
-                    if (application == null) {
-                        LOG.error("No application module find in project");
-                        return;
-                    }
-
-                    final var taskResult =
-                            mBuildService.executeProjectTasks(
-                                    application.getProjectPath() == null
-                                            ? application.getPath()
-                                            : application.getProjectPath(),
-                                    "assembleDebug");
-
-                    taskResult.whenComplete(
-                            (executionResult, executionError) -> {
-                                if (executionError != null) {
-                                    LOG.error(
-                                            "An error occurred while executing task assembleDebug", executionError);
-                                    return;
-                                }
-
-                                LOG.debug("Got task execution result", executionResult);
-                            });
+                    ThreadUtils.runOnUiThread(
+                            () -> mBinding.buildProgressIndicator.setVisibility(View.GONE));
                 });
     }
 

@@ -14,13 +14,12 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
     android:elevation="8dp"
+    android:orientation="vertical"
     app:behavior_hideable="false"
     app:behavior_peekHeight="@dimen/editor_sheet_peek_height"
     app:layout_behavior="com.itsaky.androidide.utils.EditorBottomSheetBehavior">
@@ -29,26 +28,26 @@
         android:id="@+id/text_container"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:orientation="vertical"
-        android:background="@android:color/black">
+        android:background="@android:color/black"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/statusText"
-            android:layout_height="20dp"
             android:layout_width="match_parent"
+            android:layout_height="20dp"
             android:gravity="center"
-            android:textSize="14sp"
+            android:singleLine="true"
             android:textColor="@color/primaryTextColor"
-            android:singleLine="true" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/swipe_hint"
             android:layout_width="match_parent"
             android:layout_height="18dp"
-            android:text="@string/msg_swipe_up"
             android:gravity="center"
+            android:text="@string/msg_swipe_up"
             android:textColor="@color/secondaryTextColor"
-            android:textSize="11sp"/>
+            android:textSize="11sp" />
 
     </LinearLayout>
 
@@ -56,22 +55,22 @@
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="36dp"
-        android:background="@android:color/black"
         android:layout_below="@id/text_container"
+        android:background="@android:color/black"
+        app:tabGravity="fill"
         app:tabIndicatorColor="@color/secondaryColor"
         app:tabIndicatorGravity="stretch"
         app:tabIndicatorHeight="36dp"
-        app:tabTextAppearance="@style/AppTheme.TabLayout.Title"
-        app:tabSelectedTextColor="@color/primaryTextColor"
         app:tabMode="scrollable"
-        app:tabGravity="fill"/>
+        app:tabSelectedTextColor="@color/primaryTextColor"
+        app:tabTextAppearance="@style/AppTheme.TabLayout.Title" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/content_background"
-        android:layout_below="@id/tabs"/>
+        android:layout_below="@id/tabs"
+        android:background="@color/content_background" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/clear_fab"
