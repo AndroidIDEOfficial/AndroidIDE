@@ -122,6 +122,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     @Override
     public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
         checkServerStarted();
+        ensureTmpdir();
         return server.initialize(new InitializeProjectMessage(rootDir));
     }
 
@@ -129,6 +130,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     @Override
     public CompletableFuture<TaskExecutionResult> executeTasks(@NonNull String... tasks) {
         checkServerStarted();
+        ensureTmpdir();
         return server.executeTasks(new TaskExecutionMessage(":", Arrays.asList(tasks)));
     }
 
@@ -137,6 +139,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     public CompletableFuture<TaskExecutionResult> executeProjectTasks(
             @NonNull String projectPath, @NonNull String... tasks) {
         checkServerStarted();
+        ensureTmpdir();
         return server.executeTasks(new TaskExecutionMessage(projectPath, Arrays.asList(tasks)));
     }
 
@@ -144,6 +147,10 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         if (!isToolingServerStarted) {
             throw new IllegalStateException("Tooling API server has not been started");
         }
+    }
+
+    private void ensureTmpdir() {
+        Environment.mkdirIfNotExits(Environment.TMP_DIR);
     }
 
     public void startToolingServer(@Nullable OnServerStartListener listener) {
