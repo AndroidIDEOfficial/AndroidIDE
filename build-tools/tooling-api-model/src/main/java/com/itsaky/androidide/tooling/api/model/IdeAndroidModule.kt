@@ -16,11 +16,9 @@
  */
 package com.itsaky.androidide.tooling.api.model
 
-import com.android.builder.model.v2.ide.ProjectType
 import com.android.builder.model.v2.models.AndroidProject
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
@@ -33,6 +31,7 @@ import java.io.File
  */
 class IdeAndroidModule(
     name: String?,
+    path: String?,
     description: String?,
     projectDir: File?,
     buildDir: File?,
@@ -40,20 +39,13 @@ class IdeAndroidModule(
     parent: IdeGradleProject?,
     subprojects: List<IdeGradleProject>,
     tasks: List<IdeGradleTask>,
-    override var path: String,
-    override var bootClasspath: Collection<File>,
-    override var buildFolder: File,
-    override var buildTypeSourceSets: Collection<DefaultSourceSetContainer>,
     override var dynamicFeatures: Collection<String>?,
     override var flags: DefaultAndroidGradlePluginProjectFlags,
     override var javaCompileOptions: DefaultJavaCompileOptions,
-    override var lintRuleJars: List<File>,
-    override var mainSourceSet: DefaultSourceSetContainer,
-    override var productFlavorSourceSets: Collection<DefaultSourceSetContainer>,
-    override var projectType: ProjectType,
     override var resourcePrefix: String?,
     override var variants: Collection<DefaultVariant>,
-    override var viewBindingOptions: DefaultViewBindingOptions?
+    override var viewBindingOptions: DefaultViewBindingOptions?,
+    override val lintChecksJars: List<File>
 ) :
     IdeGradleProject(
         name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks),
@@ -66,35 +58,28 @@ class IdeAndroidModule(
         return IdeAndroidModule(
             name,
             description,
+            projectPath,
             projectDir,
             buildDir,
             buildScript,
             parent,
             subprojects,
             tasks,
-            path,
-            bootClasspath,
-            buildFolder,
-            buildTypeSourceSets,
             dynamicFeatures,
             flags,
             javaCompileOptions,
-            lintRuleJars,
-            mainSourceSet,
-            productFlavorSourceSets,
-            projectType,
             resourcePrefix,
             variants,
-            viewBindingOptions)
+            viewBindingOptions,
+            lintChecksJars)
     }
 
     override fun toString(): String {
-        return "IdeAndroidModule(path='$path', bootClasspath=$bootClasspath, buildFolder=$buildFolder, buildTypeSourceSets=$buildTypeSourceSets, dynamicFeatures=$dynamicFeatures, flags=$flags, javaCompileOptions=$javaCompileOptions, lintRuleJars=$lintRuleJars, mainSourceSet=$mainSourceSet, productFlavorSourceSets=$productFlavorSourceSets, projectType=$projectType, resourcePrefix=$resourcePrefix, variants=$variants, viewBindingOptions=$viewBindingOptions, androidTestNamespace=$androidTestNamespace, buildName='$buildName', namespace='$namespace', testFixturesNamespace=$testFixturesNamespace)"
+        return "IdeAndroidModule(dynamicFeatures=$dynamicFeatures, flags=$flags, javaCompileOptions=$javaCompileOptions, resourcePrefix=$resourcePrefix, variants=$variants, viewBindingOptions=$viewBindingOptions, lintChecksJars=$lintChecksJars, variantDependencies=$variantDependencies, variantDependencyJars=$variantDependencyJars, androidTestNamespace=$androidTestNamespace, namespace='$namespace', testFixturesNamespace=$testFixturesNamespace)"
     }
 
     // These properties are not supported on newer versions
     override val androidTestNamespace: String? = null
-    override val buildName: String = ""
     override val namespace: String = ""
     override val testFixturesNamespace: String? = null
 }

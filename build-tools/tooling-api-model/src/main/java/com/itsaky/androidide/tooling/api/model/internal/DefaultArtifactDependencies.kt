@@ -21,8 +21,9 @@ import com.android.builder.model.v2.ide.ArtifactDependencies
 
 /** @author Akash Yadav */
 class DefaultArtifactDependencies : ArtifactDependencies {
-    override var compileDependencies: List<DefaultGraphItem> = mutableListOf()
-    override var runtimeDependencies: List<DefaultGraphItem>? = null
+    override var compileDependencies: List<DefaultGraphItem> = emptyList()
+    override var runtimeDependencies: List<DefaultGraphItem> = emptyList()
+    override var unresolvedDependencies: List<DefaultUnresolvedDependency> = emptyList()
 
     override fun toString(): String {
         return "DefaultArtifactDependencies(compileDependencies=$compileDependencies, runtimeDependencies=$runtimeDependencies)"

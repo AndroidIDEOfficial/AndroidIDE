@@ -49,7 +49,7 @@ class ProjectBuilder {
     var dynamicFeatures: Collection<String>? = mutableListOf()
     var flags: DefaultAndroidGradlePluginProjectFlags = DefaultAndroidGradlePluginProjectFlags()
     var javaCompileOptions: DefaultJavaCompileOptions = DefaultJavaCompileOptions()
-    var lintRuleJars: List<File> = mutableListOf()
+    var lintChecksJars: List<File> = mutableListOf()
     var mainSourceSet: DefaultSourceSetContainer = DefaultSourceSetContainer()
     var productFlavorSourceSets: Collection<DefaultSourceSetContainer> = mutableListOf()
     var projectType: ProjectType = APPLICATION
@@ -65,6 +65,7 @@ class ProjectBuilder {
     fun buildAndroidModule(): IdeAndroidModule =
         IdeAndroidModule(
             name,
+            path,
             description,
             projectDir,
             buildDir,
@@ -72,18 +73,11 @@ class ProjectBuilder {
             parent,
             subprojects,
             tasks,
-            path,
-            bootClasspath,
-            buildFolder,
-            buildTypeSourceSets,
             dynamicFeatures,
             flags,
             javaCompileOptions,
-            lintRuleJars,
-            mainSourceSet,
-            productFlavorSourceSets,
-            projectType,
             resourcePrefix,
             variants,
-            viewBindingOptions)
+            viewBindingOptions,
+            lintChecksJars)
 }

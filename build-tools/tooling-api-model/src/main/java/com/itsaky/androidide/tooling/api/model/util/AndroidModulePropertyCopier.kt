@@ -17,20 +17,27 @@
 
 package com.itsaky.androidide.tooling.api.model.util
 
+import com.android.builder.model.v2.CustomSourceDirectory
 import com.android.builder.model.v2.ModelSyncFile
 import com.android.builder.model.v2.ide.AndroidArtifact
 import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
+import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanFlag
+import com.android.builder.model.v2.ide.AndroidLibraryData
 import com.android.builder.model.v2.ide.ApiVersion
 import com.android.builder.model.v2.ide.ArtifactDependencies
 import com.android.builder.model.v2.ide.BundleInfo
 import com.android.builder.model.v2.ide.GraphItem
 import com.android.builder.model.v2.ide.JavaArtifact
 import com.android.builder.model.v2.ide.JavaCompileOptions
+import com.android.builder.model.v2.ide.Library
+import com.android.builder.model.v2.ide.LibraryInfo
+import com.android.builder.model.v2.ide.ProjectInfo
 import com.android.builder.model.v2.ide.SourceProvider
 import com.android.builder.model.v2.ide.SourceSetContainer
 import com.android.builder.model.v2.ide.SyncIssue
 import com.android.builder.model.v2.ide.TestInfo
 import com.android.builder.model.v2.ide.TestedTargetVariant
+import com.android.builder.model.v2.ide.UnresolvedDependency
 import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.android.builder.model.v2.models.ProjectSyncIssues
@@ -38,19 +45,25 @@ import com.android.builder.model.v2.models.VariantDependencies
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidArtifact
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
+import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidLibraryData
 import com.itsaky.androidide.tooling.api.model.internal.DefaultApiVersion
 import com.itsaky.androidide.tooling.api.model.internal.DefaultArtifactDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultBundleInfo
+import com.itsaky.androidide.tooling.api.model.internal.DefaultCustomSourceDirectory
 import com.itsaky.androidide.tooling.api.model.internal.DefaultGraphItem
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaArtifact
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
+import com.itsaky.androidide.tooling.api.model.internal.DefaultLibrary
+import com.itsaky.androidide.tooling.api.model.internal.DefaultLibraryInfo
 import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
+import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectInfo
 import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
 import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceProvider
 import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
 import com.itsaky.androidide.tooling.api.model.internal.DefaultSyncIssue
 import com.itsaky.androidide.tooling.api.model.internal.DefaultTestInfo
 import com.itsaky.androidide.tooling.api.model.internal.DefaultTestedTargetVariant
+import com.itsaky.androidide.tooling.api.model.internal.DefaultUnresolvedDependency
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
@@ -72,6 +85,7 @@ object AndroidModulePropertyCopier {
     fun copy(module: IdeAndroidModule): IdeAndroidModule {
         return IdeAndroidModule(
             module.name,
+            module.projectPath,
             module.description,
             module.projectDir,
             module.buildDir,
@@ -79,20 +93,13 @@ object AndroidModulePropertyCopier {
             module.parent,
             module.subprojects,
             module.tasks,
-            module.path,
-            module.bootClasspath,
-            module.buildFolder,
-            copy(module.buildTypeSourceSets),
             module.dynamicFeatures,
             copy(module.flags),
             copy(module.javaCompileOptions),
-            module.lintRuleJars,
-            copy(module.mainSourceSet),
-            copy(module.productFlavorSourceSets),
-            module.projectType,
             module.resourcePrefix,
             copy(module.variants),
-            copy(module.viewBindingOptions))
+            copy(module.viewBindingOptions),
+            module.lintChecksJars)
     }
 
     fun copy(viewBindingOptions: ViewBindingOptions?): DefaultViewBindingOptions? {
@@ -114,13 +121,10 @@ object AndroidModulePropertyCopier {
     fun copy(variant: Variant): DefaultVariant =
         DefaultVariant().apply {
             androidTestArtifact = copy(variant.androidTestArtifact)
-            buildType = variant.buildType
-            desugaredMethods = variant.desugaredMethods
             displayName = variant.displayName
             isInstantAppCompatible = variant.isInstantAppCompatible
             mainArtifact = copy(variant.mainArtifact)!!
             name = variant.name
-            productFlavors = variant.productFlavors
             testFixturesArtifact = copy(variant.testFixturesArtifact)
             testedTargetVariant = copy(variant.testedTargetVariant)
             unitTestArtifact = copy(variant.unitTestArtifact)
@@ -131,13 +135,12 @@ object AndroidModulePropertyCopier {
         }
 
         return DefaultJavaArtifact().apply {
+            modelSyncFiles = copy(artifact.modelSyncFiles)
             assembleTaskName = artifact.assembleTaskName
             classesFolders = artifact.classesFolders
             compileTaskName = artifact.compileTaskName
             generatedSourceFolders = artifact.generatedSourceFolders
             ideSetupTaskNames = artifact.ideSetupTaskNames
-            multiFlavorSourceProvider = copy(artifact.multiFlavorSourceProvider)
-            variantSourceProvider = copy(artifact.variantSourceProvider)
             mockablePlatformJar = artifact.mockablePlatformJar
             runtimeResourceFolder = artifact.runtimeResourceFolder
         }
@@ -160,6 +163,7 @@ object AndroidModulePropertyCopier {
         }
 
         return DefaultAndroidArtifact().apply {
+            resGenTaskName = artifact.resGenTaskName
             abiFilters = artifact.abiFilters
             assembleTaskOutputListingFile = artifact.assembleTaskOutputListingFile
             bundleInfo = copy(artifact.bundleInfo)
@@ -176,8 +180,8 @@ object AndroidModulePropertyCopier {
             compileTaskName = artifact.compileTaskName
             generatedSourceFolders = artifact.generatedSourceFolders
             ideSetupTaskNames = artifact.ideSetupTaskNames
-            multiFlavorSourceProvider = copy(artifact.multiFlavorSourceProvider)
-            variantSourceProvider = copy(artifact.variantSourceProvider)
+            targetSdkVersionOverride = copy(artifact.targetSdkVersionOverride)
+            modelSyncFiles = copy(artifact.modelSyncFiles)
         }
     }
 
@@ -242,9 +246,11 @@ object AndroidModulePropertyCopier {
     }
 
     fun copy(flags: AndroidGradlePluginProjectFlags): DefaultAndroidGradlePluginProjectFlags {
-        return DefaultAndroidGradlePluginProjectFlags().apply {
-            booleanFlagMap = flags.booleanFlagMap
+        val flagMap: MutableMap<BooleanFlag, Boolean?> = mutableMapOf()
+        for (value in BooleanFlag.values()) {
+            flagMap[value] = flags.getFlagValue(value.name)
         }
+        return DefaultAndroidGradlePluginProjectFlags(flagMap)
     }
 
     fun copy(containers: Collection<SourceSetContainer>): Collection<DefaultSourceSetContainer> {
@@ -274,6 +280,7 @@ object AndroidModulePropertyCopier {
         return DefaultSourceProvider().apply {
             aidlDirectories = provider.aidlDirectories
             assetsDirectories = provider.assetsDirectories
+            customDirectories = copy(provider.customDirectories)
             javaDirectories = provider.javaDirectories
             jniLibsDirectories = provider.jniLibsDirectories
             kotlinDirectories = provider.kotlinDirectories
@@ -287,14 +294,93 @@ object AndroidModulePropertyCopier {
         }
     }
 
+    @JvmName("copyCustomSourceDirectories")
+    private fun copy(
+        directories: Collection<CustomSourceDirectory>?
+    ): Collection<DefaultCustomSourceDirectory>? {
+        return directories?.map { copy(it) }
+    }
+
+    private fun copy(it: CustomSourceDirectory): DefaultCustomSourceDirectory {
+        return DefaultCustomSourceDirectory(it.directory, it.sourceTypeName)
+    }
+
     fun copy(variantDependencies: VariantDependencies): DefaultVariantDependencies {
         return DefaultVariantDependencies().apply {
             this.name = variantDependencies.name
+            this.libraries = copy(variantDependencies.libraries)
             this.mainArtifact = copy(variantDependencies.mainArtifact)!!
             this.androidTestArtifact = copy(variantDependencies.androidTestArtifact)
             this.testFixturesArtifact = copy(variantDependencies.testFixturesArtifact)
             this.unitTestArtifact = copy(variantDependencies.unitTestArtifact)
         }
+    }
+
+    private fun copy(libraries: Map<String, Library>): Map<String, DefaultLibrary> {
+        val new = mutableMapOf<String, DefaultLibrary>()
+        for ((key, value) in libraries) {
+            new[key] = copy(value)
+        }
+
+        return new
+    }
+
+    private fun copy(value: Library): DefaultLibrary {
+        return DefaultLibrary().apply {
+            this.androidLibraryData = copy(value.androidLibraryData)
+            this.artifact = value.artifact
+            this.key = value.key
+            this.libraryInfo = copy(value.libraryInfo)
+            this.lintJar = value.lintJar
+            this.projectInfo = copy(value.projectInfo)
+            this.type = value.type
+        }
+    }
+
+    private fun copy(info: ProjectInfo?): DefaultProjectInfo? {
+        return if (info == null) null
+        else
+            DefaultProjectInfo(
+                info.attributes,
+                info.buildType,
+                info.capabilities,
+                info.isTestFixtures,
+                info.productFlavors,
+                info.buildId,
+                info.projectPath)
+    }
+
+    private fun copy(info: LibraryInfo?): DefaultLibraryInfo? {
+        return if (info == null) null
+        else
+            DefaultLibraryInfo(
+                info.attributes,
+                info.buildType,
+                info.capabilities,
+                info.isTestFixtures,
+                info.productFlavors,
+                info.group,
+                info.name,
+                info.version)
+    }
+
+    private fun copy(data: AndroidLibraryData?): DefaultAndroidLibraryData? {
+        return if (data == null) null
+        else
+            DefaultAndroidLibraryData(
+                data.aidlFolder,
+                data.assetsFolder,
+                data.compileJarFiles,
+                data.externalAnnotations,
+                data.jniFolder,
+                data.manifest,
+                data.proguardRules,
+                data.publicResources,
+                data.renderscriptFolder,
+                data.resFolder,
+                data.resStaticLibrary,
+                data.runtimeJarFiles,
+                data.symbolFile)
     }
 
     fun copy(artifact: ArtifactDependencies?): DefaultArtifactDependencies? =
@@ -303,21 +389,27 @@ object AndroidModulePropertyCopier {
                 return null
             }
 
-            this.compileDependencies = copy(artifact.compileDependencies)!!
+            this.compileDependencies = copy(artifact.compileDependencies)
             this.runtimeDependencies = copy(artifact.runtimeDependencies)
+            this.unresolvedDependencies = copy(artifact.unresolvedDependencies)
         }
 
-    fun copy(graphs: List<GraphItem>?): List<DefaultGraphItem>? {
-        if (graphs == null) {
-            return null
-        }
+    private fun copy(dependencies: List<UnresolvedDependency>): List<DefaultUnresolvedDependency> {
+        return dependencies.map { copy(it) }
+    }
 
+    private fun copy(it: UnresolvedDependency): DefaultUnresolvedDependency {
+        return DefaultUnresolvedDependency(it.cause, it.name)
+    }
+
+    @JvmName("copyGraphItems")
+    fun copy(graphs: List<GraphItem>): List<DefaultGraphItem> {
         return graphs.map { copy(it) }
     }
 
     fun copy(graph: GraphItem): DefaultGraphItem =
         DefaultGraphItem().apply {
-            this.dependencies = copy(graph.dependencies)!!
+            this.dependencies = copy(graph.dependencies)
             this.requestedCoordinates = graph.requestedCoordinates
         }
 
@@ -328,7 +420,7 @@ object AndroidModulePropertyCopier {
     fun copy(syncIssues: Collection<SyncIssue>): Collection<DefaultSyncIssue> {
         return syncIssues.map { copy(it) }
     }
-
+    
     fun copy(issue: SyncIssue) =
         DefaultSyncIssue(
             issue.data, issue.message, issue.multiLineMessage, issue.severity, issue.type)

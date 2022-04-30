@@ -25,6 +25,7 @@ class DefaultSourceProvider() : SourceProvider {
 
     override var aidlDirectories: Collection<File>? = null
     override var assetsDirectories: Collection<File>? = null
+    override var customDirectories: Collection<DefaultCustomSourceDirectory>? = null
     override var javaDirectories: Collection<File> = emptyList()
     override var jniLibsDirectories: Collection<File> = emptyList()
     override var kotlinDirectories: Collection<File> = emptyList()

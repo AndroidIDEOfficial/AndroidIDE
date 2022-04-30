@@ -17,22 +17,8 @@
 
 package com.itsaky.androidide.tooling.api.model.internal
 
-import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
-import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanFlag
+import com.android.builder.model.v2.ide.UnresolvedDependency
 
 /** @author Akash Yadav */
-class DefaultAndroidGradlePluginProjectFlags(val booleanFlagMap: Map<BooleanFlag, Boolean?>) :
-    AndroidGradlePluginProjectFlags {
-
-    companion object {
-        private val flagByName = BooleanFlag.values().associateBy { it.name }
-    }
-
-    override fun getFlagValue(flagName: String): Boolean? {
-        return flagByName[flagName]?.let { booleanFlagMap[it] }
-    }
-
-    override fun toString(): String {
-        return "DefaultAndroidGradlePluginProjectFlags(booleanFlagMap=$booleanFlagMap)"
-    }
-}
+data class DefaultUnresolvedDependency(override val cause: String?, override val name: String) :
+    UnresolvedDependency

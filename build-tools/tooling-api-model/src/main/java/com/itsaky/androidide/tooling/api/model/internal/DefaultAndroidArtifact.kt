@@ -23,6 +23,7 @@ import java.io.File
 /** @author Akash Yadav */
 class DefaultAndroidArtifact : AndroidArtifact {
 
+    override var resGenTaskName: String? = null
     override var abiFilters: Set<String>? = null
     override var assembleTaskOutputListingFile: File? = null
     override var bundleInfo: DefaultBundleInfo? = null
@@ -39,12 +40,10 @@ class DefaultAndroidArtifact : AndroidArtifact {
     override var compileTaskName: String = ""
     override var generatedSourceFolders: Collection<File> = emptyList()
     override var ideSetupTaskNames: Set<String> = emptySet()
-    override var multiFlavorSourceProvider: DefaultSourceProvider? = null
-    override var variantSourceProvider: DefaultSourceProvider? = null
     override var targetSdkVersionOverride: DefaultApiVersion? = null
-    override val modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
+    override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
 
     override fun toString(): String {
-        return "DefaultAndroidArtifact(abiFilters=$abiFilters, assembleTaskOutputListingFile=$assembleTaskOutputListingFile, bundleInfo=$bundleInfo, codeShrinker=$codeShrinker, generatedResourceFolders=$generatedResourceFolders, isSigned=$isSigned, maxSdkVersion=$maxSdkVersion, minSdkVersion=$minSdkVersion, signingConfigName=$signingConfigName, sourceGenTaskName='$sourceGenTaskName', testInfo=$testInfo, assembleTaskName='$assembleTaskName', classesFolders=$classesFolders, compileTaskName='$compileTaskName', generatedSourceFolders=$generatedSourceFolders, ideSetupTaskNames=$ideSetupTaskNames, multiFlavorSourceProvider=$multiFlavorSourceProvider, variantSourceProvider=$variantSourceProvider, targetSdkVersionOverride=$targetSdkVersionOverride, modelSyncFiles=$modelSyncFiles)"
+        return "DefaultAndroidArtifact(resGenTaskName=$resGenTaskName, abiFilters=$abiFilters, assembleTaskOutputListingFile=$assembleTaskOutputListingFile, bundleInfo=$bundleInfo, codeShrinker=$codeShrinker, generatedResourceFolders=$generatedResourceFolders, isSigned=$isSigned, maxSdkVersion=$maxSdkVersion, minSdkVersion=$minSdkVersion, signingConfigName=$signingConfigName, sourceGenTaskName='$sourceGenTaskName', testInfo=$testInfo, assembleTaskName='$assembleTaskName', classesFolders=$classesFolders, compileTaskName='$compileTaskName', generatedSourceFolders=$generatedSourceFolders, ideSetupTaskNames=$ideSetupTaskNames, targetSdkVersionOverride=$targetSdkVersionOverride, modelSyncFiles=$modelSyncFiles)"
     }
 }

@@ -17,18 +17,18 @@
 
 package com.itsaky.androidide.tooling.api.model.internal
 
-import com.android.builder.model.v2.models.VariantDependencies
+import com.android.builder.model.v2.ide.Library
+import com.android.builder.model.v2.ide.LibraryType
+import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
+import java.io.File
 
 /** @author Akash Yadav */
-class DefaultVariantDependencies : VariantDependencies {
-    override var androidTestArtifact: DefaultArtifactDependencies? = null
-    override var libraries: Map<String, DefaultLibrary> = emptyMap()
-    override var mainArtifact: DefaultArtifactDependencies = DefaultArtifactDependencies()
-    override var name: String = ""
-    override var testFixturesArtifact: DefaultArtifactDependencies? = null
-    override var unitTestArtifact: DefaultArtifactDependencies? = null
-
-    override fun toString(): String {
-        return "DefaultVariantDependencies(androidTestArtifact=$androidTestArtifact, mainArtifact=$mainArtifact, name='$name', testFixturesArtifact=$testFixturesArtifact, unitTestArtifact=$unitTestArtifact)"
-    }
+class DefaultLibrary : Library {
+    override var androidLibraryData: DefaultAndroidLibraryData? = null
+    override var artifact: File? = null
+    override var key: String = ""
+    override var libraryInfo: DefaultLibraryInfo? = null
+    override var lintJar: File? = null
+    override var projectInfo: DefaultProjectInfo? = null
+    override var type: LibraryType = ANDROID_LIBRARY
 }

@@ -17,47 +17,18 @@
 
 package com.itsaky.androidide.tooling.api.util;
 
-import com.android.builder.model.AndroidArtifact;
-import com.android.builder.model.v2.ModelSyncFile;
-import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags;
-import com.android.builder.model.v2.ide.ApiVersion;
-import com.android.builder.model.v2.ide.BundleInfo;
-import com.android.builder.model.v2.ide.JavaArtifact;
-import com.android.builder.model.v2.ide.JavaCompileOptions;
-import com.android.builder.model.v2.ide.SourceProvider;
-import com.android.builder.model.v2.ide.SourceSetContainer;
-import com.android.builder.model.v2.ide.TestInfo;
-import com.android.builder.model.v2.ide.TestedTargetVariant;
-import com.android.builder.model.v2.ide.Variant;
-import com.android.builder.model.v2.ide.ViewBindingOptions;
 import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
 import com.itsaky.androidide.tooling.api.model.IdeLaunchable;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidArtifact;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultApiVersion;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultBundleInfo;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaArtifact;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceProvider;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultTestInfo;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultTestedTargetVariant;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions;
 
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
-import java.util.function.Function;
 
 /**
  * Utility class for launching {@link IToolingApiClient} and {@link IToolingApiServer}.
@@ -91,7 +62,7 @@ public class ToolingApiLauncher {
                         .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName())
                         .registerSubtype(IdeLaunchable.class, IdeLaunchable.class.getName()));
     }
-    
+
     public static Launcher<IToolingApiClient> createServerLauncher(
             IToolingApiServer server, InputStream in, OutputStream out) {
         return createIOLauncher(server, IToolingApiClient.class, in, out);

@@ -22,18 +22,15 @@ import com.android.builder.model.v2.ide.Variant
 /** @author Akash Yadav */
 class DefaultVariant : Variant {
     override var androidTestArtifact: DefaultAndroidArtifact? = null
-    override var buildType: String? = null
-    override var desugaredMethods: List<String> = emptyList()
     override var displayName: String = ""
     override var isInstantAppCompatible: Boolean = false
     override var mainArtifact: DefaultAndroidArtifact = DefaultAndroidArtifact()
     override var name: String = ""
-    override var productFlavors: List<String> = emptyList()
     override var testFixturesArtifact: DefaultAndroidArtifact? = null
     override var testedTargetVariant: DefaultTestedTargetVariant? = null
     override var unitTestArtifact: DefaultJavaArtifact? = null
 
     override fun toString(): String {
-        return "DefaultVariant(androidTestArtifact=$androidTestArtifact, buildType=$buildType, desugaredMethods=$desugaredMethods, displayName='$displayName', isInstantAppCompatible=$isInstantAppCompatible, mainArtifact=$mainArtifact, name='$name', productFlavors=$productFlavors, testFixturesArtifact=$testFixturesArtifact, testedTargetVariant=$testedTargetVariant, unitTestArtifact=$unitTestArtifact)"
+        return "DefaultVariant(androidTestArtifact=$androidTestArtifact, displayName='$displayName', isInstantAppCompatible=$isInstantAppCompatible, mainArtifact=$mainArtifact, name='$name', testFixturesArtifact=$testFixturesArtifact, testedTargetVariant=$testedTargetVariant, unitTestArtifact=$unitTestArtifact)"
     }
 }

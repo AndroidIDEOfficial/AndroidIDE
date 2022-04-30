@@ -17,22 +17,11 @@
 
 package com.itsaky.androidide.tooling.api.model.internal
 
-import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
-import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanFlag
+import com.android.builder.model.v2.CustomSourceDirectory
+import java.io.File
 
 /** @author Akash Yadav */
-class DefaultAndroidGradlePluginProjectFlags(val booleanFlagMap: Map<BooleanFlag, Boolean?>) :
-    AndroidGradlePluginProjectFlags {
-
-    companion object {
-        private val flagByName = BooleanFlag.values().associateBy { it.name }
-    }
-
-    override fun getFlagValue(flagName: String): Boolean? {
-        return flagByName[flagName]?.let { booleanFlagMap[it] }
-    }
-
-    override fun toString(): String {
-        return "DefaultAndroidGradlePluginProjectFlags(booleanFlagMap=$booleanFlagMap)"
-    }
-}
+data class DefaultCustomSourceDirectory(
+    override val directory: File,
+    override val sourceTypeName: String
+) : CustomSourceDirectory
