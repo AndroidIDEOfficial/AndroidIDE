@@ -320,6 +320,11 @@ public class EditorActivity extends StudioActivity
     @Override
     public void onOutput(String line) {
         appendBuildOut(line);
+
+        // TODO This can be handled better when ProgressEvents are received from Tooling API server
+        if (line.startsWith("> Task")) {
+            setStatus(line);
+        }
     }
 
     public void appendBuildOut(final String str) {
@@ -327,6 +332,14 @@ public class EditorActivity extends StudioActivity
 
         if (frag != null) {
             frag.appendOutput(str);
+        }
+    }
+
+    public void setStatus(final CharSequence text) {
+        try {
+            runOnUiThread(() -> mBinding.bottomSheet.statusText.setText(text));
+        } catch (Throwable th) {
+            LOG.error("Failed to update status text", th);
         }
     }
 
@@ -728,14 +741,6 @@ public class EditorActivity extends StudioActivity
                             return null;
                         },
                         __ -> setStatus(getString(R.string.msg_service_started)));
-    }
-
-    public void setStatus(final CharSequence text) {
-        try {
-            runOnUiThread(() -> mBinding.bottomSheet.statusText.setText(text));
-        } catch (Throwable th) {
-            LOG.error("Failed to update status text", th);
-        }
     }
 
     public void closeFile(int index) {
