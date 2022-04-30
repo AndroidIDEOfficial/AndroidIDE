@@ -45,4 +45,20 @@ interface IToolingApiClient {
 
     /** Called just before a build is started. */
     @JsonNotification fun prepareBuild()
+
+    /**
+     * Called when a build is successful.
+     *
+     * @param tasks The tasks that were run. Maybe an empty list if no tasks were specified or if
+     * the build was not related to any tasks.
+     */
+    @JsonNotification fun onBuildSuccessful(tasks: List<String>)
+
+    /**
+     * Called when a build fails.
+     *
+     * @param tasks The tasks that were run. Maybe an empty list if no tasks were specified or if
+     * the build was not related to any tasks.
+     */
+    @JsonNotification fun onBuildFailed(tasks: List<String>)
 }

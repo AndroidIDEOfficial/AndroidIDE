@@ -61,7 +61,7 @@ public abstract class ApkGeneratingTask extends BaseGradleTask {
             LOG.error("No apk directories found. buildDir=" + buildDir);
             return result;
         }
-
+        
         for (File dir : dirs) {
             final File jsonData = new File(dir, "output-metadata.json");
             if (!jsonData.exists() || !FileUtils.isUtf8(jsonData)) {

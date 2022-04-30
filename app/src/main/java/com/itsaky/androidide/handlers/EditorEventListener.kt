@@ -56,12 +56,37 @@ class EditorEventListener : GradleBuildService.EventListener {
         activity().binding.buildProgressIndicator.visibility = View.VISIBLE
     }
 
+    override fun onBuildSuccessful(tasks: MutableList<String>) {
+        analyzeCurrentFile()
+        activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
+        activity().binding.buildProgressIndicator.visibility = View.GONE
+        
+        // TODO If the tasks generate APKs, start the APK install intent
+    }
+
+    override fun onBuildFailed(tasks: MutableList<String>) {
+        analyzeCurrentFile()
+
+        activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
+        activity().binding.buildProgressIndicator.visibility = View.GONE
+    }
+
     override fun onOutput(line: String?) {
         activity().appendBuildOut(line)
 
         // TODO This can be handled better when ProgressEvents are received from Tooling API server
-        if (line!!.startsWith("> Task")) {
+        if (line!!.startsWith("> Task") ||
+            line.contains("BUILD SUCCESSFUL") ||
+            line.contains("BUILD FAILED")) {
             activity().setStatus(line)
+        }
+    }
+
+    private fun analyzeCurrentFile() {
+        val editorView = activity().currentEditor
+        if (editorView != null) {
+            val editor = editorView.editor
+            editor?.analyze()
         }
     }
 

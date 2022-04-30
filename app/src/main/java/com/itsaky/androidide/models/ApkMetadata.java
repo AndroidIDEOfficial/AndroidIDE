@@ -17,14 +17,24 @@
  */
 package com.itsaky.androidide.models;
 
+import static com.itsaky.androidide.utils.ILogger.newInstance;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
+import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.JSONUtility;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.List;
 
 @SuppressWarnings("unused")
 public class ApkMetadata {
+
+    private static final ILogger LOG = newInstance("ApkMetadata");
 
     @SerializedName("version")
     private int version;
@@ -44,12 +54,84 @@ public class ApkMetadata {
     @SerializedName("elementType")
     private String elementType;
 
-    public int getVersion() {
-        return version;
+    @Nullable
+    public static File findApkFile(@NonNull File metadataFile) {
+        try {
+            final var dir = metadataFile.getParentFile();
+            final var metadata =
+                    JSONUtility.gson.fromJson(new FileReader(metadataFile), ApkMetadata.class);
+            if (!isValid(metadata)) {
+                LOG.warn("Invalid APK metadata:", metadata);
+                return null;
+            }
+
+            for (Element element : metadata.getElements()) {
+                if (element == null || element.getOutputFile() == null) {
+                    LOG.warn("No output file specified in APK metadata element:", element);
+                    continue;
+                }
+
+                if (element.getOutputFile().endsWith(".apk")) {
+                    final File apk = new File(dir, element.getOutputFile());
+                    if (apk.exists() && apk.isFile()) {
+                        LOG.info("Found apk in metadata:", apk);
+                        return apk;
+                    }
+                }
+            }
+
+            return null;
+        } catch (FileNotFoundException e) {
+            LOG.error("Metadata file not found...", e);
+            return null;
+        }
     }
 
-    public void setVersion(int version) {
-        this.version = version;
+    private static boolean isValid(ApkMetadata metadata) {
+
+        // Null checks
+        if (metadata == null
+                || metadata.getArtifactType() == null
+                || metadata.getArtifactType().getType() == null
+                || metadata.getElements() == null) {
+            LOG.warn("APK metadata null check failed. Metadata:", metadata);
+            return false;
+        }
+
+        final ArtifactType type = metadata.getArtifactType();
+        final List<Element> elements = metadata.getElements();
+
+        if (!type.getType().equals(ArtifactType.TYPE_APK)) {
+            LOG.warn("Artifact is not of type APK. Metadata:", metadata);
+            return false;
+        }
+
+        if (elements.isEmpty()) {
+            LOG.warn("No output elements found for metadata:", metadata);
+            return false;
+        }
+
+        boolean atLeastOneApk = false;
+        for (Element element : elements) {
+            if (element == null
+                    || element.getOutputFile() == null
+                    || !element.getOutputFile().endsWith(".apk")) {
+                LOG.warn("Skipping output element because file is not APK:", element);
+                continue;
+            }
+
+            if (element.getOutputFile().endsWith(".apk")) {
+                atLeastOneApk = true;
+                break;
+            }
+        }
+
+        LOG.debug("Output metadata validation succeeded");
+        return atLeastOneApk;
+    }
+
+    public List<Element> getElements() {
+        return elements;
     }
 
     public ArtifactType getArtifactType() {
@@ -58,6 +140,18 @@ public class ApkMetadata {
 
     public void setArtifactType(ArtifactType artifactType) {
         this.artifactType = artifactType;
+    }
+
+    public void setElements(List<Element> elements) {
+        this.elements = elements;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     public String getApplicationId() {
@@ -74,14 +168,6 @@ public class ApkMetadata {
 
     public void setVariantName(String variantName) {
         this.variantName = variantName;
-    }
-
-    public List<Element> getElements() {
-        return elements;
-    }
-
-    public void setElements(List<Element> elements) {
-        this.elements = elements;
     }
 
     public String getElementType() {

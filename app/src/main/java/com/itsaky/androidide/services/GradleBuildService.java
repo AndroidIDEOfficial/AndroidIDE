@@ -56,6 +56,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -72,6 +73,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     private final ILogger SERVER_LOGGER = newInstance("ToolingApiServer");
     private final IBinder mBinder = new GradleServiceBinder();
     private boolean isToolingServerStarted = false;
+    private boolean isBuildInProgress = false;
     private Thread toolingServerThread;
     private NotificationManager notificationManager;
     private IToolingApiServer server;
@@ -145,12 +147,34 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         }
     }
 
+    @Override
+    public void onBuildSuccessful(@NonNull List<String> tasks) {
+        if (eventListener != null) {
+            eventListener.onBuildSuccessful(tasks);
+        }
+    }
+
+    @Override
+    public void onBuildFailed(@NonNull List<String> tasks) {
+        if (eventListener != null) {
+            eventListener.onBuildFailed(tasks);
+        }
+    }
+
     @NonNull
     @Override
     public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
         checkServerStarted();
         ensureTmpdir();
-        return server.initialize(new InitializeProjectMessage(rootDir));
+
+        if (isBuildInProgress) {
+            logBuildInProgress();
+            return failedFutureForBuildInProgress();
+        }
+
+        isBuildInProgress = true;
+        return server.initialize(new InitializeProjectMessage(rootDir))
+                .thenApply(this::markBuildAsFinished);
     }
 
     @NonNull
@@ -158,7 +182,15 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     public CompletableFuture<TaskExecutionResult> executeTasks(@NonNull String... tasks) {
         checkServerStarted();
         ensureTmpdir();
-        return server.executeTasks(new TaskExecutionMessage(":", Arrays.asList(tasks)));
+    
+        if (isBuildInProgress) {
+            logBuildInProgress();
+            return failedFutureForBuildInProgress();
+        }
+
+        isBuildInProgress = true;
+        return server.executeTasks(new TaskExecutionMessage(":", Arrays.asList(tasks)))
+                .thenApply(this::markBuildAsFinished);
     }
 
     @NonNull
@@ -167,7 +199,15 @@ public class GradleBuildService extends Service implements BuildService, IToolin
             @NonNull String projectPath, @NonNull String... tasks) {
         checkServerStarted();
         ensureTmpdir();
-        return server.executeTasks(new TaskExecutionMessage(projectPath, Arrays.asList(tasks)));
+    
+        if (isBuildInProgress) {
+            logBuildInProgress();
+            return failedFutureForBuildInProgress();
+        }
+
+        isBuildInProgress = true;
+        return server.executeTasks(new TaskExecutionMessage(projectPath, Arrays.asList(tasks)))
+                .thenApply(this::markBuildAsFinished);
     }
 
     private void checkServerStarted() {
@@ -178,6 +218,27 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     private void ensureTmpdir() {
         Environment.mkdirIfNotExits(Environment.TMP_DIR);
+    }
+
+    private void logBuildInProgress() {
+        LOG.warn("A build is already in progress!");
+    }
+
+    @NonNull
+    private <T> CompletableFuture<T> failedFutureForBuildInProgress() {
+        final var future = new CompletableFuture<T>();
+        future.completeExceptionally(
+                new CompletionException(new IllegalStateException("A build is already running!")));
+        return future;
+    }
+
+    protected <T> T markBuildAsFinished(T t) {
+        isBuildInProgress = false;
+        return t;
+    }
+
+    public boolean isBuildInProgress() {
+        return isBuildInProgress;
     }
 
     /**
@@ -303,7 +364,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         void onServerStarted();
     }
 
-    /** Handles output received from a Gradle build. */
+    /** Handles events received from a Gradle build. */
     public interface EventListener {
 
         /**
@@ -312,6 +373,22 @@ public class GradleBuildService extends Service implements BuildService, IToolin
          * @see IToolingApiClient#prepareBuild()
          */
         void prepareBuild();
+
+        /**
+         * Called when a build is successful.
+         *
+         * @param tasks The tasks that were run.
+         * @see IToolingApiClient#onBuildSuccessful(List)
+         */
+        void onBuildSuccessful(@NonNull List<String> tasks);
+
+        /**
+         * Called when a build fails.
+         *
+         * @param tasks The tasks that were run.
+         * @see IToolingApiClient#onBuildFailed(List)
+         */
+        void onBuildFailed(@NonNull List<String> tasks);
 
         /**
          * Called when the output line is received.

@@ -39,7 +39,7 @@ class QuickRunAction() : BaseBuildAction() {
 
     override fun execAction(data: ActionData): Boolean {
         val context = getActivity(data) ?: return false
-        context.buildServiceHandler.assembleDebug(true)
+        context.assembleDebug(true)
         return true
     }
 }

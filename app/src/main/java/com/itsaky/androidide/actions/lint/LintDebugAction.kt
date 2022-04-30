@@ -35,7 +35,7 @@ class LintDebugAction() : BaseBuildAction() {
     override fun execAction(data: ActionData): Boolean {
         val context = getActivity(data) ?: return false
 
-        context.buildServiceHandler.service.lintDebug()
+        context.lintDebug()
         return true
     }
 }

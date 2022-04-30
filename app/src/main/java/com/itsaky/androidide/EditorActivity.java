@@ -85,7 +85,6 @@ import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
-import com.itsaky.androidide.handlers.BuildServiceHandler;
 import com.itsaky.androidide.handlers.EditorEventListener;
 import com.itsaky.androidide.handlers.FileOptionsHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
@@ -94,6 +93,7 @@ import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
+import com.itsaky.androidide.models.ApkMetadata;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SaveResult;
@@ -103,9 +103,9 @@ import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
-import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
@@ -142,6 +142,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -174,7 +175,6 @@ public class EditorActivity extends StudioActivity
     private FileTreeFragment mFileTreeFragment;
     private TreeNode mLastHeld;
     private SymbolInputView symbolInput;
-    private BuildServiceHandler mBuildServiceHandler;
     private FileOptionsHandler mFileOptionsHandler;
     private QuickAction mTabCloseAction;
     private TextSheetFragment mDaemonStatusFragment;
@@ -184,6 +184,8 @@ public class EditorActivity extends StudioActivity
     private ActivityResultLauncher<Intent> mUIDesignerLauncher;
     private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
     private EditorViewModel mViewModel;
+
+    private IdeGradleProject mRootProject;
     private GradleBuildService mBuildService;
     private final ServiceConnection mGradleServiceConnection =
             new ServiceConnection() {
@@ -321,14 +323,6 @@ public class EditorActivity extends StudioActivity
 
         if (frag != null) {
             frag.appendOutput(str);
-        }
-    }
-
-    public void setStatus(final CharSequence text) {
-        try {
-            runOnUiThread(() -> mBinding.bottomSheet.statusText.setText(text));
-        } catch (Throwable th) {
-            LOG.error("Failed to update status text", th);
         }
     }
 
@@ -701,20 +695,6 @@ public class EditorActivity extends StudioActivity
         return saveAll(true);
     }
 
-    public void install(@NonNull File apk) {
-        LOG.debug("Installing APK:", apk);
-        if (apk.exists()) {
-            Intent i = IntentUtils.getInstallAppIntent(apk);
-            if (i != null) {
-                startActivity(i);
-            } else {
-                getApp().toast(R.string.msg_apk_install_intent_failed, Toaster.Type.ERROR);
-            }
-        } else {
-            LOG.error("APK file does not exist!");
-        }
-    }
-
     public void updateServices() {
         new TaskExecutor()
                 .executeAsync(
@@ -730,6 +710,14 @@ public class EditorActivity extends StudioActivity
                             return null;
                         },
                         __ -> setStatus(getString(R.string.msg_service_started)));
+    }
+
+    public void setStatus(final CharSequence text) {
+        try {
+            runOnUiThread(() -> mBinding.bottomSheet.statusText.setText(text));
+        } catch (Throwable th) {
+            LOG.error("Failed to update status text", th);
+        }
     }
 
     public void closeFile(int index) {
@@ -894,9 +882,8 @@ public class EditorActivity extends StudioActivity
             notifySyncNeeded();
         }
 
-        if (result.xmlSaved && canProcessResources && getBuildService() != null) {
-            getBuildService().updateResourceClasses();
-        }
+        // TODO Notify language servers about changed XML files
+        //  Maybe use a file watcher to do these kind of things.
 
         return result.gradleSaved;
     }
@@ -911,17 +898,12 @@ public class EditorActivity extends StudioActivity
     }
 
     private void notifySyncNeeded() {
-        if (getBuildService() != null && !getBuildService().isBuilding()) {
+        if (mBuildService != null && !mBuildService.isBuildInProgress()) {
             getSyncBanner()
                     .setNegative(android.R.string.cancel, null)
-                    .setPositive(
-                            android.R.string.ok, v -> getBuildServiceHandler().assembleDebug(false))
+                    .setPositive(android.R.string.ok, v -> assembleDebug(false))
                     .show();
         }
-    }
-
-    private IDEService getBuildService() {
-        return mBuildServiceHandler.getService();
     }
 
     public void saveResult(int index, SaveResult result) {
@@ -971,8 +953,116 @@ public class EditorActivity extends StudioActivity
                 .setContentText(R.string.msg_sync_needed);
     }
 
-    public BuildServiceHandler getBuildServiceHandler() {
-        return mBuildServiceHandler;
+    public void assembleDebug(boolean installApk) {
+        execTasks(installApk ? installableTaskResultConsumer("debug") : null, "assembleDebug");
+    }
+
+    @NonNull
+    public CompletableFuture<TaskExecutionResult> execTasks(
+            Consumer<TaskExecutionResult> resultHandler, String... tasks) {
+        return mBuildService
+                .executeTasks(tasks)
+                .whenComplete(
+                        ((executionResult, throwable) -> {
+                            if (executionResult == null || throwable != null) {
+                                LOG.error("Tasks failed to execute", TextUtils.join(", ", tasks));
+                            }
+
+                            if (resultHandler != null) {
+                                resultHandler.accept(executionResult);
+                            }
+                        }));
+    }
+
+    public Consumer<TaskExecutionResult> installableTaskResultConsumer(
+            @NonNull String variantName) {
+        return task -> {
+            if (task != null) {
+                // TODO Handle multiple application modules
+                final var app = mRootProject.findFirstApplicationModule();
+                if (app == null) {
+                    LOG.error("No application module found in root project. Cannot install APKs");
+                    return;
+                }
+
+                final var variants = app.getVariants();
+                final var foundVariant =
+                        variants.stream()
+                                .filter(variant -> variant.getName().equals(variantName))
+                                .findFirst();
+
+                if (foundVariant.isPresent()) {
+                    final var variant = foundVariant.get();
+                    final var main = variant.getMainArtifact();
+                    final var outputListingFile = main.getAssembleTaskOutputListingFile();
+                    if (outputListingFile == null) {
+                        LOG.error("No output listing file provided with project model");
+                        return;
+                    }
+
+                    final var apkFile = ApkMetadata.findApkFile(outputListingFile);
+                    if (apkFile == null) {
+                        LOG.error(
+                                "No apk file specified in output listing file:", outputListingFile);
+                        return;
+                    }
+
+                    install(apkFile);
+                } else {
+                    LOG.error(
+                            "No",
+                            variantName,
+                            "variant found in application module",
+                            app.getProjectPath());
+                }
+            }
+        };
+    }
+
+    public void install(@NonNull File apk) {
+        LOG.debug("Installing APK:", apk);
+        if (apk.exists()) {
+            Intent i = IntentUtils.getInstallAppIntent(apk);
+            if (i != null) {
+                startActivity(i);
+            } else {
+                getApp().toast(R.string.msg_apk_install_intent_failed, Toaster.Type.ERROR);
+            }
+        } else {
+            LOG.error("APK file does not exist!");
+        }
+    }
+
+    public void assembleRelease() {
+        execTasks(null, "assembleRelease");
+    }
+
+    public void build() {
+        execTasks(null, "build");
+    }
+
+    public void clean() {
+        execTasks(null, "clean");
+    }
+
+    public void bundle() {
+        execTasks(null, "bundle");
+    }
+    
+    public void lint() {
+        execTasks(null, "lint");
+    }
+    
+    public void lintDebug() {
+        execTasks(null, "lintDebug");
+    }
+    
+    public void lintRelease() {
+        execTasks(null, "lintRelease");
+    }
+    
+    public void cleanAndRebuild() {
+        execTasks(null, "clean", "build");
     }
 
     /////////////////////////////////////////////////
@@ -988,6 +1078,10 @@ public class EditorActivity extends StudioActivity
         if (mFileOptionsHandler != null) {
             mFileOptionsHandler.onOptionsClick(option);
         }
+    }
+
+    public GradleBuildService getBuildService() {
+        return mBuildService;
     }
 
     @Override
@@ -1013,7 +1107,6 @@ public class EditorActivity extends StudioActivity
         createQuickActions();
 
         mBuildEventListener.setActivity(this);
-        mBuildServiceHandler = new BuildServiceHandler(this);
         mFileOptionsHandler = new FileOptionsHandler(this);
 
         startServices();
@@ -1181,6 +1274,8 @@ public class EditorActivity extends StudioActivity
     }
 
     private void initializeProject() {
+        // TODO Do not create unnecessary models. Instead, just keep a reference to the root
+        //  directory of the project.
         final var androidProject = getAndroidProject();
         if (androidProject == null) {
             LOG.error("Cannot initialize project. Project model is null.");
@@ -1212,6 +1307,7 @@ public class EditorActivity extends StudioActivity
     }
 
     protected void onProjectInitialized(IdeGradleProject root) {
+        mRootProject = root;
         CompletableFuture.runAsync(
                         () -> {
                             final var app = mBuildService.findFirstAndroidModule(root);
@@ -1487,8 +1583,6 @@ public class EditorActivity extends StudioActivity
         // Because it would work anyway
         // But still we do...
         mFileOptionsHandler.start();
-        mBuildServiceHandler.start();
-        //        getBuildServiceHandler().assembleDebug(false);
     }
 
     private void initializeLanguageServers() {
@@ -1514,14 +1608,7 @@ public class EditorActivity extends StudioActivity
 
         shutdownLanguageServers();
 
-        if (getBuildService() != null) {
-            getBuildService().setListener(null);
-            if (mBuildServiceHandler != null) {
-                mBuildServiceHandler.stop();
-            } else {
-                getBuildService().exit();
-            }
-        }
+        // TODO Send shutdown request to Tooling API server
 
         if (mFileOptionsHandler != null) {
             mFileOptionsHandler.stop();

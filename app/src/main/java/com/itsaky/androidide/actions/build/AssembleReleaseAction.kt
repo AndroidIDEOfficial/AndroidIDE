@@ -36,7 +36,7 @@ class AssembleReleaseAction() : BaseBuildAction() {
     override fun execAction(data: ActionData): Boolean {
         val activity = getActivity(data) ?: return false
 
-        activity.buildServiceHandler.service.assembleRelease()
+        activity.assembleRelease()
         return true
     }
 }
