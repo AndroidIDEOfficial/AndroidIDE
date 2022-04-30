@@ -30,6 +30,7 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
+import com.itsaky.androidide.tooling.impl.LoggingOutputStream;
 import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
 
@@ -40,6 +41,8 @@ import org.gradle.tooling.UnknownModelException;
 import org.gradle.tooling.model.GradleProject;
 import org.gradle.tooling.model.GradleTask;
 
+import java.io.ByteArrayInputStream;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -47,11 +50,14 @@ import java.util.Map;
  */
 public class ProjectReader {
 
-    private static final ILogger LOG = newInstance("test");
+    private static final ILogger LOG = newInstance("ProjectReader");
 
     public static IdeGradleProject read(
             ProjectConnection connection, Map<String, DefaultProjectSyncIssues> outIssues) {
-        final var gradleModel = connection.getModel(GradleProject.class);
+        final var modelBuilder = connection.model(GradleProject.class);
+        configureBuilder(modelBuilder);
+
+        final var gradleModel = modelBuilder.get();
         if (gradleModel == null) {
             return null;
         }
@@ -65,6 +71,7 @@ public class ProjectReader {
             Map<String, DefaultProjectSyncIssues> outIssues) {
         try {
             final var modelBuilder = connection.model(AndroidProject.class);
+            configureBuilder(modelBuilder);
             addProperty(modelBuilder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
             addProperty(modelBuilder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
             final var android = modelBuilder.get();
@@ -84,6 +91,10 @@ public class ProjectReader {
         } catch (Throwable error) {
             try {
                 LOG.info("Building IdeGradleProject model for project:", gradleModel.getPath());
+                if (!(error instanceof UnknownModelException)) {
+                    // If the error is something else than UnknownModelException, we should log it
+                    LOG.error(error);
+                }
                 return buildGradleProjectModel(gradleModel, outIssues);
             } catch (Throwable e) {
                 LOG.error("Unable to create model for project", e);
@@ -130,6 +141,7 @@ public class ProjectReader {
         addProperty(modelFinder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
         addProperty(modelFinder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
         modelFinder.addProgressListener(new LoggingProgressListener());
+        configureBuilder(modelFinder);
         final var variantDependencies =
                 AndroidModulePropertyCopier.INSTANCE.copy(modelFinder.run());
         android.getVariantDependencies().put(name, variantDependencies);
@@ -159,7 +171,7 @@ public class ProjectReader {
         builder.setDynamicFeatures(android.getDynamicFeatures());
         builder.setViewBindingOptions(copier.copy(android.getViewBindingOptions()));
         builder.setFlags(copier.copy(android.getFlags()));
-        builder.setModelSyncFiles(copier.copyModelSyncFiles(android.getModelSyncFiles()));
+        builder.setModelSyncFiles(Collections.emptyList());
         builder.setLintChecksJars(android.getLintChecksJars());
 
         final var module = builder.buildAndroidModule();
@@ -217,5 +229,9 @@ public class ProjectReader {
                 task.getDisplayName(),
                 task.isPublic(),
                 project.getProjectPath());
+    }
+
+    private static void configureBuilder(ConfigurableLauncher<?> launcher) {
+    
     }
 }

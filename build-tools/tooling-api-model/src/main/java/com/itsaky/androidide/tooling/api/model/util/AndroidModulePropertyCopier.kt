@@ -129,7 +129,7 @@ object AndroidModulePropertyCopier {
             testFixturesArtifact = copy(variant.testFixturesArtifact)
             testedTargetVariant = copy(variant.testedTargetVariant)
             unitTestArtifact = copy(variant.unitTestArtifact)
-            desugaredMethods = variant.desugaredMethods
+            desugaredMethods = emptyList()
         }
     fun copy(artifact: JavaArtifact?): DefaultJavaArtifact? {
         if (artifact == null) {
@@ -137,7 +137,7 @@ object AndroidModulePropertyCopier {
         }
 
         return DefaultJavaArtifact().apply {
-            modelSyncFiles = copy(artifact.modelSyncFiles)
+            modelSyncFiles = emptyList()
             assembleTaskName = artifact.assembleTaskName
             classesFolders = artifact.classesFolders
             compileTaskName = artifact.compileTaskName
@@ -249,9 +249,18 @@ object AndroidModulePropertyCopier {
 
     fun copy(flags: AndroidGradlePluginProjectFlags): DefaultAndroidGradlePluginProjectFlags {
         val flagMap: MutableMap<BooleanFlag, Boolean?> = mutableMapOf()
-        for (value in BooleanFlag.values()) {
-            flagMap[value] = flags.getFlagValue(value.name)
-        }
+        //        log.debug("Flags:", flags)
+        //
+        //        flagMap[APPLICATION_R_CLASS_CONSTANT_IDS] =
+        //            flags.getFlagValue(APPLICATION_R_CLASS_CONSTANT_IDS.name)
+        //        flagMap[JETPACK_COMPOSE] = flags.getFlagValue(JETPACK_COMPOSE.name)
+        //        flagMap[ML_MODEL_BINDING] = flags.getFlagValue(ML_MODEL_BINDING.name)
+        //        flagMap[TEST_R_CLASS_CONSTANT_IDS] =
+        // flags.getFlagValue(TEST_R_CLASS_CONSTANT_IDS.name)
+        //        flagMap[TRANSITIVE_R_CLASS] = flags.getFlagValue(TRANSITIVE_R_CLASS.name)
+        //        flagMap[UNIFIED_TEST_PLATFORM] = flags.getFlagValue(UNIFIED_TEST_PLATFORM.name)
+        //
+        //        log.debug("Flag map:", flagMap)
         return DefaultAndroidGradlePluginProjectFlags(flagMap)
     }
 
