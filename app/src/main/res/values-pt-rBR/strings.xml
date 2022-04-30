@@ -349,8 +349,8 @@
      <string name="title_format_code">Formatar código</string>
      <string name="idepref_java_useGoogleStyle_title">Use a formatação de código no estilo Java do Google</string>
      <string name="idepref_java_useGoogleStyle_summary">Use a configuração de formatação de código Java Style do Google para formatar o código fonte Java.</string>
-     <string name="idepref_visiblePassword_title">Dica de senha</string>
-     <string name="idepref_visiblePassword_summary">Quando ativado, nenhuma dica de senha será mostrada pelo teclado.</string>
+     <string name="idepref_visiblePassword_title">Bandeira de senha visível</string>
+     <string name="idepref_visiblePassword_summary">Isso garante que nenhuma sugestão seja proposta pelo teclado no editor.</string>
      <string name="msg_no_actions">Nenhuma ação de código encontrada</string>
      <string name="previous">Anterior</string>
      <string name="msg_editor_find_case_sensitive">Maiúsculas e minúsculas</string>
