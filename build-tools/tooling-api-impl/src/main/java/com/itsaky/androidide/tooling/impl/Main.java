@@ -22,8 +22,11 @@ import static com.itsaky.androidide.utils.ILogger.newInstance;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
+import com.itsaky.androidide.tooling.impl.util.InitScriptHandler;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JvmLogger;
+
+import org.gradle.tooling.ConfigurableLauncher;
 
 import java.util.concurrent.ExecutionException;
 
@@ -49,6 +52,11 @@ public class Main {
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("An error occurred while waiting for shutdown message", e);
         }
+    }
+
+    public static void applyCommonArguments(ConfigurableLauncher<?> launcher) {
+//        launcher.addArguments(
+//                "--init-script", InitScriptHandler.INSTANCE.getInitScript().getAbsolutePath());
     }
 
     private static void onLog(LogLine line) {

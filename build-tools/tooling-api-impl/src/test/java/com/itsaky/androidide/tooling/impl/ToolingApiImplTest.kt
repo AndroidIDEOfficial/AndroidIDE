@@ -75,7 +75,7 @@ class ToolingApiImplTest {
     private fun launchServer(client: IToolingApiClient): IToolingApiServer {
         val builder = ProcessBuilder("java", "-jar", "./build/libs/tooling-api-all.jar")
         log.debug(System.getenv())
-        builder.environment().put("ANDROID_SDK_ROOT", findAndroidHome())
+        builder.environment()["ANDROID_SDK_ROOT"] = findAndroidHome()
         val proc = builder.start()
 
         Thread(Reader(proc.errorStream)).start()

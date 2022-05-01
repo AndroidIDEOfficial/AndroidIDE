@@ -36,6 +36,7 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
+import com.itsaky.androidide.tooling.impl.Main;
 import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
 
@@ -67,7 +68,9 @@ public class ProjectReader {
             ProjectConnection connection, Map<String, DefaultProjectSyncIssues> outIssues) {
         final var watch = new StopWatch("Create basic models");
         LOG.debug("Creating Idea project model...");
-        final var ideaProject = connection.getModel(IdeaProject.class);
+        final var builder = connection.model(IdeaProject.class);
+        Main.applyCommonArguments(builder);
+        final var ideaProject = builder.get();
         watch.lapFromLast("Idea project model created");
 
         return buildGradleProjectModel(ideaProject, outIssues);
@@ -80,6 +83,7 @@ public class ProjectReader {
 
         final var gradle = ideaModule.getGradleProject();
         final var modelBuilder = connection.model(AndroidProject.class);
+        Main.applyCommonArguments(modelBuilder);
         addProperty(modelBuilder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
         addProperty(modelBuilder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
 
@@ -123,7 +127,7 @@ public class ProjectReader {
         builder.setProjectDir(gradle.getProjectDirectory());
         builder.setBuildDir(gradle.getBuildDirectory());
         builder.setBuildScript(gradle.getBuildScript().getSourceFile());
-        builder.setContentRoots (collectContentRoots(idea));
+        builder.setContentRoots(collectContentRoots(idea));
         builder.setJavaDependencies(collectJavaDependencies(idea));
 
         final var project = builder.buildJavaModule();
@@ -205,6 +209,7 @@ public class ProjectReader {
                                         parameter -> parameter.setVariantName(name)));
         addProperty(modelFinder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
         addProperty(modelFinder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
+        Main.applyCommonArguments(modelFinder);
         modelFinder.addProgressListener(new LoggingProgressListener());
         final var variantDependencies =
                 AndroidModulePropertyCopier.INSTANCE.copy(modelFinder.run());
