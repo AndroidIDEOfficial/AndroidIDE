@@ -361,6 +361,8 @@
     <string name="title_gradle_service_notification_ticker">Gradle build service started</string>
     <string name="title_gradle_service_notification">Gradle build service</string>
     <string name="msg_gradle_service_notification">AndroidIDE\'s Gradle build service is running in the background.</string>
+
+    <string name="title_cancel_build">Cancel build</string>
 </resources>
 
 

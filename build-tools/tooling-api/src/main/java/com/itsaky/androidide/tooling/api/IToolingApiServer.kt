@@ -19,6 +19,7 @@ package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
+import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
@@ -47,4 +48,12 @@ interface IToolingApiServer {
     /** Execute the tasks specified in the message. */
     @JsonRequest("executeTasks")
     fun executeTasks(message: TaskExecutionMessage): CompletableFuture<TaskExecutionResult>
+
+    /**
+     * Cancel the current build.
+     *
+     * @return A [CompletableFuture] which completes when the current build cancellation process
+     * finishes (either successfully or with an error).
+     */
+    @JsonRequest fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult>
 }

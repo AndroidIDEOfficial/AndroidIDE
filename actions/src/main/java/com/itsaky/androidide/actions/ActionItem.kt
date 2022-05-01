@@ -56,7 +56,33 @@ interface ActionItem {
      */
     fun postExec(data: ActionData, result: Any) = Unit
 
+    /**
+     * Return the show as action flags for the menu item.
+     *
+     * @return The show as action flags.
+     */
     fun getShowAsActionFlags(data: ActionData): Int = -1
+
+    /**
+     * Checks if the given [ActionData] has instances of the given [types].
+     *
+     * @param data The data to check.
+     * @param types The type of objects to look for.
+     * @return `true` if the [data] has the given [types], `false` otherwise.
+     */
+    fun hasRequiredData(data: ActionData, vararg types: Class<*>): Boolean {
+        for (type in types) {
+            data.get(type) ?: return false
+        }
+
+        return true
+    }
+
+    /** Marks this action item as invisible. */
+    fun markInvisible() {
+        visible = false
+        enabled = false
+    }
 
     /** Location where an action item will be shown. */
     enum class Location(val id: String) {

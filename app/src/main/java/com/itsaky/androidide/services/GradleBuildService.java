@@ -42,10 +42,9 @@ import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage;
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage;
+import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
@@ -208,6 +207,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
                 .thenApply(this::markBuildAsFinished);
     }
 
+    @NonNull
+    @Override
+    public CompletableFuture<BuildCancellationRequestResult> cancelCurrentBuild() {
+        return server.cancelCurrentBuild();
+    }
+
     private void checkServerStarted() {
         if (!isToolingServerStarted) {
             throw new IllegalStateException("Tooling API server has not been started");
@@ -238,31 +243,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     public boolean isBuildInProgress() {
         return isBuildInProgress;
     }
-//
-//    /**
-//     * Find the first direct subproject of the given root project that is an {@link
-//     * IdeAndroidModule}.
-//     *
-//     * @param root The project whose subprojects will be searched.
-//     * @return The found {@link IdeAndroidModule} or <code>null</code>.
-//     */
-//    @Nullable
-//    public IdeAndroidModule findFirstAndroidModule(IdeGradleProject root) {
-//        return root.findFirstApplicationModule();
-//    }
-//
-//    /**
-//     * Find all the direct children of the given root project that are {@link IdeAndroidModule} and
-//     * their <code>projectType</code> is {@link
-//     * com.android.builder.model.v2.ide.ProjectType#APPLICATION APPLICATION}
-//     *
-//     * @param root The project whose subprojects will be searched.
-//     * @return The found application modules. Never <code>null</code>.
-//     */
-//    @NonNull
-//    public List<IdeAndroidModule> findAndroidModules(@NonNull IdeGradleProject root) {
-//        return root.findApplicationModules();
-//    }
 
     public void startToolingServer(@Nullable OnServerStartListener listener) {
         if (toolingServerThread != null && toolingServerThread.isAlive()) {

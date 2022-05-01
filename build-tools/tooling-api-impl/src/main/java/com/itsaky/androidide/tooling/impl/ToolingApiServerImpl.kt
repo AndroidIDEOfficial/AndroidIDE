@@ -21,6 +21,8 @@ import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
+import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
+import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult.Reason.CANCELLATION_ERROR
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure
@@ -39,16 +41,17 @@ import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
-import java.io.File
-import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.BuildCancelledException
 import org.gradle.tooling.BuildException
+import org.gradle.tooling.CancellationTokenSource
 import org.gradle.tooling.GradleConnectionException
 import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.exceptions.UnsupportedBuildArgumentException
 import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
+import java.io.File
+import java.util.concurrent.*
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -61,6 +64,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
     private var client: IToolingApiClient? = null
     private var connector: GradleConnector? = null
     private var project: IdeGradleProject? = null
+    private var buildCancellationToken: CancellationTokenSource? = null
     private val log = ILogger.newInstance(javaClass.simpleName)
 
     override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
@@ -141,12 +145,35 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             builder.forTasks(*message.tasks.toTypedArray())
             Main.applyCommonArguments(builder)
 
+            this.buildCancellationToken = GradleConnector.newCancellationTokenSource()
+            builder.withCancellationToken(this.buildCancellationToken!!.token())
+
             try {
                 builder.run()
+                this.buildCancellationToken = null
                 return@computeAsync TaskExecutionResult(true, null)
             } catch (error: Throwable) {
                 return@computeAsync TaskExecutionResult(false, getTaskFailureType(error))
             }
+        }
+    }
+
+    override fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult> {
+        return CompletableFutures.computeAsync {
+            if (this.buildCancellationToken == null) {
+                return@computeAsync BuildCancellationRequestResult(
+                    false, BuildCancellationRequestResult.Reason.NO_RUNNING_BUILD)
+            }
+
+            try {
+                this.buildCancellationToken!!.cancel()
+            } catch (e: Exception) {
+                val failureReason = CANCELLATION_ERROR
+                failureReason.message = "${failureReason.message}: ${e.message}"
+                return@computeAsync BuildCancellationRequestResult(false, failureReason)
+            }
+
+            return@computeAsync BuildCancellationRequestResult(true, null)
         }
     }
 

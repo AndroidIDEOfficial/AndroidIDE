@@ -17,9 +17,9 @@
 
 package com.itsaky.androidide.builder
 
+import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import java.util.concurrent.*
 
 /**
@@ -65,4 +65,7 @@ interface BuildService {
         projectPath: String,
         vararg tasks: String
     ): CompletableFuture<TaskExecutionResult>
+
+    /** Cancel any running build. */
+    fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult>
 }
