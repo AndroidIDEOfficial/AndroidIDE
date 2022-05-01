@@ -28,8 +28,4 @@ class DefaultModelSyncFile : ModelSyncFile {
     override var modelSyncType: ModelSyncType = BASIC
     override var syncFile: File = File(".")
     override var taskName: String = ""
-
-    override fun toString(): String {
-        return "DefaultModelSyncFile(modelSyncType=$modelSyncType, syncFile=$syncFile, taskName='$taskName')"
-    }
 }

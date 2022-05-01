@@ -24,8 +24,4 @@ class DefaultArtifactDependencies : ArtifactDependencies {
     override var compileDependencies: List<DefaultGraphItem> = emptyList()
     override var runtimeDependencies: List<DefaultGraphItem> = emptyList()
     override var unresolvedDependencies: List<DefaultUnresolvedDependency> = emptyList()
-
-    override fun toString(): String {
-        return "DefaultArtifactDependencies(compileDependencies=$compileDependencies, runtimeDependencies=$runtimeDependencies)"
-    }
 }

@@ -31,8 +31,4 @@ class DefaultVariant : Variant {
     override var testFixturesArtifact: DefaultAndroidArtifact? = null
     override var testedTargetVariant: DefaultTestedTargetVariant? = null
     override var unitTestArtifact: DefaultJavaArtifact? = null
-
-    override fun toString(): String {
-        return "DefaultVariant(androidTestArtifact=$androidTestArtifact, displayName='$displayName', isInstantAppCompatible=$isInstantAppCompatible, mainArtifact=$mainArtifact, name='$name', testFixturesArtifact=$testFixturesArtifact, testedTargetVariant=$testedTargetVariant, unitTestArtifact=$unitTestArtifact)"
-    }
 }

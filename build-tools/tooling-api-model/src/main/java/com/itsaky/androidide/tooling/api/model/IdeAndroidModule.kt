@@ -86,10 +86,6 @@ class IdeAndroidModule(
             "${AndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/$variant/classes.jar")
     }
 
-    override fun toString(): String {
-        return "IdeAndroidModule(dynamicFeatures=$dynamicFeatures, flags=$flags, javaCompileOptions=$javaCompileOptions, resourcePrefix=$resourcePrefix, variants=$variants, viewBindingOptions=$viewBindingOptions, lintChecksJars=$lintChecksJars, modelSyncFiles=$modelSyncFiles, variantDependencies=$variantDependencies, androidTestNamespace=$androidTestNamespace, namespace='$namespace', testFixturesNamespace=$testFixturesNamespace)"
-    }
-
     // These properties are not supported on newer versions
     override val androidTestNamespace: String? = null
     override val namespace: String = ""

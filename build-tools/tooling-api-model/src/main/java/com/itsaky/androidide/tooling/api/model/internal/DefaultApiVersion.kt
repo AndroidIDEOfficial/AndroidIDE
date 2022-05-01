@@ -23,8 +23,4 @@ import com.android.builder.model.v2.ide.ApiVersion
 class DefaultApiVersion : ApiVersion {
     override var apiLevel: Int = -1
     override var codename: String? = null
-
-    override fun toString(): String {
-        return "DefaultApiVersion(apiLevel=$apiLevel, codename=$codename)"
-    }
 }

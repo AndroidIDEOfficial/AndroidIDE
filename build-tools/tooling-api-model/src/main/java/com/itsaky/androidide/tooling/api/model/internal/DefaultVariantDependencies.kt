@@ -27,8 +27,4 @@ class DefaultVariantDependencies : VariantDependencies {
     override var name: String = ""
     override var testFixturesArtifact: DefaultArtifactDependencies? = null
     override var unitTestArtifact: DefaultArtifactDependencies? = null
-
-    override fun toString(): String {
-        return "DefaultVariantDependencies(androidTestArtifact=$androidTestArtifact, mainArtifact=$mainArtifact, name='$name', testFixturesArtifact=$testFixturesArtifact, unitTestArtifact=$unitTestArtifact)"
-    }
 }

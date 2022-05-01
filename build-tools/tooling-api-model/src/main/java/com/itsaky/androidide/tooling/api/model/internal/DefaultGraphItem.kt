@@ -24,8 +24,4 @@ class DefaultGraphItem : GraphItem {
     override var dependencies: List<DefaultGraphItem> = mutableListOf()
     override var key: String = ""
     override var requestedCoordinates: String? = ""
-
-    override fun toString(): String {
-        return "DefaultGraphItem(dependencies=$dependencies, key='$key', requestedCoordinates=$requestedCoordinates)"
-    }
 }

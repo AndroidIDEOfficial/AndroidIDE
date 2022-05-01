@@ -42,8 +42,4 @@ class DefaultAndroidArtifact : AndroidArtifact {
     override var ideSetupTaskNames: Set<String> = emptySet()
     override var targetSdkVersionOverride: DefaultApiVersion? = null
     override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
-
-    override fun toString(): String {
-        return "DefaultAndroidArtifact(resGenTaskName=$resGenTaskName, abiFilters=$abiFilters, assembleTaskOutputListingFile=$assembleTaskOutputListingFile, bundleInfo=$bundleInfo, codeShrinker=$codeShrinker, generatedResourceFolders=$generatedResourceFolders, isSigned=$isSigned, maxSdkVersion=$maxSdkVersion, minSdkVersion=$minSdkVersion, signingConfigName=$signingConfigName, sourceGenTaskName='$sourceGenTaskName', testInfo=$testInfo, assembleTaskName='$assembleTaskName', classesFolders=$classesFolders, compileTaskName='$compileTaskName', generatedSourceFolders=$generatedSourceFolders, ideSetupTaskNames=$ideSetupTaskNames, targetSdkVersionOverride=$targetSdkVersionOverride, modelSyncFiles=$modelSyncFiles)"
-    }
 }

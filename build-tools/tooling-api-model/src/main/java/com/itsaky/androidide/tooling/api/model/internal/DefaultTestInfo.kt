@@ -27,8 +27,4 @@ class DefaultTestInfo : TestInfo {
     override var animationsDisabled: Boolean = false
     override var execution: Execution? = null
     override var instrumentedTestTaskName: String = ""
-
-    override fun toString(): String {
-        return "DefaultTestInfo(additionalRuntimeApks=$additionalRuntimeApks, animationsDisabled=$animationsDisabled, execution=$execution, instrumentedTestTaskName='$instrumentedTestTaskName')"
-    }
 }

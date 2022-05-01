@@ -36,8 +36,4 @@ class DefaultSourceProvider() : SourceProvider {
     override var resDirectories: Collection<File>? = null
     override var resourcesDirectories: Collection<File> = emptyList()
     override var shadersDirectories: Collection<File>? = null
-
-    override fun toString(): String {
-        return "DefaultSourceProvider(aidlDirectories=$aidlDirectories, assetsDirectories=$assetsDirectories, javaDirectories=$javaDirectories, jniLibsDirectories=$jniLibsDirectories, kotlinDirectories=$kotlinDirectories, manifestFile=$manifestFile, mlModelsDirectories=$mlModelsDirectories, name='$name', renderscriptDirectories=$renderscriptDirectories, resDirectories=$resDirectories, resourcesDirectories=$resourcesDirectories, shadersDirectories=$shadersDirectories)"
-    }
 }

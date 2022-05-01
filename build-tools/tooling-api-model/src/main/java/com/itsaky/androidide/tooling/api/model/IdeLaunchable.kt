@@ -23,7 +23,4 @@ package com.itsaky.androidide.tooling.api.model
  */
 open class IdeLaunchable(val displayName: String?, val isPublic: Boolean?) {
     protected val gsonType: String = javaClass.name
-    override fun toString(): String {
-        return "IdeLaunchable(displayName=$displayName, isPublic=$isPublic, gsonType='$gsonType')"
-    }
 }

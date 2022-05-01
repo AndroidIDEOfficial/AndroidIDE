@@ -31,8 +31,4 @@ class DefaultJavaArtifact : JavaArtifact {
     override var ideSetupTaskNames: Set<String> = emptySet()
     override var mockablePlatformJar: File? = null
     override var runtimeResourceFolder: File? = null
-
-    override fun toString(): String {
-        return "DefaultJavaArtifact(modelSyncFiles=$modelSyncFiles, assembleTaskName='$assembleTaskName', classesFolders=$classesFolders, compileTaskName='$compileTaskName', generatedSourceFolders=$generatedSourceFolders, ideSetupTaskNames=$ideSetupTaskNames, mockablePlatformJar=$mockablePlatformJar, runtimeResourceFolder=$runtimeResourceFolder)"
-    }
 }

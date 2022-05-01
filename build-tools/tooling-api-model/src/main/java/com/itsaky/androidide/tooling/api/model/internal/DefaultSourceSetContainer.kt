@@ -25,8 +25,4 @@ class DefaultSourceSetContainer : SourceSetContainer {
     override var sourceProvider: DefaultSourceProvider = DefaultSourceProvider()
     override var testFixturesSourceProvider: DefaultSourceProvider? = null
     override var unitTestSourceProvider: DefaultSourceProvider? = null
-
-    override fun toString(): String {
-        return "DefaultSourceSetContainer(androidTestSourceProvider=$androidTestSourceProvider, sourceProvider=$sourceProvider, testFixturesSourceProvider=$testFixturesSourceProvider, unitTestSourceProvider=$unitTestSourceProvider)"
-    }
 }

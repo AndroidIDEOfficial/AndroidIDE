@@ -31,8 +31,4 @@ class DefaultAndroidGradlePluginProjectFlags(val booleanFlagMap: Map<BooleanFlag
     override fun getFlagValue(flagName: String): Boolean? {
         return flagByName[flagName]?.let { booleanFlagMap[it] }
     }
-
-    override fun toString(): String {
-        return "DefaultAndroidGradlePluginProjectFlags(booleanFlagMap=$booleanFlagMap)"
-    }
 }

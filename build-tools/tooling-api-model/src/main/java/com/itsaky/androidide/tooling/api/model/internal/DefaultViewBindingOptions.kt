@@ -22,8 +22,4 @@ import com.android.builder.model.v2.ide.ViewBindingOptions
 /** @author Akash Yadav */
 class DefaultViewBindingOptions : ViewBindingOptions {
     override var isEnabled: Boolean = false
-
-    override fun toString(): String {
-        return "DefaultViewBindingOptions(isEnabled=$isEnabled)"
-    }
 }

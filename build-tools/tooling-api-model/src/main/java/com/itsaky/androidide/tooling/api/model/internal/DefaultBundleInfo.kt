@@ -26,8 +26,4 @@ class DefaultBundleInfo : BundleInfo {
     override var apkFromBundleTaskOutputListingFile: File = File(".")
     override var bundleTaskName: String = ""
     override var bundleTaskOutputListingFile: File = File(".")
-    
-    override fun toString(): String {
-        return "DefaultBundleInfo(apkFromBundleTaskName='$apkFromBundleTaskName', apkFromBundleTaskOutputListingFile=$apkFromBundleTaskOutputListingFile, bundleTaskName='$bundleTaskName', bundleTaskOutputListingFile=$bundleTaskOutputListingFile)"
-    }
 }

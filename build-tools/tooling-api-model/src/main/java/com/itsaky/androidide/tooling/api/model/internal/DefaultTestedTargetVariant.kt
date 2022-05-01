@@ -23,8 +23,4 @@ import com.android.builder.model.v2.ide.TestedTargetVariant
 class DefaultTestedTargetVariant : TestedTargetVariant {
     override var targetProjectPath: String = ""
     override var targetVariant: String = ""
-
-    override fun toString(): String {
-        return "DefaultTestedTargetVariant(targetProjectPath='$targetProjectPath', targetVariant='$targetVariant')"
-    }
 }
