@@ -72,4 +72,8 @@ public class JavaServerConfiguration {
         this.classPaths = classPaths;
         return this;
     }
+
+    public Set<Path> getSourceDirs() {
+        return sourceDirs;
+    }
 }
