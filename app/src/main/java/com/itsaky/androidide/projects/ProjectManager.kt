@@ -58,7 +58,7 @@ object ProjectManager {
                 val project = rootProject.findByPath(value.projectInfo!!.projectPath)!! as IdeModule
                 paths.add(project.getGeneratedJar("debug").toPath())
 
-                if (project is IdeAndroidModule) {
+                if (project is IdeAndroidModule && project.projectPath != app.projectPath) {
                     // R.jar and maybe other JARs
                     paths.addAll(
                         project.variants
