@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.tooling.api.model.util
 
+import com.android.builder.model.v2.ide.ProjectType
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
@@ -55,6 +56,7 @@ class ProjectBuilder {
     var lintChecksJars: List<File> = mutableListOf()
     var contentRoots: List<JavaContentRoot> = mutableListOf()
     var javaDependencies: List<JavaModuleDependency> = mutableListOf()
+    var projectType: ProjectType? = null
 
     fun buildGradleProject(): IdeGradleProject {
         return IdeGradleProject(
@@ -85,6 +87,7 @@ class ProjectBuilder {
             buildScript,
             parent,
             tasks,
+            projectType,
             dynamicFeatures,
             flags,
             javaCompileOptions,

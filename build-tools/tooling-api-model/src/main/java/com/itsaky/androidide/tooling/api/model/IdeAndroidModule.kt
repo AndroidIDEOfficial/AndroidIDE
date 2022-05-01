@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.tooling.api.model
 
+import com.android.builder.model.v2.ide.ProjectType
 import com.android.builder.model.v2.models.AndroidProject
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
@@ -39,6 +40,7 @@ class IdeAndroidModule(
     buildScript: File?,
     parent: IdeGradleProject?,
     tasks: List<IdeGradleTask>,
+    val projectType: ProjectType?,
     override var dynamicFeatures: Collection<String>?,
     override var flags: DefaultAndroidGradlePluginProjectFlags,
     override var javaCompileOptions: DefaultJavaCompileOptions,
@@ -63,6 +65,7 @@ class IdeAndroidModule(
             buildScript,
             parent,
             tasks,
+            projectType,
             dynamicFeatures,
             flags,
             javaCompileOptions,
