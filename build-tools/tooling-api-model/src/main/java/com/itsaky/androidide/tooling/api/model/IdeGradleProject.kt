@@ -45,6 +45,14 @@ open class IdeGradleProject(
         return getModules().firstOrNull { it.projectPath == path }
     }
 
+    fun findAndroidModules(): List<IdeAndroidModule> {
+        return getModules().filterIsInstance(IdeAndroidModule::class.java)
+    }
+
+    fun findFirstAndroidModule(): IdeAndroidModule? {
+        return findAndroidModules().firstOrNull()
+    }
+
     override fun toString(): String {
         return "IdeGradleProject(name=$name, description=$description, projectPath=$projectPath, projectDir=$projectDir, buildDir=$buildDir, buildScript=$buildScript, parent=$parent, subprojects=$moduleProjects, tasks=$tasks, gsonType='$gsonType')"
     }

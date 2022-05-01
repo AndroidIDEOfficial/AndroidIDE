@@ -17,8 +17,8 @@
  **************************************************************************************/
 package com.itsaky.androidide.services.builder;
 
-import com.itsaky.androidide.project.IDEModule;
-import com.itsaky.androidide.project.IDEProject;
+import com.itsaky.androidide.projects.IDEModule;
+import com.itsaky.androidide.projects.IDEProject;
 import com.itsaky.androidide.tasks.GradleTask;
 
 import java.util.Optional;

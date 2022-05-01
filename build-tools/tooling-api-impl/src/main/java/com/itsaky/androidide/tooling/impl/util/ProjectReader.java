@@ -96,6 +96,12 @@ public class ProjectReader {
             final var basicAndroid = androidModel(connection, BasicAndroidProject.class);
             final var module =
                     buildAndroidModuleProject(gradle, android, basicAndroid.getProjectType());
+            module.setBoothclasspaths(basicAndroid.getBootClasspath());
+            module.setMainSourceSet(
+                    basicAndroid.getMainSourceSet() == null
+                            ? null
+                            : AndroidModulePropertyCopier.INSTANCE.copy(
+                                    basicAndroid.getMainSourceSet()));
             readDependencies(connection, module);
 
             final var issues = readSyncIssues(connection);

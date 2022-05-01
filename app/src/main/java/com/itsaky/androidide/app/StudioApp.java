@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.ThrowableUtils;
 import com.itsaky.androidide.CrashHandlerActivity;
 import com.itsaky.androidide.R;
-import com.itsaky.androidide.project.ProjectResourceTable;
+import com.itsaky.androidide.projects.ProjectResourceTable;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.apiinfo.ApiInfo;
 import com.itsaky.attrinfo.AttrInfo;

@@ -76,6 +76,7 @@ import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioActivity;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
@@ -98,8 +99,9 @@ import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
-import com.itsaky.androidide.project.AndroidProject;
-import com.itsaky.androidide.project.IDEProject;
+import com.itsaky.androidide.projects.AndroidProject;
+import com.itsaky.androidide.projects.IDEProject;
+import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
@@ -119,6 +121,7 @@ import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
+import com.itsaky.lsp.java.JavaLanguageServer;
 import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
@@ -846,8 +849,7 @@ public class EditorActivity extends StudioActivity
         if (result.gradleSaved) {
             notifySyncNeeded();
         }
-        
-        
+
         // TODO Notify language servers about changed XML files
         //  Maybe use a file watcher to do these kind of things.
 
@@ -1290,25 +1292,9 @@ public class EditorActivity extends StudioActivity
 
     protected void onProjectInitialized(IdeGradleProject root) {
         mRootProject = root;
-        CompletableFuture.runAsync(
-                        () -> {
-                            //                            final var app =
-                            // mBuildService.findFirstAndroidModule(root);
-                            //                            if (app == null) {
-                            //                                LOG.error(
-                            //                                        "No Android application module
-                            // is present in root project:",
-                            //                                        root.getName());
-                            //                                return;
-                            //                            }
-                        })
-                .whenComplete(
-                        (result, error) -> {
-                            if (error != null) {
-                                LOG.error("Post initialize task failed", error);
-                            }
-                        });
-
+        ProjectManager.INSTANCE.setRootProject(mRootProject);
+        ProjectManager.INSTANCE.notifyProjectUpdate(
+                ((JavaLanguageServer) StudioApp.getInstance().getJavaLanguageServer()));
         ThreadUtils.runOnUiThread(() -> mBinding.buildProgressIndicator.setVisibility(View.GONE));
     }
 

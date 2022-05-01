@@ -39,5 +39,26 @@ class IdeJavaModule(
     val contentRoots: List<JavaContentRoot>,
 
     /** Dependencies of this project. */
-    val dependencies: List<JavaModuleDependency>
-) : IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks) {}
+    val javaDependencies: List<JavaModuleDependency>
+) :
+    IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
+    IdeModule,
+    HasDependencies {
+
+    override fun getDependencies() = javaDependencies
+
+    override fun getGeneratedJar(variant: String): File {
+        var jar = File(buildDir, "libs/$name.jar")
+        if (jar.exists()) {
+            return jar
+        }
+
+        jar =
+            File(buildDir, "libs").listFiles()?.first {
+                it.name.startsWith(this.name ?: this.projectPath?.substring(1) ?: "")
+            }
+                ?: File("i-do-not-exist.jar")
+
+        return jar
+    }
+}

@@ -23,7 +23,7 @@ package com.itsaky.androidide.utils;
 import android.text.TextUtils;
 
 import com.blankj.utilcode.util.FileIOUtils;
-import com.itsaky.androidide.project.AndroidProject;
+import com.itsaky.androidide.projects.AndroidProject;
 
 import org.json.JSONException;
 import org.json.JSONObject;

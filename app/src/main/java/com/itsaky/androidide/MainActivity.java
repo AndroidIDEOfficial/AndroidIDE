@@ -39,7 +39,7 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
-import com.itsaky.androidide.project.AndroidProject;
+import com.itsaky.androidide.projects.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ProjectCreatorCallable;
 import com.itsaky.androidide.utils.DialogUtils;

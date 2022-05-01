@@ -21,6 +21,7 @@ import com.android.builder.model.v2.models.AndroidProject
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
 import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
+import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
@@ -51,8 +52,11 @@ class IdeAndroidModule(
     override val modelSyncFiles: List<DefaultModelSyncFile>
 ) :
     IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
+    IdeModule,
     AndroidProject {
 
+    var boothclasspaths: Collection<File> = emptyList()
+    var mainSourceSet: DefaultSourceSetContainer? = null
     var variantDependencies: MutableMap<String, DefaultVariantDependencies> = mutableMapOf()
 
     fun copy(): IdeAndroidModule {
@@ -74,6 +78,12 @@ class IdeAndroidModule(
             viewBindingOptions,
             lintChecksJars,
             modelSyncFiles)
+    }
+
+    override fun getGeneratedJar(variant: String): File {
+        return File(
+            buildDir,
+            "${AndroidProject.FD_INTERMEDIATES}/compile_library_classes_jar/$variant/classes.jar")
     }
 
     override fun toString(): String {
