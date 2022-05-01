@@ -40,7 +40,7 @@ object ProjectManager {
     fun notifyProjectUpdate(server: JavaLanguageServer) {
         val sourceDirs = collectApplicationSourceDirs(rootProject!!)
         val classPaths = collectApplicationClassPaths(rootProject!!)
-        val configuration = JavaServerConfiguration(sourceDirs, classPaths)
+        val configuration = JavaServerConfiguration(classPaths, sourceDirs)
         server.configurationChanged(configuration)
     }
 
