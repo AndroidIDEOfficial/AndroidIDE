@@ -105,13 +105,13 @@ import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.JSONUtility;
 import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
@@ -121,7 +121,6 @@ import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
-import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
@@ -139,7 +138,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
@@ -955,43 +953,43 @@ public class EditorActivity extends StudioActivity
             @NonNull String variantName) {
         return task -> {
             if (task != null) {
-                // TODO Handle multiple application modules
-                final var app = mRootProject.findFirstApplicationModule();
-                if (app == null) {
-                    LOG.error("No application module found in root project. Cannot install APKs");
-                    return;
-                }
-
-                final var variants = app.getVariants();
-                final var foundVariant =
-                        variants.stream()
-                                .filter(variant -> variant.getName().equals(variantName))
-                                .findFirst();
-
-                if (foundVariant.isPresent()) {
-                    final var variant = foundVariant.get();
-                    final var main = variant.getMainArtifact();
-                    final var outputListingFile = main.getAssembleTaskOutputListingFile();
-                    if (outputListingFile == null) {
-                        LOG.error("No output listing file provided with project model");
-                        return;
-                    }
-
-                    final var apkFile = ApkMetadata.findApkFile(outputListingFile);
-                    if (apkFile == null) {
-                        LOG.error(
-                                "No apk file specified in output listing file:", outputListingFile);
-                        return;
-                    }
-
-                    install(apkFile);
-                } else {
-                    LOG.error(
-                            "No",
-                            variantName,
-                            "variant found in application module",
-                            app.getProjectPath());
-                }
+//                // TODO Handle multiple application modules
+//                final var app = mRootProject.findFirstApplicationModule();
+//                if (app == null) {
+//                    LOG.error("No application module found in root project. Cannot install APKs");
+//                    return;
+//                }
+//
+//                final var variants = app.getVariants();
+//                final var foundVariant =
+//                        variants.stream()
+//                                .filter(variant -> variant.getName().equals(variantName))
+//                                .findFirst();
+//
+//                if (foundVariant.isPresent()) {
+//                    final var variant = foundVariant.get();
+//                    final var main = variant.getMainArtifact();
+//                    final var outputListingFile = main.getAssembleTaskOutputListingFile();
+//                    if (outputListingFile == null) {
+//                        LOG.error("No output listing file provided with project model");
+//                        return;
+//                    }
+//
+//                    final var apkFile = ApkMetadata.findApkFile(outputListingFile);
+//                    if (apkFile == null) {
+//                        LOG.error(
+//                                "No apk file specified in output listing file:", outputListingFile);
+//                        return;
+//                    }
+//
+//                    install(apkFile);
+//                } else {
+//                    LOG.error(
+//                            "No",
+//                            variantName,
+//                            "variant found in application module",
+//                            app.getProjectPath());
+//                }
             }
         };
     }
@@ -1295,27 +1293,13 @@ public class EditorActivity extends StudioActivity
         mRootProject = root;
         CompletableFuture.runAsync(
                         () -> {
-                            final var app = mBuildService.findFirstAndroidModule(root);
-                            if (app == null) {
-                                LOG.error(
-                                        "No Android application module is present in root project:",
-                                        root.getName());
-                                return;
-                            }
-
-                            // Notify Java language server about updated dependencies
-                            // TODO Java language server must also be notified about updated source
-                            //  paths
-                            final var debugDependencies =
-                                    app.getVariantDependencyJars().get("debug");
-                            getApp().getJavaLanguageServer()
-                                    .configurationChanged(
-                                            new JavaServerConfiguration(
-                                                    debugDependencies.stream()
-                                                            .filter(File::exists)
-                                                            .map(File::toPath)
-                                                            .collect(Collectors.toSet()),
-                                                    collectSourcePaths(app)));
+//                            final var app = mBuildService.findFirstAndroidModule(root);
+//                            if (app == null) {
+//                                LOG.error(
+//                                        "No Android application module is present in root project:",
+//                                        root.getName());
+//                                return;
+//                            }
                         })
                 .whenComplete(
                         (result, error) -> {
@@ -1325,17 +1309,6 @@ public class EditorActivity extends StudioActivity
                         });
 
         ThreadUtils.runOnUiThread(() -> mBinding.buildProgressIndicator.setVisibility(View.GONE));
-    }
-
-    private Set<Path> collectSourcePaths(IdeAndroidModule app) {
-        final var paths = new HashSet<Path>();
-        final var mainSourceProvider = app.getMainSourceSet().getSourceProvider();
-        paths.addAll(
-                mainSourceProvider.getJavaDirectories().stream()
-                        .map(File::toPath)
-                        .collect(Collectors.toList()));
-
-        return paths;
     }
 
     private void setupDrawerToggle() {

@@ -23,7 +23,11 @@ import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
+import com.itsaky.androidide.tooling.api.model.IdeJavaModule;
 import com.itsaky.androidide.tooling.api.model.IdeLaunchable;
+import com.itsaky.androidide.tooling.api.model.JavaModuleDependency;
+import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency;
+import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency;
 
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 
@@ -56,11 +60,20 @@ public class ToolingApiLauncher {
         builder.registerTypeAdapterFactory(
                 RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType", true)
                         .registerSubtype(IdeAndroidModule.class, IdeAndroidModule.class.getName())
+                        .registerSubtype(IdeJavaModule.class, IdeJavaModule.class.getName())
                         .registerSubtype(IdeGradleProject.class, IdeGradleProject.class.getName()));
         builder.registerTypeAdapterFactory(
                 RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType", true)
                         .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName())
                         .registerSubtype(IdeLaunchable.class, IdeLaunchable.class.getName()));
+        builder.registerTypeAdapterFactory(
+                RuntimeTypeAdapterFactory.of(JavaModuleDependency.class, "gsonType", true)
+                        .registerSubtype(
+                                JavaModuleExternalDependency.class,
+                                JavaModuleExternalDependency.class.getName())
+                        .registerSubtype(
+                                JavaModuleProjectDependency.class,
+                                JavaModuleProjectDependency.class.getName()));
     }
 
     public static Launcher<IToolingApiClient> createServerLauncher(

@@ -91,7 +91,6 @@ object AndroidModulePropertyCopier {
             module.buildDir,
             module.buildScript,
             module.parent,
-            module.subprojects,
             module.tasks,
             module.dynamicFeatures,
             copy(module.flags),

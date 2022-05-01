@@ -19,6 +19,9 @@ package com.itsaky.androidide.tooling.api.model.util
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
+import com.itsaky.androidide.tooling.api.model.IdeJavaModule
+import com.itsaky.androidide.tooling.api.model.JavaContentRoot
+import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
 import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
@@ -39,7 +42,7 @@ class ProjectBuilder {
     var buildDir: File? = null
     var buildScript: File? = null
     var parent: IdeGradleProject? = null
-    var subprojects: List<IdeGradleProject> = mutableListOf()
+    var modules: List<IdeGradleProject> = mutableListOf()
     var tasks: List<IdeGradleTask> = mutableListOf()
     var dynamicFeatures: Collection<String>? = mutableListOf()
     var flags: DefaultAndroidGradlePluginProjectFlags =
@@ -50,10 +53,26 @@ class ProjectBuilder {
     var viewBindingOptions: DefaultViewBindingOptions? = null
     var modelSyncFiles: List<DefaultModelSyncFile> = emptyList()
     var lintChecksJars: List<File> = mutableListOf()
+    var contentRoots: List<JavaContentRoot> = mutableListOf()
+    var javaDependencies: List<JavaModuleDependency> = mutableListOf()
 
     fun buildGradleProject(): IdeGradleProject {
         return IdeGradleProject(
-            name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks)
+            name, description, path, projectDir, buildDir, buildScript, parent, tasks)
+    }
+
+    fun buildJavaModule(): IdeJavaModule {
+        return IdeJavaModule(
+            name,
+            path,
+            description,
+            projectDir,
+            buildDir,
+            buildScript,
+            parent,
+            tasks,
+            contentRoots,
+            javaDependencies)
     }
 
     fun buildAndroidModule(): IdeAndroidModule =
@@ -65,7 +84,6 @@ class ProjectBuilder {
             buildDir,
             buildScript,
             parent,
-            subprojects,
             tasks,
             dynamicFeatures,
             flags,

@@ -238,31 +238,31 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     public boolean isBuildInProgress() {
         return isBuildInProgress;
     }
-
-    /**
-     * Find the first direct subproject of the given root project that is an {@link
-     * IdeAndroidModule}.
-     *
-     * @param root The project whose subprojects will be searched.
-     * @return The found {@link IdeAndroidModule} or <code>null</code>.
-     */
-    @Nullable
-    public IdeAndroidModule findFirstAndroidModule(IdeGradleProject root) {
-        return root.findFirstApplicationModule();
-    }
-
-    /**
-     * Find all the direct children of the given root project that are {@link IdeAndroidModule} and
-     * their <code>projectType</code> is {@link
-     * com.android.builder.model.v2.ide.ProjectType#APPLICATION APPLICATION}
-     *
-     * @param root The project whose subprojects will be searched.
-     * @return The found application modules. Never <code>null</code>.
-     */
-    @NonNull
-    public List<IdeAndroidModule> findAndroidModules(@NonNull IdeGradleProject root) {
-        return root.findApplicationModules();
-    }
+//
+//    /**
+//     * Find the first direct subproject of the given root project that is an {@link
+//     * IdeAndroidModule}.
+//     *
+//     * @param root The project whose subprojects will be searched.
+//     * @return The found {@link IdeAndroidModule} or <code>null</code>.
+//     */
+//    @Nullable
+//    public IdeAndroidModule findFirstAndroidModule(IdeGradleProject root) {
+//        return root.findFirstApplicationModule();
+//    }
+//
+//    /**
+//     * Find all the direct children of the given root project that are {@link IdeAndroidModule} and
+//     * their <code>projectType</code> is {@link
+//     * com.android.builder.model.v2.ide.ProjectType#APPLICATION APPLICATION}
+//     *
+//     * @param root The project whose subprojects will be searched.
+//     * @return The found application modules. Never <code>null</code>.
+//     */
+//    @NonNull
+//    public List<IdeAndroidModule> findAndroidModules(@NonNull IdeGradleProject root) {
+//        return root.findApplicationModules();
+//    }
 
     public void startToolingServer(@Nullable OnServerStartListener listener) {
         if (toolingServerThread != null && toolingServerThread.isAlive()) {

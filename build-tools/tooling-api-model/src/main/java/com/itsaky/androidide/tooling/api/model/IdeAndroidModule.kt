@@ -38,7 +38,6 @@ class IdeAndroidModule(
     buildDir: File?,
     buildScript: File?,
     parent: IdeGradleProject?,
-    subprojects: List<IdeGradleProject>,
     tasks: List<IdeGradleTask>,
     override var dynamicFeatures: Collection<String>?,
     override var flags: DefaultAndroidGradlePluginProjectFlags,
@@ -49,8 +48,7 @@ class IdeAndroidModule(
     override val lintChecksJars: List<File>,
     override val modelSyncFiles: List<DefaultModelSyncFile>
 ) :
-    IdeGradleProject(
-        name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks),
+    IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
     AndroidProject {
 
     var variantDependencies: MutableMap<String, DefaultVariantDependencies> = mutableMapOf()
@@ -64,7 +62,6 @@ class IdeAndroidModule(
             buildDir,
             buildScript,
             parent,
-            subprojects,
             tasks,
             dynamicFeatures,
             flags,

@@ -19,7 +19,7 @@ package com.itsaky.androidide.tooling.api.model
 import java.io.File
 
 /**
- * Default implementation for [IdeGradleProject].
+ * A root Gradle project.
  * @author Akash Yadav
  */
 open class IdeGradleProject(
@@ -30,34 +30,22 @@ open class IdeGradleProject(
     val buildDir: File?,
     val buildScript: File?,
     val parent: IdeGradleProject?,
-    val subprojects: List<IdeGradleProject>,
     val tasks: List<IdeGradleTask>,
-) {
+) : HasModules {
 
-    protected val gsonType: String = javaClass.name
+    private val gsonType: String = javaClass.name
+    private val moduleProjects: MutableList<IdeGradleProject> = mutableListOf()
+    override fun getModules(): List<IdeGradleProject> = moduleProjects
 
     fun findByPath(path: String): IdeGradleProject? {
         if (path == this.projectPath) {
             return this
         }
 
-        for (sub in subprojects) {
-            val subSub = sub.findByPath(path)
-            if (subSub != null) {
-                return subSub
-            }
-        }
-
-        return null
+        return getModules().firstOrNull { it.projectPath == path }
     }
 
-    // TODO Filter by application modules
-    fun findApplicationModules(): List<IdeAndroidModule> =
-        this.subprojects.filterIsInstance(IdeAndroidModule::class.java)
-
-    fun findFirstApplicationModule(): IdeAndroidModule? = findApplicationModules().firstOrNull()
-
     override fun toString(): String {
-        return "IdeGradleProject(name=$name, description=$description, projectPath=$projectPath, projectDir=$projectDir, buildDir=$buildDir, buildScript=$buildScript, parent=$parent, subprojects=$subprojects, tasks=$tasks, gsonType='$gsonType')"
+        return "IdeGradleProject(name=$name, description=$description, projectPath=$projectPath, projectDir=$projectDir, buildDir=$buildDir, buildScript=$buildScript, parent=$parent, subprojects=$moduleProjects, tasks=$tasks, gsonType='$gsonType')"
     }
 }

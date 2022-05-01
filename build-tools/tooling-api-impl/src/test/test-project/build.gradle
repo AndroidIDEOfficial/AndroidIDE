@@ -1,6 +1,6 @@
 buildscript {
     ext {
-    	build_gradle_version = '7.0.2'
+    	build_gradle_version = '7.2.0-rc01'
     }
     
     project.ext {
