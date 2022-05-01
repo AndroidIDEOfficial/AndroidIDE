@@ -19,6 +19,7 @@ package com.itsaky.androidide.projects
 
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.lsp.java.JavaLanguageServer
+import java.nio.file.Path
 
 /**
  * Manages projects in AndroidIDE.
@@ -27,8 +28,13 @@ import com.itsaky.lsp.java.JavaLanguageServer
  */
 object ProjectManager {
     var rootProject: IdeGradleProject? = null
-    
-    fun notifyProjectUpdate (server: JavaLanguageServer) {
-        rootProject!!
+
+    fun notifyProjectUpdate(server: JavaLanguageServer) {
+        val sourceDirs = collectSourceDirs(rootProject!!)
+    }
+
+    private fun collectSourceDirs(rootProject: IdeGradleProject): List<Path> {
+        val list = mutableListOf<Path>()
+        return list
     }
 }

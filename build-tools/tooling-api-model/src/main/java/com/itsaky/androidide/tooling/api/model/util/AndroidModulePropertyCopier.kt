@@ -419,6 +419,7 @@ object AndroidModulePropertyCopier {
 
     fun copy(graph: GraphItem): DefaultGraphItem =
         DefaultGraphItem().apply {
+            this.key = graph.key
             this.dependencies = copy(graph.dependencies)
             this.requestedCoordinates = graph.requestedCoordinates
         }
