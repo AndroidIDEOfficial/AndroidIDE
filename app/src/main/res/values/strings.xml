@@ -363,6 +363,7 @@
     <string name="msg_gradle_service_notification">AndroidIDE\'s Gradle build service is running in the background.</string>
 
     <string name="title_cancel_build">Cancel build</string>
+    <string name="msg_project_not_initialized">Project is not initialized</string>
 </resources>
 
 

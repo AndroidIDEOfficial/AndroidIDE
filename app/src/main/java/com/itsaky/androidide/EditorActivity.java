@@ -1574,21 +1574,19 @@ public class EditorActivity extends StudioActivity
         builder.show();
     }
 
-    @NonNull
+    @Nullable
     private AlertDialog createFindInProjectDialog() {
-        List<File> moduleDirs = null;
         final var rootProject = ProjectManager.INSTANCE.getRootProject();
         if (rootProject == null) {
             LOG.warn("No root project model found. Is the project initialized?");
-            moduleDirs = new ArrayList<>(0);
+            getApp().toast(getString(R.string.msg_project_not_initialized), Toaster.Type.ERROR);
+            return null;
         }
 
-        if (moduleDirs == null) {
-            moduleDirs =
-                    rootProject.getModules().stream()
-                            .map(IdeGradleProject::getProjectDir)
-                            .collect(Collectors.toList());
-        }
+        final var moduleDirs =
+                rootProject.getModules().stream()
+                        .map(IdeGradleProject::getProjectDir)
+                        .collect(Collectors.toList());
 
         final List<File> srcDirs = new ArrayList<>();
         final LayoutSearchProjectBinding binding =
