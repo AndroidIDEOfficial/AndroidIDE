@@ -37,9 +37,9 @@ package com.itsaky.androidide.utils
 import android.content.Context
 import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionsRegistry
+import com.itsaky.androidide.actions.build.CancelBuildAction
 import com.itsaky.androidide.actions.build.QuickRunAction
 import com.itsaky.androidide.actions.build.RunActionMenu
-import com.itsaky.androidide.actions.build.CancelBuildAction
 import com.itsaky.androidide.actions.editor.CopyAction
 import com.itsaky.androidide.actions.editor.CutAction
 import com.itsaky.androidide.actions.editor.ExpandSelectionAction

@@ -18,7 +18,6 @@
 package com.itsaky.androidide.language.xml;
 
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATOR;
-import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TEXT_SELECTED;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
 import static io.github.rosemoe.sora.widget.schemes.EditorColorScheme.LITERAL;

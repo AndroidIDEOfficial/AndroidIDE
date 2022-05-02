@@ -99,8 +99,6 @@ import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
-import com.itsaky.androidide.projects.AndroidProject;
-import com.itsaky.androidide.projects.IDEProject;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
@@ -159,7 +157,7 @@ public class EditorActivity extends StudioActivity
                 EditorActivityProvider,
                 OptionsListFragment.OnOptionsClickListener {
 
-    public static final String EXTRA_PROJECT = "project";
+    public static final String EXTRA_PROJECT_PATH = "project_path";
     public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
     private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
     private static final int ACTION_ID_CLOSE = 100;
@@ -283,34 +281,6 @@ public class EditorActivity extends StudioActivity
         return this;
     }
 
-    @Override
-    public AndroidProject provideAndroidProject() {
-        return getAndroidProject();
-    }
-
-    @Override
-    public IDEProject provideIDEProject() {
-        return getIDEProject();
-    }
-
-    @Nullable
-    private IDEProject getIDEProject() {
-        if (mViewModel == null) {
-            return null;
-        }
-
-        return mViewModel.getIDEProject();
-    }
-
-    @Nullable
-    private AndroidProject getAndroidProject() {
-        if (mViewModel == null) {
-            return null;
-        }
-
-        return mViewModel.getAndroidProject();
-    }
-
     public void handleSearchResults(Map<File, List<SearchResult>> results) {
         setSearchResultAdapter(
                 new com.itsaky.androidide.adapters.SearchListAdapter(
@@ -344,7 +314,7 @@ public class EditorActivity extends StudioActivity
         shell.bgAppend(
                 String.format(
                         "cd '%s' && sh gradlew --status",
-                        Objects.requireNonNull(getAndroidProject()).getProjectPath()));
+                        Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir())));
         if (!getDaemonStatusFragment().isShowing()) {
             getDaemonStatusFragment().show(getSupportFragmentManager(), "daemon_status");
         }
@@ -808,7 +778,8 @@ public class EditorActivity extends StudioActivity
             intent.putExtra(
                     DesignerActivity.KEY_LAYOUT_PATH,
                     getCurrentEditor().getFile().getAbsolutePath());
-            intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, getResourceDirectories());
+            intent.putStringArrayListExtra(
+                    DesignerActivity.KEY_RES_DIRS, (ArrayList<String>) getResourceDirectories());
             LOG.info("Launching UI Designer...");
             mUIDesignerLauncher.launch(intent);
         } catch (Throwable th) {
@@ -822,21 +793,13 @@ public class EditorActivity extends StudioActivity
     }
 
     @NonNull
-    private ArrayList<String> getResourceDirectories() {
-        final var dirs = new ArrayList<String>();
-        if (getAndroidProject() != null
-                && getAndroidProject().getModulePaths() != null
-                && !getAndroidProject().getModulePaths().isEmpty()) {
-            for (String path : getAndroidProject().getModulePaths()) {
-                if (path != null && new File(path).exists()) {
-                    File res = new File(path, "src/main/res");
-                    if (res.exists()) {
-                        dirs.add(res.getAbsolutePath());
-                    }
-                }
-            }
+    private List<String> getResourceDirectories() {
+        final var dirs = ProjectManager.INSTANCE.getApplicationResDirectories();
+        if (dirs == null) {
+            return Collections.emptyList();
         }
-        return dirs;
+
+        return dirs.stream().map(File::getAbsolutePath).collect(Collectors.toList());
     }
 
     public boolean saveAll(boolean notify, boolean canProcessResources) {
@@ -1049,10 +1012,6 @@ public class EditorActivity extends StudioActivity
         execTasks(null, "clean", "build");
     }
 
-    /////////////////////////////////////////////////
-    ////////////// PRIVATE APIS /////////////////////
-    /////////////////////////////////////////////////
-
     public AlertDialog getFindInProjectDialog() {
         return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
     }
@@ -1063,6 +1022,10 @@ public class EditorActivity extends StudioActivity
             mFileOptionsHandler.onOptionsClick(option);
         }
     }
+
+    /////////////////////////////////////////////////
+    ////////////// PRIVATE APIS /////////////////////
+    /////////////////////////////////////////////////
 
     public GradleBuildService getBuildService() {
         return mBuildService;
@@ -1076,7 +1039,7 @@ public class EditorActivity extends StudioActivity
         mViewModel = new ViewModelProvider(this).get(EditorViewModel.class);
         getProjectFromIntent();
 
-        mFileTreeFragment = FileTreeFragment.newInstance(this.getAndroidProject());
+        mFileTreeFragment = FileTreeFragment.newInstance();
         mDaemonStatusFragment = new TextSheetFragment().setTextSelectable(true);
 
         setupDrawerToggle();
@@ -1260,13 +1223,13 @@ public class EditorActivity extends StudioActivity
     private void initializeProject() {
         // TODO Do not create unnecessary models. Instead, just keep a reference to the root
         //  directory of the project.
-        final var androidProject = getAndroidProject();
-        if (androidProject == null) {
+        final var projectPath = ProjectManager.INSTANCE.getProjectDir();
+        if (projectPath == null) {
             LOG.error("Cannot initialize project. Project model is null.");
             return;
         }
 
-        final var projectDir = new File(androidProject.getProjectPath());
+        final var projectDir = new File(projectPath);
         if (!projectDir.exists()) {
             LOG.error("Project directory does not exist. Cannot initialize project");
             return;
@@ -1462,25 +1425,21 @@ public class EditorActivity extends StudioActivity
         final Intent intent = new Intent(this, TerminalActivity.class);
         intent.putExtra(
                 TerminalActivity.KEY_WORKING_DIRECTORY,
-                Objects.requireNonNull(getAndroidProject()).getProjectPath());
+                Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir()));
         startActivity(intent);
     }
 
     private void getProjectFromIntent() {
-        final var project = (AndroidProject) getIntent().getParcelableExtra(EXTRA_PROJECT);
-        if (mViewModel != null) {
-            mViewModel.setAndroidProject(project);
-        } else {
-            LOG.error("ViewModel is null. Cannot set project.");
-        }
+        final var project = getIntent().getStringExtra(EXTRA_PROJECT_PATH);
+        ProjectManager.INSTANCE.setProjectPath(project);
+
         getApp().getPrefManager()
-                .setOpenedProject(
-                        Objects.requireNonNull(this.getAndroidProject()).getProjectPath());
+                .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir()));
 
         try {
             //noinspection ConstantConditions
             getSupportActionBar()
-                    .setSubtitle(new File(getAndroidProject().getProjectPath()).getName());
+                    .setSubtitle(new File(ProjectManager.INSTANCE.getProjectDir()).getName());
         } catch (Throwable th) {
             // ignored
         }
@@ -1536,7 +1495,7 @@ public class EditorActivity extends StudioActivity
         final var javaLanguageServer = getApp().getJavaLanguageServer();
         final var workspaceRoots = new HashSet<Path>();
         workspaceRoots.add(
-                new File(Objects.requireNonNull(getAndroidProject()).getProjectPath()).toPath());
+                new File(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir())).toPath());
         workspaceRoots.add(Environment.HOME.toPath().resolve("logsender"));
 
         final var params = new InitializeParams(workspaceRoots);
@@ -1607,28 +1566,35 @@ public class EditorActivity extends StudioActivity
         builder.show();
     }
 
-    @Nullable
+    @NonNull
     private AlertDialog createFindInProjectDialog() {
-        if (getAndroidProject() == null
-                || getAndroidProject().getModulePaths() == null
-                || getAndroidProject().getModulePaths().size() <= 0) {
-            getApp().toast(R.string.msg_no_modules, Toaster.Type.ERROR);
-            return null;
+        List<File> moduleDirs = null;
+        final var rootProject = ProjectManager.INSTANCE.getRootProject();
+        if (rootProject == null) {
+            LOG.warn("No root project model found. Is the project initialized?");
+            moduleDirs = new ArrayList<>(0);
         }
-        final List<String> modules = getAndroidProject().getModulePaths();
+
+        if (moduleDirs == null) {
+            moduleDirs =
+                    rootProject.getModules().stream()
+                            .map(IdeGradleProject::getProjectDir)
+                            .collect(Collectors.toList());
+        }
+
         final List<File> srcDirs = new ArrayList<>();
         final LayoutSearchProjectBinding binding =
                 LayoutSearchProjectBinding.inflate(getLayoutInflater());
         binding.modulesContainer.removeAllViews();
-        for (int i = 0; i < modules.size(); i++) {
-            final File file = new File(modules.get(i));
-            final File src = new File(file, "src");
-            if (!file.exists() || !file.isDirectory() || !src.exists() || !src.isDirectory()) {
+        for (int i = 0; i < moduleDirs.size(); i++) {
+            final File module = moduleDirs.get(i);
+            final File src = new File(module, "src");
+            if (!module.exists() || !module.isDirectory() || !src.exists() || !src.isDirectory()) {
                 continue;
             }
 
             CheckBox check = new CheckBox(this);
-            check.setText(file.getName());
+            check.setText(module.getName());
             check.setChecked(true);
 
             LinearLayout.MarginLayoutParams params = new LinearLayout.MarginLayoutParams(-2, -2);

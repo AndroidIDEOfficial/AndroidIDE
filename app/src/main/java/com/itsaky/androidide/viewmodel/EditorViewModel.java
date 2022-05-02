@@ -25,9 +25,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.itsaky.androidide.projects.AndroidProject;
-import com.itsaky.androidide.projects.IDEProject;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +34,6 @@ import java.util.Objects;
 public class EditorViewModel extends ViewModel {
 
     private final MutableLiveData<List<File>> mFiles = new MutableLiveData<>(new ArrayList<>());
-    private final MutableLiveData<AndroidProject> mProject = new MutableLiveData<>(null);
-    private final MutableLiveData<IDEProject> mIDEProject = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> mFilesModified = new MutableLiveData<>(false);
 
     /**
@@ -46,44 +41,6 @@ public class EditorViewModel extends ViewModel {
      * the index of the editor opened. Second value is the file that is opened.
      */
     private final MutableLiveData<Pair<Integer, File>> mCurrentFile = new MutableLiveData<>(null);
-
-    /**
-     * Get the current {@link AndroidProject}.
-     *
-     * @return The android project.
-     */
-    @Nullable
-    public AndroidProject getAndroidProject() {
-        return mProject.getValue();
-    }
-
-    /**
-     * Set the android project currently opened in the editor activity.
-     *
-     * @param project The project that is opened.
-     */
-    public void setAndroidProject(final AndroidProject project) {
-        this.mProject.setValue(project);
-    }
-
-    /**
-     * Get the {@link IDEProject} opened in the editor activity.
-     *
-     * @return The ide project.
-     */
-    @Nullable
-    public IDEProject getIDEProject() {
-        return this.mIDEProject.getValue();
-    }
-
-    /**
-     * Set the IDEProject that is currently opened in the editor activity.
-     *
-     * @param project The project that is opened.
-     */
-    public void setIDEProject(final IDEProject project) {
-        this.mIDEProject.setValue(project);
-    }
 
     /**
      * Add the given file to the list of opened files.
@@ -110,6 +67,10 @@ public class EditorViewModel extends ViewModel {
     public void removeAllFiles() {
         mFiles.setValue(new ArrayList<>());
         setCurrentFile(-1, null);
+    }
+
+    public void setCurrentFile(final int index, @Nullable final File file) {
+        mCurrentFile.setValue(Pair.create(index, file));
     }
 
     /**
@@ -165,10 +126,6 @@ public class EditorViewModel extends ViewModel {
         }
 
         return mCurrentFile.getValue().second;
-    }
-
-    public void setCurrentFile(final int index, @Nullable final File file) {
-        mCurrentFile.setValue(Pair.create(index, file));
     }
 
     public void setFilesModified(boolean modified) {

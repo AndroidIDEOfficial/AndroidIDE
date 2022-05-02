@@ -36,16 +36,64 @@ import java.nio.file.Path
 object ProjectManager {
     private val log = com.itsaky.androidide.utils.ILogger.newInstance(javaClass.simpleName)
     var rootProject: IdeGradleProject? = null
+    var projectPath: String? = null
+
+    fun getProjectDir(): String? =
+        if (rootProject == null) projectPath else rootProject!!.projectDir!!.absolutePath
+
+    fun getApplicationModule(): IdeAndroidModule? {
+        if (rootProject == null) {
+            log.error(
+                "No root project instance is set. Is the project initialization process finished?")
+            return null
+        }
+
+        val app = rootProject!!.findFirstAndroidModule()
+        if (app == null) {
+            log.error("No application module found in root project.")
+            return null
+        }
+
+        return app
+    }
+
+    fun getApplicationResDirectories(): List<File>? {
+        return collectResDirectories(getApplicationModule() ?: return null)
+    }
+
+    fun collectResDirectories(android: IdeAndroidModule): List<File> {
+        val main = android.mainSourceSet
+        if (main == null) {
+            log.error("No main source set found in application module: ${android.name}")
+            return emptyList()
+        }
+
+        val dirs = mutableListOf<File>()
+        if (main.sourceProvider.resDirectories != null) {
+            dirs.addAll(main.sourceProvider.resDirectories!!)
+        }
+
+        val dependencies =
+            collectProjectDependencies(rootProject!!, android)
+                .filterIsInstance(IdeAndroidModule::class.java)
+
+        for (dependency in dependencies) {
+            dirs.addAll(collectResDirectories(dependency))
+        }
+
+        return dirs
+    }
 
     fun notifyProjectUpdate(server: JavaLanguageServer) {
-        val sourceDirs = collectApplicationSourceDirs(rootProject!!)
-        val classPaths = collectApplicationClassPaths(rootProject!!)
+        val sourceDirs = collectApplicationSourceDirs()
+        val classPaths = collectApplicationClassPaths()
         val configuration = JavaServerConfiguration(classPaths, sourceDirs)
         server.configurationChanged(configuration)
     }
 
-    private fun collectApplicationClassPaths(rootProject: IdeGradleProject): Set<Path> {
-        val app = getApplicationModule(rootProject)
+    private fun collectApplicationClassPaths(): Set<Path> {
+        val app = getApplicationModule() ?: return emptySet()
+
         val libraries = app.variantDependencies["debug"]!!.libraries
         val paths = mutableSetOf<Path>()
 
@@ -55,7 +103,8 @@ object ProjectManager {
             } else if (value.type == JAVA_LIBRARY) {
                 paths.add(value.artifact!!.toPath())
             } else {
-                val project = rootProject.findByPath(value.projectInfo!!.projectPath)!! as IdeModule
+                val project =
+                    rootProject!!.findByPath(value.projectInfo!!.projectPath)!! as IdeModule
                 paths.add(project.getGeneratedJar("debug").toPath())
 
                 if (project is IdeAndroidModule && project.projectPath != app.projectPath) {
@@ -73,20 +122,14 @@ object ProjectManager {
         return paths
     }
 
-    private fun collectApplicationSourceDirs(rootProject: IdeGradleProject): Set<Path> {
-        val app = getApplicationModule(rootProject)
+    private fun collectApplicationSourceDirs(): Set<Path> {
+        val app = getApplicationModule() ?: return emptySet()
         val sources = app.mainSourceSet ?: return emptySet()
         val javaDirs = sources.sourceProvider.javaDirectories
         val sourcePaths = javaDirs.toMutableSet()
-        val projectSources = collectSourceDirs(collectProjectDependencies(rootProject, app))
+        val projectSources = collectSourceDirs(collectProjectDependencies(rootProject!!, app))
         sourcePaths.addAll(projectSources)
         return sourcePaths.map { it.toPath() }.toSet()
-    }
-
-    private fun getApplicationModule(rootProject: IdeGradleProject): IdeAndroidModule {
-        return rootProject.findFirstAndroidModule()
-            ?: throw UnsupportedOperationException(
-                "No application module found in project ${rootProject.name} (${rootProject.projectPath})")
     }
 
     fun collectProjectDependencies(
