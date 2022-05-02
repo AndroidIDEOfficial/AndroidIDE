@@ -301,7 +301,32 @@ public class GradleBuildService extends Service implements BuildService, IToolin
                         serverStreams,
                         GradleBuildService.this::onServerExited,
                         false,
+
+                        // The 'java' binary executable
                         Environment.JAVA.getAbsolutePath(),
+
+                        // Allow reflective access to private members of classes in the following
+                        // packages:
+                        // - java.lang
+                        // - java.io
+                        // - java.util
+                        //
+                        // If any of the model classes in 'tooling-api-model' module send/receive
+                        // objects from the JDK, their package name must be declared here with
+                        // '--add-opens' to prevent InaccessibleObjectException.
+                        // For example, some of the model classes has members of type java.io.File.
+                        // When sending/receiving these type of objects using LSP4J, members of
+                        // these objects are reflectively accessed by Gson. If we do no specify
+                        // '--add-opens' for 'java.io' (for java.io.File) package, JVM will throw an
+                        // InaccessibleObjectException.
+                        "--add-opens",
+                        "java.base/java.lang=ALL-UNNAMED",
+                        "--add-opens",
+                        "java.base/java.util=ALL-UNNAMED",
+                        "--add-opens",
+                        "java.base/java.io=ALL-UNNAMED",
+
+                        // The JAR file to run
                         "-jar",
                         Environment.TOOLING_API_JAR.getAbsolutePath());
 
