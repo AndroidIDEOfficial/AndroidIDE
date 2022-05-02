@@ -53,9 +53,9 @@ import com.itsaky.androidide.utils.InputStreamLineReader;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * A foreground service that handles interaction with the Gradle Tooling API.
@@ -112,6 +112,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     public void onDestroy() {
         LOG.info("Service is being destroyed.", "Dismissing the shown notification...");
         notificationManager.cancel(NOTIFICATION_ID);
+
+        if (server != null) {
+            server.cancelCurrentBuild();
+            server.shutdown();
+        }
+
         if (toolingServerThread != null) {
             toolingServerThread.interrupt();
         }
@@ -315,9 +321,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
                 // Wait(block) until the process terminates
                 try {
                     future.get();
-                } catch (ExecutionException | InterruptedException e) {
-                    LOG.error(
-                            "An error occurred while waiting for tooling API server to terminate");
+                } catch (Throwable err) {
+                    if (!(err instanceof CancellationException)
+                            && !(err instanceof InterruptedException)) {
+                        LOG.error(
+                                "An error occurred while waiting for tooling API server to terminate");
+                    }
                 }
 
             } catch (Throwable e) {

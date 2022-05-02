@@ -24,6 +24,7 @@ import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import java.util.concurrent.*
+import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 
@@ -56,4 +57,11 @@ interface IToolingApiServer {
      * finishes (either successfully or with an error).
      */
     @JsonRequest fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult>
+
+    /**
+     * Shutdown the tooling API server. This will disconnect all the project connection instances.]
+     *
+     * @return A [CompletableFuture] which completes when the shutdown process is finished.
+     */
+    @JsonNotification fun shutdown(): CompletableFuture<Void>
 }

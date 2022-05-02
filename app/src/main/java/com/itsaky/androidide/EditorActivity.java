@@ -1553,9 +1553,6 @@ public class EditorActivity extends StudioActivity
         }
 
         shutdownLanguageServers();
-
-        // TODO Send shutdown request to Tooling API server
-
         if (mFileOptionsHandler != null) {
             mFileOptionsHandler.stop();
         }
@@ -1589,7 +1586,6 @@ public class EditorActivity extends StudioActivity
         closeAll(
                 () -> {
                     getApp().getPrefManager().setOpenedProject(PreferenceManager.NO_OPENED_PROJECT);
-                    getApp().stopAllDaemons();
 
                     if (manualFinish) {
                         finish();

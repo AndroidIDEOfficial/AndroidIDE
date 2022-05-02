@@ -66,16 +66,6 @@ public class StudioApp extends BaseApplication {
         getApiInformation();
     }
 
-    @NonNull
-    public ILanguageServer getJavaLanguageServer() {
-        return mJavaLanguageServer;
-    }
-
-    @NonNull
-    public ILanguageServer getXMLLanguageServer() {
-        return mXMLLanguageServer;
-    }
-
     private void handleCrash(Thread thread, Throwable th) {
         writeException(th);
 
@@ -93,6 +83,33 @@ public class StudioApp extends BaseApplication {
         } catch (Throwable error) {
             LOG.error("Unable to show crash handler activity", error);
         }
+    }
+
+    /** Reads API version information from api-versions.xml */
+    public CompletableFuture<SDKInfo> getApiInformation() {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    if (sdkInfo == null) {
+                        try {
+                            sdkInfo = new SDKInfo(StudioApp.this);
+                            ((XMLLanguageServer) mXMLLanguageServer).setupSDK(sdkInfo);
+                        } catch (Throwable th) {
+                            LOG.error(getString(R.string.err_init_sdkinfo), th);
+                        }
+                    }
+
+                    return sdkInfo;
+                });
+    }
+
+    @NonNull
+    public ILanguageServer getJavaLanguageServer() {
+        return mJavaLanguageServer;
+    }
+
+    @NonNull
+    public ILanguageServer getXMLLanguageServer() {
+        return mXMLLanguageServer;
     }
 
     public CompletableFuture<LayoutInflaterConfiguration> createInflaterConfig(
@@ -117,27 +134,6 @@ public class StudioApp extends BaseApplication {
 
     public IResourceTable getResourceTable() {
         return mResTable == null ? mResTable = new ProjectResourceTable() : mResTable;
-    }
-
-    /** Reads API version information from api-versions.xml */
-    public CompletableFuture<SDKInfo> getApiInformation() {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    if (sdkInfo == null) {
-                        try {
-                            sdkInfo = new SDKInfo(StudioApp.this);
-                            ((XMLLanguageServer) mXMLLanguageServer).setupSDK(sdkInfo);
-                        } catch (Throwable th) {
-                            LOG.error(getString(R.string.err_init_sdkinfo), th);
-                        }
-                    }
-
-                    return sdkInfo;
-                });
-    }
-
-    public void stopAllDaemons() {
-        newShell(null).bgAppend("gradle --stop");
     }
 
     public ApiInfo apiInfo() {

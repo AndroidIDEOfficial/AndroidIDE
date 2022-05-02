@@ -41,6 +41,8 @@ import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
+import java.io.File
+import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.BuildCancelledException
 import org.gradle.tooling.BuildException
@@ -50,8 +52,6 @@ import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.exceptions.UnsupportedBuildArgumentException
 import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
-import java.io.File
-import java.util.concurrent.*
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -174,6 +174,23 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             }
 
             return@computeAsync BuildCancellationRequestResult(true, null)
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
+    override fun shutdown(): CompletableFuture<Void> {
+        return CompletableFuture.runAsync {
+            connector?.disconnect()
+            Main.future?.cancel(true)
+
+            this.connector = null
+            this.client = null
+            this.project = null
+            this.buildCancellationToken = null
+            Main.future = null
+            Main.client = null
+
+            this.initialized = false
         }
     }
 

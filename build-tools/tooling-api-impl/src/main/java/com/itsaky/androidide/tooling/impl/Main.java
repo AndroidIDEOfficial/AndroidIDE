@@ -22,17 +22,18 @@ import static com.itsaky.androidide.utils.ILogger.newInstance;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
-import com.itsaky.androidide.tooling.impl.util.InitScriptHandler;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JvmLogger;
 
 import org.gradle.tooling.ConfigurableLauncher;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class Main {
     private static final ILogger LOG = newInstance("ToolingApiMain");
     public static IToolingApiClient client;
+    public static Future<Void> future;
 
     static {
         JvmLogger.interceptor = Main::onLog;
@@ -42,21 +43,22 @@ public class Main {
         LOG.debug("Starting Tooling API server...");
         final var server = new ToolingApiServerImpl();
         final var launcher = ToolingApiLauncher.createServerLauncher(server, System.in, System.out);
-        final var future = launcher.startListening();
+        Main.future = launcher.startListening();
         Main.client = launcher.getRemoteProxy();
         server.connect(client);
 
         LOG.debug("Server started. Will run until shutdown message is received...");
         try {
-            future.get();
+            Main.future.get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("An error occurred while waiting for shutdown message", e);
         }
     }
 
     public static void applyCommonArguments(ConfigurableLauncher<?> launcher) {
-//        launcher.addArguments(
-//                "--init-script", InitScriptHandler.INSTANCE.getInitScript().getAbsolutePath());
+        //        launcher.addArguments(
+        //                "--init-script",
+        // InitScriptHandler.INSTANCE.getInitScript().getAbsolutePath());
     }
 
     private static void onLog(LogLine line) {
