@@ -1258,7 +1258,15 @@ public class EditorActivity extends StudioActivity
         ProjectManager.INSTANCE.setRootProject(mRootProject);
         ProjectManager.INSTANCE.notifyProjectUpdate(
                 ((JavaLanguageServer) StudioApp.getInstance().getJavaLanguageServer()));
-        ThreadUtils.runOnUiThread(() -> mBinding.buildProgressIndicator.setVisibility(View.GONE));
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    mBinding.buildProgressIndicator.setVisibility(View.GONE);
+                    if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
+                        mFindInProjectDialog.dismiss();
+                    }
+
+                    mFindInProjectDialog = null; // Create the dialog again if needed
+                });
     }
 
     private void setupDrawerToggle() {
