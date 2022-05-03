@@ -26,15 +26,16 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
+import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.utils.ILogger
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -63,7 +64,7 @@ class ToolingApiImplTest {
 
         val javaLibrary = project.findByPath(":java-library")
         assertThat(javaLibrary).isNotNull()
-        assertThat(javaLibrary).isInstanceOf(IdeGradleProject::class.java)
+        assertThat(javaLibrary).isInstanceOf(IdeJavaModule::class.java)
 
         assertThat(project.findByPath(":does-not-exist")).isNull()
     }
