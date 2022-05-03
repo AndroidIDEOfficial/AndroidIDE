@@ -18,12 +18,11 @@
 package com.itsaky.androidide.tooling.events.download
 
 import com.itsaky.androidide.tooling.events.FinishEvent
-import com.itsaky.androidide.tooling.events.OperationResult
 
 /** @author Akash Yadav */
 class FileDownloadFinishEvent(
     displayName: String,
     eventTime: Long,
-    operationDescriptor: FileDownloadOperationDescriptor,
-    override val result: OperationResult
-) : FileDownloadProgressEvent(displayName, eventTime, operationDescriptor), FinishEvent
+    descriptor: FileDownloadOperationDescriptor,
+    override val result: FileDownloadResult
+) : FileDownloadProgressEvent(displayName, eventTime, descriptor), FinishEvent

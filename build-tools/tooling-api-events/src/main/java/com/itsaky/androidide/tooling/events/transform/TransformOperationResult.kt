@@ -20,5 +20,8 @@ package com.itsaky.androidide.tooling.events.transform
 import com.itsaky.androidide.tooling.events.OperationResult
 
 /** @author Akash Yadav */
-class TransformOperationResult(override val startTime: Long, override val endTime: Long) :
-    OperationResult()
+class TransformOperationResult(
+    val success: Boolean,
+    override val startTime: Long,
+    override val endTime: Long
+) : OperationResult()

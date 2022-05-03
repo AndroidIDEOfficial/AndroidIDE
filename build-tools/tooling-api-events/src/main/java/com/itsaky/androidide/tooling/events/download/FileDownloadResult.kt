@@ -15,17 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.events.configuration
+package com.itsaky.androidide.tooling.events.download
 
-import com.itsaky.androidide.model.PluginIdentifier
 import com.itsaky.androidide.tooling.events.OperationResult
 
 /** @author Akash Yadav */
-class ProjectConfigurationOperationResult(
-    val pluginApplicationResults: List<PluginApplicationResult>,
+class FileDownloadResult(
+    val bytesDownloaded: Long,
     override val startTime: Long,
     override val endTime: Long
-) : OperationResult() {
-
-    class PluginApplicationResult(val plugin: PluginIdentifier, val duration: Long)
-}
+) : OperationResult()

@@ -23,5 +23,5 @@ import com.itsaky.androidide.tooling.events.StartEvent
 class ProjectConfigurationStartEvent(
     displayName: String,
     eventTime: Long,
-    operationDescriptor: ProjectConfigurationOperationDescriptor
-) : ProjectConfigurationProgressEvent(displayName, eventTime, operationDescriptor), StartEvent
+    descriptor: ProjectConfigurationOperationDescriptor
+) : ProjectConfigurationProgressEvent(displayName, eventTime, descriptor), StartEvent

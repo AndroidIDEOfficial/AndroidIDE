@@ -20,5 +20,8 @@ package com.itsaky.androidide.tooling.events.work
 import com.itsaky.androidide.tooling.events.OperationResult
 
 /** @author Akash Yadav */
-class WorkItemOperationResult(override val startTime: Long, override val endTime: Long) :
-    OperationResult()
+class WorkItemOperationResult(
+    val success: Boolean,
+    override val startTime: Long,
+    override val endTime: Long
+) : OperationResult()

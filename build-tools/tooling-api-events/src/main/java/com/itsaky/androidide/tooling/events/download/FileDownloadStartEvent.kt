@@ -23,5 +23,5 @@ import com.itsaky.androidide.tooling.events.StartEvent
 class FileDownloadStartEvent(
     displayName: String,
     eventTime: Long,
-    operationDescriptor: FileDownloadOperationDescriptor
-) : FileDownloadProgressEvent(displayName, eventTime, operationDescriptor), StartEvent
+    descriptor: FileDownloadOperationDescriptor
+) : FileDownloadProgressEvent(displayName, eventTime, descriptor), StartEvent

@@ -25,5 +25,5 @@ package com.itsaky.androidide.tooling.events
 interface ProgressEvent {
     val displayName: String
     val eventTime: Long
-    val operationDescriptor: OperationDescriptor
+    val descriptor: OperationDescriptor
 }

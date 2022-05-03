@@ -24,5 +24,5 @@ class ProjectConfigurationFinishEvent(
     override val result: ProjectConfigurationOperationResult,
     displayName: String,
     eventTime: Long,
-    operationDescriptor: ProjectConfigurationOperationDescriptor
-) : ProjectConfigurationProgressEvent(displayName, eventTime, operationDescriptor), FinishEvent
+    descriptor: ProjectConfigurationOperationDescriptor
+) : ProjectConfigurationProgressEvent(displayName, eventTime, descriptor), FinishEvent

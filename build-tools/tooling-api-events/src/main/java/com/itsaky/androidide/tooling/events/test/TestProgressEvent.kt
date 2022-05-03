@@ -23,5 +23,5 @@ import com.itsaky.androidide.tooling.events.ProgressEvent
 open class TestProgressEvent(
     override val displayName: String,
     override val eventTime: Long,
-    override val operationDescriptor: TestOperationDescriptor
+    override val descriptor: TestOperationDescriptor
 ) : ProgressEvent

@@ -18,15 +18,88 @@
 package com.itsaky.androidide.tooling.impl.progress
 
 import com.itsaky.androidide.tooling.api.IToolingApiClient
+import com.itsaky.androidide.utils.ILogger
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.ProgressListener
+import org.gradle.tooling.events.configuration.ProjectConfigurationFinishEvent
+import org.gradle.tooling.events.configuration.ProjectConfigurationProgressEvent
+import org.gradle.tooling.events.configuration.ProjectConfigurationStartEvent
+import org.gradle.tooling.events.download.FileDownloadFinishEvent
+import org.gradle.tooling.events.download.FileDownloadProgressEvent
+import org.gradle.tooling.events.download.FileDownloadStartEvent
+import org.gradle.tooling.events.task.TaskFinishEvent
+import org.gradle.tooling.events.task.TaskProgressEvent
+import org.gradle.tooling.events.task.TaskStartEvent
+import org.gradle.tooling.events.test.TestFinishEvent
+import org.gradle.tooling.events.test.TestProgressEvent
+import org.gradle.tooling.events.test.TestStartEvent
+import org.gradle.tooling.events.transform.TransformFinishEvent
+import org.gradle.tooling.events.transform.TransformProgressEvent
+import org.gradle.tooling.events.transform.TransformStartEvent
+import org.gradle.tooling.events.work.WorkItemFinishEvent
+import org.gradle.tooling.events.work.WorkItemProgressEvent
+import org.gradle.tooling.events.work.WorkItemStartEvent
 
 /**
  * A [ProgressListener] which forwards all of its event to [IToolingApiClient].
  * @author Akash Yadav
  */
+@Suppress("UnstableApiUsage")
 class ForwardingProgressListener : ProgressListener {
+
+    private val log = ILogger.newInstance(javaClass.simpleName)
+
     override fun statusChanged(event: ProgressEvent?) {
-        TODO("Not yet implemented")
+        if (event == null) {
+            return
+        }
+
+        val ideEvent: com.itsaky.androidide.tooling.events.ProgressEvent? =
+            when (event) {
+                is ProjectConfigurationProgressEvent ->
+                    when (event) {
+                        is ProjectConfigurationStartEvent ->
+                            EventTransformer.projectConfigurationStart(event)
+                        is ProjectConfigurationFinishEvent ->
+                            EventTransformer.projectConfigurationFinish(event)
+                        else -> EventTransformer.projectConfigurationProgress(event)
+                    }
+                is FileDownloadProgressEvent ->
+                    when (event) {
+                        is FileDownloadStartEvent -> EventTransformer.fileDownloadStart(event)
+                        is FileDownloadFinishEvent -> EventTransformer.fileDownloadFinish(event)
+                        else -> EventTransformer.fileDownloadProgress(event)
+                    }
+                is TaskProgressEvent ->
+                    when (event) {
+                        is TaskStartEvent -> EventTransformer.taskStart(event)
+                        is TaskFinishEvent -> EventTransformer.taskFinish(event)
+                        else -> EventTransformer.taskProgress(event)
+                    }
+                is TestProgressEvent ->
+                    when (event) {
+                        is TestStartEvent -> EventTransformer.testStart(event)
+                        is TestFinishEvent -> EventTransformer.testFinish(event)
+                        else -> EventTransformer.testProgress(event)
+                    }
+                is TransformProgressEvent ->
+                    when (event) {
+                        is TransformStartEvent -> EventTransformer.transformStart(event)
+                        is TransformFinishEvent -> EventTransformer.transformFinish(event)
+                        else -> EventTransformer.transformProgress(event)
+                    }
+                is WorkItemProgressEvent ->
+                    when (event) {
+                        is WorkItemStartEvent -> EventTransformer.workStart(event)
+                        is WorkItemFinishEvent -> EventTransformer.workFinish(event)
+                        else -> EventTransformer.workProgress(event)
+                    }
+                else -> null
+            }
+
+        if (ideEvent == null) {
+            log.warn("Unknown progress event:", event)
+            return
+        }
     }
 }

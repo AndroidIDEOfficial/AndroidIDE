@@ -23,5 +23,5 @@ import com.itsaky.androidide.tooling.events.StartEvent
 class TransformStartEvent(
     displayName: String,
     eventTime: Long,
-    operationDescriptor: TransformOperationDescriptor
-) : TransformProgressEvent(displayName, eventTime, operationDescriptor), StartEvent
+    descriptor: TransformOperationDescriptor
+) : TransformProgressEvent(displayName, eventTime, descriptor), StartEvent

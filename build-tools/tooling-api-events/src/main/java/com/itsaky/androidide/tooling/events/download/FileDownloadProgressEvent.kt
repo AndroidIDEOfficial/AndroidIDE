@@ -23,5 +23,5 @@ import com.itsaky.androidide.tooling.events.ProgressEvent
 open class FileDownloadProgressEvent(
     override val displayName: String,
     override val eventTime: Long,
-    override val operationDescriptor: FileDownloadOperationDescriptor
+    override val descriptor: FileDownloadOperationDescriptor
 ) : ProgressEvent()
