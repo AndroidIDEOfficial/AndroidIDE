@@ -18,7 +18,6 @@
 package com.itsaky.androidide.tooling.impl.util;
 
 import static com.itsaky.androidide.tooling.impl.Main.applyCommonArguments;
-import static com.itsaky.androidide.utils.ILogger.newInstance;
 import static java.util.Collections.emptyList;
 
 import com.android.builder.model.v2.ide.ProjectType;
@@ -42,7 +41,6 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
 import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener;
-import com.itsaky.androidide.utils.ILogger;
 
 import org.gradle.tooling.BuildController;
 import org.gradle.tooling.ConfigurableLauncher;
@@ -67,23 +65,20 @@ import java.util.Map;
  */
 public class ProjectReader {
 
-    private static final ILogger LOG = newInstance("ProjectReader");
-
     public static IdeGradleProject read(
             ProjectConnection connection, Map<String, DefaultProjectSyncIssues> outIssues) {
-        final var watch = new StopWatch("Create basic models");
-        LOG.debug("Creating Idea project model...");
+        System.err.println("Creating Idea project model...");
         final var builder = connection.model(IdeaProject.class);
         applyCommonArguments(builder);
+
         final var ideaProject = builder.get();
-        watch.lapFromLast("Idea project model created");
 
         return buildGradleProjectModel(ideaProject, outIssues);
     }
 
     public static IdeAndroidModule buildAndroidModuleProject(
             GradleProject gradle, AndroidProject android, ProjectType type) {
-        LOG.debug("Building IdeAndroidModule for project:", gradle.getPath());
+        System.err.println("Building IdeAndroidModule for project: " + gradle.getName());
         final var builder = new ProjectBuilder();
         final var copier = AndroidModulePropertyCopier.INSTANCE;
         builder.setName(gradle.getName());
@@ -133,7 +128,7 @@ public class ProjectReader {
         final var gradle = ideaModule.getGradleProject();
 
         try {
-            LOG.debug("Trying to create model for Android project...");
+            System.err.println("Trying to create model for Android project...");
             final var executor =
                     connection.action(controller -> createAndroidModelInfo(gradle, controller));
 
@@ -142,31 +137,34 @@ public class ProjectReader {
 
             final var info = executor.run();
             if (info == null) {
-                LOG.debug(
-                        "ModelInfoContainer is null. Project",
-                        gradle.getName(),
-                        "is definitely not an Android project.");
+                System.err.println(
+                        "ModelInfoContainer is null. Project "
+                                + gradle.getName()
+                                + " is definitely not an Android project.");
                 throw new UnknownModelException(
                         "Project " + gradle.getName() + " is not an AndroidProject");
             }
 
-            LOG.debug(
-                    "ModelInfoContainer created for project:",
-                    gradle.getName(),
-                    info.getSyncIssues());
+            System.err.println(
+                    "ModelInfoContainer created for project: "
+                            + gradle.getName()
+                            + " "
+                            + info.getSyncIssues());
             outIssues.put(gradle.getPath(), info.getSyncIssues());
             return info.getProject();
         } catch (Throwable error) {
             try {
-                LOG.info("Building IdeGradleProject model for project:", gradle.getPath());
+                System.err.println(
+                        "Building IdeGradleProject model for project: " + gradle.getPath());
                 if (!(error instanceof UnknownModelException)) {
                     // If the error is something else than UnknownModelException, we should log it
-                    LOG.error(error);
+                    error.printStackTrace();
                 }
 
                 return buildJavaModuleProject(gradle, ideaModule);
             } catch (Throwable e) {
-                LOG.error("Unable to create model for project", e);
+                System.err.println("Unable to create model for project");
+                e.printStackTrace();
                 return null;
             }
         }
@@ -174,14 +172,19 @@ public class ProjectReader {
 
     private static ModelInfoContainer createAndroidModelInfo(
             GradleProject gradle, BuildController controller) {
-        final var watch = new StopWatch("GetAndroidModelV2Action");
+
+        final var start = System.currentTimeMillis();
         final var versions = controller.findModel(Versions.class);
         if (versions == null) {
-            LOG.warn("Project", gradle.getName(), "is not an AndroidProject");
+            System.err.println(
+                    "Project " + gradle.getName() + " is not an Android Gradle project.");
             return null;
         }
 
+        System.err.println("Fetching basic project model...");
         final var basicAndroid = controller.findModel(BasicAndroidProject.class);
+
+        System.err.println("Fetching project model...");
         final var android = controller.findModel(AndroidProject.class);
         final var module =
                 ProjectReader.buildAndroidModuleProject(
@@ -194,6 +197,7 @@ public class ProjectReader {
                                 basicAndroid.getMainSourceSet()));
 
         for (var variant : android.getVariants()) {
+            System.err.println("Fetching dependencies for variant: " + variant.getName());
             final var variantDependencies =
                     controller.findModel(
                             VariantDependencies.class,
@@ -206,18 +210,23 @@ public class ProjectReader {
                             AndroidModulePropertyCopier.INSTANCE.copy(variantDependencies));
         }
 
+        System.err.println("Fetching project sync issues...");
         final var issues = controller.findModel(ProjectSyncIssues.class);
         final var syncIssues =
                 issues == null
                         ? new DefaultProjectSyncIssues(emptyList())
                         : AndroidModulePropertyCopier.INSTANCE.copy(issues);
-        watch.log();
 
+        System.err.println(
+                "Android project model for project '"
+                        + gradle.getName()
+                        + "' created in "
+                        + (System.currentTimeMillis() - start)
+                        + "ms");
         return new ModelInfoContainer(module, syncIssues);
     }
 
     private static IdeJavaModule buildJavaModuleProject(GradleProject gradle, IdeaModule idea) {
-
         final var builder = new ProjectBuilder();
         builder.setName(gradle.getName());
         builder.setDescription(gradle.getDescription());

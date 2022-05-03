@@ -94,7 +94,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
                         RuntimeException(
                             "Unable to create gradle connector for project directory: ${params.directory}"))
                 }
-
+                
                 val connection = this.connector!!.connect()
                 stopWatch.lapFromLast("Project connection established")
 

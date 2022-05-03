@@ -27,6 +27,8 @@ import com.itsaky.androidide.utils.JvmLogger;
 
 import org.gradle.tooling.ConfigurableLauncher;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -56,9 +58,11 @@ public class Main {
     }
 
     public static void applyCommonArguments(ConfigurableLauncher<?> launcher) {
-        //        launcher.addArguments(
-        //                "--init-script",
-        // InitScriptHandler.INSTANCE.getInitScript().getAbsolutePath());
+        final var out = new LoggingOutputStream();
+        launcher.setStandardError(out);
+        launcher.setStandardOutput(out);
+        launcher.setStandardInput(
+                new ByteArrayInputStream("NoOp".getBytes(StandardCharsets.UTF_8)));
     }
 
     private static void onLog(LogLine line) {
