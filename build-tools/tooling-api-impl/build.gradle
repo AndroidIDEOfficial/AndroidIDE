@@ -56,8 +56,6 @@ repositories {
 dependencies {
     implementation project (path: ':build-tools:logger')
     implementation project (path: ':build-tools:tooling-api')
-    implementation project (path: ':build-tools:tooling-api-events')
-    implementation project (path: ':build-tools:tooling-api-model')
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.gradle:gradle-tooling-api:7.4.2'

@@ -20,5 +20,5 @@ package com.itsaky.androidide.tooling.events.task
 import com.itsaky.androidide.tooling.events.OperationResult
 
 /** @author Akash Yadav */
-class TaskOperationResult(override val startTime: Long, override val endTime: Long) :
+open class TaskOperationResult(override val startTime: Long, override val endTime: Long) :
     OperationResult()

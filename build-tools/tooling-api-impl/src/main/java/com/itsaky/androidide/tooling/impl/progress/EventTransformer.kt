@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.tooling.impl.progress
 
-import com.itsaky.androidide.model.PluginIdentifier
+import com.itsaky.androidide.tooling.events.StatusEvent
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationOperationResult.PluginApplicationResult
 import com.itsaky.androidide.tooling.events.download.FileDownloadFinishEvent
 import com.itsaky.androidide.tooling.events.download.FileDownloadProgressEvent
@@ -37,17 +37,24 @@ import com.itsaky.androidide.tooling.events.work.WorkItemFinishEvent
 import com.itsaky.androidide.tooling.events.work.WorkItemOperationResult
 import com.itsaky.androidide.tooling.events.work.WorkItemProgressEvent
 import com.itsaky.androidide.tooling.events.work.WorkItemStartEvent
+import com.itsaky.androidide.tooling.model.PluginIdentifier
 import org.gradle.tooling.events.OperationDescriptor
 import org.gradle.tooling.events.configuration.ProjectConfigurationFinishEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationOperationDescriptor
 import org.gradle.tooling.events.configuration.ProjectConfigurationOperationResult
 import org.gradle.tooling.events.configuration.ProjectConfigurationProgressEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationStartEvent
+import org.gradle.tooling.events.configuration.ProjectConfigurationSuccessResult
 import org.gradle.tooling.events.download.FileDownloadOperationDescriptor
 import org.gradle.tooling.events.download.FileDownloadResult
+import org.gradle.tooling.events.task.TaskExecutionResult
+import org.gradle.tooling.events.task.TaskFailureResult
 import org.gradle.tooling.events.task.TaskOperationDescriptor
 import org.gradle.tooling.events.task.TaskOperationResult
+import org.gradle.tooling.events.task.TaskSkippedResult
+import org.gradle.tooling.events.task.TaskSuccessResult
 import org.gradle.tooling.events.test.TestOperationDescriptor
+import org.gradle.tooling.events.test.TestSuccessResult
 import org.gradle.tooling.events.transform.TransformOperationDescriptor
 import org.gradle.tooling.events.transform.TransformSuccessResult
 import org.gradle.tooling.events.work.WorkItemOperationDescriptor
@@ -61,17 +68,28 @@ class EventTransformer {
 
         // ------------------------ COMMON -------------------------
         private fun operationDescriptor(
-            parent: OperationDescriptor?
+            descriptor: OperationDescriptor?
         ): com.itsaky.androidide.tooling.events.OperationDescriptor? =
-            when (parent) {
+            when (descriptor) {
                 null -> null
-                is ProjectConfigurationOperationDescriptor -> projectConfigurationDescriptor(parent)
-                is FileDownloadOperationDescriptor -> fileDownloadDescriptor(parent)
-                is TaskOperationDescriptor -> taskDescriptor(parent)
-                is TransformOperationDescriptor -> transformDescriptor(parent)
-                is WorkItemOperationDescriptor -> workDescriptor(parent)
-                else -> null
+                is ProjectConfigurationOperationDescriptor ->
+                    projectConfigurationDescriptor(descriptor)
+                is FileDownloadOperationDescriptor -> fileDownloadDescriptor(descriptor)
+                is TaskOperationDescriptor -> taskDescriptor(descriptor)
+                is TransformOperationDescriptor -> transformDescriptor(descriptor)
+                is WorkItemOperationDescriptor -> workDescriptor(descriptor)
+                else ->
+                    DefaultOperationDescriptor(
+                        name = descriptor.name,
+                        displayName = descriptor.displayName,
+                        parent = operationDescriptor(descriptor.parent))
             }
+
+        class DefaultOperationDescriptor(
+            override val name: String,
+            override val displayName: String,
+            override val parent: com.itsaky.androidide.tooling.events.OperationDescriptor?
+        ) : com.itsaky.androidide.tooling.events.OperationDescriptor()
 
         // ----------------- PROJECT CONFIGURATION --------------------
         @JvmStatic
@@ -113,7 +131,8 @@ class EventTransformer {
                             it.totalConfigurationTime.toMillis())
                     },
                 startTime = result.startTime,
-                endTime = result.endTime)
+                endTime = result.endTime,
+                success = result is ProjectConfigurationSuccessResult)
 
         private fun projectConfigurationDescriptor(
             descriptor: ProjectConfigurationOperationDescriptor
@@ -127,11 +146,12 @@ class EventTransformer {
 
         private fun projectIdentifier(
             project: ProjectIdentifier
-        ): com.itsaky.androidide.model.ProjectIdentifier =
-            com.itsaky.androidide.model.ProjectIdentifier(
+        ): com.itsaky.androidide.tooling.model.ProjectIdentifier =
+            com.itsaky.androidide.tooling.model.ProjectIdentifier(
                 projectPath = project.projectPath,
                 buildIdentifier =
-                    com.itsaky.androidide.model.BuildIdentifier(project.buildIdentifier.rootDir))
+                    com.itsaky.androidide.tooling.model.BuildIdentifier(
+                        project.buildIdentifier.rootDir))
 
         // ---------------------- FILE DOWNLOAD ---------------------------------
         @JvmStatic
@@ -206,9 +226,38 @@ class EventTransformer {
 
         private fun taskResult(
             result: TaskOperationResult
-        ): com.itsaky.androidide.tooling.events.task.TaskOperationResult =
-            com.itsaky.androidide.tooling.events.task.TaskOperationResult(
+        ): com.itsaky.androidide.tooling.events.task.TaskOperationResult {
+
+            // The order of conditions must not change here.
+
+            if (result is TaskSuccessResult) {
+                return com.itsaky.androidide.tooling.events.task.TaskSuccessResult(
+                    result.isUpToDate,
+                    result.isFromCache,
+                    result.startTime,
+                    result.endTime,
+                    result.isIncremental,
+                    result.executionReasons)
+            }
+
+            if (result is TaskExecutionResult) {
+                return com.itsaky.androidide.tooling.events.task.TaskExecutionResult(
+                    result.startTime, result.endTime, result.isIncremental, result.executionReasons)
+            }
+
+            if (result is TaskSkippedResult) {
+                return com.itsaky.androidide.tooling.events.task.TaskSkippedResult(
+                    result.skipMessage, result.startTime, result.endTime)
+            }
+
+            if (result is TaskFailureResult) {
+                return com.itsaky.androidide.tooling.events.task.TaskFailureResult(
+                    result.startTime, result.endTime)
+            }
+
+            return com.itsaky.androidide.tooling.events.task.TaskOperationResult(
                 startTime = result.startTime, endTime = result.endTime)
+        }
 
         private fun taskDescriptor(
             descriptor: TaskOperationDescriptor
@@ -253,7 +302,10 @@ class EventTransformer {
         private fun testResult(
             result: org.gradle.tooling.events.test.TestOperationResult
         ): TestOperationResult =
-            TestOperationResult(startTime = result.startTime, endTime = result.endTime)
+            TestOperationResult(
+                startTime = result.startTime,
+                endTime = result.endTime,
+                success = result is TestSuccessResult)
 
         private fun testDescriptor(
             descriptor: TestOperationDescriptor
@@ -359,5 +411,14 @@ class EventTransformer {
                 displayName = descriptor.displayName,
                 parent = operationDescriptor(descriptor.parent),
                 className = descriptor.className)
+
+        fun statusEvent(event: org.gradle.tooling.events.StatusEvent): StatusEvent =
+            StatusEvent(
+                total = event.total,
+                progress = event.progress,
+                unit = event.unit,
+                displayName = event.displayName,
+                eventTime = event.eventTime,
+                descriptor = operationDescriptor(event.descriptor)!!)
     }
 }

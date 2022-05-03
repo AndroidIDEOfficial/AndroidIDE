@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.tooling.events.configuration
 
-import com.itsaky.androidide.model.ProjectIdentifier
+import com.itsaky.androidide.tooling.model.ProjectIdentifier
 import com.itsaky.androidide.tooling.events.OperationDescriptor
 
 /** @author Akash Yadav */

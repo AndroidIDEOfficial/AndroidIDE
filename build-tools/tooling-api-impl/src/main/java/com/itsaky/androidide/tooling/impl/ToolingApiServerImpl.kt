@@ -38,7 +38,7 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_GRADLE_VERSION
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
-import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener
+import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
@@ -72,17 +72,17 @@ internal class ToolingApiServerImpl : IToolingApiServer {
     override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
         return CompletableFutures.computeAsync {
             try {
-                
+
                 if (initialized && connector != null) {
                     connector?.disconnect()
                     connector = null
                     project = null
                 }
-    
+
                 if (buildCancellationToken != null) {
                     cancelCurrentBuild().get()
                 }
-                
+
                 log.debug("Got initialize request", params)
                 val stopWatch = StopWatch("Connection to project")
                 this.connector =
@@ -94,7 +94,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
                         RuntimeException(
                             "Unable to create gradle connector for project directory: ${params.directory}"))
                 }
-                
+
                 val connection = this.connector!!.connect()
                 stopWatch.lapFromLast("Project connection established")
 
@@ -147,7 +147,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
 
             val connection = this.connector!!.forProjectDirectory(project.projectDir).connect()
             val builder = connection.newBuild()
-            builder.addProgressListener(LoggingProgressListener())
+            builder.addProgressListener(ForwardingProgressListener())
 
             // System.in and System.out are used for communication between this server and the
             // client.

@@ -21,4 +21,6 @@ package com.itsaky.androidide.tooling.events
 abstract class OperationResult {
     abstract val startTime: Long
     abstract val endTime: Long
+
+    private val gsonType = javaClass.name
 }

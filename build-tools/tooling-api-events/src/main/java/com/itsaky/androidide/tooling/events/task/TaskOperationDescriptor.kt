@@ -17,8 +17,8 @@
 
 package com.itsaky.androidide.tooling.events.task
 
-import com.itsaky.androidide.model.PluginIdentifier
 import com.itsaky.androidide.tooling.events.OperationDescriptor
+import com.itsaky.androidide.tooling.model.PluginIdentifier
 
 /** @author Akash Yadav */
 class TaskOperationDescriptor(

@@ -23,7 +23,7 @@ import com.android.builder.model.Dependencies
 import com.android.builder.model.JavaLibrary
 import com.android.builder.model.ModelBuilderParameter
 import com.android.builder.model.Variant
-import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener
+import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener
 import java.io.File
 import org.gradle.tooling.ConfigurableLauncher
 import org.gradle.tooling.ProjectConnection
@@ -40,7 +40,7 @@ object LegacyProjectReader {
                     it.shouldGenerateSources = false
                 }
             }
-        builder.addProgressListener(LoggingProgressListener())
+        builder.addProgressListener(ForwardingProgressListener())
         addProperty(
             builder,
             AndroidProject.PROPERTY_BUILD_MODEL_ONLY_VERSIONED,

@@ -21,6 +21,7 @@ import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.utils.ILogger
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.ProgressListener
+import org.gradle.tooling.events.StatusEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationFinishEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationProgressEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationStartEvent
@@ -94,11 +95,12 @@ class ForwardingProgressListener : ProgressListener {
                         is WorkItemFinishEvent -> EventTransformer.workFinish(event)
                         else -> EventTransformer.workProgress(event)
                     }
+                is StatusEvent -> EventTransformer.statusEvent(event)
                 else -> null
             }
 
         if (ideEvent == null) {
-            log.warn("Unknown progress event:", event)
+            log.warn("Unknown progress event:", event, event.javaClass)
             return
         }
     }

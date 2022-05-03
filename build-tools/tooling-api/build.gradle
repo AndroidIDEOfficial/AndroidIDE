@@ -28,6 +28,7 @@ java {
 dependencies {
     implementation project (path: ':build-tools:logger')
     api project (path: ':build-tools:tooling-api-model')
+    api project (path: ':build-tools:tooling-api-events')
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     

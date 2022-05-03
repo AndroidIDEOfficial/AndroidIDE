@@ -25,4 +25,6 @@ open class TaskProgressEvent(
     override val displayName: String,
     override val eventTime: Long,
     override val descriptor: OperationDescriptor
-) : ProgressEvent
+) : ProgressEvent {
+    private val gsonType = javaClass.name
+}

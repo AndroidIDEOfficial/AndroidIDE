@@ -28,7 +28,6 @@ class TransformOperationDescriptor(
     override val displayName: String,
     override val parent: OperationDescriptor?
 ) : OperationDescriptor() {
-
     class SubjectDescriptor(val displayName: String)
 
     class TransformerDescriptor(val displayName: String)

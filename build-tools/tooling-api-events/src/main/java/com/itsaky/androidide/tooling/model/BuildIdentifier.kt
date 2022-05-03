@@ -14,18 +14,9 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
+package com.itsaky.androidide.tooling.model
 
-package com.itsaky.androidide.tooling.events.configuration
-
-import com.itsaky.androidide.tooling.events.OperationResult
-import com.itsaky.androidide.tooling.model.PluginIdentifier
+import java.io.File
 
 /** @author Akash Yadav */
-class ProjectConfigurationOperationResult(
-    val success: Boolean,
-    val pluginApplicationResults: List<PluginApplicationResult>,
-    override val startTime: Long,
-    override val endTime: Long
-) : OperationResult() {
-    class PluginApplicationResult(val plugin: PluginIdentifier, val duration: Long)
-}
+class BuildIdentifier(val rootDir: File) {}

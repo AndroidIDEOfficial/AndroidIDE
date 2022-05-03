@@ -14,10 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.androidide.model
-
-import java.io.File
+package com.itsaky.androidide.tooling.model
 
 /** @author Akash Yadav */
-class BuildIdentifier(val rootDir: File) {}
+class PluginIdentifier(val displayName: String)

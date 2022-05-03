@@ -14,22 +14,7 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package com.itsaky.androidide.tooling.impl.progress
-
-import com.itsaky.androidide.utils.ILogger
-import org.gradle.tooling.ProgressEvent
-import org.gradle.tooling.ProgressListener
+package com.itsaky.androidide.tooling.model
 
 /** @author Akash Yadav */
-class LoggingProgressListener : ProgressListener {
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    override fun statusChanged(event: ProgressEvent?) {
-        if (event == null) {
-            log.warn("Null event received from Gradle Tooling API")
-            return
-        }
-
-        log.debug("ProgressEvent:", event.description)
-    }
-}
+class ProjectIdentifier(val buildIdentifier: BuildIdentifier, val projectPath: String) {}

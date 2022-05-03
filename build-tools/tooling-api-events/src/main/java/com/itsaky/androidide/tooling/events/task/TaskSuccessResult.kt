@@ -15,7 +15,14 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.model
+package com.itsaky.androidide.tooling.events.task
 
 /** @author Akash Yadav */
-class PluginIdentifier(val displayName: String)
+class TaskSuccessResult(
+    val isUpToDate: Boolean,
+    val isFromCache: Boolean,
+    startTime: Long,
+    endTime: Long,
+    isIncremental: Boolean,
+    executionReasons: List<String>
+) : TaskExecutionResult(startTime, endTime, isIncremental, executionReasons)

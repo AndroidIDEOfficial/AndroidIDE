@@ -24,4 +24,6 @@ open class ProjectConfigurationProgressEvent(
     override val displayName: String,
     override val eventTime: Long,
     override val descriptor: ProjectConfigurationOperationDescriptor
-) : ProgressEvent
+) : ProgressEvent {
+    private val gsonType = javaClass.name
+}

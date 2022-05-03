@@ -18,8 +18,11 @@
 package com.itsaky.androidide.tooling.events
 
 /** @author Akash Yadav */
-abstract class StatusEvent : ProgressEvent() {
-    abstract val progress: Long
-    abstract val total: Long
-    abstract val unit: String
-}
+class StatusEvent(
+    val progress: Long,
+    val total: Long,
+    val unit: String,
+    override val displayName: String,
+    override val eventTime: Long,
+    override val descriptor: OperationDescriptor
+) : ProgressEvent

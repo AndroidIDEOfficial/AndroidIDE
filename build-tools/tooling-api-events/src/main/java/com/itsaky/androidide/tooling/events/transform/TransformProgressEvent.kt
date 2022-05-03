@@ -24,4 +24,6 @@ open class TransformProgressEvent(
     override val displayName: String,
     override val eventTime: Long,
     override val descriptor: TransformOperationDescriptor
-) : ProgressEvent
+) : ProgressEvent {
+    private val gsonType = javaClass.name
+}
