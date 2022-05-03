@@ -39,6 +39,8 @@ import com.itsaky.androidide.tooling.api.model.JavaSourceDirectory;
 import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
+import com.itsaky.androidide.tooling.impl.Main;
+import com.itsaky.androidide.utils.ILogger;
 
 import org.gradle.tooling.BuildController;
 import org.gradle.tooling.ConfigurableLauncher;
@@ -74,6 +76,14 @@ public class ProjectReader {
                         });
         applyCommonArguments(buildActionExecutor);
         applyAndroidModelBuilderProps(buildActionExecutor);
+
+        final var logger = ILogger.newInstance("ProjectReader");
+        logger.warn("Starting build. See build output for more details...");
+
+        if (Main.client != null) {
+            Main.client.logOutput("Starting build...");
+        }
+
         return buildActionExecutor.run();
     }
 
@@ -129,8 +139,8 @@ public class ProjectReader {
         final var gradle = ideaModule.getGradleProject();
 
         try {
+            System.err.println();
             System.err.println("Trying to create model for Android project...");
-
             final var info = createAndroidModelInfo(gradle, controller);
             if (info == null) {
                 System.err.println(
@@ -168,7 +178,6 @@ public class ProjectReader {
 
     private static ModelInfoContainer createAndroidModelInfo(
             GradleProject gradle, BuildController controller) {
-
         final var start = System.currentTimeMillis();
         final var versions = controller.findModel(gradle, Versions.class);
         if (versions == null) {

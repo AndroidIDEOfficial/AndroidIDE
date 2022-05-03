@@ -29,13 +29,13 @@ import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.utils.ILogger
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -113,7 +113,9 @@ class ToolingApiImplTest {
         override fun logMessage(line: LogLine) {
             log.log(ILogger.priority(line.priorityChar), line.formattedTagAndMessage())
         }
-        override fun logOutput(line: String) {}
+        override fun logOutput(line: String) {
+            log.debug(line.trim())
+        }
         override fun prepareBuild() {}
         override fun onBuildSuccessful(result: BuildResult) {}
         override fun onBuildFailed(result: BuildResult) {}
