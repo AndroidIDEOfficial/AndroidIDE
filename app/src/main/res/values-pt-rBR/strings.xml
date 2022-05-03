@@ -76,11 +76,11 @@
      <string name="build_debug">assembleDebug</string>
      <string name="build_output">Saída de compilação</string>
      <string name="build_release">assembleRelease</string>
-     <string name="lint_tasks">Compilações Lint</string>
+     <string name="lint_tasks">Construções Lint</string>
      <string name="clean_amp_build">Limpar e construir</string>
      <string name="clean_project">Limpar</string>
      <string name="create_aab">Criar AAB</string>
-     <string name="build_tasks">Tipos de compilações</string>
+     <string name="build_tasks">Tipos de construções</string>
      <string name="stop_gradle_daemons">Parar daemons Gradle</string>
      <string name="quick_run_debug">Execução rápida</string>
      <string name="msg_sync_needed">Os arquivos Gradle foram alterados.  Por favor, reconstrua seu projeto para sincronizar dependências e configurações.</string>
@@ -226,8 +226,8 @@
      <string name="idepref_build_customgradlecommands_summary">Escolha comandos adicionais que serão adicionados durante a execução de cada tarefa</string>
      <string name="idepref_editor_fontsize_title">Tamanho da fonte</string>
      <string name="idepref_editor_fontsize_summary">Tamanho da fonte do editor</string>
-     <string name="idepref_editor_paintingflags_title">Bandeiras de pintura não imprimíveis</string>
-     <string name="idepref_editor_paintingflags_summary">Escolha quais caracteres não imprimíveis devem ser desenhados pelo editor</string>
+     <string name="idepref_editor_paintingflags_title">Non-printable painting flags</string>
+     <string name="idepref_editor_paintingflags_summary">Escolha quais caracteres non-printable devem ser desenhados pelo editor.</string>
      <string name="idepref_editor_drawhexcolors_title">Desenhar sequências de cores hexadecimais</string>
      <string name="idepref_editor_drawhexcolors_summary">O editor deve desenhar uma string de cor hexadecimal?</string>
      <string name="idepref_editor_title">Editor</string>
@@ -239,14 +239,17 @@
      <string name="title_default_shell">Usar shell do sistema no terminal</string>
      <string name="msg_default_shell">Se ativado, \'/system/bin/sh\' será usado no terminal.</string>
      <string name="title_general">Geral</string>
-     <string name="title_tab_size">Tamanho da tab</string>
-     <string name="msg_tab_size">Especifique o número de espaços para TAB</string>
+     <string name="title_tab_size">Tamanho das tab</string>
+     <string name="msg_tab_size">Especifique o número de espaços para as tabs</string>
      <string name="msg_preferences">Preferências</string>
      <string name="msg_failed_get_changelog">Falha ao ler o registro de alterações!</string>
      <string name="pref_changelog">Registro de alterações</string>
      <string name="msg_editor_font_size">Por favor, escolha o tamanho da fonte padrão do editor:</string>
      <string name="msg_clear_cache">Isso excluirá o diretório de caches criado pelo Gradle.  Se você excluí-lo, a próxima compilação pode demorar um pouco mais do que o normal, pois o Gradle fará o download dos arquivos necessários novamente.\nIMPORTANTE: Isso também excluirá o AAPT2.  Você precisará reinstalá-lo, caso contrário, ocorrerá uma falha de compilação.\n\nTem certeza de que deseja excluir os caches?</string>
-
+     <string name="idepref_editor_word_wrap_title">Quebra de linha</string>
+     <string name="idepref_editor_word_wrap_summary">Usar quebras de linha no editor</string>
+     <string name="idepref_editor_use_magnifier_title">Ativar lupa</string>
+     <string name="idepref_editor_use_magnifier_summary">Zoom de texto na posição do cursor ao selecionar texto no editor</string>
 
     <!-- Error Messages used while Logging -->
      <string name="err_installation">Erro de instalação</string>
@@ -346,7 +349,11 @@
      <string name="title_format_code">Formatar código</string>
      <string name="idepref_java_useGoogleStyle_title">Use a formatação de código no estilo Java do Google</string>
      <string name="idepref_java_useGoogleStyle_summary">Use a configuração de formatação de código Java Style do Google para formatar o código fonte Java.</string>
-     <string name="idepref_visiblePassword_title">Bandeira de dica de senha</string>
-     <string name="idepref_visiblePassword_summary">Isto garante que nenhuma dica de senha seja exibida pelo teclado.</string>
-     <string name="msg_no_actions">Nenhuma ação de código encontrada</string>
+     <string name="idepref_visiblePassword_title">Dica de senha</string>
+     <string name="idepref_visiblePassword_summary">Quando ativado, nenhuma dica de senha será mostrada pelo teclado.</string>
+     <string name="msg_no_actions">Nenhuma ação de código encontrada</string>   
+     <string name="previous">Anterior</string>
+     <string name="msg_editor_find_case_sensitive">Maiúsculas e minúsculas</string>
+     <string name="msg_editor_find_regex">Expressão regular</string>
+     <string name="msg_replacing">Substituindo...</string>
 </resources>
