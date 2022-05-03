@@ -64,6 +64,10 @@ class SaveFileAction() : EditorRelatedAction() {
             if (result.xmlSaved) {
                 ProjectManager.generateSources(context.buildService)
             }
+            
+            if (result.gradleSaved) {
+                context.notifySyncNeeded()
+            }
             true
         } catch (error: Throwable) {
             log.error("Failed to save file", error)

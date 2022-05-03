@@ -68,9 +68,21 @@ internal class ToolingApiServerImpl : IToolingApiServer {
     private var buildCancellationToken: CancellationTokenSource? = null
     private val log = ILogger.newInstance(javaClass.simpleName)
 
+    @Suppress("UnstableApiUsage")
     override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
         return CompletableFutures.computeAsync {
             try {
+                
+                if (initialized && connector != null) {
+                    connector?.disconnect()
+                    connector = null
+                    project = null
+                }
+    
+                if (buildCancellationToken != null) {
+                    cancelCurrentBuild().get()
+                }
+                
                 log.debug("Got initialize request", params)
                 val stopWatch = StopWatch("Connection to project")
                 this.connector =

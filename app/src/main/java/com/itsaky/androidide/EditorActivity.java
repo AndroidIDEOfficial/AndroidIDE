@@ -827,11 +827,11 @@ public class EditorActivity extends StudioActivity
         return result;
     }
 
-    private void notifySyncNeeded() {
+    public void notifySyncNeeded() {
         if (mBuildService != null && !mBuildService.isBuildInProgress()) {
             getSyncBanner()
                     .setNegative(android.R.string.cancel, null)
-                    .setPositive(android.R.string.ok, v -> assembleDebug(false))
+                    .setPositive(android.R.string.ok, v -> initializeProject())
                     .show();
         }
     }
@@ -881,6 +881,52 @@ public class EditorActivity extends StudioActivity
                 .setButtonTextColor(ContextCompat.getColor(this, R.color.secondaryColor))
                 .setIcon(R.drawable.ic_sync)
                 .setContentText(R.string.msg_sync_needed);
+    }
+
+    private void initializeProject() {
+        final var projectPath = ProjectManager.INSTANCE.getProjectDir();
+        if (projectPath == null) {
+            LOG.error("Cannot initialize project. Project model is null.");
+            return;
+        }
+
+        final var projectDir = new File(projectPath);
+        if (!projectDir.exists()) {
+            LOG.error("Project directory does not exist. Cannot initialize project");
+            return;
+        }
+
+        mBinding.buildProgressIndicator.post(
+                () -> mBinding.buildProgressIndicator.setVisibility(View.VISIBLE));
+        final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
+        future.whenComplete(
+                (result, error) -> {
+                    final var root = result == null ? null : result.getProject();
+                    if (result == null || root == null || error != null) {
+                        LOG.error(
+                                "An error occurred initializing the project with Tooling API",
+                                error);
+                        // TODO Show sync issues to user
+                        return;
+                    }
+
+                    onProjectInitialized(root);
+                });
+    }
+
+    protected void onProjectInitialized(IdeGradleProject root) {
+        mRootProject = root;
+        ProjectManager.INSTANCE.setRootProject(mRootProject);
+        ProjectManager.INSTANCE.notifyProjectUpdate();
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    mBinding.buildProgressIndicator.setVisibility(View.GONE);
+                    if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
+                        mFindInProjectDialog.dismiss();
+                    }
+
+                    mFindInProjectDialog = null; // Create the dialog again if needed
+                });
     }
 
     public void assembleDebug(boolean installApk) {
@@ -1011,6 +1057,10 @@ public class EditorActivity extends StudioActivity
         execTasks(null, "clean", "build");
     }
 
+    /////////////////////////////////////////////////
+    ////////////// PRIVATE APIS /////////////////////
+    /////////////////////////////////////////////////
+
     public AlertDialog getFindInProjectDialog() {
         return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
     }
@@ -1021,10 +1071,6 @@ public class EditorActivity extends StudioActivity
             mFileOptionsHandler.onOptionsClick(option);
         }
     }
-
-    /////////////////////////////////////////////////
-    ////////////// PRIVATE APIS /////////////////////
-    /////////////////////////////////////////////////
 
     public GradleBuildService getBuildService() {
         return mBuildService;
@@ -1217,52 +1263,6 @@ public class EditorActivity extends StudioActivity
         }
         unbindService(mGradleServiceConnection);
         super.onDestroy();
-    }
-
-    private void initializeProject() {
-        final var projectPath = ProjectManager.INSTANCE.getProjectDir();
-        if (projectPath == null) {
-            LOG.error("Cannot initialize project. Project model is null.");
-            return;
-        }
-
-        final var projectDir = new File(projectPath);
-        if (!projectDir.exists()) {
-            LOG.error("Project directory does not exist. Cannot initialize project");
-            return;
-        }
-
-        mBinding.buildProgressIndicator.post(
-                () -> mBinding.buildProgressIndicator.setVisibility(View.VISIBLE));
-        final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
-        future.whenComplete(
-                (result, error) -> {
-                    final var root = result == null ? null : result.getProject();
-                    if (result == null || root == null || error != null) {
-                        LOG.error(
-                                "An error occurred initializing the project with Tooling API",
-                                error);
-                        // TODO Show sync issues to user
-                        return;
-                    }
-
-                    onProjectInitialized(root);
-                });
-    }
-
-    protected void onProjectInitialized(IdeGradleProject root) {
-        mRootProject = root;
-        ProjectManager.INSTANCE.setRootProject(mRootProject);
-        ProjectManager.INSTANCE.notifyProjectUpdate();
-        ThreadUtils.runOnUiThread(
-                () -> {
-                    mBinding.buildProgressIndicator.setVisibility(View.GONE);
-                    if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
-                        mFindInProjectDialog.dismiss();
-                    }
-
-                    mFindInProjectDialog = null; // Create the dialog again if needed
-                });
     }
 
     private void setupDrawerToggle() {
