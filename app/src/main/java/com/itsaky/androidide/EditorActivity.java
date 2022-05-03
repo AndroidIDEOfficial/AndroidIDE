@@ -1079,6 +1079,7 @@ public class EditorActivity extends StudioActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setSupportActionBar(mBinding.editorToolbar);
 
         mViewModel = new ViewModelProvider(this).get(EditorViewModel.class);

@@ -32,7 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.ThreadUtils;
-import com.itsaky.androidide.EditorActivity;
+import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.builder.BuildService;
@@ -88,8 +88,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         final var ticker = getString(R.string.title_gradle_service_notification_ticker);
         final var title = getString(R.string.title_gradle_service_notification);
         final var message = getString(R.string.msg_gradle_service_notification);
+
+        final var launch =
+                getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID);
+
         final var intent =
-                PendingIntent.getActivity(this, 0, new Intent(this, EditorActivity.class), 0);
+                PendingIntent.getActivity(this, 0, launch, PendingIntent.FLAG_UPDATE_CURRENT);
         final var notification =
                 new Notification.Builder(this, BaseApplication.NOTIFICATION_GRADLE_BUILD_SERVICE)
                         .setSmallIcon(R.mipmap.ic_launcher_round)
