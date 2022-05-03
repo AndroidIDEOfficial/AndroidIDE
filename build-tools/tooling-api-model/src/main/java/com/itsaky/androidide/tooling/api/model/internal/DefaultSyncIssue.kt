@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.SyncIssue
+import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultSyncIssue(
@@ -26,4 +27,6 @@ class DefaultSyncIssue(
     override val multiLineMessage: List<String?>?,
     override val severity: Int,
     override val type: Int
-) : SyncIssue
+) : SyncIssue, Serializable {
+    private val serialVersionUID = 1L
+}

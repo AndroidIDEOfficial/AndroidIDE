@@ -19,10 +19,11 @@ package com.itsaky.androidide.tooling.api.model.internal
 import com.android.builder.model.v2.ide.AndroidArtifact
 import com.android.builder.model.v2.ide.CodeShrinker
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultAndroidArtifact : AndroidArtifact {
-
+class DefaultAndroidArtifact : AndroidArtifact, Serializable {
+    private val serialVersionUID = 1L
     override var resGenTaskName: String? = null
     override var abiFilters: Set<String>? = null
     override var assembleTaskOutputListingFile: File? = null

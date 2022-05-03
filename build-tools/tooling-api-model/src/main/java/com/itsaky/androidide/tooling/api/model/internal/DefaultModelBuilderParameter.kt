@@ -18,6 +18,9 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.models.ModelBuilderParameter
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultModelBuilderParameter(override var variantName: String) : ModelBuilderParameter {}
+class DefaultModelBuilderParameter(override var variantName: String) : ModelBuilderParameter, Serializable {
+    private val serialVersionUID = 1L
+}

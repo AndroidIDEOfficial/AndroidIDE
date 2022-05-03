@@ -18,7 +18,10 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.models.ProjectSyncIssues
+import java.io.Serializable
 
 /** @author Akash Yadav */
 class DefaultProjectSyncIssues(override val syncIssues: Collection<DefaultSyncIssue>) :
-    ProjectSyncIssues
+    ProjectSyncIssues, Serializable {
+    private val serialVersionUID = 1L
+}

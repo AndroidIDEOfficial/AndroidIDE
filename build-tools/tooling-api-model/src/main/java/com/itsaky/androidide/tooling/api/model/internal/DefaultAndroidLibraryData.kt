@@ -19,6 +19,7 @@ package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.AndroidLibraryData
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
 data class DefaultAndroidLibraryData(
@@ -35,4 +36,6 @@ data class DefaultAndroidLibraryData(
     override val resStaticLibrary: File,
     override val runtimeJarFiles: List<File>,
     override val symbolFile: File
-) : AndroidLibraryData {}
+) : AndroidLibraryData, Serializable {
+    private val serialVersionUID = 1L
+}

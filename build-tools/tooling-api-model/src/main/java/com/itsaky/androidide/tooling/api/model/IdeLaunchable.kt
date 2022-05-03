@@ -16,11 +16,14 @@
  */
 package com.itsaky.androidide.tooling.api.model
 
+import java.io.Serializable
+
 /**
  * Default implementation for [IdeLaunchable].
  *
  * @author Akash Yadav
  */
-open class IdeLaunchable(val displayName: String?, val isPublic: Boolean?) {
+open class IdeLaunchable(val displayName: String?, val isPublic: Boolean?) : Serializable {
     protected val gsonType: String = javaClass.name
+    private val serialVersionUID = 1L
 }

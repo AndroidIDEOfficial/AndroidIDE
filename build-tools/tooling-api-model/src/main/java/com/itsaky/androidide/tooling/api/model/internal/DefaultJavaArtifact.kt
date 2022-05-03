@@ -19,9 +19,11 @@ package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.JavaArtifact
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultJavaArtifact : JavaArtifact {
+class DefaultJavaArtifact : JavaArtifact, Serializable {
+    private val serialVersionUID = 1L
     override var modelSyncFiles: Collection<DefaultModelSyncFile> = emptyList()
 
     override var assembleTaskName: String = ""

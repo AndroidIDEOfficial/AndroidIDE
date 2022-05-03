@@ -20,9 +20,11 @@ package com.itsaky.androidide.tooling.api.model.internal
 import com.android.builder.model.v2.ide.TestInfo
 import com.android.builder.model.v2.ide.TestInfo.Execution
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultTestInfo : TestInfo {
+class DefaultTestInfo : TestInfo, Serializable {
+    private val serialVersionUID = 1L
     override var additionalRuntimeApks: Collection<File> = emptyList()
     override var animationsDisabled: Boolean = false
     override var execution: Execution? = null

@@ -21,9 +21,11 @@ import com.android.builder.model.v2.ide.Library
 import com.android.builder.model.v2.ide.LibraryType
 import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultLibrary : Library {
+class DefaultLibrary : Library, Serializable {
+    private val serialVersionUID = 1L
     override var androidLibraryData: DefaultAndroidLibraryData? = null
     override var artifact: File? = null
     override var key: String = ""

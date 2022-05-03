@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.api.model
 
 import java.io.File
+import java.io.Serializable
 
 /**
  * A java library model. Modules represented by this model does not apply any of the Android
@@ -43,7 +44,8 @@ class IdeJavaModule(
 ) :
     IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
     IdeModule,
-    HasDependencies {
+    HasDependencies,
+    Serializable {
 
     override fun getDependencies() = javaDependencies
 

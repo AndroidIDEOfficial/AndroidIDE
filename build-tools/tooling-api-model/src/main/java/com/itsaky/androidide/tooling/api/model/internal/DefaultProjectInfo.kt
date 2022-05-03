@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.ProjectInfo
+import java.io.Serializable
 
 /** @author Akash Yadav */
 data class DefaultProjectInfo(
@@ -28,4 +29,6 @@ data class DefaultProjectInfo(
     override val productFlavors: Map<String, String>,
     override val buildId: String,
     override val projectPath: String
-) : ProjectInfo
+) : ProjectInfo, Serializable {
+    private val serialVersionUID = 1L
+}

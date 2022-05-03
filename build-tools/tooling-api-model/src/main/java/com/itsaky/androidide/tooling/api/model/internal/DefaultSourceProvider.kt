@@ -19,10 +19,11 @@ package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.SourceProvider
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultSourceProvider() : SourceProvider {
-
+class DefaultSourceProvider() : SourceProvider, Serializable {
+    private val serialVersionUID = 1L
     override var aidlDirectories: Collection<File>? = null
     override var assetsDirectories: Collection<File>? = null
     override var customDirectories: Collection<DefaultCustomSourceDirectory>? = null

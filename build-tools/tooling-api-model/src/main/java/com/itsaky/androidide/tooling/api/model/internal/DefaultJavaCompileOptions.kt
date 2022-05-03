@@ -18,9 +18,11 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.JavaCompileOptions
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultJavaCompileOptions : JavaCompileOptions {
+class DefaultJavaCompileOptions : JavaCompileOptions, Serializable {
+    private val serialVersionUID = 1L
     override var encoding: String = ""
     override var isCoreLibraryDesugaringEnabled: Boolean = false
     override var sourceCompatibility: String = ""

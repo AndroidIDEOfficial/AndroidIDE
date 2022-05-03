@@ -19,9 +19,11 @@ package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.Variant
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultVariant : Variant {
+class DefaultVariant : Variant, Serializable {
+    private val serialVersionUID = 1L
     override var androidTestArtifact: DefaultAndroidArtifact? = null
     override var displayName: String = ""
     override var isInstantAppCompatible: Boolean = false

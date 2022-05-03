@@ -17,7 +17,9 @@
 
 package com.itsaky.androidide.tooling.impl.util;
 
+import static com.itsaky.androidide.tooling.impl.Main.applyCommonArguments;
 import static com.itsaky.androidide.utils.ILogger.newInstance;
+import static java.util.Collections.emptyList;
 
 import com.android.builder.model.v2.ide.ProjectType;
 import com.android.builder.model.v2.models.AndroidProject;
@@ -25,6 +27,7 @@ import com.android.builder.model.v2.models.BasicAndroidProject;
 import com.android.builder.model.v2.models.ModelBuilderParameter;
 import com.android.builder.model.v2.models.ProjectSyncIssues;
 import com.android.builder.model.v2.models.VariantDependencies;
+import com.android.builder.model.v2.models.Versions;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
@@ -38,10 +41,10 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
-import com.itsaky.androidide.tooling.impl.Main;
 import com.itsaky.androidide.tooling.impl.progress.LoggingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
 
+import org.gradle.tooling.BuildController;
 import org.gradle.tooling.ConfigurableLauncher;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ModelBuilder;
@@ -56,7 +59,6 @@ import org.gradle.tooling.model.idea.IdeaProject;
 import org.gradle.tooling.model.idea.IdeaSingleEntryLibraryDependency;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -72,11 +74,55 @@ public class ProjectReader {
         final var watch = new StopWatch("Create basic models");
         LOG.debug("Creating Idea project model...");
         final var builder = connection.model(IdeaProject.class);
-        Main.applyCommonArguments(builder);
+        applyCommonArguments(builder);
         final var ideaProject = builder.get();
         watch.lapFromLast("Idea project model created");
 
         return buildGradleProjectModel(ideaProject, outIssues);
+    }
+
+    public static IdeAndroidModule buildAndroidModuleProject(
+            GradleProject gradle, AndroidProject android, ProjectType type) {
+        LOG.debug("Building IdeAndroidModule for project:", gradle.getPath());
+        final var builder = new ProjectBuilder();
+        final var copier = AndroidModulePropertyCopier.INSTANCE;
+        builder.setName(gradle.getName());
+        builder.setDescription(gradle.getDescription());
+        builder.setPath(gradle.getPath());
+        builder.setProjectDir(gradle.getProjectDirectory());
+        builder.setBuildDir(gradle.getBuildDirectory());
+        builder.setBuildScript(gradle.getBuildScript().getSourceFile());
+        builder.setVariants(copier.copyVariants(android.getVariants()));
+        builder.setJavaCompileOptions(copier.copy(android.getJavaCompileOptions()));
+        builder.setResourcePrefix(android.getResourcePrefix());
+        builder.setDynamicFeatures(android.getDynamicFeatures());
+        builder.setViewBindingOptions(copier.copy(android.getViewBindingOptions()));
+        builder.setFlags(copier.copy(android.getFlags()));
+        builder.setModelSyncFiles(emptyList());
+        builder.setLintChecksJars(android.getLintChecksJars());
+        builder.setProjectType(type);
+
+        final var module = builder.buildAndroidModule();
+        addTasks(gradle, module);
+
+        return module;
+    }
+
+    private static void addTasks(GradleProject gradle, IdeGradleProject project) {
+        for (final var task : gradle.getTasks()) {
+            project.getTasks().add(buildGradleTaskModel(project, task));
+        }
+    }
+
+    private static IdeGradleTask buildGradleTaskModel(IdeGradleProject project, GradleTask task) {
+        return new IdeGradleTask(
+                task.getName(),
+                task.getDescription(),
+                task.getGroup(),
+                task.getPath(),
+                task.getDisplayName(),
+                task.isPublic(),
+                project.getProjectPath());
     }
 
     private static IdeGradleProject buildModuleProject(
@@ -87,27 +133,26 @@ public class ProjectReader {
         final var gradle = ideaModule.getGradleProject();
 
         try {
-            final var android = androidModel(connection, AndroidProject.class);
-            if (android == null) {
+            LOG.debug("Trying to create model for Android project...");
+            final var executor =
+                    connection.action(controller -> createAndroidModelInfo(gradle, controller));
+
+            applyCommonArguments(executor);
+            applyAndroidModelBuilderProps(executor);
+
+            final var info = executor.run();
+            if (info == null) {
+                LOG.debug(
+                        "ModelInfoContainer is null. Project",
+                        gradle.getName(),
+                        "is definitely not an Android project.");
                 throw new UnknownModelException(
-                        "Project " + gradle.getPath() + " is not an Android project.");
+                        "Project " + gradle.getName() + " is not an AndroidProject");
             }
 
-            final var basicAndroid = androidModel(connection, BasicAndroidProject.class);
-            final var module =
-                    buildAndroidModuleProject(gradle, android, basicAndroid.getProjectType());
-            module.setBoothclasspaths(basicAndroid.getBootClasspath());
-            module.setMainSourceSet(
-                    basicAndroid.getMainSourceSet() == null
-                            ? null
-                            : AndroidModulePropertyCopier.INSTANCE.copy(
-                                    basicAndroid.getMainSourceSet()));
-            readDependencies(connection, module);
-
-            final var issues = readSyncIssues(connection);
-            outIssues.put(gradle.getPath(), issues);
-
-            return module;
+            LOG.debug("ModelInfoContainer created for project:", gradle.getName(), info.getSyncIssues ());
+            outIssues.put(gradle.getPath(), info.getSyncIssues());
+            return info.getProject();
         } catch (Throwable error) {
             try {
                 LOG.info("Building IdeGradleProject model for project:", gradle.getPath());
@@ -122,6 +167,51 @@ public class ProjectReader {
                 return null;
             }
         }
+    }
+
+    private static ModelInfoContainer createAndroidModelInfo(
+            GradleProject gradle, BuildController controller) {
+        final var watch = new StopWatch("GetAndroidModelV2Action");
+        final var versions = controller.findModel(gradle, Versions.class);
+        if (versions == null) {
+            LOG.warn("Project", gradle.getName(), "is not an AndroidProject");
+            return null;
+        }
+
+        final var basicAndroid = controller.findModel(gradle, BasicAndroidProject.class);
+        final var android = controller.findModel(gradle, AndroidProject.class);
+        final var module =
+                ProjectReader.buildAndroidModuleProject(
+                        gradle, android, basicAndroid.getProjectType());
+        module.setBoothclasspaths(basicAndroid.getBootClasspath());
+        module.setMainSourceSet(
+                basicAndroid.getMainSourceSet() == null
+                        ? null
+                        : AndroidModulePropertyCopier.INSTANCE.copy(
+                                basicAndroid.getMainSourceSet()));
+
+        for (var variant : android.getVariants()) {
+            final var variantDependencies =
+                    controller.findModel(
+                            gradle,
+                            VariantDependencies.class,
+                            ModelBuilderParameter.class,
+                            it -> it.setVariantName(variant.getName()));
+
+            module.getVariantDependencies()
+                    .put(
+                            variant.getName(),
+                            AndroidModulePropertyCopier.INSTANCE.copy(variantDependencies));
+        }
+
+        final var issues = controller.findModel(gradle, ProjectSyncIssues.class);
+        final var syncIssues =
+                issues == null
+                        ? new DefaultProjectSyncIssues(emptyList())
+                        : AndroidModulePropertyCopier.INSTANCE.copy(issues);
+        watch.log();
+
+        return new ModelInfoContainer(module, syncIssues);
     }
 
     private static IdeJavaModule buildJavaModuleProject(GradleProject gradle, IdeaModule idea) {
@@ -192,6 +282,28 @@ public class ProjectReader {
         return AndroidModulePropertyCopier.INSTANCE.copy(issues);
     }
 
+    private static <T> T androidModel(ProjectConnection conn, Class<T> tClass) {
+        return androidModelBuilder(conn, tClass).get();
+    }
+
+    private static <T> ModelBuilder<T> androidModelBuilder(
+            ProjectConnection conn, Class<T> tClass) {
+        final var builder = conn.model(tClass);
+        applyAndroidModelBuilderProps(builder);
+        return builder;
+    }
+
+    private static <T extends ConfigurableLauncher<T>> void applyAndroidModelBuilderProps(
+            ConfigurableLauncher<T> launcher) {
+        addProperty(launcher, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
+        addProperty(launcher, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
+    }
+
+    private static void addProperty(
+            ConfigurableLauncher<?> launcher, String property, Object value) {
+        launcher.addArguments(String.format("-P%s=%s", property, value));
+    }
+
     private static void readDependencies(ProjectConnection connection, IdeAndroidModule android) {
         for (final var variant : android.getVariants()) {
             fillVariantDependencies(connection, android, variant);
@@ -209,38 +321,11 @@ public class ProjectReader {
                                         VariantDependencies.class,
                                         ModelBuilderParameter.class,
                                         parameter -> parameter.setVariantName(name)));
-        Main.applyCommonArguments(modelFinder);
+        applyCommonArguments(modelFinder);
         modelFinder.addProgressListener(new LoggingProgressListener());
         final var variantDependencies =
                 AndroidModulePropertyCopier.INSTANCE.copy(modelFinder.run());
         android.getVariantDependencies().put(name, variantDependencies);
-    }
-
-    private static IdeAndroidModule buildAndroidModuleProject(
-            GradleProject gradle, AndroidProject android, ProjectType type) {
-        LOG.debug("Building IdeAndroidModule for project:", gradle.getPath());
-        final var builder = new ProjectBuilder();
-        final var copier = AndroidModulePropertyCopier.INSTANCE;
-        builder.setName(gradle.getName());
-        builder.setDescription(gradle.getDescription());
-        builder.setPath(gradle.getPath());
-        builder.setProjectDir(gradle.getProjectDirectory());
-        builder.setBuildDir(gradle.getBuildDirectory());
-        builder.setBuildScript(gradle.getBuildScript().getSourceFile());
-        builder.setVariants(copier.copyVariants(android.getVariants()));
-        builder.setJavaCompileOptions(copier.copy(android.getJavaCompileOptions()));
-        builder.setResourcePrefix(android.getResourcePrefix());
-        builder.setDynamicFeatures(android.getDynamicFeatures());
-        builder.setViewBindingOptions(copier.copy(android.getViewBindingOptions()));
-        builder.setFlags(copier.copy(android.getFlags()));
-        builder.setModelSyncFiles(Collections.emptyList());
-        builder.setLintChecksJars(android.getLintChecksJars());
-        builder.setProjectType(type);
-
-        final var module = builder.buildAndroidModule();
-        addTasks(gradle, module);
-
-        return module;
     }
 
     private static IdeGradleProject buildGradleProjectModel(
@@ -272,12 +357,6 @@ public class ProjectReader {
         return project;
     }
 
-    private static void addTasks(GradleProject gradle, IdeGradleProject project) {
-        for (final var task : gradle.getTasks()) {
-            project.getTasks().add(buildGradleTaskModel(project, task));
-        }
-    }
-
     private static void addModules(
             IdeaProject ideaProject,
             IdeGradleProject project,
@@ -298,33 +377,5 @@ public class ProjectReader {
                 project.getModules().add(sub);
             }
         }
-    }
-
-    private static IdeGradleTask buildGradleTaskModel(IdeGradleProject project, GradleTask task) {
-        return new IdeGradleTask(
-                task.getName(),
-                task.getDescription(),
-                task.getGroup(),
-                task.getPath(),
-                task.getDisplayName(),
-                task.isPublic(),
-                project.getProjectPath());
-    }
-
-    private static <T> ModelBuilder<T> androidModelBuilder(
-            ProjectConnection conn, Class<T> tClass) {
-        final var builder = conn.model(tClass);
-        addProperty(builder, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
-        addProperty(builder, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
-        return builder;
-    }
-
-    private static <T> T androidModel(ProjectConnection conn, Class<T> tClass) {
-        return androidModelBuilder(conn, tClass).get();
-    }
-
-    private static void addProperty(
-            ConfigurableLauncher<?> launcher, String property, Object value) {
-        launcher.addArguments(String.format("-P%s=%s", property, value));
     }
 }

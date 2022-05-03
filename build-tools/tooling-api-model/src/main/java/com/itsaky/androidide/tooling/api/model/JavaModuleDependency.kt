@@ -18,12 +18,14 @@
 package com.itsaky.androidide.tooling.api.model
 
 import java.io.File
+import java.io.Serializable
 
 /**
  * Dependency of an [IdeJavaModule].
  *
  * @author Akash Yadav
  */
-abstract class JavaModuleDependency(val jarFile: File?) {
+abstract class JavaModuleDependency(val jarFile: File?) : Serializable {
+    private val serialVersionUID = 1L
     private val gsonType = javaClass.name
 }

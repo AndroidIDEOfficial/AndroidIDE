@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.api.model
 
 import java.io.File
+import java.io.Serializable
 
 /**
  * An external dependency of an [IdeJavaModule].
@@ -32,4 +33,5 @@ class JavaModuleExternalDependency(
 
     /** `javadoc.jar` for this dependency. */
     val javadoc: File? = null
-) : JavaModuleDependency(jar) {}
+) : JavaModuleDependency(jar), Serializable {
+}

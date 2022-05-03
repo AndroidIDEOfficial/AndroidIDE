@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.tooling.api.model
 
+import java.io.Serializable
+
 /**
  * A project dependency of an [IdeJavaModule]. More details about the project can be fetched by
  * querying the [projectPath] in the root project.
@@ -26,4 +28,5 @@ package com.itsaky.androidide.tooling.api.model
 class JavaModuleProjectDependency(
     /** The name of the module project. */
     val moduleName: String
-) : JavaModuleDependency(null)
+) : JavaModuleDependency(null), Serializable {
+}

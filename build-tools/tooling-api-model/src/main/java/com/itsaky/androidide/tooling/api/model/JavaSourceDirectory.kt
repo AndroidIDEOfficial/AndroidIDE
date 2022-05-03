@@ -18,10 +18,12 @@
 package com.itsaky.androidide.tooling.api.model
 
 import java.io.File
+import java.io.Serializable
 
 /**
  * A source directory of an [IdeJavaModule].
  *
  * @author Akash Yadav
  */
-class JavaSourceDirectory(val directory: File, val isGenerated: Boolean) {}
+class JavaSourceDirectory(val directory: File, val isGenerated: Boolean) : Serializable {
+}

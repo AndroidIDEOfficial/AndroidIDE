@@ -16,6 +16,8 @@
  */
 package com.itsaky.androidide.tooling.api.model
 
+import java.io.Serializable
+
 /**
  * Default implementation for [IdeGradleTask].
  *
@@ -29,4 +31,5 @@ open class IdeGradleTask(
     displayName: String?,
     isPublic: Boolean?,
     val projectPath: String?
-) : IdeLaunchable(displayName, isPublic)
+) : IdeLaunchable(displayName, isPublic), Serializable {
+}

@@ -26,6 +26,7 @@ import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
 import java.io.File
+import java.io.Serializable
 
 /**
  * Default implementation of [IdeAndroidModule].
@@ -49,11 +50,12 @@ class IdeAndroidModule(
     override var variants: Collection<DefaultVariant>,
     override var viewBindingOptions: DefaultViewBindingOptions?,
     override val lintChecksJars: List<File>,
-    override val modelSyncFiles: List<DefaultModelSyncFile>
+    override val modelSyncFiles: List<DefaultModelSyncFile>,
 ) :
     IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
     IdeModule,
-    AndroidProject {
+    AndroidProject,
+    Serializable {
 
     var boothclasspaths: Collection<File> = emptyList()
     var mainSourceSet: DefaultSourceSetContainer? = null

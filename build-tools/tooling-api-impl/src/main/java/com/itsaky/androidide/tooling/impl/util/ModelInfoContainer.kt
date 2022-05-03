@@ -15,13 +15,16 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.model
+package com.itsaky.androidide.tooling.impl.util
 
+import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
 import java.io.Serializable
 
 /** @author Akash Yadav */
-class JavaContentRoot: Serializable {
+data class ModelInfoContainer(
+    val project: IdeAndroidModule,
+    val syncIssues: DefaultProjectSyncIssues,
+) : Serializable {
     private val serialVersionUID = 1L
-    val sourceDirectories: List<JavaSourceDirectory> = mutableListOf()
-    val testDirectories: List<JavaSourceDirectory> = mutableListOf()
 }

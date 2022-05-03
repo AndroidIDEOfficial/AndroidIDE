@@ -19,9 +19,12 @@ package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.CustomSourceDirectory
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
 data class DefaultCustomSourceDirectory(
     override val directory: File,
     override val sourceTypeName: String
-) : CustomSourceDirectory
+) : CustomSourceDirectory, Serializable {
+    private val serialVersionUID = 1L
+}

@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.LibraryInfo
+import java.io.Serializable
 
 /** @author Akash Yadav */
 data class DefaultLibraryInfo(
@@ -29,4 +30,6 @@ data class DefaultLibraryInfo(
     override val group: String,
     override val name: String,
     override val version: String
-) : LibraryInfo
+) : LibraryInfo, Serializable {
+    private val serialVersionUID = 1L
+}

@@ -17,6 +17,7 @@
 package com.itsaky.androidide.tooling.api.model
 
 import java.io.File
+import java.io.Serializable
 
 /**
  * A root Gradle project.
@@ -31,7 +32,8 @@ open class IdeGradleProject(
     val buildScript: File?,
     val parent: IdeGradleProject?,
     val tasks: List<IdeGradleTask>,
-) : HasModules {
+) : HasModules, Serializable {
+    private val serialVersionUID = 1L
 
     private val gsonType: String = javaClass.name
     private val moduleProjects: MutableList<IdeGradleProject> = mutableListOf()
