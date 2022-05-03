@@ -23,6 +23,7 @@ import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.EditorRelatedAction
 import com.itsaky.androidide.app.StudioApp
+import com.itsaky.androidide.projects.ProjectManager
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.toaster.Toaster
 
@@ -54,11 +55,15 @@ class SaveFileAction() : EditorRelatedAction() {
 
     override fun execAction(data: ActionData): Boolean {
         val context = getActivity(data) ?: return false
-
+        
         return try {
             // Cannot use context.saveAll() because this.execAction is called on non-UI thread
             // and saveAll call will result in UI actions
-            context.saveAllResult()
+            val result = context.saveAllResult()
+
+            if (result.xmlSaved) {
+                ProjectManager.generateSources(context.buildService)
+            }
             true
         } catch (error: Throwable) {
             log.error("Failed to save file", error)

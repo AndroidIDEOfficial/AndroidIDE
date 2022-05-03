@@ -52,16 +52,16 @@ class EditorEventListener : GradleBuildService.EventListener {
         if (isFirstBuild) {
             activity().showFirstBuildNotice()
         }
-
+        
         activity().binding.buildProgressIndicator.visibility = View.VISIBLE
     }
 
     override fun onBuildSuccessful(tasks: MutableList<String>) {
         analyzeCurrentFile()
+        appendOutputSeparator()
+        
         activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
         activity().binding.buildProgressIndicator.visibility = View.GONE
-
-        appendOutputSeparator()
     }
 
     private fun appendOutputSeparator() {
@@ -70,10 +70,10 @@ class EditorEventListener : GradleBuildService.EventListener {
 
     override fun onBuildFailed(tasks: MutableList<String>) {
         analyzeCurrentFile()
+        appendOutputSeparator()
+        
         activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
         activity().binding.buildProgressIndicator.visibility = View.GONE
-
-        appendOutputSeparator()
     }
 
     override fun onOutput(line: String?) {

@@ -23,17 +23,18 @@ import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.utils.ILogger
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.JUnit4
 
 /** @author Akash Yadav */
 @RunWith(JUnit4::class)
@@ -69,7 +70,7 @@ class ToolingApiImplTest {
 
     private fun assertAndroidModule(android: IdeAndroidModule) {
         assertThat(android.viewBindingOptions).isNotNull()
-        assertThat(android.viewBindingOptions!!.isEnabled).isFalse()
+        assertThat(android.viewBindingOptions!!.isEnabled).isTrue()
     }
 
     private fun launchServer(client: IToolingApiClient): IToolingApiServer {
@@ -113,8 +114,8 @@ class ToolingApiImplTest {
         }
         override fun logOutput(line: String) {}
         override fun prepareBuild() {}
-        override fun onBuildSuccessful(tasks: List<String>) {}
-        override fun onBuildFailed(tasks: List<String>) {}
+        override fun onBuildSuccessful(result: BuildResult) {}
+        override fun onBuildFailed(result: BuildResult) {}
     }
 
     private class Reader(val input: InputStream) : Runnable {

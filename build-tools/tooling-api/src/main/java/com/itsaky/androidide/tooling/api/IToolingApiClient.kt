@@ -18,6 +18,7 @@
 package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 
@@ -49,16 +50,16 @@ interface IToolingApiClient {
     /**
      * Called when a build is successful.
      *
-     * @param tasks The tasks that were run. Maybe an empty list if no tasks were specified or if
-     * the build was not related to any tasks.
+     * @param result The result containing the tasks that were run. Maybe an empty list if no tasks
+     * were specified or if the build was not related to any tasks.
      */
-    @JsonNotification fun onBuildSuccessful(tasks: List<String>)
+    @JsonNotification fun onBuildSuccessful(result: BuildResult)
 
     /**
      * Called when a build fails.
      *
-     * @param tasks The tasks that were run. Maybe an empty list if no tasks were specified or if
-     * the build was not related to any tasks.
+     * @param result The result containing the tasks that were run. Maybe an empty list if no tasks
+     * were specified or if the build was not related to any tasks.
      */
-    @JsonNotification fun onBuildFailed(tasks: List<String>)
+    @JsonNotification fun onBuildFailed(result: BuildResult)
 }

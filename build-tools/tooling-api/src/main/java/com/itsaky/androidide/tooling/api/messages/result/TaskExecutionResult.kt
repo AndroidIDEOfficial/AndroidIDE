@@ -20,12 +20,12 @@ package com.itsaky.androidide.tooling.api.messages.result
 /**
  * Result for a task execution.
  *
- * @param result The result of the task execution.
- * @param failure The type of failure. Non-null only if [result] is `false`.
+ * @param isSuccessful The result of the task execution.
+ * @param failure The type of failure. Non-null only if [isSuccessful] is `false`.
  *
  * @author Akash Yadav
  */
-data class TaskExecutionResult(val result: Boolean, val failure: Failure?) {
+data class TaskExecutionResult(val isSuccessful: Boolean, val failure: Failure?) {
     enum class Failure {
         PROJECT_NOT_FOUND,
         UNKNOWN,

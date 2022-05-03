@@ -76,7 +76,6 @@ import com.itsaky.androidide.adapters.DiagnosticsAdapter;
 import com.itsaky.androidide.adapters.EditorBottomSheetTabAdapter;
 import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioActivity;
-import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
@@ -119,7 +118,6 @@ import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
-import com.itsaky.lsp.java.JavaLanguageServer;
 import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
@@ -813,8 +811,9 @@ public class EditorActivity extends StudioActivity
             notifySyncNeeded();
         }
 
-        // TODO Notify language servers about changed XML files
-        //  Maybe use a file watcher to do these kind of things.
+        if (canProcessResources) {
+            ProjectManager.INSTANCE.generateSources(mBuildService);
+        }
 
         return result.gradleSaved;
     }
@@ -1221,8 +1220,6 @@ public class EditorActivity extends StudioActivity
     }
 
     private void initializeProject() {
-        // TODO Do not create unnecessary models. Instead, just keep a reference to the root
-        //  directory of the project.
         final var projectPath = ProjectManager.INSTANCE.getProjectDir();
         if (projectPath == null) {
             LOG.error("Cannot initialize project. Project model is null.");
@@ -1256,8 +1253,7 @@ public class EditorActivity extends StudioActivity
     protected void onProjectInitialized(IdeGradleProject root) {
         mRootProject = root;
         ProjectManager.INSTANCE.setRootProject(mRootProject);
-        ProjectManager.INSTANCE.notifyProjectUpdate(
-                ((JavaLanguageServer) StudioApp.getInstance().getJavaLanguageServer()));
+        ProjectManager.INSTANCE.notifyProjectUpdate();
         ThreadUtils.runOnUiThread(
                 () -> {
                     mBinding.buildProgressIndicator.setVisibility(View.GONE);

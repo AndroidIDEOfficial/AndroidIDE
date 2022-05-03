@@ -19,11 +19,12 @@ package com.itsaky.androidide.projects
 import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
+import com.itsaky.androidide.app.StudioApp
+import com.itsaky.androidide.builder.BuildService
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.model.IdeModule
-import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.models.JavaServerConfiguration
 import java.io.File
 import java.nio.file.Path
@@ -40,6 +41,50 @@ object ProjectManager {
 
     fun getProjectDir(): String? =
         if (rootProject == null) projectPath else rootProject!!.projectDir!!.absolutePath
+
+    fun generateSources(builder: BuildService?) {
+        if (builder == null) {
+            log.warn("Cannot generate sources. BuildService is null.")
+            return
+        }
+
+        val app =
+            getApplicationModule()
+                ?: kotlin.run {
+                    log.error("Cannot generate resources...")
+                    return
+                }
+
+        val debug = app.variants.firstOrNull { it.name == "debug" }
+        if (debug == null) {
+            log.warn("No debug variant found in application project ${app.name}")
+            return
+        }
+
+        val mainArtifact = app.variants.first { it.name == "debug" }.mainArtifact
+        val genResourcesTask = mainArtifact.resGenTaskName
+        val genSourcesTask = mainArtifact.sourceGenTaskName
+        builder
+            .executeProjectTasks(
+                app.projectPath!!,
+                genResourcesTask ?: "",
+                genSourcesTask,
+
+                // If view binding is enabled, generate the view binding classes too
+                if (app.viewBindingOptions != null && app.viewBindingOptions!!.isEnabled)
+                    "dataBindingGenBaseClassesDebug"
+                else "")
+            .whenComplete { result, err ->
+                if (!result.isSuccessful || err != null) {
+                    log.warn(
+                        "Execution for tasks '$genResourcesTask' and '$genSourcesTask' failed.",
+                        err ?: "")
+                    return@whenComplete
+                }
+
+                notifyProjectUpdate()
+            }
+    }
 
     fun getApplicationModule(): IdeAndroidModule? {
         if (rootProject == null) {
@@ -84,7 +129,8 @@ object ProjectManager {
         return dirs
     }
 
-    fun notifyProjectUpdate(server: JavaLanguageServer) {
+    fun notifyProjectUpdate() {
+        val server = StudioApp.getInstance().javaLanguageServer
         val sourceDirs = collectApplicationSourceDirs()
         val classPaths = collectApplicationClassPaths()
         val configuration = JavaServerConfiguration(classPaths, sourceDirs)

@@ -31,6 +31,7 @@ import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.EditorActivity;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
@@ -43,6 +44,7 @@ import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage;
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage;
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult;
+import com.itsaky.androidide.tooling.api.messages.result.BuildResult;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
@@ -151,16 +153,16 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
 
     @Override
-    public void onBuildSuccessful(@NonNull List<String> tasks) {
+    public void onBuildSuccessful(@NonNull BuildResult result) {
         if (eventListener != null) {
-            eventListener.onBuildSuccessful(tasks);
+            eventListener.onBuildSuccessful(result.getTasks());
         }
     }
 
     @Override
-    public void onBuildFailed(@NonNull List<String> tasks) {
+    public void onBuildFailed(@NonNull BuildResult result) {
         if (eventListener != null) {
-            eventListener.onBuildFailed(tasks);
+            eventListener.onBuildFailed(result.getTasks());
         }
     }
 
@@ -260,8 +262,36 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     }
 
     public GradleBuildService setEventListener(EventListener eventListener) {
-        this.eventListener = eventListener;
+        this.eventListener = wrap(eventListener);
         return this;
+    }
+
+    private EventListener wrap(EventListener listener) {
+        if (listener == null) {
+            return null;
+        }
+
+        return new EventListener() {
+            @Override
+            public void prepareBuild() {
+                ThreadUtils.runOnUiThread(listener::prepareBuild);
+            }
+
+            @Override
+            public void onBuildSuccessful(@NonNull List<String> tasks) {
+                ThreadUtils.runOnUiThread(() -> listener.onBuildSuccessful(tasks));
+            }
+
+            @Override
+            public void onBuildFailed(@NonNull List<String> tasks) {
+                ThreadUtils.runOnUiThread(() -> listener.onBuildFailed(tasks));
+            }
+
+            @Override
+            public void onOutput(String line) {
+                ThreadUtils.runOnUiThread(() -> listener.onOutput(line));
+            }
+        };
     }
 
     protected void onServerExited(int exitCode) {
@@ -381,7 +411,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
          * Called when a build is successful.
          *
          * @param tasks The tasks that were run.
-         * @see IToolingApiClient#onBuildSuccessful(List)
+         * @see
+         *     IToolingApiClient#onBuildSuccessful(com.itsaky.androidide.tooling.api.messages.result.BuildResult)
          */
         void onBuildSuccessful(@NonNull List<String> tasks);
 
@@ -389,7 +420,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
          * Called when a build fails.
          *
          * @param tasks The tasks that were run.
-         * @see IToolingApiClient#onBuildFailed(List)
+         * @see
+         *     IToolingApiClient#onBuildFailed(com.itsaky.androidide.tooling.api.messages.result.BuildResult)
          */
         void onBuildFailed(@NonNull List<String> tasks);
 

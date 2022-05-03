@@ -23,6 +23,7 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult.Reason.CANCELLATION_ERROR
+import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure
@@ -142,19 +143,41 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             builder.setStandardInput("NoOp".byteInputStream())
             builder.setStandardError(out)
             builder.setStandardOutput(out)
-            builder.forTasks(*message.tasks.toTypedArray())
+            builder.forTasks(*message.tasks.filter { it.isNotBlank() }.toTypedArray())
             Main.applyCommonArguments(builder)
 
             this.buildCancellationToken = GradleConnector.newCancellationTokenSource()
             builder.withCancellationToken(this.buildCancellationToken!!.token())
 
+            notifyBeforeBuild()
+
             try {
                 builder.run()
                 this.buildCancellationToken = null
+                notifyBuildSuccess(message.tasks)
                 return@computeAsync TaskExecutionResult(true, null)
             } catch (error: Throwable) {
+                notifyBuildFailure(message.tasks)
                 return@computeAsync TaskExecutionResult(false, getTaskFailureType(error))
             }
+        }
+    }
+
+    private fun notifyBuildFailure(tasks: List<String>) {
+        if (client != null) {
+            client!!.onBuildFailed(BuildResult((tasks)))
+        }
+    }
+
+    private fun notifyBuildSuccess(tasks: List<String>) {
+        if (client != null) {
+            client!!.onBuildSuccessful(BuildResult(tasks))
+        }
+    }
+
+    private fun notifyBeforeBuild() {
+        if (client != null) {
+            client!!.prepareBuild()
         }
     }
 
