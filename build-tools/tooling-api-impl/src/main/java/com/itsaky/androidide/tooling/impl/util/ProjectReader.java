@@ -150,7 +150,10 @@ public class ProjectReader {
                         "Project " + gradle.getName() + " is not an AndroidProject");
             }
 
-            LOG.debug("ModelInfoContainer created for project:", gradle.getName(), info.getSyncIssues ());
+            LOG.debug(
+                    "ModelInfoContainer created for project:",
+                    gradle.getName(),
+                    info.getSyncIssues());
             outIssues.put(gradle.getPath(), info.getSyncIssues());
             return info.getProject();
         } catch (Throwable error) {
@@ -172,14 +175,14 @@ public class ProjectReader {
     private static ModelInfoContainer createAndroidModelInfo(
             GradleProject gradle, BuildController controller) {
         final var watch = new StopWatch("GetAndroidModelV2Action");
-        final var versions = controller.findModel(gradle, Versions.class);
+        final var versions = controller.findModel(Versions.class);
         if (versions == null) {
             LOG.warn("Project", gradle.getName(), "is not an AndroidProject");
             return null;
         }
 
-        final var basicAndroid = controller.findModel(gradle, BasicAndroidProject.class);
-        final var android = controller.findModel(gradle, AndroidProject.class);
+        final var basicAndroid = controller.findModel(BasicAndroidProject.class);
+        final var android = controller.findModel(AndroidProject.class);
         final var module =
                 ProjectReader.buildAndroidModuleProject(
                         gradle, android, basicAndroid.getProjectType());
@@ -193,7 +196,6 @@ public class ProjectReader {
         for (var variant : android.getVariants()) {
             final var variantDependencies =
                     controller.findModel(
-                            gradle,
                             VariantDependencies.class,
                             ModelBuilderParameter.class,
                             it -> it.setVariantName(variant.getName()));
@@ -204,7 +206,7 @@ public class ProjectReader {
                             AndroidModulePropertyCopier.INSTANCE.copy(variantDependencies));
         }
 
-        final var issues = controller.findModel(gradle, ProjectSyncIssues.class);
+        final var issues = controller.findModel(ProjectSyncIssues.class);
         final var syncIssues =
                 issues == null
                         ? new DefaultProjectSyncIssues(emptyList())
