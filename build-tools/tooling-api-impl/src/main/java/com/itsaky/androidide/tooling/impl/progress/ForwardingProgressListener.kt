@@ -18,9 +18,12 @@
 package com.itsaky.androidide.tooling.impl.progress
 
 import com.itsaky.androidide.tooling.api.IToolingApiClient
+import com.itsaky.androidide.tooling.impl.Main
 import com.itsaky.androidide.utils.ILogger
+import org.gradle.tooling.events.FinishEvent
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.ProgressListener
+import org.gradle.tooling.events.StartEvent
 import org.gradle.tooling.events.StatusEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationFinishEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationProgressEvent
@@ -51,11 +54,11 @@ class ForwardingProgressListener : ProgressListener {
     private val log = ILogger.newInstance(javaClass.simpleName)
 
     override fun statusChanged(event: ProgressEvent?) {
-        if (event == null) {
+        if (event == null || Main.client == null) {
             return
         }
 
-        val ideEvent: com.itsaky.androidide.tooling.events.ProgressEvent? =
+        val ideEvent: com.itsaky.androidide.tooling.events.ProgressEvent =
             when (event) {
                 is ProjectConfigurationProgressEvent ->
                     when (event) {
@@ -96,12 +99,14 @@ class ForwardingProgressListener : ProgressListener {
                         else -> EventTransformer.workProgress(event)
                     }
                 is StatusEvent -> EventTransformer.statusEvent(event)
-                else -> null
+                else ->
+                    when (event) {
+                        is StartEvent -> EventTransformer.start(event)
+                        is FinishEvent -> EventTransformer.finish(event)
+                        else -> EventTransformer.progress(event)
+                    }
             }
 
-        if (ideEvent == null) {
-            log.warn("Unknown progress event:", event, event.javaClass)
-            return
-        }
+        Main.client.onProgressEvent(ideEvent)
     }
 }

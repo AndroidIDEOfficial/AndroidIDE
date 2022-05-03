@@ -41,6 +41,11 @@ import com.itsaky.androidide.tooling.events.download.FileDownloadOperationDescri
 import com.itsaky.androidide.tooling.events.download.FileDownloadProgressEvent;
 import com.itsaky.androidide.tooling.events.download.FileDownloadResult;
 import com.itsaky.androidide.tooling.events.download.FileDownloadStartEvent;
+import com.itsaky.androidide.tooling.events.internal.DefaultFinishEvent;
+import com.itsaky.androidide.tooling.events.internal.DefaultOperationDescriptor;
+import com.itsaky.androidide.tooling.events.internal.DefaultOperationResult;
+import com.itsaky.androidide.tooling.events.internal.DefaultProgressEvent;
+import com.itsaky.androidide.tooling.events.internal.DefaultStartEvent;
 import com.itsaky.androidide.tooling.events.task.TaskExecutionResult;
 import com.itsaky.androidide.tooling.events.task.TaskFailureResult;
 import com.itsaky.androidide.tooling.events.task.TaskFinishEvent;
@@ -152,7 +157,7 @@ public class ToolingApiLauncher {
                                 TransformProgressEvent.class,
                                 TransformProgressEvent.class.getName())
                         .registerSubtype(
-                                TransformStartEvent.class, TransformProgressEvent.class.getName())
+                                TransformStartEvent.class, TransformStartEvent.class.getName())
                         .registerSubtype(
                                 TransformFinishEvent.class, TransformFinishEvent.class.getName())
 
@@ -162,7 +167,14 @@ public class ToolingApiLauncher {
                         .registerSubtype(
                                 WorkItemStartEvent.class, WorkItemStartEvent.class.getName())
                         .registerSubtype(
-                                WorkItemFinishEvent.class, WorkItemFinishEvent.class.getName()));
+                                WorkItemFinishEvent.class, WorkItemFinishEvent.class.getName())
+
+                        // Default implementations
+                        .registerSubtype(
+                                DefaultProgressEvent.class, DefaultProgressEvent.class.getName())
+                        .registerSubtype(DefaultStartEvent.class, DefaultStartEvent.class.getName())
+                        .registerSubtype(
+                                DefaultFinishEvent.class, DefaultFinishEvent.class.getName()));
 
         builder.registerTypeAdapterFactory(
                 RuntimeTypeAdapterFactory.of(OperationDescriptor.class, "gsonType", true)
@@ -183,7 +195,10 @@ public class ToolingApiLauncher {
                                 TransformOperationDescriptor.class.getName())
                         .registerSubtype(
                                 WorkItemOperationDescriptor.class,
-                                WorkItemOperationDescriptor.class.getName()));
+                                WorkItemOperationDescriptor.class.getName())
+                        .registerSubtype(
+                                DefaultOperationDescriptor.class,
+                                DefaultOperationDescriptor.class.getName()));
 
         builder.registerTypeAdapterFactory(
                 RuntimeTypeAdapterFactory.of(OperationResult.class, "gsonType", true)
@@ -201,7 +216,10 @@ public class ToolingApiLauncher {
                                 TransformOperationResult.class.getName())
                         .registerSubtype(
                                 WorkItemOperationResult.class,
-                                WorkItemOperationResult.class.getName()));
+                                WorkItemOperationResult.class.getName())
+                        .registerSubtype(
+                                DefaultOperationResult.class,
+                                DefaultOperationResult.class.getName()));
 
         builder.registerTypeAdapterFactory(
                 RuntimeTypeAdapterFactory.of(TaskOperationResult.class, "gsonType", true)

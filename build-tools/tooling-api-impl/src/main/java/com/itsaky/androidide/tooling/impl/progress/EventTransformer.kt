@@ -17,11 +17,18 @@
 
 package com.itsaky.androidide.tooling.impl.progress
 
+import com.itsaky.androidide.tooling.events.FinishEvent
+import com.itsaky.androidide.tooling.events.StartEvent
 import com.itsaky.androidide.tooling.events.StatusEvent
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationOperationResult.PluginApplicationResult
 import com.itsaky.androidide.tooling.events.download.FileDownloadFinishEvent
 import com.itsaky.androidide.tooling.events.download.FileDownloadProgressEvent
 import com.itsaky.androidide.tooling.events.download.FileDownloadStartEvent
+import com.itsaky.androidide.tooling.events.internal.DefaultFinishEvent
+import com.itsaky.androidide.tooling.events.internal.DefaultOperationDescriptor
+import com.itsaky.androidide.tooling.events.internal.DefaultOperationResult
+import com.itsaky.androidide.tooling.events.internal.DefaultProgressEvent
+import com.itsaky.androidide.tooling.events.internal.DefaultStartEvent
 import com.itsaky.androidide.tooling.events.task.TaskFinishEvent
 import com.itsaky.androidide.tooling.events.task.TaskProgressEvent
 import com.itsaky.androidide.tooling.events.task.TaskStartEvent
@@ -39,6 +46,7 @@ import com.itsaky.androidide.tooling.events.work.WorkItemProgressEvent
 import com.itsaky.androidide.tooling.events.work.WorkItemStartEvent
 import com.itsaky.androidide.tooling.model.PluginIdentifier
 import org.gradle.tooling.events.OperationDescriptor
+import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationFinishEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationOperationDescriptor
 import org.gradle.tooling.events.configuration.ProjectConfigurationOperationResult
@@ -84,12 +92,6 @@ class EventTransformer {
                         displayName = descriptor.displayName,
                         parent = operationDescriptor(descriptor.parent))
             }
-
-        class DefaultOperationDescriptor(
-            override val name: String,
-            override val displayName: String,
-            override val parent: com.itsaky.androidide.tooling.events.OperationDescriptor?
-        ) : com.itsaky.androidide.tooling.events.OperationDescriptor()
 
         // ----------------- PROJECT CONFIGURATION --------------------
         @JvmStatic
@@ -412,6 +414,8 @@ class EventTransformer {
                 parent = operationDescriptor(descriptor.parent),
                 className = descriptor.className)
 
+        
+        // ---------------------------- STATUS ---------------------------------
         fun statusEvent(event: org.gradle.tooling.events.StatusEvent): StatusEvent =
             StatusEvent(
                 total = event.total,
@@ -420,5 +424,25 @@ class EventTransformer {
                 displayName = event.displayName,
                 eventTime = event.eventTime,
                 descriptor = operationDescriptor(event.descriptor)!!)
+
+        // ----------------------- DEFAULT ----------------------------------
+        fun progress(event: ProgressEvent): com.itsaky.androidide.tooling.events.ProgressEvent =
+            DefaultProgressEvent(
+                eventTime = event.eventTime,
+                displayName = event.displayName,
+                descriptor = operationDescriptor(event.descriptor)!!)
+
+        fun start(event: org.gradle.tooling.events.StartEvent): StartEvent =
+            DefaultStartEvent(
+                eventTime = event.eventTime,
+                displayName = event.displayName,
+                descriptor = operationDescriptor(event.descriptor)!!)
+
+        fun finish(event: org.gradle.tooling.events.FinishEvent): FinishEvent =
+            DefaultFinishEvent(
+                eventTime = event.eventTime,
+                displayName = event.displayName,
+                descriptor = operationDescriptor(event.descriptor)!!,
+                result = DefaultOperationResult(event.result.startTime, event.result.endTime))
     }
 }

@@ -22,6 +22,7 @@ import static com.itsaky.androidide.utils.ILogger.newInstance;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
+import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JvmLogger;
 
@@ -63,6 +64,8 @@ public class Main {
         launcher.setStandardOutput(out);
         launcher.setStandardInput(
                 new ByteArrayInputStream("NoOp".getBytes(StandardCharsets.UTF_8)));
+
+        launcher.addProgressListener(new ForwardingProgressListener());
     }
 
     private static void onLog(LogLine line) {

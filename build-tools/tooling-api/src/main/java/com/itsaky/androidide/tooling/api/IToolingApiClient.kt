@@ -19,6 +19,7 @@ package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
+import com.itsaky.androidide.tooling.events.ProgressEvent
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 
@@ -62,4 +63,6 @@ interface IToolingApiClient {
      * were specified or if the build was not related to any tasks.
      */
     @JsonNotification fun onBuildFailed(result: BuildResult)
+
+    @JsonNotification fun onProgressEvent(event: ProgressEvent)
 }
