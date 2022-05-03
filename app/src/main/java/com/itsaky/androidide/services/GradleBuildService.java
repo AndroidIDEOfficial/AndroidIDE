@@ -48,6 +48,7 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildResult;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
+import com.itsaky.androidide.tooling.events.ProgressEvent;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.InputStreamLineReader;
@@ -168,6 +169,11 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         if (eventListener != null) {
             eventListener.onBuildFailed(result.getTasks());
         }
+    }
+
+    @Override
+    public void onProgressEvent(@NonNull ProgressEvent event) {
+        LOG.debug("[" + event.getEventTime() + "]", event.getDisplayName());
     }
 
     @NonNull
