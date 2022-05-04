@@ -20,7 +20,9 @@ package com.itsaky.androidide.tooling.api
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.events.ProgressEvent
+import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
+import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 
 /**
@@ -70,4 +72,11 @@ interface IToolingApiClient {
      * @param event The [ProgressEvent] model describing the event.
      */
     @JsonNotification fun onProgressEvent(event: ProgressEvent)
+
+    /**
+     * Get the extra build arguments that will be used for every build.
+     *
+     * @return The extra build arguments.
+     */
+    @JsonRequest fun getBuildArguments(): CompletableFuture<List<String>>
 }

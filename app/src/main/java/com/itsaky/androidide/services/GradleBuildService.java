@@ -183,6 +183,45 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     @NonNull
     @Override
+    public CompletableFuture<List<String>> getBuildArguments() {
+        final PreferenceManager prefs = StudioApp.getInstance().getPrefManager();
+        final var extraArgs = new ArrayList<String>();
+
+        extraArgs.add("--init-script");
+        extraArgs.add(Environment.INIT_SCRIPT.getAbsolutePath());
+
+        // Override AAPT2 binary
+        // The one downloaded from Maven is not built for Android
+        extraArgs.add("-Pandroid.aapt2FromMavenOverride=" + Environment.AAPT2.getAbsolutePath());
+
+        if (prefs.isStackTraceEnabled()) {
+            extraArgs.add("--stacktrace");
+        }
+        if (prefs.isGradleInfoEnabled()) {
+            extraArgs.add("--info");
+        }
+        if (prefs.isGradleDebugEnabled()) {
+            extraArgs.add("--debug");
+        }
+        if (prefs.isGradleScanEnabled()) {
+            extraArgs.add("--scan");
+        }
+        if (prefs.isGradleWarningEnabled()) {
+            extraArgs.add("--warning-mode");
+            extraArgs.add("all");
+        }
+        if (prefs.isGradleBuildCacheEnabled()) {
+            extraArgs.add("--build-cache");
+        }
+        if (prefs.isGradleOfflineModeEnabled()) {
+            extraArgs.add("--offline");
+        }
+
+        return CompletableFuture.completedFuture(extraArgs);
+    }
+
+    @NonNull
+    @Override
     public CompletableFuture<InitializeResult> initializeProject(@NonNull String rootDir) {
         checkServerStarted();
         ensureTmpdir();
@@ -209,7 +248,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         }
 
         isBuildInProgress = true;
-        return server.executeTasks(createTaskExecutionMessage(":", tasks))
+        return server.executeTasks(new TaskExecutionMessage(":", Arrays.asList(tasks)))
                 .thenApply(this::markBuildAsFinished);
     }
 
@@ -226,7 +265,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         }
 
         isBuildInProgress = true;
-        return server.executeTasks(createTaskExecutionMessage(projectPath, tasks))
+        return server.executeTasks(new TaskExecutionMessage(projectPath, Arrays.asList(tasks)))
                 .thenApply(this::markBuildAsFinished);
     }
 
@@ -234,40 +273,6 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     @Override
     public CompletableFuture<BuildCancellationRequestResult> cancelCurrentBuild() {
         return server.cancelCurrentBuild();
-    }
-
-    @NonNull
-    private TaskExecutionMessage createTaskExecutionMessage(
-            @NonNull String projectPath, @NonNull String[] tasks) {
-        final PreferenceManager prefs = StudioApp.getInstance().getPrefManager();
-        final var extraArgs = new ArrayList<String>();
-
-        extraArgs.add("--init-script");
-        extraArgs.add(Environment.INIT_SCRIPT.getAbsolutePath());
-
-        if (prefs.isStackTraceEnabled()) {
-            extraArgs.add("--stacktrace");
-        }
-        if (prefs.isGradleInfoEnabled()) {
-            extraArgs.add("--info");
-        }
-        if (prefs.isGradleDebugEnabled()) {
-            extraArgs.add("--debug");
-        }
-        if (prefs.isGradleScanEnabled()) {
-            extraArgs.add("--scan");
-        }
-        if (prefs.isGradleWarningEnabled()) {
-            extraArgs.add("--warning-mode");
-            extraArgs.add("all");
-        }
-        if (prefs.isGradleBuildCacheEnabled()) {
-            extraArgs.add("--build-cache");
-        }
-        if (prefs.isGradleOfflineModeEnabled()) {
-            extraArgs.add("--offline");
-        }
-        return new TaskExecutionMessage(projectPath, Arrays.asList(tasks), extraArgs);
     }
 
     private void checkServerStarted() {

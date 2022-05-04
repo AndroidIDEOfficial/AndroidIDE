@@ -58,7 +58,7 @@ public class Main {
         }
     }
 
-    public static void applyCommonProperties (ConfigurableLauncher<?> launcher) {
+    public static void finalizeLauncher(ConfigurableLauncher<?> launcher) {
         final var out = new LoggingOutputStream();
         launcher.setStandardError(out);
         launcher.setStandardOutput(out);
@@ -66,6 +66,16 @@ public class Main {
                 new ByteArrayInputStream("NoOp".getBytes(StandardCharsets.UTF_8)));
 
         launcher.addProgressListener(new ForwardingProgressListener());
+
+        if (client != null) {
+            try {
+                final var args = client.getBuildArguments().get();
+                args.removeIf(String::isBlank);
+                launcher.addArguments(args);
+            } catch (Throwable e) {
+                LOG.error("Unable to get build arguments from tooling client", e);
+            }
+        }
     }
 
     private static void onLog(LogLine line) {
