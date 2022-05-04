@@ -18,6 +18,10 @@
 package com.itsaky.androidide.handlers
 
 import android.content.DialogInterface
+import android.text.Layout.Alignment.ALIGN_CENTER
+import android.text.Layout.Alignment.ALIGN_NORMAL
+import android.text.SpannableStringBuilder
+import android.text.style.AlignmentSpan
 import android.view.View
 import android.webkit.URLUtil
 import androidx.core.view.GravityCompat
@@ -35,7 +39,6 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StudioUtils
 import java.io.File
 import java.lang.ref.WeakReference
-import java.util.*
 
 /**
  * Handles events received from [GradleBuildService] updates [EditorActivity].
@@ -86,10 +89,17 @@ class EditorEventListener : GradleBuildService.EventListener {
             val fileName =
                 URLUtil.guessFileName(
                     (event.descriptor as FileDownloadOperationDescriptor).uri.path, null, null)
-            activity()
-                .setStatus(
-                    String.format(Locale.ROOT, "%-20s Download %s", "[$progress/$total]", fileName),
-                    GravityCompat.START)
+
+            val status = SpannableStringBuilder()
+            status.append(
+                "[$progress/$total]",
+                AlignmentSpan.Standard(ALIGN_NORMAL),
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE)
+            status.append(
+                " Download $fileName",
+                AlignmentSpan.Standard(ALIGN_CENTER),
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE)
+            activity().setStatus(status, GravityCompat.START)
         }
     }
 
