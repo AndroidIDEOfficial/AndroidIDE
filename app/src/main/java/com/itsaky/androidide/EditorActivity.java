@@ -649,22 +649,6 @@ public class EditorActivity extends StudioActivity
         return saveAll(true);
     }
 
-    public void setStatus(final CharSequence text) {
-        setStatus(text, Gravity.CENTER);
-    }
-
-    public void setStatus(final CharSequence text, @GravityInt int gravity) {
-        try {
-            runOnUiThread(
-                    () -> {
-                        mBinding.bottomSheet.statusText.setGravity(gravity);
-                        mBinding.bottomSheet.statusText.setText(text);
-                    });
-        } catch (Throwable th) {
-            LOG.error("Failed to update status text", th);
-        }
-    }
-
     public void closeFile(int index) {
         if (index >= 0 && index < mViewModel.getOpenedFileCount()) {
             var opened = mViewModel.getOpenedFile(index);
@@ -905,8 +889,12 @@ public class EditorActivity extends StudioActivity
             return;
         }
 
-        mBinding.buildProgressIndicator.post(
-                () -> mBinding.buildProgressIndicator.setVisibility(View.VISIBLE));
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    setStatus(getString(R.string.msg_initializing_project));
+                    mBinding.buildProgressIndicator.setVisibility(View.VISIBLE);
+                });
+
         final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
         future.whenComplete(
                 (result, error) -> {
@@ -915,12 +903,16 @@ public class EditorActivity extends StudioActivity
                         LOG.error(
                                 "An error occurred initializing the project with Tooling API",
                                 error);
-                        // TODO Show sync issues to user
+                        setStatus(getString(R.string.msg_project_initialization_failed));
                         return;
                     }
 
                     onProjectInitialized(root);
                 });
+    }
+
+    public void setStatus(final CharSequence text) {
+        setStatus(text, Gravity.CENTER);
     }
 
     protected void onProjectInitialized(IdeGradleProject root) {
@@ -929,6 +921,7 @@ public class EditorActivity extends StudioActivity
         ProjectManager.INSTANCE.notifyProjectUpdate();
         ThreadUtils.runOnUiThread(
                 () -> {
+                    setStatus(getString(R.string.msg_project_initialized));
                     mBinding.buildProgressIndicator.setVisibility(View.GONE);
                     if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
                         mFindInProjectDialog.dismiss();
@@ -936,6 +929,18 @@ public class EditorActivity extends StudioActivity
 
                     mFindInProjectDialog = null; // Create the dialog again if needed
                 });
+    }
+
+    public void setStatus(final CharSequence text, @GravityInt int gravity) {
+        try {
+            runOnUiThread(
+                    () -> {
+                        mBinding.bottomSheet.statusText.setGravity(gravity);
+                        mBinding.bottomSheet.statusText.setText(text);
+                    });
+        } catch (Throwable th) {
+            LOG.error("Failed to update status text", th);
+        }
     }
 
     public void assembleDebug(boolean installApk) {
