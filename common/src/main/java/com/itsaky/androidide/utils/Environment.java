@@ -70,6 +70,7 @@ public final class Environment {
     public static File PROJECT_DATA_FILE;
     public static File GRADLE_PROPS;
     public static File GRADLE_USER_HOME;
+    public static File AAPT2;
     public static File JAVA;
     public static File BUSYBOX;
     public static File SHELL;
@@ -91,6 +92,7 @@ public final class Environment {
                 new File(
                         mkdirIfNotExits(new File(ANDROIDIDE_HOME, "tooling-api")),
                         "tooling-api-all.jar");
+        AAPT2 = new File(ANDROIDIDE_HOME, "aapt2");
 
         IDE_PROPS_FILE = new File(SYSROOT, "etc/ide-environment.properties");
         LIB_HOOK = new File(LIB_DIR, "libhook.so");

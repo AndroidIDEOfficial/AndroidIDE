@@ -55,6 +55,7 @@ public class ToolsManager {
                         () -> {
                             copyBusyboxIfNeeded();
                             extractLogsenderIfNeeded();
+                            extractAapt2();
                             extractLibHooks();
                             extractGradlePlugin();
                             extractToolingApi();
@@ -100,6 +101,13 @@ public class ToolsManager {
         }
     }
 
+    private static void extractAapt2() {
+        if (!Environment.AAPT2.exists()) {
+            ResourceUtils.copyFileFromAssets(
+                    getArchSpecificAsset("aapt2"), Environment.AAPT2.getAbsolutePath());
+        }
+    }
+
     public static void extractLibHooks() {
         if (!Environment.LIB_HOOK.exists()) {
             ResourceUtils.copyFileFromAssets(
@@ -134,7 +142,7 @@ public class ToolsManager {
         if (Environment.TOOLING_API_JAR.exists()) {
             FileUtils.delete(Environment.TOOLING_API_JAR);
         }
-        
+
         ResourceUtils.copyFileFromAssets(
                 getCommonAsset("tooling-api-all.jar"),
                 Environment.TOOLING_API_JAR.getAbsolutePath());
