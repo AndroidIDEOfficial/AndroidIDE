@@ -186,8 +186,15 @@ public class ProjectReader {
             return null;
         }
 
-        System.err.println(versions);
-        System.err.println("Fetching basic project model...");
+        if (!versions.getAgp().equals(Main.SUPPORTED_AGP_VERSION)) {
+            throw new UnsupportedOperationException(
+                    "Android Gradle Plugin version "
+                            + versions.getAgp()
+                            + " is not supported by AndroidIDE. Please use version "
+                            + Main.SUPPORTED_AGP_VERSION
+                            + " to build this project.");
+        }
+
         final var basicAndroid = controller.findModel(gradle, BasicAndroidProject.class);
 
         System.err.println("Fetching project model...");

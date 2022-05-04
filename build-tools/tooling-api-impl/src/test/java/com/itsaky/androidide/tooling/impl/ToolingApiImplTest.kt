@@ -122,8 +122,7 @@ class ToolingApiImplTest {
         override fun onBuildSuccessful(result: BuildResult) {}
         override fun onBuildFailed(result: BuildResult) {}
 
-        override fun onProgressEvent(event: ProgressEvent) {
-        }
+        override fun onProgressEvent(event: ProgressEvent) {}
 
         override fun getBuildArguments(): CompletableFuture<List<String>> {
             return CompletableFuture.completedFuture(emptyList())
