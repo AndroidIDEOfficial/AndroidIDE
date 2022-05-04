@@ -19,4 +19,4 @@ package com.itsaky.androidide.tooling.model
 import java.io.File
 
 /** @author Akash Yadav */
-class BuildIdentifier(val rootDir: File) {}
+data class BuildIdentifier(val rootDir: File)

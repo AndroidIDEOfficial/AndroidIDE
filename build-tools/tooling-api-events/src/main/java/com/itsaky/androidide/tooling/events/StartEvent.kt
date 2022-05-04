@@ -18,4 +18,4 @@
 package com.itsaky.androidide.tooling.events
 
 /** @author Akash Yadav */
-interface StartEvent : ProgressEvent
+interface StartEvent

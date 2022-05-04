@@ -173,7 +173,9 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     @Override
     public void onProgressEvent(@NonNull ProgressEvent event) {
-        LOG.debug("[" + event.getEventTime() + "]", event.getDisplayName());
+        if (eventListener != null) {
+            eventListener.onProgressEvent(event);
+        }
     }
 
     @NonNull
@@ -290,6 +292,11 @@ public class GradleBuildService extends Service implements BuildService, IToolin
             @Override
             public void onBuildSuccessful(@NonNull List<String> tasks) {
                 ThreadUtils.runOnUiThread(() -> listener.onBuildSuccessful(tasks));
+            }
+
+            @Override
+            public void onProgressEvent(@NonNull ProgressEvent event) {
+                ThreadUtils.runOnUiThread(() -> listener.onProgressEvent(event));
             }
 
             @Override
@@ -421,17 +428,22 @@ public class GradleBuildService extends Service implements BuildService, IToolin
          * Called when a build is successful.
          *
          * @param tasks The tasks that were run.
-         * @see
-         *     IToolingApiClient#onBuildSuccessful(com.itsaky.androidide.tooling.api.messages.result.BuildResult)
+         * @see IToolingApiClient#onBuildSuccessful(BuildResult)
          */
         void onBuildSuccessful(@NonNull List<String> tasks);
+
+        /**
+         * Called when a progress event is received from the Tooling API server.
+         *
+         * @param event The event model describing the event.
+         */
+        void onProgressEvent(@NonNull ProgressEvent event);
 
         /**
          * Called when a build fails.
          *
          * @param tasks The tasks that were run.
-         * @see
-         *     IToolingApiClient#onBuildFailed(com.itsaky.androidide.tooling.api.messages.result.BuildResult)
+         * @see IToolingApiClient#onBuildFailed(BuildResult)
          */
         void onBuildFailed(@NonNull List<String> tasks);
 

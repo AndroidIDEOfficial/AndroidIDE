@@ -43,6 +43,7 @@ import android.widget.LinearLayout;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.GravityInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -649,8 +650,16 @@ public class EditorActivity extends StudioActivity
     }
 
     public void setStatus(final CharSequence text) {
+        setStatus(text, Gravity.CENTER);
+    }
+
+    public void setStatus(final CharSequence text, @GravityInt int gravity) {
         try {
-            runOnUiThread(() -> mBinding.bottomSheet.statusText.setText(text));
+            runOnUiThread(
+                    () -> {
+                        mBinding.bottomSheet.statusText.setGravity(gravity);
+                        mBinding.bottomSheet.statusText.setText(text);
+                    });
         } catch (Throwable th) {
             LOG.error("Failed to update status text", th);
         }

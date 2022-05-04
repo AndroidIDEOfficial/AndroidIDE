@@ -364,6 +364,8 @@
 
     <string name="title_cancel_build">Cancel build</string>
     <string name="msg_project_not_initialized">Project is not initialized</string>
+    <string name="msg_file_downloading">Downloading %1$s</string>
+    <string name="msg_running_task">Running task: \'%1$s\'</string>
 </resources>
 
 

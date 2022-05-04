@@ -17,12 +17,8 @@
 
 package com.itsaky.androidide.tooling.events.task
 
-import com.itsaky.androidide.tooling.events.OperationDescriptor
 import com.itsaky.androidide.tooling.events.StartEvent
 
 /** @author Akash Yadav */
-class TaskStartEvent(
-    displayName: String,
-    eventTime: Long,
-    operationDescriptor: OperationDescriptor
-) : TaskProgressEvent(displayName, eventTime, operationDescriptor), StartEvent
+class TaskStartEvent(displayName: String, eventTime: Long, descriptor: TaskOperationDescriptor) :
+    TaskProgressEvent(displayName, eventTime, descriptor), StartEvent

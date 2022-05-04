@@ -18,12 +18,14 @@
 package com.itsaky.androidide.utils;
 
 import android.content.Context;
-import android.util.TypedValue;
 
 import com.itsaky.toaster.Toaster;
 
+import java.text.StringCharacterIterator;
+import java.util.Locale;
+
 public class StudioUtils {
-    private Context mContext;
+    private final Context mContext;
     private Toaster mToaster;
 
     public StudioUtils(Context mContext) {
@@ -33,6 +35,23 @@ public class StudioUtils {
 
     private Toaster getToaster() {
         return mToaster == null ? mToaster = new Toaster(mContext) : mToaster;
+    }
+
+    public static String bytesToSizeString(long bytes) {
+        final var absBytes = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
+        if (absBytes < 1024) {
+            return bytes + " B";
+        }
+
+        var value = absBytes;
+        final var iterator = new StringCharacterIterator("KMGTPE");
+        for (int i = 40; i >= 0 && absBytes > 0xfffccccccccccccL >> i; i -= 10) {
+            value >>= 10;
+            iterator.next();
+        }
+
+        value *= Long.signum(bytes);
+        return String.format(Locale.ROOT, "%.1f %cB", value / 1024.0, iterator.current());
     }
 
     public void toast(String msg, Toaster.Type type) {
@@ -49,15 +68,5 @@ public class StudioUtils {
 
     public void toastLong(int msg, Toaster.Type type) {
         getToaster().setDuration(Toaster.LONG).setText(msg).setType(type).show();
-    }
-
-    public float toDp(int px) {
-        return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, px, mContext.getResources().getDisplayMetrics());
-    }
-
-    public float toPx(int dp) {
-        return TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_PX, dp, mContext.getResources().getDisplayMetrics());
     }
 }

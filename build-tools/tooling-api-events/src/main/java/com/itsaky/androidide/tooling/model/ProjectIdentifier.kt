@@ -17,4 +17,4 @@
 package com.itsaky.androidide.tooling.model
 
 /** @author Akash Yadav */
-class ProjectIdentifier(val buildIdentifier: BuildIdentifier, val projectPath: String) {}
+data class ProjectIdentifier(val buildIdentifier: BuildIdentifier, val projectPath: String) {}

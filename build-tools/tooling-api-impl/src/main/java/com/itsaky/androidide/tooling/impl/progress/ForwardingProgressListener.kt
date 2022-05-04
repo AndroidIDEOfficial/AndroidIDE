@@ -19,7 +19,6 @@ package com.itsaky.androidide.tooling.impl.progress
 
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.impl.Main
-import com.itsaky.androidide.utils.ILogger
 import org.gradle.tooling.events.FinishEvent
 import org.gradle.tooling.events.ProgressEvent
 import org.gradle.tooling.events.ProgressListener
@@ -50,8 +49,6 @@ import org.gradle.tooling.events.work.WorkItemStartEvent
  */
 @Suppress("UnstableApiUsage")
 class ForwardingProgressListener : ProgressListener {
-
-    private val log = ILogger.newInstance(javaClass.simpleName)
 
     override fun statusChanged(event: ProgressEvent?) {
         if (event == null || Main.client == null) {

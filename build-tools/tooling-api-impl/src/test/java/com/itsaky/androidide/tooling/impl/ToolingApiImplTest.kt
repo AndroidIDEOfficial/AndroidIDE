@@ -28,7 +28,6 @@ import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
-import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
 import java.io.File

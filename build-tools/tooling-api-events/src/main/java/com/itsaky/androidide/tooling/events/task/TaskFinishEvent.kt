@@ -18,12 +18,11 @@
 package com.itsaky.androidide.tooling.events.task
 
 import com.itsaky.androidide.tooling.events.FinishEvent
-import com.itsaky.androidide.tooling.events.OperationDescriptor
 
 /** @author Akash Yadav */
 class TaskFinishEvent(
     displayName: String,
     eventTime: Long,
-    operationDescriptor: OperationDescriptor,
+    descriptor: TaskOperationDescriptor,
     override val result: TaskOperationResult
-) : TaskProgressEvent(displayName, eventTime, operationDescriptor), FinishEvent
+) : TaskProgressEvent(displayName, eventTime, descriptor), FinishEvent

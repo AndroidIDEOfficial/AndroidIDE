@@ -31,6 +31,7 @@ import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency;
 import com.itsaky.androidide.tooling.events.OperationDescriptor;
 import com.itsaky.androidide.tooling.events.OperationResult;
 import com.itsaky.androidide.tooling.events.ProgressEvent;
+import com.itsaky.androidide.tooling.events.StatusEvent;
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationFinishEvent;
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationOperationDescriptor;
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationOperationResult;
@@ -174,7 +175,10 @@ public class ToolingApiLauncher {
                                 DefaultProgressEvent.class, DefaultProgressEvent.class.getName())
                         .registerSubtype(DefaultStartEvent.class, DefaultStartEvent.class.getName())
                         .registerSubtype(
-                                DefaultFinishEvent.class, DefaultFinishEvent.class.getName()));
+                                DefaultFinishEvent.class, DefaultFinishEvent.class.getName())
+
+                        // Status event
+                        .registerSubtype(StatusEvent.class, StatusEvent.class.getName()));
 
         builder.registerTypeAdapterFactory(
                 RuntimeTypeAdapterFactory.of(OperationDescriptor.class, "gsonType", true)

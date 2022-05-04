@@ -18,6 +18,6 @@
 package com.itsaky.androidide.tooling.events
 
 /** @author Akash Yadav */
-interface FinishEvent : ProgressEvent {
+interface FinishEvent {
     val result: OperationResult
 }

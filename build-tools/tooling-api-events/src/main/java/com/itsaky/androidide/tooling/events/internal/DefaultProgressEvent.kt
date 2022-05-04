@@ -25,6 +25,4 @@ open class DefaultProgressEvent(
     override val displayName: String,
     override val eventTime: Long,
     override val descriptor: OperationDescriptor
-) : ProgressEvent {
-    private val gsonType = javaClass.name
-}
+) : ProgressEvent()

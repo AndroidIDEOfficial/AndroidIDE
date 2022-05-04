@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.tooling.impl.progress
 
-import com.itsaky.androidide.tooling.events.FinishEvent
-import com.itsaky.androidide.tooling.events.StartEvent
 import com.itsaky.androidide.tooling.events.StatusEvent
 import com.itsaky.androidide.tooling.events.configuration.ProjectConfigurationOperationResult.PluginApplicationResult
 import com.itsaky.androidide.tooling.events.download.FileDownloadFinishEvent
@@ -207,7 +205,7 @@ class EventTransformer {
             TaskStartEvent(
                 eventTime = event.eventTime,
                 displayName = event.displayName,
-                operationDescriptor = taskDescriptor(event.descriptor))
+                descriptor = taskDescriptor(event.descriptor))
 
         @JvmStatic
         fun taskProgress(
@@ -223,7 +221,7 @@ class EventTransformer {
             TaskFinishEvent(
                 eventTime = event.eventTime,
                 displayName = event.displayName,
-                operationDescriptor = taskDescriptor(event.descriptor),
+                descriptor = taskDescriptor(event.descriptor),
                 result = taskResult(event.result))
 
         private fun taskResult(
@@ -414,7 +412,6 @@ class EventTransformer {
                 parent = operationDescriptor(descriptor.parent),
                 className = descriptor.className)
 
-        
         // ---------------------------- STATUS ---------------------------------
         fun statusEvent(event: org.gradle.tooling.events.StatusEvent): StatusEvent =
             StatusEvent(
@@ -432,13 +429,17 @@ class EventTransformer {
                 displayName = event.displayName,
                 descriptor = operationDescriptor(event.descriptor)!!)
 
-        fun start(event: org.gradle.tooling.events.StartEvent): StartEvent =
+        fun start(
+            event: org.gradle.tooling.events.StartEvent
+        ): com.itsaky.androidide.tooling.events.ProgressEvent =
             DefaultStartEvent(
                 eventTime = event.eventTime,
                 displayName = event.displayName,
                 descriptor = operationDescriptor(event.descriptor)!!)
 
-        fun finish(event: org.gradle.tooling.events.FinishEvent): FinishEvent =
+        fun finish(
+            event: org.gradle.tooling.events.FinishEvent
+        ): com.itsaky.androidide.tooling.events.ProgressEvent =
             DefaultFinishEvent(
                 eventTime = event.eventTime,
                 displayName = event.displayName,

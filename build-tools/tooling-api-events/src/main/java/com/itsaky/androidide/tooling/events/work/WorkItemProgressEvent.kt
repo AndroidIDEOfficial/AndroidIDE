@@ -24,6 +24,4 @@ open class WorkItemProgressEvent(
     override val displayName: String,
     override val eventTime: Long,
     override val descriptor: WorkItemOperationDescriptor
-) : ProgressEvent {
-    private val gsonType = javaClass.name
-}
+) : ProgressEvent()

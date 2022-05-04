@@ -19,12 +19,19 @@ package com.itsaky.androidide.handlers
 
 import android.content.DialogInterface
 import android.view.View
+import android.webkit.URLUtil
+import androidx.core.view.GravityCompat
 import com.itsaky.androidide.EditorActivity
-import com.itsaky.androidide.R
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.services.GradleBuildService
+import com.itsaky.androidide.tooling.events.ProgressEvent
+import com.itsaky.androidide.tooling.events.StatusEvent
+import com.itsaky.androidide.tooling.events.download.FileDownloadOperationDescriptor
+import com.itsaky.androidide.tooling.events.task.TaskProgressEvent
 import com.itsaky.androidide.utils.DialogUtils
+import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.StudioUtils
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -35,6 +42,7 @@ import java.lang.ref.WeakReference
 class EditorEventListener : GradleBuildService.EventListener {
 
     private var activityReference: WeakReference<EditorActivity?> = WeakReference(null)
+    private val log = ILogger.newInstance(javaClass.simpleName)
 
     fun setActivity(activity: EditorActivity) {
         this.activityReference = WeakReference(activity)
@@ -47,21 +55,35 @@ class EditorEventListener : GradleBuildService.EventListener {
         activity()
             .setStatus(
                 activity()
-                    .getString(if (isFirstBuild) R.string.preparing_first else R.string.preparing))
+                    .getString(if (isFirstBuild) string.preparing_first else string.preparing))
 
         if (isFirstBuild) {
             activity().showFirstBuildNotice()
         }
-        
+
         activity().binding.buildProgressIndicator.visibility = View.VISIBLE
     }
 
     override fun onBuildSuccessful(tasks: MutableList<String>) {
         analyzeCurrentFile()
         appendOutputSeparator()
-        
+
         activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
         activity().binding.buildProgressIndicator.visibility = View.GONE
+    }
+
+    override fun onProgressEvent(event: ProgressEvent) {
+        if (event is TaskProgressEvent) {
+            activity()
+                .setStatus(activity().getString(string.msg_running_task, event.descriptor.taskPath))
+        } else if (event is StatusEvent && event.descriptor is FileDownloadOperationDescriptor) {
+            val total = StudioUtils.bytesToSizeString(event.total)
+            val progress = StudioUtils.bytesToSizeString(event.progress)
+            val fileName =
+                URLUtil.guessFileName(
+                    (event.descriptor as FileDownloadOperationDescriptor).uri.path, null, null)
+            activity().setStatus("[$progress/$total] Download $fileName", GravityCompat.START)
+        }
     }
 
     private fun appendOutputSeparator() {
@@ -71,7 +93,7 @@ class EditorEventListener : GradleBuildService.EventListener {
     override fun onBuildFailed(tasks: MutableList<String>) {
         analyzeCurrentFile()
         appendOutputSeparator()
-        
+
         activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
         activity().binding.buildProgressIndicator.visibility = View.GONE
     }
@@ -80,9 +102,7 @@ class EditorEventListener : GradleBuildService.EventListener {
         activity().appendBuildOut(line)
 
         // TODO This can be handled better when ProgressEvents are received from Tooling API server
-        if (line!!.startsWith("> Task") ||
-            line.contains("BUILD SUCCESSFUL") ||
-            line.contains("BUILD FAILED")) {
+        if (line!!.contains("BUILD SUCCESSFUL") || line.contains("BUILD FAILED")) {
             activity().setStatus(line)
         }
     }

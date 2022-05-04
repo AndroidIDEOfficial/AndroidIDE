@@ -17,4 +17,4 @@
 package com.itsaky.androidide.tooling.model
 
 /** @author Akash Yadav */
-class PluginIdentifier(val displayName: String)
+data class PluginIdentifier(val displayName: String)

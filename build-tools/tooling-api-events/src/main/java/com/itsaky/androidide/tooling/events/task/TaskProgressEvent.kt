@@ -17,14 +17,11 @@
 
 package com.itsaky.androidide.tooling.events.task
 
-import com.itsaky.androidide.tooling.events.OperationDescriptor
 import com.itsaky.androidide.tooling.events.ProgressEvent
 
 /** @author Akash Yadav */
 open class TaskProgressEvent(
     override val displayName: String,
     override val eventTime: Long,
-    override val descriptor: OperationDescriptor
-) : ProgressEvent {
-    private val gsonType = javaClass.name
-}
+    override val descriptor: TaskOperationDescriptor
+) : ProgressEvent()

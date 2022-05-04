@@ -64,5 +64,10 @@ interface IToolingApiClient {
      */
     @JsonNotification fun onBuildFailed(result: BuildResult)
 
+    /**
+     * Called when a [ProgressEvent] is received from Gradle build.
+     *
+     * @param event The [ProgressEvent] model describing the event.
+     */
     @JsonNotification fun onProgressEvent(event: ProgressEvent)
 }

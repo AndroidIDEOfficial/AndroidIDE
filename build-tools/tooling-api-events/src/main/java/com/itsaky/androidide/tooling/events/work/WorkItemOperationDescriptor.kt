@@ -25,4 +25,24 @@ class WorkItemOperationDescriptor(
     override val name: String,
     override val displayName: String,
     override val parent: OperationDescriptor?
-) : OperationDescriptor()
+) : OperationDescriptor() {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is WorkItemOperationDescriptor) return false
+
+        if (className != other.className) return false
+        if (name != other.name) return false
+        if (displayName != other.displayName) return false
+        if (parent != other.parent) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = className.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + displayName.hashCode()
+        result = 31 * result + (parent?.hashCode() ?: 0)
+        return result
+    }
+}

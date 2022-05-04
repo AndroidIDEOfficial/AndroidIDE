@@ -24,6 +24,4 @@ open class TestProgressEvent(
     override val displayName: String,
     override val eventTime: Long,
     override val descriptor: TestOperationDescriptor
-) : ProgressEvent {
-    private val gsonType = javaClass.name
-}
+) : ProgressEvent()
