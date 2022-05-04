@@ -34,7 +34,7 @@ repositories {
 dependencies {
     implementation project (path: ':build-tools:logger')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    api project (':build-tools:builder-model')
+    api "com.android.tools.build:builder-model:${project.property ("androidide.tooling.supportedAgpVersion")}"
 }
 
 task copyToTestDir (type: Copy) {

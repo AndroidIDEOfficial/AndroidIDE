@@ -15,6 +15,8 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java-library'
@@ -32,6 +34,16 @@ jar {
                 'Main-Class': 'com.itsaky.androidide.tooling.impl.Main'
         )
     }
+}
+
+task processSource(type: Sync) {
+    from sourceSets.main.java
+    filter(ReplaceTokens, tokens: [AGP_VERSION: project.property ("androidide.tooling.supportedAgpVersion")])
+    into "$buildDir/src"
+}
+
+compileJava {
+    source = processSource.outputs
 }
 
 shadowJar {

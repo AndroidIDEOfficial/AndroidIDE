@@ -36,6 +36,7 @@ import java.util.concurrent.Future;
 
 public class Main {
     private static final ILogger LOG = newInstance("ToolingApiMain");
+    public static final String SUPPORTED_AGP_VERSION = "@AGP_VERSION@";
     public static IToolingApiClient client;
     public static Future<Void> future;
 

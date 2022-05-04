@@ -74,7 +74,7 @@ public class ProjectReader {
 
                             return buildGradleProjectModel(ideaProject, controller, outIssues);
                         });
-        finalizeLauncher (buildActionExecutor);
+        finalizeLauncher(buildActionExecutor);
         applyAndroidModelBuilderProps(buildActionExecutor);
 
         final var logger = ILogger.newInstance("ProjectReader");
@@ -186,6 +186,7 @@ public class ProjectReader {
             return null;
         }
 
+        System.err.println(versions);
         System.err.println("Fetching basic project model...");
         final var basicAndroid = controller.findModel(gradle, BasicAndroidProject.class);
 
@@ -296,8 +297,8 @@ public class ProjectReader {
 
     private static <T extends ConfigurableLauncher<T>> void applyAndroidModelBuilderProps(
             ConfigurableLauncher<T> launcher) {
-        addProperty(launcher, AndroidProject.PROPERTY_BUILD_MODEL_ONLY, true);
-        addProperty(launcher, AndroidProject.PROPERTY_INVOKED_FROM_IDE, true);
+        addProperty(launcher, IdeAndroidModule.PROPERTY_BUILD_MODEL_ONLY, true);
+        addProperty(launcher, IdeAndroidModule.PROPERTY_INVOKED_FROM_IDE, true);
     }
 
     private static void addProperty(

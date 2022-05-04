@@ -28,11 +28,13 @@ import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
+import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.util.concurrent.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -121,7 +123,10 @@ class ToolingApiImplTest {
         override fun onBuildFailed(result: BuildResult) {}
 
         override fun onProgressEvent(event: ProgressEvent) {
-            log.debug(event.javaClass)
+        }
+
+        override fun getBuildArguments(): CompletableFuture<List<String>> {
+            return CompletableFuture.completedFuture(emptyList())
         }
     }
 
