@@ -27,6 +27,7 @@ import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.services.GradleBuildService
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.tooling.events.StatusEvent
+import com.itsaky.androidide.tooling.events.download.FileDownloadFinishEvent
 import com.itsaky.androidide.tooling.events.download.FileDownloadOperationDescriptor
 import com.itsaky.androidide.tooling.events.task.TaskProgressEvent
 import com.itsaky.androidide.utils.DialogUtils
@@ -73,7 +74,9 @@ class EditorEventListener : GradleBuildService.EventListener {
     }
 
     override fun onProgressEvent(event: ProgressEvent) {
-        if (event is TaskProgressEvent) {
+        if (event is FileDownloadFinishEvent) {
+            activity().setStatus("")
+        } else if (event is TaskProgressEvent) {
             activity()
                 .setStatus(activity().getString(string.msg_running_task, event.descriptor.taskPath))
         } else if (event is StatusEvent && event.descriptor is FileDownloadOperationDescriptor) {
