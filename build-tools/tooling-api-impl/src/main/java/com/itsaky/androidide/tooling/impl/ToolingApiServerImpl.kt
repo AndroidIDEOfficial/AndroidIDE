@@ -156,7 +156,12 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             builder.setStandardError(out)
             builder.setStandardOutput(out)
             builder.forTasks(*message.tasks.filter { it.isNotBlank() }.toTypedArray())
-            Main.applyCommonArguments(builder)
+            Main.applyCommonProperties(builder)
+
+            if (message.extraArguments.isNotEmpty()) {
+                log.debug("Extra build arguments:", message.extraArguments)
+                builder.addArguments(message.extraArguments.filter { it.isNotBlank() })
+            }
 
             this.buildCancellationToken = GradleConnector.newCancellationTokenSource()
             builder.withCancellationToken(this.buildCancellationToken!!.token())

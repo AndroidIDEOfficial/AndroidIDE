@@ -21,4 +21,8 @@ package com.itsaky.androidide.tooling.api.messages
  * Message sent by client to execute given tasks using the Tooling API.
  * @author Akash Yadav
  */
-data class TaskExecutionMessage(val projectPath: String?, val tasks: List<String>)
+data class TaskExecutionMessage(
+    val projectPath: String?,
+    val tasks: List<String>,
+    val extraArguments: List<String>
+)

@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.tooling.impl.util;
 
-import static com.itsaky.androidide.tooling.impl.Main.applyCommonArguments;
+import static com.itsaky.androidide.tooling.impl.Main.applyCommonProperties;
 import static java.util.Collections.emptyList;
 
 import com.android.builder.model.v2.ide.ProjectType;
@@ -74,7 +74,7 @@ public class ProjectReader {
 
                             return buildGradleProjectModel(ideaProject, controller, outIssues);
                         });
-        applyCommonArguments(buildActionExecutor);
+        applyCommonProperties (buildActionExecutor);
         applyAndroidModelBuilderProps(buildActionExecutor);
 
         final var logger = ILogger.newInstance("ProjectReader");

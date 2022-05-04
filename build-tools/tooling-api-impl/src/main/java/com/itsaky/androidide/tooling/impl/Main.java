@@ -58,7 +58,7 @@ public class Main {
         }
     }
 
-    public static void applyCommonArguments(ConfigurableLauncher<?> launcher) {
+    public static void applyCommonProperties (ConfigurableLauncher<?> launcher) {
         final var out = new LoggingOutputStream();
         launcher.setStandardError(out);
         launcher.setStandardOutput(out);

@@ -35,7 +35,9 @@ import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.builder.BuildService;
+import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.shell.CommonProcessExecutor;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
@@ -54,6 +56,7 @@ import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.InputStreamLineReader;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CancellationException;
@@ -206,7 +209,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         }
 
         isBuildInProgress = true;
-        return server.executeTasks(new TaskExecutionMessage(":", Arrays.asList(tasks)))
+        return server.executeTasks(createTaskExecutionMessage(":", tasks))
                 .thenApply(this::markBuildAsFinished);
     }
 
@@ -223,7 +226,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         }
 
         isBuildInProgress = true;
-        return server.executeTasks(new TaskExecutionMessage(projectPath, Arrays.asList(tasks)))
+        return server.executeTasks(createTaskExecutionMessage(projectPath, tasks))
                 .thenApply(this::markBuildAsFinished);
     }
 
@@ -231,6 +234,40 @@ public class GradleBuildService extends Service implements BuildService, IToolin
     @Override
     public CompletableFuture<BuildCancellationRequestResult> cancelCurrentBuild() {
         return server.cancelCurrentBuild();
+    }
+
+    @NonNull
+    private TaskExecutionMessage createTaskExecutionMessage(
+            @NonNull String projectPath, @NonNull String[] tasks) {
+        final PreferenceManager prefs = StudioApp.getInstance().getPrefManager();
+        final var extraArgs = new ArrayList<String>();
+
+        extraArgs.add("--init-script");
+        extraArgs.add(Environment.INIT_SCRIPT.getAbsolutePath());
+
+        if (prefs.isStackTraceEnabled()) {
+            extraArgs.add("--stacktrace");
+        }
+        if (prefs.isGradleInfoEnabled()) {
+            extraArgs.add("--info");
+        }
+        if (prefs.isGradleDebugEnabled()) {
+            extraArgs.add("--debug");
+        }
+        if (prefs.isGradleScanEnabled()) {
+            extraArgs.add("--scan");
+        }
+        if (prefs.isGradleWarningEnabled()) {
+            extraArgs.add("--warning-mode");
+            extraArgs.add("all");
+        }
+        if (prefs.isGradleBuildCacheEnabled()) {
+            extraArgs.add("--build-cache");
+        }
+        if (prefs.isGradleOfflineModeEnabled()) {
+            extraArgs.add("--offline");
+        }
+        return new TaskExecutionMessage(projectPath, Arrays.asList(tasks), extraArgs);
     }
 
     private void checkServerStarted() {
