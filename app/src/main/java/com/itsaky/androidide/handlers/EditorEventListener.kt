@@ -35,6 +35,7 @@ import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.StudioUtils
 import java.io.File
 import java.lang.ref.WeakReference
+import java.util.*
 
 /**
  * Handles events received from [GradleBuildService] updates [EditorActivity].
@@ -85,7 +86,10 @@ class EditorEventListener : GradleBuildService.EventListener {
             val fileName =
                 URLUtil.guessFileName(
                     (event.descriptor as FileDownloadOperationDescriptor).uri.path, null, null)
-            activity().setStatus("[$progress/$total] Download $fileName", GravityCompat.START)
+            activity()
+                .setStatus(
+                    String.format(Locale.ROOT, "%-20s Download %s", "[$progress/$total]", fileName),
+                    GravityCompat.START)
         }
     }
 
