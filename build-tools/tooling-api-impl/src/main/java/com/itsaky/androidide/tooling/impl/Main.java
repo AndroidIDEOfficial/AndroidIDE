@@ -30,6 +30,7 @@ import org.gradle.tooling.ConfigurableLauncher;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -70,7 +71,10 @@ public class Main {
         if (client != null) {
             try {
                 final var args = client.getBuildArguments().get();
+                args.removeIf(Objects::isNull);
                 args.removeIf(String::isBlank);
+
+                LOG.debug("Arguments from tooling client:", args);
                 launcher.addArguments(args);
             } catch (Throwable e) {
                 LOG.error("Unable to get build arguments from tooling client", e);
