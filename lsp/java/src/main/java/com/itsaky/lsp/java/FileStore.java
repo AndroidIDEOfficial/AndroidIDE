@@ -57,6 +57,7 @@ public class FileStore {
     }
 
     public static void setWorkspaceRoots(Set<Path> newRoots) {
+        newRoots.removeIf(it -> !Files.exists(it));
         for (Path root : workspaceRoots) {
             if (!newRoots.contains(root)) {
                 workspaceRoots.removeIf(f -> f.startsWith(root));
