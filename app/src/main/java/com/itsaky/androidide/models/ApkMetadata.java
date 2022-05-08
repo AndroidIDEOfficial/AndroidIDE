@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.JSONUtility;
+import com.itsaky.androidide.utils.ListingFileRedirect;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,11 +56,19 @@ public class ApkMetadata {
     private String elementType;
 
     @Nullable
-    public static File findApkFile(@NonNull File metadataFile) {
+    public static File findApkFile(@NonNull File listingFIle) {
         try {
-            final var dir = metadataFile.getParentFile();
+
+            // This sometimes might be a redirect to the listing file
+            // So we have to handle this case too.
+            final var redirectedFile = ListingFileRedirect.maybeExtractRedirectedFile(listingFIle);
+            if (redirectedFile != null) {
+                listingFIle = redirectedFile;
+            }
+
+            final var dir = listingFIle.getParentFile();
             final var metadata =
-                    JSONUtility.gson.fromJson(new FileReader(metadataFile), ApkMetadata.class);
+                    JSONUtility.gson.fromJson(new FileReader(listingFIle), ApkMetadata.class);
             if (!isValid(metadata)) {
                 LOG.warn("Invalid APK metadata:", metadata);
                 return null;
