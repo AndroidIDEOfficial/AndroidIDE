@@ -64,10 +64,13 @@ public final class Environment {
      */
     public static File COMPILER_MODULE;
 
+    public static File TOOLING_API_JAR;
+
     public static File INIT_SCRIPT;
     public static File PROJECT_DATA_FILE;
     public static File GRADLE_PROPS;
     public static File GRADLE_USER_HOME;
+    public static File AAPT2;
     public static File JAVA;
     public static File BUSYBOX;
     public static File SHELL;
@@ -85,6 +88,11 @@ public final class Environment {
         LIB_DIR = mkdirIfNotExits(new File(SYSROOT, "lib"));
         PROJECTS_DIR = mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
         COMPILER_MODULE = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "compiler-module"));
+        TOOLING_API_JAR =
+                new File(
+                        mkdirIfNotExits(new File(ANDROIDIDE_HOME, "tooling-api")),
+                        "tooling-api-all.jar");
+        AAPT2 = new File(ANDROIDIDE_HOME, "aapt2");
 
         IDE_PROPS_FILE = new File(SYSROOT, "etc/ide-environment.properties");
         LIB_HOOK = new File(LIB_DIR, "libhook.so");
@@ -116,10 +124,12 @@ public final class Environment {
         System.setProperty("java.home", JAVA_HOME.getAbsolutePath());
     }
 
-    public static void setExecutable(@NonNull final File file) {
-        if (!file.setExecutable(true)) {
-            LOG.error("Unable to set executable permissions to file", file);
+    public static File mkdirIfNotExits(File in) {
+        if (in != null && !in.exists()) {
+            FileUtils.createOrExistsDir(in);
         }
+
+        return in;
     }
 
     @NonNull
@@ -138,6 +148,40 @@ public final class Environment {
             LOG.error("Unable to read properties file", th);
         }
         return props;
+    }
+
+    public static String readProp(String key, String defaultValue) {
+        String value = IDE_PROPS.getOrDefault(key, defaultValue);
+        if (value == null) {
+            return defaultValue;
+        }
+        if (value.contains("$HOME")) {
+            value = value.replace("$HOME", HOME.getAbsolutePath());
+        }
+        if (value.contains("$SYSROOT")) {
+            value = value.replace("$SYSROOT", SYSROOT.getAbsolutePath());
+        }
+        if (value.contains("$PATH")) {
+            value = value.replace("$PATH", createPath());
+        }
+        return value;
+    }
+
+    public static void setExecutable(@NonNull final File file) {
+        if (!file.setExecutable(true)) {
+            LOG.error("Unable to set executable permissions to file", file);
+        }
+    }
+
+    @NonNull
+    private static String createPath() {
+        String path = "";
+        path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
+        path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
+        path += String.format(":%s/cmake/bin", ANDROID_HOME.getAbsolutePath());
+        path += String.format(":%s/bin", SYSROOT.getAbsolutePath());
+        path += String.format(":%s", System.getenv("PATH"));
+        return path;
     }
 
     public static void setBootClasspath(@NonNull File file) {
@@ -205,54 +249,11 @@ public final class Environment {
         return ENV_VARS;
     }
 
-    @NonNull
-    private static String createPath() {
-        String path = "";
-        path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
-        path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
-        path += String.format(":%s/cmake/bin", ANDROID_HOME.getAbsolutePath());
-        path += String.format(":%s/bin", SYSROOT.getAbsolutePath());
-        path += String.format(":%s", System.getenv("PATH"));
-        return path;
-    }
-
     public static void addToEnvIfPresent(Map<String, String> environment, String name) {
         String value = System.getenv(name);
         if (value != null) {
             environment.put(name, value);
         }
-    }
-
-    public static String readProp(String key, String defaultValue) {
-        String value = IDE_PROPS.getOrDefault(key, defaultValue);
-        if (value == null) {
-            return defaultValue;
-        }
-        if (value.contains("$HOME")) {
-            value = value.replace("$HOME", HOME.getAbsolutePath());
-        }
-        if (value.contains("$SYSROOT")) {
-            value = value.replace("$SYSROOT", SYSROOT.getAbsolutePath());
-        }
-        if (value.contains("$PATH")) {
-            value = value.replace("$PATH", createPath());
-        }
-        return value;
-    }
-
-    public static File mkdirIfNotExits(File in) {
-        if (in != null && !in.exists()) {
-            FileUtils.createOrExistsDir(in);
-        }
-
-        return in;
-    }
-
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean isCompilerModuleInstalled() {
-        final var modules = new File(COMPILER_MODULE, "lib/modules");
-        final var release = new File(COMPILER_MODULE, "release");
-        return modules.exists() && modules.isFile() && release.exists() && release.isFile();
     }
 
     private static List<String> blacklistedVariables() {
@@ -262,5 +263,12 @@ public final class Environment {
             blacklist.add("JLS_HOME");
         }
         return blacklist;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean isCompilerModuleInstalled() {
+        final var modules = new File(COMPILER_MODULE, "lib/modules");
+        final var release = new File(COMPILER_MODULE, "release");
+        return modules.exists() && modules.isFile() && release.exists() && release.isFile();
     }
 }

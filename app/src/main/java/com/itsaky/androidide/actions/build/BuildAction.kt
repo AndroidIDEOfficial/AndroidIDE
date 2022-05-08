@@ -36,7 +36,7 @@ class BuildAction() : BaseBuildAction() {
     override fun execAction(data: ActionData): Boolean {
         val activity = getActivity(data) ?: return false
 
-        activity.buildServiceHandler.service.build()
+        activity.build()
         return true
     }
 }

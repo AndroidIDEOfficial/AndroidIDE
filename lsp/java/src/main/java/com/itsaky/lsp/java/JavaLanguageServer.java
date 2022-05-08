@@ -86,17 +86,6 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         applySettings(getSettings());
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public JavaCompilerService getCompiler() {
-        if (createCompiler) {
-            LOG.info("Creating new compiler instance...");
-            compiler = createCompiler();
-            createCompiler = false;
-        }
-
-        return compiler;
-    }
-
     private void analyzeSelected() {
         if (this.selectedFile == null) {
             return;
@@ -122,6 +111,17 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         }
 
         return settings;
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public JavaCompilerService getCompiler() {
+        if (createCompiler) {
+            LOG.info("Creating new compiler instance...");
+            compiler = createCompiler();
+            createCompiler = false;
+        }
+
+        return compiler;
     }
 
     @NonNull
@@ -204,7 +204,9 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         LOG.info("Java language server configuration changed.");
         LOG.info(
                 this.configuration.getClassPaths().size(),
-                "class paths were provided in the configuration");
+                "class paths and",
+                this.configuration.getSourceDirs().size(),
+                "source directories were provided in the configuration");
         // Compiler must be recreated on a configuration change
         this.createCompiler = true;
     }

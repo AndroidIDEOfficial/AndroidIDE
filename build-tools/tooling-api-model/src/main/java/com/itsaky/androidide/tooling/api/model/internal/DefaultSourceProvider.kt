@@ -19,12 +19,14 @@ package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.SourceProvider
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultSourceProvider() : SourceProvider {
-
+class DefaultSourceProvider() : SourceProvider, Serializable {
+    private val serialVersionUID = 1L
     override var aidlDirectories: Collection<File>? = null
     override var assetsDirectories: Collection<File>? = null
+    override var customDirectories: Collection<DefaultCustomSourceDirectory>? = null
     override var javaDirectories: Collection<File> = emptyList()
     override var jniLibsDirectories: Collection<File> = emptyList()
     override var kotlinDirectories: Collection<File> = emptyList()
@@ -35,8 +37,4 @@ class DefaultSourceProvider() : SourceProvider {
     override var resDirectories: Collection<File>? = null
     override var resourcesDirectories: Collection<File> = emptyList()
     override var shadersDirectories: Collection<File>? = null
-
-    override fun toString(): String {
-        return "DefaultSourceProvider(aidlDirectories=$aidlDirectories, assetsDirectories=$assetsDirectories, javaDirectories=$javaDirectories, jniLibsDirectories=$jniLibsDirectories, kotlinDirectories=$kotlinDirectories, manifestFile=$manifestFile, mlModelsDirectories=$mlModelsDirectories, name='$name', renderscriptDirectories=$renderscriptDirectories, resDirectories=$resDirectories, resourcesDirectories=$resourcesDirectories, shadersDirectories=$shadersDirectories)"
-    }
 }

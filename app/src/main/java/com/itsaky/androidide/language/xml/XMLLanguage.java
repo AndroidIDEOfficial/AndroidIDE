@@ -25,8 +25,8 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
-import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
 

@@ -18,8 +18,6 @@
 package com.itsaky.androidide.actions.editor
 
 import android.content.Context
-import android.content.res.TypedArray
-import androidx.core.content.ContextCompat
 import com.itsaky.androidide.R
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.actions.BaseEditorAction

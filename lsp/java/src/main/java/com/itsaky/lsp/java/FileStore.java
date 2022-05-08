@@ -57,6 +57,7 @@ public class FileStore {
     }
 
     public static void setWorkspaceRoots(Set<Path> newRoots) {
+        newRoots.removeIf(it -> !Files.exists(it));
         for (Path root : workspaceRoots) {
             if (!newRoots.contains(root)) {
                 workspaceRoots.removeIf(f -> f.startsWith(root));
@@ -83,18 +84,23 @@ public class FileStore {
         return javaSources.keySet();
     }
 
-    public static List<Path> list(String packageName) {
-        List<Path> list = new ArrayList<>();
-        for (Path file : javaSources.keySet()) {
-            if (Objects.requireNonNull(javaSources.get(file)).packageName.equals(packageName)) {
-                list.add(file);
-            }
-        }
-        return list;
-    }
-
     public static boolean contains(Path file) {
         return isJavaFile(file) && javaSources.containsKey(file);
+    }
+
+    public static boolean isJavaFile(@NonNull Path file) {
+        String name = file.getFileName().toString();
+        // We hide module-info.java from javac, because when javac sees module-info.java
+        // it goes into "module mode" and starts looking for classes on the module class path.
+        // This becomes evident when javac starts recompiling *way too much* on each task,
+        // because it doesn't realize there are already up-to-date .class files.
+        // The better solution would be for java-language server to detect the presence of
+        // module-info.java,
+        // and go into its own "module mode" where it infers a module source path and a module class
+        // path.
+        return name.endsWith(".java")
+                && !Files.isDirectory(file)
+                && !name.equals("module-info.java");
     }
 
     public static Instant modified(Path file) {
@@ -110,13 +116,17 @@ public class FileStore {
         return Objects.requireNonNull(javaSources.get(file)).modified;
     }
 
-    public static String packageName(Path file) {
-        // If we've never checked before, look up package name on disk
-        if (!javaSources.containsKey(file)) {
-            readInfoFromDisk(file);
+    private static void readInfoFromDisk(Path file) {
+        try {
+            Instant time = Files.getLastModifiedTime(file).toInstant();
+            String packageName = StringSearch.packageName(file);
+            javaSources.put(file, new Info(time, packageName));
+        } catch (NoSuchFileException e) {
+            LOG.warn(e);
+            javaSources.remove(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        // Look up package name from cache
-        return Objects.requireNonNull(javaSources.get(file)).packageName;
     }
 
     public static String suggestedPackageName(Path file) {
@@ -154,6 +164,15 @@ public class FileStore {
         return list;
     }
 
+    public static String packageName(Path file) {
+        // If we've never checked before, look up package name on disk
+        if (!javaSources.containsKey(file)) {
+            readInfoFromDisk(file);
+        }
+        // Look up package name from cache
+        return Objects.requireNonNull(javaSources.get(file)).packageName;
+    }
+
     public static void externalCreate(Path file) {
         readInfoFromDisk(file);
     }
@@ -164,19 +183,6 @@ public class FileStore {
 
     public static void externalDelete(Path file) {
         javaSources.remove(file);
-    }
-
-    private static void readInfoFromDisk(Path file) {
-        try {
-            Instant time = Files.getLastModifiedTime(file).toInstant();
-            String packageName = StringSearch.packageName(file);
-            javaSources.put(file, new Info(time, packageName));
-        } catch (NoSuchFileException e) {
-            LOG.warn(e);
-            javaSources.remove(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static void open(DocumentOpenEvent params) {
@@ -254,6 +260,10 @@ public class FileStore {
         }
     }
 
+    public static BufferedReader lines(Path file) {
+        return bufferedReader(file);
+    }
+
     public static BufferedReader bufferedReader(Path file) {
         if (activeDocuments.containsKey(file)) {
             CharSequence string = Objects.requireNonNull(activeDocuments.get(file)).content;
@@ -270,10 +280,6 @@ public class FileStore {
         }
     }
 
-    public static BufferedReader lines(Path file) {
-        return bufferedReader(file);
-    }
-
     /** Convert from line/column (1-based) to offset (0-based) */
     public static int offset(String contents, int line, int column) {
         line--;
@@ -286,21 +292,6 @@ public class FileStore {
             cursor++;
         }
         return cursor + column;
-    }
-
-    public static boolean isJavaFile(@NonNull Path file) {
-        String name = file.getFileName().toString();
-        // We hide module-info.java from javac, because when javac sees module-info.java
-        // it goes into "module mode" and starts looking for classes on the module class path.
-        // This becomes evident when javac starts recompiling *way too much* on each task,
-        // because it doesn't realize there are already up-to-date .class files.
-        // The better solution would be for java-language server to detect the presence of
-        // module-info.java,
-        // and go into its own "module mode" where it infers a module source path and a module class
-        // path.
-        return name.endsWith(".java")
-                && !Files.isDirectory(file)
-                && !name.equals("module-info.java");
     }
 
     public static Optional<Path> findDeclaringFile(@NonNull TypeElement el) {
@@ -322,14 +313,14 @@ public class FileStore {
         return Optional.empty();
     }
 
-    private static class Info {
-        final Instant modified;
-        final String packageName;
-
-        Info(Instant modified, String packageName) {
-            this.modified = modified;
-            this.packageName = packageName;
+    public static List<Path> list(String packageName) {
+        List<Path> list = new ArrayList<>();
+        for (Path file : javaSources.keySet()) {
+            if (Objects.requireNonNull(javaSources.get(file)).packageName.equals(packageName)) {
+                list.add(file);
+            }
         }
+        return list;
     }
 
     public static class FindJavaSources extends SimpleFileVisitor<Path> {
@@ -339,6 +330,16 @@ public class FileStore {
                 readInfoFromDisk(file);
             }
             return FileVisitResult.CONTINUE;
+        }
+    }
+
+    private static class Info {
+        final Instant modified;
+        final String packageName;
+
+        Info(Instant modified, String packageName) {
+            this.modified = modified;
+            this.packageName = packageName;
         }
     }
 

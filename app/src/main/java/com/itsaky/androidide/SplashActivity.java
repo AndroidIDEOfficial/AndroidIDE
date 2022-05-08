@@ -33,30 +33,25 @@ import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.DialogUtils;
 
 public class SplashActivity extends StudioActivity {
-    private ActivitySplashBinding binding;
-
     private static final Handler mHandler = new Handler();
     private final Runnable mRunnable =
-            new Runnable() {
-
-                @Override
-                public void run() {
-                    ConstantsBridge.SPLASH_TO_MAIN = true;
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                    finish();
-                }
+            () -> {
+                ConstantsBridge.SPLASH_TO_MAIN = true;
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
             };
-
-    @Override
-    protected View bindLayout() {
-        binding = ActivitySplashBinding.inflate(getLayoutInflater());
-        return binding.getRoot();
-    }
+    private ActivitySplashBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding.splashText.setText(getString(R.string.msg_checking_storage_permissions));
+    }
+
+    @Override
+    protected void onStorageAlreadyGranted() {
+        super.onStorageAlreadyGranted();
+        proceed();
     }
 
     @Override
@@ -66,9 +61,9 @@ public class SplashActivity extends StudioActivity {
     }
 
     @Override
-    protected void onStorageAlreadyGranted() {
-        super.onStorageAlreadyGranted();
-        proceed();
+    protected View bindLayout() {
+        binding = ActivitySplashBinding.inflate(getLayoutInflater());
+        return binding.getRoot();
     }
 
     private void proceed() {

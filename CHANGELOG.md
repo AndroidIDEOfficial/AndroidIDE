@@ -18,6 +18,11 @@ This is the changelog of all the releases of AndroidIDE.
   - `do while`
 - New java code actions :
   - `Generate toString()`: Overrides the `toString()` method for the current class. Always accessible.
+  - `Generate constructor`: Allows the user to select fields from the current class, then generates a constructor with those fields as parameters.
+  - `Remove unused imports`: Removes imports that are not used in the source file.
+  - `Import orderer`: Organizes the imports. Thanks to @MrIkso (#180).
+- XML Code formatter. Thanks to @MrIkso (#180).
+- New Gradle command line options: `--build-cache` and `--offline`. Thanks to @MrIkso (#180). 
 - Highlight IDE logs based on the log line priority.
 - Added Brazilian Portuguese translations. Thanks to @Hakaisu (#165).
 
@@ -28,9 +33,19 @@ This is the changelog of all the releases of AndroidIDE.
 - Crash when performing 'Replace all' action in editor (#158).
 - Crash when layout inflation fails (#168). 
 - Always show toasts on UI thread (#160).
+- Fixed: Multiline logs in IDE logs are not highlighted properly.
+- Fixed: Invalid log line formatting when tag to too long.
+- Fixed: Application crashes when layout inflation fails (#168).
+- Fixed: Invalid syntax highlighting for text tags in XML files. Thanks to @MrIkso (#180).
+- Fixed: Extra empty `new line` gets appendend to files while saving.
 
 ### Improvements
 - Do not show 'Cut' & 'Paste' action if editor is not editable.
+- Use [ported version of NetBeans' `nb-javac`](https://github.com/itsaky/nb-javac-android) for Java language server.
+- Removed extra Maven repository URLs from project templates. Thanks to @MrIkso (#188).
+- Update dependency versions in project templates and update the Kotlin project template image. Thanks to @BanDroid (#191).
+- Updated Hindi translations. Thanks to @Premjit-Chowdhury (#171).
+- Updated Russian translation. Thansk to @AndreyKozhev (#181).
 
 ## **v2.0.1-beta**
 AndroidIDE v2.0.1-beta is here with new features, improvements and bug fixes.

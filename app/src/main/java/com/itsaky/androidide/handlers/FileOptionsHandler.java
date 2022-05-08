@@ -29,6 +29,7 @@ import com.itsaky.androidide.databinding.LayoutCreateFileJavaBinding;
 import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.models.SheetOption;
+import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ProjectWriter;
@@ -93,34 +94,27 @@ public class FileOptionsHandler extends IDEHandler
         if (forceUnknownType) {
             createNewEmptyFile(f);
         } else {
+            final var projectDir = ProjectManager.INSTANCE.getProjectDirPath ();
+            Objects.requireNonNull(projectDir);
+
             final boolean isJava =
-                    Pattern.compile(
-                                    Pattern.quote(androidProject().getProjectPath())
-                                            + JAVA_PATH_REGEX)
+                    Pattern.compile(Pattern.quote(projectDir) + JAVA_PATH_REGEX)
                             .matcher(f.getAbsolutePath())
                             .find();
             final boolean isRes =
-                    Pattern.compile(
-                                    Pattern.quote(androidProject().getProjectPath())
-                                            + RES_PATH_REGEX)
+                    Pattern.compile(Pattern.quote(projectDir) + RES_PATH_REGEX)
                             .matcher(f.getAbsolutePath())
                             .find();
             final boolean isLayoutRes =
-                    Pattern.compile(
-                                    Pattern.quote(androidProject().getProjectPath())
-                                            + LAYOUT_RES_PATH_REGEX)
+                    Pattern.compile(Pattern.quote(projectDir) + LAYOUT_RES_PATH_REGEX)
                             .matcher(f.getAbsolutePath())
                             .find();
             final boolean isMenuRes =
-                    Pattern.compile(
-                                    Pattern.quote(androidProject().getProjectPath())
-                                            + MENU_RES_PATH_REGEX)
+                    Pattern.compile(Pattern.quote(projectDir) + MENU_RES_PATH_REGEX)
                             .matcher(f.getAbsolutePath())
                             .find();
             final boolean isDrawableRes =
-                    Pattern.compile(
-                                    Pattern.quote(androidProject().getProjectPath())
-                                            + DRAWABLE_RES_PATH_REGEX)
+                    Pattern.compile(Pattern.quote(projectDir) + DRAWABLE_RES_PATH_REGEX)
                             .matcher(f.getAbsolutePath())
                             .find();
             if (isJava) {

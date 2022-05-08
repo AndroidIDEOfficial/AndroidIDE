@@ -18,22 +18,19 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.Variant
+import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultVariant : Variant {
+class DefaultVariant : Variant, Serializable {
+    private val serialVersionUID = 1L
     override var androidTestArtifact: DefaultAndroidArtifact? = null
-    override var buildType: String? = null
-    override var desugaredMethods: List<String> = emptyList()
     override var displayName: String = ""
     override var isInstantAppCompatible: Boolean = false
+    var desugaredMethods: List<File> = emptyList()
     override var mainArtifact: DefaultAndroidArtifact = DefaultAndroidArtifact()
     override var name: String = ""
-    override var productFlavors: List<String> = emptyList()
     override var testFixturesArtifact: DefaultAndroidArtifact? = null
     override var testedTargetVariant: DefaultTestedTargetVariant? = null
     override var unitTestArtifact: DefaultJavaArtifact? = null
-
-    override fun toString(): String {
-        return "DefaultVariant(androidTestArtifact=$androidTestArtifact, buildType=$buildType, desugaredMethods=$desugaredMethods, displayName='$displayName', isInstantAppCompatible=$isInstantAppCompatible, mainArtifact=$mainArtifact, name='$name', productFlavors=$productFlavors, testFixturesArtifact=$testFixturesArtifact, testedTargetVariant=$testedTargetVariant, unitTestArtifact=$unitTestArtifact)"
-    }
 }

@@ -39,18 +39,15 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
-import com.itsaky.androidide.project.AndroidProject;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ProjectCreatorCallable;
 import com.itsaky.androidide.utils.DialogUtils;
-import com.itsaky.androidide.utils.ProjectFinder;
 import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 
 import abhishekti7.unicorn.filepicker.UnicornFilePicker;
 
@@ -68,11 +65,213 @@ public class MainActivity extends StudioActivity
     private int currentTemplateIndex = 0;
 
     @Override
-    protected View bindLayout() {
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        createBinding = binding.createLayout;
-        createLayoutBinding = createBinding.createProjectContent;
-        return binding.getRoot();
+    public void onClick(View p1) {
+        if (p1.getId() == binding.createProject.getId()) {
+            showCreateProject();
+        } else if (p1.getId() == createBinding.createprojectClose.getId()) {
+            hideCreateProject();
+        } else if (p1.getId() == createLayoutBinding.nextCard.getId()) {
+            currentTemplateIndex++;
+            if (currentTemplateIndex >= mTemplates.size()) {
+                currentTemplateIndex = 0;
+            }
+            showTemplate(currentTemplateIndex);
+        } else if (p1.getId() == createLayoutBinding.previousCard.getId()) {
+            currentTemplateIndex--;
+            if (currentTemplateIndex < 0) {
+                currentTemplateIndex = mTemplates.size() - 1;
+            }
+            showTemplate(currentTemplateIndex);
+        } else if (p1.getId() == createLayoutBinding.createprojectCreate.getId()) {
+            createNewProject();
+        } else if (p1.getId() == binding.gotoPreferences.getId()) {
+            gotoSettings();
+        } else if (p1.getId() == binding.openProject.getId()) {
+            pickProject();
+        } else if (p1.getId() == binding.openTerminal.getId()) {
+            startActivity(new Intent(this, TerminalActivity.class));
+        }
+    }
+
+    private void showCreateProject() {
+        MaterialContainerTransform transform =
+                TransformUtils.createContainerTransformFor(
+                        binding.createProject, binding.createNewCard, binding.realContainer);
+        TransitionManager.beginDelayedTransition(binding.getRoot(), transform);
+        binding.createNewCard.setVisibility(View.VISIBLE);
+    }
+
+    private void hideCreateProject() {
+        MaterialContainerTransform transform =
+                TransformUtils.createContainerTransformFor(
+                        binding.createNewCard, binding.createProject, binding.realContainer);
+        TransitionManager.beginDelayedTransition(binding.getRoot(), transform);
+        binding.createNewCard.setVisibility(View.GONE);
+    }
+
+    private void showTemplate(int index) {
+        if (index < 0 || index >= mTemplates.size()) {
+            return;
+        }
+        final ProjectTemplate template = mTemplates.get(index);
+        createLayoutBinding.createprojectTemplateLabel.setText(template.getName());
+        createLayoutBinding.createprojectTemplateDescription.setText(template.getDescription());
+        createLayoutBinding.createprojectTemplateImage.setImageResource(template.getImageId());
+    }
+
+    private void createNewProject() {
+        final String appName =
+                Objects.requireNonNull(createLayoutBinding.createprojectTextAppName.getEditText())
+                        .getText()
+                        .toString()
+                        .trim();
+        final String packageName =
+                Objects.requireNonNull(
+                                createLayoutBinding.createprojectTextPackageName.getEditText())
+                        .getText()
+                        .toString()
+                        .trim();
+        final int minSdk = getMinSdk();
+        final int targetSdk = getTargetSdk();
+
+        if (!isValid(appName, packageName, minSdk, targetSdk)) {
+            getApp().toast(R.string.invalid_values, Toaster.Type.ERROR);
+            return;
+        }
+
+        createProject(appName, packageName, minSdk, targetSdk);
+    }
+
+    private void gotoSettings() {
+        startActivity(new Intent(this, PreferencesActivity.class));
+    }
+
+    private void pickProject() {
+        UnicornFilePicker.from(this)
+                .addConfigBuilder()
+                .addItemDivider(false)
+                .selectMultipleFiles(false)
+                .setRootDirectory(Environment.getExternalStorageDirectory().getAbsolutePath())
+                .showHiddenFiles(true)
+                .showOnlyDirectory(true)
+                .theme(R.style.AppTheme_FilePicker)
+                .build()
+                .forResult(abhishekti7.unicorn.filepicker.utils.Constants.REQ_UNICORN_FILE);
+    }
+
+    private int getMinSdk() {
+        try {
+            return Integer.parseInt(
+                    Objects.requireNonNull(
+                                    createLayoutBinding.createprojectTextMinSdk.getEditText())
+                            .getText()
+                            .toString());
+        } catch (Exception e) {
+            getApp().toast(e.getMessage(), Toaster.Type.ERROR);
+        }
+        return -1;
+    }
+
+    private int getTargetSdk() {
+        try {
+            return Integer.parseInt(
+                    Objects.requireNonNull(
+                                    createLayoutBinding.createprojectTextTargetSdk.getEditText())
+                            .getText()
+                            .toString());
+        } catch (Exception e) {
+            getApp().toast(e.getMessage(), Toaster.Type.ERROR);
+        }
+        return -1;
+    }
+
+    private boolean isValid(String appName, String packageName, int minSdk, int targetSdk) {
+        return appName != null
+                && appName.length() > 0
+                && packageName != null
+                && packageName.length() > 0
+                && minSdk > 1
+                && minSdk < 99
+                && targetSdk > 1
+                && targetSdk < 99;
+    }
+
+    private void createProject(String appName, String packageName, int minSdk, int targetSdk) {
+        new TaskExecutor()
+                .executeAsync(
+                        new ProjectCreatorCallable(
+                                mTemplates.get(currentTemplateIndex),
+                                new NewProjectDetails(appName, packageName, minSdk, targetSdk),
+                                this),
+                        r -> {});
+    }
+
+    @Override
+    public void beforeBegin() {
+        if (mProgressSheet == null) {
+            createProgressSheet();
+        }
+
+        setMessage(R.string.msg_begin_project_write);
+    }
+
+    @Override
+    public void onProcessTask(String taskName) {
+        setMessage(taskName);
+    }
+
+    @Override
+    public void onSuccess(File root) {
+        if (mProgressSheet == null) {
+            createProgressSheet();
+        }
+
+        if (mProgressSheet.isShowing()) {
+            mProgressSheet.dismiss();
+        }
+        getApp().toast(R.string.project_created_successfully, Toaster.Type.SUCCESS);
+
+        openProject(root);
+    }
+
+    @Override
+    public void onFailed(String reason) {
+        if (mProgressSheet == null) {
+            createProgressSheet();
+        }
+
+        if (mProgressSheet.isShowing()) {
+            mProgressSheet.dismiss();
+        }
+        getApp().toast(reason, Toaster.Type.ERROR);
+    }
+
+    private void openProject(File root) {
+        final var intent = new Intent(this, EditorActivity.class);
+        intent.putExtra(EditorActivity.EXTRA_PROJECT_PATH, root.getAbsolutePath());
+        startActivity(intent);
+    }
+
+    private void createProgressSheet() {
+        mProgressSheet = new ProgressSheet();
+        mProgressSheet.setShowShadow(false);
+    }
+
+    private void setMessage(int msg) {
+        setMessage(getString(msg));
+    }
+
+    private void setMessage(String msg) {
+        mProgressSheet.setMessage(msg);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (binding.createNewCard.getVisibility() == View.VISIBLE) {
+            hideCreateProject();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -127,20 +326,6 @@ public class MainActivity extends StudioActivity
                         });
     }
 
-    private void askProjectOpenPermission(File root) {
-        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-        builder.setTitle(R.string.title_confirm_open_project);
-        builder.setMessage(getString(R.string.msg_confirm_open_project, root.getAbsolutePath()));
-        builder.setCancelable(false);
-        builder.setPositiveButton(R.string.yes, (d, w) -> openProject(root));
-        builder.setNegativeButton(R.string.no, null);
-        builder.show();
-    }
-
-    private void gotoSettings() {
-        startActivity(new Intent(this, PreferencesActivity.class));
-    }
-
     @Override
     protected void onStorageGranted() {}
 
@@ -151,120 +336,11 @@ public class MainActivity extends StudioActivity
     }
 
     @Override
-    public void onClick(View p1) {
-        if (p1.getId() == binding.createProject.getId()) {
-            showCreateProject();
-        } else if (p1.getId() == createBinding.createprojectClose.getId()) {
-            hideCreateProject();
-        } else if (p1.getId() == createLayoutBinding.nextCard.getId()) {
-            currentTemplateIndex++;
-            if (currentTemplateIndex >= mTemplates.size()) {
-                currentTemplateIndex = 0;
-            }
-            showTemplate(currentTemplateIndex);
-        } else if (p1.getId() == createLayoutBinding.previousCard.getId()) {
-            currentTemplateIndex--;
-            if (currentTemplateIndex < 0) {
-                currentTemplateIndex = mTemplates.size() - 1;
-            }
-            showTemplate(currentTemplateIndex);
-        } else if (p1.getId() == createLayoutBinding.createprojectCreate.getId()) {
-            createNewProject();
-        } else if (p1.getId() == binding.gotoPreferences.getId()) {
-            gotoSettings();
-        } else if (p1.getId() == binding.openProject.getId()) {
-            pickProject();
-        } else if (p1.getId() == binding.openTerminal.getId()) {
-            startActivity(new Intent(this, TerminalActivity.class));
-        }
-    }
-
-    @Override
-    public void beforeBegin() {
-        if (mProgressSheet == null) {
-            createProgressSheet();
-        }
-
-        setMessage(R.string.msg_begin_project_write);
-    }
-
-    @Override
-    public void onProcessTask(String taskName) {
-        setMessage(taskName);
-    }
-
-    @Override
-    public void onSuccess(File root) {
-        if (mProgressSheet == null) {
-            createProgressSheet();
-        }
-
-        if (mProgressSheet.isShowing()) {
-            mProgressSheet.dismiss();
-        }
-        getApp().toast(R.string.project_created_successfully, Toaster.Type.SUCCESS);
-
-        openProject(root);
-    }
-
-    @Override
-    public void onFailed(String reason) {
-        if (mProgressSheet == null) {
-            createProgressSheet();
-        }
-
-        if (mProgressSheet.isShowing()) {
-            mProgressSheet.dismiss();
-        }
-        getApp().toast(reason, Toaster.Type.ERROR);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == abhishekti7.unicorn.filepicker.utils.Constants.REQ_UNICORN_FILE
-                && resultCode == RESULT_OK) {
-            ArrayList<String> files = data.getStringArrayListExtra("filePaths");
-            if (files != null) {
-                if (files.size() == 1) {
-                    File choseDir = new File(files.get(0));
-                    if (choseDir.exists() && choseDir.isDirectory()) {
-                        openProject(choseDir);
-                    } else {
-                        getApp().toast(R.string.msg_picked_isnt_dir, Toaster.Type.ERROR);
-                    }
-                } else {
-                    getApp().toast(R.string.msg_pick_single_file, Toaster.Type.ERROR);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (binding.createNewCard.getVisibility() == View.VISIBLE) {
-            hideCreateProject();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mProgressSheet != null && mProgressSheet.isShowing()) {
-            mProgressSheet.dismiss();
-        }
-    }
-
-    private void showTemplate(int index) {
-        if (index < 0 || index >= mTemplates.size()) {
-            return;
-        }
-        final ProjectTemplate template = mTemplates.get(index);
-        createLayoutBinding.createprojectTemplateLabel.setText(template.getName());
-        createLayoutBinding.createprojectTemplateDescription.setText(template.getDescription());
-        createLayoutBinding.createprojectTemplateImage.setImageResource(template.getImageId());
+    protected View bindLayout() {
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        createBinding = binding.createLayout;
+        createLayoutBinding = createBinding.createProjectContent;
+        return binding.getRoot();
     }
 
     /** Must be called in/after onViewCreated */
@@ -296,7 +372,7 @@ public class MainActivity extends StudioActivity
                                 .setId(3)
                                 .setName(this, R.string.template_kotlin_basic)
                                 .setDescription(this, R.string.template_description_kotlin_basic)
-                                .setImageId(R.drawable.template_basic),
+                                .setImageId(R.drawable.template_kotlin),
                 libgdx =
                         new ProjectTemplate()
                                 .setId(4)
@@ -310,147 +386,42 @@ public class MainActivity extends StudioActivity
         mTemplates.add(libgdx);
     }
 
-    private void createProgressSheet() {
-        mProgressSheet = new ProgressSheet();
-        mProgressSheet.setShowShadow(false);
+    private void askProjectOpenPermission(File root) {
+        final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
+        builder.setTitle(R.string.title_confirm_open_project);
+        builder.setMessage(getString(R.string.msg_confirm_open_project, root.getAbsolutePath()));
+        builder.setCancelable(false);
+        builder.setPositiveButton(R.string.yes, (d, w) -> openProject(root));
+        builder.setNegativeButton(R.string.no, null);
+        builder.show();
     }
 
-    private void setMessage(int msg) {
-        setMessage(getString(msg));
-    }
-
-    private void setMessage(String msg) {
-        mProgressSheet.setMessage(msg);
-    }
-
-    private void openProject(File root) {
-        setMessage(R.string.msg_opening_project);
-        mProgressSheet.setCancelable(false);
-        mProgressSheet.show(getSupportFragmentManager(), "opening_project");
-
-        new TaskExecutor().executeAsync(new ProjectReader(root), this::openEditor);
-    }
-
-    private void pickProject() {
-        UnicornFilePicker.from(this)
-                .addConfigBuilder()
-                .addItemDivider(false)
-                .selectMultipleFiles(false)
-                .setRootDirectory(Environment.getExternalStorageDirectory().getAbsolutePath())
-                .showHiddenFiles(true)
-                .showOnlyDirectory(true)
-                .theme(R.style.AppTheme_FilePicker)
-                .build()
-                .forResult(abhishekti7.unicorn.filepicker.utils.Constants.REQ_UNICORN_FILE);
-    }
-
-    private void openEditor(AndroidProject project) {
-        if (project == null) {
-            getApp().toast(R.string.msg_invalid_project, Toaster.Type.ERROR);
-        } else {
-            startActivity(
-                    new Intent(this, EditorActivity.class)
-                            .putExtra(EditorActivity.EXTRA_PROJECT, project));
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == abhishekti7.unicorn.filepicker.utils.Constants.REQ_UNICORN_FILE
+                && resultCode == RESULT_OK) {
+            ArrayList<String> files = data.getStringArrayListExtra("filePaths");
+            if (files != null) {
+                if (files.size() == 1) {
+                    File choseDir = new File(files.get(0));
+                    if (choseDir.exists() && choseDir.isDirectory()) {
+                        openProject(choseDir);
+                    } else {
+                        getApp().toast(R.string.msg_picked_isnt_dir, Toaster.Type.ERROR);
+                    }
+                } else {
+                    getApp().toast(R.string.msg_pick_single_file, Toaster.Type.ERROR);
+                }
+            }
         }
     }
 
-    private void createNewProject() {
-        final String appName =
-                Objects.requireNonNull(createLayoutBinding.createprojectTextAppName.getEditText())
-                        .getText()
-                        .toString()
-                        .trim();
-        final String packageName =
-                Objects.requireNonNull(
-                                createLayoutBinding.createprojectTextPackageName.getEditText())
-                        .getText()
-                        .toString()
-                        .trim();
-        final int minSdk = getMinSdk();
-        final int targetSdk = getTargetSdk();
-
-        if (!isValid(appName, packageName, minSdk, targetSdk)) {
-            getApp().toast(R.string.invalid_values, Toaster.Type.ERROR);
-            return;
-        }
-
-        createProject(appName, packageName, minSdk, targetSdk);
-    }
-
-    private void createProject(String appName, String packageName, int minSdk, int targetSdk) {
-        new TaskExecutor()
-                .executeAsync(
-                        new ProjectCreatorCallable(
-                                mTemplates.get(currentTemplateIndex),
-                                new NewProjectDetails(appName, packageName, minSdk, targetSdk),
-                                this),
-                        r -> {});
-    }
-
-    private boolean isValid(String appName, String packageName, int minSdk, int targetSdk) {
-        return appName != null
-                && appName.length() > 0
-                && packageName != null
-                && packageName.length() > 0
-                && minSdk > 1
-                && minSdk < 99
-                && targetSdk > 1
-                && targetSdk < 99;
-    }
-
-    private int getMinSdk() {
-        try {
-            return Integer.parseInt(
-                    Objects.requireNonNull(
-                                    createLayoutBinding.createprojectTextMinSdk.getEditText())
-                            .getText()
-                            .toString());
-        } catch (Exception e) {
-            getApp().toast(e.getMessage(), Toaster.Type.ERROR);
-        }
-        return -1;
-    }
-
-    private int getTargetSdk() {
-        try {
-            return Integer.parseInt(
-                    Objects.requireNonNull(
-                                    createLayoutBinding.createprojectTextTargetSdk.getEditText())
-                            .getText()
-                            .toString());
-        } catch (Exception e) {
-            getApp().toast(e.getMessage(), Toaster.Type.ERROR);
-        }
-        return -1;
-    }
-
-    private void showCreateProject() {
-        MaterialContainerTransform transform =
-                TransformUtils.createContainerTransformFor(
-                        binding.createProject, binding.createNewCard, binding.realContainer);
-        TransitionManager.beginDelayedTransition(binding.getRoot(), transform);
-        binding.createNewCard.setVisibility(View.VISIBLE);
-    }
-
-    private void hideCreateProject() {
-        MaterialContainerTransform transform =
-                TransformUtils.createContainerTransformFor(
-                        binding.createNewCard, binding.createProject, binding.realContainer);
-        TransitionManager.beginDelayedTransition(binding.getRoot(), transform);
-        binding.createNewCard.setVisibility(View.GONE);
-    }
-
-    private static final class ProjectReader implements Callable<AndroidProject> {
-
-        private final File root;
-
-        public ProjectReader(File root) {
-            this.root = root;
-        }
-
-        @Override
-        public AndroidProject call() throws Exception {
-            return ProjectFinder.fromFolder(root);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mProgressSheet != null && mProgressSheet.isShowing()) {
+            mProgressSheet.dismiss();
         }
     }
 }

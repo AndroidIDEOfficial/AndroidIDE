@@ -89,7 +89,7 @@
     <string name="preparing_first">Preparing. First build may take up to 10&#8211;15 minutes!</string>
     <string name="msg_gradle_terminated">Gradle process exited with exit code %1$d</string>
     <string name="msg_gradlew_installation_failed">Failed to install Gradle Wrapper: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper is not available!\nInstalling default one. Gradle v7.3 will be downloaded if necessary.</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper is not available!\nInstalling default one. Gradle v7.4 will be downloaded if necessary.</string>
     <string name="msg_getting_daemom_status">Getting Daemon status, please wait&#8230;</string>
     <string name="msg_daemons_stopped">Gradle Daemons Stopped</string>
     <string name="gradle_daemon_status">Gradle daemon status</string>
@@ -357,6 +357,17 @@
     <string name="msg_editor_find_case_sensitive">Case sensitive</string>
     <string name="msg_editor_find_regex">Regex</string>
     <string name="msg_replacing">Replacing...</string>
+
+    <string name="title_gradle_service_notification_ticker">Gradle build service started</string>
+    <string name="title_gradle_service_notification">Gradle build service</string>
+    <string name="msg_gradle_service_notification">AndroidIDE\'s Gradle build service is running in the background.</string>
+
+    <string name="title_cancel_build">Cancel build</string>
+    <string name="msg_initializing_project">Initializing project</string>
+    <string name="msg_project_initialized">Project initialized</string>
+    <string name="msg_project_initialization_failed">Project initialization failed</string>
+    <string name="msg_project_not_initialized">Project is not initialized</string>
+    <string name="msg_running_task">Running task: \'%1$s\'</string>
 </resources>
 
 

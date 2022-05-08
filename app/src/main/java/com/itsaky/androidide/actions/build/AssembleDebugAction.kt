@@ -36,7 +36,7 @@ class AssembleDebugAction() : BaseBuildAction() {
     override fun execAction(data: ActionData): Boolean {
         val activity = getActivity(data) ?: return false
 
-        activity.buildServiceHandler.assembleDebug(true)
+        activity.assembleDebug(true)
         return true
     }
 }

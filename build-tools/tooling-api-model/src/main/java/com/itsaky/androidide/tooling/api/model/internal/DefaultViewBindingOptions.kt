@@ -18,12 +18,10 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.ViewBindingOptions
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultViewBindingOptions : ViewBindingOptions {
+class DefaultViewBindingOptions : ViewBindingOptions, Serializable {
+    private val serialVersionUID = 1L
     override var isEnabled: Boolean = false
-
-    override fun toString(): String {
-        return "DefaultViewBindingOptions(isEnabled=$isEnabled)"
-    }
 }

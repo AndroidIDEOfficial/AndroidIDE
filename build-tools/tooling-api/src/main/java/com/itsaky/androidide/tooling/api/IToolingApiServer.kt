@@ -17,10 +17,14 @@
 
 package com.itsaky.androidide.tooling.api
 
-import com.android.builder.model.v2.ide.SourceSetContainer
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage
+import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult
+import com.itsaky.androidide.tooling.api.messages.result.InitializeResult
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import java.util.concurrent.*
+import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 
@@ -34,11 +38,30 @@ interface IToolingApiServer {
 
     /** Initialize the server with the project directory. */
     @JsonRequest("initializeProject")
-    fun initialize(params: InitializeProjectParams): CompletableFuture<IdeGradleProject?>
+    fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult>
 
     /** Is the server initialized? */
     @JsonRequest("isInitialized") fun isInitialized(): CompletableFuture<Boolean>
 
     /** Get the root project. */
     @JsonRequest("getRootProject") fun getRootProject(): CompletableFuture<IdeGradleProject>
+
+    /** Execute the tasks specified in the message. */
+    @JsonRequest("executeTasks")
+    fun executeTasks(message: TaskExecutionMessage): CompletableFuture<TaskExecutionResult>
+
+    /**
+     * Cancel the current build.
+     *
+     * @return A [CompletableFuture] which completes when the current build cancellation process
+     * finishes (either successfully or with an error).
+     */
+    @JsonRequest fun cancelCurrentBuild(): CompletableFuture<BuildCancellationRequestResult>
+
+    /**
+     * Shutdown the tooling API server. This will disconnect all the project connection instances.]
+     *
+     * @return A [CompletableFuture] which completes when the shutdown process is finished.
+     */
+    @JsonNotification fun shutdown(): CompletableFuture<Void>
 }

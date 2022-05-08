@@ -17,7 +17,6 @@
  */
 package com.itsaky.androidide.fragments.preferences;
 
-import com.itsaky.androidide.managers.PreferenceManager;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_AUTO_SAVE;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_DRAW_HEX;
 import static com.itsaky.androidide.managers.PreferenceManager.KEY_EDITOR_FLAG_LINE_BREAK;
@@ -44,6 +43,7 @@ import androidx.preference.SwitchPreference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.databinding.LayoutTextSizeSliderBinding;
+import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.DialogUtils;
 

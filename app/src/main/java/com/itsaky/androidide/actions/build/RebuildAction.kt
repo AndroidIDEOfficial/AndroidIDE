@@ -35,7 +35,7 @@ class RebuildAction() : BaseBuildAction() {
     override fun execAction(data: ActionData): Boolean {
         val context = getActivity(data) ?: return false
 
-        context.buildServiceHandler.service.cleanAndRebuild()
+        context.cleanAndRebuild()
         return true
     }
 }

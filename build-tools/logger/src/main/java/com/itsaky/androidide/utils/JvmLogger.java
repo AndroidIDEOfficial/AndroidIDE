@@ -17,15 +17,7 @@
 
 package com.itsaky.androidide.utils;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Date;
-import java.util.Locale;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
+import com.itsaky.androidide.models.LogLine;
 
 /**
  * {@link ILogger} implementation for the JVM.
@@ -34,91 +26,23 @@ import java.util.logging.Logger;
  */
 public class JvmLogger extends ILogger {
 
-    private static final Logger LOG = Logger.getLogger("main");
-
-    static {
-        initLogger();
-    }
+    public static LogInterceptor interceptor;
 
     protected JvmLogger(String tag) {
         super(tag);
     }
 
-    private static void initLogger() {
-        LOG.addHandler(new ConsoleHandler());
-        LOG.setLevel(Level.FINEST);
-        for (var h : LOG.getHandlers()) {
-            h.setLevel(Level.FINEST);
-            h.setFormatter(new LogFormat());
-        }
-    }
-
     @Override
     protected void doLog(int priority, String message) {
-        switch (priority) {
-            case ERROR:
-                LOG.log(Level.SEVERE, message);
-                break;
-            case WARNING:
-                LOG.log(Level.WARNING, message);
-                break;
-            case VERBOSE:
-                LOG.log(Level.FINEST, message);
-                break;
-            case INFO:
-                LOG.log(Level.INFO, message);
-                break;
-            case DEBUG:
-            default:
-                LOG.log(Level.FINE, message);
-                break;
+        final var log = new LogLine(priorityChar(priority), TAG, message);
+        if (interceptor != null) {
+            interceptor.onLog(log);
+        } else {
+            System.err.println(log.toSimpleString());
         }
     }
 
-    private static class LogFormat extends Formatter {
-
-        private final String format = "%1$tT.%1$tL\t%4$s\t%2$s\t%5$s%6$s%n";
-        private final Date date = new Date();
-
-        @Override
-        public synchronized String format(LogRecord record) {
-            date.setTime(record.getMillis());
-            String source;
-            if (record.getSourceClassName() != null) {
-                source = last(record.getSourceClassName());
-                if (record.getSourceMethodName() != null) {
-                    source += " " + record.getSourceMethodName();
-                }
-            } else {
-                source = record.getLoggerName();
-            }
-            var message = formatMessage(record);
-            var throwable = "";
-            if (record.getThrown() != null) {
-                var sw = new StringWriter();
-                var pw = new PrintWriter(sw);
-                pw.println();
-                record.getThrown().printStackTrace(pw);
-                pw.close();
-                throwable = sw.toString();
-            }
-            return String.format(
-                    Locale.ROOT,
-                    format,
-                    date,
-                    source,
-                    record.getLoggerName(),
-                    record.getLevel().getLocalizedName(),
-                    message,
-                    throwable);
-        }
-
-        private String last(String className) {
-            var dot = className.lastIndexOf('.');
-            if (dot == -1) {
-                return className;
-            }
-            return className.substring(dot + 1);
-        }
+    public interface LogInterceptor {
+        void onLog(LogLine line);
     }
 }

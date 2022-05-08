@@ -103,18 +103,34 @@ public abstract class ILogger {
         }
     }
 
-    public static String priorityChar(int priority) {
+    public static char priorityChar(int priority) {
         switch (priority) {
             case INFO:
-                return "I";
+                return 'I';
             case VERBOSE:
-                return "V";
+                return 'V';
             case ERROR:
-                return "E";
+                return 'E';
             case WARNING:
-                return "W";
+                return 'W';
             default:
-                return "D";
+                return 'D';
+        }
+    }
+
+    public static int priority(char priorityChar) {
+        switch (priorityChar) {
+            case 'I':
+                return INFO;
+            case 'V':
+                return VERBOSE;
+            case 'E':
+                return ERROR;
+            case 'W':
+                return WARNING;
+            case 'D':
+            default:
+                return DEBUG;
         }
     }
 

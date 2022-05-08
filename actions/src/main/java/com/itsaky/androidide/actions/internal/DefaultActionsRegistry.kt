@@ -24,7 +24,7 @@ import com.itsaky.androidide.actions.ActionItem
 import com.itsaky.androidide.actions.ActionMenu
 import com.itsaky.androidide.actions.ActionsRegistry
 import com.itsaky.androidide.utils.ILogger
-import java.util.concurrent.CompletableFuture
+import java.util.concurrent.*
 
 /**
  * Default implementation for the [ActionsRegistry]
@@ -148,21 +148,22 @@ class DefaultActionsRegistry : ActionsRegistry() {
 
     private fun execInBackground(action: ActionItem, data: ActionData, it: MenuItem) {
         val start = System.currentTimeMillis()
-        CompletableFuture.supplyAsync { action.execAction(data) }.whenComplete { result, error ->
-            if (result == null || (result is Boolean && !result) || error != null) {
-                log.error(
-                    "An error occurred when performing action '${it.title}'. Action failed in ${System.currentTimeMillis() - start}ms",
-                    error)
-            } else {
-                log.info(
-                    "Action '${it.title}' completed in ${System.currentTimeMillis() - start}ms")
-            }
+        CompletableFuture.supplyAsync { action.execAction(data) }
+            .whenComplete { result, error ->
+                if (result == null || (result is Boolean && !result) || error != null) {
+                    log.error(
+                        "An error occurred when performing action '${it.title}'. Action failed in ${System.currentTimeMillis() - start}ms",
+                        error)
+                } else {
+                    log.info(
+                        "Action '${it.title}' completed in ${System.currentTimeMillis() - start}ms")
+                }
 
-            ThreadUtils.runOnUiThread {
-                action.postExec(data, result ?: false)
-                notifyActionExec(action, result ?: false)
+                ThreadUtils.runOnUiThread {
+                    action.postExec(data, result ?: false)
+                    notifyActionExec(action, result ?: false)
+                }
             }
-        }
     }
 
     private fun notifyActionExec(action: ActionItem, result: Any) {

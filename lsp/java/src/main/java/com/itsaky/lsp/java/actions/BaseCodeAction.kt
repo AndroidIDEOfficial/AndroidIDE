@@ -78,17 +78,4 @@ abstract class BaseCodeAction : ActionItem {
         val method = klass.getDeclaredMethod("newMaterialDialogBuilder", Context::class.java)
         return method.invoke(null, data.get(Context::class.java)!!) as MaterialAlertDialogBuilder
     }
-
-    fun hasRequiredData(data: ActionData, vararg types: Class<*>): Boolean {
-        for (type in types) {
-            data.get(type) ?: return false
-        }
-
-        return true
-    }
-
-    fun markInvisible() {
-        visible = false
-        enabled = false
-    }
 }

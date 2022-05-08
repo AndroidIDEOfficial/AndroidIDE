@@ -16,6 +16,8 @@
  */
 package com.itsaky.androidide.tooling.api.model
 
+import java.io.Serializable
+
 /**
  * Default implementation for [IdeGradleTask].
  *
@@ -29,8 +31,5 @@ open class IdeGradleTask(
     displayName: String?,
     isPublic: Boolean?,
     val projectPath: String?
-) : IdeLaunchable(displayName, isPublic) {
-    override fun toString(): String {
-        return "IdeGradleTask(name='$name', description=$description, group=$group, path='$path', projectPath=$projectPath)"
-    }
+) : IdeLaunchable(displayName, isPublic), Serializable {
 }
