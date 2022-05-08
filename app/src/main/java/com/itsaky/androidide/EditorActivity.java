@@ -94,6 +94,7 @@ import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
+import com.itsaky.androidide.models.ApkMetadata;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SaveResult;
@@ -313,7 +314,7 @@ public class EditorActivity extends StudioActivity
         shell.bgAppend(
                 String.format(
                         "cd '%s' && sh gradlew --status",
-                        Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath ())));
+                        Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath())));
         if (!getDaemonStatusFragment().isShowing()) {
             getDaemonStatusFragment().show(getSupportFragmentManager(), "daemon_status");
         }
@@ -877,7 +878,7 @@ public class EditorActivity extends StudioActivity
     }
 
     private void initializeProject() {
-        final var projectPath = ProjectManager.INSTANCE.getProjectDirPath ();
+        final var projectPath = ProjectManager.INSTANCE.getProjectDirPath();
         if (projectPath == null) {
             LOG.error("Cannot initialize project. Project model is null.");
             return;
@@ -947,6 +948,7 @@ public class EditorActivity extends StudioActivity
         execTasks(installApk ? installableTaskResultConsumer("debug") : null, "assembleDebug");
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public CompletableFuture<TaskExecutionResult> execTasks(
             Consumer<TaskExecutionResult> resultHandler, String... tasks) {
@@ -970,49 +972,43 @@ public class EditorActivity extends StudioActivity
             @NonNull String variantName) {
         return task -> {
             if (task != null) {
-                //                // TODO Handle multiple application modules
-                //                final var app = mRootProject.findFirstApplicationModule();
-                //                if (app == null) {
-                //                    LOG.error("No application module found in root project. Cannot
-                // install APKs");
-                //                    return;
-                //                }
-                //
-                //                final var variants = app.getVariants();
-                //                final var foundVariant =
-                //                        variants.stream()
-                //                                .filter(variant ->
-                // variant.getName().equals(variantName))
-                //                                .findFirst();
-                //
-                //                if (foundVariant.isPresent()) {
-                //                    final var variant = foundVariant.get();
-                //                    final var main = variant.getMainArtifact();
-                //                    final var outputListingFile =
-                // main.getAssembleTaskOutputListingFile();
-                //                    if (outputListingFile == null) {
-                //                        LOG.error("No output listing file provided with project
-                // model");
-                //                        return;
-                //                    }
-                //
-                //                    final var apkFile =
-                // ApkMetadata.findApkFile(outputListingFile);
-                //                    if (apkFile == null) {
-                //                        LOG.error(
-                //                                "No apk file specified in output listing file:",
-                // outputListingFile);
-                //                        return;
-                //                    }
-                //
-                //                    install(apkFile);
-                //                } else {
-                //                    LOG.error(
-                //                            "No",
-                //                            variantName,
-                //                            "variant found in application module",
-                //                            app.getProjectPath());
-                //                }
+                // TODO Handle multiple application modules
+                final var app = mRootProject.findFirstAndroidModule();
+                if (app == null) {
+                    LOG.error("No application module found in root project. Cannot install APKs");
+                    return;
+                }
+
+                final var variants = app.getVariants();
+                final var foundVariant =
+                        variants.stream()
+                                .filter(variant -> variant.getName().equals(variantName))
+                                .findFirst();
+
+                if (foundVariant.isPresent()) {
+                    final var variant = foundVariant.get();
+                    final var main = variant.getMainArtifact();
+                    final var outputListingFile = main.getAssembleTaskOutputListingFile();
+                    if (outputListingFile == null) {
+                        LOG.error("No output listing file provided with project model");
+                        return;
+                    }
+
+                    final var apkFile = ApkMetadata.findApkFile(outputListingFile);
+                    if (apkFile == null) {
+                        LOG.error(
+                                "No apk file specified in output listing file:", outputListingFile);
+                        return;
+                    }
+
+                    install(apkFile);
+                } else {
+                    LOG.error(
+                            "No",
+                            variantName,
+                            "variant found in application module",
+                            app.getProjectPath());
+                }
             }
         };
     }
@@ -1444,7 +1440,7 @@ public class EditorActivity extends StudioActivity
         final Intent intent = new Intent(this, TerminalActivity.class);
         intent.putExtra(
                 TerminalActivity.KEY_WORKING_DIRECTORY,
-                Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath ()));
+                Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
         startActivity(intent);
     }
 
@@ -1453,12 +1449,13 @@ public class EditorActivity extends StudioActivity
         ProjectManager.INSTANCE.setProjectPath(project);
 
         getApp().getPrefManager()
-                .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath ()));
+                .setOpenedProject(
+                        Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
 
         try {
             //noinspection ConstantConditions
             getSupportActionBar()
-                    .setSubtitle(new File(ProjectManager.INSTANCE.getProjectDirPath ()).getName());
+                    .setSubtitle(new File(ProjectManager.INSTANCE.getProjectDirPath()).getName());
         } catch (Throwable th) {
             // ignored
         }
@@ -1514,7 +1511,8 @@ public class EditorActivity extends StudioActivity
         final var javaLanguageServer = getApp().getJavaLanguageServer();
         final var workspaceRoots = new HashSet<Path>();
         workspaceRoots.add(
-                new File(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath ())).toPath());
+                new File(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()))
+                        .toPath());
         workspaceRoots.add(Environment.HOME.toPath().resolve("logsender"));
 
         final var params = new InitializeParams(workspaceRoots);
