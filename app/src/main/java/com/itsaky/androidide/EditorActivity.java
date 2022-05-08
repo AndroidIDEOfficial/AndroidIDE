@@ -972,6 +972,7 @@ public class EditorActivity extends StudioActivity
             @NonNull String variantName) {
         return task -> {
             if (task != null) {
+                LOG.debug("Installing APK(s) for variant:", variantName);
                 // TODO Handle multiple application modules
                 final var app = mRootProject.findFirstAndroidModule();
                 if (app == null) {
@@ -1022,17 +1023,22 @@ public class EditorActivity extends StudioActivity
     }
 
     public void install(@NonNull File apk) {
-        LOG.debug("Installing APK:", apk);
-        if (apk.exists()) {
-            Intent i = IntentUtils.getInstallAppIntent(apk);
-            if (i != null) {
-                startActivity(i);
-            } else {
-                getApp().toast(R.string.msg_apk_install_intent_failed, Toaster.Type.ERROR);
-            }
-        } else {
-            LOG.error("APK file does not exist!");
-        }
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    LOG.debug("Installing APK:", apk);
+                    if (apk.exists()) {
+                        Intent i = IntentUtils.getInstallAppIntent(apk);
+                        if (i != null) {
+                            startActivity(i);
+                        } else {
+                            getApp().toast(
+                                            R.string.msg_apk_install_intent_failed,
+                                            Toaster.Type.ERROR);
+                        }
+                    } else {
+                        LOG.error("APK file does not exist!");
+                    }
+                });
     }
 
     public void assembleRelease() {
