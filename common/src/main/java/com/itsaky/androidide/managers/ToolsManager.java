@@ -106,6 +106,10 @@ public class ToolsManager {
             ResourceUtils.copyFileFromAssets(
                     getArchSpecificAsset("aapt2"), Environment.AAPT2.getAbsolutePath());
         }
+
+        if (!Environment.AAPT2.canExecute() && !Environment.AAPT2.setExecutable(true)) {
+            LOG.error("Cannot set executable permissions to AAPT2 binary");
+        }
     }
 
     public static void extractLibHooks() {

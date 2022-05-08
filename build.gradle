@@ -40,7 +40,7 @@ buildscript {
 
 subprojects {
     apply from: "${rootDir}/gradle/dependencies.gradle"
-
+    
     project.afterEvaluate {
         tasks.register("checkTranslations", task -> {
             def php = new File("/usr/bin/php")
