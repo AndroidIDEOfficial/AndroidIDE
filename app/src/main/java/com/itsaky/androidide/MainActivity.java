@@ -296,7 +296,7 @@ public class MainActivity extends StudioActivity
                                 .setId(3)
                                 .setName(this, R.string.template_kotlin_basic)
                                 .setDescription(this, R.string.template_description_kotlin_basic)
-                                .setImageId(R.drawable.template_basic),
+                                .setImageId(R.drawable.template_kotlin),
                 libgdx =
                         new ProjectTemplate()
                                 .setId(4)
