@@ -1002,6 +1002,11 @@ public class EditorActivity extends StudioActivity
                         return;
                     }
 
+                    if (!apkFile.exists()) {
+                        LOG.error("APK file specified in output listing file does not exist!");
+                        return;
+                    }
+
                     install(apkFile);
                 } else {
                     LOG.error(
