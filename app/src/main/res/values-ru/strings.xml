@@ -92,7 +92,7 @@
     <string name="preparing_first">Выполняется подготовка. Первая сборка может занять 10–15 минут!</string>
     <string name="msg_gradle_terminated">Процесс Gradle завершился с кодом %1$d</string>
     <string name="msg_gradlew_installation_failed">Ошибка установки Gradle Wrapper: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper недоступен!\nУстановка версии Gradle по умолчанию. Gradle v7.3 будет скачан, если это необходимо.</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper недоступен!\nУстановка версии Gradle по умолчанию. Gradle v7.4 будет скачан, если это необходимо.</string>
     <string name="msg_getting_daemom_status">Получение статуса Daemon, пожалуйста, подождите&#8230;</string>
     <string name="msg_daemons_stopped">Daemon\'ы Gradle остановлены</string>
     <string name="gradle_daemon_status">Статус Gradle Daemon</string>

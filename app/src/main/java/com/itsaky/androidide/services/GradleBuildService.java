@@ -17,6 +17,7 @@
 
 package com.itsaky.androidide.services;
 
+import static com.itsaky.androidide.managers.ToolsManager.getCommonAsset;
 import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import android.app.Notification;
@@ -27,11 +28,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ThreadUtils;
+import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
@@ -39,6 +43,7 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.builder.BuildService;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.LogLine;
+import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.shell.CommonProcessExecutor;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
@@ -47,6 +52,7 @@ import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage;
 import com.itsaky.androidide.tooling.api.messages.TaskExecutionMessage;
 import com.itsaky.androidide.tooling.api.messages.result.BuildCancellationRequestResult;
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult;
+import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
@@ -55,10 +61,13 @@ import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.utils.InputStreamLineReader;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -218,6 +227,64 @@ public class GradleBuildService extends Service implements BuildService, IToolin
         }
 
         return CompletableFuture.completedFuture(extraArgs);
+    }
+
+    @NonNull
+    @Override
+    public CompletableFuture<GradleWrapperCheckResult> checkGradleWrapperAvailability() {
+        return isGradleWrapperAvailable()
+                ? CompletableFuture.completedFuture(new GradleWrapperCheckResult(true))
+                : installWrapper();
+    }
+
+    public boolean isGradleWrapperAvailable() {
+        final var projectDir = ProjectManager.INSTANCE.getProjectDirPath();
+        if (projectDir == null || TextUtils.isEmpty(projectDir)) {
+            return false;
+        }
+
+        final var projectRoot = Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir());
+        if (!projectRoot.exists()) {
+            return false;
+        }
+
+        final File gradlew = new File(projectRoot, "gradlew");
+        final File gradleWrapperJar = new File(projectRoot, "gradle/wrapper/gradle-wrapper.jar");
+        final File gradleWrapperProps =
+                new File(projectRoot, "gradle/wrapper/gradle-wrapper.properties");
+
+        return gradlew.exists() && gradleWrapperJar.exists() && gradleWrapperProps.exists();
+    }
+
+    private CompletableFuture<GradleWrapperCheckResult> installWrapper() {
+        if (eventListener != null) {
+            eventListener.onOutput("-------------------- NOTE --------------------");
+            eventListener.onOutput(getString(R.string.msg_installing_gradlew));
+            eventListener.onOutput("----------------------------------------------");
+        }
+
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    boolean isAvailable = false;
+                    final File extracted = new File(Environment.TMP_DIR, "gradle-wrapper.zip");
+                    if (ResourceUtils.copyFileFromAssets(
+                            getCommonAsset("gradle-wrapper.zip"), extracted.getAbsolutePath())) {
+                        try {
+                            final List<File> files =
+                                    ZipUtils.unzipFile(
+                                            extracted, ProjectManager.INSTANCE.getProjectDir());
+                            if (files != null && !files.isEmpty()) {
+                                isAvailable = true;
+                            }
+                        } catch (IOException e) {
+                            LOG.error("An error occurred while extracting Gradle wrapper", e);
+                        }
+                    } else {
+                        LOG.error("Unable to extract gradle-plugin.zip from IDE resources.");
+                    }
+
+                    return new GradleWrapperCheckResult(isAvailable);
+                });
     }
 
     @NonNull

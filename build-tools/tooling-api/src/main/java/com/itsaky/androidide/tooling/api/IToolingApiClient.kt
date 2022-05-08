@@ -19,6 +19,7 @@ package com.itsaky.androidide.tooling.api
 
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
+import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.events.ProgressEvent
 import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification
@@ -79,4 +80,12 @@ interface IToolingApiClient {
      * @return The extra build arguments.
      */
     @JsonRequest fun getBuildArguments(): CompletableFuture<List<String>>
+
+    /**
+     * Tells the client to check if the Gradle wrapper files are available.
+     *
+     * @return A [CompletableFuture] which completes when the client is done checking the wrapper
+     * availability. The future provides a result which tells if the wrapper is available or not.
+     */
+    @JsonRequest fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult>
 }

@@ -89,7 +89,7 @@
     <string name="preparing_first">Preparing. First build may take up to 10&#8211;15 minutes!</string>
     <string name="msg_gradle_terminated">Gradle process exited with exit code %1$d</string>
     <string name="msg_gradlew_installation_failed">Failed to install Gradle Wrapper: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper is not available!\nInstalling default one. Gradle v7.3 will be downloaded if necessary.</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper is not available!\nInstalling default one. Gradle v7.4 will be downloaded if necessary.</string>
     <string name="msg_getting_daemom_status">Getting Daemon status, please wait&#8230;</string>
     <string name="msg_daemons_stopped">Gradle Daemons Stopped</string>
     <string name="gradle_daemon_status">Gradle daemon status</string>

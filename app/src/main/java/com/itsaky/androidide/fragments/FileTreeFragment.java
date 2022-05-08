@@ -228,7 +228,7 @@ public class FileTreeFragment extends BottomSheetDialogFragment
     }
 
     public void listProjectFiles() {
-        final var projectDirPath = ProjectManager.INSTANCE.getProjectDir();
+        final var projectDirPath = ProjectManager.INSTANCE.getProjectDirPath ();
         if (projectDirPath == null) {
             return;
         }

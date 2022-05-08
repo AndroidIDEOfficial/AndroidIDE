@@ -39,7 +39,10 @@ object ProjectManager {
     var rootProject: IdeGradleProject? = null
     var projectPath: String? = null
 
-    fun getProjectDir(): String? =
+    fun getProjectDir(): File? =
+        if (getProjectDirPath() == null) null else File(getProjectDirPath()!!)
+
+    fun getProjectDirPath(): String? =
         if (rootProject == null) projectPath else rootProject!!.projectDir!!.absolutePath
 
     fun generateSources(builder: BuildService?) {

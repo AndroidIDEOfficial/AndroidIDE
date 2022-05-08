@@ -89,7 +89,7 @@
      <string name="preparing_first">Preparando.  A primeira compilação pode levar de 10 a 15 minutos!</string>
      <string name="msg_gradle_terminated">Processo Gradle encerrado com código de saída %1$d</string>
      <string name="msg_gradlew_installation_failed">Falha ao instalar Gradle Wrapper: %s</string>
-     <string name="msg_installing_gradlew">Gradle Wrapper não está disponível!\nInstalando um padrão.  Gradle v7.3 será baixado se necessário.</string>
+     <string name="msg_installing_gradlew">Gradle Wrapper não está disponível!\nInstalando um padrão.  Gradle v7.4 será baixado se necessário.</string>
      <string name="msg_getting_daemom_status">Recebendo o status de Daemon, aguarde…</string>
      <string name="msg_daemons_stopped">Gradle Daemons Parado</string>
      <string name="gradle_daemon_status">Status do daemon Gradle</string>

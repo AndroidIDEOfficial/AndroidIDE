@@ -91,7 +91,7 @@
     <string name="preparing_first">准备中。 第一次编译可能耗费 10&#8211;15 分钟!</string>
     <string name="msg_gradle_terminated">Gradle进程以代码 %1$d退出</string>
     <string name="msg_gradlew_installation_failed">安装Gradle Wrapper失败: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper不可用!\n正在安装默认版本。 如有需要，Gradle v7.3将会被下载</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper不可用!\n正在安装默认版本。 如有需要，Gradle v7.4将会被下载</string>
     <string name="msg_getting_daemom_status">正在获取Gradle守护进程状态，请稍等&#8230;</string>
     <string name="msg_daemons_stopped">Gradle守护进程已停止</string>
     <string name="gradle_daemon_status">Gradle守护进程状态</string>

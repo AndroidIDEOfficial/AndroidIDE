@@ -79,6 +79,8 @@ internal class ToolingApiServerImpl : IToolingApiServer {
                     project = null
                 }
 
+                Main.checkGradleWrapper()
+
                 if (buildCancellationToken != null) {
                     cancelCurrentBuild().get()
                 }
@@ -135,6 +137,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             assertProjectInitialized()
 
             log.debug("Received request to run tasks.", message)
+            Main.checkGradleWrapper()
 
             var projectPath = message.projectPath
             if (projectPath == null) {

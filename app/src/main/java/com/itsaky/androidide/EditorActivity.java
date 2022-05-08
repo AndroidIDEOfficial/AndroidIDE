@@ -313,7 +313,7 @@ public class EditorActivity extends StudioActivity
         shell.bgAppend(
                 String.format(
                         "cd '%s' && sh gradlew --status",
-                        Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir())));
+                        Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath ())));
         if (!getDaemonStatusFragment().isShowing()) {
             getDaemonStatusFragment().show(getSupportFragmentManager(), "daemon_status");
         }
@@ -877,7 +877,7 @@ public class EditorActivity extends StudioActivity
     }
 
     private void initializeProject() {
-        final var projectPath = ProjectManager.INSTANCE.getProjectDir();
+        final var projectPath = ProjectManager.INSTANCE.getProjectDirPath ();
         if (projectPath == null) {
             LOG.error("Cannot initialize project. Project model is null.");
             return;
@@ -1444,7 +1444,7 @@ public class EditorActivity extends StudioActivity
         final Intent intent = new Intent(this, TerminalActivity.class);
         intent.putExtra(
                 TerminalActivity.KEY_WORKING_DIRECTORY,
-                Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir()));
+                Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath ()));
         startActivity(intent);
     }
 
@@ -1453,12 +1453,12 @@ public class EditorActivity extends StudioActivity
         ProjectManager.INSTANCE.setProjectPath(project);
 
         getApp().getPrefManager()
-                .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir()));
+                .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath ()));
 
         try {
             //noinspection ConstantConditions
             getSupportActionBar()
-                    .setSubtitle(new File(ProjectManager.INSTANCE.getProjectDir()).getName());
+                    .setSubtitle(new File(ProjectManager.INSTANCE.getProjectDirPath ()).getName());
         } catch (Throwable th) {
             // ignored
         }
@@ -1514,7 +1514,7 @@ public class EditorActivity extends StudioActivity
         final var javaLanguageServer = getApp().getJavaLanguageServer();
         final var workspaceRoots = new HashSet<Path>();
         workspaceRoots.add(
-                new File(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDir())).toPath());
+                new File(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath ())).toPath());
         workspaceRoots.add(Environment.HOME.toPath().resolve("logsender"));
 
         final var params = new InitializeParams(workspaceRoots);

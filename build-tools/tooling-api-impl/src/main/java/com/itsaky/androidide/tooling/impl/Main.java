@@ -35,8 +35,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class Main {
-    private static final ILogger LOG = newInstance("ToolingApiMain");
     public static final String SUPPORTED_AGP_VERSION = "@AGP_VERSION@";
+    private static final ILogger LOG = newInstance("ToolingApiMain");
     public static IToolingApiClient client;
     public static Future<Void> future;
 
@@ -57,6 +57,24 @@ public class Main {
             Main.future.get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("An error occurred while waiting for shutdown message", e);
+        }
+    }
+
+    public static void checkGradleWrapper() {
+        if (client != null) {
+            LOG.info("Checking gradle wrapper availability...");
+            try {
+                if (!client.checkGradleWrapperAvailability().get().isAvailable()) {
+                    LOG.warn(
+                            "Gradle wrapper is not available."
+                                    + " Client might have failed to ensure availability."
+                                    + " Build might fail.");
+                } else {
+                    LOG.info("Gradle wrapper is available");
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.warn("Unable to get Gradle wrapper availability from client", e);
+            }
         }
     }
 

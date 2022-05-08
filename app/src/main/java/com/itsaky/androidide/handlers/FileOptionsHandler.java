@@ -94,7 +94,7 @@ public class FileOptionsHandler extends IDEHandler
         if (forceUnknownType) {
             createNewEmptyFile(f);
         } else {
-            final var projectDir = ProjectManager.INSTANCE.getProjectDir();
+            final var projectDir = ProjectManager.INSTANCE.getProjectDirPath ();
             Objects.requireNonNull(projectDir);
 
             final boolean isJava =
