@@ -19,11 +19,18 @@ package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags
 import com.android.builder.model.v2.ide.AndroidGradlePluginProjectFlags.BooleanFlag
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultAndroidGradlePluginProjectFlags : AndroidGradlePluginProjectFlags {
-    override var booleanFlagMap: Map<BooleanFlag, Boolean>? = null
-    override fun toString(): String {
-        return "DefaultAndroidGradlePluginProjectFlags(booleanFlagMap=$booleanFlagMap)"
+class DefaultAndroidGradlePluginProjectFlags(val booleanFlagMap: Map<BooleanFlag, Boolean?>) :
+    AndroidGradlePluginProjectFlags, Serializable {
+    private val serialVersionUID = 1L
+
+    companion object {
+        private val flagByName = BooleanFlag.values().associateBy { it.name }
+    }
+
+    override fun getFlagValue(flagName: String): Boolean? {
+        return flagByName[flagName]?.let { booleanFlagMap[it] }
     }
 }

@@ -17,13 +17,15 @@
 package com.itsaky.androidide.tooling.api.model.util
 
 import com.android.builder.model.v2.ide.ProjectType
-import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
+import com.itsaky.androidide.tooling.api.model.IdeJavaModule
+import com.itsaky.androidide.tooling.api.model.JavaContentRoot
+import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
+import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
 import java.io.File
@@ -41,49 +43,57 @@ class ProjectBuilder {
     var buildDir: File? = null
     var buildScript: File? = null
     var parent: IdeGradleProject? = null
-    var subprojects: List<IdeGradleProject> = mutableListOf()
+    var modules: List<IdeGradleProject> = mutableListOf()
     var tasks: List<IdeGradleTask> = mutableListOf()
-    var bootClasspath: Collection<File> = mutableListOf()
-    var buildFolder: File = File("<no_path>")
-    var buildTypeSourceSets: Collection<DefaultSourceSetContainer> = mutableListOf()
     var dynamicFeatures: Collection<String>? = mutableListOf()
-    var flags: DefaultAndroidGradlePluginProjectFlags = DefaultAndroidGradlePluginProjectFlags()
+    var flags: DefaultAndroidGradlePluginProjectFlags =
+        DefaultAndroidGradlePluginProjectFlags(emptyMap())
     var javaCompileOptions: DefaultJavaCompileOptions = DefaultJavaCompileOptions()
-    var lintRuleJars: List<File> = mutableListOf()
-    var mainSourceSet: DefaultSourceSetContainer = DefaultSourceSetContainer()
-    var productFlavorSourceSets: Collection<DefaultSourceSetContainer> = mutableListOf()
-    var projectType: ProjectType = APPLICATION
     var resourcePrefix: String? = ""
     var variants: Collection<DefaultVariant> = mutableListOf()
     var viewBindingOptions: DefaultViewBindingOptions? = null
+    var modelSyncFiles: List<DefaultModelSyncFile> = emptyList()
+    var lintChecksJars: List<File> = mutableListOf()
+    var contentRoots: List<JavaContentRoot> = mutableListOf()
+    var javaDependencies: List<JavaModuleDependency> = mutableListOf()
+    var projectType: ProjectType? = null
 
     fun buildGradleProject(): IdeGradleProject {
         return IdeGradleProject(
-            name, description, path, projectDir, buildDir, buildScript, parent, subprojects, tasks)
+            name, description, path, projectDir, buildDir, buildScript, parent, tasks)
     }
 
-    fun buildAndroidModule(): IdeAndroidModule =
-        IdeAndroidModule(
+    fun buildJavaModule(): IdeJavaModule {
+        return IdeJavaModule(
             name,
+            path,
             description,
             projectDir,
             buildDir,
             buildScript,
             parent,
-            subprojects,
             tasks,
+            contentRoots,
+            javaDependencies)
+    }
+
+    fun buildAndroidModule(): IdeAndroidModule =
+        IdeAndroidModule(
+            name,
             path,
-            bootClasspath,
-            buildFolder,
-            buildTypeSourceSets,
+            description,
+            projectDir,
+            buildDir,
+            buildScript,
+            parent,
+            tasks,
+            projectType,
             dynamicFeatures,
             flags,
             javaCompileOptions,
-            lintRuleJars,
-            mainSourceSet,
-            productFlavorSourceSets,
-            projectType,
             resourcePrefix,
             variants,
-            viewBindingOptions)
+            viewBindingOptions,
+            lintChecksJars,
+            modelSyncFiles)
 }

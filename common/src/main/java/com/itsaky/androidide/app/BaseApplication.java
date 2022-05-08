@@ -49,8 +49,7 @@ import java.util.Arrays;
 
 public abstract class BaseApplication extends MultiDexApplication {
 
-    public static final String NOTIFICATION_ID_UPDATE = "17571";
-    public static final String NOTIFICATION_ID_DEVS = "17572";
+    public static final String NOTIFICATION_GRADLE_BUILD_SERVICE = "17571";
     public static final String TELEGRAM_GROUP_URL = "https://t.me/androidide_discussions";
     public static final String GITHUB_URL = "https://github.com/itsaky/AndroidIDE";
     public static final String WEBSITE = "https://androidide.com";
@@ -103,44 +102,18 @@ public abstract class BaseApplication extends MultiDexApplication {
 
         createNotificationChannels();
     }
-
-    @SuppressLint("NewApi")
+    
     private void createNotificationChannels() {
         NotificationChannel updateChannel =
                 new NotificationChannel(
-                        NOTIFICATION_ID_UPDATE,
-                        getNotificationChannelNameForId(NOTIFICATION_ID_UPDATE),
+                        NOTIFICATION_GRADLE_BUILD_SERVICE,
+                        getString(R.string.title_gradle_service_notification_channel),
                         NotificationManager.IMPORTANCE_HIGH);
         updateChannel.enableLights(true);
         updateChannel.enableVibration(true);
         updateChannel.setLightColor(Color.RED);
         updateChannel.setVibrationPattern(new long[] {10, 50, 10});
         NotificationManagerCompat.from(this).createNotificationChannel(updateChannel);
-
-        NotificationChannel devsChannels =
-                new NotificationChannel(
-                        NOTIFICATION_ID_DEVS,
-                        getNotificationChannelNameForId(NOTIFICATION_ID_DEVS),
-                        NotificationManager.IMPORTANCE_MIN);
-        devsChannels.enableLights(true);
-        devsChannels.enableVibration(true);
-        devsChannels.setLightColor(Color.BLUE);
-        devsChannels.setVibrationPattern(new long[] {10, 50, 10});
-        NotificationManagerCompat.from(this).createNotificationChannel(devsChannels);
-    }
-
-    public String getNotificationChannelNameForId(@NonNull String id) {
-        if (id.equals(NOTIFICATION_ID_UPDATE)) return getUpdateNotificationChannelName();
-        else if (id.equals(NOTIFICATION_ID_DEVS)) return getDevNotificationChannelName();
-        else return "AndroidIDE Notifications";
-    }
-
-    private String getUpdateNotificationChannelName() {
-        return getString(R.string.cms_channel_id_update);
-    }
-
-    private String getDevNotificationChannelName() {
-        return getString(R.string.cms_channel_id_devs);
     }
 
     public ShellServer newShell(ShellServer.Callback callback) {
@@ -159,12 +132,6 @@ public abstract class BaseApplication extends MultiDexApplication {
         return shellServer;
     }
 
-    public void writeException(Throwable th) {
-        FileUtil.writeFile(
-                new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
-                ThrowableUtils.getFullStackTrace(th));
-    }
-
     public File getRootDir() {
         return new File(getIDEDataDir(), "framework");
     }
@@ -172,6 +139,12 @@ public abstract class BaseApplication extends MultiDexApplication {
     @SuppressLint("SdCardPath")
     public File getIDEDataDir() {
         return Environment.mkdirIfNotExits(new File("/data/data/com.itsaky.androidide/files"));
+    }
+
+    public void writeException(Throwable th) {
+        FileUtil.writeFile(
+                new File(FileUtil.getExternalStorageDir(), "idelog.txt").getAbsolutePath(),
+                ThrowableUtils.getFullStackTrace(th));
     }
 
     @NonNull
@@ -192,24 +165,20 @@ public abstract class BaseApplication extends MultiDexApplication {
         return mPrefsManager;
     }
 
-    public File getProjectsDir() {
-        return Environment.PROJECTS_DIR;
-    }
-
     public File[] listProjects() {
         return getProjectsDir().listFiles(File::isDirectory);
     }
 
-    public StudioUtils getUtils() {
-        return mUtils == null ? mUtils = new StudioUtils(this) : mUtils;
-    }
-
-    public void toast(String msg, Toaster.Type type) {
-        getUtils().toast(msg, type);
+    public File getProjectsDir() {
+        return Environment.PROJECTS_DIR;
     }
 
     public void toast(int msg, Toaster.Type type) {
         getUtils().toast(msg, type);
+    }
+
+    public StudioUtils getUtils() {
+        return mUtils == null ? mUtils = new StudioUtils(this) : mUtils;
     }
 
     public void toastLong(String msg, Toaster.Type type) {
@@ -239,6 +208,10 @@ public abstract class BaseApplication extends MultiDexApplication {
                 toast(th2.getMessage(), Toaster.Type.ERROR);
             }
         }
+    }
+
+    public void toast(String msg, Toaster.Type type) {
+        getUtils().toast(msg, type);
     }
 
     public void openGitHub() {

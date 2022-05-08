@@ -42,7 +42,7 @@ abstract class BaseBuildAction : EditorActivityAction() {
             enabled = true
         }
     }
-    
+
     override fun postExec(data: ActionData, result: Any) {
         val context = getActivity(data) ?: return
         context.invalidateOptionsMenu()
@@ -51,5 +51,5 @@ abstract class BaseBuildAction : EditorActivityAction() {
     fun shouldPrepare() = visible && enabled
 
     private fun isBuildInProgress(activity: EditorActivity): Boolean =
-        activity.buildServiceHandler.isBuilding
+        activity.buildService == null || activity.buildService.isBuildInProgress
 }

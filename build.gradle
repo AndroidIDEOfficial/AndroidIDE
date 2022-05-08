@@ -8,7 +8,7 @@ import java.nio.file.Paths
 import java.util.stream.Collectors
 
 buildscript {
-    ext.kotlin_version = '1.6.20'
+    ext.kotlin_version = '1.6.21'
 
     project.ext {
         compileSdk = 31
@@ -40,7 +40,7 @@ buildscript {
 
 subprojects {
     apply from: "${rootDir}/gradle/dependencies.gradle"
-
+    
     project.afterEvaluate {
         tasks.register("checkTranslations", task -> {
             def php = new File("/usr/bin/php")
@@ -98,6 +98,13 @@ subprojects {
 }
 
 allprojects {
+    
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            freeCompilerArgs += '-Xjvm-default=all'
+        }
+    }
+    
     repositories {
         google()
         mavenLocal()

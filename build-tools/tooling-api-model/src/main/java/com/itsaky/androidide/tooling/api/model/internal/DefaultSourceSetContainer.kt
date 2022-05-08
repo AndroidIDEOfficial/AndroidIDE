@@ -18,15 +18,13 @@
 package com.itsaky.androidide.tooling.api.model.internal
 
 import com.android.builder.model.v2.ide.SourceSetContainer
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultSourceSetContainer : SourceSetContainer {
+class DefaultSourceSetContainer : SourceSetContainer, Serializable {
+    private val serialVersionUID = 1L
     override var androidTestSourceProvider: DefaultSourceProvider? = null
     override var sourceProvider: DefaultSourceProvider = DefaultSourceProvider()
     override var testFixturesSourceProvider: DefaultSourceProvider? = null
     override var unitTestSourceProvider: DefaultSourceProvider? = null
-
-    override fun toString(): String {
-        return "DefaultSourceSetContainer(androidTestSourceProvider=$androidTestSourceProvider, sourceProvider=$sourceProvider, testFixturesSourceProvider=$testFixturesSourceProvider, unitTestSourceProvider=$unitTestSourceProvider)"
-    }
 }

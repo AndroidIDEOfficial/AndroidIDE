@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public class ToolsManager {
 
@@ -50,15 +51,76 @@ public class ToolsManager {
 
         prefs = app.getPrefManager();
 
-        copyBusyboxIfNeeded();
-        extractLogsenderIfNeeded();
-        extractLibHooks();
-        extractGradlePlugin();
-        writeInitScript();
-        rewriteProjectData();
+        CompletableFuture.runAsync(
+                        () -> {
+                            copyBusyboxIfNeeded();
+                            extractLogsenderIfNeeded();
+                            extractAapt2();
+                            extractLibHooks();
+                            extractGradlePlugin();
+                            extractToolingApi();
+                            writeInitScript();
+                            rewriteProjectData();
+                        })
+                .whenComplete(
+                        (__, error) -> {
+                            if (error != null) {
+                                LOG.error("Error extracting tools", error);
+                            }
 
-        if (onFinish != null) {
-            onFinish.run();
+                            if (onFinish != null) {
+                                onFinish.run();
+                            }
+                        });
+    }
+
+    private static void copyBusyboxIfNeeded() {
+        File exec = Environment.BUSYBOX;
+        if (exec.exists()) return;
+        Environment.mkdirIfNotExits(exec.getParentFile());
+        ResourceUtils.copyFileFromAssets(getArchSpecificAsset("busybox"), exec.getAbsolutePath());
+        if (!exec.canExecute()) {
+            if (!exec.setExecutable(true)) {
+                LOG.error("Cannot set busybox executable permissions.");
+            }
+        }
+    }
+
+    private static void extractLogsenderIfNeeded() {
+        try {
+            final boolean isOld = LOG_SENDER_VERSION > prefs.getInt(KEY_LOG_SENDER_VERSION, 0);
+            if (isOld) {
+                final File logsenderZip = new File(Environment.TMP_DIR, "logsender.zip");
+                ResourceUtils.copyFileFromAssets(
+                        getCommonAsset("logsender.zip"), logsenderZip.getAbsolutePath());
+                ZipUtils.unzipFile(logsenderZip, Environment.HOME);
+                prefs.putInt(KEY_LOG_SENDER_VERSION, LOG_SENDER_VERSION);
+            }
+        } catch (IOException e) {
+            LOG.error("Error extracting log sender", e);
+        }
+    }
+
+    private static void extractAapt2() {
+        if (!Environment.AAPT2.exists()) {
+            ResourceUtils.copyFileFromAssets(
+                    getArchSpecificAsset("aapt2"), Environment.AAPT2.getAbsolutePath());
+        }
+
+        if (!Environment.AAPT2.canExecute() && !Environment.AAPT2.setExecutable(true)) {
+            LOG.error("Cannot set executable permissions to AAPT2 binary");
+        }
+    }
+
+    public static void extractLibHooks() {
+        if (!Environment.LIB_HOOK.exists()) {
+            ResourceUtils.copyFileFromAssets(
+                    getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
+        }
+
+        if (!Environment.LIB_HOOK2.exists()) {
+            ResourceUtils.copyFileFromAssets(
+                    getArchSpecificAsset("libhook2.so"), Environment.LIB_HOOK2.getAbsolutePath());
         }
     }
 
@@ -80,32 +142,14 @@ public class ToolsManager {
         }
     }
 
-    public static void extractLibHooks() {
-        if (!Environment.LIB_HOOK.exists()) {
-            ResourceUtils.copyFileFromAssets(
-                    getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
+    private static void extractToolingApi() {
+        if (Environment.TOOLING_API_JAR.exists()) {
+            FileUtils.delete(Environment.TOOLING_API_JAR);
         }
 
-        if (!Environment.LIB_HOOK2.exists()) {
-            ResourceUtils.copyFileFromAssets(
-                    getArchSpecificAsset("libhook2.so"), Environment.LIB_HOOK2.getAbsolutePath());
-        }
-    }
-
-    private static void rewriteProjectData() {
-        FileIOUtils.writeFileFromString(Environment.PROJECT_DATA_FILE, "/**********************/");
-    }
-
-    private static void copyBusyboxIfNeeded() {
-        File exec = Environment.BUSYBOX;
-        if (exec.exists()) return;
-        Environment.mkdirIfNotExits(exec.getParentFile());
-        ResourceUtils.copyFileFromAssets(getArchSpecificAsset("busybox"), exec.getAbsolutePath());
-        if (!exec.canExecute()) {
-            if (!exec.setExecutable(true)) {
-                LOG.error("Cannot set busybox executable permissions.");
-            }
-        }
+        ResourceUtils.copyFileFromAssets(
+                getCommonAsset("tooling-api-all.jar"),
+                Environment.TOOLING_API_JAR.getAbsolutePath());
     }
 
     private static void writeInitScript() {
@@ -115,24 +159,8 @@ public class ToolsManager {
         FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, readInitScript());
     }
 
-    @NonNull
-    private static String readInitScript() {
-        return ResourceUtils.readAssets2String(getCommonAsset("androidide.init.gradle"));
-    }
-
-    private static void extractLogsenderIfNeeded() {
-        try {
-            final boolean isOld = LOG_SENDER_VERSION > prefs.getInt(KEY_LOG_SENDER_VERSION, 0);
-            if (isOld) {
-                final File logsenderZip = new File(Environment.TMP_DIR, "logsender.zip");
-                ResourceUtils.copyFileFromAssets(
-                        getCommonAsset("logsender.zip"), logsenderZip.getAbsolutePath());
-                ZipUtils.unzipFile(logsenderZip, Environment.HOME);
-                prefs.putInt(KEY_LOG_SENDER_VERSION, LOG_SENDER_VERSION);
-            }
-        } catch (IOException e) {
-            LOG.error("Error extracting log sender", e);
-        }
+    private static void rewriteProjectData() {
+        FileIOUtils.writeFileFromString(Environment.PROJECT_DATA_FILE, "/**********************/");
     }
 
     @NonNull
@@ -145,5 +173,10 @@ public class ToolsManager {
     @Contract(pure = true)
     public static String getCommonAsset(String name) {
         return COMMON_ASSET_DATA_DIR + "/" + name;
+    }
+
+    @NonNull
+    private static String readInitScript() {
+        return ResourceUtils.readAssets2String(getCommonAsset("androidide.init.gradle"));
     }
 }

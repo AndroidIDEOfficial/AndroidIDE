@@ -21,12 +21,15 @@ package com.itsaky.androidide;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -40,6 +43,7 @@ import android.widget.LinearLayout;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.GravityInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -82,7 +86,7 @@ import com.itsaky.androidide.fragments.SearchResultFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
-import com.itsaky.androidide.handlers.BuildServiceHandler;
+import com.itsaky.androidide.handlers.EditorEventListener;
 import com.itsaky.androidide.handlers.FileOptionsHandler;
 import com.itsaky.androidide.handlers.IDEHandler;
 import com.itsaky.androidide.interfaces.DiagnosticClickListener;
@@ -90,23 +94,24 @@ import com.itsaky.androidide.interfaces.EditorActivityProvider;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.managers.ToolsManager;
+import com.itsaky.androidide.models.ApkMetadata;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.models.SaveResult;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.models.SheetOption;
-import com.itsaky.androidide.project.AndroidProject;
-import com.itsaky.androidide.project.IDEProject;
+import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
-import com.itsaky.androidide.services.builder.IDEService;
 import com.itsaky.androidide.shell.ShellServer;
-import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
 import com.itsaky.androidide.utils.Environment;
-import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.androidide.utils.LSPUtils;
 import com.itsaky.androidide.utils.RecursiveFileSearcher;
 import com.itsaky.androidide.utils.Symbols;
 import com.itsaky.androidide.viewmodel.EditorViewModel;
@@ -115,7 +120,6 @@ import com.itsaky.androidide.views.SymbolInputView;
 import com.itsaky.androidide.views.editor.CodeEditorView;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.inflater.values.ValuesTableFactory;
-import com.itsaky.lsp.java.models.JavaServerConfiguration;
 import com.itsaky.lsp.java.models.JavaServerSettings;
 import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.InitializeParams;
@@ -127,7 +131,6 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -136,6 +139,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -153,14 +157,14 @@ public class EditorActivity extends StudioActivity
                 EditorActivityProvider,
                 OptionsListFragment.OnOptionsClickListener {
 
-    public static final String EXTRA_PROJECT = "project";
+    public static final String EXTRA_PROJECT_PATH = "project_path";
     public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
     private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
     private static final int ACTION_ID_CLOSE = 100;
     private static final int ACTION_ID_OTHERS = 101;
     private static final int ACTION_ID_ALL = 102;
     private static final ILogger LOG = ILogger.newInstance("EditorActivity");
-
+    private final EditorEventListener mBuildEventListener = new EditorEventListener();
     private ActivityEditorBinding mBinding;
     private LayoutDiagnosticInfoBinding mDiagnosticInfoBinding;
     private EditorBottomSheetTabAdapter bottomSheetTabAdapter;
@@ -168,7 +172,6 @@ public class EditorActivity extends StudioActivity
     private FileTreeFragment mFileTreeFragment;
     private TreeNode mLastHeld;
     private SymbolInputView symbolInput;
-    private BuildServiceHandler mBuildServiceHandler;
     private FileOptionsHandler mFileOptionsHandler;
     private QuickAction mTabCloseAction;
     private TextSheetFragment mDaemonStatusFragment;
@@ -179,22 +182,931 @@ public class EditorActivity extends StudioActivity
     private EditorBottomSheetBehavior<? extends View> mEditorBottomSheet;
     private EditorViewModel mViewModel;
 
+    private IdeGradleProject mRootProject;
+    private GradleBuildService mBuildService;
+    private final ServiceConnection mGradleServiceConnection =
+            new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    mBuildService = ((GradleBuildService.GradleServiceBinder) service).getService();
+                    LOG.info("Gradle build service has been started...");
+
+                    mBuildService
+                            .setEventListener(mBuildEventListener)
+                            .startToolingServer(() -> initializeProject());
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    mBuildService = null;
+                    LOG.info("Disconnected from Gradle build service...");
+                }
+            };
+
     @Override
-    protected View bindLayout() {
-        mBinding = ActivityEditorBinding.inflate(getLayoutInflater());
-        mDiagnosticInfoBinding = mBinding.diagnosticInfo;
-        return mBinding.getRoot();
+    public void onBackPressed() {
+        if (mBinding.getRoot().isDrawerOpen(GravityCompat.END)) {
+            mBinding.getRoot().closeDrawer(GravityCompat.END);
+        } else if (mBinding.getRoot().isDrawerOpen(GravityCompat.START)) {
+            mBinding.getRoot().closeDrawer(GravityCompat.START);
+        } else if (getDaemonStatusFragment().isShowing()) {
+            getDaemonStatusFragment().dismiss();
+        } else if (mFileOptionsFragment != null && mFileOptionsFragment.isShowing()) {
+            mFileOptionsFragment.dismiss();
+        } else if (mEditorBottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else {
+            confirmProjectClose();
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (menu instanceof MenuBuilder) {
+            MenuBuilder builder = (MenuBuilder) menu;
+            builder.setOptionalIconsVisible(true);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        ensureToolbarMenu(menu);
+        return true;
+    }
+
+    public void ensureToolbarMenu(@NonNull Menu menu) {
+        menu.clear();
+
+        final var data = new ActionData();
+        final var currentEditor = getCurrentEditor();
+        data.put(Context.class, EditorActivity.this);
+        data.put(CodeEditorView.class, currentEditor);
+
+        if (currentEditor != null) {
+            data.put(IDEEditor.class, currentEditor.getEditor());
+            data.put(File.class, currentEditor.getEditor().getFile());
+        }
+
+        ActionsRegistry.getInstance()
+                .fillMenu(
+                        data,
+                        com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR,
+                        menu);
+    }
+
+    @Nullable
+    public CodeEditorView getCurrentEditor() {
+        if (mViewModel.getCurrentFileIndex() != -1) {
+            return getEditorAtIndex(mViewModel.getCurrentFileIndex());
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public CodeEditorView getEditorAtIndex(final int index) {
+        return (CodeEditorView) mBinding.editorContainer.getChildAt(index);
+    }
+
+    @Override
+    public EditorActivity provide() {
+        return this;
+    }
+
+    @Override
+    public EditorActivity provideEditorActivity() {
+        return this;
+    }
+
+    public void handleSearchResults(Map<File, List<SearchResult>> results) {
+        setSearchResultAdapter(
+                new com.itsaky.androidide.adapters.SearchListAdapter(
+                        results,
+                        file -> {
+                            openFile(file);
+                            hideViewOptions();
+                        },
+                        match -> {
+                            openFileAndSelect(match.file, match);
+                            hideViewOptions();
+                        }));
+
+        showSearchResults();
+
+        if (mSearchingProgress != null && mSearchingProgress.isShowing()) {
+            mSearchingProgress.dismiss();
+        }
+    }
+
+    public void appendApkLog(LogLine line) {
+        final var logFragment = bottomSheetTabAdapter.getLogFragment();
+        if (logFragment != null) {
+            logFragment.appendLog(line);
+        }
+    }
+
+    public void showDaemonStatus() {
+        ShellServer shell = getApp().newShell(t -> getDaemonStatusFragment().append(t));
+        shell.bgAppend(String.format("echo '%s'", getString(R.string.msg_getting_daemom_status)));
+        shell.bgAppend(
+                String.format(
+                        "cd '%s' && sh gradlew --status",
+                        Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath())));
+        if (!getDaemonStatusFragment().isShowing()) {
+            getDaemonStatusFragment().show(getSupportFragmentManager(), "daemon_status");
+        }
+    }
+
+    public TextSheetFragment getDaemonStatusFragment() {
+        return mDaemonStatusFragment == null
+                ? mDaemonStatusFragment =
+                        new TextSheetFragment()
+                                .setTextSelectable(true)
+                                .setTitleText(R.string.gradle_daemon_status)
+                : mDaemonStatusFragment;
+    }
+
+    public void showSearchResults() {
+        if (mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+            mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+
+        final int index =
+                bottomSheetTabAdapter.findIndexOfFragmentByClass(SearchResultFragment.class);
+        if (index >= 0 && index < mBinding.bottomSheet.tabs.getTabCount()) {
+            final var tab = mBinding.bottomSheet.tabs.getTabAt(index);
+            if (tab != null) {
+                tab.select();
+            }
+        }
+    }
+
+    public void handleDiagnosticsResultVisibility(boolean errorVisible) {
+        runOnUiThread(
+                () -> {
+                    final var diagnosticsFragment = bottomSheetTabAdapter.getDiagnosticsFragment();
+                    if (diagnosticsFragment != null) {
+                        diagnosticsFragment.handleResultVisibility(errorVisible);
+                    }
+                });
+    }
+
+    public void handleSearchResultVisibility(boolean errorVisible) {
+        runOnUiThread(
+                () -> {
+                    final var searchResultFragment =
+                            bottomSheetTabAdapter.getSearchResultFragment();
+                    if (searchResultFragment != null) {
+                        searchResultFragment.handleResultVisibility(errorVisible);
+                    }
+                });
+    }
+
+    public void showFirstBuildNotice() {
+        DialogUtils.newMaterialDialogBuilder(this)
+                .setPositiveButton(android.R.string.ok, null)
+                .setTitle(R.string.title_first_build)
+                .setMessage(R.string.msg_first_build)
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onGroupClick(DiagnosticGroup group) {
+        if (group != null
+                && group.file != null
+                && group.file.exists()
+                && FileUtils.isUtf8(group.file)) {
+            openFile(group.file);
+            hideViewOptions();
+        }
+    }
+
+    @Override
+    public void onDiagnosticClick(File file, @NonNull DiagnosticItem diagnostic) {
+        openFileAndSelect(file, diagnostic.getRange());
+        hideViewOptions();
+    }
+
+    public void openFileAndSelect(File file, Range selection) {
+        openFile(file, selection);
+        final var opened = getEditorForFile(file);
+        if (opened != null && opened.getEditor() != null) {
+            final var editor = opened.getEditor();
+            final var range = editor.validateRange(selection);
+            editor.post(
+                    () -> {
+                        if (LSPUtils.isEqual(range.getStart(), range.getEnd())) {
+                            editor.setSelection(
+                                    range.getStart().getLine(), range.getEnd().getColumn());
+                        } else {
+                            editor.setSelection(range);
+                        }
+                    });
+        }
+    }
+
+    @Nullable
+    public CodeEditorView getEditorForFile(@NonNull final File file) {
+        for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
+            final CodeEditorView editor = (CodeEditorView) mBinding.editorContainer.getChildAt(i);
+            if (file.equals(editor.getFile())) {
+                return editor;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public CodeEditorView openFile(File file) {
+        return openFile(file, null);
+    }
+
+    public void hideViewOptions() {
+        if (mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
+            mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
+    }
+
+    public CodeEditorView openFile(File file, com.itsaky.lsp.models.Range selection) {
+        if (selection == null) {
+            selection = com.itsaky.lsp.models.Range.NONE;
+        }
+
+        int index = openFileAndGetIndex(file, selection);
+        final var tab = mBinding.tabs.getTabAt(index);
+        if (tab != null && index >= 0 && !tab.isSelected()) {
+            tab.select();
+        }
+
+        if (mBinding.editorDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+            mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
+        }
+
+        mBinding.editorContainer.setDisplayedChild(index);
+
+        try {
+            return getEditorAtIndex(index);
+        } catch (Throwable th) {
+            LOG.error("Unable to get editor fragment at opened file index", index);
+            LOG.error(th);
+            return null;
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public int openFileAndGetIndex(File file, com.itsaky.lsp.models.Range selection) {
+        final var openedFileIndex = findIndexOfEditorByFile(file);
+
+        if (openedFileIndex != -1) {
+            LOG.error("File is already opened. File: " + file);
+            return openedFileIndex;
+        }
+
+        final var position = mViewModel.getOpenedFileCount();
+
+        LOG.info("Opening file at index:", position, "file: ", file);
+
+        final var editor = new CodeEditorView(this, file, selection);
+        editor.getEditor().subscribeEvent(ContentChangeEvent.class, this::onEditorContentChanged);
+        editor.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        mBinding.editorContainer.addView(editor);
+        mBinding.editorContainer.setDisplayedChild(position);
+        mBinding.tabs.addTab(mBinding.tabs.newTab().setText(file.getName()));
+
+        mViewModel.addFile(file);
+        mViewModel.setCurrentFile(position, file);
+
+        return position;
+    }
+
+    public int findIndexOfEditorByFile(File file) {
+        if (file == null) {
+            LOG.error("Cannot find index of a null file.");
+            return -1;
+        }
+
+        for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
+            final var opened = mViewModel.getOpenedFile(i);
+            if (opened.equals(file)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private void onEditorContentChanged(ContentChangeEvent event, Unsubscribe unsubscribe) {
+        if (event.getAction() != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
+            mViewModel.setFilesModified(true);
+        }
+    }
+
+    @Override
+    public void showFileOptions(File thisFile, TreeNode node) {
+        mLastHeld = node;
+        getFileOptionsFragment(thisFile)
+                .show(getSupportFragmentManager(), TAG_FILE_OPTIONS_FRAGMENT);
+    }
+
+    public OptionsListFragment getFileOptionsFragment(File file) {
+        mFileOptionsFragment = new OptionsListFragment();
+        mFileOptionsFragment.addOption(
+                new SheetOption(0, R.drawable.ic_file_copy_path, R.string.copy_path, file));
+        mFileOptionsFragment.addOption(
+                new SheetOption(1, R.drawable.ic_file_rename, R.string.rename_file, file));
+        mFileOptionsFragment.addOption(
+                new SheetOption(2, R.drawable.ic_delete, R.string.delete_file, file));
+        if (file.isDirectory()) {
+            mFileOptionsFragment.addOption(
+                    new SheetOption(3, R.drawable.ic_new_file, R.string.new_file, file));
+            mFileOptionsFragment.addOption(
+                    new SheetOption(4, R.drawable.ic_new_folder, R.string.new_folder, file));
+        }
+
+        return mFileOptionsFragment;
+    }
+
+    public ActivityEditorBinding getBinding() {
+        return mBinding;
+    }
+
+    public LayoutDiagnosticInfoBinding getDiagnosticBinding() {
+        return mDiagnosticInfoBinding;
+    }
+
+    @Override
+    public void onTabSelected(@NonNull TabLayout.Tab tab) {
+        final var position = tab.getPosition();
+        mBinding.editorContainer.setDisplayedChild(position);
+
+        final var editorView = getEditorAtIndex(position);
+        Objects.requireNonNull(editorView);
+
+        editorView.onEditorSelected();
+        mViewModel.setCurrentFile(position, editorView.getFile());
+        refreshSymbolInput(editorView);
+    }
+
+    @Override
+    public void onTabUnselected(@NonNull TabLayout.Tab tab) {
+        final var position = tab.getPosition();
+        final var editorView = getEditorAtIndex(position);
+        if (editorView != null) {
+            final var editor = editorView.getEditor();
+            if (editor != null) {
+                editor.ensureWindowsDismissed();
+            }
+        }
+    }
+
+    @Override
+    public void onTabReselected(@NonNull TabLayout.Tab tab) {
+        mTabCloseAction.show(tab.view);
+    }
+
+    private void refreshSymbolInput(@NonNull CodeEditorView frag) {
+        symbolInput.bindEditor(frag.getEditor());
+        symbolInput.setSymbols(Symbols.forFile(frag.getFile()));
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem p1) {
+        final int id = p1.getItemId();
+        if (id == R.id.editornav_discuss) {
+            getApp().openTelegramGroup();
+        } else if (id == R.id.editornav_suggest) {
+            getApp().openGitHub();
+        } else if (id == R.id.editornav_needHelp) {
+            showNeedHelpDialog();
+        } else if (id == R.id.editornav_settings) {
+            startActivity(new Intent(this, PreferencesActivity.class));
+        } else if (id == R.id.editornav_share) {
+            startActivity(IntentUtils.getShareTextIntent(getString(R.string.msg_share_app)));
+        } else if (id == R.id.editornav_close_project) {
+            confirmProjectClose();
+        } else if (id == R.id.editornav_terminal) {
+            openTerminal();
+        }
+        mBinding.getRoot().closeDrawer(GravityCompat.START);
+        return false;
+    }
+
+    public void loadFragment(Fragment fragment) {
+        super.loadFragment(fragment, mBinding.editorFrameLayout.getId());
+    }
+
+    public FileTreeFragment getFileTreeFragment() {
+        return mFileTreeFragment;
+    }
+
+    public TreeNode getLastHoldTreeNode() {
+        return mLastHeld;
+    }
+
+    public ProgressSheet getProgressSheet(int msg) {
+        if (mSearchingProgress != null && mSearchingProgress.isShowing()) {
+            mSearchingProgress.dismiss();
+        }
+        mSearchingProgress = new ProgressSheet();
+        mSearchingProgress.setCancelable(false);
+        mSearchingProgress.setWelcomeTextEnabled(false);
+        mSearchingProgress.setMessage(getString(msg));
+        mSearchingProgress.setSubMessageEnabled(false);
+        return mSearchingProgress;
+    }
+
+    public void setDiagnosticsAdapter(@NonNull final DiagnosticsAdapter adapter) {
+        runOnUiThread(
+                () -> {
+                    final var diagnosticsFragment = bottomSheetTabAdapter.getDiagnosticsFragment();
+                    if (diagnosticsFragment != null) {
+                        diagnosticsFragment.setAdapter(adapter);
+                    }
+                });
+    }
+
+    public void setSearchResultAdapter(@NonNull final SearchListAdapter adapter) {
+        runOnUiThread(
+                () -> {
+                    final var searchResultFragment =
+                            bottomSheetTabAdapter.getSearchResultFragment();
+                    if (searchResultFragment != null) {
+                        searchResultFragment.setAdapter(adapter);
+                    }
+                });
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean saveAll() {
+        return saveAll(true);
+    }
+
+    public void closeFile(int index) {
+        if (index >= 0 && index < mViewModel.getOpenedFileCount()) {
+            var opened = mViewModel.getOpenedFile(index);
+            LOG.info("Closing file:", opened);
+            final var editor = getEditorAtIndex(index);
+
+            if (editor != null && editor.isModified()) {
+                notifyFilesUnsaved(Collections.singletonList(editor), () -> closeFile(index));
+                return;
+            }
+
+            if (editor != null && editor.getEditor() != null) {
+                editor.getEditor().close();
+            } else {
+                LOG.error("Cannot save file before close. Editor instance is null");
+            }
+
+            mViewModel.removeFile(index);
+            mBinding.tabs.removeTabAt(index);
+            mBinding.editorContainer.removeViewAt(index);
+        } else {
+            LOG.error("Invalid file index. Cannot close.");
+            return;
+        }
+
+        mBinding.tabs.requestLayout();
+    }
+
+    public void closeAll() {
+        closeAll(null);
+    }
+
+    /**
+     * Close all opened files. If all the files are saved successfully, then the provided {@link
+     * Runnable} will be called.
+     *
+     * @param onSaved The {@link Runnable} to run when all the files are saved.
+     */
+    public void closeAll(Runnable onSaved) {
+        final var count = mViewModel.getOpenedFileCount();
+        final var unsavedFiles =
+                mViewModel.getOpenedFiles().stream()
+                        .map(this::getEditorForFile)
+                        .filter(editor -> editor != null && editor.isModified())
+                        .collect(Collectors.toList());
+
+        if (unsavedFiles.isEmpty()) {
+            // Files were already saved, close all files one by one
+            for (int i = 0; i < count; i++) {
+                final var editor = getEditorAtIndex(i);
+                if (editor != null && editor.getEditor() != null) {
+                    editor.getEditor().close();
+                } else {
+                    LOG.error("Unable to close file at index:", i);
+                }
+            }
+
+            mViewModel.removeAllFiles();
+            mBinding.tabs.removeAllTabs();
+            mBinding.tabs.requestLayout();
+            mBinding.editorContainer.removeAllViews();
+
+            if (onSaved != null) {
+                onSaved.run();
+            }
+        } else {
+            // There are unsaved files
+            notifyFilesUnsaved(unsavedFiles, () -> closeAll(onSaved));
+        }
+    }
+
+    public boolean areFilesModified() {
+        return mViewModel.areFilesModified();
+    }
+
+    public EditorViewModel getViewModel() {
+        return mViewModel;
+    }
+
+    public void closeOthers() {
+        final var unsavedFiles =
+                mViewModel.getOpenedFiles().stream()
+                        .map(this::getEditorForFile)
+                        .filter(editor -> editor != null && editor.isModified())
+                        .collect(Collectors.toList());
+
+        if (unsavedFiles.isEmpty()) {
+            final var file = mViewModel.getCurrentFile();
+            for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
+                final var editor = getEditorAtIndex(i);
+
+                // Index of files changes as we keep close files
+                // So we compare the files instead of index
+                if (editor != null) {
+                    if (!file.equals(editor.getFile())) {
+                        closeFile(i);
+                    }
+                } else {
+                    LOG.error("Unable to save file at index:", i);
+                }
+            }
+        } else {
+            notifyFilesUnsaved(unsavedFiles, this::closeOthers);
+        }
+    }
+
+    public void previewLayout() {
+        try {
+
+            if (getCurrentEditor() == null || getCurrentEditor().getFile() == null) {
+                LOG.error("No file is opened. Cannot preview layout.");
+                return;
+            }
+
+            saveAll(false);
+
+            final Intent intent = new Intent(this, DesignerActivity.class);
+            intent.putExtra(
+                    DesignerActivity.KEY_LAYOUT_PATH,
+                    getCurrentEditor().getFile().getAbsolutePath());
+            intent.putStringArrayListExtra(
+                    DesignerActivity.KEY_RES_DIRS, (ArrayList<String>) getResourceDirectories());
+            LOG.info("Launching UI Designer...");
+            mUIDesignerLauncher.launch(intent);
+        } catch (Throwable th) {
+            LOG.error(getString(R.string.err_cannot_preview_layout), th);
+            getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
+        }
+    }
+
+    public boolean saveAll(boolean notify) {
+        return saveAll(notify, false);
+    }
+
+    @NonNull
+    private List<String> getResourceDirectories() {
+        final var dirs = ProjectManager.INSTANCE.getApplicationResDirectories();
+        if (dirs == null) {
+            return Collections.emptyList();
+        }
+
+        return dirs.stream().map(File::getAbsolutePath).collect(Collectors.toList());
+    }
+
+    public boolean saveAll(boolean notify, boolean canProcessResources) {
+        SaveResult result = saveAllResult();
+
+        if (notify) {
+            getApp().toast(R.string.all_saved, Toaster.Type.SUCCESS);
+        }
+
+        if (result.gradleSaved) {
+            notifySyncNeeded();
+        }
+
+        if (canProcessResources) {
+            ProjectManager.INSTANCE.generateSources(mBuildService);
+        }
+
+        return result.gradleSaved;
+    }
+
+    public SaveResult saveAllResult() {
+        SaveResult result = new SaveResult();
+        for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
+            saveResult(i, result);
+        }
+
+        return result;
+    }
+
+    public void notifySyncNeeded() {
+        if (mBuildService != null && !mBuildService.isBuildInProgress()) {
+            getSyncBanner()
+                    .setNegative(android.R.string.cancel, null)
+                    .setPositive(android.R.string.ok, v -> initializeProject())
+                    .show();
+        }
+    }
+
+    public void saveResult(int index, SaveResult result) {
+        if (index >= 0 && index < mViewModel.getOpenedFileCount()) {
+            var frag = getEditorAtIndex(index);
+            if (frag == null || frag.getFile() == null) {
+                return;
+            }
+
+            // Must be called before frag.save()
+            // Otherwise, it'll always return false
+            final boolean modified = frag.isModified();
+
+            frag.save();
+
+            final boolean isGradle = frag.getFile().getName().endsWith(".gradle");
+            final boolean isXml = frag.getFile().getName().endsWith(".xml");
+
+            if (!result.gradleSaved) {
+                result.gradleSaved = modified && isGradle;
+            }
+
+            if (!result.xmlSaved) {
+                result.xmlSaved = modified && isXml;
+            }
+        }
+
+        var modified = false;
+        for (var file : mViewModel.getOpenedFiles()) {
+            var editor = getEditorForFile(file);
+            if (editor == null) {
+                continue;
+            }
+            modified = modified || editor.isModified();
+        }
+
+        final boolean finalModified = modified;
+        ThreadUtils.runOnUiThread(() -> mViewModel.setFilesModified(finalModified));
+    }
+
+    public MaterialBanner getSyncBanner() {
+        return mBinding.syncBanner
+                .setContentTextColor(ContextCompat.getColor(this, R.color.primaryTextColor))
+                .setBannerBackgroundColor(ContextCompat.getColor(this, R.color.primaryLightColor))
+                .setButtonTextColor(ContextCompat.getColor(this, R.color.secondaryColor))
+                .setIcon(R.drawable.ic_sync)
+                .setContentText(R.string.msg_sync_needed);
+    }
+
+    private void initializeProject() {
+        final var projectPath = ProjectManager.INSTANCE.getProjectDirPath();
+        if (projectPath == null) {
+            LOG.error("Cannot initialize project. Project model is null.");
+            return;
+        }
+
+        final var projectDir = new File(projectPath);
+        if (!projectDir.exists()) {
+            LOG.error("Project directory does not exist. Cannot initialize project");
+            return;
+        }
+
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    setStatus(getString(R.string.msg_initializing_project));
+                    mBinding.buildProgressIndicator.setVisibility(View.VISIBLE);
+                });
+
+        final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
+        future.whenComplete(
+                (result, error) -> {
+                    final var root = result == null ? null : result.getProject();
+                    if (result == null || root == null || error != null) {
+                        LOG.error(
+                                "An error occurred initializing the project with Tooling API",
+                                error);
+                        setStatus(getString(R.string.msg_project_initialization_failed));
+                        return;
+                    }
+
+                    onProjectInitialized(root);
+                });
+    }
+
+    public void setStatus(final CharSequence text) {
+        setStatus(text, Gravity.CENTER);
+    }
+
+    protected void onProjectInitialized(IdeGradleProject root) {
+        mRootProject = root;
+        ProjectManager.INSTANCE.setRootProject(mRootProject);
+        ProjectManager.INSTANCE.notifyProjectUpdate();
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    setStatus(getString(R.string.msg_project_initialized));
+                    mBinding.buildProgressIndicator.setVisibility(View.GONE);
+                    if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
+                        mFindInProjectDialog.dismiss();
+                    }
+
+                    mFindInProjectDialog = null; // Create the dialog again if needed
+                });
+    }
+
+    public void setStatus(final CharSequence text, @GravityInt int gravity) {
+        try {
+            runOnUiThread(
+                    () -> {
+                        mBinding.bottomSheet.statusText.setGravity(gravity);
+                        mBinding.bottomSheet.statusText.setText(text);
+                    });
+        } catch (Throwable th) {
+            LOG.error("Failed to update status text", th);
+        }
+    }
+
+    public void assembleDebug(boolean installApk) {
+        execTasks(installApk ? installableTaskResultConsumer("debug") : null, "assembleDebug");
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public CompletableFuture<TaskExecutionResult> execTasks(
+            Consumer<TaskExecutionResult> resultHandler, String... tasks) {
+        ThreadUtils.runOnUiThread(
+                () -> appendBuildOut("Executing tasks: " + TextUtils.join(", ", tasks)));
+        return mBuildService
+                .executeTasks(tasks)
+                .whenComplete(
+                        ((executionResult, throwable) -> {
+                            if (executionResult == null || throwable != null) {
+                                LOG.error("Tasks failed to execute", TextUtils.join(", ", tasks));
+                            }
+
+                            if (resultHandler != null) {
+                                resultHandler.accept(executionResult);
+                            }
+                        }));
+    }
+
+    public Consumer<TaskExecutionResult> installableTaskResultConsumer(
+            @NonNull String variantName) {
+        return task -> {
+            if (task != null) {
+                LOG.debug("Installing APK(s) for variant:", variantName);
+                // TODO Handle multiple application modules
+                final var app = mRootProject.findFirstAndroidModule();
+                if (app == null) {
+                    LOG.error("No application module found in root project. Cannot install APKs");
+                    return;
+                }
+
+                final var variants = app.getVariants();
+                final var foundVariant =
+                        variants.stream()
+                                .filter(variant -> variant.getName().equals(variantName))
+                                .findFirst();
+
+                if (foundVariant.isPresent()) {
+                    final var variant = foundVariant.get();
+                    final var main = variant.getMainArtifact();
+                    final var outputListingFile = main.getAssembleTaskOutputListingFile();
+                    if (outputListingFile == null) {
+                        LOG.error("No output listing file provided with project model");
+                        return;
+                    }
+
+                    final var apkFile = ApkMetadata.findApkFile(outputListingFile);
+                    if (apkFile == null) {
+                        LOG.error(
+                                "No apk file specified in output listing file:", outputListingFile);
+                        return;
+                    }
+
+                    if (!apkFile.exists()) {
+                        LOG.error("APK file specified in output listing file does not exist!", apkFile);
+                        return;
+                    }
+
+                    install(apkFile);
+                } else {
+                    LOG.error(
+                            "No",
+                            variantName,
+                            "variant found in application module",
+                            app.getProjectPath());
+                }
+            }
+        };
+    }
+
+    public void appendBuildOut(final String str) {
+        final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
+
+        if (frag != null) {
+            frag.appendOutput(str);
+        }
+    }
+
+    public void install(@NonNull File apk) {
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    LOG.debug("Installing APK:", apk);
+                    if (apk.exists()) {
+                        Intent i = IntentUtils.getInstallAppIntent(apk);
+                        if (i != null) {
+                            startActivity(i);
+                        } else {
+                            getApp().toast(
+                                            R.string.msg_apk_install_intent_failed,
+                                            Toaster.Type.ERROR);
+                        }
+                    } else {
+                        LOG.error("APK file does not exist!");
+                    }
+                });
+    }
+
+    public void assembleRelease() {
+        execTasks(null, "assembleRelease");
+    }
+
+    public void build() {
+        execTasks(null, "build");
+    }
+
+    public void clean() {
+        execTasks(null, "clean");
+    }
+
+    public void bundle() {
+        execTasks(null, "bundle");
+    }
+
+    public void lint() {
+        execTasks(null, "lint");
+    }
+
+    public void lintDebug() {
+        execTasks(null, "lintDebug");
+    }
+
+    public void lintRelease() {
+        execTasks(null, "lintRelease");
+    }
+
+    public void cleanAndRebuild() {
+        execTasks(null, "clean", "build");
+    }
+
+    /////////////////////////////////////////////////
+    ////////////// PRIVATE APIS /////////////////////
+    /////////////////////////////////////////////////
+
+    public AlertDialog getFindInProjectDialog() {
+        return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
+    }
+
+    @Override
+    public void onOptionsClick(SheetOption option) {
+        if (mFileOptionsHandler != null) {
+            mFileOptionsHandler.onOptionsClick(option);
+        }
+    }
+
+    public GradleBuildService getBuildService() {
+        return mBuildService;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setSupportActionBar(mBinding.editorToolbar);
 
         mViewModel = new ViewModelProvider(this).get(EditorViewModel.class);
         getProjectFromIntent();
 
-        mFileTreeFragment = FileTreeFragment.newInstance(this.getAndroidProject());
+        mFileTreeFragment = FileTreeFragment.newInstance();
         mDaemonStatusFragment = new TextSheetFragment().setTextSelectable(true);
 
         setupDrawerToggle();
@@ -208,7 +1120,7 @@ public class EditorActivity extends StudioActivity
         setupEditorBottomSheet();
         createQuickActions();
 
-        mBuildServiceHandler = new BuildServiceHandler(this);
+        mBuildEventListener.setActivity(this);
         mFileOptionsHandler = new FileOptionsHandler(this);
 
         startServices();
@@ -224,6 +1136,155 @@ public class EditorActivity extends StudioActivity
                         this::onGetUIDesignerResult);
 
         EditorActivityActions.register(this);
+    }
+
+    @Override
+    protected View bindLayout() {
+        mBinding = ActivityEditorBinding.inflate(getLayoutInflater());
+        mDiagnosticInfoBinding = mBinding.diagnosticInfo;
+        return mBinding.getRoot();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        dispatchOnPauseToEditors();
+        EditorActivityActions.clear();
+
+        if (mFileTreeFragment != null) {
+            mFileTreeFragment.saveTreeState();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        EditorActivityActions.register(this);
+
+        try {
+            checkForCompilerModule();
+            dispatchOnResumeToEditors();
+
+            if (mFileTreeFragment != null) {
+                mFileTreeFragment.listProjectFiles();
+            }
+        } catch (Throwable th) {
+            LOG.error("Failed to update files list", th);
+            getApp().toast(R.string.msg_failed_list_files, Toaster.Type.ERROR);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void checkForCompilerModule() {
+        if (!Environment.isCompilerModuleInstalled()) {
+            final var pd =
+                    ProgressDialog.show(
+                            this,
+                            getString(R.string.title_compiler_module_install),
+                            getString(R.string.msg_compiler_module_install),
+                            true,
+                            false);
+
+            final CompletableFuture<Boolean> future =
+                    CompletableFuture.supplyAsync(
+                            () -> {
+                                final var tmpModule =
+                                        new File(Environment.TMP_DIR, "compiler-module.zip");
+                                if (!ResourceUtils.copyFileFromAssets(
+                                        ToolsManager.getCommonAsset("compiler-module.zip"),
+                                        tmpModule.getAbsolutePath())) {
+                                    throw new CompletionException(
+                                            new RuntimeException(
+                                                    "Unable to copy compiler-module.zip"));
+                                }
+
+                                try {
+                                    ZipUtils.unzipFile(tmpModule, Environment.COMPILER_MODULE);
+                                } catch (Throwable e) {
+                                    throw new CompletionException(e);
+                                }
+
+                                if (!Environment.isCompilerModuleInstalled()) {
+                                    throw new CompletionException(
+                                            new RuntimeException("Unknown error"));
+                                }
+
+                                try {
+                                    FileUtils.delete(tmpModule);
+                                } catch (Exception e) {
+                                    // ignored
+                                }
+
+                                return true;
+                            });
+
+            future.whenComplete(
+                    (result, error) -> {
+                        pd.dismiss();
+
+                        if (error != null) {
+                            showCompilerModuleInstallError(error);
+                            return;
+                        }
+
+                        getApp().toast(
+                                        getString(R.string.msg_compiler_module_installed),
+                                        Toaster.Type.SUCCESS);
+                    });
+        }
+    }
+
+    private void dispatchOnResumeToEditors() {
+        CompletableFuture.runAsync(
+                () -> {
+                    for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
+                        final var editor = getEditorAtIndex(i);
+                        if (editor != null) {
+                            editor.onResume();
+                        }
+                    }
+                });
+    }
+
+    private void showCompilerModuleInstallError(Throwable error) {
+        final var stacktrace = ThrowableUtils.getFullStackTrace(error);
+        final var builder = DialogUtils.newMaterialDialogBuilder(this);
+        builder.setTitle(R.string.title_installation_failed);
+        builder.setMessage(getString(R.string.msg_compiler_module_install_failed, stacktrace));
+        builder.setCancelable(false);
+        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(
+                R.string.copy,
+                (dialog, which) -> {
+                    ClipboardUtils.copyText(stacktrace);
+                    dialog.dismiss();
+                });
+        builder.show();
+    }
+
+    private void dispatchOnPauseToEditors() {
+        CompletableFuture.runAsync(
+                () -> {
+                    for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
+                        final var editor = getEditorAtIndex(i);
+                        if (editor != null) {
+                            editor.onPause();
+                        }
+                    }
+                });
+    }
+
+    @Override
+    protected void onDestroy() {
+        closeProject(false);
+        try {
+            unregisterReceiver(mLogReceiver);
+        } catch (Throwable th) {
+            LOG.error("Failed to unregister LogReceiver", th);
+        }
+        unbindService(mGradleServiceConnection);
+        super.onDestroy();
     }
 
     private void setupDrawerToggle() {
@@ -332,655 +1393,6 @@ public class EditorActivity extends StudioActivity
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mBinding.getRoot().isDrawerOpen(GravityCompat.END)) {
-            mBinding.getRoot().closeDrawer(GravityCompat.END);
-        } else if (mBinding.getRoot().isDrawerOpen(GravityCompat.START)) {
-            mBinding.getRoot().closeDrawer(GravityCompat.START);
-        } else if (getDaemonStatusFragment().isShowing()) {
-            getDaemonStatusFragment().dismiss();
-        } else if (mFileOptionsFragment != null && mFileOptionsFragment.isShowing()) {
-            mFileOptionsFragment.dismiss();
-        } else if (mEditorBottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-            mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        } else {
-            confirmProjectClose();
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        dispatchOnPauseToEditors();
-        EditorActivityActions.clear();
-
-        if (mFileTreeFragment != null) {
-            mFileTreeFragment.saveTreeState();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        EditorActivityActions.register(this);
-
-        try {
-            checkForCompilerModule();
-            dispatchOnResumeToEditors();
-
-            if (mFileTreeFragment != null) {
-                mFileTreeFragment.listProjectFiles();
-            }
-        } catch (Throwable th) {
-            LOG.error("Failed to update files list", th);
-            getApp().toast(R.string.msg_failed_list_files, Toaster.Type.ERROR);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        closeProject(false);
-        try {
-            unregisterReceiver(mLogReceiver);
-        } catch (Throwable th) {
-            LOG.error("Failed to unregister LogReceiver", th);
-        }
-        super.onDestroy();
-    }
-
-    @SuppressLint("RestrictedApi")
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (menu instanceof MenuBuilder) {
-            MenuBuilder builder = (MenuBuilder) menu;
-            builder.setOptionalIconsVisible(true);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        ensureToolbarMenu(menu);
-        return true;
-    }
-
-    public void ensureToolbarMenu(@NonNull Menu menu) {
-        menu.clear();
-
-        final var data = new ActionData();
-        final var currentEditor = getCurrentEditor();
-        data.put(Context.class, EditorActivity.this);
-        data.put(CodeEditorView.class, currentEditor);
-
-        if (currentEditor != null) {
-            data.put(IDEEditor.class, currentEditor.getEditor());
-            data.put(File.class, currentEditor.getEditor().getFile());
-        }
-
-        ActionsRegistry.getInstance()
-                .fillMenu(
-                        data,
-                        com.itsaky.androidide.actions.ActionItem.Location.EDITOR_TOOLBAR,
-                        menu);
-    }
-
-    @Override
-    public EditorActivity provide() {
-        return this;
-    }
-
-    @Override
-    public EditorActivity provideEditorActivity() {
-        return this;
-    }
-
-    @Override
-    public AndroidProject provideAndroidProject() {
-        return getAndroidProject();
-    }
-
-    @Override
-    public IDEProject provideIDEProject() {
-        return getIDEProject();
-    }
-
-    public void handleSearchResults(Map<File, List<SearchResult>> results) {
-        setSearchResultAdapter(
-                new com.itsaky.androidide.adapters.SearchListAdapter(
-                        results,
-                        file -> {
-                            openFile(file);
-                            hideViewOptions();
-                        },
-                        match -> {
-                            openFileAndSelect(match.file, match);
-                            hideViewOptions();
-                        }));
-
-        showSearchResults();
-
-        if (mSearchingProgress != null && mSearchingProgress.isShowing()) {
-            mSearchingProgress.dismiss();
-        }
-    }
-
-    public void appendApkLog(LogLine line) {
-        final var logFragment = bottomSheetTabAdapter.getLogFragment();
-        if (logFragment != null) {
-            logFragment.appendLog(line);
-        }
-    }
-
-    public void appendBuildOut(final String str) {
-        final var frag = bottomSheetTabAdapter.getBuildOutputFragment();
-
-        if (frag != null) {
-            frag.appendOutput(str);
-        }
-    }
-
-    public void showDaemonStatus() {
-        ShellServer shell = getApp().newShell(t -> getDaemonStatusFragment().append(t));
-        shell.bgAppend(String.format("echo '%s'", getString(R.string.msg_getting_daemom_status)));
-        shell.bgAppend(
-                String.format(
-                        "cd '%s' && sh gradlew --status",
-                        Objects.requireNonNull(getAndroidProject()).getProjectPath()));
-        if (!getDaemonStatusFragment().isShowing()) {
-            getDaemonStatusFragment().show(getSupportFragmentManager(), "daemon_status");
-        }
-    }
-
-    public void hideViewOptions() {
-        if (mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_COLLAPSED) {
-            mEditorBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        }
-    }
-
-    public void showSearchResults() {
-        if (mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_EXPANDED) {
-            mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
-        }
-
-        final int index =
-                bottomSheetTabAdapter.findIndexOfFragmentByClass(SearchResultFragment.class);
-        if (index >= 0 && index < mBinding.bottomSheet.tabs.getTabCount()) {
-            final var tab = mBinding.bottomSheet.tabs.getTabAt(index);
-            if (tab != null) {
-                tab.select();
-            }
-        }
-    }
-
-    public void handleDiagnosticsResultVisibility(boolean errorVisible) {
-        runOnUiThread(
-                () -> {
-                    final var diagnosticsFragment = bottomSheetTabAdapter.getDiagnosticsFragment();
-                    if (diagnosticsFragment != null) {
-                        diagnosticsFragment.handleResultVisibility(errorVisible);
-                    }
-                });
-    }
-
-    public void handleSearchResultVisibility(boolean errorVisible) {
-        runOnUiThread(
-                () -> {
-                    final var searchResultFragment =
-                            bottomSheetTabAdapter.getSearchResultFragment();
-                    if (searchResultFragment != null) {
-                        searchResultFragment.handleResultVisibility(errorVisible);
-                    }
-                });
-    }
-
-    public void setStatus(final CharSequence text) {
-        try {
-            runOnUiThread(() -> mBinding.bottomSheet.statusText.setText(text));
-        } catch (Throwable th) {
-            LOG.error("Failed to update status text", th);
-        }
-    }
-
-    public void showFirstBuildNotice() {
-        DialogUtils.newMaterialDialogBuilder(this)
-                .setPositiveButton(android.R.string.ok, null)
-                .setTitle(R.string.title_first_build)
-                .setMessage(R.string.msg_first_build)
-                .setCancelable(false)
-                .create()
-                .show();
-    }
-
-    @Override
-    public void onGroupClick(DiagnosticGroup group) {
-        if (group != null
-                && group.file != null
-                && group.file.exists()
-                && FileUtils.isUtf8(group.file)) {
-            openFile(group.file);
-            hideViewOptions();
-        }
-    }
-
-    @Override
-    public void onDiagnosticClick(File file, @NonNull DiagnosticItem diagnostic) {
-        openFileAndSelect(file, diagnostic.getRange());
-        hideViewOptions();
-    }
-
-    public ActivityEditorBinding getBinding() {
-        return mBinding;
-    }
-
-    public LayoutDiagnosticInfoBinding getDiagnosticBinding() {
-        return mDiagnosticInfoBinding;
-    }
-
-    public void openFileAndSelect(File file, Range selection) {
-        openFile(file, selection);
-        final var opened = getEditorForFile(file);
-        if (opened != null && opened.getEditor() != null) {
-            final var editor = opened.getEditor();
-            final var range = editor.validateRange(selection);
-            editor.post(
-                    () -> {
-                        if (LSPUtils.isEqual(range.getStart(), range.getEnd())) {
-                            editor.setSelection(
-                                    range.getStart().getLine(), range.getEnd().getColumn());
-                        } else {
-                            editor.setSelection(range);
-                        }
-                    });
-        }
-    }
-
-    @Override
-    public void onTabSelected(@NonNull TabLayout.Tab tab) {
-        final var position = tab.getPosition();
-        mBinding.editorContainer.setDisplayedChild(position);
-
-        final var editorView = getEditorAtIndex(position);
-        Objects.requireNonNull(editorView);
-
-        editorView.onEditorSelected();
-        mViewModel.setCurrentFile(position, editorView.getFile());
-        refreshSymbolInput(editorView);
-    }
-
-    @Override
-    public void onTabUnselected(@NonNull TabLayout.Tab tab) {
-        final var position = tab.getPosition();
-        final var editorView = getEditorAtIndex(position);
-        if (editorView != null) {
-            final var editor = editorView.getEditor();
-            if (editor != null) {
-                editor.ensureWindowsDismissed();
-            }
-        }
-    }
-
-    @Override
-    public void onTabReselected(@NonNull TabLayout.Tab tab) {
-        mTabCloseAction.show(tab.view);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem p1) {
-        final int id = p1.getItemId();
-        if (id == R.id.editornav_discuss) {
-            getApp().openTelegramGroup();
-        } else if (id == R.id.editornav_suggest) {
-            getApp().openGitHub();
-        } else if (id == R.id.editornav_needHelp) {
-            showNeedHelpDialog();
-        } else if (id == R.id.editornav_settings) {
-            startActivity(new Intent(this, PreferencesActivity.class));
-        } else if (id == R.id.editornav_share) {
-            startActivity(IntentUtils.getShareTextIntent(getString(R.string.msg_share_app)));
-        } else if (id == R.id.editornav_close_project) {
-            confirmProjectClose();
-        } else if (id == R.id.editornav_terminal) {
-            openTerminal();
-        }
-        mBinding.getRoot().closeDrawer(GravityCompat.START);
-        return false;
-    }
-
-    public void loadFragment(Fragment fragment) {
-        super.loadFragment(fragment, mBinding.editorFrameLayout.getId());
-    }
-
-    public FileTreeFragment getFileTreeFragment() {
-        return mFileTreeFragment;
-    }
-
-    public TreeNode getLastHoldTreeNode() {
-        return mLastHeld;
-    }
-
-    public OptionsListFragment getFileOptionsFragment(File file) {
-        mFileOptionsFragment = new OptionsListFragment();
-        mFileOptionsFragment.addOption(
-                new SheetOption(0, R.drawable.ic_file_copy_path, R.string.copy_path, file));
-        mFileOptionsFragment.addOption(
-                new SheetOption(1, R.drawable.ic_file_rename, R.string.rename_file, file));
-        mFileOptionsFragment.addOption(
-                new SheetOption(2, R.drawable.ic_delete, R.string.delete_file, file));
-        if (file.isDirectory()) {
-            mFileOptionsFragment.addOption(
-                    new SheetOption(3, R.drawable.ic_new_file, R.string.new_file, file));
-            mFileOptionsFragment.addOption(
-                    new SheetOption(4, R.drawable.ic_new_folder, R.string.new_folder, file));
-        }
-
-        return mFileOptionsFragment;
-    }
-
-    public ProgressSheet getProgressSheet(int msg) {
-        if (mSearchingProgress != null && mSearchingProgress.isShowing()) {
-            mSearchingProgress.dismiss();
-        }
-        mSearchingProgress = new ProgressSheet();
-        mSearchingProgress.setCancelable(false);
-        mSearchingProgress.setWelcomeTextEnabled(false);
-        mSearchingProgress.setMessage(getString(msg));
-        mSearchingProgress.setSubMessageEnabled(false);
-        return mSearchingProgress;
-    }
-
-    public MaterialBanner getSyncBanner() {
-        return mBinding.syncBanner
-                .setContentTextColor(ContextCompat.getColor(this, R.color.primaryTextColor))
-                .setBannerBackgroundColor(ContextCompat.getColor(this, R.color.primaryLightColor))
-                .setButtonTextColor(ContextCompat.getColor(this, R.color.secondaryColor))
-                .setIcon(R.drawable.ic_sync)
-                .setContentText(R.string.msg_sync_needed);
-    }
-
-    public TextSheetFragment getDaemonStatusFragment() {
-        return mDaemonStatusFragment == null
-                ? mDaemonStatusFragment =
-                        new TextSheetFragment()
-                                .setTextSelectable(true)
-                                .setTitleText(R.string.gradle_daemon_status)
-                : mDaemonStatusFragment;
-    }
-
-    public void setDiagnosticsAdapter(@NonNull final DiagnosticsAdapter adapter) {
-        runOnUiThread(
-                () -> {
-                    final var diagnosticsFragment = bottomSheetTabAdapter.getDiagnosticsFragment();
-                    if (diagnosticsFragment != null) {
-                        diagnosticsFragment.setAdapter(adapter);
-                    }
-                });
-    }
-
-    public void setSearchResultAdapter(@NonNull final SearchListAdapter adapter) {
-        runOnUiThread(
-                () -> {
-                    final var searchResultFragment =
-                            bottomSheetTabAdapter.getSearchResultFragment();
-                    if (searchResultFragment != null) {
-                        searchResultFragment.setAdapter(adapter);
-                    }
-                });
-    }
-
-    @Override
-    public void showFileOptions(File thisFile, TreeNode node) {
-        mLastHeld = node;
-        getFileOptionsFragment(thisFile)
-                .show(getSupportFragmentManager(), TAG_FILE_OPTIONS_FRAGMENT);
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean saveAll() {
-        return saveAll(true);
-    }
-
-    public boolean saveAll(boolean notify) {
-        return saveAll(notify, false);
-    }
-
-    public boolean saveAll(boolean notify, boolean canProcessResources) {
-        SaveResult result = saveAllResult();
-
-        if (notify) {
-            getApp().toast(R.string.all_saved, Toaster.Type.SUCCESS);
-        }
-
-        if (result.gradleSaved) {
-            notifySyncNeeded();
-        }
-
-        if (result.xmlSaved && canProcessResources && getBuildService() != null) {
-            getBuildService().updateResourceClasses();
-        }
-
-        return result.gradleSaved;
-    }
-
-    public SaveResult saveAllResult() {
-        SaveResult result = new SaveResult();
-        for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
-            saveResult(i, result);
-        }
-
-        return result;
-    }
-
-    public void saveResult(int index, SaveResult result) {
-        if (index >= 0 && index < mViewModel.getOpenedFileCount()) {
-            var frag = getEditorAtIndex(index);
-            if (frag == null || frag.getFile() == null) {
-                return;
-            }
-
-            // Must be called before frag.save()
-            // Otherwise, it'll always return false
-            final boolean modified = frag.isModified();
-
-            frag.save();
-
-            final boolean isGradle = frag.getFile().getName().endsWith(".gradle");
-            final boolean isXml = frag.getFile().getName().endsWith(".xml");
-
-            if (!result.gradleSaved) {
-                result.gradleSaved = modified && isGradle;
-            }
-
-            if (!result.xmlSaved) {
-                result.xmlSaved = modified && isXml;
-            }
-        }
-
-        var modified = false;
-        for (var file : mViewModel.getOpenedFiles()) {
-            var editor = getEditorForFile(file);
-            if (editor == null) {
-                continue;
-            }
-            modified = modified || editor.isModified();
-        }
-
-        final boolean finalModified = modified;
-        ThreadUtils.runOnUiThread(() -> mViewModel.setFilesModified(finalModified));
-    }
-
-    public void install(@NonNull File apk) {
-        LOG.debug("Installing APK:", apk);
-        if (apk.exists()) {
-            Intent i = IntentUtils.getInstallAppIntent(apk);
-            if (i != null) {
-                startActivity(i);
-            } else {
-                getApp().toast(R.string.msg_apk_install_intent_failed, Toaster.Type.ERROR);
-            }
-        } else {
-            LOG.error("APK file does not exist!");
-        }
-    }
-
-    public void updateServices() {
-        new TaskExecutor()
-                .executeAsync(
-                        () -> {
-                            List<String> cps =
-                                    Objects.requireNonNull(getAndroidProject()).getClassPaths();
-                            getApp().getJavaLanguageServer()
-                                    .configurationChanged(
-                                            new JavaServerConfiguration(
-                                                    cps.stream()
-                                                            .map(Paths::get)
-                                                            .collect(Collectors.toSet())));
-                            return null;
-                        },
-                        __ -> setStatus(getString(R.string.msg_service_started)));
-    }
-
-    @Override
-    public CodeEditorView openFile(File file) {
-        return openFile(file, null);
-    }
-
-    public CodeEditorView openFile(File file, com.itsaky.lsp.models.Range selection) {
-        if (selection == null) {
-            selection = com.itsaky.lsp.models.Range.NONE;
-        }
-
-        int index = openFileAndGetIndex(file, selection);
-        final var tab = mBinding.tabs.getTabAt(index);
-        if (tab != null && index >= 0 && !tab.isSelected()) {
-            tab.select();
-        }
-
-        if (mBinding.editorDrawerLayout.isDrawerOpen(GravityCompat.END)) {
-            mBinding.editorDrawerLayout.closeDrawer(GravityCompat.END);
-        }
-
-        mBinding.editorContainer.setDisplayedChild(index);
-
-        try {
-            return getEditorAtIndex(index);
-        } catch (Throwable th) {
-            LOG.error("Unable to get editor fragment at opened file index", index);
-            LOG.error(th);
-            return null;
-        }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    public int openFileAndGetIndex(File file, com.itsaky.lsp.models.Range selection) {
-        final var openedFileIndex = findIndexOfEditorByFile(file);
-
-        if (openedFileIndex != -1) {
-            LOG.error("File is already opened. File: " + file);
-            return openedFileIndex;
-        }
-
-        final var position = mViewModel.getOpenedFileCount();
-
-        LOG.info("Opening file at index:", position, "file: ", file);
-
-        final var editor = new CodeEditorView(this, file, selection);
-        editor.getEditor().subscribeEvent(ContentChangeEvent.class, this::onEditorContentChanged);
-        editor.setLayoutParams(
-                new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        mBinding.editorContainer.addView(editor);
-        mBinding.editorContainer.setDisplayedChild(position);
-        mBinding.tabs.addTab(mBinding.tabs.newTab().setText(file.getName()));
-
-        mViewModel.addFile(file);
-        mViewModel.setCurrentFile(position, file);
-
-        return position;
-    }
-
-    public void closeFile(int index) {
-        if (index >= 0 && index < mViewModel.getOpenedFileCount()) {
-            var opened = mViewModel.getOpenedFile(index);
-            LOG.info("Closing file:", opened);
-            final var editor = getEditorAtIndex(index);
-
-            if (editor != null && editor.isModified()) {
-                notifyFilesUnsaved(Collections.singletonList(editor), () -> closeFile(index));
-                return;
-            }
-
-            if (editor != null && editor.getEditor() != null) {
-                editor.getEditor().close();
-            } else {
-                LOG.error("Cannot save file before close. Editor instance is null");
-            }
-
-            mViewModel.removeFile(index);
-            mBinding.tabs.removeTabAt(index);
-            mBinding.editorContainer.removeViewAt(index);
-        } else {
-            LOG.error("Invalid file index. Cannot close.");
-            return;
-        }
-
-        mBinding.tabs.requestLayout();
-    }
-
-    public void closeAll() {
-        closeAll(null);
-    }
-
-    /**
-     * Close all opened files. If all the files are saved successfully, then the provided {@link
-     * Runnable} will be called.
-     *
-     * @param onSaved The {@link Runnable} to run when all the files are saved.
-     */
-    public void closeAll(Runnable onSaved) {
-        final var count = mViewModel.getOpenedFileCount();
-        final var unsavedFiles =
-                mViewModel.getOpenedFiles().stream()
-                        .map(this::getEditorForFile)
-                        .filter(editor -> editor != null && editor.isModified())
-                        .collect(Collectors.toList());
-
-        if (unsavedFiles.isEmpty()) {
-            // Files were already saved, close all files one by one
-            for (int i = 0; i < count; i++) {
-                final var editor = getEditorAtIndex(i);
-                if (editor != null && editor.getEditor() != null) {
-                    editor.getEditor().close();
-                } else {
-                    LOG.error("Unable to close file at index:", i);
-                }
-            }
-
-            mViewModel.removeAllFiles();
-            mBinding.tabs.removeAllTabs();
-            mBinding.tabs.requestLayout();
-            mBinding.editorContainer.removeAllViews();
-
-            if (onSaved != null) {
-                onSaved.run();
-            }
-        } else {
-            // There are unsaved files
-            notifyFilesUnsaved(unsavedFiles, () -> closeAll(onSaved));
-        }
-    }
-
-    public boolean areFilesModified() {
-        return mViewModel.areFilesModified();
-    }
-
-    public EditorViewModel getViewModel() {
-        return mViewModel;
-    }
-
     private void notifyFilesUnsaved(List<CodeEditorView> unsavedEditors, Runnable invokeAfter) {
         //noinspection ConstantConditions
         final var mapped =
@@ -1013,208 +1425,6 @@ public class EditorActivity extends StudioActivity
         builder.show();
     }
 
-    public void closeOthers() {
-        final var unsavedFiles =
-                mViewModel.getOpenedFiles().stream()
-                        .map(this::getEditorForFile)
-                        .filter(editor -> editor != null && editor.isModified())
-                        .collect(Collectors.toList());
-
-        if (unsavedFiles.isEmpty()) {
-            final var file = mViewModel.getCurrentFile();
-            for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
-                final var editor = getEditorAtIndex(i);
-
-                // Index of files changes as we keep close files
-                // So we compare the files instead of index
-                if (editor != null) {
-                    if (!file.equals(editor.getFile())) {
-                        closeFile(i);
-                    }
-                } else {
-                    LOG.error("Unable to save file at index:", i);
-                }
-            }
-        } else {
-            notifyFilesUnsaved(unsavedFiles, this::closeOthers);
-        }
-    }
-
-    @Nullable
-    public CodeEditorView getCurrentEditor() {
-        if (mViewModel.getCurrentFileIndex() != -1) {
-            return getEditorAtIndex(mViewModel.getCurrentFileIndex());
-        }
-
-        return null;
-    }
-
-    @Nullable
-    public CodeEditorView getEditorAtIndex(final int index) {
-        return (CodeEditorView) mBinding.editorContainer.getChildAt(index);
-    }
-
-    @Nullable
-    public CodeEditorView getEditorForFile(@NonNull final File file) {
-        for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
-            final CodeEditorView editor = (CodeEditorView) mBinding.editorContainer.getChildAt(i);
-            if (file.equals(editor.getFile())) {
-                return editor;
-            }
-        }
-
-        return null;
-    }
-
-    public int findIndexOfEditorByFile(File file) {
-        if (file == null) {
-            LOG.error("Cannot find index of a null file.");
-            return -1;
-        }
-
-        for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
-            final var opened = mViewModel.getOpenedFile(i);
-            if (opened.equals(file)) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    public void previewLayout() {
-        try {
-
-            if (getCurrentEditor() == null || getCurrentEditor().getFile() == null) {
-                LOG.error("No file is opened. Cannot preview layout.");
-                return;
-            }
-
-            saveAll(false);
-
-            final Intent intent = new Intent(this, DesignerActivity.class);
-            intent.putExtra(
-                    DesignerActivity.KEY_LAYOUT_PATH,
-                    getCurrentEditor().getFile().getAbsolutePath());
-            intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, getResourceDirectories());
-            LOG.info("Launching UI Designer...");
-            mUIDesignerLauncher.launch(intent);
-        } catch (Throwable th) {
-            LOG.error(getString(R.string.err_cannot_preview_layout), th);
-            getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
-        }
-    }
-
-    /////////////////////////////////////////////////
-    ////////////// PRIVATE APIS /////////////////////
-    /////////////////////////////////////////////////
-
-    private void onEditorContentChanged(ContentChangeEvent event, Unsubscribe unsubscribe) {
-        if (event.getAction() != ContentChangeEvent.ACTION_SET_NEW_TEXT) {
-            mViewModel.setFilesModified(true);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    private void checkForCompilerModule() {
-        if (!Environment.isCompilerModuleInstalled()) {
-            final var pd =
-                    ProgressDialog.show(
-                            this,
-                            getString(R.string.title_compiler_module_install),
-                            getString(R.string.msg_compiler_module_install),
-                            true,
-                            false);
-
-            final CompletableFuture<Boolean> future =
-                    CompletableFuture.supplyAsync(
-                            () -> {
-                                final var tmpModule =
-                                        new File(Environment.TMP_DIR, "compiler-module.zip");
-                                if (!ResourceUtils.copyFileFromAssets(
-                                        ToolsManager.getCommonAsset("compiler-module.zip"),
-                                        tmpModule.getAbsolutePath())) {
-                                    throw new CompletionException(
-                                            new RuntimeException(
-                                                    "Unable to copy compiler-module.zip"));
-                                }
-
-                                try {
-                                    ZipUtils.unzipFile(tmpModule, Environment.COMPILER_MODULE);
-                                } catch (Throwable e) {
-                                    throw new CompletionException(e);
-                                }
-
-                                if (!Environment.isCompilerModuleInstalled()) {
-                                    throw new CompletionException(
-                                            new RuntimeException("Unknown error"));
-                                }
-
-                                try {
-                                    FileUtils.delete(tmpModule);
-                                } catch (Exception e) {
-                                    // ignored
-                                }
-
-                                return true;
-                            });
-
-            future.whenComplete(
-                    (result, error) -> {
-                        pd.dismiss();
-
-                        if (error != null) {
-                            showCompilerModuleInstallError(error);
-                            return;
-                        }
-
-                        getApp().toast(
-                                        getString(R.string.msg_compiler_module_installed),
-                                        Toaster.Type.SUCCESS);
-                    });
-        }
-    }
-
-    private void showCompilerModuleInstallError(Throwable error) {
-        final var stacktrace = ThrowableUtils.getFullStackTrace(error);
-        final var builder = DialogUtils.newMaterialDialogBuilder(this);
-        builder.setTitle(R.string.title_installation_failed);
-        builder.setMessage(getString(R.string.msg_compiler_module_install_failed, stacktrace));
-        builder.setCancelable(false);
-        builder.setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss());
-        builder.setNegativeButton(
-                R.string.copy,
-                (dialog, which) -> {
-                    ClipboardUtils.copyText(stacktrace);
-                    dialog.dismiss();
-                });
-        builder.show();
-    }
-
-    private void dispatchOnPauseToEditors() {
-        CompletableFuture.runAsync(
-                () -> {
-                    for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
-                        final var editor = getEditorAtIndex(i);
-                        if (editor != null) {
-                            editor.onPause();
-                        }
-                    }
-                });
-    }
-
-    private void dispatchOnResumeToEditors() {
-        CompletableFuture.runAsync(
-                () -> {
-                    for (int i = 0; i < mViewModel.getOpenedFileCount(); i++) {
-                        final var editor = getEditorAtIndex(i);
-                        if (editor != null) {
-                            editor.onResume();
-                        }
-                    }
-                });
-    }
-
     @Contract(pure = true)
     private void onGetUIDesignerResult(@NonNull ActivityResult result) {
         final var index = mBinding.editorContainer.getDisplayedChild();
@@ -1237,47 +1447,26 @@ public class EditorActivity extends StudioActivity
         }
     }
 
-    @NonNull
-    private ArrayList<String> getResourceDirectories() {
-        final var dirs = new ArrayList<String>();
-        if (getAndroidProject() != null
-                && getAndroidProject().getModulePaths() != null
-                && !getAndroidProject().getModulePaths().isEmpty()) {
-            for (String path : getAndroidProject().getModulePaths()) {
-                if (path != null && new File(path).exists()) {
-                    File res = new File(path, "src/main/res");
-                    if (res.exists()) {
-                        dirs.add(res.getAbsolutePath());
-                    }
-                }
-            }
-        }
-        return dirs;
-    }
-
     private void openTerminal() {
         final Intent intent = new Intent(this, TerminalActivity.class);
         intent.putExtra(
                 TerminalActivity.KEY_WORKING_DIRECTORY,
-                Objects.requireNonNull(getAndroidProject()).getProjectPath());
+                Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
         startActivity(intent);
     }
 
     private void getProjectFromIntent() {
-        final var project = (AndroidProject) getIntent().getParcelableExtra(EXTRA_PROJECT);
-        if (mViewModel != null) {
-            mViewModel.setAndroidProject(project);
-        } else {
-            LOG.error("ViewModel is null. Cannot set project.");
-        }
+        final var project = getIntent().getStringExtra(EXTRA_PROJECT_PATH);
+        ProjectManager.INSTANCE.setProjectPath(project);
+
         getApp().getPrefManager()
                 .setOpenedProject(
-                        Objects.requireNonNull(this.getAndroidProject()).getProjectPath());
+                        Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
 
         try {
             //noinspection ConstantConditions
             getSupportActionBar()
-                    .setSubtitle(new File(getAndroidProject().getProjectPath()).getName());
+                    .setSubtitle(new File(ProjectManager.INSTANCE.getProjectDirPath()).getName());
         } catch (Throwable th) {
             // ignored
         }
@@ -1288,30 +1477,6 @@ public class EditorActivity extends StudioActivity
                                 getResourceDirectories().stream()
                                         .map(File::new)
                                         .toArray(File[]::new)));
-    }
-
-    @Nullable
-    private AndroidProject getAndroidProject() {
-        if (mViewModel == null) {
-            return null;
-        }
-
-        return mViewModel.getAndroidProject();
-    }
-
-    @Nullable
-    private IDEProject getIDEProject() {
-        if (mViewModel == null) {
-            return null;
-        }
-
-        return mViewModel.getIDEProject();
-    }
-
-    public void setIDEProject(IDEProject project) {
-        if (mViewModel != null) {
-            mViewModel.setIDEProject(project);
-        }
     }
 
     private void setupDiagnosticInfo() {
@@ -1331,6 +1496,15 @@ public class EditorActivity extends StudioActivity
 
     private void startServices() {
 
+        if (bindService(
+                new Intent(this, GradleBuildService.class),
+                mGradleServiceConnection,
+                Context.BIND_AUTO_CREATE)) {
+            LOG.info("Bind request for Gradle build service was successful...");
+        } else {
+            LOG.error("Gradle build service doesn't exist or the IDE is not allowed to access it.");
+        }
+
         if (!IDELanguageClientImpl.isInitialized()) {
             IDELanguageClientImpl.initialize(this);
         }
@@ -1341,8 +1515,6 @@ public class EditorActivity extends StudioActivity
         // Because it would work anyway
         // But still we do...
         mFileOptionsHandler.start();
-        mBuildServiceHandler.start();
-        getBuildServiceHandler().assembleDebug(false);
     }
 
     private void initializeLanguageServers() {
@@ -1350,7 +1522,8 @@ public class EditorActivity extends StudioActivity
         final var javaLanguageServer = getApp().getJavaLanguageServer();
         final var workspaceRoots = new HashSet<Path>();
         workspaceRoots.add(
-                new File(Objects.requireNonNull(getAndroidProject()).getProjectPath()).toPath());
+                new File(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()))
+                        .toPath());
         workspaceRoots.add(Environment.HOME.toPath().resolve("logsender"));
 
         final var params = new InitializeParams(workspaceRoots);
@@ -1367,16 +1540,6 @@ public class EditorActivity extends StudioActivity
         }
 
         shutdownLanguageServers();
-
-        if (getBuildService() != null) {
-            getBuildService().setListener(null);
-            if (mBuildServiceHandler != null) {
-                mBuildServiceHandler.stop();
-            } else {
-                getBuildService().exit();
-            }
-        }
-
         if (mFileOptionsHandler != null) {
             mFileOptionsHandler.stop();
         }
@@ -1402,21 +1565,6 @@ public class EditorActivity extends StudioActivity
         }
     }
 
-    private void refreshSymbolInput(@NonNull CodeEditorView frag) {
-        symbolInput.bindEditor(frag.getEditor());
-        symbolInput.setSymbols(Symbols.forFile(frag.getFile()));
-    }
-
-    private void notifySyncNeeded() {
-        if (getBuildService() != null && !getBuildService().isBuilding()) {
-            getSyncBanner()
-                    .setNegative(android.R.string.cancel, null)
-                    .setPositive(
-                            android.R.string.ok, v -> getBuildServiceHandler().assembleDebug(false))
-                    .show();
-        }
-    }
-
     private void closeProject(boolean manualFinish) {
         stopServices();
 
@@ -1425,7 +1573,6 @@ public class EditorActivity extends StudioActivity
         closeAll(
                 () -> {
                     getApp().getPrefManager().setOpenedProject(PreferenceManager.NO_OPENED_PROJECT);
-                    getApp().stopAllDaemons();
 
                     if (manualFinish) {
                         finish();
@@ -1447,32 +1594,33 @@ public class EditorActivity extends StudioActivity
         builder.show();
     }
 
-    public AlertDialog getFindInProjectDialog() {
-        return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
-    }
-
     @Nullable
     private AlertDialog createFindInProjectDialog() {
-        if (getAndroidProject() == null
-                || getAndroidProject().getModulePaths() == null
-                || getAndroidProject().getModulePaths().size() <= 0) {
-            getApp().toast(R.string.msg_no_modules, Toaster.Type.ERROR);
+        final var rootProject = ProjectManager.INSTANCE.getRootProject();
+        if (rootProject == null) {
+            LOG.warn("No root project model found. Is the project initialized?");
+            getApp().toast(getString(R.string.msg_project_not_initialized), Toaster.Type.ERROR);
             return null;
         }
-        final List<String> modules = getAndroidProject().getModulePaths();
+
+        final var moduleDirs =
+                rootProject.getModules().stream()
+                        .map(IdeGradleProject::getProjectDir)
+                        .collect(Collectors.toList());
+
         final List<File> srcDirs = new ArrayList<>();
         final LayoutSearchProjectBinding binding =
                 LayoutSearchProjectBinding.inflate(getLayoutInflater());
         binding.modulesContainer.removeAllViews();
-        for (int i = 0; i < modules.size(); i++) {
-            final File file = new File(modules.get(i));
-            final File src = new File(file, "src");
-            if (!file.exists() || !file.isDirectory() || !src.exists() || !src.isDirectory()) {
+        for (int i = 0; i < moduleDirs.size(); i++) {
+            final File module = moduleDirs.get(i);
+            final File src = new File(module, "src");
+            if (!module.exists() || !module.isDirectory() || !src.exists() || !src.isDirectory()) {
                 continue;
             }
 
             CheckBox check = new CheckBox(this);
-            check.setText(file.getName());
+            check.setText(module.getName());
             check.setChecked(true);
 
             LinearLayout.MarginLayoutParams params = new LinearLayout.MarginLayoutParams(-2, -2);
@@ -1547,14 +1695,6 @@ public class EditorActivity extends StudioActivity
         registerReceiver(mLogReceiver, filter);
     }
 
-    private IDEService getBuildService() {
-        return mBuildServiceHandler.getService();
-    }
-
-    public BuildServiceHandler getBuildServiceHandler() {
-        return mBuildServiceHandler;
-    }
-
     private void showNeedHelpDialog() {
         MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
         builder.setTitle(R.string.need_help);
@@ -1604,12 +1744,5 @@ public class EditorActivity extends StudioActivity
                         closeAll();
                     }
                 });
-    }
-
-    @Override
-    public void onOptionsClick(SheetOption option) {
-        if (mFileOptionsHandler != null) {
-            mFileOptionsHandler.onOptionsClick(option);
-        }
     }
 }

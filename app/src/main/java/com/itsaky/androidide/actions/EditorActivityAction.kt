@@ -32,6 +32,12 @@ abstract class EditorActivityAction : ActionItem {
 
     override var requiresUIThread: Boolean = false
 
+    override fun prepare(data: ActionData) {
+        if (!hasRequiredData(data, Context::class.java)) {
+            markInvisible()
+        }
+    }
+
     fun getActivity(data: ActionData): EditorActivity? {
         val context = data.get(Context::class.java) ?: return null
         return context as EditorActivity

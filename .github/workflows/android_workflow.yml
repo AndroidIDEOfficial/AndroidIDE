@@ -2,7 +2,9 @@ name: Android CI
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - tooling-api
 
 jobs:
   build:

@@ -30,22 +30,20 @@ import java.util.Set;
 public class JavaServerConfiguration {
 
     private Set<Path> classPaths;
+    private Set<Path> sourceDirs;
 
     public JavaServerConfiguration() {
-        this(Collections.emptySet());
+        this(Collections.emptySet(), Collections.emptySet());
     }
 
-    public JavaServerConfiguration(Set<Path> classPaths) {
+    public JavaServerConfiguration(Set<Path> classPaths, Set<Path> sourcePaths) {
         this.classPaths = classPaths;
+        this.sourceDirs = sourcePaths;
     }
 
-    public Set<Path> getClassPaths() {
-        return classPaths;
-    }
-
-    public JavaServerConfiguration setClassPaths(Set<Path> classPaths) {
-        this.classPaths = classPaths;
-        return this;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClassPaths());
     }
 
     @Override
@@ -62,12 +60,20 @@ public class JavaServerConfiguration {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(getClassPaths());
-    }
-
-    @Override
     public String toString() {
         return "JavaServerConfiguration{" + "classPaths=" + classPaths + '}';
+    }
+
+    public Set<Path> getClassPaths() {
+        return classPaths;
+    }
+
+    public JavaServerConfiguration setClassPaths(Set<Path> classPaths) {
+        this.classPaths = classPaths;
+        return this;
+    }
+
+    public Set<Path> getSourceDirs() {
+        return sourceDirs;
     }
 }

@@ -21,15 +21,12 @@ import com.android.builder.model.v2.ModelSyncFile
 import com.android.builder.model.v2.ModelSyncFile.ModelSyncType
 import com.android.builder.model.v2.ModelSyncFile.ModelSyncType.BASIC
 import java.io.File
+import java.io.Serializable
 
 /** @author Akash Yadav */
-class DefaultModelSyncFile : ModelSyncFile {
-
+class DefaultModelSyncFile : ModelSyncFile, Serializable {
+    private val serialVersionUID = 1L
     override var modelSyncType: ModelSyncType = BASIC
     override var syncFile: File = File(".")
     override var taskName: String = ""
-
-    override fun toString(): String {
-        return "DefaultModelSyncFile(modelSyncType=$modelSyncType, syncFile=$syncFile, taskName='$taskName')"
-    }
 }

@@ -18,8 +18,6 @@
 package com.itsaky.androidide.handlers;
 
 import com.itsaky.androidide.EditorActivity;
-import com.itsaky.androidide.project.AndroidProject;
-import com.itsaky.androidide.project.IDEProject;
 import com.itsaky.androidide.utils.ILogger;
 
 /**
@@ -36,21 +34,13 @@ public abstract class IDEHandler {
         this.provider = provider;
     }
 
-    protected EditorActivity activity() {
-        return provider.provideEditorActivity();
-    }
-
-    protected AndroidProject androidProject() {
-        return provider.provideAndroidProject();
-    }
-
-    protected IDEProject ideProject() {
-        return provider.provideIDEProject();
-    }
-
     public abstract void start();
 
     public abstract void stop();
+
+    protected EditorActivity activity() {
+        return provider.provideEditorActivity();
+    }
 
     /** An interface to communicate between a handler and its client */
     public interface Provider {
@@ -61,19 +51,5 @@ public abstract class IDEHandler {
          * @throws NullPointerException is this is required
          */
         EditorActivity provideEditorActivity();
-
-        /**
-         * Called by handler to get a reference of the current {@link AndroidProject}
-         *
-         * @throws NullPointerException is this is required
-         */
-        AndroidProject provideAndroidProject();
-
-        /**
-         * Called by handler to get a reference of the current {@link IDEProject}
-         *
-         * @throws NullPointerException is this is required
-         */
-        IDEProject provideIDEProject();
     }
 }

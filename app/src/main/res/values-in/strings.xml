@@ -90,7 +90,7 @@
     <string name="preparing_first">Menyiapkan. Build pertama mungkin memakan waktu sekitar 10&#8211;15 menit!</string>
     <string name="msg_gradle_terminated">Proses Gradle berhenti dengan kode exit %1$d</string>
     <string name="msg_gradlew_installation_failed">Gagal untuk menginstal Gradle Wrapper: %s</string>
-    <string name="msg_installing_gradlew">Gradle Wrapper tidak tersedia!\nMenginstal Gradle bawaan. Gradle v7.3 akan diunduh jika diperlukan.</string>
+    <string name="msg_installing_gradlew">Gradle Wrapper tidak tersedia!\nMenginstal Gradle bawaan. Gradle v7.4 akan diunduh jika diperlukan.</string>
     <string name="msg_getting_daemom_status">Mendapatkan status Daemon, mohon tunggu&#8230;</string>
     <string name="msg_daemons_stopped">Gradle Daemon Dihentikan</string>
     <string name="gradle_daemon_status">Status Gradle Daemon</string>

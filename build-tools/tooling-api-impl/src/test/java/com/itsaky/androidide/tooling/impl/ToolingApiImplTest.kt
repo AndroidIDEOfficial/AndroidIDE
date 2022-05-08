@@ -17,20 +17,27 @@
 
 package com.itsaky.androidide.tooling.impl
 
+import com.android.builder.model.v2.ide.LibraryType.PROJECT
 import com.android.builder.model.v2.ide.ProjectType
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.GsonBuilder
+import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
-import com.itsaky.androidide.tooling.api.messages.InitializeProjectParams
+import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
+import com.itsaky.androidide.tooling.api.messages.result.BuildResult
+import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
+import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
+import com.itsaky.androidide.tooling.events.ProgressEvent
 import com.itsaky.androidide.utils.ILogger
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.util.concurrent.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -46,8 +53,9 @@ class ToolingApiImplTest {
         val client = TestClient()
         val server = launchServer(client)
 
-        val project = server.initialize(InitializeProjectParams(getTestProject())).get()
-        log.debug(project?.asJson())
+        val result =
+            server.initialize(InitializeProjectMessage(getTestProject().absolutePath)).get()
+        val project = result.project
         assertThat(project).isNotNull()
         assertThat(project!!).isInstanceOf(IdeGradleProject::class.java)
 
@@ -57,25 +65,47 @@ class ToolingApiImplTest {
         val app = project.findByPath(":app")
         assertThat(app).isNotNull()
         assertThat(app).isInstanceOf(IdeAndroidModule::class.java)
-        assertAndroidModule(app as IdeAndroidModule)
+
+        assertThat((app as IdeAndroidModule).javaCompileOptions).isNotNull()
+        assertThat(app.javaCompileOptions.sourceCompatibility).isEqualTo("11")
+        assertThat(app.javaCompileOptions.targetCompatibility).isEqualTo("11")
+        assertThat(app.javaCompileOptions.isCoreLibraryDesugaringEnabled).isFalse()
+
+        assertThat(app.projectType).isEqualTo(ProjectType.APPLICATION)
+
+        assertThat(app.viewBindingOptions).isNotNull()
+        assertThat(app.viewBindingOptions!!.isEnabled).isTrue()
+
+        // There are always more than 100 tasks in an android module
+        // Also, the tasks must contain the user defined tasks
+        assertThat(app.tasks.size).isAtLeast(100)
+        assertThat(app.tasks.first { it.path == "${app.projectPath}:thisIsATestTask" }).isNotNull()
+
+        assertThat(app.variantDependencies).hasSize(2)
+        assertThat(app.variantDependencies).containsKey("debug")
+        assertThat(app.variantDependencies["debug"]).isNotNull()
+        assertThat(app.variantDependencies).containsKey("release")
+        assertThat(app.variantDependencies["release"]).isNotNull()
+
+        // Assert that there is at least one dependency on another module in both of the variants
+        assertThat(
+                app.variantDependencies["debug"]!!.libraries.values.filter { it.type == PROJECT })
+            .isNotEmpty()
+        assertThat(
+                app.variantDependencies["release"]!!.libraries.values.filter { it.type == PROJECT })
+            .isNotEmpty()
 
         val javaLibrary = project.findByPath(":java-library")
         assertThat(javaLibrary).isNotNull()
-        assertThat(javaLibrary).isInstanceOf(IdeGradleProject::class.java)
+        assertThat(javaLibrary).isInstanceOf(IdeJavaModule::class.java)
 
         assertThat(project.findByPath(":does-not-exist")).isNull()
-    }
-
-    private fun assertAndroidModule(android: IdeAndroidModule) {
-        assertThat(android.projectType).isEqualTo(ProjectType.APPLICATION)
-        assertThat(android.viewBindingOptions).isNotNull()
-        assertThat(android.viewBindingOptions!!.isEnabled).isFalse()
     }
 
     private fun launchServer(client: IToolingApiClient): IToolingApiServer {
         val builder = ProcessBuilder("java", "-jar", "./build/libs/tooling-api-all.jar")
         log.debug(System.getenv())
-        builder.environment().put("ANDROID_SDK_ROOT", findAndroidHome())
+        builder.environment()["ANDROID_SDK_ROOT"] = findAndroidHome()
         val proc = builder.start()
 
         Thread(Reader(proc.errorStream)).start()
@@ -87,7 +117,7 @@ class ToolingApiImplTest {
         return launcher.remoteProxy
     }
 
-    private fun findAndroidHome(): String? {
+    private fun findAndroidHome(): String {
         var fromEnv = System.getenv("ANDROID_SDK_ROOT")
         if (fromEnv != null) {
             return fromEnv
@@ -108,6 +138,26 @@ class ToolingApiImplTest {
 
     private class TestClient : IToolingApiClient {
         private val log = ILogger.newInstance(javaClass.simpleName)
+        override fun logMessage(line: LogLine) {
+            log.log(ILogger.priority(line.priorityChar), line.formattedTagAndMessage())
+        }
+
+        override fun logOutput(line: String) {
+            log.debug(line.trim())
+        }
+
+        override fun prepareBuild() {}
+        override fun onBuildSuccessful(result: BuildResult) {}
+        override fun onBuildFailed(result: BuildResult) {}
+
+        override fun onProgressEvent(event: ProgressEvent) {}
+
+        override fun getBuildArguments(): CompletableFuture<List<String>> {
+            return CompletableFuture.completedFuture(emptyList())
+        }
+
+        override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> =
+            CompletableFuture.completedFuture(GradleWrapperCheckResult(true))
     }
 
     private class Reader(val input: InputStream) : Runnable {

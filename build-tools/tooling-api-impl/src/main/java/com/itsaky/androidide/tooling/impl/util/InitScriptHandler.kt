@@ -28,11 +28,21 @@ import java.io.File
 object InitScriptHandler {
 
     private val log = ILogger.newInstance(javaClass.simpleName)
-    private const val initDir = ".androidide/init"
-    private var modelsJar = File(".")
+    private const val initScript = ".androidide/init/androidide.init.gradle"
 
     fun getInitScript(): File {
-        return File (".")
+        val file = File(getHome(), initScript)
+        return if (file.exists()) {
+            file
+        } else {
+            writeInitScript()
+            file
+        }
+    }
+
+    private fun writeInitScript() {
+        val script = File(getHome(), initScript)
+        script.writeBytes("project.rootProject.afterEvaluate { subprojects { apply plugin: 'idea' } }".toByteArray())
     }
 
     private fun getHome(): String {

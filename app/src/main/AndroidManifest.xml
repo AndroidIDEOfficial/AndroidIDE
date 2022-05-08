@@ -68,6 +68,9 @@
             android:configChanges="orientation|screenSize|uiMode"
             android:windowSoftInputMode="adjustResize" />
 
+        <service
+            android:name=".services.GradleBuildService"
+            android:exported="false" />
         <provider
             android:name=".filepicker.IDEDocumentsProvider"
             android:authorities="com.itsaky.androidide.documents"
@@ -87,16 +90,6 @@
                 <action android:name="com.itsaky.androidide.logs.APPEND_LOG" />
             </intent-filter>
         </receiver>
-
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@mipmap/ic_launcher" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/secondaryColor" />
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/cms_channel_id_devs" />
     </application>
 
 </manifest>

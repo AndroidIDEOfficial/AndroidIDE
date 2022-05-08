@@ -21,15 +21,14 @@
  * Unless you know what this does.
  */
 //noinspection GrPackage
-
 initscript {
-
+    
     repositories {
         maven {
-            url file("${System.getenv("HOME")}/.androidide/repo")
+            url file ("${System.getenv ("HOME")}/.androidide/repo")
         }
     }
-
+    
     dependencies {
         classpath 'com.itsaky.androidide:gradle-plugin:1.0.0'
     }
@@ -37,7 +36,7 @@ initscript {
 
 // Source code for the plugin is available in :gradle-plugin module
 gradle.projectsLoaded {
-    rootProject.subprojects.forEach { sub ->
+    rootProject.subprojects.forEach {sub ->
         sub.afterEvaluate {
             sub.apply plugin: com.itsaky.androidide.gradle.plugin.AndroidIDEPlugin
         }
