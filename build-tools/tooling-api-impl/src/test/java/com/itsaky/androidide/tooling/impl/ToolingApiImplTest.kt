@@ -17,6 +17,8 @@
 
 package com.itsaky.androidide.tooling.impl
 
+import com.android.builder.model.v2.ide.LibraryType.PROJECT
+import com.android.builder.model.v2.ide.ProjectType
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.GsonBuilder
 import com.itsaky.androidide.models.LogLine
@@ -24,6 +26,7 @@ import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
+import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
@@ -62,18 +65,41 @@ class ToolingApiImplTest {
         val app = project.findByPath(":app")
         assertThat(app).isNotNull()
         assertThat(app).isInstanceOf(IdeAndroidModule::class.java)
-        assertAndroidModule(app as IdeAndroidModule)
+
+        assertThat((app as IdeAndroidModule).javaCompileOptions).isNotNull()
+        assertThat(app.javaCompileOptions.sourceCompatibility).isEqualTo("11")
+        assertThat(app.javaCompileOptions.targetCompatibility).isEqualTo("11")
+        assertThat(app.javaCompileOptions.isCoreLibraryDesugaringEnabled).isFalse()
+
+        assertThat(app.projectType).isEqualTo(ProjectType.APPLICATION)
+
+        assertThat(app.viewBindingOptions).isNotNull()
+        assertThat(app.viewBindingOptions!!.isEnabled).isTrue()
+
+        // There are always more than 100 tasks in an android module
+        // Also, the tasks must contain the user defined tasks
+        assertThat(app.tasks.size).isAtLeast(100)
+        assertThat(app.tasks.first { it.path == "${app.projectPath}:thisIsATestTask" }).isNotNull()
+
+        assertThat(app.variantDependencies).hasSize(2)
+        assertThat(app.variantDependencies).containsKey("debug")
+        assertThat(app.variantDependencies["debug"]).isNotNull()
+        assertThat(app.variantDependencies).containsKey("release")
+        assertThat(app.variantDependencies["release"]).isNotNull()
+
+        // Assert that there is at least one dependency on another module in both of the variants
+        assertThat(
+                app.variantDependencies["debug"]!!.libraries.values.filter { it.type == PROJECT })
+            .isNotEmpty()
+        assertThat(
+                app.variantDependencies["release"]!!.libraries.values.filter { it.type == PROJECT })
+            .isNotEmpty()
 
         val javaLibrary = project.findByPath(":java-library")
         assertThat(javaLibrary).isNotNull()
         assertThat(javaLibrary).isInstanceOf(IdeJavaModule::class.java)
 
         assertThat(project.findByPath(":does-not-exist")).isNull()
-    }
-
-    private fun assertAndroidModule(android: IdeAndroidModule) {
-        assertThat(android.viewBindingOptions).isNotNull()
-        assertThat(android.viewBindingOptions!!.isEnabled).isTrue()
     }
 
     private fun launchServer(client: IToolingApiClient): IToolingApiServer {
@@ -91,7 +117,7 @@ class ToolingApiImplTest {
         return launcher.remoteProxy
     }
 
-    private fun findAndroidHome(): String? {
+    private fun findAndroidHome(): String {
         var fromEnv = System.getenv("ANDROID_SDK_ROOT")
         if (fromEnv != null) {
             return fromEnv
@@ -115,9 +141,11 @@ class ToolingApiImplTest {
         override fun logMessage(line: LogLine) {
             log.log(ILogger.priority(line.priorityChar), line.formattedTagAndMessage())
         }
+
         override fun logOutput(line: String) {
             log.debug(line.trim())
         }
+
         override fun prepareBuild() {}
         override fun onBuildSuccessful(result: BuildResult) {}
         override fun onBuildFailed(result: BuildResult) {}
@@ -127,6 +155,9 @@ class ToolingApiImplTest {
         override fun getBuildArguments(): CompletableFuture<List<String>> {
             return CompletableFuture.completedFuture(emptyList())
         }
+
+        override fun checkGradleWrapperAvailability(): CompletableFuture<GradleWrapperCheckResult> =
+            CompletableFuture.completedFuture(GradleWrapperCheckResult(true))
     }
 
     private class Reader(val input: InputStream) : Runnable {
