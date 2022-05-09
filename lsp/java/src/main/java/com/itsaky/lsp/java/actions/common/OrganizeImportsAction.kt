@@ -10,11 +10,11 @@ import com.itsaky.lsp.java.actions.BaseCodeAction
 import com.itsaky.lsp.java.models.JavaServerSettings
 import io.github.rosemoe.sora.widget.CodeEditor
 
-class ImportOrdererAction : BaseCodeAction() {
+class OrganizeImportsAction : BaseCodeAction() {
     private val log = ILogger.newInstance(javaClass.simpleName)
-    override val id: String = "lsp_java_import_ordrerer_action"
+    override val id: String = "lsp_java_organizeImports"
     override var label: String = ""
-    override val titleTextRes: Int = string.action_import_ordrerer
+    override val titleTextRes: Int = string.action_organize_imports
 
     override fun prepare(data: ActionData) {
         super.prepare(data)

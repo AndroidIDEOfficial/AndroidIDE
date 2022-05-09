@@ -23,7 +23,7 @@ import com.itsaky.lsp.java.actions.common.FindReferencesAction
 import com.itsaky.lsp.java.actions.common.GoToDefinitionAction
 import com.itsaky.lsp.java.actions.common.UncommentAction
 import com.itsaky.lsp.java.actions.common.RemoveUnusedImportsAction
-import com.itsaky.lsp.java.actions.common.ImportOrdererAction
+import com.itsaky.lsp.java.actions.common.OrganizeImportsAction
 import com.itsaky.lsp.java.actions.diagnostics.AddImportAction
 import com.itsaky.lsp.java.actions.diagnostics.AddThrowsAction
 import com.itsaky.lsp.java.actions.diagnostics.CreateMissingMethodAction
@@ -63,7 +63,7 @@ class JavaCodeActionsMenu : CodeActionsMenu() {
         addAction(GenerateConstructorAction())
         addAction(GenerateToStringMethodAction())
         addAction(RemoveUnusedImportsAction())
-        addAction(ImportOrdererAction())
+        addAction(OrganizeImportsAction())
     }
 }
 
