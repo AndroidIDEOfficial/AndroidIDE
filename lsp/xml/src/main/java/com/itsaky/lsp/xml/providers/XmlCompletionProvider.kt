@@ -17,10 +17,16 @@
 
 package com.itsaky.lsp.xml.providers
 
+import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.api.ICompletionProvider
 import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.models.CompletionResult
+import com.itsaky.lsp.xml.utils.XmlUtils
+import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
+import com.itsaky.xml.INamespace
+import org.eclipse.lemminx.dom.DOMParser
+import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
 /**
  * Completion provider for XMl files.
@@ -34,6 +40,25 @@ class XmlCompletionProvider : ICompletionProvider {
 
     override fun complete(params: CompletionParams): CompletionResult {
         return try {
+            if (params.module == null || params.module !is IdeAndroidModule) {
+                log.warn("Cannot provide completions for file:", params.file)
+                log.warn("Module provide in params is either null or is not an Android module")
+                return CompletionResult()
+            }
+
+            val contents = params.requireContents().toString()
+            val namespace =
+                INamespace.forPackageName((params.module as IdeAndroidModule).packageName)
+            val document =
+                DOMParser.getInstance()
+                    .parse(contents, namespace.uri, URIResolverExtensionManager())
+            val type = XmlUtils.getNodeType(document, params.position.requireIndex())
+
+            if (type == UNKNOWN) {
+                log.warn("Unknown node type. CompletionParams:", params)
+                return CompletionResult()
+            }
+
             CompletionResult()
         } catch (error: Throwable) {
             log.error("An error occurred while computing XML completions", error)

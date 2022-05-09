@@ -248,13 +248,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     @NonNull
     private String createAttributeInsertText(@NonNull Attr attr) {
         StringBuilder xml = new StringBuilder();
-        xml.append(attr.namespace.getName());
+        xml.append(attr.namespace.getPrefix ());
         xml.append(":");
         xml.append(attr.name);
         xml.append("=");
         xml.append("\"");
 
-        if (attr.namespace.getName().equals("android") && attr.name.equals("id")) {
+        if (attr.namespace.getPrefix ().equals("android") && attr.name.equals("id")) {
             xml.append("@+id/");
         }
 

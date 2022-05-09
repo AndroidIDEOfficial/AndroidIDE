@@ -43,7 +43,7 @@ public abstract class BaseView implements IView {
     public static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
     protected final Set<INamespace> namespaces =
-            new TreeSet<>(Comparator.comparing(INamespace::getName));
+            new TreeSet<>(Comparator.comparing(INamespace::getPrefix));
     protected final List<IAttribute> attributes = new ArrayList<>();
     protected final Set<IAttributeAdapter> attrAdapters = new HashSet<>();
 
@@ -227,7 +227,7 @@ public abstract class BaseView implements IView {
     public INamespace findRegisteredNamespace(@NonNull String name) {
         final var namespaces =
                 this.namespaces.stream()
-                        .filter(ns -> name.equals(ns.getName()))
+                        .filter(ns -> name.equals(ns.getPrefix ()))
                         .collect(Collectors.toSet());
 
         if (namespaces.isEmpty()) {
@@ -269,8 +269,8 @@ public abstract class BaseView implements IView {
                 newLine(sb, indentCount + 1); // Attributes must be indented by one tab (4 spaces by
                 // default)
                 attr.getNamespace();
-                if (attr.getNamespace() != null && attr.getNamespace().getName().length() > 0) {
-                    sb.append(attr.getNamespace().getName());
+                if (attr.getNamespace() != null && attr.getNamespace().getPrefix ().length() > 0) {
+                    sb.append(attr.getNamespace().getPrefix ());
                     sb.append(":");
                 }
                 sb.append(attr.getAttributeName());

@@ -203,7 +203,7 @@ class IdeAndroidModule(
             shouldLookupPackage = false
         }
         
-        val packageAttr = manifest.attributes.getNamedItem("package")]
+        val packageAttr = manifest.attributes.getNamedItem("package")
         this.packageName = packageAttr.nodeValue
         this.shouldLookupPackage = false
     }

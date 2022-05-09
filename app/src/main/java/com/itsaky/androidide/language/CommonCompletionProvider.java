@@ -19,6 +19,7 @@ package com.itsaky.androidide.language;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.ILanguageServer;
@@ -123,6 +124,7 @@ public class CommonCompletionProvider {
                                             file);
                             params.setContent(content);
                             params.setPrefix(prefix);
+                            params.setModule(ProjectManager.INSTANCE.findModuleForFile (file.toFile ()));
                             final var result = completer.complete(params);
                             Collections.sort(result.getItems());
                             return result;

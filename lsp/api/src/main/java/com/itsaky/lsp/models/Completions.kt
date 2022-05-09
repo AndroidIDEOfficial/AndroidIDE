@@ -17,6 +17,7 @@
 
 package com.itsaky.lsp.models
 
+import com.itsaky.androidide.tooling.api.model.IdeModule
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -25,6 +26,7 @@ import java.nio.file.Path
 data class CompletionParams(var position: Position, var file: Path) {
     var content: CharSequence? = null
     var prefix: String? = null
+    var module: IdeModule? = null
 
     fun requirePrefix(): String {
         if (prefix == null) {
