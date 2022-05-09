@@ -84,4 +84,14 @@
         android:src="@drawable/ic_close"
         app:backgroundTint="@color/secondaryColor" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/share_output_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/clear_fab"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_share"
+        app:backgroundTint="@color/secondaryColor" />
+
 </RelativeLayout>

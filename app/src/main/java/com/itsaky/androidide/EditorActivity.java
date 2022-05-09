@@ -51,6 +51,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -58,6 +59,7 @@ import androidx.transition.Slide;
 import androidx.transition.TransitionManager;
 
 import com.blankj.utilcode.util.ClipboardUtils;
+import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.IntentUtils;
 import com.blankj.utilcode.util.KeyboardUtils;
@@ -81,8 +83,11 @@ import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
 import com.itsaky.androidide.fragments.FileTreeFragment;
+import com.itsaky.androidide.fragments.IDELogFragment;
+import com.itsaky.androidide.fragments.LogViewFragment;
 import com.itsaky.androidide.fragments.NonEditableEditorFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
+import com.itsaky.androidide.fragments.SimpleOutputFragment;
 import com.itsaky.androidide.fragments.sheets.OptionsListFragment;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.fragments.sheets.TextSheetFragment;
@@ -106,6 +111,7 @@ import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
+import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
 import com.itsaky.androidide.utils.EditorBottomSheetBehavior;
@@ -130,6 +136,8 @@ import com.unnamed.b.atv.model.TreeNode;
 import org.jetbrains.annotations.Contract;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1003,7 +1011,9 @@ public class EditorActivity extends StudioActivity
                     }
 
                     if (!apkFile.exists()) {
-                        LOG.error("APK file specified in output listing file does not exist!", apkFile);
+                        LOG.error(
+                                "APK file specified in output listing file does not exist!",
+                                apkFile);
                         return;
                     }
 
@@ -1353,8 +1363,10 @@ public class EditorActivity extends StudioActivity
                                 bottomSheetTabAdapter.getFragmentAtIndex(tab.getPosition());
                         if (fragment instanceof NonEditableEditorFragment) {
                             mBinding.bottomSheet.clearFab.show();
+                            mBinding.bottomSheet.shareOutputFab.show();
                         } else {
                             mBinding.bottomSheet.clearFab.hide();
+                            mBinding.bottomSheet.shareOutputFab.hide();
                         }
                     }
 
@@ -1380,6 +1392,28 @@ public class EditorActivity extends StudioActivity
                     }
                 });
 
+        mBinding.bottomSheet.shareOutputFab.setOnClickListener(
+                v -> {
+                    final var fragment =
+                            bottomSheetTabAdapter.getFragmentAtIndex(
+                                    mBinding.bottomSheet.tabs.getSelectedTabPosition());
+                    if (fragment instanceof NonEditableEditorFragment) {
+                        final var editor = (NonEditableEditorFragment) fragment;
+                        if (editor.getEditor() != null) {
+                            final var text = editor.getEditor().getText();
+                            final var type =
+                                    editor instanceof SimpleOutputFragment
+                                            ? "build_output"
+                                            : editor instanceof IDELogFragment
+                                                    ? "ide_logs"
+                                                    : editor instanceof LogViewFragment
+                                                            ? "app_logs"
+                                                            : "unknown_type";
+                            shareText(text, type);
+                        }
+                    }
+                });
+
         if (!getApp().getPrefManager().getBoolean(KEY_BOTTOM_SHEET_SHOWN)
                 && mEditorBottomSheet.getState() != BottomSheetBehavior.STATE_EXPANDED) {
             mEditorBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -1391,6 +1425,50 @@ public class EditorActivity extends StudioActivity
                             },
                             1500);
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void shareText(CharSequence text, String type) {
+        final var pd =
+                ProgressDialog.show(this, null, getString(R.string.please_wait), true, false);
+        CompletableFuture.supplyAsync(() -> writeTempFile(text, type))
+                .whenComplete(
+                        (result, error) -> {
+                            ThreadUtils.runOnUiThread(pd::dismiss);
+                            if (result == null || error != null) {
+                                LOG.warn("Unable to share output", error);
+                                return;
+                            }
+
+                            ThreadUtils.runOnUiThread(
+                                    () -> {
+                                        shareFile(result);
+                                    });
+                        });
+    }
+
+    private void shareFile(File file) {
+        final var uri =
+                FileProvider.getUriForFile(
+                        this, BuildConfig.APPLICATION_ID + ".utilcode.fileprovider", file);
+        final var intent = new Intent(Intent.ACTION_SEND);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+
+        startActivity(Intent.createChooser(intent, null));
+    }
+
+    @NonNull
+    private File writeTempFile(CharSequence text, String type) {
+        final var in = new CharSequenceInputStream(text, StandardCharsets.UTF_8);
+        final var file = new File(getFilesDir(), type + ".txt"); // use a common name to avoid multiple files
+        if (!FileIOUtils.writeFileFromIS(file, in)) {
+            LOG.error("Unable to write output of type", type, "to temporary file", file);
+            throw new RuntimeException(new IOException("Cannot write output to temp file"));
+        }
+
+        return file;
     }
 
     private void notifyFilesUnsaved(List<CodeEditorView> unsavedEditors, Runnable invokeAfter) {
