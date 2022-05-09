@@ -4,6 +4,7 @@ import com.google.googlejavaformat.java.FormatterException
 import com.google.googlejavaformat.java.RemoveUnusedImports
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.lsp.java.R.string
 import com.itsaky.lsp.java.actions.BaseCodeAction
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -31,12 +32,12 @@ class RemoveUnusedImportsAction : BaseCodeAction() {
     }
 
     override fun execAction(data: ActionData): Any {
-        val start = System.currentTimeMillis()
+        val watch = StopWatch("Remove unused imports")
         return try {
             val editor = requireEditor(data)
             val content = editor.text
             val output = RemoveUnusedImports.removeUnusedImports(content.toString())
-            log.info("Removed unused imports in", "${System.currentTimeMillis() - start}ms")
+            watch.log()
             output
         } catch (e: FormatterException) {
             log.error("Failed to remove unused imports", e)
@@ -45,12 +46,9 @@ class RemoveUnusedImportsAction : BaseCodeAction() {
     }
 
     override fun postExec(data: ActionData, result: Any) {
-        super.postExec(data, result)
-        if (result is String) {
-            if (result.isNotEmpty()) {
-                val editor = requireEditor(data)
-                editor.setText(result)
-            }
+        if (result is String && result.isNotEmpty()) {
+            val editor = requireEditor(data)
+            editor.setText(result)
         }
     }
 }

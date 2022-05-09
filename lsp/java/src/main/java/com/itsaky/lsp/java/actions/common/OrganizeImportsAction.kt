@@ -4,6 +4,7 @@ import com.google.googlejavaformat.java.FormatterException
 import com.google.googlejavaformat.java.ImportOrderer
 import com.itsaky.androidide.actions.ActionData
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.StopWatch
 import com.itsaky.lsp.java.JavaLanguageServer
 import com.itsaky.lsp.java.R.string
 import com.itsaky.lsp.java.actions.BaseCodeAction
@@ -32,14 +33,14 @@ class OrganizeImportsAction : BaseCodeAction() {
     }
 
     override fun execAction(data: ActionData): Any {
-        val start = System.currentTimeMillis()
+        val watch = StopWatch("Organize imports")
         return try {
             val editor = requireEditor(data)
             val content = editor.text
             val server = data[JavaLanguageServer::class.java]
             val settings = server!!.settings as JavaServerSettings
             val output = ImportOrderer.reorderImports(content.toString(), settings.style)
-            log.info("Reorder imports in", "${System.currentTimeMillis() - start}ms")
+            watch.log()
             output
         } catch (e: FormatterException) {
             log.error("Failed to reorder imports", e)
