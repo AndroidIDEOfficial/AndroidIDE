@@ -506,7 +506,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
                     if (!(err instanceof CancellationException)
                             && !(err instanceof InterruptedException)) {
                         LOG.error(
-                                "An error occurred while waiting for tooling API server to terminate");
+                                "An error occurred while waiting for tooling API server to terminate", err);
                     }
                 }
 
