@@ -87,8 +87,7 @@ class EventTransformer {
                 else ->
                     DefaultOperationDescriptor(
                         name = descriptor.name,
-                        displayName = descriptor.displayName,
-                        parent = operationDescriptor(descriptor.parent))
+                        displayName = descriptor.displayName)
             }
 
         // ----------------- PROJECT CONFIGURATION --------------------
@@ -141,8 +140,7 @@ class EventTransformer {
                 .ProjectConfigurationOperationDescriptor(
                     project = projectIdentifier(descriptor.project),
                     name = descriptor.name,
-                    displayName = descriptor.displayName,
-                    parent = operationDescriptor(descriptor.parent))
+                    displayName = descriptor.displayName)
 
         private fun projectIdentifier(
             project: ProjectIdentifier
@@ -196,8 +194,7 @@ class EventTransformer {
             com.itsaky.androidide.tooling.events.download.FileDownloadOperationDescriptor(
                 descriptor.uri,
                 descriptor.name,
-                descriptor.displayName,
-                operationDescriptor(descriptor.parent))
+                descriptor.displayName)
 
         // -------------------- TASK -------------------------------
         @JvmStatic
@@ -271,8 +268,7 @@ class EventTransformer {
                 originPlugin = PluginIdentifier(descriptor.originPlugin.displayName),
                 taskPath = descriptor.taskPath,
                 name = descriptor.name,
-                displayName = descriptor.displayName,
-                parent = operationDescriptor(descriptor.parent))
+                displayName = descriptor.displayName)
 
         // ----------------------- TEST -------------------------
         @JvmStatic
@@ -312,8 +308,7 @@ class EventTransformer {
         ): com.itsaky.androidide.tooling.events.test.TestOperationDescriptor =
             com.itsaky.androidide.tooling.events.test.TestOperationDescriptor(
                 name = descriptor.name,
-                displayName = descriptor.displayName,
-                parent = operationDescriptor(descriptor.parent))
+                displayName = descriptor.displayName)
 
         // ----------------------- TRANSFORM -------------------------
         @JvmStatic
@@ -358,7 +353,6 @@ class EventTransformer {
             com.itsaky.androidide.tooling.events.transform.TransformOperationDescriptor(
                 name = descriptor.name,
                 displayName = descriptor.displayName,
-                parent = operationDescriptor(descriptor.parent),
                 subject = SubjectDescriptor(descriptor.subject.displayName),
                 transformer =
                     com.itsaky.androidide.tooling.events.transform.TransformOperationDescriptor
@@ -409,7 +403,6 @@ class EventTransformer {
             com.itsaky.androidide.tooling.events.work.WorkItemOperationDescriptor(
                 name = descriptor.name,
                 displayName = descriptor.displayName,
-                parent = operationDescriptor(descriptor.parent),
                 className = descriptor.className)
 
         // ---------------------------- STATUS ---------------------------------

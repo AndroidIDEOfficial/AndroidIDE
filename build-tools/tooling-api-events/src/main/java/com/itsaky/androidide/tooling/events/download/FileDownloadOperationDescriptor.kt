@@ -24,8 +24,7 @@ import java.net.URI
 class FileDownloadOperationDescriptor(
     val uri: URI,
     override val name: String,
-    override val displayName: String,
-    override val parent: OperationDescriptor?
+    override val displayName: String
 ) : OperationDescriptor() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -34,8 +33,7 @@ class FileDownloadOperationDescriptor(
         if (uri != other.uri) return false
         if (name != other.name) return false
         if (displayName != other.displayName) return false
-        if (parent != other.parent) return false
-
+        
         return true
     }
 
@@ -43,7 +41,6 @@ class FileDownloadOperationDescriptor(
         var result = uri.hashCode()
         result = 31 * result + name.hashCode()
         result = 31 * result + displayName.hashCode()
-        result = 31 * result + (parent?.hashCode() ?: 0)
         return result
     }
 }

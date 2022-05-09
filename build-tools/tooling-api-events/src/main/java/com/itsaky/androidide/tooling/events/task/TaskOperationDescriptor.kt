@@ -26,8 +26,7 @@ class TaskOperationDescriptor(
     val originPlugin: PluginIdentifier,
     val taskPath: String,
     override val name: String,
-    override val displayName: String,
-    override val parent: OperationDescriptor?
+    override val displayName: String
 ) : OperationDescriptor() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -38,7 +37,6 @@ class TaskOperationDescriptor(
         if (taskPath != other.taskPath) return false
         if (name != other.name) return false
         if (displayName != other.displayName) return false
-        if (parent != other.parent) return false
         
         return true
     }
@@ -49,7 +47,6 @@ class TaskOperationDescriptor(
         result = 31 * result + taskPath.hashCode()
         result = 31 * result + name.hashCode()
         result = 31 * result + displayName.hashCode()
-        result = 31 * result + (parent?.hashCode() ?: 0)
         return result
     }
 }

@@ -25,8 +25,7 @@ class TransformOperationDescriptor(
     val subject: SubjectDescriptor,
     val transformer: TransformerDescriptor,
     override val name: String,
-    override val displayName: String,
-    override val parent: OperationDescriptor?
+    override val displayName: String
 ) : OperationDescriptor() {
     class SubjectDescriptor(val displayName: String)
 
@@ -41,8 +40,7 @@ class TransformOperationDescriptor(
         if (transformer != other.transformer) return false
         if (name != other.name) return false
         if (displayName != other.displayName) return false
-        if (parent != other.parent) return false
-
+        
         return true
     }
 
@@ -52,7 +50,6 @@ class TransformOperationDescriptor(
         result = 31 * result + transformer.hashCode()
         result = 31 * result + name.hashCode()
         result = 31 * result + displayName.hashCode()
-        result = 31 * result + (parent?.hashCode() ?: 0)
         return result
     }
 }

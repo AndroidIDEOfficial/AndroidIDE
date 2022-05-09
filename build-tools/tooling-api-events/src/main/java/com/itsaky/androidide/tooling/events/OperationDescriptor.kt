@@ -25,7 +25,6 @@ package com.itsaky.androidide.tooling.events
 abstract class OperationDescriptor {
     abstract val name: String
     abstract val displayName: String
-    abstract val parent: OperationDescriptor?
 
     private val gsonType = javaClass.name
 }
