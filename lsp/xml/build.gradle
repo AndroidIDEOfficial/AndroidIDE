@@ -17,6 +17,7 @@
 
 plugins {
     id 'com.android.library'
+    id 'kotlin-android'
 }
 
 android {
@@ -48,6 +49,9 @@ dependencies {
     implementation project (':lsp:api')
     implementation project (':build-tools:xml-dom')
     implementation project (':build-tools:xml-formatter')
+    
+    implementation "androidx.core:core-ktx:1.7.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     
     compileOnly project (':lexers')
     compileOnly project (':common')

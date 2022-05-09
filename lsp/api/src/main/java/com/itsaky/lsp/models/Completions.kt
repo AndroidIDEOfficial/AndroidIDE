@@ -45,6 +45,11 @@ data class CompletionParams(var position: Position, var file: Path) {
 }
 
 data class CompletionResult(var isIncomplete: Boolean, var items: List<CompletionItem>) {
+
+    companion object {
+        const val MAX_ITEMS = 50
+    }
+
     constructor() : this(false, ArrayList<CompletionItem>())
 
     override fun toString(): String {

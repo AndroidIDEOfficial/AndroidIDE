@@ -92,20 +92,20 @@ object XmlUtils {
         return false
     }
 
-    fun getPrefix(parsed: DOMDocument, index: Long, type: NodeType?): String? {
+    fun getPrefix(parsed: DOMDocument, index: Int, type: NodeType?): String? {
         val text = parsed.text
         when (type) {
             TAG -> {
-                val nodeAt = parsed.findNodeAt(index.toInt()) ?: return null
-                return text.substring(nodeAt.start, index.toInt())
+                val nodeAt = parsed.findNodeAt(index) ?: return null
+                return text.substring(nodeAt.start, index)
             }
             ATTRIBUTE -> {
-                val attr = parsed.findAttrAt(index.toInt()) ?: return null
-                return text.substring(attr.start, index.toInt())
+                val attr = parsed.findAttrAt(index) ?: return null
+                return text.substring(attr.start, index)
             }
             ATTRIBUTE_VALUE -> {
-                val attrAt = parsed.findAttrAt(index.toInt()) ?: return null
-                var prefix = text.substring(attrAt.nodeAttrValue.start + 1, index.toInt())
+                val attrAt = parsed.findAttrAt(index) ?: return null
+                var prefix = text.substring(attrAt.nodeAttrValue.start + 1, index)
                 if (prefix.contains("|")) {
                     prefix = prefix.substring(prefix.lastIndexOf('|') + 1)
                 }
@@ -117,7 +117,7 @@ object XmlUtils {
 
     fun getNodeType(parsed: DOMDocument, cursor: Int): NodeType {
         val nodeAt = parsed.findNodeAt(cursor) ?: return NodeType.UNKNOWN
-        
+
         if (isTag(nodeAt, cursor) || isEndTag(nodeAt, cursor)) {
             return TAG
         }

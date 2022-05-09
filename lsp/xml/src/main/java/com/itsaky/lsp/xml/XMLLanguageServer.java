@@ -39,7 +39,7 @@ import com.itsaky.lsp.util.NoCompletionsProvider;
 import com.itsaky.lsp.util.NoDocumentHandler;
 import com.itsaky.lsp.xml.models.XMLServerSettings;
 import com.itsaky.lsp.xml.providers.CodeFormatProvider;
-import com.itsaky.lsp.xml.providers.CompletionProvider;
+import com.itsaky.lsp.xml.providers.XmlCompletionProvider;
 import com.itsaky.sdk.SDKInfo;
 
 import org.jetbrains.annotations.Nullable;
@@ -71,20 +71,6 @@ public class XMLLanguageServer implements ILanguageServer {
     }
 
     @Override
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    @NonNull
-    public IServerSettings getSettings() {
-        if (settings == null) {
-            settings = XMLServerSettings.getInstance();
-        }
-
-        return settings;
-    }
-
-    @Override
     public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
         if (initialized) {
             throw new AlreadyInitializedException();
@@ -99,6 +85,11 @@ public class XMLLanguageServer implements ILanguageServer {
         capabilities.setSmartSelectionsEnabled(false);
 
         initialized = true;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
     }
 
     @NonNull
@@ -136,7 +127,16 @@ public class XMLLanguageServer implements ILanguageServer {
             return new NoCompletionsProvider();
         }
 
-        return new CompletionProvider(this.sdkInfo, this.getSettings());
+        return new XmlCompletionProvider(this.sdkInfo, this.getSettings());
+    }
+
+    @NonNull
+    public IServerSettings getSettings() {
+        if (settings == null) {
+            settings = XMLServerSettings.getInstance();
+        }
+
+        return settings;
     }
 
     @NonNull
@@ -171,14 +171,13 @@ public class XMLLanguageServer implements ILanguageServer {
 
     @NonNull
     @Override
-    public IDocumentHandler getDocumentHandler() {
-        return this.documentHandler;
-    }
-    
-   @NonNull
-    @Override
     public CharSequence formatCode(CharSequence input) {
         return new CodeFormatProvider().format(input);
     }
 
+    @NonNull
+    @Override
+    public IDocumentHandler getDocumentHandler() {
+        return this.documentHandler;
+    }
 }
