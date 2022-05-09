@@ -11,6 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="AndroidIDE.build-tools.builder-api" target="11" />
       <module name="AndroidIDE.build-tools.builder-model" target="11" />
       <module name="AndroidIDE.build-tools.project" target="11" />
       <module name="AndroidIDE.build-tools.tooling-api-plugin" target="11" />

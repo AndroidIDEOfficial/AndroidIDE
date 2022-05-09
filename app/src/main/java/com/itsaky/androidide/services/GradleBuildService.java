@@ -40,7 +40,6 @@ import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.builder.BuildService;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.projects.ProjectManager;

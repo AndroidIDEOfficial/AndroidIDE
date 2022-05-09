@@ -16,7 +16,6 @@ include ':lsp:xml'
 include ':lsp:testing'
 
 include ':build-tools'
-include ':build-tools:builder-api'
 include ':build-tools:framework-stubs'
 include ':build-tools:google-java-format'
 include ':build-tools:javac'

@@ -61,6 +61,7 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    
     packagingOptions {
         resources {
             excludes += ['META-INF/eclipse.inf', 'about_files/LICENSE-2.0.txt', 'plugin.xml', 'plugin.properties', 'about.mappings', 'about.properties', 'about.ini', 'modeling32.png']
@@ -109,7 +110,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     
     // Local projects here
-    implementation project (':build-tools:builder-api')
+    implementation project (':build-tools:tooling-api')
     implementation project (':treeview')
     implementation project (':emulatorview')
     implementation project (':xml-inflater')
