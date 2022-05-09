@@ -72,6 +72,7 @@ class ToolingApiImplTest {
         assertThat(app.javaCompileOptions.isCoreLibraryDesugaringEnabled).isFalse()
 
         assertThat(app.projectType).isEqualTo(ProjectType.APPLICATION)
+        assertThat(app.packageName).isEqualTo("com.itsaky.test.app")
 
         assertThat(app.viewBindingOptions).isNotNull()
         assertThat(app.viewBindingOptions!!.isEnabled).isTrue()

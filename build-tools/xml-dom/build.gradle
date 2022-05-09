@@ -26,11 +26,13 @@ java {
 }
 
 dependencies {
-    api files ('libs/org.eclipse.lemminx-0.21.0.jar')
+    api files ('libs/org.eclipse.lemminx-0.21.0-uber.jar')
 }
 
 repositories {
-    mavenCentral ()
+    maven {
+        url "https://repo.eclipse.org/content/repositories/lemminx-snapshots/"
+    }
 }
 
 compileKotlin {
