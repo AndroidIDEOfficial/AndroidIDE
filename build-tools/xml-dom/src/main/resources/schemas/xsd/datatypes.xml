@@ -1,0 +1,110 @@
+<datatypes>
+	<!-- See all built-in datatypes at https://www.w3.org/TR/xmlschema11-2/#built-in-datatypes -->
+
+	<!-- 3.2 Special Built-in Datatypes -> https://www.w3.org/TR/xmlschema11-2/#special-datatypes -->
+	<datatype name="anySimpleType"
+		url="https://www.w3.org/TR/xmlschema11-2/#anySimpleType" />
+	<datatype name="anyAtomicType"
+		url="https://www.w3.org/TR/xmlschema11-2/#anyAtomicType" />
+
+	<!-- 3.3 Primitive Datatypes -> https://www.w3.org/TR/xmlschema11-2/#built-in-primitive-datatypes -->
+	<datatype name="string"
+		url="https://www.w3.org/TR/xmlschema11-2/#string" />
+	<datatype name="boolean"
+		url="https://www.w3.org/TR/xmlschema11-2/#boolean" />
+	<datatype name="decimal"
+		url="https://www.w3.org/TR/xmlschema11-2/#decimal" />
+	<datatype name="float"
+		url="https://www.w3.org/TR/xmlschema11-2/#float" />
+	<datatype name="double"
+		url="https://www.w3.org/TR/xmlschema11-2/#double" />
+	<datatype name="duration"
+		url="https://www.w3.org/TR/xmlschema11-2/#duration" />
+	<datatype name="dateTime"
+		url="https://www.w3.org/TR/xmlschema11-2/#dateTime" />
+	<datatype name="time"
+		url="https://www.w3.org/TR/xmlschema11-2/#time" />
+	<datatype name="date"
+		url="https://www.w3.org/TR/xmlschema11-2/#date" />
+	<datatype name="gYearMonth"
+		url="https://www.w3.org/TR/xmlschema11-2/#gYearMonth" />
+	<datatype name="gYear"
+		url="https://www.w3.org/TR/xmlschema11-2/#gYear" />
+	<datatype name="gMonthDay"
+		url="https://www.w3.org/TR/xmlschema11-2/#gMonthDay" />
+	<datatype name="gDay"
+		url="https://www.w3.org/TR/xmlschema11-2/#gDay" />
+	<datatype name="gMonth"
+		url="https://www.w3.org/TR/xmlschema11-2/#gMonth" />
+	<datatype name="hexBinary"
+		url="https://www.w3.org/TR/xmlschema11-2/#hexBinary" />
+	<datatype name="base64Binary"
+		url="https://www.w3.org/TR/xmlschema11-2/#base64Binary" />
+	<datatype name="anyURI"
+		url="https://www.w3.org/TR/xmlschema11-2/#anyURI" />
+	<datatype name="QName"
+		url="https://www.w3.org/TR/xmlschema11-2/#QName" />
+	<datatype name="NOTATION"
+		url="https://www.w3.org/TR/xmlschema11-2/#NOTATION" />
+
+	<!-- 3.4 Other Built-in Datatypes -> https://www.w3.org/TR/xmlschema11-2/#ordinary-built-ins -->
+	<datatype name="normalizedString"
+		url="https://www.w3.org/TR/xmlschema11-2/#normalizedString" />
+	<datatype name="token"
+		url="https://www.w3.org/TR/xmlschema11-2/#token" />
+	<datatype name="language"
+		url="https://www.w3.org/TR/xmlschema11-2/#language" />
+	<datatype name="NMTOKEN"
+		url="https://www.w3.org/TR/xmlschema11-2/#NMTOKEN" />
+	<datatype name="NMTOKENS"
+		url="https://www.w3.org/TR/xmlschema11-2/#NMTOKENS" />
+	<datatype name="Name"
+		url="https://www.w3.org/TR/xmlschema11-2/#Name" />
+	<datatype name="NCName"
+		url="https://www.w3.org/TR/xmlschema11-2/#NCName" />
+	<datatype name="ID"
+		url="https://www.w3.org/TR/xmlschema11-2/#ID" />
+	<datatype name="IDREF"
+		url="https://www.w3.org/TR/xmlschema11-2/#IDREF" />
+	<datatype name="IDREFS"
+		url="https://www.w3.org/TR/xmlschema11-2/#IDREFS" />
+	<datatype name="ENTITY"
+		url="https://www.w3.org/TR/xmlschema11-2/#ENTITY" />
+	<datatype name="ENTITIES"
+		url="https://www.w3.org/TR/xmlschema11-2/#ENTITIES" />
+	<datatype name="integer"
+		url="https://www.w3.org/TR/xmlschema11-2/#integer" />
+	<datatype name="nonPositiveInteger"
+		url="https://www.w3.org/TR/xmlschema11-2/#nonPositiveInteger" />
+	<datatype name="negativeInteger"
+		url="https://www.w3.org/TR/xmlschema11-2/#negativeInteger" />
+	<datatype name="long"
+		url="https://www.w3.org/TR/xmlschema11-2/#long" />
+	<datatype name="negativeInteger"
+		url="https://www.w3.org/TR/xmlschema11-2/#negativeInteger" />
+	<datatype name="int"
+		url="https://www.w3.org/TR/xmlschema11-2/#int" />
+	<datatype name="short"
+		url="https://www.w3.org/TR/xmlschema11-2/#short" />
+	<datatype name="byte"
+		url="https://www.w3.org/TR/xmlschema11-2/#byte" />
+	<datatype name="nonNegativeInteger"
+		url="https://www.w3.org/TR/xmlschema11-2/#nonNegativeInteger" />
+	<datatype name="unsignedLong"
+		url="https://www.w3.org/TR/xmlschema11-2/#unsignedLong" />
+	<datatype name="unsignedInt"
+		url="https://www.w3.org/TR/xmlschema11-2/#unsignedInt" />
+	<datatype name="unsignedShort"
+		url="https://www.w3.org/TR/xmlschema11-2/#unsignedShort" />
+	<datatype name="unsignedByte"
+		url="https://www.w3.org/TR/xmlschema11-2/#unsignedByte" />
+	<datatype name="positiveInteger"
+		url="https://www.w3.org/TR/xmlschema11-2/#positiveInteger" />
+	<datatype name="yearMonthDuration"
+		url="https://www.w3.org/TR/xmlschema11-2/#yearMonthDuration" />
+	<datatype name="dayTimeDuration"
+		url="https://www.w3.org/TR/xmlschema11-2/#dayTimeDuration" />
+	<datatype name="dateTimeStamp"
+		url="https://www.w3.org/TR/xmlschema11-2/#dateTimeStamp" />
+
+</datatypes>

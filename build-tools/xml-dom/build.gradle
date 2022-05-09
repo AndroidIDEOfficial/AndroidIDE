@@ -26,17 +26,7 @@ java {
 }
 
 dependencies {
-    implementation project (path: ':build-tools:logger')
-    api project (path: ':build-tools:tooling-api-model')
-    api project (path: ':build-tools:tooling-api-events')
-    
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    
-    testImplementation tests.junit
-    testImplementation tests.google_truth
-    
-    api common.jsonrpc
-    api google.gson
+    api files ('libs/org.eclipse.lemminx-0.21.0.jar')
 }
 
 repositories {

@@ -1,0 +1,17 @@
+{
+  "New XSD": {
+    "prefix": [
+      "<schema"
+    ],
+    "suffix": ">",
+    "body": [
+      "<${1:xs}:schema xmlns:${1:xs}=\"http://www.w3.org/2001/XMLSchema\">",
+      "\t<${1:xs}:element name=\"${2:root-element}\">${0}",
+      "\t\t${0}",
+      "\t</${1:xs}:element>",
+      "</${1:xs}:schema>"
+    ],
+    "label": "$description",
+    "description": "New XML Schema"
+  }
+ }

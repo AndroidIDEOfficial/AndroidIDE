@@ -22,19 +22,19 @@ plugins {
 android {
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
-
+    
     defaultConfig {
         minSdkVersion rootProject.ext.minSdk
         targetSdkVersion rootProject.ext.targetSdk
     }
-
+    
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile ('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
+    
     compileOptions {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion
@@ -44,13 +44,14 @@ android {
 dependencies {
     implementation common.editor
     implementation common.utilcode
-
-    implementation project(':lsp:api')
+    
+    implementation project (':lsp:api')
+    implementation project (':build-tools:xml-dom')
     implementation project (':build-tools:xml-formatter')
     
-    compileOnly project(':lexers')
-    compileOnly project(':common')
-    compileOnly project(':sdk-info')
-
+    compileOnly project (':lexers')
+    compileOnly project (':common')
+    compileOnly project (':sdk-info')
+    
     compileOnly common.antlr4
 }

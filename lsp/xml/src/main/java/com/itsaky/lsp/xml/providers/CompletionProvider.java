@@ -127,7 +127,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         final var parent = file.getParentFile().getName();
 
         if (parent.startsWith("drawable")
-                || parent.startsWith("drawable")
+                || parent.startsWith("mipmap")
                 || parent.startsWith("color")) {
             return "drawable";
         } else if (parent.startsWith("values")) {

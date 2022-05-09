@@ -1,0 +1,50 @@
+{
+	"Insert XML Model: XSD": {
+	  "prefix": [
+		"<?xml-model"
+	  ],
+	  "suffix": "?>",
+	  "body": [
+		"<?xml-model href=\"${1:file.xsd}\" type=\"application/xml\" schematypens=\"http://www.w3.org/2001/XMLSchema\"?>${0}"
+	  ],
+	  "label": "Insert XML Schema association",
+	  "description": "Insert XML Model Processing Instruction to Associate XSD Schema",
+	  "sortText": "model"
+	},
+	"Insert XML Model: DTD": {
+		"prefix": [
+		  "<?xml-model"
+		],
+		"suffix": "?>",
+		"body": [
+		  "<?xml-model href=\"${1:file.dtd}\" type=\"application/xml-dtd\"?>${0}"
+		],
+		"label": "Insert DTD association",
+		"description": "Insert XML Model Processing Instruction to Associate Document Type Description (DTD)",
+		"sortText": "model"
+	  },
+	"Insert Stylesheet: XSL": {
+		"prefix": [
+		  "<?xml-stylesheet"
+		],
+		"suffix": "?>",
+		"body": [
+			"<?xml-stylesheet href=\"${1:file.xsl}\" type=\"text/xsl\"?>${0}"
+		],
+		"label": "Insert XSL Stylesheet association",
+		"description": "Insert XML Stylesheet Processing Instruction to Associate XSL Transformation Stylesheet (XSLT)",
+		"sortText": "stylesheet"
+	},
+	"Insert Stylesheet: CSS": {
+		"prefix": [
+		  "<?xml-stylesheet"
+		],
+		"suffix": "?>",
+		"body": [
+			"<?xml-stylesheet href=\"${1:file.css}\" type=\"text/css\"?>${0}"
+		],
+		"label": "Insert CSS Stylesheet association",
+		"description": "Insert XML Stylesheet Processing Instruction to Associate Cascading Stylesheet (CSS)",
+		"sortText": "stylesheet"
+	}
+}
