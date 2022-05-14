@@ -200,9 +200,9 @@ open class CompletionItem(
             val klass = editor::class.java
             val method = klass.getMethod("executeCommand", Command::class.java)
             method.isAccessible = true
-            method.invoke(command)
+            method.invoke(editor, command)
         } catch (th: Throwable) {
-            LOG.error("Unable to invoke 'executeCommand(Command) method in IDEEditor.")
+            LOG.error("Unable to invoke 'executeCommand(Command) method in IDEEditor.", th)
         }
     }
 
