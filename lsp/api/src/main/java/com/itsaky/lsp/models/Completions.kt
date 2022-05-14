@@ -20,6 +20,7 @@ package com.itsaky.lsp.models
 import com.itsaky.androidide.tooling.api.model.IdeModule
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
+import com.itsaky.lsp.util.StringUtils
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
@@ -48,11 +49,11 @@ data class CompletionParams(var position: Position, var file: Path) {
 open class CompletionResult(items: List<CompletionItem>) {
     var items: List<CompletionItem> = run {
         var temp = items.toMutableList()
-        if (temp.size > MAX_ITEMS) {
+        temp.sort()
+
+        if (TRIM_TO_MAX && temp.size > MAX_ITEMS) {
             temp = temp.subList(0, MAX_ITEMS)
         }
-
-        temp.sort()
         return@run temp
     }
 
@@ -61,6 +62,8 @@ open class CompletionResult(items: List<CompletionItem>) {
     companion object {
         const val MAX_ITEMS = 50
         @JvmField val EMPTY = CompletionResult(listOf())
+
+        var TRIM_TO_MAX = true
     }
 
     constructor() : this(listOf())
@@ -119,7 +122,19 @@ open class CompletionItem(
 
     companion object {
         private val LOG = ILogger.newInstance("CompletionItem")
-        @JvmStatic fun sortTextForMatchRatio(ratio: Int, text: CharSequence) = "${100-ratio}$text"
+        @JvmStatic
+        fun sortTextForMatchRatio(ratio: Int, label: CharSequence, prefix: CharSequence): String {
+            if (StringUtils.matchesPartialName(label, prefix, true)) {
+
+                // The label starts with prefix
+                // So, this item must be shown at top
+                return "00$label"
+            }
+
+            // Label does not start with prefix
+            // The order of this item is decided based on the match ratio
+            return "${100-ratio}$label"
+        }
     }
 
     fun setLabel(label: String) {

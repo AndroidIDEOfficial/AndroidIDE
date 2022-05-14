@@ -342,7 +342,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                     StringUtils.fuzzySearchRatio(
                             k, partial, getSettings().shouldMatchAllLowerCase());
             if (ratio > 0) {
-                list.getItems().add(keyword(k, ratio));
+                list.getItems().add(keyword(k, partial, ratio));
             }
         }
     }
@@ -376,9 +376,11 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             if (member.getKind() == ElementKind.METHOD) {
                 ExecutableElement method = (ExecutableElement) member;
                 TreePath parentPath = path.getParentPath() /*method*/.getParentPath() /*class*/;
-                list.add(overrideIfPossible(task, parentPath, method, endsWithParen, matchRatio));
+                list.add(
+                        overrideIfPossible(
+                                task, parentPath, method, partial, endsWithParen, matchRatio));
             } else {
-                list.add(item(task, member, matchRatio));
+                list.add(item(task, member, partial, matchRatio));
             }
         }
 
@@ -431,7 +433,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                     putMethod((ExecutableElement) member, methods);
                     matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio);
                 } else {
-                    list.getItems().add(item(task, member, matchRatio));
+                    list.getItems().add(item(task, member, partial, matchRatio));
                 }
 
                 if (list.getItems().size() + methods.size() > MAX_COMPLETION_ITEMS) {
@@ -443,7 +445,8 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         for (Map.Entry<String, List<ExecutableElement>> entry : methods.entrySet()) {
             Integer matchRatio = matchRatios.getOrDefault(entry.getKey(), 0);
             matchRatio = matchRatio == null ? 0 : matchRatio;
-            list.getItems().add(method(task, entry.getValue(), !endsWithParen, matchRatio));
+            list.getItems()
+                    .add(method(task, entry.getValue(), !endsWithParen, partial, matchRatio));
         }
 
         LOG.info("...found " + (list.getItems().size() - previousSize) + " static imports");
@@ -481,7 +484,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                 continue;
             }
 
-            list.getItems().add(classItem(imports, file, className, matchRatio));
+            list.getItems().add(classItem(imports, file, className, partial, matchRatio));
             uniques.add(className);
         }
 
@@ -501,7 +504,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                 break;
             }
 
-            list.getItems().add(classItem(imports, file, className, matchRatio));
+            list.getItems().add(classItem(imports, file, className, partial, matchRatio));
             uniques.add(className);
         }
 
@@ -521,7 +524,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             }
 
             final String name = packageName + "." + c.getSimpleName();
-            list.getItems().add(classItem(name, matchRatio));
+            list.getItems().add(classItem(name, partial, matchRatio));
             if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
                 break;
             }
@@ -543,7 +546,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         Scope scope = trees.getScope(path);
         TypeMirror type = trees.getTypeMirror(path);
         if (type instanceof ArrayType) {
-            return completeArrayMemberSelect(isStatic);
+            return completeArrayMemberSelect(isStatic, partial);
         } else if (type instanceof TypeVariable) {
             return completeTypeVariableMemberSelect(
                     task, scope, (TypeVariable) type, isStatic, partial, endsWithParen);
@@ -555,12 +558,12 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         }
     }
 
-    private CompletionResult completeArrayMemberSelect(boolean isStatic) {
+    private CompletionResult completeArrayMemberSelect(boolean isStatic, CharSequence partialName) {
         if (isStatic) {
             return CompletionResult.EMPTY;
         } else {
             CompletionResult list = new CompletionResult();
-            list.getItems().add(keyword("length", 100));
+            list.getItems().add(keyword("length", partialName, 100));
             return list;
         }
     }
@@ -599,7 +602,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             Scope scope,
             @NonNull DeclaredType type,
             boolean isStatic,
-            String partial,
+            String partialName,
             boolean endsWithParen) {
         Trees trees = Trees.instance(task.task);
         TypeElement typeElement = (TypeElement) type.asElement();
@@ -614,7 +617,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             final int matchRatio =
                     StringUtils.fuzzySearchRatio(
                             member.getSimpleName(),
-                            partial,
+                            partialName,
                             getSettings().shouldMatchAllLowerCase());
             if (matchRatio == 0) {
                 continue;
@@ -632,23 +635,23 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                 putMethod((ExecutableElement) member, methods);
                 matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio);
             } else {
-                list.add(item(task, member, matchRatio));
+                list.add(item(task, member, partialName, matchRatio));
             }
         }
 
         for (Map.Entry<String, List<ExecutableElement>> entry : methods.entrySet()) {
             Integer matchRatio = matchRatios.getOrDefault(entry.getKey(), 0);
             matchRatio = matchRatio == null ? 0 : matchRatio;
-            list.add(method(task, entry.getValue(), !endsWithParen, matchRatio));
+            list.add(method(task, entry.getValue(), !endsWithParen, partialName, matchRatio));
         }
 
         if (isStatic) {
-            list.add(keyword("class", 100));
+            list.add(keyword("class", partialName, 100));
         }
 
         if (!isStatic && isEnclosingClass(type, scope)) {
-            list.add(keyword("this", 100));
-            list.add(keyword("super", 100));
+            list.add(keyword("this", partialName, 100));
+            list.add(keyword("super", partialName, 100));
         }
 
         return new CompletionResult(list);
@@ -675,7 +678,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     }
 
     private CompletionResult completeMemberReference(
-            @NonNull CompileTask task, @NonNull TreePath path, String partial) {
+            @NonNull CompileTask task, @NonNull TreePath path, String partialName) {
         Trees trees = Trees.instance(task.task);
         MemberReferenceTree select = (MemberReferenceTree) path.getLeaf();
         LOG.info("...complete methods of " + select.getQualifierExpression());
@@ -685,22 +688,23 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         Scope scope = trees.getScope(path);
         TypeMirror type = trees.getTypeMirror(path);
         if (type instanceof ArrayType) {
-            return completeArrayMemberReference(isStatic);
+            return completeArrayMemberReference(isStatic, partialName);
         } else if (type instanceof TypeVariable) {
             return completeTypeVariableMemberReference(
-                    task, scope, (TypeVariable) type, isStatic, partial);
+                    task, scope, (TypeVariable) type, isStatic, partialName);
         } else if (type instanceof DeclaredType) {
             return completeDeclaredTypeMemberReference(
-                    task, scope, (DeclaredType) type, isStatic, partial);
+                    task, scope, (DeclaredType) type, isStatic, partialName);
         } else {
             return CompletionResult.EMPTY;
         }
     }
 
-    private CompletionResult completeArrayMemberReference(boolean isStatic) {
+    private CompletionResult completeArrayMemberReference(
+            boolean isStatic, CharSequence partialName) {
         if (isStatic) {
             CompletionResult list = new CompletionResult();
-            list.getItems().add(keyword("new", 100));
+            list.getItems().add(keyword("new", partialName, 100));
             return list;
         } else {
             return CompletionResult.EMPTY;
@@ -730,7 +734,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             Scope scope,
             @NonNull DeclaredType type,
             boolean isStatic,
-            String partial) {
+            String partialName) {
         Trees trees = Trees.instance(task.task);
         TypeElement typeElement = (TypeElement) type.asElement();
         List<CompletionItem> list = new ArrayList<>();
@@ -740,7 +744,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             final int matchRatio =
                     StringUtils.fuzzySearchRatio(
                             member.getSimpleName(),
-                            partial,
+                            partialName,
                             getSettings().shouldMatchAllLowerCase());
             if (0 == matchRatio) {
                 continue;
@@ -762,17 +766,23 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                 putMethod((ExecutableElement) member, methods);
                 matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio);
             } else {
-                list.add(item(task, member, matchRatio));
+                list.add(item(task, member, partialName, matchRatio));
             }
         }
 
         for (Map.Entry<String, List<ExecutableElement>> entry : methods.entrySet()) {
             final Integer matchRatio = matchRatios.getOrDefault(entry.getKey(), 0);
-            list.add(method(task, entry.getValue(), false, matchRatio == null ? 0 : matchRatio));
+            list.add(
+                    method(
+                            task,
+                            entry.getValue(),
+                            false,
+                            partialName,
+                            matchRatio == null ? 0 : matchRatio));
         }
 
         if (isStatic) {
-            list.add(keyword("new", 100));
+            list.add(keyword("new", partialName, 100));
         }
 
         return new CompletionResult(list);
@@ -793,7 +803,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     private CompletionResult completeSwitchConstant(
             @NonNull CompileTask task,
             @NonNull TreePath path,
-            String partial,
+            String partialName,
             boolean endsWithParen) {
         SwitchTree switchTree = (SwitchTree) path.getLeaf();
         path = new TreePath(path, switchTree.getExpression());
@@ -801,7 +811,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
         if (type.getKind().isPrimitive() || !(type instanceof DeclaredType)) {
             // primitive types do not have any members
-            return completeIdentifier(task, path, partial, endsWithParen);
+            return completeIdentifier(task, path, partialName, endsWithParen);
         }
 
         DeclaredType declared = (DeclaredType) type;
@@ -814,7 +824,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             // At this point, we are sure that the case expression will definitely be an identifier
             // tree
             // see visitCase (CaseTree, Long) in FindCompletionsAt.java
-            return completeIdentifier(task, path, partial, endsWithParen);
+            return completeIdentifier(task, path, partialName, endsWithParen);
         }
 
         LOG.info("...complete constants of type " + type);
@@ -827,13 +837,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             final int matchRatio =
                     StringUtils.fuzzySearchRatio(
                             member.getSimpleName(),
-                            partial,
+                            partialName,
                             getSettings().shouldMatchAllLowerCase());
             if (matchRatio == 0) {
                 continue;
             }
 
-            list.add(item(task, member, matchRatio));
+            list.add(item(task, member, partialName, matchRatio));
         }
 
         return new CompletionResult(list);
@@ -867,9 +877,9 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
             boolean isClass = end == path.length();
             if (isClass) {
-                list.getItems().add(classItem(className, matchRatio));
+                list.getItems().add(classItem(className, path, matchRatio));
             } else {
-                list.getItems().add(packageItem(segment, matchRatio));
+                list.getItems().add(packageItem(segment, path, matchRatio));
             }
 
             if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
@@ -879,31 +889,38 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         return list;
     }
 
-    private CompletionItem packageItem(String name, int matchRatio) {
+    private CompletionItem packageItem(String name, String partialName, int matchRatio) {
         CompletionItem i = new CompletionItem();
         i.setLabel(name);
         i.setKind(CompletionItemKind.MODULE);
-        i.setSortText(sortTextForMatchRatio(matchRatio, name));
+        i.setSortText(sortTextForMatchRatio(matchRatio, name, partialName));
         return i;
     }
 
-    private CompletionItem classItem(String className, int matchRatio) {
-        return classItem(Collections.emptySet(), null, className, matchRatio);
+    private CompletionItem classItem(String className, String partialName, int matchRatio) {
+        return classItem(Collections.emptySet(), null, className, partialName, matchRatio);
     }
 
     private CompletionItem classItem(
-            Set<String> imports, Path file, String className, int matchRatio) {
+            Set<String> imports, Path file, String className, String partialName, int matchRatio) {
         CompletionItem item = new CompletionItem();
         item.setLabel(simpleName(className).toString());
         item.setKind(CompletionItemKind.CLASS);
         item.setDetail(className);
-        item.setSortText(sortTextForMatchRatio(matchRatio, item.label));
+        item.setSortText(sortTextForMatchRatio(matchRatio, item.label, partialName));
 
         CompletionData data = new CompletionData();
         data.setClassName(className);
         item.setData(data);
         item.setAdditionalTextEdits(addImportIfNeeded(compiler, file, imports, className));
         return item;
+    }
+
+    @NonNull
+    private CharSequence simpleName(@NonNull String className) {
+        int dot = className.lastIndexOf('.');
+        if (dot == -1) return className;
+        return className.subSequence(dot + 1, className.length());
     }
 
     private CompletionItem snippetItem(String label, String snippet) {
@@ -917,14 +934,15 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     }
 
     @NonNull
-    private CompletionItem item(CompileTask task, @NonNull Element element, int matchRatio) {
+    private CompletionItem item(
+            CompileTask task, @NonNull Element element, CharSequence partialName, int matchRatio) {
         if (element.getKind() == ElementKind.METHOD) throw new RuntimeException("method");
         CompletionItem item = new CompletionItem();
         item.setLabel(element.getSimpleName().toString());
         item.setKind(kind(element));
         item.setDetail(element.toString());
         item.setData(data(task, element, 1));
-        item.setSortText(sortTextForMatchRatio(matchRatio, element.getSimpleName()));
+        item.setSortText(sortTextForMatchRatio(matchRatio, element.getSimpleName(), partialName));
         return item;
     }
 
@@ -933,13 +951,14 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             CompileTask task,
             @NonNull List<ExecutableElement> overloads,
             boolean addParens,
+            CharSequence partialName,
             int matchRatio) {
         ExecutableElement first = overloads.get(0);
         CompletionItem item = new CompletionItem();
         item.setLabel(first.getSimpleName().toString());
         item.setKind(CompletionItemKind.METHOD);
         item.setDetail(first.getReturnType() + " " + first);
-        item.setSortText(sortTextForMatchRatio(matchRatio, item.label));
+        item.setSortText(sortTextForMatchRatio(matchRatio, item.label, partialName));
 
         CompletionData data = data(task, first, overloads.size());
         item.setData(data);
@@ -964,6 +983,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
      * @param task The compilation task.
      * @param parentPath The tree path of the parent class.
      * @param method The method to override if possible.
+     * @param partialName The partial name.
      * @param endsWithParen Does the statement at cursor ends with a parenthesis?
      * @param matchRatio The match ratio for this completion item.
      * @return The completion item.
@@ -973,12 +993,18 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             @NonNull CompileTask task,
             TreePath parentPath,
             @NonNull ExecutableElement method,
+            CharSequence partialName,
             boolean endsWithParen,
             int matchRatio) {
 
         if (parentPath.getLeaf().getKind() != Tree.Kind.CLASS) {
             // Can only override if the cursor is directly in a class declaration
-            return method(task, Collections.singletonList(method), !endsWithParen, matchRatio);
+            return method(
+                    task,
+                    Collections.singletonList(method),
+                    !endsWithParen,
+                    partialName,
+                    matchRatio);
         }
 
         final Types types = task.task.getTypes();
@@ -986,7 +1012,12 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
         if (parentElement == null) {
             // Can't get further information for overriding this method
-            return method(task, Collections.singletonList(method), !endsWithParen, matchRatio);
+            return method(
+                    task,
+                    Collections.singletonList(method),
+                    !endsWithParen,
+                    partialName,
+                    matchRatio);
         }
 
         final DeclaredType type = (DeclaredType) parentElement.asType();
@@ -1002,7 +1033,12 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                 || !types.isAssignable(type, enclosing.asType())
                 || !(parentPath.getLeaf() instanceof ClassTree)) {
             // Override is not possible
-            return method(task, Collections.singletonList(method), !endsWithParen, matchRatio);
+            return method(
+                    task,
+                    Collections.singletonList(method),
+                    !endsWithParen,
+                    partialName,
+                    matchRatio);
         }
 
         // Print the method details and the annotations
@@ -1017,7 +1053,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         item.setLabel(methodSpec.name);
         item.setKind(CompletionItemKind.METHOD);
         item.setDetail(method.getReturnType() + " " + method);
-        item.setSortText(sortTextForMatchRatio(matchRatio, item.label));
+        item.setSortText(sortTextForMatchRatio(matchRatio, item.label, partialName));
         item.setInsertText(insertText);
         item.setInsertTextFormat(InsertTextFormat.SNIPPET);
         item.setData(data(task, method, 1));
@@ -1111,12 +1147,12 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     }
 
     @NonNull
-    private CompletionItem keyword(String keyword, int matchRatio) {
+    private CompletionItem keyword(String keyword, CharSequence partialName, int matchRatio) {
         CompletionItem item = new CompletionItem();
         item.setLabel(keyword);
         item.setKind(CompletionItemKind.KEYWORD);
         item.setDetail("keyword");
-        item.setSortText(sortTextForMatchRatio(matchRatio, keyword));
+        item.setSortText(sortTextForMatchRatio(matchRatio, keyword, partialName));
         return item;
     }
 
@@ -1137,12 +1173,5 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                             list.size(),
                             elapsedMs));
         }
-    }
-
-    @NonNull
-    private CharSequence simpleName(@NonNull String className) {
-        int dot = className.lastIndexOf('.');
-        if (dot == -1) return className;
-        return className.subSequence(dot + 1, className.length());
     }
 }

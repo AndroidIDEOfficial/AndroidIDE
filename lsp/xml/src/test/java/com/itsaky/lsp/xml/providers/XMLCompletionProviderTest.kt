@@ -17,6 +17,7 @@
 
 package com.itsaky.lsp.xml.providers
 
+import android.text.TextUtils
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.xml.BaseXMLTest
@@ -62,8 +63,8 @@ class XMLCompletionProviderTest : BaseXMLTest() {
 
         assertThat(isIncomplete).isTrue()
         assertThat(items).isNotEmpty()
-
-        assertThat(items).containsAtLeast("text", "textSize", "textColor", "textStyle")
+        
+        assertThat(items).containsAtLeast("text", "textColor", "textAlignment", "textAllCaps")
     }
 
     override fun openFile(fileName: String) {
