@@ -45,20 +45,25 @@ data class CompletionParams(var position: Position, var file: Path) {
     }
 }
 
-open class CompletionResult(var isIncomplete: Boolean, items: List<CompletionItem>) {
+open class CompletionResult(items: List<CompletionItem>) {
+    var items: List<CompletionItem> = run {
+        var temp = items.toMutableList()
+        if (temp.size > MAX_ITEMS) {
+            temp = temp.subList(0, MAX_ITEMS)
+        }
 
-    var items =
-        items
-            .subList(0, if (items.size < MAX_ITEMS) items.size else MAX_ITEMS)
-            .toMutableList()
-            .apply { sort() }
+        temp.sort()
+        return@run temp
+    }
+
+    val isIncomplete = this.items.size < items.size
 
     companion object {
         const val MAX_ITEMS = 50
-        @JvmField val EMPTY = CompletionResult()
+        @JvmField val EMPTY = CompletionResult(listOf())
     }
 
-    constructor() : this(false, ArrayList<CompletionItem>())
+    constructor() : this(listOf())
 
     override fun toString(): String {
         return android.text.TextUtils.join("\n", items)
@@ -114,7 +119,6 @@ open class CompletionItem(
 
     companion object {
         private val LOG = ILogger.newInstance("CompletionItem")
-
         @JvmStatic fun sortTextForMatchRatio(ratio: Int, text: CharSequence) = "${100-ratio}$text"
     }
 
@@ -130,13 +134,12 @@ open class CompletionItem(
 
     override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
         val start = getIdentifierStart(text.getLine(line), column)
-        val insert = if (insertText == null) label else insertText
-        val shift = insert!!.contains("$0")
+        val shift = insertText.contains("$0")
 
         text.delete(line, start, line, column)
 
         if (text.contains("\n")) {
-            val lines = insert.split("\\\n")
+            val lines = insertText.split("\\\n")
             var i = 0
             lines.forEach {
                 var commit = it
@@ -277,7 +280,7 @@ data class Command(var title: String, var command: String) {
     }
 }
 
-enum class CompletionItemKind private constructor(val sortIndex: Int) {
+enum class CompletionItemKind(val sortIndex: Int) {
     CLASS(7),
     INTERFACE(7),
     ANNOTATION_TYPE(7),

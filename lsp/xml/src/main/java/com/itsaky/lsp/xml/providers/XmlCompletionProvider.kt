@@ -20,22 +20,25 @@ package com.itsaky.lsp.xml.providers
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.attrinfo.models.Attr
 import com.itsaky.lsp.api.AbstractServiceProvider
 import com.itsaky.lsp.api.ICompletionProvider
 import com.itsaky.lsp.api.IServerSettings
+import com.itsaky.lsp.models.Command
 import com.itsaky.lsp.models.CompletionData
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionItem.Companion.sortTextForMatchRatio
 import com.itsaky.lsp.models.CompletionItemKind.CLASS
+import com.itsaky.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.lsp.models.CompletionItemKind.VALUE
 import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.models.CompletionResult
 import com.itsaky.lsp.models.CompletionResult.Companion.EMPTY
-import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
 import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.util.StringUtils
 import com.itsaky.lsp.xml.utils.XmlUtils
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType
+import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
@@ -55,14 +58,13 @@ import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
  *
  * @author Akash Yadav
  */
-class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
+class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSettings) :
     AbstractServiceProvider(), ICompletionProvider {
 
     init {
         super.applySettings(settings)
     }
-
-    private val cachedResult: CompletionResult? = null
+    
     private val log = ILogger.newInstance(javaClass.simpleName)
 
     override fun complete(params: CompletionParams): CompletionResult {
@@ -128,20 +130,48 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
                     } else {
                         prefix
                     })
-            //            ATTRIBUTE -> completeAttributes(document, prefix)
+            ATTRIBUTE -> completeAttributes(document, params.position)
             ATTRIBUTE_VALUE -> completeAttributeValue(document, prefix, params.position)
             else -> EMPTY
         }
     }
+
+    private fun completeAttributes(document: DOMDocument, position: Position): CompletionResult {
+        // TODO Provide attributes based on current node and it's direct parent node
+        //   For example, if the current node is a 'TextView', provide attributes applicable to
+        //   TextView only. Also, if the parent of this TextView is a LinearLayout, then add
+        //   attributes related to LinearLayout LayoutParams.
+
+        // TODO Provided attributes from declared namespaces only
+        val attr = document.findAttrAt(position.requireIndex())
+        val list = mutableListOf<CompletionItem>()
+        for (attribute in sdkInfo.attrInfo.attributes.values) {
+            val matchRatio =
+                StringUtils.fuzzySearchRatio(
+                    attribute.name, attr.name, settings.shouldMatchAllLowerCase())
+            if (matchRatio > 0) {
+                list.add(createAttrCompletionItem(attribute, matchRatio))
+            }
+        }
+
+        return CompletionResult(list)
+    }
+
+    private fun createAttrCompletionItem(attr: Attr, matchRatio: Int): CompletionItem =
+        CompletionItem().apply {
+            label = attr.name
+            kind = FIELD
+            detail = "From package '${attr.namespace.packageName}'"
+            sortText = sortTextForMatchRatio(matchRatio, label)
+            command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
+        }
 
     private fun completeAttributeValue(
         document: DOMDocument,
         prefix: String,
         position: Position
     ): CompletionResult {
-        val resolver = XmlUtils.getNamespaceResolver(document)
         val attr = document.findAttrAt(position.requireIndex())
-        val uri = attr.namespaceURI
 
         // TODO Provide attribute values based on namespace URI
         //   For example, if the namespace of this attribute refers to a library dependency/module,
@@ -165,7 +195,7 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
             }
         }
 
-        return CompletionResult(false, items)
+        return CompletionResult(items)
     }
 
     private fun createAttrValueCompletionItem(
@@ -178,14 +208,11 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
             detail = "Value for '$attrName'"
             kind = VALUE
             sortText = sortTextForMatchRatio(matchRatio, label)
-            insertText = label.toString()
-            insertTextFormat = PLAIN_TEXT
         }
     }
 
     private fun completeTags(prefix: String): CompletionResult {
         val widgets = sdkInfo.widgetInfo.widgets
-        var isIncomplete = false
         val result = mutableListOf<CompletionItem>()
 
         for (widget in widgets) {
@@ -198,23 +225,16 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
             if (simpleNameMatchRatio > 0 || nameMatchRatio > 0) {
                 result.add(
                     createTagCompletionItem(widget, max(simpleNameMatchRatio, nameMatchRatio)))
-
-                if (result.size == CompletionResult.MAX_ITEMS) {
-                    isIncomplete = true
-                    break
-                }
             }
         }
 
-        return CompletionResult(isIncomplete, result)
+        return CompletionResult(result)
     }
-
+    
     private fun createTagCompletionItem(widget: Widget, matchRatio: Int): CompletionItem =
         CompletionItem().apply {
             label = widget.simpleName
             detail = widget.name
-            insertText = label as String
-            insertTextFormat = PLAIN_TEXT
             sortText = sortTextForMatchRatio(matchRatio, label)
             kind = CLASS
             data = CompletionData().apply { className = widget.name }

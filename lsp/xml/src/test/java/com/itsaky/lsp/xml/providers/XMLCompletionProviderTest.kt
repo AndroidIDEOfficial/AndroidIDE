@@ -54,6 +54,18 @@ class XMLCompletionProviderTest : BaseXMLTest() {
         assertThat(items).containsAtLeast("center", "fitCenter", "fitXY", "matrix")
     }
 
+    @Test
+    fun testAttrCompletion() {
+        openFile("AttributeCompletion")
+
+        val (isIncomplete, items) = complete()
+
+        assertThat(isIncomplete).isTrue()
+        assertThat(items).isNotEmpty()
+
+        assertThat(items).containsAtLeast("text", "textSize", "textColor", "textStyle")
+    }
+
     override fun openFile(fileName: String) {
         super.openFile("completion/${fileName}")
     }

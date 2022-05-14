@@ -19,12 +19,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
+    <TextView
         android:id="@+id/icon"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:src="@drawable/ic_android"
-        android:scaleType="@@cursor@@"
+        te@@cursor@@
         android:padding="4dp"
         android:layout_marginEnd="8dp"
         android:layout_gravity="center_vertical"/>

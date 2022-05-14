@@ -92,7 +92,7 @@ import javax.lang.model.util.Types;
 
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
-    public static final int MAX_COMPLETION_ITEMS = 50;
+    public static final int MAX_COMPLETION_ITEMS = CompletionResult.MAX_ITEMS;
     private static final String[] TOP_LEVEL_KEYWORDS = {
         "package",
         "import",
@@ -435,7 +435,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                 }
 
                 if (list.getItems().size() + methods.size() > MAX_COMPLETION_ITEMS) {
-                    list.setIncomplete(true);
                     break outer;
                 }
             }
@@ -499,7 +498,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             }
 
             if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
-                list.setIncomplete(true);
                 break;
             }
 
@@ -525,7 +523,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             final String name = packageName + "." + c.getSimpleName();
             list.getItems().add(classItem(name, matchRatio));
             if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
-                list.setIncomplete(true);
                 break;
             }
         }
@@ -654,7 +651,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             list.add(keyword("super", 100));
         }
 
-        return new CompletionResult(false, list);
+        return new CompletionResult(list);
     }
 
     private boolean isEnclosingClass(DeclaredType type, Scope start) {
@@ -778,7 +775,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             list.add(keyword("new", 100));
         }
 
-        return new CompletionResult(false, list);
+        return new CompletionResult(list);
     }
 
     private void putMethod(
@@ -839,7 +836,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             list.add(item(task, member, matchRatio));
         }
 
-        return new CompletionResult(false, list);
+        return new CompletionResult(list);
     }
 
     private CompletionResult completeImport(String path) {
@@ -876,7 +873,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             }
 
             if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
-                list.setIncomplete(true);
                 return list;
             }
         }
