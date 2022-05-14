@@ -44,7 +44,9 @@ data class CompletionParams(var position: Position, var file: Path) {
     }
 }
 
-data class CompletionResult(var isIncomplete: Boolean, var items: List<CompletionItem>) {
+open class CompletionResult(var isIncomplete: Boolean, items: List<CompletionItem>) {
+
+    var items = items.subList(0, MAX_ITEMS).toMutableList().apply { sort() }
 
     companion object {
         const val MAX_ITEMS = 50

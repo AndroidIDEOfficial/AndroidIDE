@@ -51,21 +51,7 @@ import io.github.rosemoe.sora.util.MyCharacter;
  * @author Akash Yadav
  */
 public class CommonCompletionProvider {
-
-    private static final Comparator<CompletionItem> RESULT_SORTER =
-            (p1, p2) -> {
-                if (p1 == null && p2 == null) {
-                    return 0;
-                } else if (p1 == null) {
-                    return -1;
-                } else if (p2 == null) {
-                    return 1;
-                }
-
-                String s1 = p1.getSortText() == null ? p1.getLabel() : p1.getSortText();
-                String s2 = p2.getSortText() == null ? p2.getLabel() : p2.getSortText();
-                return s1.compareTo(s2);
-            };
+    
     private static final ILogger LOG = ILogger.newInstance("CommonCompletionProvider");
     private final ILanguageServer server;
     private CompletableFuture<CompletionResult> future;
@@ -130,7 +116,7 @@ public class CommonCompletionProvider {
                         });
 
         try {
-            return finalizeResults(future.get().getItems());
+            return future.get().getItems();
         } catch (Throwable e) {
             // Do not log if completion was interrupted or cancelled
             if (!(e instanceof InterruptedException || e instanceof CompletionCancelledException)) {
@@ -139,12 +125,5 @@ public class CommonCompletionProvider {
 
             return Collections.emptyList();
         }
-    }
-
-    @NonNull
-    @Contract("_ -> param1")
-    private List<CompletionItem> finalizeResults(@NonNull List<CompletionItem> items) {
-        items.sort(RESULT_SORTER);
-        return items;
     }
 }
