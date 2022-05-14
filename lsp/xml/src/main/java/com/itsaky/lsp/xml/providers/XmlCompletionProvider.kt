@@ -17,7 +17,6 @@
 
 package com.itsaky.lsp.xml.providers
 
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.attrinfo.models.Attr
@@ -70,15 +69,14 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
 
     override fun complete(params: CompletionParams): CompletionResult {
         return try {
-            if (params.module == null || params.module !is IdeAndroidModule) {
-                log.warn("Cannot provide completions for file:", params.file)
-                log.warn("Module provided in params is either null or is not an Android module")
-                return EMPTY
-            }
+            // TODO When the completion will be namespace-aware, we will then need to use
+            //   'params.module'
 
+            // val namespace =
+            // INamespace.forPackageName((params.module as IdeAndroidModule).packageName)
+
+            val namespace = INamespace.ANDROID
             val contents = toString(params.requireContents())
-            val namespace =
-                INamespace.forPackageName((params.module as IdeAndroidModule).packageName)
             val document =
                 DOMParser.getInstance()
                     .parse(contents, namespace.uri, URIResolverExtensionManager())
