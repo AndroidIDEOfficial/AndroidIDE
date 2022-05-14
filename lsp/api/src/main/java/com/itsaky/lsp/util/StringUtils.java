@@ -17,18 +17,54 @@
 
 package com.itsaky.lsp.util;
 
+import static com.itsaky.androidide.utils.ILogger.newInstance;
+
+import com.itsaky.androidide.fuzzysearch.FuzzySearch;
+import com.itsaky.androidide.utils.ILogger;
+
+import java.util.Locale;
+
 /**
  * @author Akash Yadav
  */
 public class StringUtils {
 
-    public static boolean matchesPartialName(CharSequence candidate, CharSequence partialName) {
-        return matchesPartialName(candidate, partialName, false);
+    private static final ILogger LOG = newInstance("StringUtils");
+
+    public static boolean matchesFuzzy (CharSequence candidate, CharSequence partialName) {
+        return matchesFuzzy (candidate, partialName, false);
+    }
+    
+    public static boolean matchesFuzzy (
+            CharSequence candidate, CharSequence partialName, boolean allLower) {
+        return fuzzySearchRatio(candidate, partialName, allLower) > 0;
+    }
+
+    public static int fuzzySearchRatio(
+            CharSequence candidate, CharSequence partialName, boolean allLower) {
+
+        if (candidate == null || partialName == null || candidate.length() < partialName.length()) {
+            return 0;
+        }
+
+        var first = candidate.toString();
+        var second = partialName.toString();
+
+        if (allLower) {
+            first = first.toLowerCase(Locale.ROOT);
+            second = first.toLowerCase(Locale.ROOT);
+        }
+
+        return FuzzySearch.partialRatio(first, second);
+    }
+
+    public static boolean matchesPartialName(String name, String partialName) {
+        return matchesPartialName(name, partialName, false);
     }
 
     public static boolean matchesPartialName(
             CharSequence candidate, CharSequence partialName, boolean allLower) {
-        if (candidate.length() < partialName.length()) {
+        if (candidate == null || partialName == null || candidate.length() < partialName.length()) {
             return false;
         }
 

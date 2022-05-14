@@ -62,7 +62,7 @@ public class DimensionSuggestionProvider extends BaseSuggestionProvider {
             var val = extractDimensionVal(prefix);
             for (var unit : this.dimensions) {
                 final var dimension = val + unit;
-                if (StringUtils.matchesPartialName(dimension, prefix, true)) {
+                if (StringUtils.matchesFuzzy (dimension, prefix, true)) {
                     list.add(dimension);
                 }
             }

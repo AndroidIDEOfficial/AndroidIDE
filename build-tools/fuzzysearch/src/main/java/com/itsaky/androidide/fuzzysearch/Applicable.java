@@ -15,16 +15,20 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    id 'java-library'
-}
+package com.itsaky.androidide.fuzzysearch;
 
-java {
-    sourceCompatibility = rootProject.ext.javaSourceVersion
-    targetCompatibility = rootProject.ext.javaTargetVersion
-}
+/**
+ * A ratio/algorithm that can be applied
+ */
+public interface Applicable {
 
-dependencies {
-    implementation google.guava_jre
-    implementation 'org.jetbrains:annotations:23.0.0'
+    /**
+     * Apply the ratio/algorithm to the input strings
+     *
+     * @param s1 Input string
+     * @param s2 Input string
+     * @return The score of similarity
+     */
+    int apply(String s1, String s2);
+
 }

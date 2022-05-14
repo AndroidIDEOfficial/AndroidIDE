@@ -465,16 +465,7 @@ public class StringSearch {
         // TODO fall back on parsing file
         return "";
     }
-
-    public static boolean matchesPartialName(CharSequence candidate, CharSequence partialName) {
-        return StringUtils.matchesPartialName(candidate, partialName, false);
-    }
-
-    public static boolean matchesPartialName(
-            CharSequence candidate, CharSequence partialName, boolean allLower) {
-        return StringUtils.matchesPartialName(candidate, partialName, allLower);
-    }
-
+    
     public static byte[] toByteArray(final Reader reader, final Charset charset)
             throws IOException {
         try (final ByteArrayOutputStream output = new ByteArrayOutputStream()) {

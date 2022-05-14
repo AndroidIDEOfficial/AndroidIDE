@@ -15,16 +15,28 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    id 'java-library'
-}
+package com.itsaky.androidide.fuzzysearch;
 
-java {
-    sourceCompatibility = rootProject.ext.javaSourceVersion
-    targetCompatibility = rootProject.ext.javaTargetVersion
-}
+/**
+ * Transforms the input string
+ *
+ * @deprecated Use {@code ToStringFunction<String>} instead.
+ */
+@Deprecated
+public abstract class StringProcessor implements ToStringFunction<String> {
+// now abstract class because JDK1.7 does not allow default methods in interfaces
+    /**
+     * Transforms the input string
+     *
+     * @deprecated Use {@code ToStringFunction#apply(String)} instead.
+     * @param in Input string
+     * @return The processed string
+     */
+    @Deprecated
+    public abstract String process(String in);
 
-dependencies {
-    implementation google.guava_jre
-    implementation 'org.jetbrains:annotations:23.0.0'
+    @Override
+    public String apply(String item) {
+        return process(item);
+    }
 }

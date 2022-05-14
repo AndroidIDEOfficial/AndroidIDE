@@ -25,6 +25,7 @@ import com.itsaky.lsp.api.ICompletionProvider
 import com.itsaky.lsp.api.IServerSettings
 import com.itsaky.lsp.models.CompletionData
 import com.itsaky.lsp.models.CompletionItem
+import com.itsaky.lsp.models.CompletionItem.Companion.sortTextForMatchRatio
 import com.itsaky.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.lsp.models.CompletionItemKind.VALUE
 import com.itsaky.lsp.models.CompletionParams
@@ -44,6 +45,7 @@ import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
 import java.io.IOException
 import java.io.Reader
+import kotlin.math.max
 import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
@@ -150,20 +152,32 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
         val attribute = sdkInfo.attrInfo.getAttribute(name) ?: return EMPTY
         val items = mutableListOf<CompletionItem>()
         for (value in attribute.possibleValues) {
-            if (StringUtils.matchesPartialName(value, prefix, settings.shouldMatchAllLowerCase())) {
-                items.add(createAttrValueCompletionItem(attr.name, value))
+            val matchRatio =
+                StringUtils.fuzzySearchRatio(value, prefix, settings.shouldMatchAllLowerCase())
+
+            // It might happen that the completion request is triggered but the prefix is empty
+            // For example, a completion request is triggered when the user selects an attribute
+            // completion item.
+            // In such cases, 'prefix' is an empty string.
+            // So, we still have to provide completions
+            if (prefix.isEmpty() || matchRatio > 0) {
+                items.add(createAttrValueCompletionItem(attr.name, value, matchRatio))
             }
         }
-        
+
         return CompletionResult(false, items)
     }
 
-    private fun createAttrValueCompletionItem(attrName: String, value: String): CompletionItem {
+    private fun createAttrValueCompletionItem(
+        attrName: String,
+        value: String,
+        matchRatio: Int
+    ): CompletionItem {
         return CompletionItem().apply {
             label = value
             detail = "Value for '$attrName'"
             kind = VALUE
-            sortText = "0$label"
+            sortText = sortTextForMatchRatio(matchRatio, label)
             insertText = label.toString()
             insertTextFormat = PLAIN_TEXT
         }
@@ -175,11 +189,15 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
         val result = mutableListOf<CompletionItem>()
 
         for (widget in widgets) {
-            if (StringUtils.matchesPartialName(
-                widget.simpleName, prefix, settings.shouldMatchAllLowerCase()) ||
-                StringUtils.matchesPartialName(
-                    widget.name, prefix, settings.shouldMatchAllLowerCase())) {
-                result.add(createTagCompletionItem(widget))
+            val simpleNameMatchRatio =
+                StringUtils.fuzzySearchRatio(
+                    widget.simpleName, prefix, settings.shouldMatchAllLowerCase())
+            val nameMatchRatio =
+                StringUtils.fuzzySearchRatio(
+                    widget.name, prefix, settings.shouldMatchAllLowerCase())
+            if (simpleNameMatchRatio > 0 || nameMatchRatio > 0) {
+                result.add(
+                    createTagCompletionItem(widget, max(simpleNameMatchRatio, nameMatchRatio)))
 
                 if (result.size == CompletionResult.MAX_ITEMS) {
                     isIncomplete = true
@@ -191,13 +209,13 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
         return CompletionResult(isIncomplete, result)
     }
 
-    private fun createTagCompletionItem(widget: Widget): CompletionItem =
+    private fun createTagCompletionItem(widget: Widget, matchRatio: Int): CompletionItem =
         CompletionItem().apply {
             label = widget.simpleName
             detail = widget.name
             insertText = label as String
             insertTextFormat = PLAIN_TEXT
-            sortText = "2$label"
+            sortText = sortTextForMatchRatio(matchRatio, label)
             kind = CLASS
             data = CompletionData().apply { className = widget.name }
         }

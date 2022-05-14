@@ -40,6 +40,8 @@ android {
 
 dependencies {
     implementation common.editor
+    implementation project (':build-tools:fuzzysearch')
+    
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     

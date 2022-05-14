@@ -58,12 +58,12 @@ data class CompletionResult(var isIncomplete: Boolean, var items: List<Completio
     }
 }
 
-data class CompletionItem(
+open class CompletionItem(
     @JvmField var label: String,
     var detail: String,
     var insertText: String?,
     var insertTextFormat: InsertTextFormat?,
-    var sortText: String?,
+    sortText: String?,
     var command: Command?,
     var kind: CompletionItemKind,
     var additionalTextEdits: List<TextEdit>?,
@@ -71,10 +71,33 @@ data class CompletionItem(
 ) :
     io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail),
     Comparable<CompletionItem> {
-    constructor() : this("", "", null, null, null, null, CompletionItemKind.NONE, ArrayList(), null)
+
+    var sortText: String? = sortText
+        get() {
+            if (field == null) {
+                return "$kind$label"
+            }
+
+            return "${kind.sortIndex}$field"
+        }
+
+    constructor() :
+        this(
+            "", // label
+            "", // detail
+            null, // insertText
+            null, // insertTextFormat
+            null, // sortText
+            null, // command
+            CompletionItemKind.NONE, // kind
+            ArrayList(), // additionalEdits
+            null // data
+            )
 
     companion object {
         private val LOG = ILogger.newInstance("CompletionItem")
+
+        @JvmStatic fun sortTextForMatchRatio(ratio: Int, text: CharSequence) = "${100-ratio}$text"
     }
 
     fun setLabel(label: String) {
