@@ -34,6 +34,7 @@ import com.itsaky.lsp.models.CompletionItemKind.VALUE
 import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.models.CompletionResult
 import com.itsaky.lsp.models.CompletionResult.Companion.EMPTY
+import com.itsaky.lsp.models.InsertTextFormat.SNIPPET
 import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.util.StringUtils
 import com.itsaky.lsp.xml.utils.XmlUtils
@@ -46,12 +47,12 @@ import com.itsaky.sdk.SDKInfo
 import com.itsaky.widgets.models.Widget
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
-import org.eclipse.lemminx.dom.DOMDocument
-import org.eclipse.lemminx.dom.DOMParser
-import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 import java.io.IOException
 import java.io.Reader
 import kotlin.math.max
+import org.eclipse.lemminx.dom.DOMDocument
+import org.eclipse.lemminx.dom.DOMParser
+import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
 /**
  * Completion provider for XMl files.
@@ -149,7 +150,8 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
                     widget.name, prefix, settings.shouldMatchAllLowerCase())
             if (simpleNameMatchRatio > 0 || nameMatchRatio > 0) {
                 result.add(
-                    createTagCompletionItem(widget, prefix, max(simpleNameMatchRatio, nameMatchRatio)))
+                    createTagCompletionItem(
+                        widget, prefix, max(simpleNameMatchRatio, nameMatchRatio)))
             }
         }
 
@@ -209,7 +211,11 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
         return CompletionResult(items)
     }
 
-    private fun createTagCompletionItem(widget: Widget, prefix: CharSequence, matchRatio: Int): CompletionItem =
+    private fun createTagCompletionItem(
+        widget: Widget,
+        prefix: CharSequence,
+        matchRatio: Int
+    ): CompletionItem =
         CompletionItem().apply {
             label = widget.simpleName
             detail = widget.name
@@ -218,11 +224,17 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
             data = CompletionData().apply { className = widget.name }
         }
 
-    private fun createAttrCompletionItem(attr: Attr, prefix: CharSequence, matchRatio: Int): CompletionItem =
+    private fun createAttrCompletionItem(
+        attr: Attr,
+        prefix: CharSequence,
+        matchRatio: Int
+    ): CompletionItem =
         CompletionItem().apply {
             label = attr.name
             kind = FIELD
             detail = "From package '${attr.namespace.packageName}'"
+            insertText = "${attr.namespace.prefix}:${attr.name}=\"$0\""
+            insertTextFormat = SNIPPET
             sortText = sortTextForMatchRatio(matchRatio, label, prefix)
             command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
         }
