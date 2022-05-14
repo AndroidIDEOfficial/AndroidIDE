@@ -23,7 +23,6 @@ import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
-import kotlin.math.max
 
 data class CompletionParams(var position: Position, var file: Path) {
     var content: CharSequence? = null
@@ -48,7 +47,11 @@ data class CompletionParams(var position: Position, var file: Path) {
 
 open class CompletionResult(var isIncomplete: Boolean, items: List<CompletionItem>) {
 
-    var items = items.subList(0, max(MAX_ITEMS, items.size)).toMutableList().apply { sort() }
+    var items =
+        items
+            .subList(0, if (items.size < MAX_ITEMS) items.size else MAX_ITEMS)
+            .toMutableList()
+            .apply { sort() }
 
     companion object {
         const val MAX_ITEMS = 50
