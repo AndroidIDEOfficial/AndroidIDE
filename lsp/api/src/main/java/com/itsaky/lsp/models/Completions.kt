@@ -19,6 +19,7 @@ package com.itsaky.lsp.models
 
 import com.itsaky.androidide.tooling.api.model.IdeModule
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
@@ -63,8 +64,8 @@ open class CompletionResult(var isIncomplete: Boolean, items: List<CompletionIte
 open class CompletionItem(
     @JvmField var label: String,
     var detail: String,
-    var insertText: String?,
-    var insertTextFormat: InsertTextFormat?,
+    insertText: String?,
+    insertTextFormat: InsertTextFormat?,
     sortText: String?,
     var command: Command?,
     var kind: CompletionItemKind,
@@ -82,6 +83,17 @@ open class CompletionItem(
 
             return "${kind.sortIndex}$field"
         }
+
+    var insertText: String = insertText ?: ""
+        get() {
+            if (field.isEmpty()) {
+                return this.label.toString()
+            }
+
+            return field
+        }
+
+    var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
 
     constructor() :
         this(
