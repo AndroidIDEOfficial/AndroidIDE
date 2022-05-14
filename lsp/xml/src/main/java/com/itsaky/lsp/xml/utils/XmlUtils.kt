@@ -161,8 +161,8 @@ object XmlUtils {
                     return rootElement.getPrefix(namespaceUri)
                 }
 
-                override fun findUri(@NonNull namespacePrefix: String?): String? {
-                    val xmlns = rootElement.getAttributeNode("xmlns", namespacePrefix)
+                override fun findUri(@NonNull prefix: String?): String? {
+                    val xmlns = rootElement.getAttributeNode("xmlns", prefix)
                     return xmlns?.value
                 }
             }

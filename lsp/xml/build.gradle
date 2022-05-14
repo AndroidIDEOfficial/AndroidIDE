@@ -53,6 +53,7 @@ dependencies {
     implementation common.utilcode
     
     implementation project (':lsp:api')
+    implementation project (':lexers')
     implementation project (':build-tools:xml-dom')
     implementation project (':build-tools:xml-formatter')
     implementation project (':sdk-info')
@@ -71,7 +72,6 @@ dependencies {
     androidTestImplementation tests.androidx_espresso
     androidTestImplementation tests.google_truth
     
-    compileOnly project (':lexers')
     compileOnly project (':common')
     
     compileOnly common.antlr4

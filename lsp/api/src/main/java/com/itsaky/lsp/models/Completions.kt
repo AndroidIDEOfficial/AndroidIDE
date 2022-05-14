@@ -48,6 +48,7 @@ data class CompletionResult(var isIncomplete: Boolean, var items: List<Completio
 
     companion object {
         const val MAX_ITEMS = 50
+        @JvmField val EMPTY = CompletionResult()
     }
 
     constructor() : this(false, ArrayList<CompletionItem>())

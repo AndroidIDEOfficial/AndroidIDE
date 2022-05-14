@@ -26,9 +26,12 @@ import com.itsaky.lsp.api.IServerSettings
 import com.itsaky.lsp.models.CompletionData
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionItemKind.CLASS
+import com.itsaky.lsp.models.CompletionItemKind.VALUE
 import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.models.CompletionResult
+import com.itsaky.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
+import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.util.StringUtils
 import com.itsaky.lsp.xml.utils.XmlUtils
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType
@@ -39,11 +42,11 @@ import com.itsaky.sdk.SDKInfo
 import com.itsaky.widgets.models.Widget
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
+import java.io.IOException
+import java.io.Reader
 import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
-import java.io.IOException
-import java.io.Reader
 
 /**
  * Completion provider for XMl files.
@@ -65,7 +68,7 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
             if (params.module == null || params.module !is IdeAndroidModule) {
                 log.warn("Cannot provide completions for file:", params.file)
                 log.warn("Module provided in params is either null or is not an Android module")
-                return CompletionResult()
+                return EMPTY
             }
 
             val contents = toString(params.requireContents())
@@ -78,17 +81,16 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
 
             if (type == UNKNOWN) {
                 log.warn("Unknown node type. CompletionParams:", params)
-                return CompletionResult()
+                return EMPTY
             }
 
             val prefix =
-                XmlUtils.getPrefix(document, params.position.requireIndex(), type)
-                    ?: return CompletionResult()
+                XmlUtils.getPrefix(document, params.position.requireIndex(), type) ?: return EMPTY
 
             completeImpl(params, document, prefix, type)
         } catch (error: Throwable) {
             log.error("An error occurred while computing XML completions", error)
-            CompletionResult()
+            EMPTY
         }
     }
 
@@ -116,7 +118,6 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
         prefix: String,
         type: NodeType,
     ): CompletionResult {
-        val index = params.position.requireIndex()
         return when (type) {
             TAG ->
                 completeTags(
@@ -126,14 +127,46 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
                         prefix
                     })
             //            ATTRIBUTE -> completeAttributes(document, prefix)
-            ATTRIBUTE_VALUE -> completeAttributeValue(document, prefix)
-            else -> CompletionResult()
+            ATTRIBUTE_VALUE -> completeAttributeValue(document, prefix, params.position)
+            else -> EMPTY
         }
     }
 
-    private fun completeAttributeValue(document: DOMDocument, prefix: String): CompletionResult {
+    private fun completeAttributeValue(
+        document: DOMDocument,
+        prefix: String,
+        position: Position
+    ): CompletionResult {
         val resolver = XmlUtils.getNamespaceResolver(document)
-        return CompletionResult()
+        val attr = document.findAttrAt(position.requireIndex())
+        val uri = attr.namespaceURI
+
+        // TODO Provide attribute values based on namespace URI
+        //   For example, if the namespace of this attribute refers to a library dependency/module,
+        //   check for values in the respective module
+        //   Currently, only the attributes from the 'android' package name are suggested
+
+        val name = attr.localName ?: return EMPTY
+        val attribute = sdkInfo.attrInfo.getAttribute(name) ?: return EMPTY
+        val items = mutableListOf<CompletionItem>()
+        for (value in attribute.possibleValues) {
+            if (StringUtils.matchesPartialName(value, prefix, settings.shouldMatchAllLowerCase())) {
+                items.add(createAttrValueCompletionItem(attr.name, value))
+            }
+        }
+        
+        return CompletionResult(false, items)
+    }
+
+    private fun createAttrValueCompletionItem(attrName: String, value: String): CompletionItem {
+        return CompletionItem().apply {
+            label = value
+            detail = "Value for '$attrName'"
+            kind = VALUE
+            sortText = "0$label"
+            insertText = label.toString()
+            insertTextFormat = PLAIN_TEXT
+        }
     }
 
     private fun completeTags(prefix: String): CompletionResult {

@@ -108,7 +108,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             if (!(e instanceof CompletionCancelledException)) {
                 LOG.error("Unable to provide XML completions");
             }
-            return EMPTY;
+            return CompletionResult.EMPTY;
         }
     }
 
@@ -146,7 +146,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             final String fileType,
             final int index) {
         if (fileType == null) {
-            return EMPTY;
+            return CompletionResult.EMPTY;
         }
 
         final var matchLower = getSettings().shouldMatchAllLowerCase();

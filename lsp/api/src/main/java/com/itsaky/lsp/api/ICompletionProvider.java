@@ -48,9 +48,7 @@ import java.nio.file.Path;
  * @author Akash Yadav
  */
 public interface ICompletionProvider {
-
-    CompletionResult EMPTY = new CompletionResult();
-
+    
     default boolean canComplete(Path file) {
         return file != null && Files.exists(file) && !Files.isDirectory(file);
     }

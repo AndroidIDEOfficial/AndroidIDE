@@ -81,11 +81,11 @@ public interface INamespace extends Parcelable {
      */
     String getUri();
 
-    public static interface Resolver {
-        public static Resolver EMPTY =
+    interface Resolver {
+        Resolver EMPTY =
                 new Resolver() {
                     @Override
-                    public String findUri(String namespace) {
+                    public String findUri(String prefix) {
                         return null;
                     }
 
@@ -95,7 +95,7 @@ public interface INamespace extends Parcelable {
                     }
                 };
 
-        String findUri(String namespace);
+        String findUri(String prefix);
 
         String findPrefix(String uri);
     }

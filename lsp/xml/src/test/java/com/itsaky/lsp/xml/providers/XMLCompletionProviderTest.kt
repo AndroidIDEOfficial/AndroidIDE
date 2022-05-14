@@ -20,7 +20,6 @@ package com.itsaky.lsp.xml.providers
 import com.google.common.truth.Truth.assertThat
 import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.xml.BaseXMLTest
-import kotlin.streams.toList
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -35,21 +34,47 @@ class XMLCompletionProviderTest : BaseXMLTest() {
     fun testTagCompletion() {
         openFile("TagCompletion")
 
+        val (isIncomplete, items) = complete()
+
+        assertThat(isIncomplete).isFalse()
+        assertThat(items).isNotEmpty()
+
+        assertThat(items).containsAtLeast("ImageView", "ImageButton")
+    }
+
+    @Test
+    fun testAttrValueCompletion() {
+        openFile("AttributeValueCompletion")
+
+        val (isIncomplete, items) = complete()
+
+        assertThat(isIncomplete).isFalse()
+        assertThat(items).isNotEmpty()
+
+        assertThat(items).containsAtLeast("center", "fitCenter", "fitXY", "matrix")
+    }
+
+    override fun openFile(fileName: String) {
+        super.openFile("completion/${fileName}")
+    }
+
+    private fun complete(): Pair<Boolean, List<String>> {
+        val createCompletionParams = createCompletionParams()
+        val result = mServer.completionProvider.complete(createCompletionParams)
+        return result.isIncomplete to
+            result.items
+                .filter { it.label != null }
+                .map { it.label.toString() }
+                .filter { it.isNotBlank() }
+                .toList()
+    }
+
+    private fun createCompletionParams(): CompletionParams {
         val cursor = cursorPosition(true)
         val completionParams = CompletionParams(cursor, file!!)
         completionParams.module = mockModuleProject()
         completionParams.position.index = this.cursor
         completionParams.content = contents
-        val (isIncomplete, items) = mServer.completionProvider.complete(completionParams)
-
-        assertThat(isIncomplete).isFalse()
-        assertThat(items).isNotEmpty()
-
-        assertThat(items.stream().map { it.label }.toList())
-            .containsAtLeast("ImageView", "ImageButton")
-    }
-
-    override fun openFile(fileName: String) {
-        super.openFile("completion/${fileName}")
+        return completionParams
     }
 }

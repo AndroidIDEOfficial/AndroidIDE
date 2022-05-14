@@ -194,7 +194,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         contents.insert(endOfLine, ';');
         CompletionResult list = compileAndComplete(file, contents.toString(), cursor);
         if (list == null) {
-            list = new CompletionResult();
+            list = CompletionResult.EMPTY;
         }
 
         addTopLevelSnippets(task, list);
@@ -504,13 +504,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             return completeDeclaredTypeMemberSelect(
                     task, scope, (DeclaredType) type, isStatic, partial, endsWithParen);
         } else {
-            return EMPTY;
+            return CompletionResult.EMPTY;
         }
     }
 
     private CompletionResult completeArrayMemberSelect(boolean isStatic) {
         if (isStatic) {
-            return EMPTY;
+            return CompletionResult.EMPTY;
         } else {
             CompletionResult list = new CompletionResult();
             list.getItems().add(keyword("length"));
@@ -542,7 +542,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                     partial,
                     endsWithParen);
         } else {
-            return EMPTY;
+            return CompletionResult.EMPTY;
         }
     }
 
@@ -623,7 +623,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             return completeDeclaredTypeMemberReference(
                     task, scope, (DeclaredType) type, isStatic, partial);
         } else {
-            return EMPTY;
+            return CompletionResult.EMPTY;
         }
     }
 
@@ -633,7 +633,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             list.getItems().add(keyword("new"));
             return list;
         } else {
-            return EMPTY;
+            return CompletionResult.EMPTY;
         }
     }
 
@@ -650,7 +650,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             return completeTypeVariableMemberReference(
                     task, scope, (TypeVariable) type.getUpperBound(), isStatic, partial);
         } else {
-            return EMPTY;
+            return CompletionResult.EMPTY;
         }
     }
 

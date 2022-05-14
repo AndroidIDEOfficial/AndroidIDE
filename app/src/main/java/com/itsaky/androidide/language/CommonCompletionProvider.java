@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionParams;
@@ -114,7 +113,7 @@ public class CommonCompletionProvider {
                             final var completer = server.getCompletionProvider();
 
                             if (!completer.canComplete(file)) {
-                                return ICompletionProvider.EMPTY;
+                                return CompletionResult.EMPTY;
                             }
 
                             final var params =
