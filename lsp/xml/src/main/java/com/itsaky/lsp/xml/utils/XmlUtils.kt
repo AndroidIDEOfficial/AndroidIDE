@@ -16,12 +16,15 @@
  */
 package com.itsaky.lsp.xml.utils
 
+import androidx.annotation.NonNull
+import androidx.annotation.Nullable
 import com.itsaky.androidide.lexers.xml.XMLLexer
 import com.itsaky.androidide.utils.CharSequenceReader
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.TAG
+import com.itsaky.xml.INamespace.Resolver
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.Token
 import org.eclipse.lemminx.dom.DOMDocument
@@ -30,9 +33,14 @@ import org.eclipse.lemminx.dom.DOMNode
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import org.xmlpull.v1.XmlPullParserFactory
+import java.util.*
 
 /** @author Akash Yadav */
 object XmlUtils {
+
+    private val NAMESPACE_RESOLVER_KEY: String = "namespaceResolver"
+    private val caches: WeakHashMap<DOMNode, MutableMap<String, Any>> = WeakHashMap()
+
     private val LOG = ILogger.newInstance("XmlUtils")
     private val parserFactory: XmlPullParserFactory =
         try {
@@ -126,6 +134,53 @@ object XmlUtils {
             ATTRIBUTE_VALUE
         } else {
             ATTRIBUTE
+        }
+    }
+
+    @Nullable
+    fun getRootElement(@NonNull document: DOMDocument): DOMElement? {
+        val roots = document.roots
+        for (root in roots) {
+            if (root is DOMElement) {
+                return root
+            }
+        }
+        return null
+    }
+
+    fun getNamespaceResolver(document: DOMDocument): Resolver {
+        val rootElement = getRootElement(document) ?: return Resolver.EMPTY
+        val userData: Any? = retrieveCache(rootElement, NAMESPACE_RESOLVER_KEY)
+        if (userData is Resolver) {
+            return userData
+        }
+
+        val resolver: Resolver =
+            object : Resolver {
+                override fun findPrefix(@NonNull namespaceUri: String?): String? {
+                    return rootElement.getPrefix(namespaceUri)
+                }
+
+                override fun findUri(@NonNull namespacePrefix: String?): String? {
+                    val xmlns = rootElement.getAttributeNode("xmlns", namespacePrefix)
+                    return xmlns?.value
+                }
+            }
+
+        updateCache(rootElement, NAMESPACE_RESOLVER_KEY, resolver)
+        return resolver
+    }
+
+    private fun retrieveCache(node: DOMNode?, key: String): Any? {
+        val map = caches[node] ?: return null
+        return map[key]
+    }
+
+    private fun updateCache(@NonNull node: DOMNode?, @NonNull key: String, value: Any) {
+        caches.computeIfAbsent(node) { HashMap() }
+        val map: MutableMap<String, Any>? = caches[node]
+        if (map != null) {
+            map[key] = value
         }
     }
 

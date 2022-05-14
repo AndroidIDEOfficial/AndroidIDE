@@ -52,15 +52,11 @@ public class AttrInfo {
     public final Map<String, Attr> attributes = new HashMap<>();
     public final Styleable NO_PARENT;
 
-    public AttrInfo(@NonNull final Context context) throws Exception {
-        this(context.getResources());
-    }
-
-    public AttrInfo(final Resources resources) throws Exception {
+    public AttrInfo(@NonNull final Resources resources) throws Exception {
         NO_PARENT = new Styleable("<unknown_parent>");
-
+    
         Objects.requireNonNull(resources, "Cannot read from null resources.");
-
+    
         final var in = resources.openRawResource(R.raw.attrs);
         parseFromStream(in);
     }

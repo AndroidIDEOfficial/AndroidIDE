@@ -17,7 +17,6 @@
  */
 package com.itsaky.widgets;
 
-import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
@@ -38,34 +37,10 @@ public class WidgetInfo {
     private final SortedMap<String, Widget> widgets;
     private final SortedMap<String, String[]> params;
 
-    public WidgetInfo(@NonNull final Context ctx) throws IOException {
+    public WidgetInfo(@NonNull final Resources resources) throws IOException {
         this.widgets = new TreeMap<>();
         this.params = new TreeMap<>();
-        readWidgets(ctx.getResources());
-    }
-
-    public Widget getWidget(String name) {
-        return this.widgets.getOrDefault(name, null);
-    }
-
-    @Nullable
-    public Widget getWidgetBySimpleName(@NonNull final String name) {
-        for (final var entry : this.widgets.entrySet()) {
-            final var key = entry.getKey();
-            final var simple = key.substring(key.lastIndexOf(".") + 1);
-            if (simple.equals(name)) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
-    public Collection<Widget> getWidgets() {
-        return this.widgets.values();
-    }
-
-    public String[] getLayoutParamSuperClasses(final String className) {
-        return this.params.get(className);
+        readWidgets(resources);
     }
 
     private void readWidgets(@NonNull final Resources resources) throws IOException {
@@ -100,5 +75,29 @@ public class WidgetInfo {
                 widgets.put(entryName, widget);
             }
         }
+    }
+
+    public Widget getWidget(String name) {
+        return this.widgets.getOrDefault(name, null);
+    }
+
+    @Nullable
+    public Widget getWidgetBySimpleName(@NonNull final String name) {
+        for (final var entry : this.widgets.entrySet()) {
+            final var key = entry.getKey();
+            final var simple = key.substring(key.lastIndexOf(".") + 1);
+            if (simple.equals(name)) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    public Collection<Widget> getWidgets() {
+        return this.widgets.values();
+    }
+
+    public String[] getLayoutParamSuperClasses(final String className) {
+        return this.params.get(className);
     }
 }

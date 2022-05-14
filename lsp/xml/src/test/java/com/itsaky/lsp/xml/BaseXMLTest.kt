@@ -15,13 +15,22 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java
+package com.itsaky.lsp.xml
 
+import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.lsp.api.CursorDependentTest
 import com.itsaky.lsp.api.ILanguageServer
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 
 /** @author Akash Yadav */
-open class BaseJavaTest : CursorDependentTest() {
-    protected val mServer = JavaLanguageServerProvider.INSTANCE.server()
+open class BaseXMLTest : CursorDependentTest() {
+    protected val mServer = XmlLanguageServerProvider.INSTANCE.server()
     override fun getServer(): ILanguageServer = mServer
+
+    protected fun mockModuleProject(): IdeAndroidModule {
+        val mocked = mock(IdeAndroidModule::class.java)
+        `when`(mocked.packageName).thenReturn("com.itsaky.androidide.test")
+        return mocked
+    }
 }

@@ -40,6 +40,12 @@ android {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion
     }
+    
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -49,13 +55,24 @@ dependencies {
     implementation project (':lsp:api')
     implementation project (':build-tools:xml-dom')
     implementation project (':build-tools:xml-formatter')
+    implementation project (':sdk-info')
     
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     
+    testImplementation project (':lsp:testing')
+    testImplementation project (':common')
+    testImplementation project (':actions')
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    testImplementation tests.robolectric
+    testImplementation tests.mockito
+    androidTestImplementation tests.androidx_junit
+    androidTestImplementation tests.androidx_espresso
+    androidTestImplementation tests.google_truth
+    
     compileOnly project (':lexers')
     compileOnly project (':common')
-    compileOnly project (':sdk-info')
     
     compileOnly common.antlr4
 }

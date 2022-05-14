@@ -80,4 +80,23 @@ public interface INamespace extends Parcelable {
      * @return The uri of this namespace.
      */
     String getUri();
+
+    public static interface Resolver {
+        public static Resolver EMPTY =
+                new Resolver() {
+                    @Override
+                    public String findUri(String namespace) {
+                        return null;
+                    }
+
+                    @Override
+                    public String findPrefix(String uri) {
+                        return null;
+                    }
+                };
+
+        String findUri(String namespace);
+
+        String findPrefix(String uri);
+    }
 }

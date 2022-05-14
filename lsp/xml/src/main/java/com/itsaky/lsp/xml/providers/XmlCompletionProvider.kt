@@ -32,17 +32,18 @@ import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
 import com.itsaky.lsp.util.StringUtils
 import com.itsaky.lsp.xml.utils.XmlUtils
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType
+import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE_VALUE
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.TAG
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.UNKNOWN
 import com.itsaky.sdk.SDKInfo
 import com.itsaky.widgets.models.Widget
 import com.itsaky.xml.INamespace
 import io.github.rosemoe.sora.text.ContentReference
-import java.io.IOException
-import java.io.Reader
 import org.eclipse.lemminx.dom.DOMDocument
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
+import java.io.IOException
+import java.io.Reader
 
 /**
  * Completion provider for XMl files.
@@ -125,9 +126,14 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
                         prefix
                     })
             //            ATTRIBUTE -> completeAttributes(document, prefix)
-            //            ATTRIBUTE_VALUE -> completeAttributeValue(document, prefix)
+            ATTRIBUTE_VALUE -> completeAttributeValue(document, prefix)
             else -> CompletionResult()
         }
+    }
+
+    private fun completeAttributeValue(document: DOMDocument, prefix: String): CompletionResult {
+        val resolver = XmlUtils.getNamespaceResolver(document)
+        return CompletionResult()
     }
 
     private fun completeTags(prefix: String): CompletionResult {
@@ -137,7 +143,7 @@ class XmlCompletionProvider(val sdkInfo: SDKInfo, settings: IServerSettings) :
 
         for (widget in widgets) {
             if (StringUtils.matchesPartialName(
-                widget.name, prefix, settings.shouldMatchAllLowerCase()) ||
+                widget.simpleName, prefix, settings.shouldMatchAllLowerCase()) ||
                 StringUtils.matchesPartialName(
                     widget.name, prefix, settings.shouldMatchAllLowerCase())) {
                 result.add(createTagCompletionItem(widget))

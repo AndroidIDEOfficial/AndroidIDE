@@ -15,13 +15,29 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.lsp.java
+package com.itsaky.lsp.xml
 
-import com.itsaky.lsp.api.CursorDependentTest
 import com.itsaky.lsp.api.ILanguageServer
+import com.itsaky.lsp.api.LanguageServerProvider
+import com.itsaky.sdk.SDKInfo
+import org.robolectric.Robolectric
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
 /** @author Akash Yadav */
-open class BaseJavaTest : CursorDependentTest() {
-    protected val mServer = JavaLanguageServerProvider.INSTANCE.server()
-    override fun getServer(): ILanguageServer = mServer
+class XmlLanguageServerProvider : LanguageServerProvider() {
+    private val server = XMLLanguageServer()
+    override fun getServer(): ILanguageServer = server
+
+    override fun initIfNecessary() {
+        super.initIfNecessary()
+
+        if (server.isInitialized && server.sdkInfo == null) {
+            val application = RuntimeEnvironment.getApplication()
+            server.setupSDK(SDKInfo(application.resources))
+        }
+    }
+    companion object {
+        @JvmField val INSTANCE = XmlLanguageServerProvider()
+    }
 }

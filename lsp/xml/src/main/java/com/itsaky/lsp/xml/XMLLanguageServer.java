@@ -18,6 +18,7 @@
 package com.itsaky.lsp.xml;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
 
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
@@ -56,7 +57,10 @@ import java.util.List;
 public class XMLLanguageServer implements ILanguageServer {
 
     private final IDocumentHandler documentHandler = new NoDocumentHandler();
-    private SDKInfo sdkInfo;
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public SDKInfo sdkInfo;
+
     private ILanguageClient client;
     private IServerSettings settings;
     private boolean initialized = false;

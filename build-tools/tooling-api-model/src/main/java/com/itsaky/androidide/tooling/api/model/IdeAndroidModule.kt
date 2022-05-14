@@ -36,7 +36,7 @@ import java.io.Serializable
  *
  * @author Akash Yadav
  */
-class IdeAndroidModule(
+open class IdeAndroidModule(
     name: String?,
     path: String?,
     description: String?,
@@ -62,7 +62,7 @@ class IdeAndroidModule(
 
     
     private var shouldLookupPackage = true
-    var packageName: String = UNKNOWN_PACKAGE
+    open var packageName: String = UNKNOWN_PACKAGE
         get() {
             if (field == UNKNOWN_PACKAGE && shouldLookupPackage) {
                 findPackageName ()
