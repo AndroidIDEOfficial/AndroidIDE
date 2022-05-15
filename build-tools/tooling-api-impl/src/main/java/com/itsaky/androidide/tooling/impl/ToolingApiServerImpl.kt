@@ -60,7 +60,8 @@ import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
  *
  * @author Akash Yadav
  */
-internal class ToolingApiServerImpl (val forwardingProject: InternalForwardingProject) : IToolingApiServer {
+internal class ToolingApiServerImpl(private val forwardingProject: InternalForwardingProject) :
+    IToolingApiServer {
 
     private var initialized = false
     private var client: IToolingApiClient? = null
