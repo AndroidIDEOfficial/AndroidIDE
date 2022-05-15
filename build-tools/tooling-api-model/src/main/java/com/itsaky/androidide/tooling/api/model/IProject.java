@@ -17,8 +17,6 @@
 
 package com.itsaky.androidide.tooling.api.model;
 
-import com.itsaky.androidide.tooling.api.messages.FindProjectParams;
-
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
 import org.eclipse.lsp4j.jsonrpc.services.JsonSegment;
 import org.jetbrains.annotations.NotNull;
@@ -69,7 +67,7 @@ public interface IProject {
 
     @NotNull
     @JsonRequest
-    CompletableFuture<IdeGradleProject> findByPath(FindProjectParams params);
+    CompletableFuture<IdeGradleProject> findByPath(@NotNull String path);
 
     @NotNull
     @JsonRequest

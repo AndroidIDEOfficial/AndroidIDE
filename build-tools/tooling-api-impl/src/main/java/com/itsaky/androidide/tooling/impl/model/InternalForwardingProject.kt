@@ -17,36 +17,51 @@
 
 package com.itsaky.androidide.tooling.impl.model
 
-import com.itsaky.androidide.tooling.api.messages.FindProjectParams
 import com.itsaky.androidide.tooling.api.model.IProject
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
+import com.itsaky.androidide.utils.ILogger
 import java.io.File
 import java.util.concurrent.*
 
 /** @author Akash Yadav */
 class InternalForwardingProject(var project: IProject?) : IProject {
-    override fun getName(): CompletableFuture<String> =
-        this.project?.name ?: CompletableFuture.completedFuture("")
+
+    private val log = ILogger.newInstance(javaClass.simpleName)
+
+    override fun getName(): CompletableFuture<String> {
+        log.debug("getName", "this.project", this.project)
+        return if (this.project != null) this.project!!.name else CompletableFuture.completedFuture("")
+    }
     override fun getDescription(): CompletableFuture<String> =
-        this.project?.description ?: CompletableFuture.completedFuture("")
+        if (this.project != null) this.project!!.description
+        else CompletableFuture.completedFuture("")
     override fun getProjectPath(): CompletableFuture<String> =
-        this.project?.projectPath ?: CompletableFuture.completedFuture("")
+        if (this.project != null) this.project!!.projectPath
+        else CompletableFuture.completedFuture("")
     override fun getProjectDir(): CompletableFuture<File> =
-        this.project?.projectDir ?: CompletableFuture.completedFuture(File("."))
+        if (this.project != null) this.project!!.projectDir
+        else CompletableFuture.completedFuture(File("."))
     override fun getBuildDir(): CompletableFuture<File> =
-        this.project?.buildDir ?: CompletableFuture.completedFuture(File("."))
+        if (this.project != null) this.project!!.buildDir
+        else CompletableFuture.completedFuture(File("."))
     override fun getBuildScript(): CompletableFuture<File> =
-        this.project?.buildScript ?: CompletableFuture.completedFuture(File("."))
+        if (this.project != null) this.project!!.buildScript
+        else CompletableFuture.completedFuture(File("."))
     override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> =
-        this.project?.tasks ?: CompletableFuture.completedFuture(mutableListOf())
+        if (this.project != null) this.project!!.tasks
+        else CompletableFuture.completedFuture(mutableListOf())
     override fun getModules(): CompletableFuture<MutableList<IdeGradleProject>> =
-        this.project?.modules ?: CompletableFuture.completedFuture(mutableListOf())
-    override fun findByPath(params: FindProjectParams): CompletableFuture<IdeGradleProject?> =
-        this.project?.findByPath(params) ?: CompletableFuture.completedFuture(null)
+        if (this.project != null) this.project!!.modules
+        else CompletableFuture.completedFuture(mutableListOf())
+    override fun findByPath(path: String): CompletableFuture<IdeGradleProject?> =
+        if (this.project != null) this.project!!.findByPath(path)
+        else CompletableFuture.completedFuture(null)
     override fun findAndroidModules(): CompletableFuture<MutableList<IdeAndroidModule>> =
-        this.project?.findAndroidModules() ?: CompletableFuture.completedFuture(mutableListOf())
+        if (this.project != null) this.project!!.findAndroidModules()
+        else CompletableFuture.completedFuture(mutableListOf())
     override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> =
-        this.project?.findFirstAndroidModule() ?: CompletableFuture.completedFuture(null)
+        if (this.project != null) this.project!!.findFirstAndroidModule()
+        else CompletableFuture.completedFuture(null)
 }

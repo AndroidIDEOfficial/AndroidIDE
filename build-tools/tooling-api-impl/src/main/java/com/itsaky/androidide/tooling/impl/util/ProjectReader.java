@@ -116,7 +116,7 @@ public class ProjectReader {
 
     private static void addTasks(GradleProject gradle, IdeGradleProject project) {
         for (final var task : gradle.getTasks()) {
-            project.getTasks().add(buildGradleTaskModel(project, task));
+            project.tasks.add(buildGradleTaskModel(project, task));
         }
     }
 
@@ -128,7 +128,7 @@ public class ProjectReader {
                 task.getPath(),
                 task.getDisplayName(),
                 task.isPublic(),
-                project.getProjectPath());
+                project.projectPath);
     }
 
     private static IdeGradleProject buildModuleProject(
@@ -358,7 +358,7 @@ public class ProjectReader {
 
             final var sub = buildModuleProject(controller, module, outIssues);
             if (sub != null) {
-                project.getModules().add(sub);
+                project.moduleProjects.add(sub);
             }
         }
     }

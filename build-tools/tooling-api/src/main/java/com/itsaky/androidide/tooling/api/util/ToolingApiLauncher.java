@@ -20,6 +20,7 @@ package com.itsaky.androidide.tooling.api.util;
 import com.google.gson.GsonBuilder;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
+import com.itsaky.androidide.tooling.api.model.IProject;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
@@ -76,6 +77,8 @@ import org.eclipse.lsp4j.jsonrpc.Launcher;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.concurrent.Executors;
 
 /**
  * Utility class for launching {@link IToolingApiClient} and {@link IToolingApiServer}.
@@ -233,6 +236,34 @@ public class ToolingApiLauncher {
                                 TaskExecutionResult.class, TaskExecutionResult.class.getName())
                         .registerSubtype(
                                 TaskSuccessResult.class, TaskSuccessResult.class.getName()));
+    }
+
+    public static Launcher<Object> newClientLauncher(
+            IToolingApiClient client, InputStream in, OutputStream out) {
+        return newIoLauncher(
+                new Object[] {client},
+                new Class[] {IToolingApiServer.class, IProject.class},
+                in,
+                out);
+    }
+
+    public static Launcher<Object> newIoLauncher(
+            Object[] locals, Class<?>[] remotes, InputStream in, OutputStream out) {
+        return new Launcher.Builder<>()
+                .setInput(in)
+                .setOutput(out)
+                .setExecutorService(Executors.newCachedThreadPool())
+                .setLocalServices(Arrays.asList(locals))
+                .setRemoteInterfaces(Arrays.asList(remotes))
+                .configureGson(ToolingApiLauncher::configureGson)
+                .setClassLoader(locals[0].getClass().getClassLoader())
+                .create();
+    }
+
+    public static Launcher<Object> newServerLauncher(
+            IToolingApiServer server, IProject project, InputStream in, OutputStream out) {
+        return newIoLauncher(
+                new Object[] {server, project}, new Class[] {IToolingApiClient.class}, in, out);
     }
 
     public static Launcher<IToolingApiClient> createServerLauncher(

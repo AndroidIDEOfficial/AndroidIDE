@@ -38,6 +38,7 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_GRADLE_VERSION
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
+import com.itsaky.androidide.tooling.impl.model.InternalForwardingProject
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
@@ -59,7 +60,7 @@ import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
  *
  * @author Akash Yadav
  */
-internal class ToolingApiServerImpl : IToolingApiServer {
+internal class ToolingApiServerImpl (val forwardingProject: InternalForwardingProject) : IToolingApiServer {
 
     private var initialized = false
     private var client: IToolingApiClient? = null
@@ -108,6 +109,8 @@ internal class ToolingApiServerImpl : IToolingApiServer {
                 connection.close()
                 stopWatch.log()
 
+                this.forwardingProject.project = this.project
+
                 initialized = true
 
                 return@computeAsync InitializeResult(project, issues)
@@ -145,7 +148,7 @@ internal class ToolingApiServerImpl : IToolingApiServer {
             }
 
             val project =
-                this.project!!.findByPath(projectPath)
+                this.project!!.findByPath(projectPath).get()
                     ?: return@computeAsync TaskExecutionResult(false, PROJECT_NOT_FOUND)
 
             val connection = this.connector!!.forProjectDirectory(project.projectDir).connect()

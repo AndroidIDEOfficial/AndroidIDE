@@ -36,12 +36,12 @@ import java.io.File
  * @author Akash Yadav
  */
 class ProjectBuilder {
-    var name: String? = null
+    var name: String = ""
     var description: String? = null
     var path: String = ":"
-    var projectDir: File? = null
-    var buildDir: File? = null
-    var buildScript: File? = null
+    var projectDir: File = File(".")
+    var buildDir: File= File(".")
+    var buildScript: File = File(".")
     var parent: IdeGradleProject? = null
     var modules: List<IdeGradleProject> = mutableListOf()
     var tasks: List<IdeGradleTask> = mutableListOf()

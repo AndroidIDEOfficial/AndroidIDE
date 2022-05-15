@@ -27,8 +27,8 @@ import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
+import com.itsaky.androidide.tooling.api.model.IProject
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
@@ -51,18 +51,18 @@ class ToolingApiImplTest {
     @Test
     fun testProjectInit() {
         val client = TestClient()
-        val server = launchServer(client)
+        val (server, project) = launchServer(client)
 
-        val result =
-            server.initialize(InitializeProjectMessage(getTestProject().absolutePath)).get()
-        val project = result.project
+        server.initialize(InitializeProjectMessage(getTestProject().absolutePath)).get()
+
         assertThat(project).isNotNull()
-        assertThat(project!!).isInstanceOf(IdeGradleProject::class.java)
+        // As the returned project is just a proxy,
+        // project instanceOf IdeGradleProject will always return false
 
         val isInitialized = server.isInitialized().get()
         assertThat(isInitialized).isTrue()
 
-        val app = project.findByPath(":app")
+        val app = project.findByPath(":app").get()
         assertThat(app).isNotNull()
         assertThat(app).isInstanceOf(IdeAndroidModule::class.java)
 
@@ -96,26 +96,25 @@ class ToolingApiImplTest {
                 app.variantDependencies["release"]!!.libraries.values.filter { it.type == PROJECT })
             .isNotEmpty()
 
-        val javaLibrary = project.findByPath(":java-library")
+        val javaLibrary = project.findByPath(":java-library").get()
         assertThat(javaLibrary).isNotNull()
         assertThat(javaLibrary).isInstanceOf(IdeJavaModule::class.java)
 
-        assertThat(project.findByPath(":does-not-exist")).isNull()
+        assertThat(project.findByPath(":does-not-exist").get()).isNull()
     }
 
-    private fun launchServer(client: IToolingApiClient): IToolingApiServer {
+    private fun launchServer(client: IToolingApiClient): Pair<IToolingApiServer, IProject> {
         val builder = ProcessBuilder("java", "-jar", "./build/libs/tooling-api-all.jar")
-        log.debug(System.getenv())
         builder.environment()["ANDROID_SDK_ROOT"] = findAndroidHome()
         val proc = builder.start()
 
         Thread(Reader(proc.errorStream)).start()
         val launcher =
-            ToolingApiLauncher.createClientLauncher(client, proc.inputStream, proc.outputStream)
+            ToolingApiLauncher.newClientLauncher(client, proc.inputStream, proc.outputStream)
 
         launcher.startListening()
 
-        return launcher.remoteProxy
+        return launcher.remoteProxy as IToolingApiServer to launcher.remoteProxy as IProject
     }
 
     private fun findAndroidHome(): String {

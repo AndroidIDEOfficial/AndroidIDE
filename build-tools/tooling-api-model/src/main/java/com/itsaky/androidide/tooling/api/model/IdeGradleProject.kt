@@ -18,40 +18,77 @@ package com.itsaky.androidide.tooling.api.model
 
 import java.io.File
 import java.io.Serializable
+import java.util.concurrent.*
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 
 /**
  * A root Gradle project.
  * @author Akash Yadav
  */
 open class IdeGradleProject(
-    val name: String?,
-    val description: String?,
-    val projectPath: String?,
-    val projectDir: File?,
-    val buildDir: File?,
-    val buildScript: File?,
-    val parent: IdeGradleProject?,
-    val tasks: List<IdeGradleTask>,
-) : HasModules, Serializable {
+    @JvmField val name: String,
+    @JvmField val description: String?,
+    @JvmField val projectPath: String,
+    @JvmField val projectDir: File,
+    @JvmField val buildDir: File,
+    @JvmField val buildScript: File,
+    @JvmField val parent: IdeGradleProject?,
+    @JvmField val tasks: List<IdeGradleTask>,
+) : IProject, Serializable {
     private val serialVersionUID = 1L
 
     private val gsonType: String = javaClass.name
-    private val moduleProjects: MutableList<IdeGradleProject> = mutableListOf()
-    override fun getModules(): List<IdeGradleProject> = moduleProjects
+    @JvmField val moduleProjects: MutableList<IdeGradleProject> = mutableListOf()
 
-    fun findByPath(path: String): IdeGradleProject? {
-        if (path == this.projectPath) {
-            return this
+    override fun getName(): CompletableFuture<String> {
+        return CompletableFutures.computeAsync { this.name }
+    }
+
+    override fun getDescription(): CompletableFuture<String> {
+        return CompletableFutures.computeAsync { this.description }
+    }
+
+    override fun getProjectPath(): CompletableFuture<String> {
+        return CompletableFutures.computeAsync { this.projectPath }
+    }
+
+    override fun getProjectDir(): CompletableFuture<File> {
+        return CompletableFutures.computeAsync { this.projectDir }
+    }
+
+    override fun getBuildDir(): CompletableFuture<File> {
+        return CompletableFutures.computeAsync { this.buildDir }
+    }
+
+    override fun getBuildScript(): CompletableFuture<File> {
+        return CompletableFutures.computeAsync { this.buildScript }
+    }
+
+    override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> {
+        return CompletableFutures.computeAsync { this.tasks.toMutableList() }
+    }
+
+    override fun getModules(): CompletableFuture<MutableList<IdeGradleProject>> {
+        return CompletableFutures.computeAsync { this.moduleProjects.toMutableList() }
+    }
+
+    override fun findByPath(path: String): CompletableFuture<IdeGradleProject?> {
+        return CompletableFutures.computeAsync {
+            if (path == this.projectPath) {
+                return@computeAsync this
+            }
+
+            return@computeAsync moduleProjects.firstOrNull { it.projectPath == path }
         }
-
-        return getModules().firstOrNull { it.projectPath == path }
     }
 
-    fun findAndroidModules(): List<IdeAndroidModule> {
-        return getModules().filterIsInstance(IdeAndroidModule::class.java)
+    override fun findAndroidModules(): CompletableFuture<List<IdeAndroidModule>> {
+        return CompletableFutures.computeAsync {
+            moduleProjects.filterIsInstance(IdeAndroidModule::class.java)
+        }
     }
 
-    fun findFirstAndroidModule(): IdeAndroidModule? {
-        return findAndroidModules().firstOrNull()
+    override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> {
+        return findAndroidModules().thenApply { it.firstOrNull() }
     }
 }

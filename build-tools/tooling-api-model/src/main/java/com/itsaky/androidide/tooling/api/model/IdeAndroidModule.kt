@@ -37,12 +37,12 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 open class IdeAndroidModule(
-    name: String?,
-    path: String?,
+    name: String,
+    path: String,
     description: String?,
-    projectDir: File?,
-    buildDir: File?,
-    buildScript: File?,
+    projectDir: File,
+    buildDir: File,
+    buildScript: File,
     parent: IdeGradleProject?,
     tasks: List<IdeGradleTask>,
     val projectType: ProjectType?,
@@ -157,27 +157,6 @@ open class IdeAndroidModule(
         const val FD_LOGS = "logs"
         const val FD_OUTPUTS = "outputs"
         const val FD_GENERATED = "generated"
-    }
-
-    fun copy(): IdeAndroidModule {
-        return IdeAndroidModule(
-            name,
-            description,
-            projectPath,
-            projectDir,
-            buildDir,
-            buildScript,
-            parent,
-            tasks,
-            projectType,
-            dynamicFeatures,
-            flags,
-            javaCompileOptions,
-            resourcePrefix,
-            variants,
-            viewBindingOptions,
-            lintChecksJars,
-            modelSyncFiles)
     }
 
     override fun getGeneratedJar(variant: String): File {

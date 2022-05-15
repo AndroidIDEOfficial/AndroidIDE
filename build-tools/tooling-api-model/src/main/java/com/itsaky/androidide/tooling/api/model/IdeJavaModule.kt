@@ -27,12 +27,12 @@ import java.io.Serializable
  * @author Akash Yadav
  */
 open class IdeJavaModule(
-    name: String?,
-    path: String?,
+    name: String,
+    path: String,
     description: String?,
-    projectDir: File?,
-    buildDir: File?,
-    buildScript: File?,
+    projectDir: File,
+    buildDir: File,
+    buildScript: File,
     parent: IdeGradleProject?,
     tasks: List<IdeGradleTask>,
 
