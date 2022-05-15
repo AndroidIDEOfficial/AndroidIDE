@@ -108,7 +108,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             if (!(e instanceof CompletionCancelledException)) {
                 LOG.error("Unable to provide XML completions");
             }
-            return EMPTY;
+            return CompletionResult.EMPTY;
         }
     }
 
@@ -127,7 +127,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         final var parent = file.getParentFile().getName();
 
         if (parent.startsWith("drawable")
-                || parent.startsWith("drawable")
+                || parent.startsWith("mipmap")
                 || parent.startsWith("color")) {
             return "drawable";
         } else if (parent.startsWith("values")) {
@@ -146,7 +146,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             final String fileType,
             final int index) {
         if (fileType == null) {
-            return EMPTY;
+            return CompletionResult.EMPTY;
         }
 
         final var matchLower = getSettings().shouldMatchAllLowerCase();
@@ -248,13 +248,13 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     @NonNull
     private String createAttributeInsertText(@NonNull Attr attr) {
         StringBuilder xml = new StringBuilder();
-        xml.append(attr.namespace.getName());
+        xml.append(attr.namespace.getPrefix ());
         xml.append(":");
         xml.append(attr.name);
         xml.append("=");
         xml.append("\"");
 
-        if (attr.namespace.getName().equals("android") && attr.name.equals("id")) {
+        if (attr.namespace.getPrefix ().equals("android") && attr.name.equals("id")) {
             xml.append("@+id/");
         }
 

@@ -31,9 +31,6 @@ import java.util.Objects;
  */
 public class UiNamespace implements INamespace {
 
-    private final String name;
-    private final String uri;
-
     public static final Creator<UiNamespace> CREATOR =
             new Creator<>() {
                 @NonNull
@@ -50,21 +47,29 @@ public class UiNamespace implements INamespace {
                     return new UiNamespace[0];
                 }
             };
+    private final String prefix;
+    private final String packageName;
+    private final String uri;
 
-    public UiNamespace(String name, String uri) {
-        this.name = name;
+    public UiNamespace(String prefix, String uri) {
+        this(prefix, null, uri);
+    }
+
+    public UiNamespace(String prefix, String packageName, String uri) {
+        this.prefix = prefix;
+        this.packageName = packageName;
         this.uri = uri;
     }
 
     private UiNamespace(@NonNull Parcel in) {
-        this.name = in.readString();
+        this.prefix = in.readString();
+        this.packageName = in.readString();
         this.uri = in.readString();
     }
 
-    @NonNull
     @Override
-    public String toString() {
-        return "UiNamespace{" + "name='" + name + '\'' + ", uri='" + uri + '\'' + '}';
+    public int hashCode() {
+        return Objects.hash(getUri());
     }
 
     @Override
@@ -84,14 +89,20 @@ public class UiNamespace implements INamespace {
         return Objects.equals(getUri(), that.getUri());
     }
 
+    @NonNull
     @Override
-    public int hashCode() {
-        return Objects.hash(getUri());
+    public String toString() {
+        return "UiNamespace{" + "name='" + prefix + '\'' + ", uri='" + uri + '\'' + '}';
     }
 
     @Override
-    public String getName() {
-        return name;
+    public String getPrefix() {
+        return prefix;
+    }
+
+    @Override
+    public String getPackageName() {
+        return packageName;
     }
 
     @Override
@@ -106,7 +117,8 @@ public class UiNamespace implements INamespace {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-        dest.writeString(name);
+        dest.writeString(prefix);
+        dest.writeString(packageName);
         dest.writeString(uri);
     }
 }

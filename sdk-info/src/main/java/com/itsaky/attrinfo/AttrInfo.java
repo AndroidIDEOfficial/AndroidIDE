@@ -17,7 +17,6 @@
 
 package com.itsaky.attrinfo;
 
-import android.content.Context;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
@@ -37,6 +36,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 /**
  * A parser for parsing <b>attrs.xml</b>. This parser maps the attributes with the declared
@@ -49,14 +49,10 @@ public class AttrInfo {
     /** Styles mapped by names; */
     public final Map<String, Styleable> styles = new HashMap<>();
 
-    public final Map<String, Attr> attributes = new HashMap<>();
+    public final Map<String, Attr> attributes = new TreeMap<>();
     public final Styleable NO_PARENT;
 
-    public AttrInfo(@NonNull final Context context) throws Exception {
-        this(context.getResources());
-    }
-
-    public AttrInfo(final Resources resources) throws Exception {
+    public AttrInfo(@NonNull final Resources resources) throws Exception {
         NO_PARENT = new Styleable("<unknown_parent>");
 
         Objects.requireNonNull(resources, "Cannot read from null resources.");
@@ -90,6 +86,29 @@ public class AttrInfo {
     @NonNull
     public Map<String, Styleable> getStyles() {
         return styles;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(NO_PARENT, styles);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AttrInfo)) {
+            return false;
+        }
+        AttrInfo that = (AttrInfo) o;
+        return Objects.equals(NO_PARENT, that.NO_PARENT) && Objects.equals(styles, that.styles);
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "AttrInfoCompat{" + "NO_PARENT=" + NO_PARENT + ", styles=" + styles + '}';
     }
 
     protected void parseFromStream(InputStream in) throws Exception {
@@ -207,28 +226,5 @@ public class AttrInfo {
         if (!child.hasAttr("name")) {
             throw new IllegalStateException("Element does not have 'name' attribute: " + child);
         }
-    }
-
-    @NonNull
-    @Override
-    public String toString() {
-        return "AttrInfoCompat{" + "NO_PARENT=" + NO_PARENT + ", styles=" + styles + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof AttrInfo)) {
-            return false;
-        }
-        AttrInfo that = (AttrInfo) o;
-        return Objects.equals(NO_PARENT, that.NO_PARENT) && Objects.equals(styles, that.styles);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(NO_PARENT, styles);
     }
 }

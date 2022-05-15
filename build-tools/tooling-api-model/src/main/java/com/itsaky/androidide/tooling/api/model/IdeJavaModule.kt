@@ -26,7 +26,7 @@ import java.io.Serializable
  *
  * @author Akash Yadav
  */
-class IdeJavaModule(
+open class IdeJavaModule(
     name: String?,
     path: String?,
     description: String?,

@@ -20,8 +20,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility rootProject.ext.javaSourceVersion
-    targetCompatibility rootProject.ext.javaTargetVersion
+    sourceCompatibility = rootProject.ext.javaSourceVersion
+    targetCompatibility = rootProject.ext.javaTargetVersion
 }
 
 dependencies {

@@ -18,6 +18,7 @@
 package com.itsaky.lsp.xml;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
 
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IDocumentHandler;
@@ -39,7 +40,7 @@ import com.itsaky.lsp.util.NoCompletionsProvider;
 import com.itsaky.lsp.util.NoDocumentHandler;
 import com.itsaky.lsp.xml.models.XMLServerSettings;
 import com.itsaky.lsp.xml.providers.CodeFormatProvider;
-import com.itsaky.lsp.xml.providers.CompletionProvider;
+import com.itsaky.lsp.xml.providers.XmlCompletionProvider;
 import com.itsaky.sdk.SDKInfo;
 
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +57,10 @@ import java.util.List;
 public class XMLLanguageServer implements ILanguageServer {
 
     private final IDocumentHandler documentHandler = new NoDocumentHandler();
-    private SDKInfo sdkInfo;
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    public SDKInfo sdkInfo;
+
     private ILanguageClient client;
     private IServerSettings settings;
     private boolean initialized = false;
@@ -68,20 +72,6 @@ public class XMLLanguageServer implements ILanguageServer {
     public void setupSDK(@NonNull final SDKInfo info) {
         this.sdkInfo = info;
         this.canProvideCompletions = true;
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    @NonNull
-    public IServerSettings getSettings() {
-        if (settings == null) {
-            settings = XMLServerSettings.getInstance();
-        }
-
-        return settings;
     }
 
     @Override
@@ -99,6 +89,11 @@ public class XMLLanguageServer implements ILanguageServer {
         capabilities.setSmartSelectionsEnabled(false);
 
         initialized = true;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
     }
 
     @NonNull
@@ -136,7 +131,16 @@ public class XMLLanguageServer implements ILanguageServer {
             return new NoCompletionsProvider();
         }
 
-        return new CompletionProvider(this.sdkInfo, this.getSettings());
+        return new XmlCompletionProvider(this.sdkInfo, this.getSettings());
+    }
+
+    @NonNull
+    public IServerSettings getSettings() {
+        if (settings == null) {
+            settings = XMLServerSettings.getInstance();
+        }
+
+        return settings;
     }
 
     @NonNull
@@ -171,14 +175,13 @@ public class XMLLanguageServer implements ILanguageServer {
 
     @NonNull
     @Override
-    public IDocumentHandler getDocumentHandler() {
-        return this.documentHandler;
-    }
-    
-   @NonNull
-    @Override
     public CharSequence formatCode(CharSequence input) {
         return new CodeFormatProvider().format(input);
     }
 
+    @NonNull
+    @Override
+    public IDocumentHandler getDocumentHandler() {
+        return this.documentHandler;
+    }
 }

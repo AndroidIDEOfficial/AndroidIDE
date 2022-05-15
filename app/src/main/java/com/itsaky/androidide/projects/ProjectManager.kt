@@ -245,4 +245,38 @@ object ProjectManager {
             android.variants.first { it.name == "debug" }.mainArtifact.generatedSourceFolders)
         return sources
     }
+
+    /**
+     * Finds the module in which the given file exists.
+     *
+     * @return The module in which the given file exists or `null` if the module cannot be found.
+     */
+    fun findModuleForFile(file: File): IdeModule? {
+        if (rootProject == null) {
+            log.warn(
+                "No root project instance is set. Is the project initialization process finished?")
+            return null
+        }
+
+        val path = file.canonicalPath
+        val modules = rootProject!!.getModules()
+
+        var longestPath = ""
+        var longestPathModule: IdeModule? = null
+        for (module in modules) {
+            val modulePath = module.projectDir!!.canonicalPath
+            if (path.startsWith(modulePath)) {
+                if (longestPath.length < modulePath.length && module is IdeModule) {
+                    longestPathModule = module
+                    longestPath = modulePath
+                }
+            }
+        }
+
+        if (longestPath.isEmpty()) {
+            return null
+        }
+
+        return longestPathModule
+    }
 }

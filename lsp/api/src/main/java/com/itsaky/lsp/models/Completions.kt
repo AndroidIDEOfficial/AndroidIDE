@@ -17,7 +17,10 @@
 
 package com.itsaky.lsp.models
 
+import com.itsaky.androidide.tooling.api.model.IdeModule
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
+import com.itsaky.lsp.util.StringUtils
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
@@ -25,6 +28,7 @@ import java.nio.file.Path
 data class CompletionParams(var position: Position, var file: Path) {
     var content: CharSequence? = null
     var prefix: String? = null
+    var module: IdeModule? = null
 
     fun requirePrefix(): String {
         if (prefix == null) {
@@ -42,20 +46,39 @@ data class CompletionParams(var position: Position, var file: Path) {
     }
 }
 
-data class CompletionResult(var isIncomplete: Boolean, var items: List<CompletionItem>) {
-    constructor() : this(false, ArrayList<CompletionItem>())
+open class CompletionResult(items: List<CompletionItem>) {
+    var items: List<CompletionItem> = run {
+        var temp = items.toMutableList()
+        temp.sort()
+
+        if (TRIM_TO_MAX && temp.size > MAX_ITEMS) {
+            temp = temp.subList(0, MAX_ITEMS)
+        }
+        return@run temp
+    }
+
+    val isIncomplete = this.items.size < items.size
+
+    companion object {
+        const val MAX_ITEMS = 50
+        @JvmField val EMPTY = CompletionResult(listOf())
+
+        var TRIM_TO_MAX = true
+    }
+
+    constructor() : this(listOf())
 
     override fun toString(): String {
         return android.text.TextUtils.join("\n", items)
     }
 }
 
-data class CompletionItem(
+open class CompletionItem(
     @JvmField var label: String,
     var detail: String,
-    var insertText: String?,
-    var insertTextFormat: InsertTextFormat?,
-    var sortText: String?,
+    insertText: String?,
+    insertTextFormat: InsertTextFormat?,
+    sortText: String?,
     var command: Command?,
     var kind: CompletionItemKind,
     var additionalTextEdits: List<TextEdit>?,
@@ -63,10 +86,55 @@ data class CompletionItem(
 ) :
     io.github.rosemoe.sora.lang.completion.CompletionItem(label, detail),
     Comparable<CompletionItem> {
-    constructor() : this("", "", null, null, null, null, CompletionItemKind.NONE, ArrayList(), null)
+
+    var sortText: String? = sortText
+        get() {
+            if (field == null) {
+                return "$kind$label"
+            }
+
+            return "${kind.sortIndex}$field"
+        }
+
+    var insertText: String = insertText ?: ""
+        get() {
+            if (field.isEmpty()) {
+                return this.label.toString()
+            }
+
+            return field
+        }
+
+    var insertTextFormat: InsertTextFormat = insertTextFormat ?: PLAIN_TEXT
+
+    constructor() :
+        this(
+            "", // label
+            "", // detail
+            null, // insertText
+            null, // insertTextFormat
+            null, // sortText
+            null, // command
+            CompletionItemKind.NONE, // kind
+            ArrayList(), // additionalEdits
+            null // data
+            )
 
     companion object {
         private val LOG = ILogger.newInstance("CompletionItem")
+        @JvmStatic
+        fun sortTextForMatchRatio(ratio: Int, label: CharSequence, prefix: CharSequence): String {
+            if (StringUtils.matchesPartialName(label, prefix, true)) {
+
+                // The label starts with prefix
+                // So, this item must be shown at top
+                return "00$label"
+            }
+
+            // Label does not start with prefix
+            // The order of this item is decided based on the match ratio
+            return "${100-ratio}$label"
+        }
     }
 
     fun setLabel(label: String) {
@@ -81,13 +149,12 @@ data class CompletionItem(
 
     override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
         val start = getIdentifierStart(text.getLine(line), column)
-        val insert = if (insertText == null) label else insertText
-        val shift = insert!!.contains("$0")
+        val shift = insertText.contains("$0")
 
         text.delete(line, start, line, column)
 
         if (text.contains("\n")) {
-            val lines = insert.split("\\\n")
+            val lines = insertText.split("\\\n")
             var i = 0
             lines.forEach {
                 var commit = it
@@ -133,9 +200,9 @@ data class CompletionItem(
             val klass = editor::class.java
             val method = klass.getMethod("executeCommand", Command::class.java)
             method.isAccessible = true
-            method.invoke(command)
+            method.invoke(editor, command)
         } catch (th: Throwable) {
-            LOG.error("Unable to invoke 'executeCommand(Command) method in IDEEditor.")
+            LOG.error("Unable to invoke 'executeCommand(Command) method in IDEEditor.", th)
         }
     }
 
@@ -228,7 +295,7 @@ data class Command(var title: String, var command: String) {
     }
 }
 
-enum class CompletionItemKind private constructor(val sortIndex: Int) {
+enum class CompletionItemKind(val sortIndex: Int) {
     CLASS(7),
     INTERFACE(7),
     ANNOTATION_TYPE(7),

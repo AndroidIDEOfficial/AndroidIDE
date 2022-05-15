@@ -20,8 +20,8 @@ import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.lsp.api.FileProvider.Companion.resources
 import com.itsaky.lsp.models.InitializeParams
-import org.jetbrains.annotations.Contract
 import java.io.File
+import org.jetbrains.annotations.Contract
 
 /**
  * Provides instance to the java language server to test classes.
@@ -29,28 +29,28 @@ import java.io.File
  * @author Akash Yadav
  */
 abstract class LanguageServerProvider {
-    
+
     fun server(): ILanguageServer {
-        
+
         if (Environment.COMPILER_MODULE == null) {
             val javaHome = System.getProperty("java.home")
             assertThat(javaHome).isNotEmpty()
             Environment.COMPILER_MODULE = File(javaHome)
         }
-        
+
         initIfNecessary()
-        
+
         return getServer()
     }
-    
+
     protected abstract fun getServer(): ILanguageServer
-    
-    private fun initIfNecessary() {
+
+    protected open fun initIfNecessary() {
         if (!getServer().isInitialized) {
             getServer().initialize(createInitParams())
         }
     }
-    
+
     @Contract(" -> new")
     private fun createInitParams(): InitializeParams {
         return InitializeParams(setOf(resources()))

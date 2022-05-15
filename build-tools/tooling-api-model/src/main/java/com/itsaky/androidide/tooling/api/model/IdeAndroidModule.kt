@@ -21,10 +21,13 @@ import com.android.builder.model.v2.models.AndroidProject
 import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
 import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
+import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceProvider
 import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
 import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
 import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
+import org.eclipse.lemminx.dom.DOMParser
+import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 import java.io.File
 import java.io.Serializable
 
@@ -33,7 +36,7 @@ import java.io.Serializable
  *
  * @author Akash Yadav
  */
-class IdeAndroidModule(
+open class IdeAndroidModule(
     name: String?,
     path: String?,
     description: String?,
@@ -57,12 +60,26 @@ class IdeAndroidModule(
     AndroidProject,
     Serializable {
 
+    
+    private var shouldLookupPackage = true
+    open var packageName: String = UNKNOWN_PACKAGE
+        get() {
+            if (field == UNKNOWN_PACKAGE && shouldLookupPackage) {
+                findPackageName ()
+            }
+            
+            return field
+        }
     var boothclasspaths: Collection<File> = emptyList()
     var mainSourceSet: DefaultSourceSetContainer? = null
     var variantDependencies: MutableMap<String, DefaultVariantDependencies> = mutableMapOf()
 
     @Suppress("unused")
     companion object {
+        
+        const val UNKNOWN_PACKAGE = "com.itsaky.androidide.unknown_package"
+        const val ANDROID_NAMESPACE = "http://schemas.android.com/res/android"
+        
         //  Injectable properties to use with -P
         // Sent by Studio 4.2+
         const val PROPERTY_BUILD_MODEL_ONLY = "android.injected.build.model.v2"
@@ -165,6 +182,30 @@ class IdeAndroidModule(
 
     override fun getGeneratedJar(variant: String): File {
         return File(buildDir, "$FD_INTERMEDIATES/compile_library_classes_jar/$variant/classes.jar")
+    }
+    
+    private fun findPackageName () {
+        if (mainSourceSet == null) {
+            shouldLookupPackage = false
+            return
+        }
+        
+        val manifestFile = mainSourceSet!!.sourceProvider.manifestFile
+        if (manifestFile == DefaultSourceProvider.NoFile) {
+            shouldLookupPackage = false
+            return
+        }
+        
+        val content = manifestFile.readText()
+        val document = DOMParser.getInstance().parse(content, ANDROID_NAMESPACE, URIResolverExtensionManager())
+        val manifest = document.children.first { it.nodeName == "manifest" }
+        if (manifest == null) {
+            shouldLookupPackage = false
+        }
+        
+        val packageAttr = manifest.attributes.getNamedItem("package")
+        this.packageName = packageAttr.nodeValue
+        this.shouldLookupPackage = false
     }
 
     // These properties are not supported on newer versions

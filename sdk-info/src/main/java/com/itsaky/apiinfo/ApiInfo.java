@@ -17,8 +17,9 @@
  **************************************************************************************/
 package com.itsaky.apiinfo;
 
-import android.content.Context;
 import android.content.res.Resources;
+
+import androidx.annotation.NonNull;
 
 import com.itsaky.apiinfo.models.ClassInfo;
 import com.itsaky.apiinfo.models.FieldInfo;
@@ -38,10 +39,6 @@ import java.util.Map;
 
 public class ApiInfo {
 
-    private boolean read = false;
-
-    private final Map<String, ClassInfo> classInfos;
-
     public static final String NAME = "name";
     public static final String SINCE = "since";
     public static final String DEPRECATED = "deprecated";
@@ -50,18 +47,12 @@ public class ApiInfo {
     public static final String IMPLEMENTS = "implements";
     public static final String FIELD = "field";
     public static final String METHOD = "method";
+    private final Map<String, ClassInfo> classInfos;
+    private boolean read = false;
 
-    public ApiInfo(Context ctx) throws Exception {
-        this.classInfos = new HashMap<String, ClassInfo>();
-        doRead(ctx.getResources());
-    }
-
-    public boolean hasRead() {
-        return read;
-    }
-
-    public ClassInfo getClassByName(String qualifiedName) {
-        return classInfos.get(qualifiedName);
+    public ApiInfo(@NonNull final Resources resources) throws Exception {
+        this.classInfos = new HashMap<>();
+        doRead(resources);
     }
 
     public void doRead(Resources resources) throws Exception {
@@ -182,5 +173,13 @@ public class ApiInfo {
         }
 
         clazz.methods.put(info.name, info);
+    }
+
+    public boolean hasRead() {
+        return read;
+    }
+
+    public ClassInfo getClassByName(String qualifiedName) {
+        return classInfos.get(qualifiedName);
     }
 }

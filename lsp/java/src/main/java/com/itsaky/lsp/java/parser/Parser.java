@@ -21,9 +21,9 @@ import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.java.FileStore;
 import com.itsaky.lsp.java.compiler.SourceFileManager;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
-import com.itsaky.lsp.java.utils.StringSearch;
 import com.itsaky.lsp.models.Position;
 import com.itsaky.lsp.models.Range;
+import com.itsaky.lsp.util.StringUtils;
 import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
@@ -300,7 +300,7 @@ public class Parser {
             }
             // If class doesn't match partialName, skip it
             String name = cls.getSimpleName().toString();
-            if (!StringSearch.matchesPartialName(name, partialName)) {
+            if (!StringUtils.matchesPartialName (name, partialName)) {
                 continue;
             }
             if (root.getPackageName() != null) {

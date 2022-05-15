@@ -116,7 +116,7 @@ public class AttrValueEditorSheet extends BottomSheetDialogFragment
         final var namespace = this.attribute.getNamespace();
         final var formatText = Attr.createFormatText(attribute.getFormat());
         this.binding.attributeName.setText(
-                String.format("%s:%s", namespace.getName(), attribute.getAttributeName()));
+                String.format("%s:%s", namespace.getPrefix (), attribute.getAttributeName()));
         this.binding.attributeFormat.setText(formatText);
 
         setupTabs(formatText);

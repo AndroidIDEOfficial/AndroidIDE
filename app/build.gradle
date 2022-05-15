@@ -64,7 +64,16 @@ android {
     
     packagingOptions {
         resources {
-            excludes += ['META-INF/eclipse.inf', 'about_files/LICENSE-2.0.txt', 'plugin.xml', 'plugin.properties', 'about.mappings', 'about.properties', 'about.ini', 'modeling32.png']
+            excludes += ['META-INF/eclipse.inf',
+                         'META-INF/CHANGES',
+                         'META-INF/README.md',
+                         'about_files/LICENSE-2.0.txt',
+                         'plugin.xml',
+                         'plugin.properties',
+                         'about.mappings',
+                         'about.properties',
+                         'about.ini',
+                         'modeling32.png']
         }
     }
     
