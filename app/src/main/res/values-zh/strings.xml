@@ -31,9 +31,9 @@
     <string name="nothing_here">这里啥也没有 &#8230;</string>
 
     <!-- LSP, Diagnostics & Completions -->
-    <string name="msg_code_actions">行动</string>
+    <string name="msg_code_actions">操作</string>
     <string name="msg_cannot_perform_fix">无法执行快速修复</string>
-    <string name="msg_performing_actions">正在修复&#8230;</string>
+    <string name="msg_performing_actions">正在执行代码操作&#8230;</string>
     <string name="msg_api_info_since">在API %d 添加</string>
     <string name="msg_api_info_removed">在API %d 移除</string>
     <string name="msg_api_info_deprecated">在API %d 弃用</string>
@@ -241,6 +241,10 @@
     <string name="idepref_editor_paintingflags_summary">选择哪些不可打印字符在编辑器中应被显示</string>
     <string name="idepref_editor_drawhexcolors_title">显示十六进制颜色</string>
     <string name="idepref_editor_drawhexcolors_summary">编辑器是否为十六进制色显示对应颜色?</string>
+    <string name="idepref_editor_word_wrap_title">自动换行</string>
+    <string name="idepref_editor_word_wrap_summary">在编辑器中使用自动换行</string>
+    <string name="idepref_editor_use_magnifier_title">启用放大镜</string>
+    <string name="idepref_editor_use_magnifier_summary">在编辑器中选择文本时，放大光标处的文本</string>
     <string name="idepref_editor_title">编辑器</string>
     <string name="idepref_build_title">构建 &amp; 运行</string>
     <string name="title_open_projects">打开上一次的项目</string>
@@ -358,7 +362,22 @@
     <string name="idepref_java_useGoogleStyle_summary">使用 Google Java 样式代码格式化配置格式化 Java 源代码</string>
     <string name="idepref_visiblePassword_title">使用明文密码键盘</string>
     <string name="idepref_visiblePassword_summary">在编辑器中指示系统使用明文密码键盘。这确保您的键盘不会显示字词建议</string>
+    <string name="msg_no_actions">未找到代码操作</string>
+    <string name="previous">上一个</string>
+    <string name="msg_editor_find_case_sensitive">区分大小写</string>
+    <string name="msg_editor_find_regex">正则表达式</string>
+    <string name="msg_replacing">替换中&#8230;</string>
 
+    <string name="title_gradle_service_notification_ticker">Gradle 构建服务已启动</string>
+    <string name="title_gradle_service_notification">Gradle 构建服务</string>
+    <string name="msg_gradle_service_notification">AndroidIDE 的 Gradle 构建服务正在后台运行。</string>
+
+    <string name="title_cancel_build">停止构建</string>
+    <string name="msg_initializing_project">初始化项目中&#8230;</string>
+    <string name="msg_project_initialized">项目已初始化</string>
+    <string name="msg_project_initialization_failed">项目初始化失败</string>
+    <string name="msg_project_not_initialized">项目未初始化</string>
+    <string name="msg_running_task">运行的任务: \'%1$s\'</string>
     
 </resources>
 
