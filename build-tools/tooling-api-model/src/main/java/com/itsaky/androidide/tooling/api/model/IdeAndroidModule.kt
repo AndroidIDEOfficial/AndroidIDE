@@ -18,14 +18,14 @@ package com.itsaky.androidide.tooling.api.model
 
 import com.android.builder.model.v2.ide.ProjectType
 import com.android.builder.model.v2.models.AndroidProject
-import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
-import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
-import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceProvider
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
-import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
-import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
-import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
+import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlags
+import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
+import com.itsaky.androidide.builder.model.DefaultModelSyncFile
+import com.itsaky.androidide.builder.model.DefaultSourceProvider
+import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
+import com.itsaky.androidide.builder.model.DefaultVariant
+import com.itsaky.androidide.builder.model.DefaultVariantDependencies
+import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 import java.io.File

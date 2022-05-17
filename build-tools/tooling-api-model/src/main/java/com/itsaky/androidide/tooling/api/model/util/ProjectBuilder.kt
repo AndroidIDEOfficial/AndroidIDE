@@ -23,11 +23,11 @@ import com.itsaky.androidide.tooling.api.model.IdeGradleTask
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
-import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
-import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
-import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
-import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
-import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
+import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlags
+import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
+import com.itsaky.androidide.builder.model.DefaultModelSyncFile
+import com.itsaky.androidide.builder.model.DefaultVariant
+import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import java.io.File
 
 /**

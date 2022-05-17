@@ -18,7 +18,7 @@
 package com.itsaky.androidide.tooling.impl.util
 
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
-import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
+import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
 import java.io.Serializable
 
 /** @author Akash Yadav */

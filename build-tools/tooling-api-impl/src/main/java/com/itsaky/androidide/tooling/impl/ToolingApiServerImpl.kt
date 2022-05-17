@@ -37,7 +37,7 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_CONFIGURATION
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_GRADLE_VERSION
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
-import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
+import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
 import com.itsaky.androidide.tooling.impl.model.InternalForwardingProject
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
@@ -229,6 +229,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
             this.client = null
             this.project = null
             this.buildCancellationToken = null
+            this.forwardingProject.project = null
             Main.future = null
             Main.client = null
 

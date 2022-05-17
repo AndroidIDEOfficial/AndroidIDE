@@ -54,6 +54,7 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildResult;
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
+import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.events.ProgressEvent;
 import com.itsaky.androidide.utils.Environment;
@@ -486,13 +487,15 @@ public class GradleBuildService extends Service implements BuildService, IToolin
                         Environment.TOOLING_API_JAR.getAbsolutePath());
 
                 final var launcher =
-                        ToolingApiLauncher.createClientLauncher(
+                        ToolingApiLauncher.newClientLauncher(
                                 GradleBuildService.this, serverStreams.in, serverStreams.out);
                 final var future = launcher.startListening();
 
                 GradleBuildService.this.startServerOutputReader(serverStreams.err);
-                GradleBuildService.this.server = launcher.getRemoteProxy();
+                GradleBuildService.this.server = (IToolingApiServer) launcher.getRemoteProxy();
                 GradleBuildService.this.isToolingServerStarted = true;
+
+                ProjectManager.INSTANCE.setRootProject((IProject) launcher.getRemoteProxy());
 
                 if (listener != null) {
                     listener.onServerStarted();
@@ -505,7 +508,8 @@ public class GradleBuildService extends Service implements BuildService, IToolin
                     if (!(err instanceof CancellationException)
                             && !(err instanceof InterruptedException)) {
                         LOG.error(
-                                "An error occurred while waiting for tooling API server to terminate", err);
+                                "An error occurred while waiting for tooling API server to terminate",
+                                err);
                     }
                 }
 

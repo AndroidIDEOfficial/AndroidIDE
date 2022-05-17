@@ -21,7 +21,6 @@ import static com.itsaky.androidide.utils.ILogger.newInstance;
 
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
-import com.itsaky.androidide.tooling.api.model.IProject;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.impl.model.InternalForwardingProject;
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener;

@@ -36,7 +36,7 @@ import com.itsaky.androidide.tooling.api.model.JavaModuleDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleExternalDependency;
 import com.itsaky.androidide.tooling.api.model.JavaModuleProjectDependency;
 import com.itsaky.androidide.tooling.api.model.JavaSourceDirectory;
-import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues;
+import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
 import com.itsaky.androidide.tooling.api.model.util.AndroidModulePropertyCopier;
 import com.itsaky.androidide.tooling.api.model.util.ProjectBuilder;
 import com.itsaky.androidide.tooling.impl.Main;

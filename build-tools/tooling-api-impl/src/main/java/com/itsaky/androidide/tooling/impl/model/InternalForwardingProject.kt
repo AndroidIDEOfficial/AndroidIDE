@@ -17,8 +17,9 @@
 
 package com.itsaky.androidide.tooling.impl.model
 
+import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
-import com.itsaky.androidide.tooling.api.model.IProject
+import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
@@ -39,6 +40,10 @@ import java.util.concurrent.*
 class InternalForwardingProject(var project: IProject?) : IProject {
 
     private val log = ILogger.newInstance(javaClass.simpleName)
+
+    override fun isInitialized(): CompletableFuture<Boolean> {
+        return CompletableFuture.completedFuture(this.project != null)
+    }
 
     override fun getName(): CompletableFuture<String> =
         if (this.project != null) this.project!!.name else CompletableFuture.completedFuture("")
@@ -71,6 +76,10 @@ class InternalForwardingProject(var project: IProject?) : IProject {
         if (this.project != null) this.project!!.modules
         else CompletableFuture.completedFuture(mutableListOf())
 
+    override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> =
+        if (this.project != null) project!!.listModules()
+        else CompletableFuture.completedFuture(mutableListOf())
+
     override fun findByPath(path: String): CompletableFuture<IdeGradleProject?> =
         if (this.project != null) this.project!!.findByPath(path)
         else CompletableFuture.completedFuture(null)
@@ -81,5 +90,9 @@ class InternalForwardingProject(var project: IProject?) : IProject {
 
     override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> =
         if (this.project != null) this.project!!.findFirstAndroidModule()
+        else CompletableFuture.completedFuture(null)
+
+    override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> =
+        if (this.project != null) this.project!!.findFirstAndroidAppModule()
         else CompletableFuture.completedFuture(null)
 }

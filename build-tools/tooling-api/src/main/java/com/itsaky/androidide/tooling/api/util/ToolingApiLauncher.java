@@ -20,7 +20,7 @@ package com.itsaky.androidide.tooling.api.util;
 import com.google.gson.GsonBuilder;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
-import com.itsaky.androidide.tooling.api.model.IProject;
+import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
@@ -86,10 +86,6 @@ import java.util.concurrent.Executors;
  * @author Akash Yadav
  */
 public class ToolingApiLauncher {
-    public static Launcher<IToolingApiServer> createClientLauncher(
-            IToolingApiClient client, InputStream in, OutputStream out) {
-        return createIOLauncher(client, IToolingApiServer.class, in, out);
-    }
 
     public static <T> Launcher<T> createIOLauncher(
             Object local, Class<T> remote, InputStream in, OutputStream out) {
@@ -264,10 +260,5 @@ public class ToolingApiLauncher {
             IToolingApiServer server, IProject project, InputStream in, OutputStream out) {
         return newIoLauncher(
                 new Object[] {server, project}, new Class[] {IToolingApiClient.class}, in, out);
-    }
-
-    public static Launcher<IToolingApiClient> createServerLauncher(
-            IToolingApiServer server, InputStream in, OutputStream out) {
-        return createIOLauncher(server, IToolingApiClient.class, in, out);
     }
 }

@@ -21,29 +21,50 @@ import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
 import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.services.BuildService
+import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.model.IdeModule
+import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.models.JavaServerConfiguration
 import java.io.File
 import java.nio.file.Path
+import java.util.concurrent.*
 
 /**
  * Manages projects in AndroidIDE.
  *
  * @author Akash Yadav
  */
+@Suppress("MemberVisibilityCanBePrivate")
 object ProjectManager {
-    private val log = com.itsaky.androidide.utils.ILogger.newInstance(javaClass.simpleName)
-    var rootProject: IdeGradleProject? = null
+    private val log = ILogger.newInstance(javaClass.simpleName)
+    var rootProject: IProject? = null
+        set(value) {
+            field = if (value == null) null else CachingProject(value)
+
+            // Cache the module data in advance for future use
+            if (field != null) {
+                field!!.listModules()
+            }
+        }
     var projectPath: String? = null
 
-    fun getProjectDir(): File? =
-        if (getProjectDirPath() == null) null else File(getProjectDirPath()!!)
+    fun isInitialized() = this.rootProject != null && this.rootProject!!.isInitialized.get()
+
+    fun checkInit(): Boolean {
+        if (isInitialized()) {
+            return true
+        }
+
+        log.warn("Project is not initialized yet!")
+        return false
+    }
+
+    fun getProjectDir(): File? = if (!checkInit()) null else File(getProjectDirPath()!!)
 
     fun getProjectDirPath(): String? =
-        if (rootProject == null) projectPath else rootProject!!.projectDir!!.absolutePath
+        if (!checkInit()) projectPath else rootProject!!.projectDir.get().absolutePath
 
     fun generateSources(builder: BuildService?) {
         if (builder == null) {
@@ -51,62 +72,63 @@ object ProjectManager {
             return
         }
 
-        val app =
-            getApplicationModule()
-                ?: kotlin.run {
-                    log.error("Cannot generate resources...")
-                    return
-                }
-
-        val debug = app.variants.firstOrNull { it.name == "debug" }
-        if (debug == null) {
-            log.warn("No debug variant found in application project ${app.name}")
-            return
-        }
-
-        val mainArtifact = app.variants.first { it.name == "debug" }.mainArtifact
-        val genResourcesTask = mainArtifact.resGenTaskName
-        val genSourcesTask = mainArtifact.sourceGenTaskName
-        builder
-            .executeProjectTasks(
-                app.projectPath!!,
-                genResourcesTask ?: "",
-                genSourcesTask,
-
-                // If view binding is enabled, generate the view binding classes too
-                if (app.viewBindingOptions != null && app.viewBindingOptions!!.isEnabled)
-                    "dataBindingGenBaseClassesDebug"
-                else "")
-            .whenComplete { result, err ->
-                if (!result.isSuccessful || err != null) {
-                    log.warn(
-                        "Execution for tasks '$genResourcesTask' and '$genSourcesTask' failed.",
-                        err ?: "")
-                    return@whenComplete
-                }
-
-                notifyProjectUpdate()
+        getApplicationModule().whenComplete { app, _ ->
+            if (app == null) {
+                log.warn(
+                    "Cannot run resource and source generation task. No application module found.")
+                return@whenComplete
             }
+
+            val debug = app.variants.firstOrNull { it.name == "debug" }
+            if (debug == null) {
+                log.warn("No debug variant found in application project ${app.name}")
+                return@whenComplete
+            }
+
+            val mainArtifact = app.variants.first { it.name == "debug" }.mainArtifact
+            val genResourcesTask = mainArtifact.resGenTaskName
+            val genSourcesTask = mainArtifact.sourceGenTaskName
+            builder
+                .executeProjectTasks(
+                    app.projectPath,
+                    genResourcesTask ?: "",
+                    genSourcesTask,
+
+                    // If view binding is enabled, generate the view binding classes too
+                    if (app.viewBindingOptions != null && app.viewBindingOptions!!.isEnabled)
+                        "dataBindingGenBaseClassesDebug"
+                    else "")
+                .whenComplete { result, taskErr ->
+                    if (!result.isSuccessful || taskErr != null) {
+                        log.warn(
+                            "Execution for tasks '$genResourcesTask' and '$genSourcesTask' failed.",
+                            taskErr ?: "")
+                    } else {
+                        notifyProjectUpdate()
+                    }
+                }
+        }
     }
 
-    fun getApplicationModule(): IdeAndroidModule? {
+    fun getApplicationModule(): CompletableFuture<IdeAndroidModule?> {
         if (rootProject == null) {
             log.error(
                 "No root project instance is set. Is the project initialization process finished?")
-            return null
+            return CompletableFuture.completedFuture(null)
         }
 
-        val app = rootProject!!.findFirstAndroidModule()
-        if (app == null) {
-            log.error("No application module found in root project.")
-            return null
+        return rootProject!!.findFirstAndroidAppModule().whenComplete { app, err ->
+            if (app == null || err != null) {
+                log.debug("An error occurred while fetching model for application module.")
+                return@whenComplete
+            }
         }
-
-        return app
     }
 
-    fun getApplicationResDirectories(): List<File>? {
-        return collectResDirectories(getApplicationModule() ?: return null)
+    fun getApplicationResDirectories(): CompletableFuture<List<File>?> {
+        return getApplicationModule().thenApplyAsync {
+            if (it == null) null else collectResDirectories(it)
+        }
     }
 
     fun collectResDirectories(android: IdeAndroidModule): List<File> {
@@ -133,15 +155,21 @@ object ProjectManager {
     }
 
     fun notifyProjectUpdate() {
-        val server = StudioApp.getInstance().javaLanguageServer
-        val sourceDirs = collectApplicationSourceDirs()
-        val classPaths = collectApplicationClassPaths()
-        val configuration = JavaServerConfiguration(classPaths, sourceDirs)
-        server.configurationChanged(configuration)
+        getApplicationModule().thenAccept {
+            if (it == null) {
+                log.debug("Cannot find application module. Unable to update class paths to LSP.")
+                return@thenAccept
+            }
+
+            val server = StudioApp.getInstance().javaLanguageServer
+            val sourceDirs = collectSourceDirs(it)
+            val classPaths = collectClassPaths(it)
+            val configuration = JavaServerConfiguration(classPaths, sourceDirs)
+            server.configurationChanged(configuration)
+        }
     }
 
-    private fun collectApplicationClassPaths(): Set<Path> {
-        val app = getApplicationModule() ?: return emptySet()
+    private fun collectClassPaths(app: IdeAndroidModule): Set<Path> {
 
         val libraries = app.variantDependencies["debug"]!!.libraries
         val paths = mutableSetOf<Path>()
@@ -153,7 +181,7 @@ object ProjectManager {
                 paths.add(value.artifact!!.toPath())
             } else {
                 val project =
-                    rootProject!!.findByPath(value.projectInfo!!.projectPath)!! as IdeModule
+                    rootProject!!.findByPath(value.projectInfo!!.projectPath).get() as IdeModule
                 paths.add(project.getGeneratedJar("debug").toPath())
 
                 if (project is IdeAndroidModule && project.projectPath != app.projectPath) {
@@ -171,8 +199,7 @@ object ProjectManager {
         return paths
     }
 
-    private fun collectApplicationSourceDirs(): Set<Path> {
-        val app = getApplicationModule() ?: return emptySet()
+    private fun collectSourceDirs(app: IdeAndroidModule): Set<Path> {
         val sources = app.mainSourceSet ?: return emptySet()
         val javaDirs = sources.sourceProvider.javaDirectories
         val sourcePaths = javaDirs.toMutableSet()
@@ -181,15 +208,12 @@ object ProjectManager {
         return sourcePaths.map { it.toPath() }.toSet()
     }
 
-    fun collectProjectDependencies(
-        project: IdeGradleProject,
-        app: IdeAndroidModule
-    ): List<IdeModule> {
+    fun collectProjectDependencies(project: IProject, app: IdeAndroidModule): List<IdeModule> {
 
         return app.variantDependencies["debug"]!!
             .libraries.values
             .filter { it.type == PROJECT }
-            .mapNotNull { project.findByPath(it.projectInfo!!.projectPath) }
+            .map { project.findByPath(it.projectInfo!!.projectPath) }
             .filterIsInstance(IdeModule::class.java)
     }
 
@@ -244,39 +268,5 @@ object ProjectManager {
         sources.addAll(
             android.variants.first { it.name == "debug" }.mainArtifact.generatedSourceFolders)
         return sources
-    }
-
-    /**
-     * Finds the module in which the given file exists.
-     *
-     * @return The module in which the given file exists or `null` if the module cannot be found.
-     */
-    fun findModuleForFile(file: File): IdeModule? {
-        if (rootProject == null) {
-            log.warn(
-                "No root project instance is set. Is the project initialization process finished?")
-            return null
-        }
-
-        val path = file.canonicalPath
-        val modules = rootProject!!.getModules()
-
-        var longestPath = ""
-        var longestPathModule: IdeModule? = null
-        for (module in modules) {
-            val modulePath = module.projectDir!!.canonicalPath
-            if (path.startsWith(modulePath)) {
-                if (longestPath.length < modulePath.length && module is IdeModule) {
-                    longestPathModule = module
-                    longestPath = modulePath
-                }
-            }
-        }
-
-        if (longestPath.isEmpty()) {
-            return null
-        }
-
-        return longestPathModule
     }
 }

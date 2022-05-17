@@ -18,7 +18,7 @@
 package com.itsaky.androidide.tooling.api.messages.result
 
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
-import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
+import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
 
 /**
  * Result received after an initialize project request.

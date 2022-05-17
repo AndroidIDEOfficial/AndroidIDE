@@ -14,7 +14,6 @@
  *  You should have received a copy of the GNU General Public License
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
@@ -34,9 +33,9 @@ repositories {
 dependencies {
     implementation project (path: ':build-tools:logger')
     implementation project (path: ':build-tools:xml-dom')
+    api project (path: ':build-tools:builder-model-impl')
     
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    api "com.android.tools.build:builder-model:${project.property ("androidide.tooling.supportedAgpVersion")}"
 }
 
 task copyToTestDir (type: Copy) {

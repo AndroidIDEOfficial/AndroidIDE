@@ -16,10 +16,12 @@
  */
 package com.itsaky.androidide.tooling.api.model
 
+import com.android.builder.model.v2.ide.ProjectType.APPLICATION
+import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import java.io.File
 import java.io.Serializable
 import java.util.concurrent.*
-import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 
 /**
  * A root Gradle project.
@@ -34,7 +36,7 @@ open class IdeGradleProject(
     @JvmField val buildScript: File,
     @JvmField val parent: IdeGradleProject?,
     @JvmField val tasks: List<IdeGradleTask>,
-) : IProject, Serializable {
+) : com.itsaky.androidide.tooling.api.IProject, Serializable {
     private val serialVersionUID = 1L
 
     private val gsonType: String = javaClass.name
@@ -72,6 +74,14 @@ open class IdeGradleProject(
         return CompletableFutures.computeAsync { this.moduleProjects.toMutableList() }
     }
 
+    override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> {
+        return CompletableFutures.computeAsync {
+            return@computeAsync this.moduleProjects
+                .map { SimpleModuleData(it.name, it.projectPath, it.projectDir) }
+                .toMutableList()
+        }
+    }
+
     override fun findByPath(path: String): CompletableFuture<IdeGradleProject?> {
         return CompletableFutures.computeAsync {
             if (path == this.projectPath) {
@@ -90,5 +100,13 @@ open class IdeGradleProject(
 
     override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> {
         return findAndroidModules().thenApply { it.firstOrNull() }
+    }
+
+    override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> {
+        return findAndroidModules().thenApply { modules ->
+            val application =
+                modules.stream().filter { it != null && it.projectType == APPLICATION }.findFirst()
+            application.orElse(null)
+        }
     }
 }
