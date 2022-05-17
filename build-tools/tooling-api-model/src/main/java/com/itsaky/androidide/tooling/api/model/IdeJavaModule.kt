@@ -57,7 +57,7 @@ open class IdeJavaModule(
 
         jar =
             File(buildDir, "libs").listFiles()?.first {
-                it.name.startsWith(this.name ?: this.projectPath?.substring(1) ?: "")
+                it.name.startsWith(this.name)
             }
                 ?: File("i-do-not-exist.jar")
 

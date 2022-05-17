@@ -38,6 +38,7 @@ import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Fai
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult.Failure.UNSUPPORTED_GRADLE_VERSION
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
+import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.impl.model.InternalForwardingProject
 import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
@@ -72,6 +73,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
 
     @Suppress("UnstableApiUsage")
     override fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult> {
+        forwardingProject.projectPath = params.directory
         return CompletableFutures.computeAsync {
             try {
 
@@ -123,7 +125,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
         }
     }
 
-    override fun isInitialized(): CompletableFuture<Boolean> {
+    override fun isServerInitialized(): CompletableFuture<Boolean> {
         return CompletableFuture.supplyAsync { initialized }
     }
 
@@ -250,7 +252,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
         }
 
     private fun assertProjectInitialized() {
-        if (!isInitialized().get() || project == null) {
+        if (!isServerInitialized().get() || project == null) {
             throw CompletionException(IllegalStateException("Project is not initialized!"))
         }
     }

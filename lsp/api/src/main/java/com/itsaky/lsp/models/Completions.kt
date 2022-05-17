@@ -17,7 +17,7 @@
 
 package com.itsaky.lsp.models
 
-import com.itsaky.androidide.tooling.api.model.IdeModule
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
 import com.itsaky.lsp.util.StringUtils
@@ -28,7 +28,7 @@ import java.nio.file.Path
 data class CompletionParams(var position: Position, var file: Path) {
     var content: CharSequence? = null
     var prefix: String? = null
-    var module: IdeModule? = null
+    var module: IdeGradleProject? = null
 
     fun requirePrefix(): String {
         if (prefix == null) {

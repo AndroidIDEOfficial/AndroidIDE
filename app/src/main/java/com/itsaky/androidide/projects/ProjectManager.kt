@@ -23,6 +23,7 @@ import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.services.BuildService
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.model.IdeModule
 import com.itsaky.androidide.utils.ILogger
@@ -50,7 +51,7 @@ object ProjectManager {
         }
     var projectPath: String? = null
 
-    fun isInitialized() = this.rootProject != null && this.rootProject!!.isInitialized.get()
+    fun isInitialized() = this.rootProject != null && this.rootProject!!.isProjectInitialized.get()
 
     fun checkInit(): Boolean {
         if (isInitialized()) {
@@ -63,8 +64,9 @@ object ProjectManager {
 
     fun getProjectDir(): File? = if (!checkInit()) null else File(getProjectDirPath()!!)
 
-    fun getProjectDirPath(): String? =
-        if (!checkInit()) projectPath else rootProject!!.projectDir.get().absolutePath
+    fun getProjectDirPath(): String? {
+        return projectPath
+    }
 
     fun generateSources(builder: BuildService?) {
         if (builder == null) {
@@ -268,5 +270,39 @@ object ProjectManager {
         sources.addAll(
             android.variants.first { it.name == "debug" }.mainArtifact.generatedSourceFolders)
         return sources
+    }
+
+    fun findModuleForFile(file: File): CompletableFuture<IdeGradleProject?> {
+        if (!checkInit()) {
+            return CompletableFuture.completedFuture(null)
+        }
+
+        val notAvailable = ":::::"
+        return rootProject!!
+            .listModules()
+            .thenApplyAsync { modules ->
+                val path = file.canonicalPath
+
+                var longestPath = ""
+                for (module in modules) {
+                    val modulePath = module.projectDir.canonicalPath
+                    if (path.startsWith(modulePath)) {
+                        if (longestPath.length < modulePath.length) {
+                            longestPath = modulePath
+                        }
+                    }
+                }
+
+                if (longestPath.isEmpty()) {
+                    return@thenApplyAsync notAvailable
+                }
+
+                return@thenApplyAsync longestPath
+            }
+            .thenApplyAsync {
+                if (it == notAvailable) {
+                    return@thenApplyAsync null
+                } else return@thenApplyAsync rootProject!!.findByPath(it).get()
+            }
     }
 }

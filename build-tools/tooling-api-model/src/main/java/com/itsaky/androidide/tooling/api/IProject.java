@@ -38,11 +38,11 @@ import java.util.concurrent.CompletableFuture;
 @JsonSegment("project")
 public interface IProject {
 
+  String FILE_PATH_NOT_AVAILABLE = "<not_available>";
+
   @NotNull
   @JsonRequest
-  default CompletableFuture<Boolean> isInitialized() {
-    return CompletableFuture.completedFuture(true);
-  }
+  CompletableFuture<Boolean> isProjectInitialized();
 
   @NotNull
   @JsonRequest

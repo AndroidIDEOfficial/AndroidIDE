@@ -59,7 +59,7 @@ class ToolingApiImplTest {
         // As the returned project is just a proxy,
         // project instanceOf IdeGradleProject will always return false
 
-        val isInitialized = server.isInitialized().get()
+        val isInitialized = server.isServerInitialized().get()
         assertThat(isInitialized).isTrue()
 
         val app = project.findByPath(":app").get()

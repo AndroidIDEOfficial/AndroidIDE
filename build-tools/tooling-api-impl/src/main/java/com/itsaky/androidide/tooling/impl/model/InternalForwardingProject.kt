@@ -37,11 +37,14 @@ import java.util.concurrent.*
  *
  * @author Akash Yadav
  */
-class InternalForwardingProject(var project: IProject?) : IProject {
+class InternalForwardingProject(
+    var project: IProject?,
+    var projectPath: String = IProject.FILE_PATH_NOT_AVAILABLE
+) : IProject {
 
     private val log = ILogger.newInstance(javaClass.simpleName)
 
-    override fun isInitialized(): CompletableFuture<Boolean> {
+    override fun isProjectInitialized(): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(this.project != null)
     }
 
@@ -58,15 +61,15 @@ class InternalForwardingProject(var project: IProject?) : IProject {
 
     override fun getProjectDir(): CompletableFuture<File> =
         if (this.project != null) this.project!!.projectDir
-        else CompletableFuture.completedFuture(File("."))
+        else CompletableFuture.completedFuture(File(projectPath))
 
     override fun getBuildDir(): CompletableFuture<File> =
         if (this.project != null) this.project!!.buildDir
-        else CompletableFuture.completedFuture(File("."))
+        else CompletableFuture.completedFuture(File(projectPath))
 
     override fun getBuildScript(): CompletableFuture<File> =
         if (this.project != null) this.project!!.buildScript
-        else CompletableFuture.completedFuture(File("."))
+        else CompletableFuture.completedFuture(File(projectPath))
 
     override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> =
         if (this.project != null) this.project!!.tasks

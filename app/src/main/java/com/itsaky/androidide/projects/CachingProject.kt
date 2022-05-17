@@ -45,6 +45,10 @@ class CachingProject(val project: IProject) : IProject {
     private var mFirstAppModule: IdeAndroidModule? = null
     private val mModules: MutableList<SimpleModuleData> = mutableListOf()
 
+    override fun isProjectInitialized(): CompletableFuture<Boolean> {
+        return CompletableFuture.completedFuture(true)
+    }
+
     override fun getName(): CompletableFuture<String> {
         return CompletableFuture.completedFuture(this.mName)
     }
@@ -81,14 +85,28 @@ class CachingProject(val project: IProject) : IProject {
         return if (this.mModules.isNotEmpty()) {
             CompletableFuture.completedFuture(mModules)
         } else {
-            this.project.listModules().whenComplete { modules, err ->
-                if (err != null || modules == null || modules.isEmpty()) {
-                    log.warn("Unable to fetch module data", err)
-                    return@whenComplete
+            CompletableFuture.supplyAsync {
+                var failed: Boolean
+                var failure: Throwable
+                try {
+                    val modules = this.project.listModules().get()
+                    failed = modules == null || modules.isEmpty()
+                    failure = RuntimeException("Tooling server returned invalid data")
+
+                    if (!failed) {
+                        mModules.clear()
+                        mModules.addAll(modules)
+                    }
+                } catch (e: Throwable) {
+                    failed = true
+                    failure = e
                 }
 
-                this.mModules.clear()
-                this.mModules.addAll(modules.filterNotNull())
+                if (failed) {
+                    log.error("Unable to fetch module project data", failure)
+                }
+
+                return@supplyAsync this.mModules
             }
         }
     }

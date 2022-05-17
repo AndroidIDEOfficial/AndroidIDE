@@ -18,10 +18,10 @@ package com.itsaky.androidide.tooling.api.model
 
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
-import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import java.io.File
 import java.io.Serializable
 import java.util.concurrent.*
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 
 /**
  * A root Gradle project.
@@ -41,6 +41,10 @@ open class IdeGradleProject(
 
     private val gsonType: String = javaClass.name
     @JvmField val moduleProjects: MutableList<IdeGradleProject> = mutableListOf()
+
+    override fun isProjectInitialized(): CompletableFuture<Boolean> {
+        return CompletableFuture.completedFuture(true)
+    }
 
     override fun getName(): CompletableFuture<String> {
         return CompletableFutures.computeAsync { this.name }

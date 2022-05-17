@@ -20,6 +20,8 @@ package com.itsaky.androidide.language;
 import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
+import com.itsaky.androidide.tooling.api.model.IdeModule;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.CompletionItem;
@@ -36,6 +38,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
@@ -101,7 +104,13 @@ public class CommonCompletionProvider {
                             if (!completer.canComplete(file)) {
                                 return CompletionResult.EMPTY;
                             }
-
+    
+                            IdeGradleProject fileModule = null;
+                            try {
+                                fileModule = ProjectManager.INSTANCE.findModuleForFile (file.toFile ()).get (); } catch (Throwable e) {
+                                LOG.error ("Unable to find module for current file", e);
+                            }
+                            
                             final var params =
                                     new CompletionParams(
                                             new Position(
@@ -109,7 +118,7 @@ public class CommonCompletionProvider {
                                             file);
                             params.setContent(content);
                             params.setPrefix(prefix);
-                            params.setModule(ProjectManager.INSTANCE.findModuleForFile (file.toFile ()));
+                            params.setModule(fileModule);
                             final var result = completer.complete(params);
                             Collections.sort(result.getItems());
                             return result;

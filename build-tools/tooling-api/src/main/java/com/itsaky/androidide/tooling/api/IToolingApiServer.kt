@@ -37,17 +37,17 @@ import org.eclipse.lsp4j.jsonrpc.services.JsonSegment
 interface IToolingApiServer {
 
     /** Initialize the server with the project directory. */
-    @JsonRequest("initializeProject")
+    @JsonRequest
     fun initialize(params: InitializeProjectMessage): CompletableFuture<InitializeResult>
 
     /** Is the server initialized? */
-    @JsonRequest("isInitialized") fun isInitialized(): CompletableFuture<Boolean>
+    @JsonRequest fun isServerInitialized(): CompletableFuture<Boolean>
 
     /** Get the root project. */
-    @JsonRequest("getRootProject") fun getRootProject(): CompletableFuture<IdeGradleProject>
+    @JsonRequest fun getRootProject(): CompletableFuture<IdeGradleProject>
 
     /** Execute the tasks specified in the message. */
-    @JsonRequest("executeTasks")
+    @JsonRequest
     fun executeTasks(message: TaskExecutionMessage): CompletableFuture<TaskExecutionResult>
 
     /**

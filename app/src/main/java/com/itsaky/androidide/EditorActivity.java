@@ -149,7 +149,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -168,7 +167,6 @@ public class EditorActivity extends StudioActivity
         EditorActivityProvider,
         OptionsListFragment.OnOptionsClickListener {
 
-  public static final String EXTRA_PROJECT_PATH = "project_path";
   public static final String KEY_BOTTOM_SHEET_SHOWN = "editor_bottomSheetShown";
   private static final String TAG_FILE_OPTIONS_FRAGMENT = "file_options_fragment";
   private static final int ACTION_ID_CLOSE = 100;
@@ -770,18 +768,17 @@ public class EditorActivity extends StudioActivity
 
       getResourceDirPaths()
           .whenComplete(
-              (dirs, error) -> {
-                runOnUiThread(
-                    () -> {
-                      final Intent intent = new Intent(this, DesignerActivity.class);
-                      intent.putExtra(
-                          DesignerActivity.KEY_LAYOUT_PATH,
-                          getCurrentEditor().getFile().getAbsolutePath());
-                      intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, dirs);
-                      LOG.info("Launching UI Designer...");
-                      mUIDesignerLauncher.launch(intent);
-                    });
-              });
+              (dirs, error) ->
+                  runOnUiThread(
+                      () -> {
+                        final Intent intent = new Intent(this, DesignerActivity.class);
+                        intent.putExtra(
+                            DesignerActivity.KEY_LAYOUT_PATH,
+                            getCurrentEditor().getFile().getAbsolutePath());
+                        intent.putStringArrayListExtra(DesignerActivity.KEY_RES_DIRS, dirs);
+                        LOG.info("Launching UI Designer...");
+                        mUIDesignerLauncher.launch(intent);
+                      }));
     } catch (Throwable th) {
       LOG.error(getString(R.string.err_cannot_preview_layout), th);
       getApp().toast(R.string.msg_cannot_preview_layout, Toaster.Type.ERROR);
@@ -892,7 +889,7 @@ public class EditorActivity extends StudioActivity
   }
 
   private void initializeProject() {
-    final var projectPath = ProjectManager.INSTANCE.getProjectDirPath();
+    final var projectPath = ProjectManager.INSTANCE.getProjectPath();
     if (projectPath == null) {
       LOG.error("Cannot initialize project. Project model is null.");
       return;
@@ -1089,9 +1086,7 @@ public class EditorActivity extends StudioActivity
   /////////////////////////////////////////////////
 
   public AlertDialog getFindInProjectDialog() {
-    return mFindInProjectDialog == null
-        ? createFindInProjectDialog()
-        : mFindInProjectDialog;
+    return mFindInProjectDialog == null ? createFindInProjectDialog() : mFindInProjectDialog;
   }
 
   @Override
@@ -1112,7 +1107,7 @@ public class EditorActivity extends StudioActivity
     setSupportActionBar(mBinding.editorToolbar);
 
     mViewModel = new ViewModelProvider(this).get(EditorViewModel.class);
-    getProjectFromIntent();
+    initialSetup();
 
     mFileTreeFragment = FileTreeFragment.newInstance();
     mDaemonStatusFragment = new TextSheetFragment().setTextSelectable(true);
@@ -1425,10 +1420,7 @@ public class EditorActivity extends StudioActivity
                 return;
               }
 
-              ThreadUtils.runOnUiThread(
-                  () -> {
-                    shareFile(result);
-                  });
+              ThreadUtils.runOnUiThread(() -> shareFile(result));
             });
   }
 
@@ -1516,10 +1508,7 @@ public class EditorActivity extends StudioActivity
     startActivity(intent);
   }
 
-  private void getProjectFromIntent() {
-    final var project = getIntent().getStringExtra(EXTRA_PROJECT_PATH);
-    ProjectManager.INSTANCE.setProjectPath(project);
-
+  private void initialSetup() {
     getApp()
         .getPrefManager()
         .setOpenedProject(Objects.requireNonNull(ProjectManager.INSTANCE.getProjectDirPath()));
@@ -1662,22 +1651,22 @@ public class EditorActivity extends StudioActivity
       getApp().toast(getString(R.string.msg_project_not_initialized), Toaster.Type.ERROR);
       return null;
     }
-  
+
     List<File> moduleDirs;
     try {
       moduleDirs =
-              rootProject.listModules().get().stream()
-                      .map(SimpleModuleData::getProjectDir)
-                      .collect(Collectors.toList());
+          rootProject.listModules().get().stream()
+              .map(SimpleModuleData::getProjectDir)
+              .collect(Collectors.toList());
     } catch (Throwable e) {
       StudioApp.getInstance().toast(getString(R.string.msg_no_modules), Toaster.Type.ERROR);
       moduleDirs = Collections.emptyList();
     }
-  
-    return createFindInProjectDialog (moduleDirs);
+
+    return createFindInProjectDialog(moduleDirs);
   }
-  
-  private AlertDialog createFindInProjectDialog (List<File> moduleDirs) {
+
+  private AlertDialog createFindInProjectDialog(List<File> moduleDirs) {
     final List<File> srcDirs = new ArrayList<>();
     final LayoutSearchProjectBinding binding =
         LayoutSearchProjectBinding.inflate(getLayoutInflater());
@@ -1699,7 +1688,7 @@ public class EditorActivity extends StudioActivity
 
       srcDirs.add(src);
     }
-    
+
     final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
     builder.setTitle(R.string.menu_find_project);
     builder.setView(binding.getRoot());
@@ -1723,10 +1712,7 @@ public class EditorActivity extends StudioActivity
           }
 
           final String extensions =
-              Objects.requireNonNull(binding.filter.getEditText())
-                  .getText()
-                  .toString()
-                  .trim();
+              Objects.requireNonNull(binding.filter.getEditText()).getText().toString().trim();
           final List<String> extensionList = new ArrayList<>();
           if (!extensions.isEmpty()) {
             if (extensions.contains("|")) {
@@ -1756,7 +1742,7 @@ public class EditorActivity extends StudioActivity
     mFindInProjectDialog = builder.create();
     return mFindInProjectDialog;
   }
-  
+
   private void registerLogReceiver() {
     IntentFilter filter = new IntentFilter();
     filter.addAction(LogReceiver.APPEND_LOG);
