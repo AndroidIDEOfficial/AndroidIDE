@@ -17,7 +17,6 @@
 
 plugins {
     id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
 }
 
 java {
@@ -26,30 +25,6 @@ java {
 }
 
 dependencies {
+    implementation google.gson
     implementation project (path: ':build-tools:logger')
-    api project (path: ':build-tools:jsonrpc')
-    api project (path: ':build-tools:tooling-api-model')
-    api project (path: ':build-tools:tooling-api-events')
-    
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    
-    testImplementation tests.junit
-    testImplementation tests.google_truth
-    api google.gson
-}
-
-repositories {
-    mavenCentral ()
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
 }
