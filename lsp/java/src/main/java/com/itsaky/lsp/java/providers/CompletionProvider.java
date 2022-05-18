@@ -22,6 +22,8 @@ import static com.itsaky.lsp.java.utils.EditHelper.repeatSpaces;
 import static com.itsaky.lsp.java.utils.JavaPoetUtils.buildMethod;
 import static com.itsaky.lsp.models.CompletionItem.sortTextForMatchRatio;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -333,8 +335,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
       keywords = METHOD_BODY_KEYWORDS;
     }
     for (String k : keywords) {
-      final int ratio =
-          StringUtils.fuzzySearchRatio(k, partial, getSettings().shouldMatchAllLowerCase());
+      final int ratio = fuzzySearchRatio(k, partial, getSettings().shouldMatchAllLowerCase());
       if (ratio > 0) {
         list.getItems().add(keyword(k, partial, ratio));
       }
@@ -362,7 +363,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     Predicate<CharSequence> filter = name -> StringUtils.matchesFuzzy(name, partial, true);
     for (Element member : ScopeHelper.scopeMembers(task, scope, filter)) {
       final int matchRatio =
-          StringUtils.fuzzySearchRatio(
+          fuzzySearchRatio(
               member.getSimpleName(), partial, getSettings().shouldMatchAllLowerCase());
 
       if (member.getKind() == ElementKind.METHOD) {
@@ -411,7 +412,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         }
 
         final int matchRatio =
-            StringUtils.fuzzySearchRatio(
+            fuzzySearchRatio(
                 member.getSimpleName(), partial, getSettings().shouldMatchAllLowerCase());
         if (matchRatio == 0) {
           continue;
@@ -463,7 +464,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
     for (String className : compiler.packagePrivateTopLevelTypes(packageName)) {
       final int matchRatio =
-          StringUtils.fuzzySearchRatio(className, partial, getSettings().shouldMatchAllLowerCase());
+          fuzzySearchRatio(className, partial, getSettings().shouldMatchAllLowerCase());
       if (matchRatio == 0) {
         continue;
       }
@@ -474,7 +475,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
     for (String className : compiler.publicTopLevelTypes()) {
       final int matchRatio =
-          StringUtils.fuzzySearchRatio(className, partial, getSettings().shouldMatchAllLowerCase());
+          fuzzySearchRatio(className, partial, getSettings().shouldMatchAllLowerCase());
       if (matchRatio == 0) {
         continue;
       }
@@ -500,7 +501,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
       CharSequence candidate = c.getSimpleName() == null ? "" : c.getSimpleName();
 
       final int matchRatio =
-          StringUtils.fuzzySearchRatio(candidate, partial, getSettings().shouldMatchAllLowerCase());
+          fuzzySearchRatio(candidate, partial, getSettings().shouldMatchAllLowerCase());
       if (matchRatio == 0) {
         continue;
       }
@@ -584,7 +585,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
       }
 
       final int matchRatio =
-          StringUtils.fuzzySearchRatio(
+          fuzzySearchRatio(
               member.getSimpleName(), partialName, getSettings().shouldMatchAllLowerCase());
       if (matchRatio == 0) {
         continue;
@@ -705,7 +706,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     Map<String, Integer> matchRatios = new HashMap<>();
     for (Element member : task.task.getElements().getAllMembers(typeElement)) {
       final int matchRatio =
-          StringUtils.fuzzySearchRatio(
+          fuzzySearchRatio(
               member.getSimpleName(), partialName, getSettings().shouldMatchAllLowerCase());
       if (0 == matchRatio) {
         continue;
@@ -790,7 +791,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
       }
 
       final int matchRatio =
-          StringUtils.fuzzySearchRatio(
+          fuzzySearchRatio(
               member.getSimpleName(), partialName, getSettings().shouldMatchAllLowerCase());
       if (matchRatio == 0) {
         continue;
@@ -808,7 +809,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     CompletionResult list = new CompletionResult();
     for (String className : compiler.publicTopLevelTypes()) {
       final int matchRatio =
-          StringUtils.fuzzySearchRatio(className, path, getSettings().shouldMatchAllLowerCase());
+          fuzzySearchRatio(className, path, getSettings().shouldMatchAllLowerCase());
 
       if (matchRatio == 0) {
         continue;
@@ -920,8 +921,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         item.setInsertText(first.getSimpleName() + "()$0");
       } else {
         item.setInsertText(first.getSimpleName() + "($0)");
-        item.setCommand(
-            new Command("Trigger Parameter Hints", "editor.action.triggerParameterHints"));
+        item.setCommand(new Command("Trigger Parameter Hints", Command.TRIGGER_PARAMETER_HINTS));
       }
       item.setInsertTextFormat(InsertTextFormat.SNIPPET); // Snippet
     }
@@ -1107,5 +1107,14 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
           String.format(
               Locale.getDefault(), "...found %d items in %,d ms", list.size(), elapsedMs));
     }
+  }
+
+  private int fuzzySearchRatio(CharSequence candidate, CharSequence partial, boolean allLower) {
+    if (TextUtils.isEmpty(partial)) {
+      // If the partial identifier is null, then the user is probably trying access members of a
+      // class.
+      return 100;
+    }
+    return StringUtils.fuzzySearchRatio(candidate, partial, allLower);
   }
 }

@@ -46,7 +46,7 @@ class CachingProject(val project: IProject) : IProject {
 
     private var mFirstAppModule: IdeAndroidModule? = null
     private val mCachedVariants: MutableMap<VariantDataRequest, SimpleVariantData> = mutableMapOf()
-    val mModules: MutableList<SimpleModuleData> = mutableListOf()
+    private val mModules: MutableList<SimpleModuleData> = mutableListOf()
 
     override fun isProjectInitialized(): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(true)

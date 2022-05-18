@@ -17,11 +17,8 @@
 
 package com.itsaky.androidide.language;
 
-import androidx.annotation.NonNull;
-
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
-import com.itsaky.androidide.tooling.api.model.IdeModule;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.CompletionItem;
@@ -29,16 +26,12 @@ import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.Position;
 
-import org.jetbrains.annotations.Contract;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
@@ -117,9 +110,7 @@ public class CommonCompletionProvider {
               params.setContent(content);
               params.setPrefix(prefix);
               params.setModule(fileModule);
-              final var result = completer.complete(params);
-              Collections.sort(result.getItems());
-              return result;
+              return completer.complete(params);
             });
 
     try {

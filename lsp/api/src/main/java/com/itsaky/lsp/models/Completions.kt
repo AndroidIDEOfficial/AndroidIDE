@@ -128,7 +128,7 @@ open class CompletionItem(
 
                 // The label starts with prefix
                 // So, this item must be shown at top
-                return "00$label"
+                return "000$label"
             }
 
             // Label does not start with prefix
