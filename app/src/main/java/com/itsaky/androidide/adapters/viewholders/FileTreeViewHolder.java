@@ -39,75 +39,73 @@ import java.io.File;
 
 public class FileTreeViewHolder extends TreeNode.BaseNodeViewHolder<File> {
 
-    private Context context;
-    private ImageView chevron;
-    private LayoutFiletreeItemBinding binding;
+  private Context context;
+  private ImageView chevron;
+  private LayoutFiletreeItemBinding binding;
 
-    public FileTreeViewHolder(Context context) {
-        super(context);
-        this.context = context;
-    }
+  public FileTreeViewHolder(Context context) {
+    super(context);
+    this.context = context;
+  }
 
-    @Override
-    public View createNodeView(TreeNode node, File file) {
-        binding = LayoutFiletreeItemBinding.inflate(LayoutInflater.from(context));
-        int dp15 =
-                context instanceof StudioActivity
-                        ? ((StudioActivity) context).dpToPx(15)
-                        : (int)
-                                (TypedValue.applyDimension(
-                                        TypedValue.COMPLEX_UNIT_DIP,
-                                        15,
-                                        context.getResources().getDisplayMetrics()));
-        int icon = 0;
-        if (file.isDirectory()) icon = R.drawable.ic_folder;
-        else if (file.getName().endsWith(".java")) icon = R.drawable.ic_language_java;
-        else if (file.getName().endsWith(".kt")) icon = R.drawable.ic_language_kotlin;
-        else if (file.getName().endsWith(".xml")) icon = R.drawable.ic_language_xml;
-        else if (file.getName().endsWith(".gradle")) icon = R.drawable.ic_language_gradle;
-        else if (file.getName().endsWith(".json")) icon = R.drawable.ic_language_json;
-        else icon = R.drawable.ic_file_unknown;
+  @Override
+  public View createNodeView(TreeNode node, File file) {
+    binding = LayoutFiletreeItemBinding.inflate(LayoutInflater.from(context));
+    int dp15 =
+        context instanceof StudioActivity
+            ? ((StudioActivity) context).dpToPx(15)
+            : (int)
+                (TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 15, context.getResources().getDisplayMetrics()));
+    int icon = 0;
+    if (file.isDirectory()) icon = R.drawable.ic_folder;
+    else if (file.getName().endsWith(".java")) icon = R.drawable.ic_language_java;
+    else if (file.getName().endsWith(".kt")) icon = R.drawable.ic_language_kotlin;
+    else if (file.getName().endsWith(".xml")) icon = R.drawable.ic_language_xml;
+    else if (file.getName().endsWith(".gradle")) icon = R.drawable.ic_language_gradle;
+    else if (file.getName().endsWith(".json")) icon = R.drawable.ic_language_json;
+    else icon = R.drawable.ic_file_unknown;
 
-        final boolean isGradle =
-                file.getAbsolutePath().equals(Environment.GRADLE_USER_HOME.getAbsolutePath());
-        chevron = binding.getRoot().findViewById(R.id.filetree_chevron);
-        binding.filetreeName.setText(isGradle ? "GRADLE_HOME" : file.getName());
-        binding.filetreeIcon.setImageResource(icon);
-        binding.getRoot()
-                .setPadding(
-                        binding.getRoot().getPaddingLeft() + (dp15 * (node.getLevel() - 1)),
-                        binding.getRoot().getPaddingTop(),
-                        binding.getRoot().getPaddingRight(),
-                        binding.getRoot().getPaddingBottom());
-        chevron.setVisibility(file.isFile() ? View.INVISIBLE : View.VISIBLE);
-        chevron.setImageResource(
-                node.isExpanded() ? R.drawable.ic_chevron_down : R.drawable.ic_chevron_right);
-        chevron.getDrawable()
-                .setColorFilter(
-                        ContextCompat.getColor(context, R.color.secondaryLightColor),
-                        PorterDuff.Mode.SRC_ATOP);
-        binding.filetreeIcon
-                .getDrawable()
-                .setColorFilter(
-                        ContextCompat.getColor(context, R.color.secondaryLightColor),
-                        PorterDuff.Mode.SRC_ATOP);
+    final boolean isGradle =
+        file.getAbsolutePath().equals(Environment.GRADLE_USER_HOME.getAbsolutePath());
+    chevron = binding.getRoot().findViewById(R.id.filetree_chevron);
+    binding.filetreeName.setText(isGradle ? "GRADLE_HOME" : file.getName());
+    binding.filetreeIcon.setImageResource(icon);
+    binding
+        .getRoot()
+        .setPadding(
+            binding.getRoot().getPaddingLeft() + (dp15 * (node.getLevel() - 1)),
+            binding.getRoot().getPaddingTop(),
+            binding.getRoot().getPaddingRight(),
+            binding.getRoot().getPaddingBottom());
+    chevron.setVisibility(file.isFile() ? View.INVISIBLE : View.VISIBLE);
+    chevron.setImageResource(
+        node.isExpanded() ? R.drawable.ic_chevron_down : R.drawable.ic_chevron_right);
+    chevron
+        .getDrawable()
+        .setColorFilter(
+            ContextCompat.getColor(context, R.color.secondaryLightColor), PorterDuff.Mode.SRC_ATOP);
+    binding
+        .filetreeIcon
+        .getDrawable()
+        .setColorFilter(
+            ContextCompat.getColor(context, R.color.secondaryLightColor), PorterDuff.Mode.SRC_ATOP);
 
-        return binding.getRoot();
-    }
+    return binding.getRoot();
+  }
 
-    public void setLoading() {
-        chevron.getDrawable()
-                .setColorFilter(
-                        ContextCompat.getColor(context, R.color.secondaryLightColor),
-                        PorterDuff.Mode.SRC_ATOP);
-    }
+  public void setLoading() {
+    chevron
+        .getDrawable()
+        .setColorFilter(
+            ContextCompat.getColor(context, R.color.secondaryLightColor), PorterDuff.Mode.SRC_ATOP);
+  }
 
-    public void updateChevron(boolean isExpanded) {
-        chevron.setImageResource(
-                isExpanded ? R.drawable.ic_chevron_down : R.drawable.ic_chevron_right);
-        chevron.getDrawable()
-                .setColorFilter(
-                        ContextCompat.getColor(context, R.color.secondaryLightColor),
-                        PorterDuff.Mode.SRC_ATOP);
-    }
+  public void updateChevron(boolean isExpanded) {
+    chevron.setImageResource(isExpanded ? R.drawable.ic_chevron_down : R.drawable.ic_chevron_right);
+    chevron
+        .getDrawable()
+        .setColorFilter(
+            ContextCompat.getColor(context, R.color.secondaryLightColor), PorterDuff.Mode.SRC_ATOP);
+  }
 }

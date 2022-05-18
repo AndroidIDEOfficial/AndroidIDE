@@ -29,26 +29,26 @@ import java.util.Objects;
  */
 public class ActionData {
 
-    private final Map<Class<?>, Object> instances = new HashMap<>();
+  private final Map<Class<?>, Object> instances = new HashMap<>();
 
-    public <T> void put(@NonNull Class<T> type, @Nullable T object) {
-        Objects.requireNonNull(type);
-        this.instances.put(type, object);
+  public <T> void put(@NonNull Class<T> type, @Nullable T object) {
+    Objects.requireNonNull(type);
+    this.instances.put(type, object);
+  }
+
+  @Nullable
+  public <T> T get(@NonNull Class<T> type) {
+    Objects.requireNonNull(type);
+
+    final var object = this.instances.get(type);
+    if (object == null) {
+      return null;
     }
 
-    @Nullable
-    public <T> T get(@NonNull Class<T> type) {
-        Objects.requireNonNull(type);
+    return type.cast(object);
+  }
 
-        final var object = this.instances.get(type);
-        if (object == null) {
-            return null;
-        }
-
-        return type.cast(object);
-    }
-
-    public void clear() {
-        this.instances.clear();
-    }
+  public void clear() {
+    this.instances.clear();
+  }
 }

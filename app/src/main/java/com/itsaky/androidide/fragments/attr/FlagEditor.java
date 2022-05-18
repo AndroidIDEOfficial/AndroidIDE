@@ -37,52 +37,52 @@ import java.util.Arrays;
  */
 public class FlagEditor extends FixedValueEditor {
 
-    private static final ILogger LOG = ILogger.newInstance("FlagEditor");
+  private static final ILogger LOG = ILogger.newInstance("FlagEditor");
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
-        this.chipGroup.setSingleSelection(false);
-        this.chipGroup.setSelectionRequired(true);
-        this.chipGroup.setOnCheckedChangeListener(null); // does not work for multiple selections
+    this.chipGroup.setSingleSelection(false);
+    this.chipGroup.setSelectionRequired(true);
+    this.chipGroup.setOnCheckedChangeListener(null); // does not work for multiple selections
 
-        if (!TextUtils.isEmpty(attribute.getValue())) {
-            final var values = Arrays.asList(this.attribute.getValue().split("\\|"));
-            for (int i = 0; i < this.chipGroup.getChildCount(); i++) {
-                final var chip = (Chip) this.chipGroup.getChildAt(i);
-                if (values.contains(chip.getText().toString().trim())) {
-                    chip.setChecked(true);
-                }
-            }
+    if (!TextUtils.isEmpty(attribute.getValue())) {
+      final var values = Arrays.asList(this.attribute.getValue().split("\\|"));
+      for (int i = 0; i < this.chipGroup.getChildCount(); i++) {
+        final var chip = (Chip) this.chipGroup.getChildAt(i);
+        if (values.contains(chip.getText().toString().trim())) {
+          chip.setChecked(true);
         }
+      }
+    }
+  }
+
+  @Override
+  protected void onCheckChanged(@NonNull ChipGroup group, int checkedId) {
+    // Does noting...
+  }
+
+  protected void onCheckChangedMultiple(CompoundButton compoundButton, boolean b) {
+    final var items = new ArrayList<String>();
+    for (var id : this.chipGroup.getCheckedChipIds()) {
+      final var chip = (Chip) this.chipGroup.findViewById(id);
+      if (chip == null) {
+        LOG.error("Unable to find chip with checked id:", id);
+        continue;
+      }
+
+      final var val = chip.getText().toString().trim();
+      items.add(val);
     }
 
-    @Override
-    protected void onCheckChanged(@NonNull ChipGroup group, int checkedId) {
-        // Does noting...
-    }
+    notifyValueChanged(TextUtils.join("|", items));
+  }
 
-    protected void onCheckChangedMultiple(CompoundButton compoundButton, boolean b) {
-        final var items = new ArrayList<String>();
-        for (var id : this.chipGroup.getCheckedChipIds()) {
-            final var chip = (Chip) this.chipGroup.findViewById(id);
-            if (chip == null) {
-                LOG.error("Unable to find chip with checked id:", id);
-                continue;
-            }
-
-            final var val = chip.getText().toString().trim();
-            items.add(val);
-        }
-
-        notifyValueChanged(TextUtils.join("|", items));
-    }
-
-    @Override
-    protected Chip newChip(String title, boolean checked) {
-        final var chip = super.newChip(title, checked);
-        chip.setOnCheckedChangeListener(this::onCheckChangedMultiple);
-        return chip;
-    }
+  @Override
+  protected Chip newChip(String title, boolean checked) {
+    final var chip = super.newChip(title, checked);
+    chip.setOnCheckedChangeListener(this::onCheckChangedMultiple);
+    return chip;
+  }
 }

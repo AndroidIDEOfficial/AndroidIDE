@@ -34,88 +34,88 @@ import com.itsaky.inflater.adapters.android.widget.FrameLayoutAttrAdapter;
  */
 public class GestureOverlayViewAttrAdapter extends FrameLayoutAttrAdapter {
 
-    public GestureOverlayViewAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
+  public GestureOverlayViewAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof GestureOverlayView;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    final var gesture = (GestureOverlayView) view;
+    final var name = attribute.getAttributeName();
+    final var value = attribute.getValue();
+
+    if (!canHandleNamespace(attribute)) {
+      return false;
     }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof GestureOverlayView;
+    boolean handled = true;
+    switch (name) {
+      case "eventsInterceptionEnabled":
+        gesture.setEventsInterceptionEnabled(parseBoolean(value));
+        break;
+      case "fadeDuration":
+        ReflectUtils.reflect(gesture).field("mFadeDuration", parseLong(value, 150));
+        break;
+      case "fadeEnabled":
+        gesture.setFadeEnabled(parseBoolean(value));
+        break;
+      case "fadeOffset":
+        gesture.setFadeOffset(parseLong(value, 420));
+        break;
+      case "gestureColor":
+        gesture.setGestureColor(parseColor(value, gesture.getContext()));
+        break;
+      case "gestureStrokeAngleThreshold":
+        gesture.setGestureStrokeAngleThreshold(parseFloat(value));
+        break;
+      case "gestureStrokeLengthThreshold":
+        gesture.setGestureStrokeLengthThreshold(parseFloat(value));
+        break;
+      case "gestureStrokeSquarenessThreshold":
+        gesture.setGestureStrokeSquarenessTreshold(parseFloat(value));
+        break;
+      case "gestureStrokeType":
+        gesture.setGestureStrokeType(parseGestureStrokeType(value));
+        break;
+      case "gestureStrokeWidth":
+        gesture.setGestureStrokeWidth(parseFloat(value));
+        break;
+      case "orientation":
+        gesture.setOrientation(parseOrientation(value));
+        break;
+      case "uncertainGestureColor":
+        gesture.setUncertainGestureColor(parseColor(value, gesture.getContext()));
+        break;
+      default:
+        handled = false;
+        break;
     }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        final var gesture = (GestureOverlayView) view;
-        final var name = attribute.getAttributeName();
-        final var value = attribute.getValue();
-
-        if (!canHandleNamespace(attribute)) {
-            return false;
-        }
-
-        boolean handled = true;
-        switch (name) {
-            case "eventsInterceptionEnabled":
-                gesture.setEventsInterceptionEnabled(parseBoolean(value));
-                break;
-            case "fadeDuration":
-                ReflectUtils.reflect(gesture).field("mFadeDuration", parseLong(value, 150));
-                break;
-            case "fadeEnabled":
-                gesture.setFadeEnabled(parseBoolean(value));
-                break;
-            case "fadeOffset":
-                gesture.setFadeOffset(parseLong(value, 420));
-                break;
-            case "gestureColor":
-                gesture.setGestureColor(parseColor(value, gesture.getContext()));
-                break;
-            case "gestureStrokeAngleThreshold":
-                gesture.setGestureStrokeAngleThreshold(parseFloat(value));
-                break;
-            case "gestureStrokeLengthThreshold":
-                gesture.setGestureStrokeLengthThreshold(parseFloat(value));
-                break;
-            case "gestureStrokeSquarenessThreshold":
-                gesture.setGestureStrokeSquarenessTreshold(parseFloat(value));
-                break;
-            case "gestureStrokeType":
-                gesture.setGestureStrokeType(parseGestureStrokeType(value));
-                break;
-            case "gestureStrokeWidth":
-                gesture.setGestureStrokeWidth(parseFloat(value));
-                break;
-            case "orientation":
-                gesture.setOrientation(parseOrientation(value));
-                break;
-            case "uncertainGestureColor":
-                gesture.setUncertainGestureColor(parseColor(value, gesture.getContext()));
-                break;
-            default:
-                handled = false;
-                break;
-        }
-
-        if (!handled) {
-            handled = super.apply(attribute, view);
-        }
-
-        return handled;
+    if (!handled) {
+      handled = super.apply(attribute, view);
     }
 
-    private int parseOrientation(String value) {
-        if ("horizontal".equals(value)) {
-            return GestureOverlayView.ORIENTATION_HORIZONTAL;
-        }
+    return handled;
+  }
 
-        return GestureOverlayView.ORIENTATION_VERTICAL;
+  private int parseOrientation(String value) {
+    if ("horizontal".equals(value)) {
+      return GestureOverlayView.ORIENTATION_HORIZONTAL;
     }
 
-    protected int parseGestureStrokeType(String value) {
-        if ("multiple".equals(value)) {
-            return GestureOverlayView.GESTURE_STROKE_TYPE_MULTIPLE;
-        }
-        return GestureOverlayView.GESTURE_STROKE_TYPE_SINGLE;
+    return GestureOverlayView.ORIENTATION_VERTICAL;
+  }
+
+  protected int parseGestureStrokeType(String value) {
+    if ("multiple".equals(value)) {
+      return GestureOverlayView.GESTURE_STROKE_TYPE_MULTIPLE;
     }
+    return GestureOverlayView.GESTURE_STROKE_TYPE_SINGLE;
+  }
 }

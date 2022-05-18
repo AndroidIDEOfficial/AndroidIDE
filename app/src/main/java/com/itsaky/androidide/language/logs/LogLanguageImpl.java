@@ -41,80 +41,80 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class LogLanguageImpl extends IDELanguage {
 
-    private static final LogAnalyzer analyzer = new LogAnalyzer();
+  private static final LogAnalyzer analyzer = new LogAnalyzer();
 
-    public void addLine(LogLine line) {
-        analyzer.addLine(line);
+  public void addLine(LogLine line) {
+    analyzer.addLine(line);
+  }
+
+  @NonNull
+  @Override
+  public AnalyzeManager getAnalyzeManager() {
+    return analyzer;
+  }
+
+  @Override
+  public int getInterruptionLevel() {
+    return 0;
+  }
+
+  @Override
+  public void requireAutoComplete(
+      @NonNull ContentReference content,
+      @NonNull CharPosition position,
+      @NonNull CompletionPublisher publisher,
+      @NonNull Bundle extraArguments)
+      throws CompletionCancelledException {}
+
+  @Override
+  public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {
+    return 0;
+  }
+
+  @Override
+  public CharSequence format(CharSequence text) {
+    return text;
+  }
+
+  @Override
+  public SymbolPairMatch getSymbolPairs() {
+    return new SymbolPairMatch.DefaultSymbolPairs();
+  }
+
+  @Override
+  public NewlineHandler[] getNewlineHandlers() {
+    return new NewlineHandler[0];
+  }
+
+  @Override
+  public void destroy() {}
+
+  private static class LogAnalyzer extends SimpleAnalyzeManager<Void> {
+
+    private static final List<LogLine> lines = new ArrayList<>();
+
+    public LogAnalyzer addLine(LogLine line) {
+      if (line != null) lines.add(line);
+
+      return this;
     }
 
-    @NonNull
     @Override
-    public AnalyzeManager getAnalyzeManager() {
-        return analyzer;
+    protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {
+      final var styles = new Styles();
+      final var colors = new MappedSpans.Builder();
+      int lastLine = 0;
+      for (int i = 0; i < lines.size() && !delegate.isCancelled(); i++) {
+        if (i == 0) colors.addNormalIfNull();
+        LogLine line = lines.get(i);
+        colors.addIfNeeded(i, 0, SchemeAndroidIDE.forLogPriority(line.priority));
+        lastLine = i;
+      }
+      colors.determine(lastLine);
+
+      styles.spans = colors.build();
+
+      return styles;
     }
-
-    @Override
-    public int getInterruptionLevel() {
-        return 0;
-    }
-
-    @Override
-    public void requireAutoComplete(
-            @NonNull ContentReference content,
-            @NonNull CharPosition position,
-            @NonNull CompletionPublisher publisher,
-            @NonNull Bundle extraArguments)
-            throws CompletionCancelledException {}
-
-    @Override
-    public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {
-        return 0;
-    }
-
-    @Override
-    public CharSequence format(CharSequence text) {
-        return text;
-    }
-
-    @Override
-    public SymbolPairMatch getSymbolPairs() {
-        return new SymbolPairMatch.DefaultSymbolPairs();
-    }
-
-    @Override
-    public NewlineHandler[] getNewlineHandlers() {
-        return new NewlineHandler[0];
-    }
-
-    @Override
-    public void destroy() {}
-
-    private static class LogAnalyzer extends SimpleAnalyzeManager<Void> {
-
-        private static final List<LogLine> lines = new ArrayList<>();
-
-        public LogAnalyzer addLine(LogLine line) {
-            if (line != null) lines.add(line);
-
-            return this;
-        }
-
-        @Override
-        protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {
-            final var styles = new Styles();
-            final var colors = new MappedSpans.Builder();
-            int lastLine = 0;
-            for (int i = 0; i < lines.size() && !delegate.isCancelled(); i++) {
-                if (i == 0) colors.addNormalIfNull();
-                LogLine line = lines.get(i);
-                colors.addIfNeeded(i, 0, SchemeAndroidIDE.forLogPriority(line.priority));
-                lastLine = i;
-            }
-            colors.determine(lastLine);
-
-            styles.spans = colors.build();
-
-            return styles;
-        }
-    }
+  }
 }

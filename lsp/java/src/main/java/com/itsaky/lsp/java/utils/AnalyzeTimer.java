@@ -30,66 +30,66 @@ import java.util.Objects;
  */
 public class AnalyzeTimer {
 
-    public static final long DEFAULT_INTERVAL = 400;
-    @NonNull private final Handler timerHandler;
-    @NonNull private final Runnable timerCallback;
-    private long interval;
-    private boolean started;
+  public static final long DEFAULT_INTERVAL = 400;
+  @NonNull private final Handler timerHandler;
+  @NonNull private final Runnable timerCallback;
+  private long interval;
+  private boolean started;
 
-    /**
-     * Creates a new AnalyzeTimer instance.
-     *
-     * @param timerCallback The callback that will be invoked after the timer has ended.
-     */
-    public AnalyzeTimer(@NonNull Runnable timerCallback) {
-        this.timerHandler = new Handler();
-        this.interval = DEFAULT_INTERVAL;
-        this.timerCallback = timerCallback;
+  /**
+   * Creates a new AnalyzeTimer instance.
+   *
+   * @param timerCallback The callback that will be invoked after the timer has ended.
+   */
+  public AnalyzeTimer(@NonNull Runnable timerCallback) {
+    this.timerHandler = new Handler();
+    this.interval = DEFAULT_INTERVAL;
+    this.timerCallback = timerCallback;
 
-        Objects.requireNonNull(this.timerCallback, "Callback cannot be null");
+    Objects.requireNonNull(this.timerCallback, "Callback cannot be null");
+  }
+
+  /**
+   * Get the interval set to this timer.
+   *
+   * @return The interval.
+   */
+  public long getInterval() {
+    return interval;
+  }
+
+  /**
+   * Set the interval for the lint timer.
+   *
+   * @param interval The interval after which <code>timerCallback</code> will be called.
+   */
+  public void setInterval(long interval) {
+    this.interval = interval;
+
+    if (this.interval <= 0) {
+      throw new IllegalArgumentException("Invalid interval specified for timer.");
     }
+  }
 
-    /**
-     * Get the interval set to this timer.
-     *
-     * @return The interval.
-     */
-    public long getInterval() {
-        return interval;
-    }
+  /** Starts the timer. */
+  public void start() {
+    restart();
+  }
 
-    /**
-     * Set the interval for the lint timer.
-     *
-     * @param interval The interval after which <code>timerCallback</code> will be called.
-     */
-    public void setInterval(long interval) {
-        this.interval = interval;
+  /** Restarts the timer. */
+  public void restart() {
+    timerHandler.removeCallbacks(timerCallback);
+    timerHandler.postDelayed(timerCallback, interval);
+    started = true;
+  }
 
-        if (this.interval <= 0) {
-            throw new IllegalArgumentException("Invalid interval specified for timer.");
-        }
-    }
+  /** Shutdown the timer. Cancels any running timers. */
+  public void shutdown() {
+    timerHandler.removeCallbacks(timerCallback);
+    started = false;
+  }
 
-    /** Starts the timer. */
-    public void start() {
-        restart();
-    }
-
-    /** Restarts the timer. */
-    public void restart() {
-        timerHandler.removeCallbacks(timerCallback);
-        timerHandler.postDelayed(timerCallback, interval);
-        started = true;
-    }
-
-    /** Shutdown the timer. Cancels any running timers. */
-    public void shutdown() {
-        timerHandler.removeCallbacks(timerCallback);
-        started = false;
-    }
-
-    public boolean isStarted() {
-        return started;
-    }
+  public boolean isStarted() {
+    return started;
+  }
 }

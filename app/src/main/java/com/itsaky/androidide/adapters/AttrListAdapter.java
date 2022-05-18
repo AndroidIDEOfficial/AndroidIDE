@@ -34,48 +34,46 @@ import java.util.function.Consumer;
  */
 public class AttrListAdapter extends IconTextAdapter<Attr> {
 
-    private final Consumer<Attr> clickConsumer;
-    private final List<Attr> attrs;
+  private final Consumer<Attr> clickConsumer;
+  private final List<Attr> attrs;
 
-    public AttrListAdapter(Consumer<Attr> clickConsumer, List<Attr> attrs) {
-        this.clickConsumer = clickConsumer;
-        if (attrs == null) {
-            attrs = new ArrayList<>();
-        }
-
-        this.attrs = attrs;
+  public AttrListAdapter(Consumer<Attr> clickConsumer, List<Attr> attrs) {
+    this.clickConsumer = clickConsumer;
+    if (attrs == null) {
+      attrs = new ArrayList<>();
     }
 
-    @NonNull
-    @Override
-    public Attr getItemAt(int index) {
-        return attrs.get(index);
-    }
+    this.attrs = attrs;
+  }
 
-    @Override
-    public int getIconResource(int index) {
-        return R.drawable.ic_xml_attribute;
-    }
+  @NonNull
+  @Override
+  public Attr getItemAt(int index) {
+    return attrs.get(index);
+  }
 
-    @NonNull
-    @Override
-    public String getItemText(int index) {
-        return getItemAt(index).name;
-    }
+  @Override
+  public int getIconResource(int index) {
+    return R.drawable.ic_xml_attribute;
+  }
 
-    @Override
-    public int getItemCount() {
-        return attrs.size();
-    }
+  @NonNull
+  @Override
+  public String getItemText(int index) {
+    return getItemAt(index).name;
+  }
 
-    @Override
-    public void onBindViewHolder(@NonNull VH holder, int position) {
-        super.onBindViewHolder(holder, position);
+  @Override
+  public int getItemCount() {
+    return attrs.size();
+  }
 
-        if (clickConsumer != null) {
-            holder.binding
-                    .getRoot()
-                    .setOnClickListener(v -> clickConsumer.accept(getItemAt(position)));
-        }
+  @Override
+  public void onBindViewHolder(@NonNull VH holder, int position) {
+    super.onBindViewHolder(holder, position);
+
+    if (clickConsumer != null) {
+      holder.binding.getRoot().setOnClickListener(v -> clickConsumer.accept(getItemAt(position)));
     }
+  }
 }

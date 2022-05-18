@@ -23,24 +23,24 @@ import androidx.annotation.NonNull;
 
 public class Widget implements Comparable<Widget> {
 
-    public String name;
-    public String simpleName;
-    public boolean isViewGroup;
+  public String name;
+  public String simpleName;
+  public boolean isViewGroup;
 
-    public String[] superclasses = new String[0];
+  public String[] superclasses = new String[0];
 
-    public Widget(@NonNull String name, boolean isViewGroup) {
-        this.name = name;
-        this.simpleName = name.substring(name.lastIndexOf(".") + 1);
-        this.isViewGroup = isViewGroup;
+  public Widget(@NonNull String name, boolean isViewGroup) {
+    this.name = name;
+    this.simpleName = name.substring(name.lastIndexOf(".") + 1);
+    this.isViewGroup = isViewGroup;
+  }
+
+  @Override
+  public int compareTo(Widget that) {
+    if (that != null) {
+      return this.simpleName.compareTo(that.simpleName);
     }
 
-    @Override
-    public int compareTo(Widget that) {
-        if (that != null) {
-            return this.simpleName.compareTo(that.simpleName);
-        }
-
-        return -1;
-    }
+    return -1;
+  }
 }

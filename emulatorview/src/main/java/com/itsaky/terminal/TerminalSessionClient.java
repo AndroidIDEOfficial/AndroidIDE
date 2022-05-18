@@ -7,35 +7,35 @@ package com.itsaky.terminal;
  */
 public interface TerminalSessionClient {
 
-    void onTextChanged(TerminalSession changedSession);
+  void onTextChanged(TerminalSession changedSession);
 
-    void onTitleChanged(TerminalSession changedSession);
+  void onTitleChanged(TerminalSession changedSession);
 
-    void onSessionFinished(TerminalSession finishedSession);
+  void onSessionFinished(TerminalSession finishedSession);
 
-    void onCopyTextToClipboard(TerminalSession session, String text);
+  void onCopyTextToClipboard(TerminalSession session, String text);
 
-    void onPasteTextFromClipboard(TerminalSession session);
+  void onPasteTextFromClipboard(TerminalSession session);
 
-    void onBell(TerminalSession session);
+  void onBell(TerminalSession session);
 
-    void onColorsChanged(TerminalSession session);
+  void onColorsChanged(TerminalSession session);
 
-    void onTerminalCursorStateChange(boolean state);
+  void onTerminalCursorStateChange(boolean state);
 
-    Integer getTerminalCursorStyle();
+  Integer getTerminalCursorStyle();
 
-    void logError(String tag, String message);
+  void logError(String tag, String message);
 
-    void logWarn(String tag, String message);
+  void logWarn(String tag, String message);
 
-    void logInfo(String tag, String message);
+  void logInfo(String tag, String message);
 
-    void logDebug(String tag, String message);
+  void logDebug(String tag, String message);
 
-    void logVerbose(String tag, String message);
+  void logVerbose(String tag, String message);
 
-    void logStackTraceWithMessage(String tag, String message, Exception e);
+  void logStackTraceWithMessage(String tag, String message, Exception e);
 
-    void logStackTrace(String tag, Exception e);
+  void logStackTrace(String tag, Exception e);
 }

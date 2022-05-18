@@ -26,30 +26,30 @@ import com.itsaky.androidide.utils.ILogger;
  */
 public abstract class IDEHandler {
 
-    protected static final ILogger LOG = ILogger.instance();
+  protected static final ILogger LOG = ILogger.instance();
 
-    protected Provider provider;
+  protected Provider provider;
 
-    public IDEHandler(Provider provider) {
-        this.provider = provider;
-    }
+  public IDEHandler(Provider provider) {
+    this.provider = provider;
+  }
 
-    public abstract void start();
+  public abstract void start();
 
-    public abstract void stop();
+  public abstract void stop();
 
-    protected EditorActivity activity() {
-        return provider.provideEditorActivity();
-    }
+  protected EditorActivity activity() {
+    return provider.provideEditorActivity();
+  }
 
-    /** An interface to communicate between a handler and its client */
-    public interface Provider {
+  /** An interface to communicate between a handler and its client */
+  public interface Provider {
 
-        /**
-         * Called by handler to get a reference to {@link EditorActivity}
-         *
-         * @throws NullPointerException is this is required
-         */
-        EditorActivity provideEditorActivity();
-    }
+    /**
+     * Called by handler to get a reference to {@link EditorActivity}
+     *
+     * @throws NullPointerException is this is required
+     */
+    EditorActivity provideEditorActivity();
+  }
 }

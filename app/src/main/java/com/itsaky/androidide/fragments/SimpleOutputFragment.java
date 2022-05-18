@@ -31,30 +31,29 @@ import java.util.Objects;
 
 public class SimpleOutputFragment extends NonEditableEditorFragment {
 
-    private final List<String> unsavedLines = new ArrayList<>();
+  private final List<String> unsavedLines = new ArrayList<>();
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
-        if (!unsavedLines.isEmpty()) {
-            for (String line : unsavedLines) {
-                Objects.requireNonNull(getEditor()).append(line.trim() + "\n");
-            }
-            unsavedLines.clear();
-        }
+    if (!unsavedLines.isEmpty()) {
+      for (String line : unsavedLines) {
+        Objects.requireNonNull(getEditor()).append(line.trim() + "\n");
+      }
+      unsavedLines.clear();
     }
+  }
 
-    public void appendOutput(String output) {
-        if (getEditor() == null) {
-            unsavedLines.add(output);
-            return;
-        }
-        ThreadUtils.runOnUiThread(
-                () -> {
-                    final var message =
-                            output == null || output.endsWith("\n") ? output : output + "\n";
-                    getEditor().append(message);
-                });
+  public void appendOutput(String output) {
+    if (getEditor() == null) {
+      unsavedLines.add(output);
+      return;
     }
+    ThreadUtils.runOnUiThread(
+        () -> {
+          final var message = output == null || output.endsWith("\n") ? output : output + "\n";
+          getEditor().append(message);
+        });
+  }
 }

@@ -25,17 +25,17 @@ import java.util.function.Function;
  * https://microsoft.github.io/language-server-protocol/inspector/
  */
 public class MessageTracer implements Function<MessageConsumer, MessageConsumer> {
-	private final PrintWriter printWriter;
-	private final Map<String, RequestMetadata> sentRequests = new HashMap<>();
-	private final Map<String, RequestMetadata> receivedRequests = new HashMap<>();
+  private final PrintWriter printWriter;
+  private final Map<String, RequestMetadata> sentRequests = new HashMap<>();
+  private final Map<String, RequestMetadata> receivedRequests = new HashMap<>();
 
-	MessageTracer(PrintWriter printWriter) {
-		this.printWriter = Objects.requireNonNull(printWriter);
-	}
+  MessageTracer(PrintWriter printWriter) {
+    this.printWriter = Objects.requireNonNull(printWriter);
+  }
 
-	@Override
-	public MessageConsumer apply(MessageConsumer messageConsumer) {
-		return new TracingMessageConsumer(
-				messageConsumer, sentRequests, receivedRequests, printWriter, Clock.systemDefaultZone());
-	}
+  @Override
+  public MessageConsumer apply(MessageConsumer messageConsumer) {
+    return new TracingMessageConsumer(
+        messageConsumer, sentRequests, receivedRequests, printWriter, Clock.systemDefaultZone());
+  }
 }

@@ -45,55 +45,55 @@ import kotlin.jvm.functions.Function1;
 
 public class SynchronizedTask {
 
-    private static final ILogger LOG = ILogger.newInstance("SynchronizedTask");
-    private final Semaphore semaphore = new Semaphore(1);
-    private volatile boolean isWriting;
-    private CompileTask task;
+  private static final ILogger LOG = ILogger.newInstance("SynchronizedTask");
+  private final Semaphore semaphore = new Semaphore(1);
+  private volatile boolean isWriting;
+  private CompileTask task;
 
-    public void run(@NonNull Consumer<CompileTask> taskConsumer) {
-        semaphore.acquireUninterruptibly();
-        try {
-            taskConsumer.accept(this.task);
-        } catch (Throwable th) {
-            LOG.error("An error occurred in SynchronizedTask.run()", th);
-        } finally {
-            semaphore.release();
-        }
+  public void run(@NonNull Consumer<CompileTask> taskConsumer) {
+    semaphore.acquireUninterruptibly();
+    try {
+      taskConsumer.accept(this.task);
+    } catch (Throwable th) {
+      LOG.error("An error occurred in SynchronizedTask.run()", th);
+    } finally {
+      semaphore.release();
     }
+  }
 
-    public <T> T get(@NonNull Function1<CompileTask, T> function) {
-        semaphore.acquireUninterruptibly();
-        try {
-            return function.invoke(this.task);
-        } catch (Throwable th) {
-            LOG.error("An error occurred in SynchronizedTask.get()", th);
-            return null;
-        } finally {
-            semaphore.release();
-        }
+  public <T> T get(@NonNull Function1<CompileTask, T> function) {
+    semaphore.acquireUninterruptibly();
+    try {
+      return function.invoke(this.task);
+    } catch (Throwable th) {
+      LOG.error("An error occurred in SynchronizedTask.get()", th);
+      return null;
+    } finally {
+      semaphore.release();
     }
+  }
 
-    void doCompile(@NonNull Runnable run) {
-        semaphore.acquireUninterruptibly();
-        isWriting = true;
-        try {
-            if (this.task != null) {
-                this.task.close();
-            }
-            run.run();
-        } catch (Throwable th) {
-            LOG.error("An error occurred in SynchronizedTask.doCompile()", th);
-        } finally {
-            isWriting = false;
-            semaphore.release();
-        }
+  void doCompile(@NonNull Runnable run) {
+    semaphore.acquireUninterruptibly();
+    isWriting = true;
+    try {
+      if (this.task != null) {
+        this.task.close();
+      }
+      run.run();
+    } catch (Throwable th) {
+      LOG.error("An error occurred in SynchronizedTask.doCompile()", th);
+    } finally {
+      isWriting = false;
+      semaphore.release();
     }
+  }
 
-    void setTask(CompileTask task) {
-        this.task = task;
-    }
+  void setTask(CompileTask task) {
+    this.task = task;
+  }
 
-    public synchronized boolean isWriting() {
-        return isWriting || semaphore.hasQueuedThreads();
-    }
+  public synchronized boolean isWriting() {
+    return isWriting || semaphore.hasQueuedThreads();
+  }
 }

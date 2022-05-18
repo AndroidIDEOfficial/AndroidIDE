@@ -18,17 +18,14 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to mark a notification method on an interface or class.
- * <p>
- * A notification method must be of type <code>void</code> and have zero or one
- * argument.
- * <p>
- * According to jsonrpc an argument must be an 'object' (a java bean, not e,g.
- * String).
- * <p>
- * The name of the jsonrpc notification will be the optional segment, followed
- * by the name of the Java method that is annotated with JsonNotification. The
- * name of the jsonrpc notification can be customized by using the
- * {@link #value()} field of this annotation. To specify the whole name,
+ *
+ * <p>A notification method must be of type <code>void</code> and have zero or one argument.
+ *
+ * <p>According to jsonrpc an argument must be an 'object' (a java bean, not e,g. String).
+ *
+ * <p>The name of the jsonrpc notification will be the optional segment, followed by the name of the
+ * Java method that is annotated with JsonNotification. The name of the jsonrpc notification can be
+ * customized by using the {@link #value()} field of this annotation. To specify the whole name,
  * including the segment, in the value, set {@link #useSegment()} to false.
  *
  * @see JsonSegment
@@ -36,17 +33,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface JsonNotification {
-	/**
-	 * The name of the the jsonrpc request method. If empty, uses the name of the
-	 * annotated method.
-	 */
-	String value() default "";
+  /**
+   * The name of the the jsonrpc request method. If empty, uses the name of the annotated method.
+   */
+  String value() default "";
 
-	/**
-	 * When using segments, useSegment will be true to prepend the segment name to
-	 * the name of the request.
-	 *
-	 * @see JsonSegment
-	 */
-	boolean useSegment() default true;
+  /**
+   * When using segments, useSegment will be true to prepend the segment name to the name of the
+   * request.
+   *
+   * @see JsonSegment
+   */
+  boolean useSegment() default true;
 }

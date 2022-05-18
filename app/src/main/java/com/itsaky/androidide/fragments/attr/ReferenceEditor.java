@@ -40,44 +40,44 @@ import java.util.stream.Collectors;
  */
 public class ReferenceEditor extends AbstractReferenceEditor {
 
-    private LayoutReferenceAttrEditorBinding binding;
+  private LayoutReferenceAttrEditorBinding binding;
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        this.binding = LayoutReferenceAttrEditorBinding.inflate(inflater, container, false);
-        return this.binding.getRoot();
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    this.binding = LayoutReferenceAttrEditorBinding.inflate(inflater, container, false);
+    return this.binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+
+    setupReferenceInput((MaterialAutoCompleteTextView) this.binding.resInput.getEditText());
+  }
+
+  @Override
+  protected List<String> computeReferenceItems() {
+    final var resTable = StudioApp.getInstance().getResourceTable();
+    final var list = new ArrayList<>(resTable.listResourceNames(null));
+
+    final var tables = ValuesTableFactory.getAllTables();
+    for (var entry : tables.entrySet()) {
+      final var resourceMap = entry.getValue().getResourceMap();
+      for (var resourceEntries : resourceMap.entrySet()) {
+        final var name = resourceEntries.getKey();
+        list.addAll(
+            resourceEntries.getValue().keySet().stream()
+                .map(("@android:" + name + "/")::concat)
+                .collect(Collectors.toList()));
+      }
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    list.addAll(FrameworkValues.listAllResources());
 
-        setupReferenceInput((MaterialAutoCompleteTextView) this.binding.resInput.getEditText());
-    }
-
-    @Override
-    protected List<String> computeReferenceItems() {
-        final var resTable = StudioApp.getInstance().getResourceTable();
-        final var list = new ArrayList<>(resTable.listResourceNames(null));
-
-        final var tables = ValuesTableFactory.getAllTables();
-        for (var entry : tables.entrySet()) {
-            final var resourceMap = entry.getValue().getResourceMap();
-            for (var resourceEntries : resourceMap.entrySet()) {
-                final var name = resourceEntries.getKey();
-                list.addAll(
-                        resourceEntries.getValue().keySet().stream()
-                                .map(("@android:" + name + "/")::concat)
-                                .collect(Collectors.toList()));
-            }
-        }
-
-        list.addAll(FrameworkValues.listAllResources());
-
-        return list;
-    }
+    return list;
+  }
 }

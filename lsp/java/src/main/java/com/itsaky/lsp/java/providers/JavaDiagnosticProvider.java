@@ -35,27 +35,27 @@ import java.util.List;
  */
 public class JavaDiagnosticProvider {
 
-    private final CompilerProvider compiler;
+  private final CompilerProvider compiler;
 
-    public JavaDiagnosticProvider(CompilerProvider compiler) {
-        this.compiler = compiler;
-    }
+  public JavaDiagnosticProvider(CompilerProvider compiler) {
+    this.compiler = compiler;
+  }
 
-    private static boolean isTaskValid(CompileTask task) {
-        return task != null && task.task != null && task.roots != null && task.roots.size() > 0;
-    }
+  private static boolean isTaskValid(CompileTask task) {
+    return task != null && task.task != null && task.roots != null && task.roots.size() > 0;
+  }
 
-    @NonNull
-    public List<DiagnosticItem> analyze(@NonNull Path file) {
-        final SynchronizedTask synchronizedTask = compiler.compile(file);
-        return synchronizedTask.get(
-                task -> {
-                    if (!isTaskValid(task)) {
-                        // Do not use Collections.emptyList ()
-                        return new ArrayList<>();
-                    }
+  @NonNull
+  public List<DiagnosticItem> analyze(@NonNull Path file) {
+    final SynchronizedTask synchronizedTask = compiler.compile(file);
+    return synchronizedTask.get(
+        task -> {
+          if (!isTaskValid(task)) {
+            // Do not use Collections.emptyList ()
+            return new ArrayList<>();
+          }
 
-                    return DiagnosticsProvider.findDiagnostics(task, file);
-                });
-    }
+          return DiagnosticsProvider.findDiagnostics(task, file);
+        });
+  }
 }

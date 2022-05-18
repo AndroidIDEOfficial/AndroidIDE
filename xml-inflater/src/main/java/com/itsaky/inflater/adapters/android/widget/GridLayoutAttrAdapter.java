@@ -32,74 +32,74 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  */
 public class GridLayoutAttrAdapter extends ViewGroupAttrAdapter {
 
-    public GridLayoutAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
+  public GridLayoutAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof GridLayout;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    final var grid = (GridLayout) view;
+    final var name = attribute.getAttributeName();
+    final var value = attribute.getValue();
+
+    if (!canHandleNamespace(attribute)) {
+      return false;
     }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof GridLayout;
+    boolean handled = true;
+    switch (name) {
+      case "alignmentMode":
+        grid.setAlignmentMode(parseAlignmentMode(value));
+        break;
+      case "columnCount":
+        grid.setColumnCount(parseInteger(value, Integer.MIN_VALUE));
+        break;
+      case "columnOrderPreserved":
+        grid.setColumnOrderPreserved(parseBoolean(value));
+        break;
+      case "orientation":
+        grid.setOrientation(parseOrientation(value));
+        break;
+      case "rowCount":
+        grid.setRowCount(parseInteger(value, Integer.MIN_VALUE));
+        break;
+      case "rowOrderPreserved":
+        grid.setRowOrderPreserved(parseBoolean(value));
+        break;
+      case "useDefaultMargins":
+        grid.setUseDefaultMargins(parseBoolean(value));
+        break;
+      default:
+        handled = false;
+        break;
     }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        final var grid = (GridLayout) view;
-        final var name = attribute.getAttributeName();
-        final var value = attribute.getValue();
-
-        if (!canHandleNamespace(attribute)) {
-            return false;
-        }
-
-        boolean handled = true;
-        switch (name) {
-            case "alignmentMode":
-                grid.setAlignmentMode(parseAlignmentMode(value));
-                break;
-            case "columnCount":
-                grid.setColumnCount(parseInteger(value, Integer.MIN_VALUE));
-                break;
-            case "columnOrderPreserved":
-                grid.setColumnOrderPreserved(parseBoolean(value));
-                break;
-            case "orientation":
-                grid.setOrientation(parseOrientation(value));
-                break;
-            case "rowCount":
-                grid.setRowCount(parseInteger(value, Integer.MIN_VALUE));
-                break;
-            case "rowOrderPreserved":
-                grid.setRowOrderPreserved(parseBoolean(value));
-                break;
-            case "useDefaultMargins":
-                grid.setUseDefaultMargins(parseBoolean(value));
-                break;
-            default:
-                handled = false;
-                break;
-        }
-
-        if (!handled) {
-            handled = super.apply(attribute, view);
-        }
-
-        return handled;
+    if (!handled) {
+      handled = super.apply(attribute, view);
     }
 
-    protected int parseOrientation(String value) {
-        if ("vertical".equals(value)) {
-            return GridLayout.VERTICAL;
-        }
+    return handled;
+  }
 
-        return GridLayout.HORIZONTAL;
+  protected int parseOrientation(String value) {
+    if ("vertical".equals(value)) {
+      return GridLayout.VERTICAL;
     }
 
-    protected int parseAlignmentMode(String value) {
-        if ("alignBounds".equals(value)) {
-            return GridLayout.ALIGN_BOUNDS;
-        }
+    return GridLayout.HORIZONTAL;
+  }
 
-        return GridLayout.ALIGN_MARGINS;
+  protected int parseAlignmentMode(String value) {
+    if ("alignBounds".equals(value)) {
+      return GridLayout.ALIGN_BOUNDS;
     }
+
+    return GridLayout.ALIGN_MARGINS;
+  }
 }

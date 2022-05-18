@@ -26,16 +26,16 @@ import com.itsaky.inflater.IView;
  */
 public class IncludeLayout extends BaseView {
 
-    public static final String TAG = "include";
-    private final IView view;
+  public static final String TAG = "include";
+  private final IView view;
 
-    public IncludeLayout(IView view) {
-        super(TAG, view.asView(), false);
-        this.view = view;
-    }
+  public IncludeLayout(IView view) {
+    super(TAG, view.asView(), false);
+    this.view = view;
+  }
 
-    @Override
-    public String getXmlTag() {
-        return TAG;
-    }
+  @Override
+  public String getXmlTag() {
+    return TAG;
+  }
 }

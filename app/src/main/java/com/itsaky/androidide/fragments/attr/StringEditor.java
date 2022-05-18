@@ -41,54 +41,50 @@ import java.util.stream.Collectors;
  */
 public class StringEditor extends AbstractReferenceEditor {
 
-    private LayoutStringAttrEditorBinding binding;
+  private LayoutStringAttrEditorBinding binding;
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        this.binding = LayoutStringAttrEditorBinding.inflate(inflater, container, false);
-        return this.binding.getRoot();
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    this.binding = LayoutStringAttrEditorBinding.inflate(inflater, container, false);
+    return this.binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+
+    final var stringInput = Objects.requireNonNull(this.binding.stringInput.getEditText());
+    stringInput.addTextChangedListener(
+        new TextWatcherAdapter() {
+          @Override
+          public void afterTextChanged(@NonNull Editable s) {
+            notifyValueChanged(s.toString());
+          }
+        });
+
+    stringInput.setText(this.attribute.getValue());
+    setupReferenceInput((MaterialAutoCompleteTextView) this.binding.stringResInput.getEditText());
+  }
+
+  @Override
+  protected List<String> computeReferenceItems() {
+    final var list = new ArrayList<String>();
+    final var tables = ValuesTableFactory.getAllTables();
+    for (var entry : tables.entrySet()) {
+      final var dimens = entry.getValue().getTable("string");
+      if (dimens != null) {
+        list.addAll(dimens.keySet().stream().map("@string/"::concat).collect(Collectors.toSet()));
+      }
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        final var stringInput = Objects.requireNonNull(this.binding.stringInput.getEditText());
-        stringInput.addTextChangedListener(
-                new TextWatcherAdapter() {
-                    @Override
-                    public void afterTextChanged(@NonNull Editable s) {
-                        notifyValueChanged(s.toString());
-                    }
-                });
-
-        stringInput.setText(this.attribute.getValue());
-        setupReferenceInput(
-                (MaterialAutoCompleteTextView) this.binding.stringResInput.getEditText());
-    }
-
-    @Override
-    protected List<String> computeReferenceItems() {
-        final var list = new ArrayList<String>();
-        final var tables = ValuesTableFactory.getAllTables();
-        for (var entry : tables.entrySet()) {
-            final var dimens = entry.getValue().getTable("string");
-            if (dimens != null) {
-                list.addAll(
-                        dimens.keySet().stream()
-                                .map("@string/"::concat)
-                                .collect(Collectors.toSet()));
-            }
-        }
-
-        list.addAll(
-                FrameworkValues.listStrings().stream()
-                        .map("@android:string/"::concat)
-                        .collect(Collectors.toList()));
-        return list;
-    }
+    list.addAll(
+        FrameworkValues.listStrings().stream()
+            .map("@android:string/"::concat)
+            .collect(Collectors.toList()));
+    return list;
+  }
 }

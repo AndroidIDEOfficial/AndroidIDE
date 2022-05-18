@@ -27,42 +27,42 @@ import java.util.regex.Pattern;
  * characters from tryConsume? -- but it is convenient for the lexer.
  */
 final class CharStream {
-    String remaining;
-    int toConsume;
+  String remaining;
+  int toConsume;
 
-    CharStream(String input) {
-        this.remaining = checkNotNull(input);
-    }
+  CharStream(String input) {
+    this.remaining = checkNotNull(input);
+  }
 
-    boolean tryConsume(String expected) {
-        if (!remaining.startsWith(expected)) {
-            return false;
-        }
-        toConsume = expected.length();
-        return true;
+  boolean tryConsume(String expected) {
+    if (!remaining.startsWith(expected)) {
+      return false;
     }
+    toConsume = expected.length();
+    return true;
+  }
 
-    /*
-     * @param pattern the pattern to search for, which must be anchored to match only at position 0
-     */
-    boolean tryConsumeRegex(Pattern pattern) {
-        Matcher matcher = pattern.matcher(remaining);
-        if (!matcher.find()) {
-            return false;
-        }
-        checkArgument(matcher.start() == 0);
-        toConsume = matcher.end();
-        return true;
+  /*
+   * @param pattern the pattern to search for, which must be anchored to match only at position 0
+   */
+  boolean tryConsumeRegex(Pattern pattern) {
+    Matcher matcher = pattern.matcher(remaining);
+    if (!matcher.find()) {
+      return false;
     }
+    checkArgument(matcher.start() == 0);
+    toConsume = matcher.end();
+    return true;
+  }
 
-    String readAndResetRecorded() {
-        String result = remaining.substring(0, toConsume);
-        remaining = remaining.substring(toConsume);
-        toConsume = 0; // TODO(cpovirk): Set this to a bogus value here and in the constructor.
-        return result;
-    }
+  String readAndResetRecorded() {
+    String result = remaining.substring(0, toConsume);
+    remaining = remaining.substring(toConsume);
+    toConsume = 0; // TODO(cpovirk): Set this to a bogus value here and in the constructor.
+    return result;
+  }
 
-    boolean isExhausted() {
-        return remaining.isEmpty();
-    }
+  boolean isExhausted() {
+    return remaining.isEmpty();
+  }
 }

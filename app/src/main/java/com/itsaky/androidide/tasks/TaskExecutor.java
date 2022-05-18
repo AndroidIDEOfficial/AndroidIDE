@@ -27,54 +27,48 @@ import java.util.concurrent.CompletionException;
 
 public class TaskExecutor {
 
-    private final ILogger LOG = ILogger.newInstance("TaskExecutor");
+  private final ILogger LOG = ILogger.newInstance("TaskExecutor");
 
-    public static <R> void execAsync(Callable<R> callable, Callback<R> callback) {
-        new TaskExecutor().executeAsync(callable, callback);
-    }
+  public static <R> void execAsync(Callable<R> callable, Callback<R> callback) {
+    new TaskExecutor().executeAsync(callable, callback);
+  }
 
-    public <R> void executeAsync(Callable<R> callable, Callback<R> callback) {
-        CompletableFuture.supplyAsync(
-                        () -> {
-                            try {
-                                return callable.call();
-                            } catch (Throwable th) {
-                                LOG.error(
-                                        "An error occurred while executing Callable in background"
-                                                + " thread.",
-                                        th);
-                                return null;
-                            }
-                        })
-                .whenComplete(
-                        (result, throwable) ->
-                                ThreadUtils.runOnUiThread(() -> callback.complete(result)));
-    }
+  public <R> void executeAsync(Callable<R> callable, Callback<R> callback) {
+    CompletableFuture.supplyAsync(
+            () -> {
+              try {
+                return callable.call();
+              } catch (Throwable th) {
+                LOG.error(
+                    "An error occurred while executing Callable in background" + " thread.", th);
+                return null;
+              }
+            })
+        .whenComplete(
+            (result, throwable) -> ThreadUtils.runOnUiThread(() -> callback.complete(result)));
+  }
 
-    public <R> void executeAsyncProvideError(Callable<R> callable, CallbackWithError<R> callback) {
-        CompletableFuture.supplyAsync(
-                        () -> {
-                            try {
-                                return callable.call();
-                            } catch (Throwable th) {
-                                LOG.error(
-                                        "An error occurred while executing Callable in background"
-                                                + " thread.",
-                                        th);
-                                throw new CompletionException(th);
-                            }
-                        })
-                .whenComplete(
-                        (result, throwable) ->
-                                ThreadUtils.runOnUiThread(
-                                        () -> callback.complete(result, throwable)));
-    }
+  public <R> void executeAsyncProvideError(Callable<R> callable, CallbackWithError<R> callback) {
+    CompletableFuture.supplyAsync(
+            () -> {
+              try {
+                return callable.call();
+              } catch (Throwable th) {
+                LOG.error(
+                    "An error occurred while executing Callable in background" + " thread.", th);
+                throw new CompletionException(th);
+              }
+            })
+        .whenComplete(
+            (result, throwable) ->
+                ThreadUtils.runOnUiThread(() -> callback.complete(result, throwable)));
+  }
 
-    public interface Callback<R> {
-        void complete(R result);
-    }
+  public interface Callback<R> {
+    void complete(R result);
+  }
 
-    public interface CallbackWithError<R> {
-        void complete(R result, Throwable error);
-    }
+  public interface CallbackWithError<R> {
+    void complete(R result, Throwable error);
+  }
 }

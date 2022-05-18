@@ -29,21 +29,21 @@ import com.itsaky.lsp.actions.CodeActionsMenu;
  */
 public class LSPEditorActions {
 
-    private static final ILogger LOG = newInstance("LSPEditorActions");
+  private static final ILogger LOG = newInstance("LSPEditorActions");
 
-    public static void ensureActionsMenuRegistered(Class<? extends CodeActionsMenu> klass) {
-        final var registry = ActionsRegistry.getInstance();
-        final var action =
-                registry.findAction(ActionItem.Location.EDITOR_TEXT_ACTIONS, CodeActionsMenu.ID);
-        
-        if (action == null) {
-            try {
-                final var constructor = klass.getDeclaredConstructor();
-                final var instance = constructor.newInstance();
-                registry.registerAction(instance);
-            } catch (Throwable throwable) {
-                LOG.error("Unable to register code actions item to editor text actions");
-            }
-        }
+  public static void ensureActionsMenuRegistered(Class<? extends CodeActionsMenu> klass) {
+    final var registry = ActionsRegistry.getInstance();
+    final var action =
+        registry.findAction(ActionItem.Location.EDITOR_TEXT_ACTIONS, CodeActionsMenu.ID);
+
+    if (action == null) {
+      try {
+        final var constructor = klass.getDeclaredConstructor();
+        final var instance = constructor.newInstance();
+        registry.registerAction(instance);
+      } catch (Throwable throwable) {
+        LOG.error("Unable to register code actions item to editor text actions");
+      }
     }
+  }
 }

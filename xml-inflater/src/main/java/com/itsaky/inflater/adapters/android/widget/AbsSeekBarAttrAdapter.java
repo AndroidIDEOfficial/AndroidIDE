@@ -33,51 +33,51 @@ import com.itsaky.inflater.IResourceTable;
  */
 public abstract class AbsSeekBarAttrAdapter extends ProgressBarAttrAdapter {
 
-    public AbsSeekBarAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
+  public AbsSeekBarAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof AbsSeekBar;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    final var seek = (AbsSeekBar) view;
+    final var namespace = attribute.getNamespace();
+    final var name = attribute.getAttributeName();
+    final var value = attribute.getValue();
+
+    if (!canHandleNamespace(namespace)) {
+      return false;
     }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof AbsSeekBar;
+    boolean handled = true;
+
+    switch (name) {
+      case "thumbTint":
+        seek.setThumbTintList(parseColorStateList(value, seek.getContext()));
+        break;
+      case "thumbTintMode":
+        seek.setThumbTintMode(parsePorterDuffMode(value));
+        break;
+      case "tickMarkTint":
+        seek.setTickMarkTintList(parseColorStateList(value, seek.getContext()));
+        break;
+      case "tickMarkTintMode":
+        seek.setTickMarkTintMode(parsePorterDuffMode(value));
+        break;
+      default:
+        handled = false;
+        break;
     }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        final var seek = (AbsSeekBar) view;
-        final var namespace = attribute.getNamespace();
-        final var name = attribute.getAttributeName();
-        final var value = attribute.getValue();
-
-        if (!canHandleNamespace(namespace)) {
-            return false;
-        }
-
-        boolean handled = true;
-
-        switch (name) {
-            case "thumbTint":
-                seek.setThumbTintList(parseColorStateList(value, seek.getContext()));
-                break;
-            case "thumbTintMode":
-                seek.setThumbTintMode(parsePorterDuffMode(value));
-                break;
-            case "tickMarkTint":
-                seek.setTickMarkTintList(parseColorStateList(value, seek.getContext()));
-                break;
-            case "tickMarkTintMode":
-                seek.setTickMarkTintMode(parsePorterDuffMode(value));
-                break;
-            default:
-                handled = false;
-                break;
-        }
-
-        if (!handled) {
-            handled = super.apply(attribute, view);
-        }
-
-        return handled;
+    if (!handled) {
+      handled = super.apply(attribute, view);
     }
+
+    return handled;
+  }
 }

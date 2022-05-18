@@ -26,83 +26,83 @@ import java.io.File;
 
 public class Symbols {
 
-    public static Symbol[] forFile(@Nullable File file) {
-        if (file == null) {
-            return new Symbol[0];
-        }
-
-        if (file.isFile()) {
-            if (file.getName().endsWith(".java") || file.getName().endsWith(".gradle"))
-                return javaSymbols();
-
-            if (file.getName().endsWith(".xml")) return xmlSymbols();
-        }
-
-        return new Symbol[0];
+  public static Symbol[] forFile(@Nullable File file) {
+    if (file == null) {
+      return new Symbol[0];
     }
 
-    public static String createTabSpaces() {
-        int size = StudioApp.getInstance().getPrefManager().getEditorTabSize();
-        StringBuilder tab = new StringBuilder();
-        for (int i = 1; i <= size; i++) {
-            tab.append(" ");
-        }
-        return tab.toString();
+    if (file.isFile()) {
+      if (file.getName().endsWith(".java") || file.getName().endsWith(".gradle"))
+        return javaSymbols();
+
+      if (file.getName().endsWith(".xml")) return xmlSymbols();
     }
 
-    public static Symbol[] javaSymbols() {
-        return new Symbol[] {
-            new Symbol("↹", "\t"),
-            new Symbol("{", "{}"),
-            new Symbol("}"),
-            new Symbol("(", "()"),
-            new Symbol(")"),
-            new Symbol(";"),
-            new Symbol("="),
-            new Symbol("\"", "\"\""),
-            new Symbol("|"),
-            new Symbol("&"),
-            new Symbol("!"),
-            new Symbol("[", "[]"),
-            new Symbol("]"),
-            new Symbol("<", "<>"),
-            new Symbol(">"),
-            new Symbol("+"),
-            new Symbol("-"),
-            new Symbol("/"),
-            new Symbol("*"),
-            new Symbol("?"),
-            new Symbol(":"),
-            new Symbol("_")
-        };
-    }
+    return new Symbol[0];
+  }
 
-    public static Symbol[] xmlSymbols() {
-        return new Symbol[] {
-            new Symbol("↹", "\t"),
-            new Symbol("<", "<>"),
-            new Symbol(">"),
-            new Symbol("/"),
-            new Symbol("="),
-            new Symbol("\"", "\"\""),
-            new Symbol(":"),
-            new Symbol("@"),
-            new Symbol("+"),
-            new Symbol("(", "()"),
-            new Symbol(")"),
-            new Symbol(";"),
-            new Symbol(","),
-            new Symbol("."),
-            new Symbol("?"),
-            new Symbol("|"),
-            new Symbol("\\"),
-            new Symbol("&"),
-            new Symbol("[", "[]"),
-            new Symbol("]"),
-            new Symbol("{", "{}"),
-            new Symbol("}"),
-            new Symbol("_"),
-            new Symbol("-")
-        };
+  public static String createTabSpaces() {
+    int size = StudioApp.getInstance().getPrefManager().getEditorTabSize();
+    StringBuilder tab = new StringBuilder();
+    for (int i = 1; i <= size; i++) {
+      tab.append(" ");
     }
+    return tab.toString();
+  }
+
+  public static Symbol[] javaSymbols() {
+    return new Symbol[] {
+      new Symbol("↹", "\t"),
+      new Symbol("{", "{}"),
+      new Symbol("}"),
+      new Symbol("(", "()"),
+      new Symbol(")"),
+      new Symbol(";"),
+      new Symbol("="),
+      new Symbol("\"", "\"\""),
+      new Symbol("|"),
+      new Symbol("&"),
+      new Symbol("!"),
+      new Symbol("[", "[]"),
+      new Symbol("]"),
+      new Symbol("<", "<>"),
+      new Symbol(">"),
+      new Symbol("+"),
+      new Symbol("-"),
+      new Symbol("/"),
+      new Symbol("*"),
+      new Symbol("?"),
+      new Symbol(":"),
+      new Symbol("_")
+    };
+  }
+
+  public static Symbol[] xmlSymbols() {
+    return new Symbol[] {
+      new Symbol("↹", "\t"),
+      new Symbol("<", "<>"),
+      new Symbol(">"),
+      new Symbol("/"),
+      new Symbol("="),
+      new Symbol("\"", "\"\""),
+      new Symbol(":"),
+      new Symbol("@"),
+      new Symbol("+"),
+      new Symbol("(", "()"),
+      new Symbol(")"),
+      new Symbol(";"),
+      new Symbol(","),
+      new Symbol("."),
+      new Symbol("?"),
+      new Symbol("|"),
+      new Symbol("\\"),
+      new Symbol("&"),
+      new Symbol("[", "[]"),
+      new Symbol("]"),
+      new Symbol("{", "{}"),
+      new Symbol("}"),
+      new Symbol("_"),
+      new Symbol("-")
+    };
+  }
 }

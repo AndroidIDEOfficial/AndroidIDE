@@ -34,26 +34,26 @@ import com.sun.tools.javac.util.ListBuffer;
 import java.util.Collection;
 
 /**
- *
  * @author lahvac
  */
 public class NBClassWriter extends ClassWriter {
 
-    public static void preRegister(Context context) {
-        context.put(classWriterKey, new Context.Factory<ClassWriter>() {
-            public ClassWriter make(Context c) {
-                return new NBClassWriter(c);
-            }
+  public static void preRegister(Context context) {
+    context.put(
+        classWriterKey,
+        new Context.Factory<ClassWriter>() {
+          public ClassWriter make(Context c) {
+            return new NBClassWriter(c);
+          }
         });
-    }
+  }
 
-    private final NBNames nbNames;
-    private final Types types;
+  private final NBNames nbNames;
+  private final Types types;
 
-    protected NBClassWriter(Context context) {
-        super(context);
-        nbNames = NBNames.instance(context);
-        types = Types.instance(context);
-    }
-    
+  protected NBClassWriter(Context context) {
+    super(context);
+    nbNames = NBNames.instance(context);
+    types = Types.instance(context);
+  }
 }

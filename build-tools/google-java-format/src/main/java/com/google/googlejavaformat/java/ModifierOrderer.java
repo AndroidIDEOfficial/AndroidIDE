@@ -38,141 +38,139 @@ import javax.lang.model.element.Modifier;
 /** Fixes sequences of modifiers to be in JLS order. */
 final class ModifierOrderer {
 
-    /** Reorders all modifiers in the given text to be in JLS order. */
-    static JavaInput reorderModifiers(String text) throws FormatterException {
-        return reorderModifiers(
-                new JavaInput(text), ImmutableList.of(Range.closedOpen(0, text.length())));
+  /** Reorders all modifiers in the given text to be in JLS order. */
+  static JavaInput reorderModifiers(String text) throws FormatterException {
+    return reorderModifiers(
+        new JavaInput(text), ImmutableList.of(Range.closedOpen(0, text.length())));
+  }
+
+  /**
+   * Reorders all modifiers in the given text and within the given character ranges to be in JLS
+   * order.
+   */
+  static JavaInput reorderModifiers(JavaInput javaInput, Collection<Range<Integer>> characterRanges)
+      throws FormatterException {
+    if (javaInput.getTokens().isEmpty()) {
+      // There weren't any tokens, possible because of a lexing error.
+      // Errors about invalid input will be reported later after parsing.
+      return javaInput;
     }
+    RangeSet<Integer> tokenRanges = javaInput.characterRangesToTokenRanges(characterRanges);
+    Iterator<? extends Token> it = javaInput.getTokens().iterator();
+    TreeRangeMap<Integer, String> replacements = TreeRangeMap.create();
+    while (it.hasNext()) {
+      Token token = it.next();
+      if (!tokenRanges.contains(token.getTok().getIndex())) {
+        continue;
+      }
+      Modifier mod = asModifier(token);
+      if (mod == null) {
+        continue;
+      }
 
-    /**
-     * Reorders all modifiers in the given text and within the given character ranges to be in JLS
-     * order.
-     */
-    static JavaInput reorderModifiers(
-            JavaInput javaInput, Collection<Range<Integer>> characterRanges)
-            throws FormatterException {
-        if (javaInput.getTokens().isEmpty()) {
-            // There weren't any tokens, possible because of a lexing error.
-            // Errors about invalid input will be reported later after parsing.
-            return javaInput;
+      List<Token> modifierTokens = new ArrayList<>();
+      List<Modifier> mods = new ArrayList<>();
+
+      int begin = token.getTok().getPosition();
+      mods.add(mod);
+      modifierTokens.add(token);
+
+      int end = -1;
+      while (it.hasNext()) {
+        token = it.next();
+        mod = asModifier(token);
+        if (mod == null) {
+          break;
         }
-        RangeSet<Integer> tokenRanges = javaInput.characterRangesToTokenRanges(characterRanges);
-        Iterator<? extends Token> it = javaInput.getTokens().iterator();
-        TreeRangeMap<Integer, String> replacements = TreeRangeMap.create();
-        while (it.hasNext()) {
-            Token token = it.next();
-            if (!tokenRanges.contains(token.getTok().getIndex())) {
-                continue;
-            }
-            Modifier mod = asModifier(token);
-            if (mod == null) {
-                continue;
-            }
+        mods.add(mod);
+        modifierTokens.add(token);
+        end = token.getTok().getPosition() + token.getTok().length();
+      }
 
-            List<Token> modifierTokens = new ArrayList<>();
-            List<Modifier> mods = new ArrayList<>();
-
-            int begin = token.getTok().getPosition();
-            mods.add(mod);
-            modifierTokens.add(token);
-
-            int end = -1;
-            while (it.hasNext()) {
-                token = it.next();
-                mod = asModifier(token);
-                if (mod == null) {
-                    break;
-                }
-                mods.add(mod);
-                modifierTokens.add(token);
-                end = token.getTok().getPosition() + token.getTok().length();
-            }
-
-            if (!Ordering.natural().isOrdered(mods)) {
-                Collections.sort(mods);
-                StringBuilder replacement = new StringBuilder();
-                for (int i = 0; i < mods.size(); i++) {
-                    if (i > 0) {
-                        addTrivia(replacement, modifierTokens.get(i).getToksBefore());
-                    }
-                    replacement.append(mods.get(i));
-                    if (i < (modifierTokens.size() - 1)) {
-                        addTrivia(replacement, modifierTokens.get(i).getToksAfter());
-                    }
-                }
-                replacements.put(Range.closedOpen(begin, end), replacement.toString());
-            }
+      if (!Ordering.natural().isOrdered(mods)) {
+        Collections.sort(mods);
+        StringBuilder replacement = new StringBuilder();
+        for (int i = 0; i < mods.size(); i++) {
+          if (i > 0) {
+            addTrivia(replacement, modifierTokens.get(i).getToksBefore());
+          }
+          replacement.append(mods.get(i));
+          if (i < (modifierTokens.size() - 1)) {
+            addTrivia(replacement, modifierTokens.get(i).getToksAfter());
+          }
         }
-        return applyReplacements(javaInput, replacements);
+        replacements.put(Range.closedOpen(begin, end), replacement.toString());
+      }
     }
+    return applyReplacements(javaInput, replacements);
+  }
 
-    private static void addTrivia(StringBuilder replacement, ImmutableList<? extends Tok> toks) {
-        for (Tok tok : toks) {
-            replacement.append(tok.getText());
-        }
+  private static void addTrivia(StringBuilder replacement, ImmutableList<? extends Tok> toks) {
+    for (Tok tok : toks) {
+      replacement.append(tok.getText());
     }
+  }
 
-    /**
-     * Returns the given token as a {@link javax.lang.model.element.Modifier}, or {@code null} if it
-     * is not a modifier.
-     */
-    private static Modifier asModifier(Token token) {
-        TokenKind kind = ((JavaInput.Tok) token.getTok()).kind();
-        if (kind != null) {
-            switch (kind) {
-                case PUBLIC:
-                    return Modifier.PUBLIC;
-                case PROTECTED:
-                    return Modifier.PROTECTED;
-                case PRIVATE:
-                    return Modifier.PRIVATE;
-                case ABSTRACT:
-                    return Modifier.ABSTRACT;
-                case STATIC:
-                    return Modifier.STATIC;
-                case DEFAULT:
-                    return Modifier.DEFAULT;
-                case FINAL:
-                    return Modifier.FINAL;
-                case TRANSIENT:
-                    return Modifier.TRANSIENT;
-                case VOLATILE:
-                    return Modifier.VOLATILE;
-                case SYNCHRONIZED:
-                    return Modifier.SYNCHRONIZED;
-                case NATIVE:
-                    return Modifier.NATIVE;
-                case STRICTFP:
-                    return Modifier.STRICTFP;
-                default: // fall out
-            }
-        }
-        switch (token.getTok().getText()) {
-            case "non-sealed":
-                return Modifier.valueOf("NON_SEALED");
-            case "sealed":
-                return Modifier.valueOf("SEALED");
-            default:
-                return null;
-        }
+  /**
+   * Returns the given token as a {@link javax.lang.model.element.Modifier}, or {@code null} if it
+   * is not a modifier.
+   */
+  private static Modifier asModifier(Token token) {
+    TokenKind kind = ((JavaInput.Tok) token.getTok()).kind();
+    if (kind != null) {
+      switch (kind) {
+        case PUBLIC:
+          return Modifier.PUBLIC;
+        case PROTECTED:
+          return Modifier.PROTECTED;
+        case PRIVATE:
+          return Modifier.PRIVATE;
+        case ABSTRACT:
+          return Modifier.ABSTRACT;
+        case STATIC:
+          return Modifier.STATIC;
+        case DEFAULT:
+          return Modifier.DEFAULT;
+        case FINAL:
+          return Modifier.FINAL;
+        case TRANSIENT:
+          return Modifier.TRANSIENT;
+        case VOLATILE:
+          return Modifier.VOLATILE;
+        case SYNCHRONIZED:
+          return Modifier.SYNCHRONIZED;
+        case NATIVE:
+          return Modifier.NATIVE;
+        case STRICTFP:
+          return Modifier.STRICTFP;
+        default: // fall out
+      }
     }
+    switch (token.getTok().getText()) {
+      case "non-sealed":
+        return Modifier.valueOf("NON_SEALED");
+      case "sealed":
+        return Modifier.valueOf("SEALED");
+      default:
+        return null;
+    }
+  }
 
-    /** Applies replacements to the given string. */
-    private static JavaInput applyReplacements(
-            JavaInput javaInput, TreeRangeMap<Integer, String> replacementMap)
-            throws FormatterException {
-        // process in descending order so the replacement ranges aren't perturbed if any
-        // replacements
-        // differ in size from the input
-        Map<Range<Integer>, String> ranges = replacementMap.asDescendingMapOfRanges();
-        if (ranges.isEmpty()) {
-            return javaInput;
-        }
-        StringBuilder sb = new StringBuilder(javaInput.getText());
-        for (Entry<Range<Integer>, String> entry : ranges.entrySet()) {
-            Range<Integer> range = entry.getKey();
-            sb.replace(range.lowerEndpoint(), range.upperEndpoint(), entry.getValue());
-        }
-        return new JavaInput(sb.toString());
+  /** Applies replacements to the given string. */
+  private static JavaInput applyReplacements(
+      JavaInput javaInput, TreeRangeMap<Integer, String> replacementMap) throws FormatterException {
+    // process in descending order so the replacement ranges aren't perturbed if any
+    // replacements
+    // differ in size from the input
+    Map<Range<Integer>, String> ranges = replacementMap.asDescendingMapOfRanges();
+    if (ranges.isEmpty()) {
+      return javaInput;
     }
+    StringBuilder sb = new StringBuilder(javaInput.getText());
+    for (Entry<Range<Integer>, String> entry : ranges.entrySet()) {
+      Range<Integer> range = entry.getKey();
+      sb.replace(range.lowerEndpoint(), range.upperEndpoint(), entry.getValue());
+    }
+    return new JavaInput(sb.toString());
+  }
 }

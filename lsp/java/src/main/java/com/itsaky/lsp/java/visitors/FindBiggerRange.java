@@ -38,87 +38,87 @@ import com.sun.source.util.Trees;
  */
 public class FindBiggerRange extends TreeScanner<Range, Range> {
 
-    private final SourcePositions positions;
-    private final CompilationUnitTree root;
-    private final LineMap lineMap;
+  private final SourcePositions positions;
+  private final CompilationUnitTree root;
+  private final LineMap lineMap;
 
-    public FindBiggerRange(JavacTask task, @NonNull CompilationUnitTree root) {
-        this.positions = Trees.instance(task).getSourcePositions();
-        this.root = root;
-        this.lineMap = root.getLineMap();
+  public FindBiggerRange(JavacTask task, @NonNull CompilationUnitTree root) {
+    this.positions = Trees.instance(task).getSourcePositions();
+    this.root = root;
+    this.lineMap = root.getLineMap();
+  }
+
+  @Override
+  public Range scan(Tree tree, Range range) {
+    final Range smallerThanThis = super.scan(tree, range);
+    if (smallerThanThis != null) {
+      return smallerThanThis;
     }
 
-    @Override
-    public Range scan(Tree tree, Range range) {
-        final Range smallerThanThis = super.scan(tree, range);
-        if (smallerThanThis != null) {
-            return smallerThanThis;
-        }
-
-        final Range treeRange = getRange(tree);
-        if (treeRange != null && range.isSmallerThan(treeRange)) {
-            ILogger.newInstance("FindBiggerRange")
-                    .debug("Selecting tree", tree, tree.getClass(), tree.getKind());
-            return treeRange;
-        }
-
-        return null;
+    final Range treeRange = getRange(tree);
+    if (treeRange != null && range.isSmallerThan(treeRange)) {
+      ILogger.newInstance("FindBiggerRange")
+          .debug("Selecting tree", tree, tree.getClass(), tree.getKind());
+      return treeRange;
     }
 
-    @Override
-    public Range visitTry(TryTree node, Range range) {
+    return null;
+  }
 
-        // If this try's body or finally block is selected, then select the entire try
-        final Range methodRange = getRange(node);
-        final Range blockRange = getRange(node.getBlock());
-        final Range finallyRange = getRange(node.getFinallyBlock());
-        if ((range.equals(blockRange) || range.equals(finallyRange)) && methodRange != null) {
-            return methodRange;
-        }
+  @Override
+  public Range visitTry(TryTree node, Range range) {
 
-        return super.visitTry(node, range);
+    // If this try's body or finally block is selected, then select the entire try
+    final Range methodRange = getRange(node);
+    final Range blockRange = getRange(node.getBlock());
+    final Range finallyRange = getRange(node.getFinallyBlock());
+    if ((range.equals(blockRange) || range.equals(finallyRange)) && methodRange != null) {
+      return methodRange;
     }
 
-    @Override
-    public Range visitMethod(MethodTree node, Range range) {
+    return super.visitTry(node, range);
+  }
 
-        // If this methods body is selected, then select the entire method
-        final Range methodRange = getRange(node);
-        final Range blockRange = getRange(node.getBody());
-        if (range.equals(blockRange) && methodRange != null) {
-            return methodRange;
-        }
+  @Override
+  public Range visitMethod(MethodTree node, Range range) {
 
-        return super.visitMethod(node, range);
+    // If this methods body is selected, then select the entire method
+    final Range methodRange = getRange(node);
+    final Range blockRange = getRange(node.getBody());
+    if (range.equals(blockRange) && methodRange != null) {
+      return methodRange;
     }
 
-    @Override
-    public Range reduce(Range r1, Range r2) {
-        return r1 == null ? r2 : r1;
+    return super.visitMethod(node, range);
+  }
+
+  @Override
+  public Range reduce(Range r1, Range r2) {
+    return r1 == null ? r2 : r1;
+  }
+
+  @Nullable
+  private Range getRange(Tree leaf) {
+    final Range range = new Range();
+    final Position start = new Position(0, 0);
+    final Position end = new Position(0, 0);
+
+    final long startPos = positions.getStartPosition(root, leaf);
+    final long endPos = positions.getEndPosition(root, leaf);
+
+    if (startPos == -1 || endPos == -1) {
+      return null;
     }
 
-    @Nullable
-    private Range getRange(Tree leaf) {
-        final Range range = new Range();
-        final Position start = new Position(0, 0);
-        final Position end = new Position(0, 0);
+    start.setLine((int) lineMap.getLineNumber(startPos) - 1);
+    start.setColumn((int) lineMap.getColumnNumber(startPos) - 1);
 
-        final long startPos = positions.getStartPosition(root, leaf);
-        final long endPos = positions.getEndPosition(root, leaf);
+    end.setLine((int) lineMap.getLineNumber(endPos) - 1);
+    end.setColumn((int) lineMap.getColumnNumber(endPos) - 1);
 
-        if (startPos == -1 || endPos == -1) {
-            return null;
-        }
+    range.setStart(start);
+    range.setEnd(end);
 
-        start.setLine((int) lineMap.getLineNumber(startPos) - 1);
-        start.setColumn((int) lineMap.getColumnNumber(startPos) - 1);
-
-        end.setLine((int) lineMap.getLineNumber(endPos) - 1);
-        end.setColumn((int) lineMap.getColumnNumber(endPos) - 1);
-
-        range.setStart(start);
-        range.setEnd(end);
-
-        return range;
-    }
+    return range;
+  }
 }

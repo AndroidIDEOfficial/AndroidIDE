@@ -31,48 +31,47 @@ import javax.tools.JavaFileObject;
 
 public class CompileTask implements AutoCloseable {
 
-    public final JavacTaskImpl task;
-    public final List<CompilationUnitTree> roots;
-    public final List<Diagnostic<? extends JavaFileObject>> diagnostics;
+  public final JavacTaskImpl task;
+  public final List<CompilationUnitTree> roots;
+  public final List<Diagnostic<? extends JavaFileObject>> diagnostics;
 
-    private final CompileBatch compileBatch;
+  private final CompileBatch compileBatch;
 
-    public CompileTask(
-            @NonNull CompileBatch compileBatch,
-            List<Diagnostic<? extends JavaFileObject>> diagnostics) {
-        this.compileBatch = compileBatch;
-        this.task = compileBatch.task;
-        this.roots = compileBatch.roots;
-        this.diagnostics = diagnostics;
+  public CompileTask(
+      @NonNull CompileBatch compileBatch, List<Diagnostic<? extends JavaFileObject>> diagnostics) {
+    this.compileBatch = compileBatch;
+    this.task = compileBatch.task;
+    this.roots = compileBatch.roots;
+    this.diagnostics = diagnostics;
+  }
+
+  public CompilationUnitTree root() {
+    if (roots.size() != 1) {
+      throw new RuntimeException("No compilation units found. Roots: " + roots.size());
     }
+    return roots.get(0);
+  }
 
-    public CompilationUnitTree root() {
-        if (roots.size() != 1) {
-            throw new RuntimeException("No compilation units found. Roots: " + roots.size());
-        }
-        return roots.get(0);
+  public CompilationUnitTree root(Path file) {
+    for (CompilationUnitTree root : roots) {
+      if (root.getSourceFile().toUri().equals(file.toUri())) {
+        return root;
+      }
     }
+    throw new RuntimeException("Compilation unit not found");
+  }
 
-    public CompilationUnitTree root(Path file) {
-        for (CompilationUnitTree root : roots) {
-            if (root.getSourceFile().toUri().equals(file.toUri())) {
-                return root;
-            }
-        }
-        throw new RuntimeException("Compilation unit not found");
+  public CompilationUnitTree root(JavaFileObject file) {
+    for (CompilationUnitTree root : roots) {
+      if (root.getSourceFile().toUri().equals(file.toUri())) {
+        return root;
+      }
     }
+    throw new RuntimeException("Compilation unit not found");
+  }
 
-    public CompilationUnitTree root(JavaFileObject file) {
-        for (CompilationUnitTree root : roots) {
-            if (root.getSourceFile().toUri().equals(file.toUri())) {
-                return root;
-            }
-        }
-        throw new RuntimeException("Compilation unit not found");
-    }
-
-    @Override
-    public void close() {
-        compileBatch.close();
-    }
+  @Override
+  public void close() {
+    compileBatch.close();
+  }
 }

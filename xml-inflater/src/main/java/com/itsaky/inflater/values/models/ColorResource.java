@@ -27,20 +27,20 @@ import androidx.annotation.NonNull;
  */
 public class ColorResource extends AbstractResource {
 
-    public ColorResource(@NonNull String name, @NonNull String value) {
-        super(name, value);
-    }
+  public ColorResource(@NonNull String name, @NonNull String value) {
+    super(name, value);
+  }
 
-    /**
-     * Parse the value of this color resource and get the int color.
-     *
-     * @return The int color value or -1 if this is not a valid color.
-     */
-    public int parseColor() {
-        try {
-            return Color.parseColor(getValue());
-        } catch (Throwable th) {
-            return -1;
-        }
+  /**
+   * Parse the value of this color resource and get the int color.
+   *
+   * @return The int color value or -1 if this is not a valid color.
+   */
+  public int parseColor() {
+    try {
+      return Color.parseColor(getValue());
+    } catch (Throwable th) {
+      return -1;
     }
+  }
 }

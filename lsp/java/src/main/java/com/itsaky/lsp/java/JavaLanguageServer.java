@@ -66,261 +66,260 @@ import java.util.concurrent.CompletableFuture;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
-    private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
-    private final AnalyzeTimer analyzeTimer;
-    private ILanguageClient client;
-    private IServerSettings settings;
-    private JavaCompilerService compiler;
-    private JavaServerConfiguration configuration;
-    private boolean initialized;
-    private boolean createCompiler;
-    private ServerCapabilities capabilities;
-    private Path selectedFile;
+  private static final ILogger LOG = ILogger.newInstance("JavaLanguageServer");
+  private final AnalyzeTimer analyzeTimer;
+  private ILanguageClient client;
+  private IServerSettings settings;
+  private JavaCompilerService compiler;
+  private JavaServerConfiguration configuration;
+  private boolean initialized;
+  private boolean createCompiler;
+  private ServerCapabilities capabilities;
+  private Path selectedFile;
 
-    public JavaLanguageServer() {
-        this.initialized = false;
-        this.createCompiler = true;
-        this.configuration = new JavaServerConfiguration();
-        this.analyzeTimer = new AnalyzeTimer(this::analyzeSelected);
+  public JavaLanguageServer() {
+    this.initialized = false;
+    this.createCompiler = true;
+    this.configuration = new JavaServerConfiguration();
+    this.analyzeTimer = new AnalyzeTimer(this::analyzeSelected);
 
-        applySettings(getSettings());
+    applySettings(getSettings());
+  }
+
+  private void analyzeSelected() {
+    if (this.selectedFile == null) {
+      return;
     }
 
-    private void analyzeSelected() {
-        if (this.selectedFile == null) {
-            return;
-        }
+    CompletableFuture.supplyAsync(() -> analyze(selectedFile))
+        .whenComplete(
+            ((diagnostics, throwable) -> {
+              if (client != null) {
+                if (diagnostics == null) {
+                  diagnostics = new ArrayList<>(0);
+                }
 
-        CompletableFuture.supplyAsync(() -> analyze(selectedFile))
-                .whenComplete(
-                        ((diagnostics, throwable) -> {
-                            if (client != null) {
-                                if (diagnostics == null) {
-                                    diagnostics = new ArrayList<>(0);
-                                }
+                client.publishDiagnostics(new DiagnosticResult(this.selectedFile, diagnostics));
+              }
+            }));
+  }
 
-                                client.publishDiagnostics(
-                                        new DiagnosticResult(this.selectedFile, diagnostics));
-                            }
-                        }));
+  public IServerSettings getSettings() {
+    if (settings == null) {
+      settings = JavaServerSettings.getInstance();
     }
 
-    public IServerSettings getSettings() {
-        if (settings == null) {
-            settings = JavaServerSettings.getInstance();
-        }
+    return settings;
+  }
 
-        return settings;
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public JavaCompilerService getCompiler() {
+    if (createCompiler) {
+      LOG.info("Creating new compiler instance...");
+      compiler = createCompiler();
+      createCompiler = false;
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public JavaCompilerService getCompiler() {
-        if (createCompiler) {
-            LOG.info("Creating new compiler instance...");
-            compiler = createCompiler();
-            createCompiler = false;
-        }
+    return compiler;
+  }
 
-        return compiler;
+  @NonNull
+  private JavaCompilerService createCompiler() {
+    return new JavaCompilerService(configuration.getClassPaths(), Collections.emptySet());
+  }
+
+  @Override
+  public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
+
+    if (initialized) {
+      throw new AlreadyInitializedException();
     }
 
-    @NonNull
-    private JavaCompilerService createCompiler() {
-        return new JavaCompilerService(configuration.getClassPaths(), Collections.emptySet());
+    FileStore.setWorkspaceRoots(params.getWorkspaceRoots());
+
+    capabilities = new ServerCapabilities();
+    capabilities.setCompletionsAvailable(true);
+    capabilities.setCodeActionsAvailable(true);
+    capabilities.setDefinitionsAvailable(true);
+    capabilities.setReferencesAvailable(true);
+    capabilities.setSignatureHelpAvailable(true);
+    capabilities.setCodeAnalysisAvailable(true);
+    capabilities.setSmartSelectionsEnabled(true);
+
+    LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
+
+    initialized = true;
+  }
+
+  @Override
+  public boolean isInitialized() {
+    return initialized;
+  }
+
+  @NonNull
+  @Override
+  public ServerCapabilities getCapabilities() {
+    return capabilities;
+  }
+
+  @Override
+  public void shutdown() {
+    if (compiler != null) {
+      compiler.close();
+      compiler = null;
+      createCompiler = true;
     }
 
-    @Override
-    public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
+    FileStore.shutdown();
+    this.analyzeTimer.shutdown();
+    initialized = false;
+  }
 
-        if (initialized) {
-            throw new AlreadyInitializedException();
-        }
+  @Override
+  public void connectClient(@Nullable ILanguageClient client) {
+    this.client = client;
+  }
 
-        FileStore.setWorkspaceRoots(params.getWorkspaceRoots());
+  @Nullable
+  @Override
+  public ILanguageClient getClient() {
+    return this.client;
+  }
 
-        capabilities = new ServerCapabilities();
-        capabilities.setCompletionsAvailable(true);
-        capabilities.setCodeActionsAvailable(true);
-        capabilities.setDefinitionsAvailable(true);
-        capabilities.setReferencesAvailable(true);
-        capabilities.setSignatureHelpAvailable(true);
-        capabilities.setCodeAnalysisAvailable(true);
-        capabilities.setSmartSelectionsEnabled(true);
+  @Override
+  public void applySettings(@Nullable IServerSettings settings) {
+    this.settings = settings;
+  }
 
-        LSPEditorActions.ensureActionsMenuRegistered(JavaCodeActionsMenu.class);
-
-        initialized = true;
+  @Override
+  public void configurationChanged(Object newConfiguration) {
+    if (!(newConfiguration instanceof JavaServerConfiguration)) {
+      LOG.error("Invalid configuration passed to server.", newConfiguration);
+      LOG.error("Configuration change event will be ignored.");
+      return;
     }
 
-    @Override
-    public boolean isInitialized() {
-        return initialized;
+    this.configuration = (JavaServerConfiguration) newConfiguration;
+    LOG.info("Java language server configuration changed.");
+    LOG.info(
+        this.configuration.getClassPaths().size(),
+        "class paths and",
+        this.configuration.getSourceDirs().size(),
+        "source directories were provided in the configuration");
+    // Compiler must be recreated on a configuration change
+    this.createCompiler = true;
+  }
+
+  @NonNull
+  @Override
+  public ICompletionProvider getCompletionProvider() {
+    if (!settings.completionsEnabled()) {
+      return new NoCompletionsProvider();
     }
 
-    @NonNull
-    @Override
-    public ServerCapabilities getCapabilities() {
-        return capabilities;
+    return new CompletionProvider(getCompiler(), this.settings);
+  }
+
+  @NonNull
+  @Override
+  public ReferenceResult findReferences(@NonNull ReferenceParams params) {
+    if (!settings.referencesEnabled()) {
+      return new ReferenceResult(Collections.emptyList());
     }
 
-    @Override
-    public void shutdown() {
-        if (compiler != null) {
-            compiler.close();
-            compiler = null;
-            createCompiler = true;
-        }
+    return new ReferenceProvider(getCompiler()).findReferences(params);
+  }
 
-        FileStore.shutdown();
-        this.analyzeTimer.shutdown();
-        initialized = false;
+  @NonNull
+  @Override
+  public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
+    if (!settings.definitionsEnabled()) {
+      return new DefinitionResult(Collections.emptyList());
     }
 
-    @Override
-    public void connectClient(@Nullable ILanguageClient client) {
-        this.client = client;
+    return new DefinitionProvider(getCompiler()).findDefinition(params);
+  }
+
+  @NonNull
+  @Override
+  public Range expandSelection(@NonNull ExpandSelectionParams params) {
+    if (!settings.smartSelectionsEnabled()) {
+      return params.getSelection();
     }
 
-    @Nullable
-    @Override
-    public ILanguageClient getClient() {
-        return this.client;
+    return new JavaSelectionProvider(getCompiler()).expandSelection(params);
+  }
+
+  @NonNull
+  @Override
+  public SignatureHelp signatureHelp(@NonNull SignatureHelpParams params) {
+    if (!settings.signatureHelpEnabled()) {
+      return new SignatureHelp(Collections.emptyList(), -1, -1);
     }
 
-    @Override
-    public void applySettings(@Nullable IServerSettings settings) {
-        this.settings = settings;
+    return new SignatureProvider(getCompiler()).signatureHelp(params);
+  }
+
+  @NonNull
+  @Override
+  public List<DiagnosticItem> analyze(@NonNull Path file) {
+    if (!settings.codeAnalysisEnabled()) {
+      return Collections.emptyList();
     }
 
-    @Override
-    public void configurationChanged(Object newConfiguration) {
-        if (!(newConfiguration instanceof JavaServerConfiguration)) {
-            LOG.error("Invalid configuration passed to server.", newConfiguration);
-            LOG.error("Configuration change event will be ignored.");
-            return;
-        }
+    return new JavaDiagnosticProvider(getCompiler()).analyze(file);
+  }
 
-        this.configuration = (JavaServerConfiguration) newConfiguration;
-        LOG.info("Java language server configuration changed.");
-        LOG.info(
-                this.configuration.getClassPaths().size(),
-                "class paths and",
-                this.configuration.getSourceDirs().size(),
-                "source directories were provided in the configuration");
-        // Compiler must be recreated on a configuration change
-        this.createCompiler = true;
+  @NonNull
+  @Override
+  public CharSequence formatCode(CharSequence input) {
+    return new CodeFormatProvider(getSettings()).format(input);
+  }
+
+  @NonNull
+  @Override
+  public IDocumentHandler getDocumentHandler() {
+    return this;
+  }
+
+  @Override
+  public boolean accepts(Path file) {
+    return FileStore.isJavaFile(file);
+  }
+
+  @Override
+  public void onFileOpened(DocumentOpenEvent event) {
+    FileStore.open(event);
+  }
+
+  @Override
+  public void onContentChange(@NonNull DocumentChangeEvent event) {
+    // If a file's content is changed, it is definitely visible to user.
+    onFileSelected(event.getChangedFile());
+    ensureAnalyzeTimerStarted();
+    FileStore.change(event);
+  }
+
+  @Override
+  public void onFileSaved(DocumentSaveEvent event) {
+    // TODO Run a lint check (or a simple compilation)
+  }
+
+  @Override
+  public void onFileClosed(DocumentCloseEvent event) {
+    FileStore.close(event);
+  }
+
+  @Override
+  public void onFileSelected(@NonNull Path path) {
+    this.selectedFile = path;
+  }
+
+  private void ensureAnalyzeTimerStarted() {
+    if (!this.analyzeTimer.isStarted()) {
+      this.analyzeTimer.start();
+    } else {
+      this.analyzeTimer.restart();
     }
-
-    @NonNull
-    @Override
-    public ICompletionProvider getCompletionProvider() {
-        if (!settings.completionsEnabled()) {
-            return new NoCompletionsProvider();
-        }
-
-        return new CompletionProvider(getCompiler(), this.settings);
-    }
-
-    @NonNull
-    @Override
-    public ReferenceResult findReferences(@NonNull ReferenceParams params) {
-        if (!settings.referencesEnabled()) {
-            return new ReferenceResult(Collections.emptyList());
-        }
-
-        return new ReferenceProvider(getCompiler()).findReferences(params);
-    }
-
-    @NonNull
-    @Override
-    public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
-        if (!settings.definitionsEnabled()) {
-            return new DefinitionResult(Collections.emptyList());
-        }
-
-        return new DefinitionProvider(getCompiler()).findDefinition(params);
-    }
-
-    @NonNull
-    @Override
-    public Range expandSelection(@NonNull ExpandSelectionParams params) {
-        if (!settings.smartSelectionsEnabled()) {
-            return params.getSelection();
-        }
-
-        return new JavaSelectionProvider(getCompiler()).expandSelection(params);
-    }
-
-    @NonNull
-    @Override
-    public SignatureHelp signatureHelp(@NonNull SignatureHelpParams params) {
-        if (!settings.signatureHelpEnabled()) {
-            return new SignatureHelp(Collections.emptyList(), -1, -1);
-        }
-
-        return new SignatureProvider(getCompiler()).signatureHelp(params);
-    }
-
-    @NonNull
-    @Override
-    public List<DiagnosticItem> analyze(@NonNull Path file) {
-        if (!settings.codeAnalysisEnabled()) {
-            return Collections.emptyList();
-        }
-
-        return new JavaDiagnosticProvider(getCompiler()).analyze(file);
-    }
-
-    @NonNull
-    @Override
-    public CharSequence formatCode(CharSequence input) {
-        return new CodeFormatProvider(getSettings()).format(input);
-    }
-
-    @NonNull
-    @Override
-    public IDocumentHandler getDocumentHandler() {
-        return this;
-    }
-
-    @Override
-    public boolean accepts(Path file) {
-        return FileStore.isJavaFile(file);
-    }
-
-    @Override
-    public void onFileOpened(DocumentOpenEvent event) {
-        FileStore.open(event);
-    }
-
-    @Override
-    public void onContentChange(@NonNull DocumentChangeEvent event) {
-        // If a file's content is changed, it is definitely visible to user.
-        onFileSelected(event.getChangedFile());
-        ensureAnalyzeTimerStarted();
-        FileStore.change(event);
-    }
-
-    @Override
-    public void onFileSaved(DocumentSaveEvent event) {
-        // TODO Run a lint check (or a simple compilation)
-    }
-
-    @Override
-    public void onFileClosed(DocumentCloseEvent event) {
-        FileStore.close(event);
-    }
-
-    @Override
-    public void onFileSelected(@NonNull Path path) {
-        this.selectedFile = path;
-    }
-
-    private void ensureAnalyzeTimerStarted() {
-        if (!this.analyzeTimer.isStarted()) {
-            this.analyzeTimer.start();
-        } else {
-            this.analyzeTimer.restart();
-        }
-    }
+  }
 }

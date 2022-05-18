@@ -27,29 +27,29 @@ import com.itsaky.inflater.IView;
  */
 public class WidgetDragData {
 
-    /**
-     * Set this to true if the view that is being dragged was already inflated in the layout. If
-     * this is set to {@code true}, {@link #alreadyInflatedView} must NOT be {@code null}.
-     *
-     * <p>If this is {@code false}, then {@link #newDragData} must be not be null.
-     */
-    public boolean isAlreadyInflated;
+  /**
+   * Set this to true if the view that is being dragged was already inflated in the layout. If this
+   * is set to {@code true}, {@link #alreadyInflatedView} must NOT be {@code null}.
+   *
+   * <p>If this is {@code false}, then {@link #newDragData} must be not be null.
+   */
+  public boolean isAlreadyInflated;
 
-    /**
-     * The view that was already inflated and is being relocated. This must not be null if {@link
-     * #isAlreadyInflated} is {@code true}.
-     */
-    public IView alreadyInflatedView;
+  /**
+   * The view that was already inflated and is being relocated. This must not be null if {@link
+   * #isAlreadyInflated} is {@code true}.
+   */
+  public IView alreadyInflatedView;
 
-    /** The UIWidget that is being dragged. */
-    public UIWidget newDragData;
+  /** The UIWidget that is being dragged. */
+  public UIWidget newDragData;
 
-    private WidgetDragData() {}
+  private WidgetDragData() {}
 
-    public WidgetDragData(
-            boolean isAlreadyInflated, IView alreadyInflatedView, UIWidget newDragData) {
-        this.isAlreadyInflated = isAlreadyInflated;
-        this.alreadyInflatedView = alreadyInflatedView;
-        this.newDragData = newDragData;
-    }
+  public WidgetDragData(
+      boolean isAlreadyInflated, IView alreadyInflatedView, UIWidget newDragData) {
+    this.isAlreadyInflated = isAlreadyInflated;
+    this.alreadyInflatedView = alreadyInflatedView;
+    this.newDragData = newDragData;
+  }
 }

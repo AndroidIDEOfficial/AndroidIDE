@@ -5,39 +5,38 @@ import com.itsaky.androidide.fuzzysearch.ToStringFunction;
 
 public abstract class BasicAlgorithm implements Applicable {
 
-    private ToStringFunction<String> stringFunction;
+  private ToStringFunction<String> stringFunction;
 
-    public BasicAlgorithm() {
-        this.stringFunction = new DefaultStringFunction();
-    }
+  public BasicAlgorithm() {
+    this.stringFunction = new DefaultStringFunction();
+  }
 
-    public BasicAlgorithm(ToStringFunction<String> stringFunction) {
-        this.stringFunction = stringFunction;
-    }
+  public BasicAlgorithm(ToStringFunction<String> stringFunction) {
+    this.stringFunction = stringFunction;
+  }
 
-    public abstract int apply(String s1, String s2, ToStringFunction<String> stringProcessor);
+  public abstract int apply(String s1, String s2, ToStringFunction<String> stringProcessor);
 
-    public int apply(String s1, String s2){
+  public int apply(String s1, String s2) {
 
-        return apply(s1, s2, this.stringFunction);
+    return apply(s1, s2, this.stringFunction);
+  }
 
-    }
+  public BasicAlgorithm with(ToStringFunction<String> stringFunction) {
+    setStringFunction(stringFunction);
+    return this;
+  }
 
-    public BasicAlgorithm with(ToStringFunction<String> stringFunction){
-        setStringFunction(stringFunction);
-        return this;
-    }
+  public BasicAlgorithm noProcessor() {
+    this.stringFunction = ToStringFunction.NO_PROCESS;
+    return this;
+  }
 
-    public BasicAlgorithm noProcessor(){
-        this.stringFunction = ToStringFunction.NO_PROCESS;
-        return this;
-    }
+  void setStringFunction(ToStringFunction<String> stringFunction) {
+    this.stringFunction = stringFunction;
+  }
 
-    void setStringFunction(ToStringFunction<String> stringFunction){
-        this.stringFunction = stringFunction;
-    }
-
-    public ToStringFunction<String> getStringFunction() {
-        return stringFunction;
-    }
+  public ToStringFunction<String> getStringFunction() {
+    return stringFunction;
+  }
 }

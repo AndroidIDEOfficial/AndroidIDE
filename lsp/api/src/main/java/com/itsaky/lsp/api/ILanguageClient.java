@@ -31,22 +31,22 @@ import java.io.File;
  */
 public interface ILanguageClient {
 
-    /**
-     * Publish the diagnostics result (allow the user to see them).
-     *
-     * @param result The diagnostic result.
-     */
-    void publishDiagnostics(DiagnosticResult result);
+  /**
+   * Publish the diagnostics result (allow the user to see them).
+   *
+   * @param result The diagnostic result.
+   */
+  void publishDiagnostics(DiagnosticResult result);
 
-    void performCodeAction(File file, CodeActionItem actionItem);
+  void performCodeAction(File file, CodeActionItem actionItem);
 
-    /**
-     * Notification sent by the language server to tell the client that it should open the given
-     * file and select the range from the params.
-     *
-     * @param params The params for showing the document.
-     * @return The result of the show document request. Servers can use this result to perform
-     *     further action.
-     */
-    ShowDocumentResult showDocument(ShowDocumentParams params);
+  /**
+   * Notification sent by the language server to tell the client that it should open the given file
+   * and select the range from the params.
+   *
+   * @param params The params for showing the document.
+   * @return The result of the show document request. Servers can use this result to perform further
+   *     action.
+   */
+  ShowDocumentResult showDocument(ShowDocumentParams params);
 }

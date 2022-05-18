@@ -27,52 +27,53 @@ import com.sun.tools.javac.comp.Resolve;
 import com.sun.tools.javac.util.Context;
 
 /**
- *
  * @author lahvac
  */
 public class NBResolve extends Resolve {
-    public static NBResolve instance(Context context) {
-        Resolve instance = context.get(resolveKey);
-        if (instance == null)
-            instance = new NBResolve(context);
-        return (NBResolve) instance;
-    }
+  public static NBResolve instance(Context context) {
+    Resolve instance = context.get(resolveKey);
+    if (instance == null) instance = new NBResolve(context);
+    return (NBResolve) instance;
+  }
 
-    public static void preRegister(Context context) {
-        context.put(resolveKey, new Context.Factory<Resolve>() {
-            @Override public Resolve make(Context c) {
-                return new NBResolve(c);
-            }
+  public static void preRegister(Context context) {
+    context.put(
+        resolveKey,
+        new Context.Factory<Resolve>() {
+          @Override
+          public Resolve make(Context c) {
+            return new NBResolve(c);
+          }
         });
-    }
+  }
 
-    protected NBResolve(Context ctx) {
-        super(ctx);
-    }
+  protected NBResolve(Context ctx) {
+    super(ctx);
+  }
 
-    private boolean accessibleOverride;
-    
-    public void disableAccessibilityChecks() {
-        accessibleOverride = true;
-    }
-    
-    public void restoreAccessbilityChecks() {
-        accessibleOverride = false;
-    }
-    
-    @Override
-    public boolean isAccessible(Env<AttrContext> env, Type site, Symbol sym, boolean checkInner) {
-        if (accessibleOverride) return true;
-        return super.isAccessible(env, site, sym, checkInner);
-    }
+  private boolean accessibleOverride;
 
-    @Override
-    public boolean isAccessible(Env<AttrContext> env, TypeSymbol c, boolean checkInner) {
-        if (accessibleOverride) return true;
-        return super.isAccessible(env, c, checkInner);
-    }
+  public void disableAccessibilityChecks() {
+    accessibleOverride = true;
+  }
 
-    public static boolean isStatic(Env<AttrContext> env) {
-        return Resolve.isStatic(env);
-    }
+  public void restoreAccessbilityChecks() {
+    accessibleOverride = false;
+  }
+
+  @Override
+  public boolean isAccessible(Env<AttrContext> env, Type site, Symbol sym, boolean checkInner) {
+    if (accessibleOverride) return true;
+    return super.isAccessible(env, site, sym, checkInner);
+  }
+
+  @Override
+  public boolean isAccessible(Env<AttrContext> env, TypeSymbol c, boolean checkInner) {
+    if (accessibleOverride) return true;
+    return super.isAccessible(env, c, checkInner);
+  }
+
+  public static boolean isStatic(Env<AttrContext> env) {
+    return Resolve.isStatic(env);
+  }
 }

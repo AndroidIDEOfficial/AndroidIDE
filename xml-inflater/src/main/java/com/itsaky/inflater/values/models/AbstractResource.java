@@ -29,57 +29,56 @@ import java.util.Objects;
  */
 abstract class AbstractResource implements IResource {
 
-    private final String name;
-    private final String value;
+  private final String name;
+  private final String value;
 
-    public AbstractResource(@NonNull String name, @NonNull String value) {
-        this.name = name;
-        this.value = value;
+  public AbstractResource(@NonNull String name, @NonNull String value) {
+    this.name = name;
+    this.value = value;
+  }
+
+  @NonNull
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  @NonNull
+  @Override
+  public String getValue() {
+    return value;
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    return getClass().getSimpleName()
+        + "{"
+        + "name='"
+        + name
+        + '\''
+        + ", value='"
+        + value
+        + '\''
+        + '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
 
-    @NonNull
-    @Override
-    public String getName() {
-        return name;
+    if (!(o instanceof AbstractResource)) {
+      return false;
     }
 
-    @NonNull
-    @Override
-    public String getValue() {
-        return value;
-    }
+    AbstractResource that = (AbstractResource) o;
+    return Objects.equals(getName(), that.getName()) && Objects.equals(getValue(), that.getValue());
+  }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return getClass().getSimpleName()
-                + "{"
-                + "name='"
-                + name
-                + '\''
-                + ", value='"
-                + value
-                + '\''
-                + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (!(o instanceof AbstractResource)) {
-            return false;
-        }
-
-        AbstractResource that = (AbstractResource) o;
-        return Objects.equals(getName(), that.getName())
-                && Objects.equals(getValue(), that.getValue());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getName(), getValue());
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(getName(), getValue());
+  }
 }

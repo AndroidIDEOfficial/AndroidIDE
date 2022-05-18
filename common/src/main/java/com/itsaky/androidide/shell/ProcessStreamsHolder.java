@@ -24,7 +24,7 @@ import java.io.OutputStream;
 
 /** Holder input, error and output streams for a {@link java.lang.Process} */
 public class ProcessStreamsHolder {
-    public InputStream in;
-    public InputStream err;
-    public OutputStream out;
+  public InputStream in;
+  public InputStream err;
+  public OutputStream out;
 }

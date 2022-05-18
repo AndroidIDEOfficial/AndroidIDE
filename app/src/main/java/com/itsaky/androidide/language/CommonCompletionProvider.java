@@ -54,85 +54,83 @@ import io.github.rosemoe.sora.util.MyCharacter;
  * @author Akash Yadav
  */
 public class CommonCompletionProvider {
-    
-    private static final ILogger LOG = ILogger.newInstance("CommonCompletionProvider");
-    private final ILanguageServer server;
-    private CompletableFuture<CompletionResult> future;
 
-    public CommonCompletionProvider(ILanguageServer server) {
-        this.server = server;
+  private static final ILogger LOG = ILogger.newInstance("CommonCompletionProvider");
+  private final ILanguageServer server;
+  private CompletableFuture<CompletionResult> future;
+
+  public CommonCompletionProvider(ILanguageServer server) {
+    this.server = server;
+  }
+
+  public static boolean checkJavaCompletionChar(char c) {
+    return MyCharacter.isJavaIdentifierPart(c) || c == '.';
+  }
+
+  public static boolean checkXMLCompletionChar(char c) {
+    return MyCharacter.isJavaIdentifierPart(c) || c == '<' || c == '/';
+  }
+
+  /**
+   * Computes completion items using the provided language server instance.
+   *
+   * @param content The reference to the content of the editor.
+   * @param file The file to compute completions for.
+   * @param position The position of the cursor in the content.
+   * @return The computed completion items. May return an empty list if the there was an error
+   *     computing the completion items.
+   */
+  public List<CompletionItem> complete(
+      ContentReference content,
+      Path file,
+      CharPosition position,
+      Predicate<Character> prefixMatcher) {
+    if (this.future != null && !this.future.isDone()) {
+      try {
+        this.future.cancel(true);
+      } catch (CancellationException e) {
+        return new ArrayList<>();
+      }
     }
 
-    public static boolean checkJavaCompletionChar(char c) {
-        return MyCharacter.isJavaIdentifierPart(c) || c == '.';
+    this.future =
+        CompletableFuture.supplyAsync(
+            () -> {
+              final var prefix =
+                  CompletionHelper.computePrefix(content, position, prefixMatcher::test);
+              final var completer = server.getCompletionProvider();
+
+              if (!completer.canComplete(file)) {
+                return CompletionResult.EMPTY;
+              }
+
+              IdeGradleProject fileModule = null;
+              try {
+                fileModule = ProjectManager.INSTANCE.findModuleForFile(file.toFile()).get();
+              } catch (Throwable e) {
+                LOG.error("Unable to find module for current file", e);
+              }
+
+              final var params =
+                  new CompletionParams(
+                      new Position(position.line, position.column, position.index), file);
+              params.setContent(content);
+              params.setPrefix(prefix);
+              params.setModule(fileModule);
+              final var result = completer.complete(params);
+              Collections.sort(result.getItems());
+              return result;
+            });
+
+    try {
+      return future.get().getItems();
+    } catch (Throwable e) {
+      // Do not log if completion was interrupted or cancelled
+      if (!(e instanceof InterruptedException || e instanceof CompletionCancelledException)) {
+        LOG.error("Unable to compute completions", e);
+      }
+
+      return Collections.emptyList();
     }
-
-    public static boolean checkXMLCompletionChar(char c) {
-        return MyCharacter.isJavaIdentifierPart(c) || c == '<' || c == '/';
-    }
-
-    /**
-     * Computes completion items using the provided language server instance.
-     *
-     * @param content The reference to the content of the editor.
-     * @param file The file to compute completions for.
-     * @param position The position of the cursor in the content.
-     * @return The computed completion items. May return an empty list if the there was an error
-     *     computing the completion items.
-     */
-    public List<CompletionItem> complete(
-            ContentReference content,
-            Path file,
-            CharPosition position,
-            Predicate<Character> prefixMatcher) {
-        if (this.future != null && !this.future.isDone()) {
-            try {
-                this.future.cancel(true);
-            } catch (CancellationException e) {
-                return new ArrayList<>();
-            }
-        }
-
-        this.future =
-                CompletableFuture.supplyAsync(
-                        () -> {
-                            final var prefix =
-                                    CompletionHelper.computePrefix(
-                                            content, position, prefixMatcher::test);
-                            final var completer = server.getCompletionProvider();
-
-                            if (!completer.canComplete(file)) {
-                                return CompletionResult.EMPTY;
-                            }
-    
-                            IdeGradleProject fileModule = null;
-                            try {
-                                fileModule = ProjectManager.INSTANCE.findModuleForFile (file.toFile ()).get (); } catch (Throwable e) {
-                                LOG.error ("Unable to find module for current file", e);
-                            }
-                            
-                            final var params =
-                                    new CompletionParams(
-                                            new Position(
-                                                    position.line, position.column, position.index),
-                                            file);
-                            params.setContent(content);
-                            params.setPrefix(prefix);
-                            params.setModule(fileModule);
-                            final var result = completer.complete(params);
-                            Collections.sort(result.getItems());
-                            return result;
-                        });
-
-        try {
-            return future.get().getItems();
-        } catch (Throwable e) {
-            // Do not log if completion was interrupted or cancelled
-            if (!(e instanceof InterruptedException || e instanceof CompletionCancelledException)) {
-                LOG.error("Unable to compute completions", e);
-            }
-
-            return Collections.emptyList();
-        }
-    }
+  }
 }

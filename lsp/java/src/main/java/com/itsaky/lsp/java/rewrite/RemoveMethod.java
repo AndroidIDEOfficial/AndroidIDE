@@ -31,33 +31,30 @@ import javax.lang.model.element.ExecutableElement;
 
 public class RemoveMethod extends Rewrite {
 
-    final String className, methodName;
-    final String[] erasedParameterTypes;
+  final String className, methodName;
+  final String[] erasedParameterTypes;
 
-    public RemoveMethod(String className, String methodName, String[] erasedParameterTypes) {
-        this.className = className;
-        this.methodName = methodName;
-        this.erasedParameterTypes = erasedParameterTypes;
-    }
+  public RemoveMethod(String className, String methodName, String[] erasedParameterTypes) {
+    this.className = className;
+    this.methodName = methodName;
+    this.erasedParameterTypes = erasedParameterTypes;
+  }
 
-    @Override
-    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
-        Path file = compiler.findTypeDeclaration(className);
-        if (file == CompilerProvider.NOT_FOUND) {
-            return CANCELLED;
-        }
-        return compiler.compile(file)
-                .get(
-                        task -> {
-                            ExecutableElement methodElement =
-                                    FindHelper.findMethod(
-                                            task, className, methodName, erasedParameterTypes);
-                            MethodTree methodTree =
-                                    Trees.instance(task.task).getTree(methodElement);
-                            TextEdit[] edits = {
-                                EditHelper.removeTree(task.task, task.root(), methodTree)
-                            };
-                            return Collections.singletonMap(file, edits);
-                        });
+  @Override
+  public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
+    Path file = compiler.findTypeDeclaration(className);
+    if (file == CompilerProvider.NOT_FOUND) {
+      return CANCELLED;
     }
+    return compiler
+        .compile(file)
+        .get(
+            task -> {
+              ExecutableElement methodElement =
+                  FindHelper.findMethod(task, className, methodName, erasedParameterTypes);
+              MethodTree methodTree = Trees.instance(task.task).getTree(methodElement);
+              TextEdit[] edits = {EditHelper.removeTree(task.task, task.root(), methodTree)};
+              return Collections.singletonMap(file, edits);
+            });
+  }
 }

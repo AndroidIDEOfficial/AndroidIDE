@@ -30,43 +30,42 @@ import com.itsaky.lsp.util.PrefBasedServerSettings;
  */
 public class JavaServerSettings extends PrefBasedServerSettings {
 
-    public static final String KEY_JAVA_PREF_GOOGLE_CODE_STYLE =
-            "idepref_editor_java_googleCodeStyle";
-    public static final int CODE_STYLE_AOSP = 0;
-    public static final int CODE_STYLE_GOOGLE = 1;
-    private static JavaServerSettings instance;
+  public static final String KEY_JAVA_PREF_GOOGLE_CODE_STYLE =
+      "idepref_editor_java_googleCodeStyle";
+  public static final int CODE_STYLE_AOSP = 0;
+  public static final int CODE_STYLE_GOOGLE = 1;
+  private static JavaServerSettings instance;
 
-    @NonNull
-    public static JavaServerSettings getInstance() {
-        if (instance == null) {
-            instance = new JavaServerSettings();
-        }
-
-        return instance;
+  @NonNull
+  public static JavaServerSettings getInstance() {
+    if (instance == null) {
+      instance = new JavaServerSettings();
     }
 
-    private int getCodeStyle() {
-        final PreferenceManager prefs = getPrefs();
-        if (prefs != null) {
-            if (prefs.getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false)) {
-                return CODE_STYLE_GOOGLE;
-            }
-        }
+    return instance;
+  }
 
-        return CODE_STYLE_AOSP;
+  private int getCodeStyle() {
+    final PreferenceManager prefs = getPrefs();
+    if (prefs != null) {
+      if (prefs.getBoolean(KEY_JAVA_PREF_GOOGLE_CODE_STYLE, false)) {
+        return CODE_STYLE_GOOGLE;
+      }
     }
 
-    public JavaFormatterOptions.Style getStyle() {
-        if (getCodeStyle() == JavaServerSettings.CODE_STYLE_AOSP) {
+    return CODE_STYLE_AOSP;
+  }
 
-            return JavaFormatterOptions.Style.AOSP;
-        }
+  public JavaFormatterOptions.Style getStyle() {
+    if (getCodeStyle() == JavaServerSettings.CODE_STYLE_AOSP) {
 
-        return JavaFormatterOptions.Style.GOOGLE;
+      return JavaFormatterOptions.Style.AOSP;
     }
 
-    public JavaFormatterOptions getFormatterOptions() {
-        return JavaFormatterOptions.builder().formatJavadoc(true).style(getStyle()).build();
-    }
+    return JavaFormatterOptions.Style.GOOGLE;
+  }
+
+  public JavaFormatterOptions getFormatterOptions() {
+    return JavaFormatterOptions.builder().formatJavadoc(true).style(getStyle()).build();
+  }
 }
-

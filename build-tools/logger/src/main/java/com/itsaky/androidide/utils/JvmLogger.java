@@ -26,23 +26,23 @@ import com.itsaky.androidide.models.LogLine;
  */
 public class JvmLogger extends ILogger {
 
-    public static LogInterceptor interceptor;
+  public static LogInterceptor interceptor;
 
-    protected JvmLogger(String tag) {
-        super(tag);
-    }
+  protected JvmLogger(String tag) {
+    super(tag);
+  }
 
-    @Override
-    protected void doLog(int priority, String message) {
-        final var log = new LogLine(priorityChar(priority), TAG, message);
-        if (interceptor != null) {
-            interceptor.onLog(log);
-        } else {
-            System.err.println(log.toSimpleString());
-        }
+  @Override
+  protected void doLog(int priority, String message) {
+    final var log = new LogLine(priorityChar(priority), TAG, message);
+    if (interceptor != null) {
+      interceptor.onLog(log);
+    } else {
+      System.err.println(log.toSimpleString());
     }
+  }
 
-    public interface LogInterceptor {
-        void onLog(LogLine line);
-    }
+  public interface LogInterceptor {
+    void onLog(LogLine line);
+  }
 }

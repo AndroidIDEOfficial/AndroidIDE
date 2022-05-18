@@ -35,42 +35,42 @@ import org.xmlpull.v1.XmlPullParser;
  */
 public class InsetDrawableParser extends IDrawableParser {
 
-    protected InsetDrawableParser(
-            XmlPullParser parser,
-            IResourceTable resourceFinder,
-            DisplayMetrics displayMetrics,
-            int minDepth) {
-        super(parser, resourceFinder, displayMetrics, minDepth);
+  protected InsetDrawableParser(
+      XmlPullParser parser,
+      IResourceTable resourceFinder,
+      DisplayMetrics displayMetrics,
+      int minDepth) {
+    super(parser, resourceFinder, displayMetrics, minDepth);
+  }
+
+  @Override
+  public Drawable parseDrawable() throws Exception {
+    var index = attrIndex("drawable");
+    if (index == -1) {
+      throw new InflateException("No drawable specified for <inset> drawable");
     }
 
-    @Override
-    public Drawable parseDrawable() throws Exception {
-        var index = attrIndex("drawable");
-        if (index == -1) {
-            throw new InflateException("No drawable specified for <inset> drawable");
-        }
+    var value = value(index);
+    Preconditions.assertNotBlank(value, "Invalid value specified for android:drawable");
 
-        var value = value(index);
-        Preconditions.assertNotBlank(value, "Invalid value specified for android:drawable");
-
-        final var drawable = parseDrawable(value, BaseApplication.getBaseInstance());
-        if (drawable == null) {
-            throw new InflateException(
-                    "Unable to parse inset drawable. Failed to parse android:drawable");
-        }
-
-        index = attrIndex("insetLeft");
-        final var left = index == -1 ? 0 : parseDimension(value(index), 0);
-
-        index = attrIndex("insetTop");
-        final var top = index == -1 ? 0 : parseDimension(value(index), 0);
-
-        index = attrIndex("insetRight");
-        final var right = index == -1 ? 0 : parseDimension(value(index), 0);
-
-        index = attrIndex("insetBottom");
-        final var bottom = index == -1 ? 0 : parseDimension(value(index), 0);
-
-        return new InsetDrawable(drawable, left, top, right, bottom);
+    final var drawable = parseDrawable(value, BaseApplication.getBaseInstance());
+    if (drawable == null) {
+      throw new InflateException(
+          "Unable to parse inset drawable. Failed to parse android:drawable");
     }
+
+    index = attrIndex("insetLeft");
+    final var left = index == -1 ? 0 : parseDimension(value(index), 0);
+
+    index = attrIndex("insetTop");
+    final var top = index == -1 ? 0 : parseDimension(value(index), 0);
+
+    index = attrIndex("insetRight");
+    final var right = index == -1 ? 0 : parseDimension(value(index), 0);
+
+    index = attrIndex("insetBottom");
+    final var bottom = index == -1 ? 0 : parseDimension(value(index), 0);
+
+    return new InsetDrawable(drawable, left, top, right, bottom);
+  }
 }

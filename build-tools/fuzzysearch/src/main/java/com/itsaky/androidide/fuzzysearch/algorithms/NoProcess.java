@@ -8,10 +8,9 @@ import com.itsaky.androidide.fuzzysearch.StringProcessor;
 @Deprecated
 public class NoProcess extends StringProcessor {
 
-    @Override
-    @Deprecated
-    public String process(String in) {
-        return in;
-    }
-
+  @Override
+  @Deprecated
+  public String process(String in) {
+    return in;
+  }
 }

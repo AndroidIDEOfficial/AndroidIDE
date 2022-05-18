@@ -34,70 +34,70 @@ import java.util.TreeMap;
 
 public class WidgetInfo {
 
-    private final SortedMap<String, Widget> widgets;
-    private final SortedMap<String, String[]> params;
+  private final SortedMap<String, Widget> widgets;
+  private final SortedMap<String, String[]> params;
 
-    public WidgetInfo(@NonNull final Resources resources) throws IOException {
-        this.widgets = new TreeMap<>();
-        this.params = new TreeMap<>();
-        readWidgets(resources);
+  public WidgetInfo(@NonNull final Resources resources) throws IOException {
+    this.widgets = new TreeMap<>();
+    this.params = new TreeMap<>();
+    readWidgets(resources);
+  }
+
+  private void readWidgets(@NonNull final Resources resources) throws IOException {
+    final InputStream in = resources.openRawResource(com.itsaky.sdkinfo.R.raw.widgets);
+    if (in == null) {
+      return;
     }
 
-    private void readWidgets(@NonNull final Resources resources) throws IOException {
-        final InputStream in = resources.openRawResource(com.itsaky.sdkinfo.R.raw.widgets);
-        if (in == null) {
-            return;
-        }
+    final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+    String line;
+    while ((line = reader.readLine()) != null) {
+      final var split = line.split("\\s");
+      final var name = split[0];
+      if (name == null || name.trim().isEmpty()) {
+        continue;
+      }
 
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            final var split = line.split("\\s");
-            final var name = split[0];
-            if (name == null || name.trim().isEmpty()) {
-                continue;
-            }
+      final var code = name.charAt(0);
 
-            final var code = name.charAt(0);
+      final var entryName = name.substring(1);
+      final var isLayout = code == 'L'; // L -> Layout, W -> Widget, P -> LayoutParam
+      final var superclasses = new String[split.length - 1];
 
-            final var entryName = name.substring(1);
-            final var isLayout = code == 'L'; // L -> Layout, W -> Widget, P -> LayoutParam
-            final var superclasses = new String[split.length - 1];
+      System.arraycopy(split, 1, superclasses, 0, superclasses.length);
 
-            System.arraycopy(split, 1, superclasses, 0, superclasses.length);
-
-            if (code == 'P') {
-                final var className = entryName.substring(0, entryName.lastIndexOf("."));
-                this.params.put(className, superclasses);
-            } else {
-                final var widget = new Widget(entryName, isLayout);
-                widget.superclasses = superclasses;
-                widgets.put(entryName, widget);
-            }
-        }
+      if (code == 'P') {
+        final var className = entryName.substring(0, entryName.lastIndexOf("."));
+        this.params.put(className, superclasses);
+      } else {
+        final var widget = new Widget(entryName, isLayout);
+        widget.superclasses = superclasses;
+        widgets.put(entryName, widget);
+      }
     }
+  }
 
-    public Widget getWidget(String name) {
-        return this.widgets.getOrDefault(name, null);
-    }
+  public Widget getWidget(String name) {
+    return this.widgets.getOrDefault(name, null);
+  }
 
-    @Nullable
-    public Widget getWidgetBySimpleName(@NonNull final String name) {
-        for (final var entry : this.widgets.entrySet()) {
-            final var key = entry.getKey();
-            final var simple = key.substring(key.lastIndexOf(".") + 1);
-            if (simple.equals(name)) {
-                return entry.getValue();
-            }
-        }
-        return null;
+  @Nullable
+  public Widget getWidgetBySimpleName(@NonNull final String name) {
+    for (final var entry : this.widgets.entrySet()) {
+      final var key = entry.getKey();
+      final var simple = key.substring(key.lastIndexOf(".") + 1);
+      if (simple.equals(name)) {
+        return entry.getValue();
+      }
     }
+    return null;
+  }
 
-    public Collection<Widget> getWidgets() {
-        return this.widgets.values();
-    }
+  public Collection<Widget> getWidgets() {
+    return this.widgets.values();
+  }
 
-    public String[] getLayoutParamSuperClasses(final String className) {
-        return this.params.get(className);
-    }
+  public String[] getLayoutParamSuperClasses(final String className) {
+    return this.params.get(className);
+  }
 }

@@ -26,29 +26,29 @@ import android.util.Log;
  */
 public class AndroidLogger extends ILogger {
 
-    protected AndroidLogger(String tag) {
-        super(tag);
-    }
+  protected AndroidLogger(String tag) {
+    super(tag);
+  }
 
-    @Override
-    protected void doLog(int priority, String message) {
-        switch (priority) {
-            case ERROR:
-                Log.e(TAG, message);
-                break;
-            case WARNING:
-                Log.w(TAG, message);
-                break;
-            case VERBOSE:
-                Log.v(TAG, message);
-                break;
-            case INFO:
-                Log.i(TAG, message);
-                break;
-            case DEBUG:
-            default:
-                Log.d(TAG, message);
-                break;
-        }
+  @Override
+  protected void doLog(int priority, String message) {
+    switch (priority) {
+      case ERROR:
+        Log.e(TAG, message);
+        break;
+      case WARNING:
+        Log.w(TAG, message);
+        break;
+      case VERBOSE:
+        Log.v(TAG, message);
+        break;
+      case INFO:
+        Log.i(TAG, message);
+        break;
+      case DEBUG:
+      default:
+        Log.d(TAG, message);
+        break;
     }
+  }
 }

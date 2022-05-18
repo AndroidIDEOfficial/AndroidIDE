@@ -33,60 +33,60 @@ import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.utils.DialogUtils;
 
 public class SplashActivity extends StudioActivity {
-    private static final Handler mHandler = new Handler();
-    private final Runnable mRunnable =
-            () -> {
-                ConstantsBridge.SPLASH_TO_MAIN = true;
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                finish();
-            };
-    private ActivitySplashBinding binding;
+  private static final Handler mHandler = new Handler();
+  private final Runnable mRunnable =
+      () -> {
+        ConstantsBridge.SPLASH_TO_MAIN = true;
+        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+        finish();
+      };
+  private ActivitySplashBinding binding;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding.splashText.setText(getString(R.string.msg_checking_storage_permissions));
-    }
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    binding.splashText.setText(getString(R.string.msg_checking_storage_permissions));
+  }
 
-    @Override
-    protected void onStorageAlreadyGranted() {
-        super.onStorageAlreadyGranted();
-        proceed();
-    }
+  @Override
+  protected void onStorageAlreadyGranted() {
+    super.onStorageAlreadyGranted();
+    proceed();
+  }
 
-    @Override
-    protected void onStorageGranted() {
-        super.onStorageGranted();
-        proceed();
-    }
+  @Override
+  protected void onStorageGranted() {
+    super.onStorageGranted();
+    proceed();
+  }
 
-    @Override
-    protected View bindLayout() {
-        binding = ActivitySplashBinding.inflate(getLayoutInflater());
-        return binding.getRoot();
-    }
+  @Override
+  protected View bindLayout() {
+    binding = ActivitySplashBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
+  }
 
-    private void proceed() {
-        if (!StudioApp.isAbiSupported()) {
-            final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-            builder.setTitle(R.string.title_device_not_supported);
-            builder.setMessage(R.string.msg_device_not_supported);
-            builder.setCancelable(false);
-            builder.setPositiveButton(android.R.string.ok, (p1, p2) -> finishAffinity());
-            builder.create().show();
-        } else {
-            binding.splashText.setText(getString(R.string.msg_storage_granted));
-            if (getApp().isFrameworkInstalled()) {
-                goToMain();
-            } else {
-                startActivity(new Intent(this, DownloadActivity.class));
-                finish();
-            }
-        }
+  private void proceed() {
+    if (!StudioApp.isAbiSupported()) {
+      final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
+      builder.setTitle(R.string.title_device_not_supported);
+      builder.setMessage(R.string.msg_device_not_supported);
+      builder.setCancelable(false);
+      builder.setPositiveButton(android.R.string.ok, (p1, p2) -> finishAffinity());
+      builder.create().show();
+    } else {
+      binding.splashText.setText(getString(R.string.msg_storage_granted));
+      if (getApp().isFrameworkInstalled()) {
+        goToMain();
+      } else {
+        startActivity(new Intent(this, DownloadActivity.class));
+        finish();
+      }
     }
+  }
 
-    private void goToMain() {
-        mHandler.removeCallbacks(mRunnable);
-        mHandler.postDelayed(mRunnable, 1000);
-    }
+  private void goToMain() {
+    mHandler.removeCallbacks(mRunnable);
+    mHandler.postDelayed(mRunnable, 1000);
+  }
 }

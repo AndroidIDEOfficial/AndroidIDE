@@ -56,132 +56,132 @@ import java.util.List;
  */
 public class XMLLanguageServer implements ILanguageServer {
 
-    private final IDocumentHandler documentHandler = new NoDocumentHandler();
+  private final IDocumentHandler documentHandler = new NoDocumentHandler();
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public SDKInfo sdkInfo;
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public SDKInfo sdkInfo;
 
-    private ILanguageClient client;
-    private IServerSettings settings;
-    private boolean initialized = false;
-    private boolean canProvideCompletions = false;
-    private ServerCapabilities capabilities;
+  private ILanguageClient client;
+  private IServerSettings settings;
+  private boolean initialized = false;
+  private boolean canProvideCompletions = false;
+  private ServerCapabilities capabilities;
 
-    public XMLLanguageServer() {}
+  public XMLLanguageServer() {}
 
-    public void setupSDK(@NonNull final SDKInfo info) {
-        this.sdkInfo = info;
-        this.canProvideCompletions = true;
+  public void setupSDK(@NonNull final SDKInfo info) {
+    this.sdkInfo = info;
+    this.canProvideCompletions = true;
+  }
+
+  @Override
+  public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
+    if (initialized) {
+      throw new AlreadyInitializedException();
     }
 
-    @Override
-    public void initialize(@NonNull InitializeParams params) throws AlreadyInitializedException {
-        if (initialized) {
-            throw new AlreadyInitializedException();
-        }
+    capabilities = new ServerCapabilities();
+    capabilities.setCompletionsAvailable(true);
+    capabilities.setCodeAnalysisAvailable(true);
+    capabilities.setSignatureHelpAvailable(false);
+    capabilities.setReferencesAvailable(false);
+    capabilities.setDefinitionsAvailable(false);
+    capabilities.setSmartSelectionsEnabled(false);
 
-        capabilities = new ServerCapabilities();
-        capabilities.setCompletionsAvailable(true);
-        capabilities.setCodeAnalysisAvailable(true);
-        capabilities.setSignatureHelpAvailable(false);
-        capabilities.setReferencesAvailable(false);
-        capabilities.setDefinitionsAvailable(false);
-        capabilities.setSmartSelectionsEnabled(false);
+    initialized = true;
+  }
 
-        initialized = true;
+  @Override
+  public boolean isInitialized() {
+    return initialized;
+  }
+
+  @NonNull
+  @Override
+  public ServerCapabilities getCapabilities() {
+    return capabilities;
+  }
+
+  @Override
+  public void shutdown() {}
+
+  @Override
+  public void connectClient(ILanguageClient client) {
+    this.client = client;
+  }
+
+  @Nullable
+  @Override
+  public ILanguageClient getClient() {
+    return this.client;
+  }
+
+  @Override
+  public void applySettings(IServerSettings settings) {
+    this.settings = settings;
+  }
+
+  @Override
+  public void configurationChanged(Object newConfiguration) {}
+
+  @NonNull
+  @Override
+  public ICompletionProvider getCompletionProvider() {
+    if (!getSettings().completionsEnabled() || !canProvideCompletions) {
+      return new NoCompletionsProvider();
     }
 
-    @Override
-    public boolean isInitialized() {
-        return initialized;
+    return new XmlCompletionProvider(this.sdkInfo, this.getSettings());
+  }
+
+  @NonNull
+  public IServerSettings getSettings() {
+    if (settings == null) {
+      settings = XMLServerSettings.getInstance();
     }
 
-    @NonNull
-    @Override
-    public ServerCapabilities getCapabilities() {
-        return capabilities;
-    }
+    return settings;
+  }
 
-    @Override
-    public void shutdown() {}
+  @NonNull
+  @Override
+  public ReferenceResult findReferences(@NonNull ReferenceParams params) {
+    return new ReferenceResult(Collections.emptyList());
+  }
 
-    @Override
-    public void connectClient(ILanguageClient client) {
-        this.client = client;
-    }
+  @NonNull
+  @Override
+  public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
+    return new DefinitionResult(Collections.emptyList());
+  }
 
-    @Nullable
-    @Override
-    public ILanguageClient getClient() {
-        return this.client;
-    }
+  @NonNull
+  @Override
+  public Range expandSelection(@NonNull ExpandSelectionParams params) {
+    return params.getSelection();
+  }
 
-    @Override
-    public void applySettings(IServerSettings settings) {
-        this.settings = settings;
-    }
+  @NonNull
+  @Override
+  public SignatureHelp signatureHelp(@NonNull SignatureHelpParams params) {
+    return new SignatureHelp(Collections.emptyList(), -1, -1);
+  }
 
-    @Override
-    public void configurationChanged(Object newConfiguration) {}
+  @NonNull
+  @Override
+  public List<DiagnosticItem> analyze(@NonNull Path file) {
+    return Collections.emptyList();
+  }
 
-    @NonNull
-    @Override
-    public ICompletionProvider getCompletionProvider() {
-        if (!getSettings().completionsEnabled() || !canProvideCompletions) {
-            return new NoCompletionsProvider();
-        }
+  @NonNull
+  @Override
+  public CharSequence formatCode(CharSequence input) {
+    return new CodeFormatProvider().format(input);
+  }
 
-        return new XmlCompletionProvider(this.sdkInfo, this.getSettings());
-    }
-
-    @NonNull
-    public IServerSettings getSettings() {
-        if (settings == null) {
-            settings = XMLServerSettings.getInstance();
-        }
-
-        return settings;
-    }
-
-    @NonNull
-    @Override
-    public ReferenceResult findReferences(@NonNull ReferenceParams params) {
-        return new ReferenceResult(Collections.emptyList());
-    }
-
-    @NonNull
-    @Override
-    public DefinitionResult findDefinition(@NonNull DefinitionParams params) {
-        return new DefinitionResult(Collections.emptyList());
-    }
-
-    @NonNull
-    @Override
-    public Range expandSelection(@NonNull ExpandSelectionParams params) {
-        return params.getSelection();
-    }
-
-    @NonNull
-    @Override
-    public SignatureHelp signatureHelp(@NonNull SignatureHelpParams params) {
-        return new SignatureHelp(Collections.emptyList(), -1, -1);
-    }
-
-    @NonNull
-    @Override
-    public List<DiagnosticItem> analyze(@NonNull Path file) {
-        return Collections.emptyList();
-    }
-
-    @NonNull
-    @Override
-    public CharSequence formatCode(CharSequence input) {
-        return new CodeFormatProvider().format(input);
-    }
-
-    @NonNull
-    @Override
-    public IDocumentHandler getDocumentHandler() {
-        return this.documentHandler;
-    }
+  @NonNull
+  @Override
+  public IDocumentHandler getDocumentHandler() {
+    return this.documentHandler;
+  }
 }

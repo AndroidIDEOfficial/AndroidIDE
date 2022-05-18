@@ -29,343 +29,342 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * extended to create a listener which only needs to handle a subset of the available methods.
  */
 public class JavadocParserBaseListener implements JavadocParserListener {
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterDocumentation(JavadocParser.DocumentationContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitDocumentation(JavadocParser.DocumentationContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterDocumentationContent(JavadocParser.DocumentationContentContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitDocumentationContent(JavadocParser.DocumentationContentContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterSkipWhitespace(JavadocParser.SkipWhitespaceContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitSkipWhitespace(JavadocParser.SkipWhitespaceContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterDescription(JavadocParser.DescriptionContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitDescription(JavadocParser.DescriptionContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterDescriptionLine(JavadocParser.DescriptionLineContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitDescriptionLine(JavadocParser.DescriptionLineContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterDescriptionLineStart(JavadocParser.DescriptionLineStartContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitDescriptionLineStart(JavadocParser.DescriptionLineStartContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterDescriptionLineNoSpaceNoAt(
-            JavadocParser.DescriptionLineNoSpaceNoAtContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitDescriptionLineNoSpaceNoAt(
-            JavadocParser.DescriptionLineNoSpaceNoAtContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterDescriptionLineElement(JavadocParser.DescriptionLineElementContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitDescriptionLineElement(JavadocParser.DescriptionLineElementContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterDescriptionLineText(JavadocParser.DescriptionLineTextContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitDescriptionLineText(JavadocParser.DescriptionLineTextContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterDescriptionNewline(JavadocParser.DescriptionNewlineContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitDescriptionNewline(JavadocParser.DescriptionNewlineContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterTagSection(JavadocParser.TagSectionContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitTagSection(JavadocParser.TagSectionContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterBlockTag(JavadocParser.BlockTagContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitBlockTag(JavadocParser.BlockTagContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterBlockTagName(JavadocParser.BlockTagNameContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitBlockTagName(JavadocParser.BlockTagNameContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterBlockTagContent(JavadocParser.BlockTagContentContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitBlockTagContent(JavadocParser.BlockTagContentContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterBlockTagText(JavadocParser.BlockTagTextContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitBlockTagText(JavadocParser.BlockTagTextContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterBlockTagTextElement(JavadocParser.BlockTagTextElementContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitBlockTagTextElement(JavadocParser.BlockTagTextElementContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterInlineTag(JavadocParser.InlineTagContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitInlineTag(JavadocParser.InlineTagContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterInlineTagName(JavadocParser.InlineTagNameContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitInlineTagName(JavadocParser.InlineTagNameContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterInlineTagContent(JavadocParser.InlineTagContentContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitInlineTagContent(JavadocParser.InlineTagContentContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterBraceExpression(JavadocParser.BraceExpressionContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitBraceExpression(JavadocParser.BraceExpressionContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterBraceContent(JavadocParser.BraceContentContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitBraceContent(JavadocParser.BraceContentContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterBraceText(JavadocParser.BraceTextContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitBraceText(JavadocParser.BraceTextContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterDocumentation(JavadocParser.DocumentationContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitDocumentation(JavadocParser.DocumentationContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterDocumentationContent(JavadocParser.DocumentationContentContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitDocumentationContent(JavadocParser.DocumentationContentContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterSkipWhitespace(JavadocParser.SkipWhitespaceContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitSkipWhitespace(JavadocParser.SkipWhitespaceContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterDescription(JavadocParser.DescriptionContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitDescription(JavadocParser.DescriptionContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterDescriptionLine(JavadocParser.DescriptionLineContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitDescriptionLine(JavadocParser.DescriptionLineContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterDescriptionLineStart(JavadocParser.DescriptionLineStartContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitDescriptionLineStart(JavadocParser.DescriptionLineStartContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterDescriptionLineNoSpaceNoAt(
+      JavadocParser.DescriptionLineNoSpaceNoAtContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitDescriptionLineNoSpaceNoAt(JavadocParser.DescriptionLineNoSpaceNoAtContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterDescriptionLineElement(JavadocParser.DescriptionLineElementContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitDescriptionLineElement(JavadocParser.DescriptionLineElementContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterDescriptionLineText(JavadocParser.DescriptionLineTextContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitDescriptionLineText(JavadocParser.DescriptionLineTextContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterDescriptionNewline(JavadocParser.DescriptionNewlineContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitDescriptionNewline(JavadocParser.DescriptionNewlineContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterTagSection(JavadocParser.TagSectionContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitTagSection(JavadocParser.TagSectionContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterBlockTag(JavadocParser.BlockTagContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitBlockTag(JavadocParser.BlockTagContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterBlockTagName(JavadocParser.BlockTagNameContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitBlockTagName(JavadocParser.BlockTagNameContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterBlockTagContent(JavadocParser.BlockTagContentContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitBlockTagContent(JavadocParser.BlockTagContentContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterBlockTagText(JavadocParser.BlockTagTextContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitBlockTagText(JavadocParser.BlockTagTextContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterBlockTagTextElement(JavadocParser.BlockTagTextElementContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitBlockTagTextElement(JavadocParser.BlockTagTextElementContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterInlineTag(JavadocParser.InlineTagContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitInlineTag(JavadocParser.InlineTagContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterInlineTagName(JavadocParser.InlineTagNameContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitInlineTagName(JavadocParser.InlineTagNameContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterInlineTagContent(JavadocParser.InlineTagContentContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitInlineTagContent(JavadocParser.InlineTagContentContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterBraceExpression(JavadocParser.BraceExpressionContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitBraceExpression(JavadocParser.BraceExpressionContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterBraceContent(JavadocParser.BraceContentContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitBraceContent(JavadocParser.BraceContentContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterBraceText(JavadocParser.BraceTextContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitBraceText(JavadocParser.BraceTextContext ctx) {}
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void enterEveryRule(ParserRuleContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void exitEveryRule(ParserRuleContext ctx) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void visitTerminal(TerminalNode node) {}
-    /**
-     * {@inheritDoc}
-     *
-     * <p>The default implementation does nothing.
-     */
-    @Override
-    public void visitErrorNode(ErrorNode node) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterEveryRule(ParserRuleContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitEveryRule(ParserRuleContext ctx) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void visitTerminal(TerminalNode node) {}
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void visitErrorNode(ErrorNode node) {}
 }

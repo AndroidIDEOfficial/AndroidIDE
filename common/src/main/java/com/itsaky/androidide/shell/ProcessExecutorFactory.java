@@ -20,9 +20,9 @@ package com.itsaky.androidide.shell;
 /** Provides static access to the process executor */
 public class ProcessExecutorFactory {
 
-    private static final CommonProcessExecutor executor = new CommonProcessExecutor();
+  private static final CommonProcessExecutor executor = new CommonProcessExecutor();
 
-    public static IProcessExecutor commonExecutor() {
-        return executor;
-    }
+  public static IProcessExecutor commonExecutor() {
+    return executor;
+  }
 }

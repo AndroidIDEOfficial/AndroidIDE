@@ -22,14 +22,14 @@ import com.itsaky.lsp.models.Range;
 import java.io.File;
 
 public class SearchResult extends Range {
-    public File file;
-    public String line;
-    public String match;
+  public File file;
+  public String line;
+  public String match;
 
-    public SearchResult(Range src, File file, String line, String match) {
-        super(src.getStart(), src.getEnd());
-        this.file = file;
-        this.line = line;
-        this.match = match;
-    }
+  public SearchResult(Range src, File file, String line, String match) {
+    super(src.getStart(), src.getEnd());
+    this.file = file;
+    this.line = line;
+    this.match = match;
+  }
 }

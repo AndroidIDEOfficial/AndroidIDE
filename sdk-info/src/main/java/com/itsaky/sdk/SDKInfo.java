@@ -38,30 +38,30 @@ import java.util.Objects;
  */
 public class SDKInfo {
 
-    private final AttrInfo attrInfo;
-    private final ApiInfo apiInfo;
-    private final WidgetInfo widgetInfo;
+  private final AttrInfo attrInfo;
+  private final ApiInfo apiInfo;
+  private final WidgetInfo widgetInfo;
 
-    public SDKInfo(@NonNull final Context context) throws Exception {
-        this(context.getResources());
-    }
+  public SDKInfo(@NonNull final Context context) throws Exception {
+    this(context.getResources());
+  }
 
-    public SDKInfo(@NonNull final Resources resources) throws Exception {
-        Objects.requireNonNull(resources);
-        this.apiInfo = new ApiInfo(resources);
-        this.attrInfo = new AttrInfo(resources);
-        this.widgetInfo = new WidgetInfo(resources);
-    }
+  public SDKInfo(@NonNull final Resources resources) throws Exception {
+    Objects.requireNonNull(resources);
+    this.apiInfo = new ApiInfo(resources);
+    this.attrInfo = new AttrInfo(resources);
+    this.widgetInfo = new WidgetInfo(resources);
+  }
 
-    public AttrInfo getAttrInfo() {
-        return attrInfo;
-    }
+  public AttrInfo getAttrInfo() {
+    return attrInfo;
+  }
 
-    public ApiInfo getApiInfo() {
-        return apiInfo;
-    }
+  public ApiInfo getApiInfo() {
+    return apiInfo;
+  }
 
-    public WidgetInfo getWidgetInfo() {
-        return widgetInfo;
-    }
+  public WidgetInfo getWidgetInfo() {
+    return widgetInfo;
+  }
 }

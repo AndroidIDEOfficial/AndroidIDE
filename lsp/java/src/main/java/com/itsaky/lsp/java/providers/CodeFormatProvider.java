@@ -37,54 +37,52 @@ import java.io.Writer;
  */
 public class CodeFormatProvider {
 
-    private static final ILogger LOG = ILogger.newInstance("JavaCodeFormatProvider");
+  private static final ILogger LOG = ILogger.newInstance("JavaCodeFormatProvider");
 
-    private final JavaServerSettings settings;
+  private final JavaServerSettings settings;
 
-    public CodeFormatProvider(IServerSettings settings) {
-        assert settings instanceof JavaServerSettings;
-        this.settings = (JavaServerSettings) settings;
+  public CodeFormatProvider(IServerSettings settings) {
+    assert settings instanceof JavaServerSettings;
+    this.settings = (JavaServerSettings) settings;
+  }
+
+  public CharSequence format(CharSequence input) {
+    final long start = System.currentTimeMillis();
+    try (final StringWriterCharSink sink = new StringWriterCharSink(); ) {
+      final CharSource source = CharSource.wrap(input);
+      final Formatter formatter = new Formatter(settings.getFormatterOptions());
+      formatter.formatSource(source, sink);
+      LOG.info("Java code formatted in", System.currentTimeMillis() - start + "ms");
+      return sink.toString();
+    } catch (Throwable e) {
+      LOG.error("Failed to format code.", e);
+      return input;
+    }
+  }
+
+  private static class StringWriterCharSink extends CharSink implements AutoCloseable {
+
+    private final StringWriter writer;
+
+    private StringWriterCharSink() {
+      this.writer = new StringWriter();
     }
 
-    public CharSequence format(CharSequence input) {
-        final long start = System.currentTimeMillis();
-        try (final StringWriterCharSink sink = new StringWriterCharSink(); ) {
-            final CharSource source = CharSource.wrap(input);
-            final Formatter formatter = new Formatter(settings.getFormatterOptions());
-            formatter.formatSource(source, sink);
-            LOG.info("Java code formatted in", System.currentTimeMillis() - start + "ms");
-            return sink.toString();
-        } catch (Throwable e) {
-            LOG.error("Failed to format code.", e);
-            return input;
-        }
+    @NonNull
+    @Override
+    public Writer openStream() {
+      return this.writer;
     }
 
-    private static class StringWriterCharSink extends CharSink implements AutoCloseable {
-
-        private final StringWriter writer;
-
-        private StringWriterCharSink() {
-            this.writer = new StringWriter();
-        }
-
-        @NonNull
-        @Override
-        public Writer openStream() {
-            return this.writer;
-        }
-
-        @Override
-        public void close() throws Exception {
-            this.writer.close();
-        }
-
-        @NonNull
-        @Override
-        public String toString() {
-            return this.writer.toString();
-        }
+    @Override
+    public void close() throws Exception {
+      this.writer.close();
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+      return this.writer.toString();
+    }
+  }
 }
-
-

@@ -25,8 +25,8 @@ import java.util.Map;
 
 class RewriteNotSupported extends Rewrite {
 
-    @Override
-    public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
-        return CANCELLED;
-    }
+  @Override
+  public Map<Path, TextEdit[]> rewrite(CompilerProvider compiler) {
+    return CANCELLED;
+  }
 }

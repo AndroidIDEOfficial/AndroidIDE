@@ -48,17 +48,17 @@ import java.nio.file.Path;
  * @author Akash Yadav
  */
 public interface ICompletionProvider {
-    
-    default boolean canComplete(Path file) {
-        return file != null && Files.exists(file) && !Files.isDirectory(file);
-    }
 
-    /**
-     * Compute completions using the given params and return the given completion result.
-     *
-     * @param params The params that can be used to compute completion items.
-     * @return The completion result. Must not be null.
-     */
-    @NonNull
-    CompletionResult complete(CompletionParams params);
+  default boolean canComplete(Path file) {
+    return file != null && Files.exists(file) && !Files.isDirectory(file);
+  }
+
+  /**
+   * Compute completions using the given params and return the given completion result.
+   *
+   * @param params The params that can be used to compute completion items.
+   * @return The completion result. Must not be null.
+   */
+  @NonNull
+  CompletionResult complete(CompletionParams params);
 }

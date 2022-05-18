@@ -96,7 +96,7 @@ public class ProjectReader {
     builder.setProjectDir(gradle.getProjectDirectory());
     builder.setBuildDir(gradle.getBuildDirectory());
     builder.setBuildScript(gradle.getBuildScript().getSourceFile());
-    builder.setSimpleVariants (copier.asSimpleVariants (android.getVariants ()));
+    builder.setSimpleVariants(copier.asSimpleVariants(android.getVariants()));
     builder.setJavaCompileOptions(copier.copy(android.getJavaCompileOptions()));
     builder.setResourcePrefix(android.getResourcePrefix());
     builder.setDynamicFeatures(android.getDynamicFeatures());

@@ -33,86 +33,86 @@ import com.itsaky.androidide.databinding.LayoutSimpleIconTextBinding;
  */
 public abstract class IconTextAdapter<E> extends RecyclerView.Adapter<IconTextAdapter.VH> {
 
-    private OnBindListener<E> bindListener;
+  private OnBindListener<E> bindListener;
 
-    public IconTextAdapter<E> setOnBindListener(OnBindListener<E> listener) {
-        this.bindListener = listener;
-        return this;
+  public IconTextAdapter<E> setOnBindListener(OnBindListener<E> listener) {
+    this.bindListener = listener;
+    return this;
+  }
+
+  @NonNull
+  @Override
+  public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    return new VH(
+        LayoutSimpleIconTextBinding.inflate(
+            LayoutInflater.from(parent.getContext()), parent, false));
+  }
+
+  @Override
+  public void onBindViewHolder(@NonNull VH holder, int position) {
+    final var binding = holder.binding;
+    final var item = getItemAt(position);
+
+    if (this.bindListener != null && this.bindListener.onBind(item, holder, position)) {
+      return;
     }
 
-    @NonNull
-    @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new VH(
-                LayoutSimpleIconTextBinding.inflate(
-                        LayoutInflater.from(parent.getContext()), parent, false));
+    final var icon = getIconResource(position);
+
+    if (icon == -1) {
+      binding.icon.setVisibility(View.GONE);
+    } else {
+      binding.icon.setImageResource(icon);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull VH holder, int position) {
-        final var binding = holder.binding;
-        final var item = getItemAt(position);
+    binding.text.setText(getItemText(position));
 
-        if (this.bindListener != null && this.bindListener.onBind(item, holder, position)) {
-            return;
-        }
+    if (this.bindListener != null) {
+      this.bindListener.postBind(item, holder, position);
+    }
+  }
 
-        final var icon = getIconResource(position);
+  /**
+   * Get the list item at the given position.
+   *
+   * @param index The index of the item to retrieve.
+   * @return The item at the given index. Must not be <code>null</code>.
+   */
+  @NonNull
+  public abstract E getItemAt(int index);
 
-        if (icon == -1) {
-            binding.icon.setVisibility(View.GONE);
-        } else {
-            binding.icon.setImageResource(icon);
-        }
+  /**
+   * Get the icon resource ID of the item the given index.
+   *
+   * @param index The index of the item.
+   * @return The icon resource id or <b>-1</b> to hide the icon.
+   */
+  public abstract int getIconResource(int index);
 
-        binding.text.setText(getItemText(position));
+  /**
+   * Get the title of the item at the given index.
+   *
+   * @param index The index of the item.
+   * @return The title of the item.
+   */
+  @NonNull
+  public abstract String getItemText(int index);
 
-        if (this.bindListener != null) {
-            this.bindListener.postBind(item, holder, position);
-        }
+  public interface OnBindListener<T> {
+    default boolean onBind(T item, VH holder, int position) {
+      return false;
     }
 
-    /**
-     * Get the list item at the given position.
-     *
-     * @param index The index of the item to retrieve.
-     * @return The item at the given index. Must not be <code>null</code>.
-     */
-    @NonNull
-    public abstract E getItemAt(int index);
+    default void postBind(T item, VH holder, int position) {}
+  }
 
-    /**
-     * Get the icon resource ID of the item the given index.
-     *
-     * @param index The index of the item.
-     * @return The icon resource id or <b>-1</b> to hide the icon.
-     */
-    public abstract int getIconResource(int index);
+  public static class VH extends RecyclerView.ViewHolder {
 
-    /**
-     * Get the title of the item at the given index.
-     *
-     * @param index The index of the item.
-     * @return The title of the item.
-     */
-    @NonNull
-    public abstract String getItemText(int index);
+    public final LayoutSimpleIconTextBinding binding;
 
-    public interface OnBindListener<T> {
-        default boolean onBind(T item, VH holder, int position) {
-            return false;
-        }
-
-        default void postBind(T item, VH holder, int position) {}
+    public VH(@NonNull LayoutSimpleIconTextBinding binding) {
+      super(binding.getRoot());
+      this.binding = binding;
     }
-
-    public static class VH extends RecyclerView.ViewHolder {
-
-        public final LayoutSimpleIconTextBinding binding;
-
-        public VH(@NonNull LayoutSimpleIconTextBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
-        }
-    }
+  }
 }

@@ -92,1086 +92,1020 @@ import javax.lang.model.util.Types;
 
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
-    public static final int MAX_COMPLETION_ITEMS = CompletionResult.MAX_ITEMS;
-    private static final String[] TOP_LEVEL_KEYWORDS = {
-        "package",
-        "import",
-        "public",
-        "private",
-        "protected",
-        "abstract",
-        "class",
-        "interface",
-        "@interface",
-        "extends",
-        "implements",
-    };
-    private static final String[] CLASS_BODY_KEYWORDS = {
-        "public",
-        "private",
-        "protected",
-        "static",
-        "final",
-        "native",
-        "synchronized",
-        "abstract",
-        "default",
-        "class",
-        "interface",
-        "void",
-        "boolean",
-        "int",
-        "long",
-        "float",
-        "double",
-    };
-    private static final String[] METHOD_BODY_KEYWORDS = {
-        "new",
-        "assert",
-        "try",
-        "catch",
-        "finally",
-        "throw",
-        "return",
-        "break",
-        "case",
-        "continue",
-        "default",
-        "do",
-        "while",
-        "for",
-        "switch",
-        "if",
-        "else",
-        "instanceof",
-        "var",
-        "final",
-        "class",
-        "void",
-        "boolean",
-        "int",
-        "long",
-        "float",
-        "double",
-    };
-    private static final ILogger LOG = ILogger.newInstance("JavaCompletionProvider");
-    private final CompilerProvider compiler;
-    private Path completingFile;
-    private long cursor;
+  public static final int MAX_COMPLETION_ITEMS = CompletionResult.MAX_ITEMS;
+  private static final String[] TOP_LEVEL_KEYWORDS = {
+    "package",
+    "import",
+    "public",
+    "private",
+    "protected",
+    "abstract",
+    "class",
+    "interface",
+    "@interface",
+    "extends",
+    "implements",
+  };
+  private static final String[] CLASS_BODY_KEYWORDS = {
+    "public",
+    "private",
+    "protected",
+    "static",
+    "final",
+    "native",
+    "synchronized",
+    "abstract",
+    "default",
+    "class",
+    "interface",
+    "void",
+    "boolean",
+    "int",
+    "long",
+    "float",
+    "double",
+  };
+  private static final String[] METHOD_BODY_KEYWORDS = {
+    "new",
+    "assert",
+    "try",
+    "catch",
+    "finally",
+    "throw",
+    "return",
+    "break",
+    "case",
+    "continue",
+    "default",
+    "do",
+    "while",
+    "for",
+    "switch",
+    "if",
+    "else",
+    "instanceof",
+    "var",
+    "final",
+    "class",
+    "void",
+    "boolean",
+    "int",
+    "long",
+    "float",
+    "double",
+  };
+  private static final ILogger LOG = ILogger.newInstance("JavaCompletionProvider");
+  private final CompilerProvider compiler;
+  private Path completingFile;
+  private long cursor;
 
-    public CompletionProvider(CompilerProvider compiler, IServerSettings settings) {
-        super();
-        super.applySettings(settings);
+  public CompletionProvider(CompilerProvider compiler, IServerSettings settings) {
+    super();
+    super.applySettings(settings);
 
-        this.compiler = compiler;
+    this.compiler = compiler;
+  }
+
+  @Override
+  public boolean canComplete(Path file) {
+    return ICompletionProvider.super.canComplete(file) && file.toFile().getName().endsWith(".java");
+  }
+
+  @NonNull
+  @Override
+  public CompletionResult complete(@NonNull CompletionParams params) {
+    return complete(
+        params.getFile(), params.getPosition().getLine(), params.getPosition().getColumn());
+  }
+
+  public CompletionResult complete(@NonNull Path file, int line, int column) {
+    LOG.info("Complete at " + file.getFileName() + "(" + line + "," + column + ")...");
+
+    // javac expects 1-based line and column indexes
+    line++;
+    column++;
+
+    Instant started = Instant.now();
+    ParseTask task = compiler.parse(file);
+
+    this.completingFile = file;
+    this.cursor = task.root.getLineMap().getPosition(line, column);
+    StringBuilder contents = new PruneMethodBodies(task.task).scan(task.root, cursor);
+    int endOfLine = endOfLine(contents, (int) cursor);
+    contents.insert(endOfLine, ';');
+    CompletionResult list = compileAndComplete(file, contents.toString(), cursor);
+    if (list == null) {
+      list = CompletionResult.EMPTY;
     }
 
-    @Override
-    public boolean canComplete(Path file) {
-        return ICompletionProvider.super.canComplete(file)
-                && file.toFile().getName().endsWith(".java");
+    addTopLevelSnippets(task, list);
+    logCompletionTiming(started, list.getItems(), list.isIncomplete());
+    return list;
+  }
+
+  private int endOfLine(@NonNull CharSequence contents, int cursor) {
+    while (cursor < contents.length()) {
+      char c = contents.charAt(cursor);
+      if (c == '\r' || c == '\n') break;
+      cursor++;
     }
-
-    @NonNull
-    @Override
-    public CompletionResult complete(@NonNull CompletionParams params) {
-        return complete(
-                params.getFile(), params.getPosition().getLine(), params.getPosition().getColumn());
-    }
-
-    public CompletionResult complete(@NonNull Path file, int line, int column) {
-        LOG.info("Complete at " + file.getFileName() + "(" + line + "," + column + ")...");
-
-        // javac expects 1-based line and column indexes
-        line++;
-        column++;
-
-        Instant started = Instant.now();
-        ParseTask task = compiler.parse(file);
-
-        this.completingFile = file;
-        this.cursor = task.root.getLineMap().getPosition(line, column);
-        StringBuilder contents = new PruneMethodBodies(task.task).scan(task.root, cursor);
-        int endOfLine = endOfLine(contents, (int) cursor);
-        contents.insert(endOfLine, ';');
-        CompletionResult list = compileAndComplete(file, contents.toString(), cursor);
-        if (list == null) {
-            list = CompletionResult.EMPTY;
-        }
-
-        addTopLevelSnippets(task, list);
-        logCompletionTiming(started, list.getItems(), list.isIncomplete());
-        return list;
-    }
-
-    private int endOfLine(@NonNull CharSequence contents, int cursor) {
-        while (cursor < contents.length()) {
-            char c = contents.charAt(cursor);
-            if (c == '\r' || c == '\n') break;
-            cursor++;
-        }
-        return cursor;
-    }
-
-    private CompletionResult compileAndComplete(Path file, String contents, long cursor) {
-        Instant started = Instant.now();
-        SourceFileObject source = new SourceFileObject(file, contents, Instant.now());
-        String partial = partialIdentifier(contents, (int) cursor);
-        boolean endsWithParen = endsWithParen(contents, (int) cursor);
-        SynchronizedTask synchronizedTask = compiler.compile(Collections.singletonList(source));
-        return synchronizedTask.get(
-                task -> {
-                    LOG.info(
-                            "...compiled in "
-                                    + Duration.between(started, Instant.now()).toMillis()
-                                    + "ms");
-                    TreePath path = new FindCompletionsAt(task.task).scan(task.root(), cursor);
-                    switch (path.getLeaf().getKind()) {
-                        case IDENTIFIER:
-                            return completeIdentifier(task, path, partial, endsWithParen);
-                        case MEMBER_SELECT:
-                            return completeMemberSelect(task, path, partial, endsWithParen);
-                        case MEMBER_REFERENCE:
-                            return completeMemberReference(task, path, partial);
-                        case SWITCH:
-                            return completeSwitchConstant(task, path, partial, endsWithParen);
-                        case IMPORT:
-                            return completeImport(
-                                    qualifiedPartialIdentifier(contents, (int) cursor));
-                        default:
-                            CompletionResult list = new CompletionResult();
-                            addKeywords(path, partial, list);
-                            return list;
-                    }
-                });
-    }
-
-    @SuppressWarnings("Since15")
-    private void addTopLevelSnippets(@NonNull ParseTask task, CompletionResult list) {
-        Path file = Paths.get(task.root.getSourceFile().toUri());
-        if (!hasTypeDeclaration(task.root)) {
-            list.getItems().add(classSnippet(file));
-            if (task.root.getPackage() == null) {
-                list.getItems().add(packageSnippet(file));
-            }
-        }
-    }
-
-    private boolean hasTypeDeclaration(@NonNull CompilationUnitTree root) {
-        for (Tree tree : root.getTypeDecls()) {
-            if (tree.getKind() != Tree.Kind.ERRONEOUS) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @NonNull
-    private CompletionItem packageSnippet(Path file) {
-        String name = FileStore.suggestedPackageName(file);
-        return snippetItem("package " + name, "package " + name + ";\n\n");
-    }
-
-    @NonNull
-    private CompletionItem classSnippet(@NonNull Path file) {
-        String name = file.getFileName().toString();
-        name = name.substring(0, name.length() - ".java".length());
-        return snippetItem("class " + name, "class " + name + " {\n    $0\n}");
-    }
-
-    @NonNull
-    private String partialIdentifier(String contents, int end) {
-        int start = end;
-        while (start > 0 && Character.isJavaIdentifierPart(contents.charAt(start - 1))) {
-            start--;
-        }
-        return contents.substring(start, end);
-    }
-
-    private boolean endsWithParen(@NonNull String contents, int cursor) {
-        for (int i = cursor; i < contents.length(); i++) {
-            if (!Character.isJavaIdentifierPart(contents.charAt(i))) {
-                return contents.charAt(i) == '(';
-            }
-        }
-        return false;
-    }
-
-    @NonNull
-    private String qualifiedPartialIdentifier(String contents, int end) {
-        int start = end;
-        while (start > 0 && isQualifiedIdentifierChar(contents.charAt(start - 1))) {
-            start--;
-        }
-        return contents.substring(start, end);
-    }
-
-    private boolean isQualifiedIdentifierChar(char c) {
-        return c == '.' || Character.isJavaIdentifierPart(c);
-    }
-
-    @NonNull
-    private CompletionResult completeIdentifier(
-            CompileTask task, TreePath path, String partial, boolean endsWithParen) {
-        LOG.info("...complete identifiers");
-        CompletionResult list = new CompletionResult();
-        list.setItems(completeUsingScope(task, path, partial, endsWithParen));
-        addStaticImports(task, path.getCompilationUnit(), partial, endsWithParen, list);
-        if (!list.isIncomplete()) {
-            final boolean allLower = getSettings().shouldMatchAllLowerCase();
-            if (allLower || (partial.length() > 0 && Character.isUpperCase(partial.charAt(0)))) {
-                addClassNames(path.getCompilationUnit(), partial, list);
-            }
-        }
-        addKeywords(path, partial, list);
-        return list;
-    }
-
-    private void addKeywords(TreePath path, String partial, CompletionResult list) {
-        Tree level = findKeywordLevel(path);
-        String[] keywords = {};
-        if (level instanceof CompilationUnitTree) {
-            keywords = TOP_LEVEL_KEYWORDS;
-        } else if (level instanceof ClassTree) {
-            keywords = CLASS_BODY_KEYWORDS;
-        } else if (level instanceof MethodTree) {
-            keywords = METHOD_BODY_KEYWORDS;
-        }
-        for (String k : keywords) {
-            final int ratio =
-                    StringUtils.fuzzySearchRatio(
-                            k, partial, getSettings().shouldMatchAllLowerCase());
-            if (ratio > 0) {
-                list.getItems().add(keyword(k, partial, ratio));
-            }
-        }
-    }
-
-    private Tree findKeywordLevel(TreePath path) {
-        while (path != null) {
-            if (path.getLeaf() instanceof CompilationUnitTree
-                    || path.getLeaf() instanceof ClassTree
-                    || path.getLeaf() instanceof MethodTree) {
-                return path.getLeaf();
-            }
-            path = path.getParentPath();
-        }
-        throw new RuntimeException("empty path");
-    }
-
-    @NonNull
-    private List<CompletionItem> completeUsingScope(
-            @NonNull CompileTask task, TreePath path, String partial, boolean endsWithParen) {
-        Trees trees = Trees.instance(task.task);
-        List<CompletionItem> list = new ArrayList<>();
-        Scope scope = trees.getScope(path);
-        Predicate<CharSequence> filter = name -> StringUtils.matchesFuzzy(name, partial, true);
-        for (Element member : ScopeHelper.scopeMembers(task, scope, filter)) {
-            final int matchRatio =
-                    StringUtils.fuzzySearchRatio(
-                            member.getSimpleName(),
-                            partial,
-                            getSettings().shouldMatchAllLowerCase());
-
-            if (member.getKind() == ElementKind.METHOD) {
-                ExecutableElement method = (ExecutableElement) member;
-                TreePath parentPath = path.getParentPath() /*method*/.getParentPath() /*class*/;
-                list.add(
-                        overrideIfPossible(
-                                task, parentPath, method, partial, endsWithParen, matchRatio));
-            } else {
-                list.add(item(task, member, partial, matchRatio));
-            }
-        }
-
-        LOG.info("...found " + list.size() + " scope members");
-        return list;
-    }
-
-    private void addStaticImports(
-            @NonNull CompileTask task,
-            CompilationUnitTree root,
-            String partial,
-            boolean endsWithParen,
-            @NonNull CompletionResult list) {
-        Trees trees = Trees.instance(task.task);
-        Map<String, List<ExecutableElement>> methods = new HashMap<>();
-        Map<String, Integer> matchRatios = new HashMap<>();
-        int previousSize = list.getItems().size();
-        outer:
-        for (ImportTree i : root.getImports()) {
-            if (!i.isStatic()) {
-                continue;
-            }
-
-            MemberSelectTree id = (MemberSelectTree) i.getQualifiedIdentifier();
-            if (!importMatchesPartial(id.getIdentifier(), partial)) {
-                continue;
-            }
-
-            TreePath path = trees.getPath(root, id.getExpression());
-            TypeElement type = (TypeElement) trees.getElement(path);
-            for (Element member : type.getEnclosedElements()) {
-                if (!member.getModifiers().contains(Modifier.STATIC)) {
-                    continue;
-                }
-
-                if (!memberMatchesImport(id.getIdentifier(), member)) {
-                    continue;
-                }
-
-                final int matchRatio =
-                        StringUtils.fuzzySearchRatio(
-                                member.getSimpleName(),
-                                partial,
-                                getSettings().shouldMatchAllLowerCase());
-                if (matchRatio == 0) {
-                    continue;
-                }
-
-                if (member.getKind() == ElementKind.METHOD) {
-                    putMethod((ExecutableElement) member, methods);
-                    matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio);
-                } else {
-                    list.getItems().add(item(task, member, partial, matchRatio));
-                }
-
-                if (list.getItems().size() + methods.size() > MAX_COMPLETION_ITEMS) {
-                    break outer;
-                }
-            }
-        }
-
-        for (Map.Entry<String, List<ExecutableElement>> entry : methods.entrySet()) {
-            Integer matchRatio = matchRatios.getOrDefault(entry.getKey(), 0);
-            matchRatio = matchRatio == null ? 0 : matchRatio;
-            list.getItems()
-                    .add(method(task, entry.getValue(), !endsWithParen, partial, matchRatio));
-        }
-
-        LOG.info("...found " + (list.getItems().size() - previousSize) + " static imports");
-    }
-
-    private boolean importMatchesPartial(@NonNull Name staticImport, String partial) {
-        return staticImport.contentEquals("*")
-                || StringUtils.matchesFuzzy(
-                        staticImport, partial, getSettings().shouldMatchAllLowerCase());
-    }
-
-    private boolean memberMatchesImport(@NonNull Name staticImport, Element member) {
-        return staticImport.contentEquals("*")
-                || staticImport.contentEquals(member.getSimpleName());
-    }
-
-    private void addClassNames(
-            @NonNull CompilationUnitTree root, String partial, @NonNull CompletionResult list) {
-        String packageName = Objects.toString(root.getPackageName(), "");
-        Set<String> uniques = new HashSet<>();
-        int previousSize = list.getItems().size();
-
-        final Path file = Paths.get(root.getSourceFile().toUri());
-        final Set<String> imports =
-                root.getImports().stream()
-                        .map(ImportTree::getQualifiedIdentifier)
-                        .map(Tree::toString)
-                        .collect(Collectors.toSet());
-
-        for (String className : compiler.packagePrivateTopLevelTypes(packageName)) {
-            final int matchRatio =
-                    StringUtils.fuzzySearchRatio(
-                            className, partial, getSettings().shouldMatchAllLowerCase());
-            if (matchRatio == 0) {
-                continue;
-            }
-
-            list.getItems().add(classItem(imports, file, className, partial, matchRatio));
-            uniques.add(className);
-        }
-
-        for (String className : compiler.publicTopLevelTypes()) {
-            final int matchRatio =
-                    StringUtils.fuzzySearchRatio(
-                            className, partial, getSettings().shouldMatchAllLowerCase());
-            if (matchRatio == 0) {
-                continue;
-            }
-
-            if (uniques.contains(className)) {
-                continue;
-            }
-
-            if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
-                break;
-            }
-
-            list.getItems().add(classItem(imports, file, className, partial, matchRatio));
-            uniques.add(className);
-        }
-
-        for (Tree t : root.getTypeDecls()) {
-            if (!(t instanceof ClassTree)) {
-                continue;
-            }
-
-            final ClassTree c = (ClassTree) t;
-            CharSequence candidate = c.getSimpleName() == null ? "" : c.getSimpleName();
-
-            final int matchRatio =
-                    StringUtils.fuzzySearchRatio(
-                            candidate, partial, getSettings().shouldMatchAllLowerCase());
-            if (matchRatio == 0) {
-                continue;
-            }
-
-            final String name = packageName + "." + c.getSimpleName();
-            list.getItems().add(classItem(name, partial, matchRatio));
-            if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
-                break;
-            }
-        }
-
-        LOG.info("...found " + (list.getItems().size() - previousSize) + " class names");
-    }
-
-    private CompletionResult completeMemberSelect(
-            @NonNull CompileTask task,
-            @NonNull TreePath path,
-            String partial,
-            boolean endsWithParen) {
-        Trees trees = Trees.instance(task.task);
-        MemberSelectTree select = (MemberSelectTree) path.getLeaf();
-        LOG.info("...complete members of " + select.getExpression());
-        path = new TreePath(path, select.getExpression());
-        boolean isStatic = trees.getElement(path) instanceof TypeElement;
-        Scope scope = trees.getScope(path);
-        TypeMirror type = trees.getTypeMirror(path);
-        if (type instanceof ArrayType) {
-            return completeArrayMemberSelect(isStatic, partial);
-        } else if (type instanceof TypeVariable) {
-            return completeTypeVariableMemberSelect(
-                    task, scope, (TypeVariable) type, isStatic, partial, endsWithParen);
-        } else if (type instanceof DeclaredType) {
-            return completeDeclaredTypeMemberSelect(
-                    task, scope, (DeclaredType) type, isStatic, partial, endsWithParen);
-        } else {
-            return CompletionResult.EMPTY;
-        }
-    }
-
-    private CompletionResult completeArrayMemberSelect(boolean isStatic, CharSequence partialName) {
-        if (isStatic) {
-            return CompletionResult.EMPTY;
-        } else {
-            CompletionResult list = new CompletionResult();
-            list.getItems().add(keyword("length", partialName, 100));
-            return list;
-        }
-    }
-
-    private CompletionResult completeTypeVariableMemberSelect(
-            CompileTask task,
-            Scope scope,
-            @NonNull TypeVariable type,
-            boolean isStatic,
-            String partial,
-            boolean endsWithParen) {
-        if (type.getUpperBound() instanceof DeclaredType) {
-            return completeDeclaredTypeMemberSelect(
-                    task,
-                    scope,
-                    (DeclaredType) type.getUpperBound(),
-                    isStatic,
-                    partial,
-                    endsWithParen);
-        } else if (type.getUpperBound() instanceof TypeVariable) {
-            return completeTypeVariableMemberSelect(
-                    task,
-                    scope,
-                    (TypeVariable) type.getUpperBound(),
-                    isStatic,
-                    partial,
-                    endsWithParen);
-        } else {
-            return CompletionResult.EMPTY;
-        }
-    }
-
-    @NonNull
-    private CompletionResult completeDeclaredTypeMemberSelect(
-            @NonNull CompileTask task,
-            Scope scope,
-            @NonNull DeclaredType type,
-            boolean isStatic,
-            String partialName,
-            boolean endsWithParen) {
-        Trees trees = Trees.instance(task.task);
-        TypeElement typeElement = (TypeElement) type.asElement();
-        List<CompletionItem> list = new ArrayList<>();
-        Map<String, List<ExecutableElement>> methods = new HashMap<>();
-        Map<String, Integer> matchRatios = new HashMap<>();
-        for (Element member : task.task.getElements().getAllMembers(typeElement)) {
-            if (member.getKind() == ElementKind.CONSTRUCTOR) {
-                continue;
-            }
-
-            final int matchRatio =
-                    StringUtils.fuzzySearchRatio(
-                            member.getSimpleName(),
-                            partialName,
-                            getSettings().shouldMatchAllLowerCase());
-            if (matchRatio == 0) {
-                continue;
-            }
-
-            if (!trees.isAccessible(scope, member, type)) {
-                continue;
-            }
-
-            if (isStatic != member.getModifiers().contains(Modifier.STATIC)) {
-                continue;
-            }
-
-            if (member.getKind() == ElementKind.METHOD) {
-                putMethod((ExecutableElement) member, methods);
-                matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio);
-            } else {
-                list.add(item(task, member, partialName, matchRatio));
-            }
-        }
-
-        for (Map.Entry<String, List<ExecutableElement>> entry : methods.entrySet()) {
-            Integer matchRatio = matchRatios.getOrDefault(entry.getKey(), 0);
-            matchRatio = matchRatio == null ? 0 : matchRatio;
-            list.add(method(task, entry.getValue(), !endsWithParen, partialName, matchRatio));
-        }
-
-        if (isStatic) {
-            list.add(keyword("class", partialName, 100));
-        }
-
-        if (!isStatic && isEnclosingClass(type, scope)) {
-            list.add(keyword("this", partialName, 100));
-            list.add(keyword("super", partialName, 100));
-        }
-
-        return new CompletionResult(list);
-    }
-
-    private boolean isEnclosingClass(DeclaredType type, Scope start) {
-        for (Scope s : ScopeHelper.fastScopes(start)) {
-            // If we reach a static method, stop looking
-            ExecutableElement method = s.getEnclosingMethod();
-            if (method != null && method.getModifiers().contains(Modifier.STATIC)) {
-                return false;
-            }
-            // If we find the enclosing class
-            TypeElement thisElement = s.getEnclosingClass();
-            if (thisElement != null && thisElement.asType().equals(type)) {
-                return true;
-            }
-            // If the enclosing class is static, stop looking
-            if (thisElement != null && thisElement.getModifiers().contains(Modifier.STATIC)) {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    private CompletionResult completeMemberReference(
-            @NonNull CompileTask task, @NonNull TreePath path, String partialName) {
-        Trees trees = Trees.instance(task.task);
-        MemberReferenceTree select = (MemberReferenceTree) path.getLeaf();
-        LOG.info("...complete methods of " + select.getQualifierExpression());
-        path = new TreePath(path, select.getQualifierExpression());
-        Element element = trees.getElement(path);
-        boolean isStatic = element instanceof TypeElement;
-        Scope scope = trees.getScope(path);
-        TypeMirror type = trees.getTypeMirror(path);
-        if (type instanceof ArrayType) {
-            return completeArrayMemberReference(isStatic, partialName);
-        } else if (type instanceof TypeVariable) {
-            return completeTypeVariableMemberReference(
-                    task, scope, (TypeVariable) type, isStatic, partialName);
-        } else if (type instanceof DeclaredType) {
-            return completeDeclaredTypeMemberReference(
-                    task, scope, (DeclaredType) type, isStatic, partialName);
-        } else {
-            return CompletionResult.EMPTY;
-        }
-    }
-
-    private CompletionResult completeArrayMemberReference(
-            boolean isStatic, CharSequence partialName) {
-        if (isStatic) {
-            CompletionResult list = new CompletionResult();
-            list.getItems().add(keyword("new", partialName, 100));
-            return list;
-        } else {
-            return CompletionResult.EMPTY;
-        }
-    }
-
-    private CompletionResult completeTypeVariableMemberReference(
-            CompileTask task,
-            Scope scope,
-            @NonNull TypeVariable type,
-            boolean isStatic,
-            String partial) {
-        if (type.getUpperBound() instanceof DeclaredType) {
-            return completeDeclaredTypeMemberReference(
-                    task, scope, (DeclaredType) type.getUpperBound(), isStatic, partial);
-        } else if (type.getUpperBound() instanceof TypeVariable) {
-            return completeTypeVariableMemberReference(
-                    task, scope, (TypeVariable) type.getUpperBound(), isStatic, partial);
-        } else {
-            return CompletionResult.EMPTY;
-        }
-    }
-
-    @NonNull
-    private CompletionResult completeDeclaredTypeMemberReference(
-            @NonNull CompileTask task,
-            Scope scope,
-            @NonNull DeclaredType type,
-            boolean isStatic,
-            String partialName) {
-        Trees trees = Trees.instance(task.task);
-        TypeElement typeElement = (TypeElement) type.asElement();
-        List<CompletionItem> list = new ArrayList<>();
-        Map<String, List<ExecutableElement>> methods = new HashMap<>();
-        Map<String, Integer> matchRatios = new HashMap<>();
-        for (Element member : task.task.getElements().getAllMembers(typeElement)) {
-            final int matchRatio =
-                    StringUtils.fuzzySearchRatio(
-                            member.getSimpleName(),
-                            partialName,
-                            getSettings().shouldMatchAllLowerCase());
-            if (0 == matchRatio) {
-                continue;
-            }
-
-            if (member.getKind() != ElementKind.METHOD) {
-                continue;
-            }
-
-            if (!trees.isAccessible(scope, member, type)) {
-                continue;
-            }
-
-            if (!isStatic && member.getModifiers().contains(Modifier.STATIC)) {
-                continue;
-            }
-
-            if (member.getKind() == ElementKind.METHOD) {
-                putMethod((ExecutableElement) member, methods);
-                matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio);
-            } else {
-                list.add(item(task, member, partialName, matchRatio));
-            }
-        }
-
-        for (Map.Entry<String, List<ExecutableElement>> entry : methods.entrySet()) {
-            final Integer matchRatio = matchRatios.getOrDefault(entry.getKey(), 0);
-            list.add(
-                    method(
-                            task,
-                            entry.getValue(),
-                            false,
-                            partialName,
-                            matchRatio == null ? 0 : matchRatio));
-        }
-
-        if (isStatic) {
-            list.add(keyword("new", partialName, 100));
-        }
-
-        return new CompletionResult(list);
-    }
-
-    private void putMethod(
-            @NonNull ExecutableElement method,
-            @NonNull Map<String, List<ExecutableElement>> methods) {
-        String name = method.getSimpleName().toString();
-
-        if (!methods.containsKey(name)) {
-            methods.put(name, new ArrayList<>());
-        }
-
-        Objects.requireNonNull(methods.get(name)).add(method);
-    }
-
-    private CompletionResult completeSwitchConstant(
-            @NonNull CompileTask task,
-            @NonNull TreePath path,
-            String partialName,
-            boolean endsWithParen) {
-        SwitchTree switchTree = (SwitchTree) path.getLeaf();
-        path = new TreePath(path, switchTree.getExpression());
-        TypeMirror type = Trees.instance(task.task).getTypeMirror(path);
-
-        if (type.getKind().isPrimitive() || !(type instanceof DeclaredType)) {
-            // primitive types do not have any members
-            return completeIdentifier(task, path, partialName, endsWithParen);
-        }
-
-        DeclaredType declared = (DeclaredType) type;
-        TypeElement element = (TypeElement) declared.asElement();
-
-        if (element.getKind() != ElementKind.ENUM) {
-            // If the switch's expression is not an enum type
-            // we will not get any constants to complete
-            // In this case, we fall back to completing identifiers
-            // At this point, we are sure that the case expression will definitely be an identifier
-            // tree
-            // see visitCase (CaseTree, Long) in FindCompletionsAt.java
-            return completeIdentifier(task, path, partialName, endsWithParen);
-        }
-
-        LOG.info("...complete constants of type " + type);
-        List<CompletionItem> list = new ArrayList<>();
-        for (Element member : task.task.getElements().getAllMembers(element)) {
-            if (member.getKind() != ElementKind.ENUM_CONSTANT) {
-                continue;
-            }
-
-            final int matchRatio =
-                    StringUtils.fuzzySearchRatio(
-                            member.getSimpleName(),
-                            partialName,
-                            getSettings().shouldMatchAllLowerCase());
-            if (matchRatio == 0) {
-                continue;
-            }
-
-            list.add(item(task, member, partialName, matchRatio));
-        }
-
-        return new CompletionResult(list);
-    }
-
-    private CompletionResult completeImport(String path) {
-        LOG.info("...complete import");
-        Set<String> names = new HashSet<>();
-        CompletionResult list = new CompletionResult();
-        for (String className : compiler.publicTopLevelTypes()) {
-            final int matchRatio =
-                    StringUtils.fuzzySearchRatio(
-                            className, path, getSettings().shouldMatchAllLowerCase());
-
-            if (matchRatio == 0) {
-                continue;
-            }
-
-            int start = path.lastIndexOf('.');
-            int end = className.indexOf('.', path.length());
-            if (end == -1) {
-                end = className.length();
-            }
-
-            String segment = className.substring(start + 1, end);
-            if (names.contains(segment)) {
-                continue;
-            }
-
-            names.add(segment);
-
-            boolean isClass = end == path.length();
-            if (isClass) {
-                list.getItems().add(classItem(className, path, matchRatio));
-            } else {
-                list.getItems().add(packageItem(segment, path, matchRatio));
-            }
-
-            if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
-                return list;
-            }
-        }
-        return list;
-    }
-
-    private CompletionItem packageItem(String name, String partialName, int matchRatio) {
-        CompletionItem i = new CompletionItem();
-        i.setLabel(name);
-        i.setKind(CompletionItemKind.MODULE);
-        i.setSortText(sortTextForMatchRatio(matchRatio, name, partialName));
-        return i;
-    }
-
-    private CompletionItem classItem(String className, String partialName, int matchRatio) {
-        return classItem(Collections.emptySet(), null, className, partialName, matchRatio);
-    }
-
-    private CompletionItem classItem(
-            Set<String> imports, Path file, String className, String partialName, int matchRatio) {
-        CompletionItem item = new CompletionItem();
-        item.setLabel(simpleName(className).toString());
-        item.setKind(CompletionItemKind.CLASS);
-        item.setDetail(className);
-        item.setSortText(sortTextForMatchRatio(matchRatio, item.label, partialName));
-
-        CompletionData data = new CompletionData();
-        data.setClassName(className);
-        item.setData(data);
-        item.setAdditionalTextEdits(addImportIfNeeded(compiler, file, imports, className));
-        return item;
-    }
-
-    @NonNull
-    private CharSequence simpleName(@NonNull String className) {
-        int dot = className.lastIndexOf('.');
-        if (dot == -1) return className;
-        return className.subSequence(dot + 1, className.length());
-    }
-
-    private CompletionItem snippetItem(String label, String snippet) {
-        CompletionItem item = new CompletionItem();
-        item.setLabel(label);
-        item.setKind(CompletionItemKind.SNIPPET);
-        item.setInsertText(snippet);
-        item.setInsertTextFormat(InsertTextFormat.SNIPPET);
-        item.setSortText(label);
-        return item;
-    }
-
-    @NonNull
-    private CompletionItem item(
-            CompileTask task, @NonNull Element element, CharSequence partialName, int matchRatio) {
-        if (element.getKind() == ElementKind.METHOD) throw new RuntimeException("method");
-        CompletionItem item = new CompletionItem();
-        item.setLabel(element.getSimpleName().toString());
-        item.setKind(kind(element));
-        item.setDetail(element.toString());
-        item.setData(data(task, element, 1));
-        item.setSortText(sortTextForMatchRatio(matchRatio, element.getSimpleName(), partialName));
-        return item;
-    }
-
-    @NonNull
-    private CompletionItem method(
-            CompileTask task,
-            @NonNull List<ExecutableElement> overloads,
-            boolean addParens,
-            CharSequence partialName,
-            int matchRatio) {
-        ExecutableElement first = overloads.get(0);
-        CompletionItem item = new CompletionItem();
-        item.setLabel(first.getSimpleName().toString());
-        item.setKind(CompletionItemKind.METHOD);
-        item.setDetail(first.getReturnType() + " " + first);
-        item.setSortText(sortTextForMatchRatio(matchRatio, item.label, partialName));
-
-        CompletionData data = data(task, first, overloads.size());
-        item.setData(data);
-
-        if (addParens) {
-            if (overloads.size() == 1 && first.getParameters().isEmpty()) {
-                item.setInsertText(first.getSimpleName() + "()$0");
-            } else {
-                item.setInsertText(first.getSimpleName() + "($0)");
-                item.setCommand(
-                        new Command(
-                                "Trigger Parameter Hints", "editor.action.triggerParameterHints"));
-            }
-            item.setInsertTextFormat(InsertTextFormat.SNIPPET); // Snippet
-        }
-        return item;
-    }
-
-    /**
-     * Override the given method if it is overridable.
-     *
-     * @param task The compilation task.
-     * @param parentPath The tree path of the parent class.
-     * @param method The method to override if possible.
-     * @param partialName The partial name.
-     * @param endsWithParen Does the statement at cursor ends with a parenthesis?
-     * @param matchRatio The match ratio for this completion item.
-     * @return The completion item.
-     */
-    @NonNull
-    private CompletionItem overrideIfPossible(
-            @NonNull CompileTask task,
-            TreePath parentPath,
-            @NonNull ExecutableElement method,
-            CharSequence partialName,
-            boolean endsWithParen,
-            int matchRatio) {
-
-        if (parentPath.getLeaf().getKind() != Tree.Kind.CLASS) {
-            // Can only override if the cursor is directly in a class declaration
-            return method(
-                    task,
-                    Collections.singletonList(method),
-                    !endsWithParen,
-                    partialName,
-                    matchRatio);
-        }
-
-        final Types types = task.task.getTypes();
-        final Element parentElement = Trees.instance(task.task).getElement(parentPath);
-
-        if (parentElement == null) {
-            // Can't get further information for overriding this method
-            return method(
-                    task,
-                    Collections.singletonList(method),
-                    !endsWithParen,
-                    partialName,
-                    matchRatio);
-        }
-
-        final DeclaredType type = (DeclaredType) parentElement.asType();
-        final Element enclosing = method.getEnclosingElement();
-
-        boolean isFinalClass = enclosing.getModifiers().contains(Modifier.FINAL);
-        boolean isNotOverridable =
-                method.getModifiers().contains(Modifier.STATIC)
-                        || method.getModifiers().contains(Modifier.FINAL)
-                        || method.getModifiers().contains(Modifier.PRIVATE);
-        if (isFinalClass
-                || isNotOverridable
-                || !types.isAssignable(type, enclosing.asType())
-                || !(parentPath.getLeaf() instanceof ClassTree)) {
-            // Override is not possible
-            return method(
-                    task,
-                    Collections.singletonList(method),
-                    !endsWithParen,
-                    partialName,
-                    matchRatio);
-        }
-
-        // Print the method details and the annotations
-        final int indent = EditHelper.indent(FileStore.contents(completingFile), (int) this.cursor);
-        final MethodSpec.Builder builder = buildMethod(method, types, type);
-        final Set<String> imports = new HashSet<>();
-        final MethodSpec methodSpec = builder.build();
-        String insertText = JavaPoetUtils.print(methodSpec, imports, false);
-        insertText = insertText.replace("\n", "\n" + repeatSpaces(indent));
-
-        CompletionItem item = new CompletionItem();
-        item.setLabel(methodSpec.name);
-        item.setKind(CompletionItemKind.METHOD);
-        item.setDetail(method.getReturnType() + " " + method);
-        item.setSortText(sortTextForMatchRatio(matchRatio, item.label, partialName));
-        item.setInsertText(insertText);
-        item.setInsertTextFormat(InsertTextFormat.SNIPPET);
-        item.setData(data(task, method, 1));
-
-        if (item.getAdditionalTextEdits() == null) {
-            item.setAdditionalTextEdits(new ArrayList<>());
-        }
-
-        if (!imports.isEmpty()) {
-            final Set<String> fileImports =
-                    task.root(completingFile).getImports().stream()
-                            .map(ImportTree::getQualifiedIdentifier)
-                            .map(Tree::toString)
-                            .collect(Collectors.toSet());
-            for (String className : imports) {
-                item.getAdditionalTextEdits()
-                        .addAll(
-                                addImportIfNeeded(
-                                        compiler, completingFile, fileImports, className));
-            }
-        }
-
-        return item;
-    }
-
-    @Nullable
-    private CompletionData data(CompileTask task, Element element, int overloads) {
-        CompletionData data = new CompletionData();
-        if (element instanceof TypeElement) {
-            TypeElement type = (TypeElement) element;
-            data.setClassName(type.getQualifiedName().toString());
-        } else if (element.getKind() == ElementKind.FIELD) {
-            VariableElement field = (VariableElement) element;
-            TypeElement type = (TypeElement) field.getEnclosingElement();
-            data.setClassName(type.getQualifiedName().toString());
-            data.setMemberName(field.getSimpleName().toString());
-        } else if (element instanceof ExecutableElement) {
-            Types types = task.task.getTypes();
-            ExecutableElement method = (ExecutableElement) element;
-            TypeElement type = (TypeElement) method.getEnclosingElement();
-            data.setClassName(type.getQualifiedName().toString());
-            data.setMemberName(method.getSimpleName().toString());
-            data.setErasedParameterTypes(new String[method.getParameters().size()]);
-            for (int i = 0; i < data.getErasedParameterTypes().length; i++) {
-                TypeMirror p = method.getParameters().get(i).asType();
-                data.getErasedParameterTypes()[i] = types.erasure(p).toString();
-            }
-            data.setPlusOverloads(overloads - 1);
-        } else {
-            return null;
-        }
-        return data;
-    }
-
-    @NonNull
-    private CompletionItemKind kind(@NonNull Element e) {
-        switch (e.getKind()) {
-            case ANNOTATION_TYPE:
-                return CompletionItemKind.ANNOTATION_TYPE;
-            case CLASS:
-                return CompletionItemKind.CLASS;
-            case CONSTRUCTOR:
-                return CompletionItemKind.CONSTRUCTOR;
-            case ENUM:
-                return CompletionItemKind.ENUM;
-            case ENUM_CONSTANT:
-                return CompletionItemKind.ENUM_MEMBER;
-            case EXCEPTION_PARAMETER:
-            case PARAMETER:
-                return CompletionItemKind.PROPERTY;
-            case FIELD:
-                return CompletionItemKind.FIELD;
-            case STATIC_INIT:
-            case INSTANCE_INIT:
-                return CompletionItemKind.FUNCTION;
-            case INTERFACE:
-                return CompletionItemKind.INTERFACE;
-            case LOCAL_VARIABLE:
-            case RESOURCE_VARIABLE:
-                return CompletionItemKind.VARIABLE;
-            case METHOD:
-                return CompletionItemKind.METHOD;
-            case PACKAGE:
-                return CompletionItemKind.MODULE;
-            case TYPE_PARAMETER:
-                return CompletionItemKind.TYPE_PARAMETER;
-            case OTHER:
+    return cursor;
+  }
+
+  private CompletionResult compileAndComplete(Path file, String contents, long cursor) {
+    Instant started = Instant.now();
+    SourceFileObject source = new SourceFileObject(file, contents, Instant.now());
+    String partial = partialIdentifier(contents, (int) cursor);
+    boolean endsWithParen = endsWithParen(contents, (int) cursor);
+    SynchronizedTask synchronizedTask = compiler.compile(Collections.singletonList(source));
+    return synchronizedTask.get(
+        task -> {
+          LOG.info("...compiled in " + Duration.between(started, Instant.now()).toMillis() + "ms");
+          TreePath path = new FindCompletionsAt(task.task).scan(task.root(), cursor);
+          switch (path.getLeaf().getKind()) {
+            case IDENTIFIER:
+              return completeIdentifier(task, path, partial, endsWithParen);
+            case MEMBER_SELECT:
+              return completeMemberSelect(task, path, partial, endsWithParen);
+            case MEMBER_REFERENCE:
+              return completeMemberReference(task, path, partial);
+            case SWITCH:
+              return completeSwitchConstant(task, path, partial, endsWithParen);
+            case IMPORT:
+              return completeImport(qualifiedPartialIdentifier(contents, (int) cursor));
             default:
-                return CompletionItemKind.NONE;
+              CompletionResult list = new CompletionResult();
+              addKeywords(path, partial, list);
+              return list;
+          }
+        });
+  }
+
+  @SuppressWarnings("Since15")
+  private void addTopLevelSnippets(@NonNull ParseTask task, CompletionResult list) {
+    Path file = Paths.get(task.root.getSourceFile().toUri());
+    if (!hasTypeDeclaration(task.root)) {
+      list.getItems().add(classSnippet(file));
+      if (task.root.getPackage() == null) {
+        list.getItems().add(packageSnippet(file));
+      }
+    }
+  }
+
+  private boolean hasTypeDeclaration(@NonNull CompilationUnitTree root) {
+    for (Tree tree : root.getTypeDecls()) {
+      if (tree.getKind() != Tree.Kind.ERRONEOUS) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @NonNull
+  private CompletionItem packageSnippet(Path file) {
+    String name = FileStore.suggestedPackageName(file);
+    return snippetItem("package " + name, "package " + name + ";\n\n");
+  }
+
+  @NonNull
+  private CompletionItem classSnippet(@NonNull Path file) {
+    String name = file.getFileName().toString();
+    name = name.substring(0, name.length() - ".java".length());
+    return snippetItem("class " + name, "class " + name + " {\n    $0\n}");
+  }
+
+  @NonNull
+  private String partialIdentifier(String contents, int end) {
+    int start = end;
+    while (start > 0 && Character.isJavaIdentifierPart(contents.charAt(start - 1))) {
+      start--;
+    }
+    return contents.substring(start, end);
+  }
+
+  private boolean endsWithParen(@NonNull String contents, int cursor) {
+    for (int i = cursor; i < contents.length(); i++) {
+      if (!Character.isJavaIdentifierPart(contents.charAt(i))) {
+        return contents.charAt(i) == '(';
+      }
+    }
+    return false;
+  }
+
+  @NonNull
+  private String qualifiedPartialIdentifier(String contents, int end) {
+    int start = end;
+    while (start > 0 && isQualifiedIdentifierChar(contents.charAt(start - 1))) {
+      start--;
+    }
+    return contents.substring(start, end);
+  }
+
+  private boolean isQualifiedIdentifierChar(char c) {
+    return c == '.' || Character.isJavaIdentifierPart(c);
+  }
+
+  @NonNull
+  private CompletionResult completeIdentifier(
+      CompileTask task, TreePath path, String partial, boolean endsWithParen) {
+    LOG.info("...complete identifiers");
+    CompletionResult list = new CompletionResult();
+    list.setItems(completeUsingScope(task, path, partial, endsWithParen));
+    addStaticImports(task, path.getCompilationUnit(), partial, endsWithParen, list);
+    if (!list.isIncomplete()) {
+      final boolean allLower = getSettings().shouldMatchAllLowerCase();
+      if (allLower || (partial.length() > 0 && Character.isUpperCase(partial.charAt(0)))) {
+        addClassNames(path.getCompilationUnit(), partial, list);
+      }
+    }
+    addKeywords(path, partial, list);
+    return list;
+  }
+
+  private void addKeywords(TreePath path, String partial, CompletionResult list) {
+    Tree level = findKeywordLevel(path);
+    String[] keywords = {};
+    if (level instanceof CompilationUnitTree) {
+      keywords = TOP_LEVEL_KEYWORDS;
+    } else if (level instanceof ClassTree) {
+      keywords = CLASS_BODY_KEYWORDS;
+    } else if (level instanceof MethodTree) {
+      keywords = METHOD_BODY_KEYWORDS;
+    }
+    for (String k : keywords) {
+      final int ratio =
+          StringUtils.fuzzySearchRatio(k, partial, getSettings().shouldMatchAllLowerCase());
+      if (ratio > 0) {
+        list.getItems().add(keyword(k, partial, ratio));
+      }
+    }
+  }
+
+  private Tree findKeywordLevel(TreePath path) {
+    while (path != null) {
+      if (path.getLeaf() instanceof CompilationUnitTree
+          || path.getLeaf() instanceof ClassTree
+          || path.getLeaf() instanceof MethodTree) {
+        return path.getLeaf();
+      }
+      path = path.getParentPath();
+    }
+    throw new RuntimeException("empty path");
+  }
+
+  @NonNull
+  private List<CompletionItem> completeUsingScope(
+      @NonNull CompileTask task, TreePath path, String partial, boolean endsWithParen) {
+    Trees trees = Trees.instance(task.task);
+    List<CompletionItem> list = new ArrayList<>();
+    Scope scope = trees.getScope(path);
+    Predicate<CharSequence> filter = name -> StringUtils.matchesFuzzy(name, partial, true);
+    for (Element member : ScopeHelper.scopeMembers(task, scope, filter)) {
+      final int matchRatio =
+          StringUtils.fuzzySearchRatio(
+              member.getSimpleName(), partial, getSettings().shouldMatchAllLowerCase());
+
+      if (member.getKind() == ElementKind.METHOD) {
+        ExecutableElement method = (ExecutableElement) member;
+        TreePath parentPath = path.getParentPath() /*method*/.getParentPath() /*class*/;
+        list.add(overrideIfPossible(task, parentPath, method, partial, endsWithParen, matchRatio));
+      } else {
+        list.add(item(task, member, partial, matchRatio));
+      }
+    }
+
+    LOG.info("...found " + list.size() + " scope members");
+    return list;
+  }
+
+  private void addStaticImports(
+      @NonNull CompileTask task,
+      CompilationUnitTree root,
+      String partial,
+      boolean endsWithParen,
+      @NonNull CompletionResult list) {
+    Trees trees = Trees.instance(task.task);
+    Map<String, List<ExecutableElement>> methods = new HashMap<>();
+    Map<String, Integer> matchRatios = new HashMap<>();
+    int previousSize = list.getItems().size();
+    outer:
+    for (ImportTree i : root.getImports()) {
+      if (!i.isStatic()) {
+        continue;
+      }
+
+      MemberSelectTree id = (MemberSelectTree) i.getQualifiedIdentifier();
+      if (!importMatchesPartial(id.getIdentifier(), partial)) {
+        continue;
+      }
+
+      TreePath path = trees.getPath(root, id.getExpression());
+      TypeElement type = (TypeElement) trees.getElement(path);
+      for (Element member : type.getEnclosedElements()) {
+        if (!member.getModifiers().contains(Modifier.STATIC)) {
+          continue;
         }
-    }
 
-    @NonNull
-    private CompletionItem keyword(String keyword, CharSequence partialName, int matchRatio) {
-        CompletionItem item = new CompletionItem();
-        item.setLabel(keyword);
-        item.setKind(CompletionItemKind.KEYWORD);
-        item.setDetail("keyword");
-        item.setSortText(sortTextForMatchRatio(matchRatio, keyword, partialName));
-        return item;
-    }
+        if (!memberMatchesImport(id.getIdentifier(), member)) {
+          continue;
+        }
 
-    private void logCompletionTiming(Instant started, List<?> list, boolean isIncomplete) {
-        long elapsedMs = Duration.between(started, Instant.now()).toMillis();
-        if (isIncomplete) {
-            LOG.info(
-                    String.format(
-                            Locale.getDefault(),
-                            "Found %d items (incomplete) in %,d ms",
-                            list.size(),
-                            elapsedMs));
+        final int matchRatio =
+            StringUtils.fuzzySearchRatio(
+                member.getSimpleName(), partial, getSettings().shouldMatchAllLowerCase());
+        if (matchRatio == 0) {
+          continue;
+        }
+
+        if (member.getKind() == ElementKind.METHOD) {
+          putMethod((ExecutableElement) member, methods);
+          matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio);
         } else {
-            LOG.info(
-                    String.format(
-                            Locale.getDefault(),
-                            "...found %d items in %,d ms",
-                            list.size(),
-                            elapsedMs));
+          list.getItems().add(item(task, member, partial, matchRatio));
         }
+
+        if (list.getItems().size() + methods.size() > MAX_COMPLETION_ITEMS) {
+          break outer;
+        }
+      }
     }
+
+    for (Map.Entry<String, List<ExecutableElement>> entry : methods.entrySet()) {
+      Integer matchRatio = matchRatios.getOrDefault(entry.getKey(), 0);
+      matchRatio = matchRatio == null ? 0 : matchRatio;
+      list.getItems().add(method(task, entry.getValue(), !endsWithParen, partial, matchRatio));
+    }
+
+    LOG.info("...found " + (list.getItems().size() - previousSize) + " static imports");
+  }
+
+  private boolean importMatchesPartial(@NonNull Name staticImport, String partial) {
+    return staticImport.contentEquals("*")
+        || StringUtils.matchesFuzzy(staticImport, partial, getSettings().shouldMatchAllLowerCase());
+  }
+
+  private boolean memberMatchesImport(@NonNull Name staticImport, Element member) {
+    return staticImport.contentEquals("*") || staticImport.contentEquals(member.getSimpleName());
+  }
+
+  private void addClassNames(
+      @NonNull CompilationUnitTree root, String partial, @NonNull CompletionResult list) {
+    String packageName = Objects.toString(root.getPackageName(), "");
+    Set<String> uniques = new HashSet<>();
+    int previousSize = list.getItems().size();
+
+    final Path file = Paths.get(root.getSourceFile().toUri());
+    final Set<String> imports =
+        root.getImports().stream()
+            .map(ImportTree::getQualifiedIdentifier)
+            .map(Tree::toString)
+            .collect(Collectors.toSet());
+
+    for (String className : compiler.packagePrivateTopLevelTypes(packageName)) {
+      final int matchRatio =
+          StringUtils.fuzzySearchRatio(className, partial, getSettings().shouldMatchAllLowerCase());
+      if (matchRatio == 0) {
+        continue;
+      }
+
+      list.getItems().add(classItem(imports, file, className, partial, matchRatio));
+      uniques.add(className);
+    }
+
+    for (String className : compiler.publicTopLevelTypes()) {
+      final int matchRatio =
+          StringUtils.fuzzySearchRatio(className, partial, getSettings().shouldMatchAllLowerCase());
+      if (matchRatio == 0) {
+        continue;
+      }
+
+      if (uniques.contains(className)) {
+        continue;
+      }
+
+      if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
+        break;
+      }
+
+      list.getItems().add(classItem(imports, file, className, partial, matchRatio));
+      uniques.add(className);
+    }
+
+    for (Tree t : root.getTypeDecls()) {
+      if (!(t instanceof ClassTree)) {
+        continue;
+      }
+
+      final ClassTree c = (ClassTree) t;
+      CharSequence candidate = c.getSimpleName() == null ? "" : c.getSimpleName();
+
+      final int matchRatio =
+          StringUtils.fuzzySearchRatio(candidate, partial, getSettings().shouldMatchAllLowerCase());
+      if (matchRatio == 0) {
+        continue;
+      }
+
+      final String name = packageName + "." + c.getSimpleName();
+      list.getItems().add(classItem(name, partial, matchRatio));
+      if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
+        break;
+      }
+    }
+
+    LOG.info("...found " + (list.getItems().size() - previousSize) + " class names");
+  }
+
+  private CompletionResult completeMemberSelect(
+      @NonNull CompileTask task, @NonNull TreePath path, String partial, boolean endsWithParen) {
+    Trees trees = Trees.instance(task.task);
+    MemberSelectTree select = (MemberSelectTree) path.getLeaf();
+    LOG.info("...complete members of " + select.getExpression());
+    path = new TreePath(path, select.getExpression());
+    boolean isStatic = trees.getElement(path) instanceof TypeElement;
+    Scope scope = trees.getScope(path);
+    TypeMirror type = trees.getTypeMirror(path);
+    if (type instanceof ArrayType) {
+      return completeArrayMemberSelect(isStatic, partial);
+    } else if (type instanceof TypeVariable) {
+      return completeTypeVariableMemberSelect(
+          task, scope, (TypeVariable) type, isStatic, partial, endsWithParen);
+    } else if (type instanceof DeclaredType) {
+      return completeDeclaredTypeMemberSelect(
+          task, scope, (DeclaredType) type, isStatic, partial, endsWithParen);
+    } else {
+      return CompletionResult.EMPTY;
+    }
+  }
+
+  private CompletionResult completeArrayMemberSelect(boolean isStatic, CharSequence partialName) {
+    if (isStatic) {
+      return CompletionResult.EMPTY;
+    } else {
+      CompletionResult list = new CompletionResult();
+      list.getItems().add(keyword("length", partialName, 100));
+      return list;
+    }
+  }
+
+  private CompletionResult completeTypeVariableMemberSelect(
+      CompileTask task,
+      Scope scope,
+      @NonNull TypeVariable type,
+      boolean isStatic,
+      String partial,
+      boolean endsWithParen) {
+    if (type.getUpperBound() instanceof DeclaredType) {
+      return completeDeclaredTypeMemberSelect(
+          task, scope, (DeclaredType) type.getUpperBound(), isStatic, partial, endsWithParen);
+    } else if (type.getUpperBound() instanceof TypeVariable) {
+      return completeTypeVariableMemberSelect(
+          task, scope, (TypeVariable) type.getUpperBound(), isStatic, partial, endsWithParen);
+    } else {
+      return CompletionResult.EMPTY;
+    }
+  }
+
+  @NonNull
+  private CompletionResult completeDeclaredTypeMemberSelect(
+      @NonNull CompileTask task,
+      Scope scope,
+      @NonNull DeclaredType type,
+      boolean isStatic,
+      String partialName,
+      boolean endsWithParen) {
+    Trees trees = Trees.instance(task.task);
+    TypeElement typeElement = (TypeElement) type.asElement();
+    List<CompletionItem> list = new ArrayList<>();
+    Map<String, List<ExecutableElement>> methods = new HashMap<>();
+    Map<String, Integer> matchRatios = new HashMap<>();
+    for (Element member : task.task.getElements().getAllMembers(typeElement)) {
+      if (member.getKind() == ElementKind.CONSTRUCTOR) {
+        continue;
+      }
+
+      final int matchRatio =
+          StringUtils.fuzzySearchRatio(
+              member.getSimpleName(), partialName, getSettings().shouldMatchAllLowerCase());
+      if (matchRatio == 0) {
+        continue;
+      }
+
+      if (!trees.isAccessible(scope, member, type)) {
+        continue;
+      }
+
+      if (isStatic != member.getModifiers().contains(Modifier.STATIC)) {
+        continue;
+      }
+
+      if (member.getKind() == ElementKind.METHOD) {
+        putMethod((ExecutableElement) member, methods);
+        matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio);
+      } else {
+        list.add(item(task, member, partialName, matchRatio));
+      }
+    }
+
+    for (Map.Entry<String, List<ExecutableElement>> entry : methods.entrySet()) {
+      Integer matchRatio = matchRatios.getOrDefault(entry.getKey(), 0);
+      matchRatio = matchRatio == null ? 0 : matchRatio;
+      list.add(method(task, entry.getValue(), !endsWithParen, partialName, matchRatio));
+    }
+
+    if (isStatic) {
+      list.add(keyword("class", partialName, 100));
+    }
+
+    if (!isStatic && isEnclosingClass(type, scope)) {
+      list.add(keyword("this", partialName, 100));
+      list.add(keyword("super", partialName, 100));
+    }
+
+    return new CompletionResult(list);
+  }
+
+  private boolean isEnclosingClass(DeclaredType type, Scope start) {
+    for (Scope s : ScopeHelper.fastScopes(start)) {
+      // If we reach a static method, stop looking
+      ExecutableElement method = s.getEnclosingMethod();
+      if (method != null && method.getModifiers().contains(Modifier.STATIC)) {
+        return false;
+      }
+      // If we find the enclosing class
+      TypeElement thisElement = s.getEnclosingClass();
+      if (thisElement != null && thisElement.asType().equals(type)) {
+        return true;
+      }
+      // If the enclosing class is static, stop looking
+      if (thisElement != null && thisElement.getModifiers().contains(Modifier.STATIC)) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  private CompletionResult completeMemberReference(
+      @NonNull CompileTask task, @NonNull TreePath path, String partialName) {
+    Trees trees = Trees.instance(task.task);
+    MemberReferenceTree select = (MemberReferenceTree) path.getLeaf();
+    LOG.info("...complete methods of " + select.getQualifierExpression());
+    path = new TreePath(path, select.getQualifierExpression());
+    Element element = trees.getElement(path);
+    boolean isStatic = element instanceof TypeElement;
+    Scope scope = trees.getScope(path);
+    TypeMirror type = trees.getTypeMirror(path);
+    if (type instanceof ArrayType) {
+      return completeArrayMemberReference(isStatic, partialName);
+    } else if (type instanceof TypeVariable) {
+      return completeTypeVariableMemberReference(
+          task, scope, (TypeVariable) type, isStatic, partialName);
+    } else if (type instanceof DeclaredType) {
+      return completeDeclaredTypeMemberReference(
+          task, scope, (DeclaredType) type, isStatic, partialName);
+    } else {
+      return CompletionResult.EMPTY;
+    }
+  }
+
+  private CompletionResult completeArrayMemberReference(
+      boolean isStatic, CharSequence partialName) {
+    if (isStatic) {
+      CompletionResult list = new CompletionResult();
+      list.getItems().add(keyword("new", partialName, 100));
+      return list;
+    } else {
+      return CompletionResult.EMPTY;
+    }
+  }
+
+  private CompletionResult completeTypeVariableMemberReference(
+      CompileTask task, Scope scope, @NonNull TypeVariable type, boolean isStatic, String partial) {
+    if (type.getUpperBound() instanceof DeclaredType) {
+      return completeDeclaredTypeMemberReference(
+          task, scope, (DeclaredType) type.getUpperBound(), isStatic, partial);
+    } else if (type.getUpperBound() instanceof TypeVariable) {
+      return completeTypeVariableMemberReference(
+          task, scope, (TypeVariable) type.getUpperBound(), isStatic, partial);
+    } else {
+      return CompletionResult.EMPTY;
+    }
+  }
+
+  @NonNull
+  private CompletionResult completeDeclaredTypeMemberReference(
+      @NonNull CompileTask task,
+      Scope scope,
+      @NonNull DeclaredType type,
+      boolean isStatic,
+      String partialName) {
+    Trees trees = Trees.instance(task.task);
+    TypeElement typeElement = (TypeElement) type.asElement();
+    List<CompletionItem> list = new ArrayList<>();
+    Map<String, List<ExecutableElement>> methods = new HashMap<>();
+    Map<String, Integer> matchRatios = new HashMap<>();
+    for (Element member : task.task.getElements().getAllMembers(typeElement)) {
+      final int matchRatio =
+          StringUtils.fuzzySearchRatio(
+              member.getSimpleName(), partialName, getSettings().shouldMatchAllLowerCase());
+      if (0 == matchRatio) {
+        continue;
+      }
+
+      if (member.getKind() != ElementKind.METHOD) {
+        continue;
+      }
+
+      if (!trees.isAccessible(scope, member, type)) {
+        continue;
+      }
+
+      if (!isStatic && member.getModifiers().contains(Modifier.STATIC)) {
+        continue;
+      }
+
+      if (member.getKind() == ElementKind.METHOD) {
+        putMethod((ExecutableElement) member, methods);
+        matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio);
+      } else {
+        list.add(item(task, member, partialName, matchRatio));
+      }
+    }
+
+    for (Map.Entry<String, List<ExecutableElement>> entry : methods.entrySet()) {
+      final Integer matchRatio = matchRatios.getOrDefault(entry.getKey(), 0);
+      list.add(
+          method(task, entry.getValue(), false, partialName, matchRatio == null ? 0 : matchRatio));
+    }
+
+    if (isStatic) {
+      list.add(keyword("new", partialName, 100));
+    }
+
+    return new CompletionResult(list);
+  }
+
+  private void putMethod(
+      @NonNull ExecutableElement method, @NonNull Map<String, List<ExecutableElement>> methods) {
+    String name = method.getSimpleName().toString();
+
+    if (!methods.containsKey(name)) {
+      methods.put(name, new ArrayList<>());
+    }
+
+    Objects.requireNonNull(methods.get(name)).add(method);
+  }
+
+  private CompletionResult completeSwitchConstant(
+      @NonNull CompileTask task,
+      @NonNull TreePath path,
+      String partialName,
+      boolean endsWithParen) {
+    SwitchTree switchTree = (SwitchTree) path.getLeaf();
+    path = new TreePath(path, switchTree.getExpression());
+    TypeMirror type = Trees.instance(task.task).getTypeMirror(path);
+
+    if (type.getKind().isPrimitive() || !(type instanceof DeclaredType)) {
+      // primitive types do not have any members
+      return completeIdentifier(task, path, partialName, endsWithParen);
+    }
+
+    DeclaredType declared = (DeclaredType) type;
+    TypeElement element = (TypeElement) declared.asElement();
+
+    if (element.getKind() != ElementKind.ENUM) {
+      // If the switch's expression is not an enum type
+      // we will not get any constants to complete
+      // In this case, we fall back to completing identifiers
+      // At this point, we are sure that the case expression will definitely be an identifier
+      // tree
+      // see visitCase (CaseTree, Long) in FindCompletionsAt.java
+      return completeIdentifier(task, path, partialName, endsWithParen);
+    }
+
+    LOG.info("...complete constants of type " + type);
+    List<CompletionItem> list = new ArrayList<>();
+    for (Element member : task.task.getElements().getAllMembers(element)) {
+      if (member.getKind() != ElementKind.ENUM_CONSTANT) {
+        continue;
+      }
+
+      final int matchRatio =
+          StringUtils.fuzzySearchRatio(
+              member.getSimpleName(), partialName, getSettings().shouldMatchAllLowerCase());
+      if (matchRatio == 0) {
+        continue;
+      }
+
+      list.add(item(task, member, partialName, matchRatio));
+    }
+
+    return new CompletionResult(list);
+  }
+
+  private CompletionResult completeImport(String path) {
+    LOG.info("...complete import");
+    Set<String> names = new HashSet<>();
+    CompletionResult list = new CompletionResult();
+    for (String className : compiler.publicTopLevelTypes()) {
+      final int matchRatio =
+          StringUtils.fuzzySearchRatio(className, path, getSettings().shouldMatchAllLowerCase());
+
+      if (matchRatio == 0) {
+        continue;
+      }
+
+      int start = path.lastIndexOf('.');
+      int end = className.indexOf('.', path.length());
+      if (end == -1) {
+        end = className.length();
+      }
+
+      String segment = className.substring(start + 1, end);
+      if (names.contains(segment)) {
+        continue;
+      }
+
+      names.add(segment);
+
+      boolean isClass = end == path.length();
+      if (isClass) {
+        list.getItems().add(classItem(className, path, matchRatio));
+      } else {
+        list.getItems().add(packageItem(segment, path, matchRatio));
+      }
+
+      if (list.getItems().size() > MAX_COMPLETION_ITEMS) {
+        return list;
+      }
+    }
+    return list;
+  }
+
+  private CompletionItem packageItem(String name, String partialName, int matchRatio) {
+    CompletionItem i = new CompletionItem();
+    i.setLabel(name);
+    i.setKind(CompletionItemKind.MODULE);
+    i.setSortText(sortTextForMatchRatio(matchRatio, name, partialName));
+    return i;
+  }
+
+  private CompletionItem classItem(String className, String partialName, int matchRatio) {
+    return classItem(Collections.emptySet(), null, className, partialName, matchRatio);
+  }
+
+  private CompletionItem classItem(
+      Set<String> imports, Path file, String className, String partialName, int matchRatio) {
+    CompletionItem item = new CompletionItem();
+    item.setLabel(simpleName(className).toString());
+    item.setKind(CompletionItemKind.CLASS);
+    item.setDetail(className);
+    item.setSortText(sortTextForMatchRatio(matchRatio, item.label, partialName));
+
+    CompletionData data = new CompletionData();
+    data.setClassName(className);
+    item.setData(data);
+    item.setAdditionalTextEdits(addImportIfNeeded(compiler, file, imports, className));
+    return item;
+  }
+
+  @NonNull
+  private CharSequence simpleName(@NonNull String className) {
+    int dot = className.lastIndexOf('.');
+    if (dot == -1) return className;
+    return className.subSequence(dot + 1, className.length());
+  }
+
+  private CompletionItem snippetItem(String label, String snippet) {
+    CompletionItem item = new CompletionItem();
+    item.setLabel(label);
+    item.setKind(CompletionItemKind.SNIPPET);
+    item.setInsertText(snippet);
+    item.setInsertTextFormat(InsertTextFormat.SNIPPET);
+    item.setSortText(label);
+    return item;
+  }
+
+  @NonNull
+  private CompletionItem item(
+      CompileTask task, @NonNull Element element, CharSequence partialName, int matchRatio) {
+    if (element.getKind() == ElementKind.METHOD) throw new RuntimeException("method");
+    CompletionItem item = new CompletionItem();
+    item.setLabel(element.getSimpleName().toString());
+    item.setKind(kind(element));
+    item.setDetail(element.toString());
+    item.setData(data(task, element, 1));
+    item.setSortText(sortTextForMatchRatio(matchRatio, element.getSimpleName(), partialName));
+    return item;
+  }
+
+  @NonNull
+  private CompletionItem method(
+      CompileTask task,
+      @NonNull List<ExecutableElement> overloads,
+      boolean addParens,
+      CharSequence partialName,
+      int matchRatio) {
+    ExecutableElement first = overloads.get(0);
+    CompletionItem item = new CompletionItem();
+    item.setLabel(first.getSimpleName().toString());
+    item.setKind(CompletionItemKind.METHOD);
+    item.setDetail(first.getReturnType() + " " + first);
+    item.setSortText(sortTextForMatchRatio(matchRatio, item.label, partialName));
+
+    CompletionData data = data(task, first, overloads.size());
+    item.setData(data);
+
+    if (addParens) {
+      if (overloads.size() == 1 && first.getParameters().isEmpty()) {
+        item.setInsertText(first.getSimpleName() + "()$0");
+      } else {
+        item.setInsertText(first.getSimpleName() + "($0)");
+        item.setCommand(
+            new Command("Trigger Parameter Hints", "editor.action.triggerParameterHints"));
+      }
+      item.setInsertTextFormat(InsertTextFormat.SNIPPET); // Snippet
+    }
+    return item;
+  }
+
+  /**
+   * Override the given method if it is overridable.
+   *
+   * @param task The compilation task.
+   * @param parentPath The tree path of the parent class.
+   * @param method The method to override if possible.
+   * @param partialName The partial name.
+   * @param endsWithParen Does the statement at cursor ends with a parenthesis?
+   * @param matchRatio The match ratio for this completion item.
+   * @return The completion item.
+   */
+  @NonNull
+  private CompletionItem overrideIfPossible(
+      @NonNull CompileTask task,
+      TreePath parentPath,
+      @NonNull ExecutableElement method,
+      CharSequence partialName,
+      boolean endsWithParen,
+      int matchRatio) {
+
+    if (parentPath.getLeaf().getKind() != Tree.Kind.CLASS) {
+      // Can only override if the cursor is directly in a class declaration
+      return method(
+          task, Collections.singletonList(method), !endsWithParen, partialName, matchRatio);
+    }
+
+    final Types types = task.task.getTypes();
+    final Element parentElement = Trees.instance(task.task).getElement(parentPath);
+
+    if (parentElement == null) {
+      // Can't get further information for overriding this method
+      return method(
+          task, Collections.singletonList(method), !endsWithParen, partialName, matchRatio);
+    }
+
+    final DeclaredType type = (DeclaredType) parentElement.asType();
+    final Element enclosing = method.getEnclosingElement();
+
+    boolean isFinalClass = enclosing.getModifiers().contains(Modifier.FINAL);
+    boolean isNotOverridable =
+        method.getModifiers().contains(Modifier.STATIC)
+            || method.getModifiers().contains(Modifier.FINAL)
+            || method.getModifiers().contains(Modifier.PRIVATE);
+    if (isFinalClass
+        || isNotOverridable
+        || !types.isAssignable(type, enclosing.asType())
+        || !(parentPath.getLeaf() instanceof ClassTree)) {
+      // Override is not possible
+      return method(
+          task, Collections.singletonList(method), !endsWithParen, partialName, matchRatio);
+    }
+
+    // Print the method details and the annotations
+    final int indent = EditHelper.indent(FileStore.contents(completingFile), (int) this.cursor);
+    final MethodSpec.Builder builder = buildMethod(method, types, type);
+    final Set<String> imports = new HashSet<>();
+    final MethodSpec methodSpec = builder.build();
+    String insertText = JavaPoetUtils.print(methodSpec, imports, false);
+    insertText = insertText.replace("\n", "\n" + repeatSpaces(indent));
+
+    CompletionItem item = new CompletionItem();
+    item.setLabel(methodSpec.name);
+    item.setKind(CompletionItemKind.METHOD);
+    item.setDetail(method.getReturnType() + " " + method);
+    item.setSortText(sortTextForMatchRatio(matchRatio, item.label, partialName));
+    item.setInsertText(insertText);
+    item.setInsertTextFormat(InsertTextFormat.SNIPPET);
+    item.setData(data(task, method, 1));
+
+    if (item.getAdditionalTextEdits() == null) {
+      item.setAdditionalTextEdits(new ArrayList<>());
+    }
+
+    if (!imports.isEmpty()) {
+      final Set<String> fileImports =
+          task.root(completingFile).getImports().stream()
+              .map(ImportTree::getQualifiedIdentifier)
+              .map(Tree::toString)
+              .collect(Collectors.toSet());
+      for (String className : imports) {
+        item.getAdditionalTextEdits()
+            .addAll(addImportIfNeeded(compiler, completingFile, fileImports, className));
+      }
+    }
+
+    return item;
+  }
+
+  @Nullable
+  private CompletionData data(CompileTask task, Element element, int overloads) {
+    CompletionData data = new CompletionData();
+    if (element instanceof TypeElement) {
+      TypeElement type = (TypeElement) element;
+      data.setClassName(type.getQualifiedName().toString());
+    } else if (element.getKind() == ElementKind.FIELD) {
+      VariableElement field = (VariableElement) element;
+      TypeElement type = (TypeElement) field.getEnclosingElement();
+      data.setClassName(type.getQualifiedName().toString());
+      data.setMemberName(field.getSimpleName().toString());
+    } else if (element instanceof ExecutableElement) {
+      Types types = task.task.getTypes();
+      ExecutableElement method = (ExecutableElement) element;
+      TypeElement type = (TypeElement) method.getEnclosingElement();
+      data.setClassName(type.getQualifiedName().toString());
+      data.setMemberName(method.getSimpleName().toString());
+      data.setErasedParameterTypes(new String[method.getParameters().size()]);
+      for (int i = 0; i < data.getErasedParameterTypes().length; i++) {
+        TypeMirror p = method.getParameters().get(i).asType();
+        data.getErasedParameterTypes()[i] = types.erasure(p).toString();
+      }
+      data.setPlusOverloads(overloads - 1);
+    } else {
+      return null;
+    }
+    return data;
+  }
+
+  @NonNull
+  private CompletionItemKind kind(@NonNull Element e) {
+    switch (e.getKind()) {
+      case ANNOTATION_TYPE:
+        return CompletionItemKind.ANNOTATION_TYPE;
+      case CLASS:
+        return CompletionItemKind.CLASS;
+      case CONSTRUCTOR:
+        return CompletionItemKind.CONSTRUCTOR;
+      case ENUM:
+        return CompletionItemKind.ENUM;
+      case ENUM_CONSTANT:
+        return CompletionItemKind.ENUM_MEMBER;
+      case EXCEPTION_PARAMETER:
+      case PARAMETER:
+        return CompletionItemKind.PROPERTY;
+      case FIELD:
+        return CompletionItemKind.FIELD;
+      case STATIC_INIT:
+      case INSTANCE_INIT:
+        return CompletionItemKind.FUNCTION;
+      case INTERFACE:
+        return CompletionItemKind.INTERFACE;
+      case LOCAL_VARIABLE:
+      case RESOURCE_VARIABLE:
+        return CompletionItemKind.VARIABLE;
+      case METHOD:
+        return CompletionItemKind.METHOD;
+      case PACKAGE:
+        return CompletionItemKind.MODULE;
+      case TYPE_PARAMETER:
+        return CompletionItemKind.TYPE_PARAMETER;
+      case OTHER:
+      default:
+        return CompletionItemKind.NONE;
+    }
+  }
+
+  @NonNull
+  private CompletionItem keyword(String keyword, CharSequence partialName, int matchRatio) {
+    CompletionItem item = new CompletionItem();
+    item.setLabel(keyword);
+    item.setKind(CompletionItemKind.KEYWORD);
+    item.setDetail("keyword");
+    item.setSortText(sortTextForMatchRatio(matchRatio, keyword, partialName));
+    return item;
+  }
+
+  private void logCompletionTiming(Instant started, List<?> list, boolean isIncomplete) {
+    long elapsedMs = Duration.between(started, Instant.now()).toMillis();
+    if (isIncomplete) {
+      LOG.info(
+          String.format(
+              Locale.getDefault(),
+              "Found %d items (incomplete) in %,d ms",
+              list.size(),
+              elapsedMs));
+    } else {
+      LOG.info(
+          String.format(
+              Locale.getDefault(), "...found %d items in %,d ms", list.size(), elapsedMs));
+    }
+  }
 }

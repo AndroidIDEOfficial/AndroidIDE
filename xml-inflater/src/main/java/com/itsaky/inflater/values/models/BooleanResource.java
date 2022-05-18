@@ -24,26 +24,26 @@ import androidx.annotation.NonNull;
  */
 public class BooleanResource extends AbstractResource {
 
-    public BooleanResource(@NonNull String name, @NonNull String value) {
-        super(name, value);
-    }
+  public BooleanResource(@NonNull String name, @NonNull String value) {
+    super(name, value);
+  }
 
-    /**
-     * Get the value of this resource as boolean.
-     *
-     * @return The value of this resource.
-     * @throws UnsupportedOperationException If the value is not a boolean value. This will also be
-     *     thrown if the value this resource refers to another resource.
-     */
-    public boolean asBoolean() {
-        final var val = getValue();
-        switch (val) {
-            case "true":
-                return true;
-            case "false":
-                return false;
-            default:
-                throw new UnsupportedOperationException("Cannot parse boolean value: " + val);
-        }
+  /**
+   * Get the value of this resource as boolean.
+   *
+   * @return The value of this resource.
+   * @throws UnsupportedOperationException If the value is not a boolean value. This will also be
+   *     thrown if the value this resource refers to another resource.
+   */
+  public boolean asBoolean() {
+    final var val = getValue();
+    switch (val) {
+      case "true":
+        return true;
+      case "false":
+        return false;
+      default:
+        throw new UnsupportedOperationException("Cannot parse boolean value: " + val);
     }
+  }
 }

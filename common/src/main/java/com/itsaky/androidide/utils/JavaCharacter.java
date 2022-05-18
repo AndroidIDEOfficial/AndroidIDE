@@ -24,67 +24,67 @@ import java.util.Arrays;
  */
 public class JavaCharacter {
 
-    /** Compressed bit set for isJavaIdentifierStart() */
-    private static int[] state_start;
+  /** Compressed bit set for isJavaIdentifierStart() */
+  private static int[] state_start;
 
-    /** Compressed bit set for isJavaIdentifierPart() */
-    private static int[] state_part;
+  /** Compressed bit set for isJavaIdentifierPart() */
+  private static int[] state_part;
 
-    /**
-     * Get bit in compressed bit set
-     *
-     * @param values Compressed bit set
-     * @param bitIndex Target index
-     * @return Boolean value at the index
-     */
-    private static boolean get(int[] values, int bitIndex) {
-        return ((values[bitIndex / 32] & (1 << (bitIndex % 32))) != 0);
+  /**
+   * Get bit in compressed bit set
+   *
+   * @param values Compressed bit set
+   * @param bitIndex Target index
+   * @return Boolean value at the index
+   */
+  private static boolean get(int[] values, int bitIndex) {
+    return ((values[bitIndex / 32] & (1 << (bitIndex % 32))) != 0);
+  }
+
+  /**
+   * Make the given position's bit true
+   *
+   * @param values Compressed bit set
+   * @param bitIndex Index of bit
+   */
+  private static void set(int[] values, int bitIndex) {
+    values[bitIndex / 32] |= (1 << (bitIndex % 32));
+  }
+
+  /** Init maps */
+  public static void initMap() {
+    if (state_start != null) {
+      return;
     }
-
-    /**
-     * Make the given position's bit true
-     *
-     * @param values Compressed bit set
-     * @param bitIndex Index of bit
-     */
-    private static void set(int[] values, int bitIndex) {
-        values[bitIndex / 32] |= (1 << (bitIndex % 32));
+    state_part = new int[2048];
+    state_start = new int[2048];
+    Arrays.fill(state_part, 0);
+    Arrays.fill(state_start, 0);
+    for (int i = 0; i <= 65535; i++) {
+      if (Character.isJavaIdentifierPart((char) i)) {
+        set(state_part, i);
+      }
+      if (Character.isJavaIdentifierStart((char) i)) {
+        set(state_start, i);
+      }
     }
+  }
 
-    /** Init maps */
-    public static void initMap() {
-        if (state_start != null) {
-            return;
-        }
-        state_part = new int[2048];
-        state_start = new int[2048];
-        Arrays.fill(state_part, 0);
-        Arrays.fill(state_start, 0);
-        for (int i = 0; i <= 65535; i++) {
-            if (Character.isJavaIdentifierPart((char) i)) {
-                set(state_part, i);
-            }
-            if (Character.isJavaIdentifierStart((char) i)) {
-                set(state_start, i);
-            }
-        }
-    }
+  /**
+   * @param key Character
+   * @return Whether a identifier part
+   * @see Character#isJavaIdentifierPart(char)
+   */
+  public static boolean isJavaIdentifierPart(int key) {
+    return get(state_part, key);
+  }
 
-    /**
-     * @param key Character
-     * @return Whether a identifier part
-     * @see Character#isJavaIdentifierPart(char)
-     */
-    public static boolean isJavaIdentifierPart(int key) {
-        return get(state_part, key);
-    }
-
-    /**
-     * @param key Character
-     * @return Whether a identifier start
-     * @see Character#isJavaIdentifierStart(char)
-     */
-    public static boolean isJavaIdentifierStart(int key) {
-        return get(state_start, key);
-    }
+  /**
+   * @param key Character
+   * @return Whether a identifier start
+   * @see Character#isJavaIdentifierStart(char)
+   */
+  public static boolean isJavaIdentifierStart(int key) {
+    return get(state_start, key);
+  }
 }

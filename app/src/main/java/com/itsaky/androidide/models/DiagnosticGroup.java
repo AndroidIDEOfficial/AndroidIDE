@@ -23,15 +23,15 @@ import java.io.File;
 import java.util.List;
 
 public class DiagnosticGroup {
-    public int icon;
-    public String text;
-    public File file;
-    public List<DiagnosticItem> diagnostics;
+  public int icon;
+  public String text;
+  public File file;
+  public List<DiagnosticItem> diagnostics;
 
-    public DiagnosticGroup(int icon, File file, List<DiagnosticItem> diagnostics) {
-        this.icon = icon;
-        this.file = file;
-        this.text = file.getName();
-        this.diagnostics = diagnostics;
-    }
+  public DiagnosticGroup(int icon, File file, List<DiagnosticItem> diagnostics) {
+    this.icon = icon;
+    this.file = file;
+    this.text = file.getName();
+    this.diagnostics = diagnostics;
+  }
 }

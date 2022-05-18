@@ -28,65 +28,60 @@ import java.io.IOException;
  */
 public interface IProcessExecutor {
 
-    /**
-     * @see exec(ProcessStreamsHolder, boolean, String[])
-     */
-    int exec(ProcessStreamsHolder holder, String... args) throws IOException, InterruptedException;
+  /**
+   * @see exec(ProcessStreamsHolder, boolean, String[])
+   */
+  int exec(ProcessStreamsHolder holder, String... args) throws IOException, InterruptedException;
 
-    /**
-     * Executes the given command with its attributes. This method WILL block the current thread.
-     *
-     * @param holder A holder which will be provided the process's input, error and output stream
-     * @param redirectErr Whether to redirect error stream to output stream
-     * @param args Arguments for {@code cmd}
-     * @return The exit code of the command
-     */
-    int exec(ProcessStreamsHolder holder, boolean redirectErr, String... args)
-            throws IOException, InterruptedException;
+  /**
+   * Executes the given command with its attributes. This method WILL block the current thread.
+   *
+   * @param holder A holder which will be provided the process's input, error and output stream
+   * @param redirectErr Whether to redirect error stream to output stream
+   * @param args Arguments for {@code cmd}
+   * @return The exit code of the command
+   */
+  int exec(ProcessStreamsHolder holder, boolean redirectErr, String... args)
+      throws IOException, InterruptedException;
 
-    /**
-     * Executes the given command with its attributes. This method WILL block the current thread.
-     *
-     * @param holder A holder which will be provided the process's input, error and output stream
-     * @param redirectErr Whether to redirect error stream to output stream
-     * @param cwd The working directory of the process
-     * @param args Arguments for {@code cmd}
-     * @return The exit code of the command
-     */
-    int exec(ProcessStreamsHolder holder, String cwd, boolean redirectErr, String... args)
-            throws IOException, InterruptedException;
+  /**
+   * Executes the given command with its attributes. This method WILL block the current thread.
+   *
+   * @param holder A holder which will be provided the process's input, error and output stream
+   * @param redirectErr Whether to redirect error stream to output stream
+   * @param cwd The working directory of the process
+   * @param args Arguments for {@code cmd}
+   * @return The exit code of the command
+   */
+  int exec(ProcessStreamsHolder holder, String cwd, boolean redirectErr, String... args)
+      throws IOException, InterruptedException;
 
-    /**
-     * Executes the given command with its attributes. This method will not block the current
-     * thread.
-     *
-     * @param holder A holder which will be provided the process's input, error and output stream
-     * @param redirectErr Whether to redirect error stream to output stream
-     * @param onExit A listener that will be called once the process exits
-     * @param args Arguments for {@code cmd}
-     */
-    void execAsync(
-            ProcessStreamsHolder holder,
-            IProcessExitListener onExit,
-            boolean redirectErr,
-            String... args)
-            throws IOException;
+  /**
+   * Executes the given command with its attributes. This method will not block the current thread.
+   *
+   * @param holder A holder which will be provided the process's input, error and output stream
+   * @param redirectErr Whether to redirect error stream to output stream
+   * @param onExit A listener that will be called once the process exits
+   * @param args Arguments for {@code cmd}
+   */
+  void execAsync(
+      ProcessStreamsHolder holder, IProcessExitListener onExit, boolean redirectErr, String... args)
+      throws IOException;
 
-    /**
-     * Executes the given command with its attributes. This method will not block the current
-     * thread.
-     *
-     * @param holder A holder which will be provided the process's input, error and output stream
-     * @param redirectErr Whether to redirect error stream to output stream
-     * @param cwd The working directory of the process
-     * @param onExit A listener that will be called once the process exits
-     * @param args Arguments for {@code cmd}
-     */
-    void execAsync(
-            ProcessStreamsHolder holder,
-            IProcessExitListener onExit,
-            String cwd,
-            boolean redirectErr,
-            String... args)
-            throws IOException;
+  /**
+   * Executes the given command with its attributes. This method will not block the current thread.
+   *
+   * @param holder A holder which will be provided the process's input, error and output stream
+   * @param redirectErr Whether to redirect error stream to output stream
+   * @param cwd The working directory of the process
+   * @param onExit A listener that will be called once the process exits
+   * @param args Arguments for {@code cmd}
+   */
+  void execAsync(
+      ProcessStreamsHolder holder,
+      IProcessExitListener onExit,
+      String cwd,
+      boolean redirectErr,
+      String... args)
+      throws IOException;
 }

@@ -31,72 +31,72 @@ import org.jetbrains.annotations.Contract;
  */
 public interface INamespace extends Parcelable {
 
-    String URI_PREFIX = "http://schemas.android.com/apk/res/";
+  String URI_PREFIX = "http://schemas.android.com/apk/res/";
 
-    /** Used to represent the namespace declarator (xmlns) (don't know what else to call it). */
-    INamespace DECLARATOR = new UiNamespace("xmlns", "<namespace declarator>");
+  /** Used to represent the namespace declarator (xmlns) (don't know what else to call it). */
+  INamespace DECLARATOR = new UiNamespace("xmlns", "<namespace declarator>");
 
-    /** The android namespace. */
-    INamespace ANDROID =
-            new UiNamespace("android", "android", "http://schemas.android.com/apk/res/android");
+  /** The android namespace. */
+  INamespace ANDROID =
+      new UiNamespace("android", "android", "http://schemas.android.com/apk/res/android");
 
-    /** The 'res-auto' namespace. */
-    INamespace RES_AUTO = new UiNamespace("", null, "http://schemas.android.com/apk/res-auto");
+  /** The 'res-auto' namespace. */
+  INamespace RES_AUTO = new UiNamespace("", null, "http://schemas.android.com/apk/res-auto");
 
-    /** The tools namespace. */
-    INamespace TOOLS = new UiNamespace("tools", null, "http://schemas.android.com/tools");
+  /** The tools namespace. */
+  INamespace TOOLS = new UiNamespace("tools", null, "http://schemas.android.com/tools");
 
-    static INamespace forPackageName(@NonNull String packageName) {
-        if (ANDROID.getPackageName().equals(packageName)) {
-            return ANDROID;
-        }
-
-        return new UiNamespace("", packageName, INamespace.URI_PREFIX + packageName);
+  static INamespace forPackageName(@NonNull String packageName) {
+    if (ANDROID.getPackageName().equals(packageName)) {
+      return ANDROID;
     }
 
-    /**
-     * Get the package name of this namespace (as used by aapt).
-     *
-     * @return The package name.
-     */
-    String getPackageName();
+    return new UiNamespace("", packageName, INamespace.URI_PREFIX + packageName);
+  }
 
-    @NonNull
-    @Contract(value = "_ -> new", pure = true)
-    static INamespace invalid(String name) {
-        return new UiNamespace(name, "");
-    }
+  /**
+   * Get the package name of this namespace (as used by aapt).
+   *
+   * @return The package name.
+   */
+  String getPackageName();
 
-    /**
-     * Get the prefix (name) of this namespace.
-     *
-     * @return The name of the namespace.
-     */
-    String getPrefix();
+  @NonNull
+  @Contract(value = "_ -> new", pure = true)
+  static INamespace invalid(String name) {
+    return new UiNamespace(name, "");
+  }
 
-    /**
-     * Get the uri of this namespace.
-     *
-     * @return The uri of this namespace.
-     */
-    String getUri();
+  /**
+   * Get the prefix (name) of this namespace.
+   *
+   * @return The name of the namespace.
+   */
+  String getPrefix();
 
-    interface Resolver {
-        Resolver EMPTY =
-                new Resolver() {
-                    @Override
-                    public String findUri(String prefix) {
-                        return null;
-                    }
+  /**
+   * Get the uri of this namespace.
+   *
+   * @return The uri of this namespace.
+   */
+  String getUri();
 
-                    @Override
-                    public String findPrefix(String uri) {
-                        return null;
-                    }
-                };
+  interface Resolver {
+    Resolver EMPTY =
+        new Resolver() {
+          @Override
+          public String findUri(String prefix) {
+            return null;
+          }
 
-        String findUri(String prefix);
+          @Override
+          public String findPrefix(String uri) {
+            return null;
+          }
+        };
 
-        String findPrefix(String uri);
-    }
+    String findUri(String prefix);
+
+    String findPrefix(String uri);
+  }
 }

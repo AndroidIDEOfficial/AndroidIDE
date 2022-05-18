@@ -2,38 +2,33 @@ package com.itsaky.androidide.fuzzysearch.algorithms;
 
 final class PrimitiveUtils {
 
-    static double max(double ... elems) {
+  static double max(double... elems) {
 
-        if (elems.length == 0) return 0;
+    if (elems.length == 0) return 0;
 
-        double best = elems[0];
+    double best = elems[0];
 
-        for(double t : elems){
-            if (t > best) {
-                best = t;
-            }
-        }
-
-        return best;
-
+    for (double t : elems) {
+      if (t > best) {
+        best = t;
+      }
     }
 
-    static int max(int ... elems) {
+    return best;
+  }
 
-        if (elems.length == 0) return 0;
+  static int max(int... elems) {
 
-        int best = elems[0];
+    if (elems.length == 0) return 0;
 
-        for(int t : elems){
-            if (t > best) {
-                best = t;
-            }
-        }
+    int best = elems[0];
 
-        return best;
-
+    for (int t : elems) {
+      if (t > best) {
+        best = t;
+      }
     }
-    
-    
-    
+
+    return best;
+  }
 }

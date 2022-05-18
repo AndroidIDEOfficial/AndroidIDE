@@ -37,99 +37,96 @@ import java.util.ArrayList;
  */
 public class StateListParser extends IDrawableParser {
 
-    private static final ILogger LOG = ILogger.newInstance("StateListParser");
+  private static final ILogger LOG = ILogger.newInstance("StateListParser");
 
-    protected StateListParser(
-            XmlPullParser parser,
-            IResourceTable resourceFinder,
-            DisplayMetrics displayMetrics,
-            int minDepth) {
-        super(parser, resourceFinder, displayMetrics, minDepth);
+  protected StateListParser(
+      XmlPullParser parser,
+      IResourceTable resourceFinder,
+      DisplayMetrics displayMetrics,
+      int minDepth) {
+    super(parser, resourceFinder, displayMetrics, minDepth);
+  }
+
+  @Override
+  public Drawable parseDrawable() throws Exception {
+    var states = new StateListDrawable();
+
+    // --------------------------- NOTE -------------------------
+    // Unsupported attributes :
+    //  1. android:constantSize
+    //  2. android:variablePadding
+
+    var index = attrIndex("dither");
+    if (index != -1) {
+      states.setDither(parseBoolean(value(index)));
     }
 
-    @Override
-    public Drawable parseDrawable() throws Exception {
-        var states = new StateListDrawable();
+    var event = parser.getEventType();
+    while ((event = parser.next()) != XmlPullParser.END_DOCUMENT) {
+      if (event == XmlPullParser.START_TAG) {
+        var name = parser.getName();
+        if ("item".equals(name)) {
+          index = attrIndex("drawable");
+          if (index == -1) {
+            throw new InflateException("<selector> item does not define android:drawable");
+          }
+          final var drawable = parseDrawable(value(index), BaseApplication.getBaseInstance());
+          if (drawable == null) {
+            throw new InflateException("Unable to parse drawable for android:drawable attribute");
+          }
 
-        // --------------------------- NOTE -------------------------
-        // Unsupported attributes :
-        //  1. android:constantSize
-        //  2. android:variablePadding
-
-        var index = attrIndex("dither");
-        if (index != -1) {
-            states.setDither(parseBoolean(value(index)));
+          addStates(states, drawable);
         }
-
-        var event = parser.getEventType();
-        while ((event = parser.next()) != XmlPullParser.END_DOCUMENT) {
-            if (event == XmlPullParser.START_TAG) {
-                var name = parser.getName();
-                if ("item".equals(name)) {
-                    index = attrIndex("drawable");
-                    if (index == -1) {
-                        throw new InflateException(
-                                "<selector> item does not define android:drawable");
-                    }
-                    final var drawable =
-                            parseDrawable(value(index), BaseApplication.getBaseInstance());
-                    if (drawable == null) {
-                        throw new InflateException(
-                                "Unable to parse drawable for android:drawable attribute");
-                    }
-
-                    addStates(states, drawable);
-                }
-            }
-        }
-
-        return states;
+      }
     }
 
-    /**
-     * Add all the defined states of the current tag in <code>parser</code> to the given state list
-     * drawable.
-     *
-     * @param states The drawable to add states to.
-     * @param drawable The drawable associated with the defined states;
-     */
-    private void addStates(StateListDrawable states, Drawable drawable) {
-        final var stateList = new ArrayList<Integer>();
-        final var count = parser.getAttributeCount();
-        for (int i = 0; i < count; i++) {
-            var name = parser.getAttributeName(i);
-            var value = parser.getAttributeValue(i);
-            if (!name.startsWith("state_")) {
-                continue;
-            }
+    return states;
+  }
 
-            var state = reflectState(name);
+  /**
+   * Add all the defined states of the current tag in <code>parser</code> to the given state list
+   * drawable.
+   *
+   * @param states The drawable to add states to.
+   * @param drawable The drawable associated with the defined states;
+   */
+  private void addStates(StateListDrawable states, Drawable drawable) {
+    final var stateList = new ArrayList<Integer>();
+    final var count = parser.getAttributeCount();
+    for (int i = 0; i < count; i++) {
+      var name = parser.getAttributeName(i);
+      var value = parser.getAttributeValue(i);
+      if (!name.startsWith("state_")) {
+        continue;
+      }
 
-            final var isEnabled = parseBoolean(value);
-            if (!isEnabled) {
-                // android:state_[state_name]="false"
-                state = -state;
-            }
+      var state = reflectState(name);
 
-            stateList.add(state);
-        }
+      final var isEnabled = parseBoolean(value);
+      if (!isEnabled) {
+        // android:state_[state_name]="false"
+        state = -state;
+      }
 
-        final var arr = new int[stateList.size()];
-        for (int i = 0; i < stateList.size(); i++) {
-            arr[i] = stateList.get(i);
-        }
-
-        states.addState(arr, drawable);
+      stateList.add(state);
     }
 
-    private int reflectState(String name) {
-        try {
-            final var clazz = android.R.attr.class;
-            final var field = clazz.getDeclaredField(name);
-            return field.getInt(null);
-        } catch (Throwable th) {
-            LOG.error("Unable to get state ID with name:", name);
-            return -1;
-        }
+    final var arr = new int[stateList.size()];
+    for (int i = 0; i < stateList.size(); i++) {
+      arr[i] = stateList.get(i);
     }
+
+    states.addState(arr, drawable);
+  }
+
+  private int reflectState(String name) {
+    try {
+      final var clazz = android.R.attr.class;
+      final var field = clazz.getDeclaredField(name);
+      return field.getInt(null);
+    } catch (Throwable th) {
+      LOG.error("Unable to get state ID with name:", name);
+      return -1;
+    }
+  }
 }

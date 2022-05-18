@@ -49,87 +49,84 @@ import java.util.stream.Collectors;
  */
 public class AttributeListSheet extends BottomSheetDialogFragment {
 
-    private LayoutAddAttrSheetBinding binding;
-    private Consumer<Attr> clickConsumer;
-    private List<Attr> mItems;
+  private LayoutAddAttrSheetBinding binding;
+  private Consumer<Attr> clickConsumer;
+  private List<Attr> mItems;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_SheetAboveKeyboard);
+  @Override
+  public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_SheetAboveKeyboard);
+  }
+
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    this.binding = LayoutAddAttrSheetBinding.inflate(inflater, container, false);
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    binding.searchBar.setOnQueryTextListener(
+        new SearchView.OnQueryTextListener() {
+
+          @Override
+          public boolean onQueryTextSubmit(String query) {
+            return filterAttributes(query.trim());
+          }
+
+          @Override
+          public boolean onQueryTextChange(String newText) {
+            return filterAttributes(newText.trim());
+          }
+        });
+    binding.attrList.setAdapter(new AttrListAdapter(clickConsumer, mItems));
+  }
+
+  private boolean filterAttributes(@NonNull String query) {
+    if (mItems == null || TextUtils.isEmpty(query)) {
+      update();
+      return true;
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        this.binding = LayoutAddAttrSheetBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    final var filtered =
+        this.mItems.stream()
+            .filter(
+                attr -> attr.name.toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT)))
+            .collect(Collectors.toList());
+
+    update(filtered);
+    return true;
+  }
+
+  public void setItems(@Nullable List<Attr> items) {
+    if (items == null) {
+      items = new ArrayList<>();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        binding.searchBar.setOnQueryTextListener(
-                new SearchView.OnQueryTextListener() {
+    mItems = items;
+    update();
+  }
 
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        return filterAttributes(query.trim());
-                    }
+  @Override
+  public void onAttach(@NonNull Context context) {
+    super.onAttach(context);
+    //noinspection unchecked
+    this.clickConsumer = (Consumer<Attr>) getParentFragment();
+  }
 
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        return filterAttributes(newText.trim());
-                    }
-                });
-        binding.attrList.setAdapter(new AttrListAdapter(clickConsumer, mItems));
+  public void update() {
+    update(mItems);
+  }
+
+  public void update(List<Attr> items) {
+    if (binding != null) {
+      binding.attrList.setAdapter(new AttrListAdapter(clickConsumer, items));
     }
-
-    private boolean filterAttributes(@NonNull String query) {
-        if (mItems == null || TextUtils.isEmpty(query)) {
-            update();
-            return true;
-        }
-
-        final var filtered =
-                this.mItems.stream()
-                        .filter(
-                                attr ->
-                                        attr.name
-                                                .toLowerCase(Locale.ROOT)
-                                                .contains(query.toLowerCase(Locale.ROOT)))
-                        .collect(Collectors.toList());
-
-        update(filtered);
-        return true;
-    }
-
-    public void setItems(@Nullable List<Attr> items) {
-        if (items == null) {
-            items = new ArrayList<>();
-        }
-
-        mItems = items;
-        update();
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        //noinspection unchecked
-        this.clickConsumer = (Consumer<Attr>) getParentFragment();
-    }
-
-    public void update() {
-        update(mItems);
-    }
-
-    public void update(List<Attr> items) {
-        if (binding != null) {
-            binding.attrList.setAdapter(new AttrListAdapter(clickConsumer, items));
-        }
-    }
+  }
 }

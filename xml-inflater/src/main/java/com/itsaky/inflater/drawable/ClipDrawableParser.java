@@ -38,51 +38,51 @@ import org.xmlpull.v1.XmlPullParser;
  */
 public class ClipDrawableParser extends IDrawableParser {
 
-    protected ClipDrawableParser(
-            XmlPullParser parser,
-            IResourceTable resourceFinder,
-            DisplayMetrics displayMetrics,
-            int minDepth) {
-        super(parser, resourceFinder, displayMetrics, minDepth);
+  protected ClipDrawableParser(
+      XmlPullParser parser,
+      IResourceTable resourceFinder,
+      DisplayMetrics displayMetrics,
+      int minDepth) {
+    super(parser, resourceFinder, displayMetrics, minDepth);
+  }
+
+  @Override
+  public Drawable parseDrawable() throws Exception {
+    var index = attrIndex("drawable");
+    if (index == -1) {
+      throw new InflateException("<clip> drawable must specify android:drawable attribute");
     }
 
-    @Override
-    public Drawable parseDrawable() throws Exception {
-        var index = attrIndex("drawable");
-        if (index == -1) {
-            throw new InflateException("<clip> drawable must specify android:drawable attribute");
-        }
+    var val = value(index);
+    Preconditions.assertNotBlank(val, "Invalid value specified to android:drawable attribute");
 
-        var val = value(index);
-        Preconditions.assertNotBlank(val, "Invalid value specified to android:drawable attribute");
-
-        final var drawable = parseDrawable(val, BaseApplication.getBaseInstance());
-        if (drawable == null) {
-            throw new InflateException("Unable to parse drawable for value: " + val);
-        }
-
-        var orientation = ClipDrawable.HORIZONTAL;
-        index = attrIndex("clipOrientation");
-        if (index != -1) {
-            orientation = parseClipOrientation(value(index));
-        }
-
-        var gravity = Gravity.LEFT;
-        index = attrIndex("gravity");
-        if (index != -1) {
-            gravity = parseGravity(value(index));
-        }
-
-        return new ClipDrawable(drawable, gravity, orientation);
+    final var drawable = parseDrawable(val, BaseApplication.getBaseInstance());
+    if (drawable == null) {
+      throw new InflateException("Unable to parse drawable for value: " + val);
     }
 
-    protected int parseClipOrientation(@NonNull final String value) {
-        switch (value) {
-            case "vertical":
-                return ClipDrawable.VERTICAL;
-            default:
-            case "horizontal":
-                return ClipDrawable.HORIZONTAL;
-        }
+    var orientation = ClipDrawable.HORIZONTAL;
+    index = attrIndex("clipOrientation");
+    if (index != -1) {
+      orientation = parseClipOrientation(value(index));
     }
+
+    var gravity = Gravity.LEFT;
+    index = attrIndex("gravity");
+    if (index != -1) {
+      gravity = parseGravity(value(index));
+    }
+
+    return new ClipDrawable(drawable, gravity, orientation);
+  }
+
+  protected int parseClipOrientation(@NonNull final String value) {
+    switch (value) {
+      case "vertical":
+        return ClipDrawable.VERTICAL;
+      default:
+      case "horizontal":
+        return ClipDrawable.HORIZONTAL;
+    }
+  }
 }

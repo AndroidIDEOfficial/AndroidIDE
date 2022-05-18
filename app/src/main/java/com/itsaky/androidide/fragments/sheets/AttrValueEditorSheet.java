@@ -66,128 +66,127 @@ import java.util.Objects;
  * @author Akash Yadav
  */
 public class AttrValueEditorSheet extends BottomSheetDialogFragment
-        implements BaseValueEditorFragment.OnValueChangeListener {
+    implements BaseValueEditorFragment.OnValueChangeListener {
 
-    private static final String KEY_ATTRIBUTE = "attrEditorSheet_attribute";
-    private BaseValueEditorFragment.OnValueChangeListener valueChangeListener;
-    private LayoutAttrValueEditorBinding binding;
-    private AttrValueFormatTabAdapter adapter;
-    private XMLAttribute attribute;
+  private static final String KEY_ATTRIBUTE = "attrEditorSheet_attribute";
+  private BaseValueEditorFragment.OnValueChangeListener valueChangeListener;
+  private LayoutAttrValueEditorBinding binding;
+  private AttrValueFormatTabAdapter adapter;
+  private XMLAttribute attribute;
 
-    @NonNull
-    public static AttrValueEditorSheet newInstance(final XMLAttribute attribute) {
-        Objects.requireNonNull(attribute);
+  @NonNull
+  public static AttrValueEditorSheet newInstance(final XMLAttribute attribute) {
+    Objects.requireNonNull(attribute);
 
-        final var args = new Bundle();
-        args.putParcelable(KEY_ATTRIBUTE, attribute);
+    final var args = new Bundle();
+    args.putParcelable(KEY_ATTRIBUTE, attribute);
 
-        final var fragment = new AttrValueEditorSheet();
-        fragment.setArguments(args);
-        return fragment;
+    final var fragment = new AttrValueEditorSheet();
+    fragment.setArguments(args);
+    return fragment;
+  }
+
+  @Override
+  public void onAttach(@NonNull Context context) {
+    super.onAttach(context);
+    this.valueChangeListener = (BaseValueEditorFragment.OnValueChangeListener) getParentFragment();
+  }
+
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    this.binding = LayoutAttrValueEditorBinding.inflate(inflater, container, false);
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+
+    if (attribute == null) {
+      this.attribute = requireArguments().getParcelable(KEY_ATTRIBUTE);
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        this.valueChangeListener =
-                (BaseValueEditorFragment.OnValueChangeListener) getParentFragment();
+    Objects.requireNonNull(this.attribute);
+
+    final var namespace = this.attribute.getNamespace();
+    final var formatText = Attr.createFormatText(attribute.getFormat());
+    this.binding.attributeName.setText(
+        String.format("%s:%s", namespace.getPrefix(), attribute.getAttributeName()));
+    this.binding.attributeFormat.setText(formatText);
+
+    setupTabs(formatText);
+  }
+
+  @SuppressLint("NotifyDataSetChanged")
+  private void setupTabs(@NonNull String formatText) {
+    this.binding.tabs.removeAllTabs();
+    this.binding.pager.setSaveEnabled(false);
+
+    if (this.adapter != null) {
+      this.adapter.removeAll();
+      this.adapter.notifyDataSetChanged();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        this.binding = LayoutAttrValueEditorBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    this.adapter = new AttrValueFormatTabAdapter(getChildFragmentManager(), attribute);
+
+    final var formats = formatText.split("\\|");
+    for (var formatName : formats) {
+      if (TextUtils.isEmpty(formatName) || formatName.length() < 2) {
+        continue;
+      }
+
+      final var frag = getFragmentClass(formatName);
+      if (frag != null) {
+        this.adapter.addFragment(frag, formatName);
+      }
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    binding.pager.setAdapter(this.adapter);
+    binding.tabs.setupWithViewPager(binding.pager);
+  }
 
-        if (attribute == null) {
-            this.attribute = requireArguments().getParcelable(KEY_ATTRIBUTE);
-        }
-
-        Objects.requireNonNull(this.attribute);
-
-        final var namespace = this.attribute.getNamespace();
-        final var formatText = Attr.createFormatText(attribute.getFormat());
-        this.binding.attributeName.setText(
-                String.format("%s:%s", namespace.getPrefix (), attribute.getAttributeName()));
-        this.binding.attributeFormat.setText(formatText);
-
-        setupTabs(formatText);
+  @Nullable
+  @Contract(pure = true)
+  private Class<? extends BaseValueEditorFragment> getFragmentClass(@NonNull String name) {
+    switch (name) {
+      case FORMAT_REFERENCE:
+        return ReferenceEditor.class;
+      case FORMAT_COLOR:
+        return ColorEditor.class;
+      case FORMAT_BOOLEAN:
+        return BooleanEditor.class;
+      case FORMAT_DIMENSION:
+        return DimensionEditor.class;
+      case FORMAT_FLOAT:
+        return FloatEditor.class;
+      case FORMAT_INTEGER:
+        return IntegerEditor.class;
+      case FORMAT_FRACTION:
+        return FractionEditor.class;
+      case FORMAT_STRING:
+        return StringEditor.class;
+      case FORMAT_ENUM:
+        return EnumEditor.class;
+      case FORMAT_FLAG:
+        return FlagEditor.class;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private void setupTabs(@NonNull String formatText) {
-        this.binding.tabs.removeAllTabs();
-        this.binding.pager.setSaveEnabled(false);
+    return null;
+  }
 
-        if (this.adapter != null) {
-            this.adapter.removeAll();
-            this.adapter.notifyDataSetChanged();
-        }
+  public void setAttribute(XMLAttribute attribute) {
+    Objects.requireNonNull(attribute);
+    this.attribute = attribute;
+  }
 
-        this.adapter = new AttrValueFormatTabAdapter(getChildFragmentManager(), attribute);
-
-        final var formats = formatText.split("\\|");
-        for (var formatName : formats) {
-            if (TextUtils.isEmpty(formatName) || formatName.length() < 2) {
-                continue;
-            }
-
-            final var frag = getFragmentClass(formatName);
-            if (frag != null) {
-                this.adapter.addFragment(frag, formatName);
-            }
-        }
-
-        binding.pager.setAdapter(this.adapter);
-        binding.tabs.setupWithViewPager(binding.pager);
+  @Override
+  public void onValueChanged(IAttribute attribute, String newValue) {
+    if (valueChangeListener != null) {
+      valueChangeListener.onValueChanged(attribute, newValue);
     }
-
-    @Nullable
-    @Contract(pure = true)
-    private Class<? extends BaseValueEditorFragment> getFragmentClass(@NonNull String name) {
-        switch (name) {
-            case FORMAT_REFERENCE:
-                return ReferenceEditor.class;
-            case FORMAT_COLOR:
-                return ColorEditor.class;
-            case FORMAT_BOOLEAN:
-                return BooleanEditor.class;
-            case FORMAT_DIMENSION:
-                return DimensionEditor.class;
-            case FORMAT_FLOAT:
-                return FloatEditor.class;
-            case FORMAT_INTEGER:
-                return IntegerEditor.class;
-            case FORMAT_FRACTION:
-                return FractionEditor.class;
-            case FORMAT_STRING:
-                return StringEditor.class;
-            case FORMAT_ENUM:
-                return EnumEditor.class;
-            case FORMAT_FLAG:
-                return FlagEditor.class;
-        }
-
-        return null;
-    }
-
-    public void setAttribute(XMLAttribute attribute) {
-        Objects.requireNonNull(attribute);
-        this.attribute = attribute;
-    }
-
-    @Override
-    public void onValueChanged(IAttribute attribute, String newValue) {
-        if (valueChangeListener != null) {
-            valueChangeListener.onValueChanged(attribute, newValue);
-        }
-    }
+  }
 }

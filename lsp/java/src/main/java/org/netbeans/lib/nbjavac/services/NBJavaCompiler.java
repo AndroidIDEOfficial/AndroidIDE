@@ -31,66 +31,68 @@ import java.util.Queue;
 import java.util.function.Consumer;
 
 /**
- *
  * @author lahvac
  */
 public class NBJavaCompiler extends JavaCompiler {
 
-    public static void preRegister(Context context) {
-        context.put(compilerKey, new Context.Factory<JavaCompiler>() {
-            public JavaCompiler make(Context c) {
-                return new NBJavaCompiler(c);
-            }
+  public static void preRegister(Context context) {
+    context.put(
+        compilerKey,
+        new Context.Factory<JavaCompiler>() {
+          public JavaCompiler make(Context c) {
+            return new NBJavaCompiler(c);
+          }
         });
+  }
+
+  private final CancelService cancelService;
+  private Consumer<Env<AttrContext>> desugarCallback;
+
+  public NBJavaCompiler(Context context) {
+    super(context);
+    cancelService = CancelService.instance(context);
+  }
+
+  @Override
+  public void processAnnotations(
+      List<JCTree.JCCompilationUnit> roots, Collection<String> classnames) {
+    if (roots.isEmpty()) {
+      super.processAnnotations(roots, classnames);
+    } else {
+      setOrigin(roots.head.sourcefile.toUri().toString());
+      try {
+        super.processAnnotations(roots, classnames);
+      } finally {
+        setOrigin("");
+      }
     }
+  }
 
-    private final CancelService cancelService;
-    private Consumer<Env<AttrContext>> desugarCallback;
+  private void setOrigin(String origin) {
+    fileManager.handleOption("apt-origin", Collections.singletonList(origin).iterator());
+  }
 
-    public NBJavaCompiler(Context context) {
-        super(context);
-        cancelService = CancelService.instance(context);
+  public void setDesugarCallback(Consumer<Env<AttrContext>> callback) {
+    this.desugarCallback = callback;
+  }
+
+  private boolean desugaring;
+
+  @Override
+  protected void desugar(
+      Env<AttrContext> env, Queue<Pair<Env<AttrContext>, JCTree.JCClassDecl>> results) {
+    boolean prevDesugaring = desugaring;
+    try {
+      desugaring = true;
+      super.desugar(env, results);
+    } finally {
+      desugaring = prevDesugaring;
     }
+  }
 
-    @Override
-    public void processAnnotations(List<JCTree.JCCompilationUnit> roots, Collection<String> classnames) {
-        if (roots.isEmpty()) {
-            super.processAnnotations(roots, classnames);
-        } else {
-            setOrigin(roots.head.sourcefile.toUri().toString());
-            try {
-                super.processAnnotations(roots, classnames);
-            } finally {
-                setOrigin("");
-            }
-        }
+  void maybeInvokeDesugarCallback(Env<AttrContext> env) {
+    if (desugaring && desugarCallback != null) {
+      desugarCallback.accept(env);
     }
-
-    private void setOrigin(String origin) {
-        fileManager.handleOption("apt-origin", Collections.singletonList(origin).iterator());
-    }
-
-    public void setDesugarCallback(Consumer<Env<AttrContext>> callback) {
-        this.desugarCallback = callback;
-    }
-
-    private boolean desugaring;
-
-    @Override
-    protected void desugar(Env<AttrContext> env, Queue<Pair<Env<AttrContext>, JCTree.JCClassDecl>> results) {
-        boolean prevDesugaring = desugaring;
-        try {
-            desugaring = true;
-        super.desugar(env, results);
-        } finally {
-            desugaring = prevDesugaring;
-        }
-    }
-
-    void maybeInvokeDesugarCallback(Env<AttrContext> env) {
-        if (desugaring && desugarCallback != null) {
-            desugarCallback.accept(env);
-        }
-    }
-
+  }
 }

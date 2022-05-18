@@ -44,107 +44,107 @@ import java.util.concurrent.CompletionException;
 
 public class StudioApp extends BaseApplication {
 
-    private static final ILogger LOG = ILogger.newInstance("StudioApp");
-    private static StudioApp instance;
-    private static SDKInfo sdkInfo;
-    private final ILanguageServer mJavaLanguageServer = new JavaLanguageServer();
-    private final ILanguageServer mXMLLanguageServer = new XMLLanguageServer();
-    private IResourceTable mResTable;
-    private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
+  private static final ILogger LOG = ILogger.newInstance("StudioApp");
+  private static StudioApp instance;
+  private static SDKInfo sdkInfo;
+  private final ILanguageServer mJavaLanguageServer = new JavaLanguageServer();
+  private final ILanguageServer mXMLLanguageServer = new XMLLanguageServer();
+  private IResourceTable mResTable;
+  private Thread.UncaughtExceptionHandler uncaughtExceptionHandler;
 
-    public static StudioApp getInstance() {
-        return instance;
+  public static StudioApp getInstance() {
+    return instance;
+  }
+
+  @Override
+  public void onCreate() {
+    instance = this;
+    this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+    Thread.setDefaultUncaughtExceptionHandler(this::handleCrash);
+    super.onCreate();
+
+    getApiInformation();
+  }
+
+  private void handleCrash(Thread thread, Throwable th) {
+    writeException(th);
+
+    try {
+      final var intent = new Intent();
+      intent.setAction(CrashHandlerActivity.REPORT_ACTION);
+      intent.putExtra(CrashHandlerActivity.TRACE_KEY, ThrowableUtils.getFullStackTrace(th));
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      startActivity(intent);
+
+      if (this.uncaughtExceptionHandler != null) {
+        this.uncaughtExceptionHandler.uncaughtException(thread, th);
+      }
+      System.exit(1);
+    } catch (Throwable error) {
+      LOG.error("Unable to show crash handler activity", error);
     }
+  }
 
-    @Override
-    public void onCreate() {
-        instance = this;
-        this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(this::handleCrash);
-        super.onCreate();
-
-        getApiInformation();
-    }
-
-    private void handleCrash(Thread thread, Throwable th) {
-        writeException(th);
-
-        try {
-            final var intent = new Intent();
-            intent.setAction(CrashHandlerActivity.REPORT_ACTION);
-            intent.putExtra(CrashHandlerActivity.TRACE_KEY, ThrowableUtils.getFullStackTrace(th));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-
-            if (this.uncaughtExceptionHandler != null) {
-                this.uncaughtExceptionHandler.uncaughtException(thread, th);
+  /** Reads API version information from api-versions.xml */
+  public CompletableFuture<SDKInfo> getApiInformation() {
+    return CompletableFuture.supplyAsync(
+        () -> {
+          if (sdkInfo == null) {
+            try {
+              sdkInfo = new SDKInfo(StudioApp.this);
+              ((XMLLanguageServer) mXMLLanguageServer).setupSDK(sdkInfo);
+            } catch (Throwable th) {
+              LOG.error(getString(R.string.err_init_sdkinfo), th);
             }
-            System.exit(1);
-        } catch (Throwable error) {
-            LOG.error("Unable to show crash handler activity", error);
-        }
-    }
+          }
 
-    /** Reads API version information from api-versions.xml */
-    public CompletableFuture<SDKInfo> getApiInformation() {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    if (sdkInfo == null) {
-                        try {
-                            sdkInfo = new SDKInfo(StudioApp.this);
-                            ((XMLLanguageServer) mXMLLanguageServer).setupSDK(sdkInfo);
-                        } catch (Throwable th) {
-                            LOG.error(getString(R.string.err_init_sdkinfo), th);
-                        }
-                    }
+          return sdkInfo;
+        });
+  }
 
-                    return sdkInfo;
-                });
-    }
+  @NonNull
+  public ILanguageServer getJavaLanguageServer() {
+    return mJavaLanguageServer;
+  }
 
-    @NonNull
-    public ILanguageServer getJavaLanguageServer() {
-        return mJavaLanguageServer;
-    }
+  @NonNull
+  public ILanguageServer getXMLLanguageServer() {
+    return mXMLLanguageServer;
+  }
 
-    @NonNull
-    public ILanguageServer getXMLLanguageServer() {
-        return mXMLLanguageServer;
-    }
+  public CompletableFuture<LayoutInflaterConfiguration> createInflaterConfig(
+      ILayoutInflater.ContextProvider contextProvider, Set<File> resDirs) {
 
-    public CompletableFuture<LayoutInflaterConfiguration> createInflaterConfig(
-            ILayoutInflater.ContextProvider contextProvider, Set<File> resDirs) {
+    return CompletableFuture.supplyAsync(
+        () -> {
+          try {
+            final var sdkInfo = getApiInformation().get();
+            return new LayoutInflaterConfiguration.Builder()
+                .setAttrInfo(sdkInfo.getAttrInfo())
+                .setWidgetInfo(sdkInfo.getWidgetInfo())
+                .setResourceFinder(getResourceTable())
+                .setResourceDirectories(resDirs)
+                .setContextProvider(contextProvider)
+                .create();
+          } catch (Throwable e) {
+            throw new CompletionException(e);
+          }
+        });
+  }
 
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    try {
-                        final var sdkInfo = getApiInformation().get();
-                        return new LayoutInflaterConfiguration.Builder()
-                                .setAttrInfo(sdkInfo.getAttrInfo())
-                                .setWidgetInfo(sdkInfo.getWidgetInfo())
-                                .setResourceFinder(getResourceTable())
-                                .setResourceDirectories(resDirs)
-                                .setContextProvider(contextProvider)
-                                .create();
-                    } catch (Throwable e) {
-                        throw new CompletionException(e);
-                    }
-                });
-    }
+  public IResourceTable getResourceTable() {
+    return mResTable == null ? mResTable = new ProjectResourceTable() : mResTable;
+  }
 
-    public IResourceTable getResourceTable() {
-        return mResTable == null ? mResTable = new ProjectResourceTable() : mResTable;
-    }
+  public ApiInfo apiInfo() {
+    return sdkInfo.getApiInfo();
+  }
 
-    public ApiInfo apiInfo() {
-        return sdkInfo.getApiInfo();
-    }
+  public AttrInfo attrInfo() {
+    return sdkInfo.getAttrInfo();
+  }
 
-    public AttrInfo attrInfo() {
-        return sdkInfo.getAttrInfo();
-    }
-
-    public WidgetInfo widgetInfo() {
-        return sdkInfo.getWidgetInfo();
-    }
+  public WidgetInfo widgetInfo() {
+    return sdkInfo.getWidgetInfo();
+  }
 }

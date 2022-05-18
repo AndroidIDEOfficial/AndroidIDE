@@ -177,7 +177,7 @@ task formatJavaSources() {
             final def formatter = new Formatter(
                     JavaFormatterOptions
                             .builder()
-                            .style(JavaFormatterOptions.Style.AOSP)
+                            .style(JavaFormatterOptions.Style.GOOGLE)
                             .formatJavadoc(true)
                             .build()
             )
