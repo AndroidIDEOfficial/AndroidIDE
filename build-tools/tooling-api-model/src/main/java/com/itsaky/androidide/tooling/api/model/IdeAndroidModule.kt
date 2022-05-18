@@ -20,6 +20,7 @@ import com.android.builder.model.v2.ide.ProjectType
 import com.android.builder.model.v2.models.AndroidProject
 import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
+import com.itsaky.androidide.builder.model.DefaultLibrary
 import com.itsaky.androidide.builder.model.DefaultModelSyncFile
 import com.itsaky.androidide.builder.model.DefaultSourceProvider
 import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
@@ -27,10 +28,10 @@ import com.itsaky.androidide.builder.model.DefaultVariant
 import com.itsaky.androidide.builder.model.DefaultVariantDependencies
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
-import org.eclipse.lemminx.dom.DOMParser
-import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 import java.io.File
 import java.io.Serializable
+import org.eclipse.lemminx.dom.DOMParser
+import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
 
 /**
  * Default implementation of [IdeAndroidModule].
@@ -74,7 +75,13 @@ open class IdeAndroidModule(
         }
     var boothclasspaths: Collection<File> = emptyList()
     var mainSourceSet: DefaultSourceSetContainer? = null
+
+    @Deprecated(
+        "We do not keep references to all variant dependencies (to cut down memory usage)." +
+            " Use debugLibraries instead.")
     var variantDependencies: MutableMap<String, DefaultVariantDependencies> = mutableMapOf()
+    
+    var debugLibraries: List<DefaultLibrary> = emptyList()
 
     @Suppress("unused")
     companion object {

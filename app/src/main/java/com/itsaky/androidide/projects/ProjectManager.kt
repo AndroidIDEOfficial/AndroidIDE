@@ -173,10 +173,10 @@ object ProjectManager {
 
     private fun collectClassPaths(app: IdeAndroidModule): Set<Path> {
 
-        val libraries = app.variantDependencies["debug"]!!.libraries
+        val libraries = app.debugLibraries
         val paths = mutableSetOf<Path>()
 
-        for (value in libraries.values) {
+        for (value in libraries) {
             if (value.type == ANDROID_LIBRARY) {
                 paths.addAll(value.androidLibraryData!!.compileJarFiles.map { it.toPath() })
             } else if (value.type == JAVA_LIBRARY) {
@@ -210,8 +210,7 @@ object ProjectManager {
 
     fun collectProjectDependencies(project: IProject, app: IdeAndroidModule): List<IdeModule> {
 
-        return app.variantDependencies["debug"]!!
-            .libraries.values
+        return app.debugLibraries
             .filter { it.type == PROJECT }
             .map { project.findByPath(it.projectInfo!!.projectPath) }
             .filterIsInstance(IdeModule::class.java)

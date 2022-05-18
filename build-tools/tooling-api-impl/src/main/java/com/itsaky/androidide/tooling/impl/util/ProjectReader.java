@@ -20,11 +20,14 @@ package com.itsaky.androidide.tooling.impl.util;
 import static com.itsaky.androidide.tooling.impl.Main.finalizeLauncher;
 import static java.util.Collections.emptyList;
 
+import com.android.builder.model.ModelBuilderParameter;
 import com.android.builder.model.v2.ide.ProjectType;
 import com.android.builder.model.v2.models.AndroidProject;
 import com.android.builder.model.v2.models.BasicAndroidProject;
 import com.android.builder.model.v2.models.ProjectSyncIssues;
+import com.android.builder.model.v2.models.VariantDependencies;
 import com.android.builder.model.v2.models.Versions;
+import com.itsaky.androidide.builder.model.DefaultLibrary;
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
@@ -202,6 +205,21 @@ public class ProjectReader {
         basicAndroid.getMainSourceSet() == null
             ? null
             : AndroidModulePropertyCopier.INSTANCE.copy(basicAndroid.getMainSourceSet()));
+
+    System.err.println("Fetching 'debug' dependencies");
+    final var variantDependencies =
+        controller.findModel(
+            gradle,
+            VariantDependencies.class,
+            ModelBuilderParameter.class,
+            it -> it.setVariantName("debug"));
+
+    final var libraries = new ArrayList<DefaultLibrary>();
+    variantDependencies
+        .getLibraries()
+        .forEach((s, library) -> libraries.add(AndroidModulePropertyCopier.INSTANCE.copy(library)));
+
+    module.setDebugLibraries(libraries);
 
     System.err.println("Fetching project sync issues...");
     final var issues = controller.findModel(gradle, ProjectSyncIssues.class);

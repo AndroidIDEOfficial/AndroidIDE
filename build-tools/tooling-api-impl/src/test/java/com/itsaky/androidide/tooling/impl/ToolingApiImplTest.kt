@@ -22,12 +22,12 @@ import com.android.builder.model.v2.ide.ProjectType
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.GsonBuilder
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
-import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
@@ -82,19 +82,12 @@ class ToolingApiImplTest {
         assertThat(app.tasks.size).isAtLeast(100)
         assertThat(app.tasks.first { it.path == "${app.projectPath}:thisIsATestTask" }).isNotNull()
 
-        assertThat(app.variantDependencies).hasSize(2)
-        assertThat(app.variantDependencies).containsKey("debug")
-        assertThat(app.variantDependencies["debug"]).isNotNull()
-        assertThat(app.variantDependencies).containsKey("release")
-        assertThat(app.variantDependencies["release"]).isNotNull()
+        // This is not expected to be filled. Instead debugLibraries must be filled
+        @Suppress("DEPRECATION") assertThat(app.variantDependencies).isEmpty()
 
-        // Assert that there is at least one dependency on another module in both of the variants
-        assertThat(
-                app.variantDependencies["debug"]!!.libraries.values.filter { it.type == PROJECT })
-            .isNotEmpty()
-        assertThat(
-                app.variantDependencies["release"]!!.libraries.values.filter { it.type == PROJECT })
-            .isNotEmpty()
+        assertThat(app.debugLibraries).isNotEmpty()
+        // At least one project library
+        assertThat(app.debugLibraries.filter { it.type == PROJECT }).isNotEmpty()
 
         val javaLibrary = project.findByPath(":java-library").get()
         assertThat(javaLibrary).isNotNull()

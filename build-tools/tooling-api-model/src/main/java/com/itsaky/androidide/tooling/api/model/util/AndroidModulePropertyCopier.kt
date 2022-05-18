@@ -338,7 +338,7 @@ object AndroidModulePropertyCopier {
         return new
     }
 
-    private fun copy(value: Library): DefaultLibrary {
+    fun copy(value: Library): DefaultLibrary {
         return DefaultLibrary().apply {
             this.androidLibraryData = copy(value.androidLibraryData)
             this.artifact = value.artifact

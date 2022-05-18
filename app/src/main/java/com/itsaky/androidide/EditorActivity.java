@@ -976,15 +976,15 @@ public class EditorActivity extends StudioActivity
   }
 
   public Consumer<TaskExecutionResult> installableTaskResultConsumer(@NonNull String variantName) {
-    return task -> {
-      if (task != null) {
+    return result -> {
+      if (result != null && result.isSuccessful ()) {
         LOG.debug("Installing APK(s) for variant:", variantName);
         // TODO Handle multiple application modules
         final var projectManager = ProjectManager.INSTANCE;
         final var future = projectManager.getApplicationModule();
         future.whenCompleteAsync(
             (app, error) -> {
-              if (app == null || !task.isSuccessful()) {
+              if (app == null) {
                 return;
               }
 
@@ -1018,6 +1018,8 @@ public class EditorActivity extends StudioActivity
                     "No", variantName, "variant found in application module", app.projectPath);
               }
             });
+      } else {
+        LOG.debug ("Cannot install APK. Task execution result:", result);
       }
     };
   }
