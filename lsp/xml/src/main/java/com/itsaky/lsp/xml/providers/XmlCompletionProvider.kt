@@ -141,10 +141,10 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
 
         for (widget in widgets) {
             val simpleNameMatchRatio =
-                StringUtils.fuzzySearchRatio(
+                StringUtils.fuzzySearchPartialRatio(
                     widget.simpleName, prefix, settings.shouldMatchAllLowerCase())
             val nameMatchRatio =
-                StringUtils.fuzzySearchRatio(
+                StringUtils.fuzzySearchPartialRatio(
                     widget.name, prefix, settings.shouldMatchAllLowerCase())
             if (simpleNameMatchRatio > 0 || nameMatchRatio > 0) {
                 result.add(
@@ -167,7 +167,7 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
         val list = mutableListOf<CompletionItem>()
         for (attribute in sdkInfo.attrInfo.attributes.values) {
             val matchRatio =
-                StringUtils.fuzzySearchRatio(
+                StringUtils.fuzzySearchPartialRatio(
                     attribute.name, attr.name, settings.shouldMatchAllLowerCase())
             if (matchRatio > 0) {
                 list.add(createAttrCompletionItem(attribute, attr.name, matchRatio))
@@ -194,7 +194,7 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
         val items = mutableListOf<CompletionItem>()
         for (value in attribute.possibleValues) {
             val matchRatio =
-                StringUtils.fuzzySearchRatio(value, prefix, settings.shouldMatchAllLowerCase())
+                StringUtils.fuzzySearchPartialRatio(value, prefix, settings.shouldMatchAllLowerCase())
 
             // It might happen that the completion request is triggered but the prefix is empty
             // For example, a completion request is triggered when the user selects an attribute

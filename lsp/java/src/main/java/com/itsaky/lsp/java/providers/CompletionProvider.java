@@ -1115,6 +1115,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
       // class.
       return 100;
     }
-    return StringUtils.fuzzySearchRatio(candidate, partial, allLower);
+    return StringUtils.fuzzySearchPartialRatio(candidate, partial, allLower);
   }
 }
