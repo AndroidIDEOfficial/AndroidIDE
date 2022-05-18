@@ -83,7 +83,13 @@ open class IdeGradleProject(
     override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> {
         return CompletableFutures.computeAsync {
             return@computeAsync this.moduleProjects
-                .map { SimpleModuleData(it.name, it.projectPath, it.projectDir) }
+                .map {
+                    SimpleModuleData(
+                        name = it.name,
+                        path = it.projectPath,
+                        projectDir = it.projectDir,
+                        classPaths = if (it is IdeModule) it.getClassPaths() else emptySet())
+                }
                 .toMutableList()
         }
     }

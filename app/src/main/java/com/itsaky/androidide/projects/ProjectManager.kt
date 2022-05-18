@@ -19,6 +19,7 @@ package com.itsaky.androidide.projects
 import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
+import com.android.builder.model.v2.ide.LibraryType.RELOCATED
 import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.services.BuildService
 import com.itsaky.androidide.tooling.api.IProject
@@ -40,6 +41,7 @@ import java.util.concurrent.*
 @Suppress("MemberVisibilityCanBePrivate")
 object ProjectManager {
     private val log = ILogger.newInstance(javaClass.simpleName)
+
     var rootProject: IProject? = null
         set(value) {
             field = if (value == null) null else CachingProject(value)
@@ -157,10 +159,11 @@ object ProjectManager {
     }
 
     fun notifyProjectUpdate() {
-        getApplicationModule().thenAccept {
+        log.debug("Updating class paths in language servers...")
+        getApplicationModule().whenCompleteAsync { it, _ ->
             if (it == null) {
                 log.debug("Cannot find application module. Unable to update class paths to LSP.")
-                return@thenAccept
+                return@whenCompleteAsync
             }
 
             val server = StudioApp.getInstance().javaLanguageServer
@@ -175,23 +178,26 @@ object ProjectManager {
 
         val libraries = app.debugLibraries
         val paths = mutableSetOf<Path>()
-
+        val modules = this.rootProject!!.listModules().get()
         for (value in libraries) {
+            if (value.type == RELOCATED) {
+                // this library does not have any artifacts
+                continue
+            }
+
             if (value.type == ANDROID_LIBRARY) {
                 paths.addAll(value.androidLibraryData!!.compileJarFiles.map { it.toPath() })
             } else if (value.type == JAVA_LIBRARY) {
                 paths.add(value.artifact!!.toPath())
             } else {
-                val project =
-                    rootProject!!.findByPath(value.projectInfo!!.projectPath).get() as IdeModule
-                paths.add(project.getGeneratedJar("debug").toPath())
-
-                if (project is IdeAndroidModule && project.projectPath != app.projectPath) {
-                    // R.jar and maybe other JARs
-                    paths.addAll(
-                        project.simpleVariants
-                            .first { it.name == "debug" }
-                            .mainArtifact.classJars.map { it.toPath() })
+                val projectPath = value.projectInfo!!.projectPath
+                val module =
+                    (if (projectPath != app.projectPath)
+                        modules.firstOrNull { it.path == projectPath }
+                    else null)
+                        ?: continue
+                if (module.classPaths.isNotEmpty()) {
+                    paths.addAll(module.classPaths.map { it.toPath() })
                 }
             }
         }

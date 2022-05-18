@@ -45,8 +45,8 @@ class CachingProject(val project: IProject) : IProject {
     private val mBuildScript: File by lazy { this.project.buildScript.get() }
 
     private var mFirstAppModule: IdeAndroidModule? = null
-    private val mModules: MutableList<SimpleModuleData> = mutableListOf()
     private val mCachedVariants: MutableMap<VariantDataRequest, SimpleVariantData> = mutableMapOf()
+    val mModules: MutableList<SimpleModuleData> = mutableListOf()
 
     override fun isProjectInitialized(): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(true)
@@ -86,30 +86,22 @@ class CachingProject(val project: IProject) : IProject {
 
     override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> {
         return if (this.mModules.isNotEmpty()) {
+            log.debug("Using cached module data...")
             CompletableFuture.completedFuture(mModules)
         } else {
-            CompletableFuture.supplyAsync {
-                var failed: Boolean
-                var failure: Throwable
-                try {
-                    val modules = this.project.listModules().get()
-                    failed = modules == null || modules.isEmpty()
-                    failure = RuntimeException("Tooling server returned invalid data")
-
-                    if (!failed) {
-                        mModules.clear()
-                        mModules.addAll(modules)
-                    }
-                } catch (e: Throwable) {
-                    failed = true
-                    failure = e
+            return this.project.listModules().whenComplete { modules, err ->
+                if (err != null || modules == null) {
+                    log.debug("Unable to fetch module data from tooling server", err)
+                    return@whenComplete
                 }
 
-                if (failed) {
-                    log.error("Unable to fetch module project data", failure)
+                if (modules.isEmpty()) {
+                    log.debug("Empty module data returned by tooling server. Ignoring...")
+                    return@whenComplete
                 }
 
-                return@supplyAsync this.mModules
+                mModules.clear()
+                mModules.addAll(modules)
             }
         }
     }

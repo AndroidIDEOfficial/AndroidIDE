@@ -80,7 +80,7 @@ open class IdeAndroidModule(
         "We do not keep references to all variant dependencies (to cut down memory usage)." +
             " Use debugLibraries instead.")
     var variantDependencies: MutableMap<String, DefaultVariantDependencies> = mutableMapOf()
-    
+
     var debugLibraries: List<DefaultLibrary> = emptyList()
 
     @Suppress("unused")
@@ -168,9 +168,24 @@ open class IdeAndroidModule(
         const val FD_GENERATED = "generated"
     }
 
+    @Deprecated(
+        "Use getClasspath() instead.",
+        ReplaceWith(
+            "File(buildDir, \"\$FD_INTERMEDIATES/compile_library_classes_jar/\$variant/classes.jar\")",
+            "java.io.File",
+            "com.itsaky.androidide.tooling.api.model.IdeAndroidModule.Companion.FD_INTERMEDIATES"))
     override fun getGeneratedJar(variant: String): File {
         return File(buildDir, "$FD_INTERMEDIATES/compile_library_classes_jar/$variant/classes.jar")
     }
+
+    override fun getClassPaths(): Set<File> =
+        mutableSetOf<File>().apply {
+            add(
+                File(
+                    buildDir,
+                    "$FD_INTERMEDIATES/compile_library_classes_jar/${"debug"}/classes.jar"))
+            addAll(simpleVariants.first { it.name == "debug" }.mainArtifact.classJars)
+        }
 
     private fun findPackageName() {
         if (mainSourceSet == null) {

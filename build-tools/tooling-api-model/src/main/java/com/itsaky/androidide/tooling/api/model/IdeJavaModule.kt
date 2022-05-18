@@ -49,6 +49,7 @@ open class IdeJavaModule(
 
     override fun getDependencies() = javaDependencies
 
+    @Deprecated("Use getClasspath() instead.")
     override fun getGeneratedJar(variant: String): File {
         var jar = File(buildDir, "libs/$name.jar")
         if (jar.exists()) {
@@ -56,11 +57,12 @@ open class IdeJavaModule(
         }
 
         jar =
-            File(buildDir, "libs").listFiles()?.first {
-                it.name.startsWith(this.name)
-            }
+            File(buildDir, "libs").listFiles()?.first { it.name.startsWith(this.name) }
                 ?: File("i-do-not-exist.jar")
 
         return jar
     }
+
+    @Suppress("DEPRECATION")
+    override fun getClassPaths(): Set<File> = setOf(getGeneratedJar("debug"))
 }

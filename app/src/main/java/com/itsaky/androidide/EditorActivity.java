@@ -977,7 +977,7 @@ public class EditorActivity extends StudioActivity
 
   public Consumer<TaskExecutionResult> installableTaskResultConsumer(@NonNull String variantName) {
     return result -> {
-      if (result != null && result.isSuccessful ()) {
+      if (result != null && result.isSuccessful()) {
         LOG.debug("Installing APK(s) for variant:", variantName);
         // TODO Handle multiple application modules
         final var projectManager = ProjectManager.INSTANCE;
@@ -1019,7 +1019,7 @@ public class EditorActivity extends StudioActivity
               }
             });
       } else {
-        LOG.debug ("Cannot install APK. Task execution result:", result);
+        LOG.debug("Cannot install APK. Task execution result:", result);
       }
     };
   }
