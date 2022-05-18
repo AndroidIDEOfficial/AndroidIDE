@@ -21,11 +21,24 @@ import java.io.File
 import java.io.Serializable
 
 /**
- * Container for basic data about module projects.
+ * Artifact in a [SimpleVariantData].
  *
  * @author Akash Yadav
  */
-data class SimpleModuleData(val name: String, val path: String, val projectDir: File) :
-    Serializable {
+data class SimpleArtifact(
+    val name: String,
+    val resGenTaskName: String?,
+    val assembleTaskOutputListingFile: File?,
+    val generatedResourceFolders: Collection<File>,
+    val generatedSourceFolders: Collection<File>,
+    val maxSdkVersion: Int?,
+    val minSdkVersion: Int,
+    val signingConfigName: String?,
+    val sourceGenTaskName: String,
+    val assembleTaskName: String,
+    val classJars: List<File>,
+    val compileTaskName: String,
+    val targetSdkVersionOverride: Int
+) : Serializable {
     private val serialVersionUID = 1L
 }

@@ -18,7 +18,9 @@
 package com.itsaky.androidide.projects
 
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
+import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
@@ -44,6 +46,7 @@ class CachingProject(val project: IProject) : IProject {
 
     private var mFirstAppModule: IdeAndroidModule? = null
     private val mModules: MutableList<SimpleModuleData> = mutableListOf()
+    private val mCachedVariants: MutableMap<VariantDataRequest, SimpleVariantData> = mutableMapOf()
 
     override fun isProjectInitialized(): CompletableFuture<Boolean> {
         return CompletableFuture.completedFuture(true)
@@ -108,6 +111,25 @@ class CachingProject(val project: IProject) : IProject {
 
                 return@supplyAsync this.mModules
             }
+        }
+    }
+
+    override fun getVariantData(request: VariantDataRequest): CompletableFuture<SimpleVariantData> {
+        val cached = mCachedVariants[request]
+        if (cached != null) {
+            return CompletableFuture.completedFuture(cached)
+        }
+
+        return this.project.getVariantData(request).whenComplete { t, u ->
+            if (t == null) {
+                log.warn(
+                    "Unable to get variant data for " +
+                        "variant ${request.variantName} ('${request.projectPath}') from tooling server",
+                    u)
+                return@whenComplete
+            }
+
+            mCachedVariants[request] = t
         }
     }
 

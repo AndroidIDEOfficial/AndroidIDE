@@ -17,7 +17,9 @@
 package com.itsaky.androidide.tooling.api.model
 
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
+import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
+import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import java.io.File
 import java.io.Serializable
 import java.util.concurrent.*
@@ -83,6 +85,16 @@ open class IdeGradleProject(
             return@computeAsync this.moduleProjects
                 .map { SimpleModuleData(it.name, it.projectPath, it.projectDir) }
                 .toMutableList()
+        }
+    }
+
+    override fun getVariantData(request: VariantDataRequest): CompletableFuture<SimpleVariantData> {
+        return findByPath(request.projectPath).thenApply { project ->
+            if (project !is IdeAndroidModule) {
+                return@thenApply null
+            }
+
+            return@thenApply project.simpleVariants.firstOrNull { it.name == request.variantName }
         }
     }
 

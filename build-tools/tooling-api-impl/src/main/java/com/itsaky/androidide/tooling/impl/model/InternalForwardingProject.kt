@@ -19,7 +19,9 @@ package com.itsaky.androidide.tooling.impl.model
 
 import com.itsaky.androidide.tooling.api.IProject
 import com.itsaky.androidide.tooling.api.IToolingApiClient
+import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
+import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
@@ -97,5 +99,9 @@ class InternalForwardingProject(
 
     override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> =
         if (this.project != null) this.project!!.findFirstAndroidAppModule()
+        else CompletableFuture.completedFuture(null)
+
+    override fun getVariantData(request: VariantDataRequest): CompletableFuture<SimpleVariantData> =
+        if (this.project != null) this.project!!.getVariantData(request)
         else CompletableFuture.completedFuture(null)
 }

@@ -15,17 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.tooling.api.messages.result
+package com.itsaky.androidide.tooling.api.messages
 
-import java.io.File
-import java.io.Serializable
-
-/**
- * Container for basic data about module projects.
- *
- * @author Akash Yadav
- */
-data class SimpleModuleData(val name: String, val path: String, val projectDir: File) :
-    Serializable {
-    private val serialVersionUID = 1L
-}
+/** @author Akash Yadav */
+data class VariantDataRequest(val variantName: String, val projectPath: String)

@@ -111,8 +111,8 @@ import com.itsaky.androidide.services.GradleBuildService;
 import com.itsaky.androidide.services.LogReceiver;
 import com.itsaky.androidide.shell.ShellServer;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData;
+import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.utils.CharSequenceInputStream;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.EditorActivityActions;
@@ -147,6 +147,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
@@ -910,14 +911,13 @@ public class EditorActivity extends StudioActivity
     final var future = mBuildService.initializeProject(projectDir.getAbsolutePath());
     future.whenComplete(
         (result, error) -> {
-          final var root = result == null ? null : result.getProject();
-          if (result == null || root == null || error != null) {
+          if (result == null || error != null) {
             LOG.error("An error occurred initializing the project with Tooling API", error);
             setStatus(getString(R.string.msg_project_initialization_failed));
             return;
           }
 
-          onProjectInitialized(root);
+          onProjectInitialized();
         });
   }
 
@@ -925,8 +925,7 @@ public class EditorActivity extends StudioActivity
     setStatus(text, Gravity.CENTER);
   }
 
-  protected void onProjectInitialized(IdeGradleProject root) {
-    ProjectManager.INSTANCE.setRootProject(root);
+  protected void onProjectInitialized() {
     ProjectManager.INSTANCE.notifyProjectUpdate();
     ThreadUtils.runOnUiThread(
         () -> {
@@ -981,19 +980,18 @@ public class EditorActivity extends StudioActivity
       if (task != null) {
         LOG.debug("Installing APK(s) for variant:", variantName);
         // TODO Handle multiple application modules
-        final var future = ProjectManager.INSTANCE.getApplicationModule();
-        future.whenComplete(
+        final var projectManager = ProjectManager.INSTANCE;
+        final var future = projectManager.getApplicationModule();
+        future.whenCompleteAsync(
             (app, error) -> {
-              if (app == null) {
+              if (app == null || !task.isSuccessful()) {
                 return;
               }
 
-              final var variants = app.getVariants();
-              final var foundVariant =
-                  variants.stream()
-                      .filter(variant -> variant.getName().equals(variantName))
+              Optional<SimpleVariantData> foundVariant =
+                  app.getSimpleVariants().stream()
+                      .filter(it -> variantName.equals(it.getName()))
                       .findFirst();
-
               if (foundVariant.isPresent()) {
                 final var variant = foundVariant.get();
                 final var main = variant.getMainArtifact();
@@ -1017,7 +1015,7 @@ public class EditorActivity extends StudioActivity
                 install(apkFile);
               } else {
                 LOG.error(
-                    "No", variantName, "variant found in application module", app.getProjectPath());
+                    "No", variantName, "variant found in application module", app.projectPath);
               }
             });
       }
@@ -1033,7 +1031,7 @@ public class EditorActivity extends StudioActivity
   }
 
   public void install(@NonNull File apk) {
-    ThreadUtils.runOnUiThread(
+    runOnUiThread(
         () -> {
           LOG.debug("Installing APK:", apk);
           if (apk.exists()) {

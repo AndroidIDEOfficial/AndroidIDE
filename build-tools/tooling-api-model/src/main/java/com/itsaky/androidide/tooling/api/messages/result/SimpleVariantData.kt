@@ -17,15 +17,17 @@
 
 package com.itsaky.androidide.tooling.api.messages.result
 
-import java.io.File
 import java.io.Serializable
 
 /**
- * Container for basic data about module projects.
+ * Contains simple data about a variant in an Android module project.
  *
  * @author Akash Yadav
  */
-data class SimpleModuleData(val name: String, val path: String, val projectDir: File) :
-    Serializable {
+data class SimpleVariantData(
+    val name: String,
+    val mainArtifact: SimpleArtifact,
+    val otherArtifacts: Map<String, SimpleArtifact>
+): Serializable {
     private val serialVersionUID = 1L
 }

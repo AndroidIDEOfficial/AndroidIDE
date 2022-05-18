@@ -17,7 +17,9 @@
 
 package com.itsaky.androidide.tooling.api;
 
+import com.itsaky.androidide.tooling.api.messages.VariantDataRequest;
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData;
+import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
@@ -79,6 +81,10 @@ public interface IProject {
   @NotNull
   @JsonRequest
   CompletableFuture<List<SimpleModuleData>> listModules();
+
+  @NotNull
+  @JsonRequest
+  CompletableFuture<SimpleVariantData> getVariantData(@NotNull VariantDataRequest request);
 
   @NotNull
   @JsonRequest

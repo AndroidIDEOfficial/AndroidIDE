@@ -74,20 +74,20 @@ object ProjectManager {
             return
         }
 
-        getApplicationModule().whenComplete { app, _ ->
+        getApplicationModule().whenCompleteAsync { app, _ ->
             if (app == null) {
                 log.warn(
                     "Cannot run resource and source generation task. No application module found.")
-                return@whenComplete
+                return@whenCompleteAsync
             }
 
-            val debug = app.variants.firstOrNull { it.name == "debug" }
+            val debug = app.simpleVariants.firstOrNull { it.name == "debug" }
             if (debug == null) {
                 log.warn("No debug variant found in application project ${app.name}")
-                return@whenComplete
+                return@whenCompleteAsync
             }
 
-            val mainArtifact = app.variants.first { it.name == "debug" }.mainArtifact
+            val mainArtifact = app.simpleVariants.first { it.name == "debug" }.mainArtifact
             val genResourcesTask = mainArtifact.resGenTaskName
             val genSourcesTask = mainArtifact.sourceGenTaskName
             builder
@@ -189,11 +189,9 @@ object ProjectManager {
                 if (project is IdeAndroidModule && project.projectPath != app.projectPath) {
                     // R.jar and maybe other JARs
                     paths.addAll(
-                        project.variants
+                        project.simpleVariants
                             .first { it.name == "debug" }
-                            .mainArtifact.classesFolders
-                            .filter { it.name.endsWith(".jar") }
-                            .map { it.toPath() })
+                            .mainArtifact.classJars.map { it.toPath() })
                 }
             }
         }
@@ -268,7 +266,7 @@ object ProjectManager {
         // build/generated/**
         // AIDL, ViewBinding, Renderscript, BuildConfig i.e every generated source sources
         sources.addAll(
-            android.variants.first { it.name == "debug" }.mainArtifact.generatedSourceFolders)
+            android.simpleVariants.first { it.name == "debug" }.mainArtifact.generatedSourceFolders)
         return sources
     }
 

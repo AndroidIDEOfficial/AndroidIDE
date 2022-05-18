@@ -42,7 +42,6 @@ import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.android.builder.model.v2.models.ProjectSyncIssues
 import com.android.builder.model.v2.models.VariantDependencies
-import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.builder.model.DefaultAndroidArtifact
 import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlags
 import com.itsaky.androidide.builder.model.DefaultAndroidLibraryData
@@ -67,6 +66,9 @@ import com.itsaky.androidide.builder.model.DefaultUnresolvedDependency
 import com.itsaky.androidide.builder.model.DefaultVariant
 import com.itsaky.androidide.builder.model.DefaultVariantDependencies
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
+import com.itsaky.androidide.tooling.api.messages.result.SimpleArtifact
+import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
+import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.utils.ILogger
 
 /**
@@ -436,4 +438,34 @@ object AndroidModulePropertyCopier {
     fun copy(issue: SyncIssue) =
         DefaultSyncIssue(
             issue.data, issue.message, issue.multiLineMessage, issue.severity, issue.type)
+
+    fun asSimpleVariants(variants: MutableCollection<Variant>): MutableList<SimpleVariantData> {
+        return mutableListOf<SimpleVariantData>().apply {
+            for (variant in variants) {
+                add(
+                    SimpleVariantData(
+                        variant.name,
+                        asSimpleArtifact("main", variant.mainArtifact),
+                        mutableMapOf()))
+            }
+        }
+    }
+
+    @Suppress("SameParameterValue") // We might need details about other artifacts in future
+    private fun asSimpleArtifact(name: String, artifact: AndroidArtifact): SimpleArtifact {
+        return SimpleArtifact(
+            name = name,
+            assembleTaskName = artifact.assembleTaskName,
+            assembleTaskOutputListingFile = artifact.assembleTaskOutputListingFile,
+            classJars = artifact.classesFolders.filter { it.name.endsWith(".jar") },
+            compileTaskName = artifact.compileTaskName,
+            generatedResourceFolders = artifact.generatedResourceFolders,
+            generatedSourceFolders = artifact.generatedSourceFolders,
+            maxSdkVersion = artifact.maxSdkVersion,
+            minSdkVersion = artifact.minSdkVersion.apiLevel,
+            resGenTaskName = artifact.resGenTaskName,
+            signingConfigName = artifact.signingConfigName,
+            sourceGenTaskName = artifact.sourceGenTaskName,
+            targetSdkVersionOverride = artifact.targetSdkVersionOverride?.apiLevel ?: -1)
+    }
 }

@@ -17,7 +17,6 @@
 
 package com.itsaky.androidide.tooling.api.messages.result
 
-import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
 
 /**
@@ -28,7 +27,4 @@ import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
  *
  * @author Akash Yadav
  */
-data class InitializeResult(
-    val project: IdeGradleProject?,
-    val syncIssues: Map<String, DefaultProjectSyncIssues>
-)
+data class InitializeResult(val syncIssues: Map<String, DefaultProjectSyncIssues>)

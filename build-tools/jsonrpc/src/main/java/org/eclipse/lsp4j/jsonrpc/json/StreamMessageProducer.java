@@ -150,7 +150,8 @@ public class StreamMessageProducer implements MessageProducer, Closeable, Messag
         bytesRead += readResult;
       }
 
-      String content = new String(buffer, headers.charset);
+      final var content = new String(buffer, headers.charset);
+
       try {
         Message message = jsonHandler.parseMessage(content);
         callback.consume(message);
