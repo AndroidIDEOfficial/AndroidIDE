@@ -22,6 +22,7 @@ import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionResult
+import com.itsaky.lsp.util.StringUtils
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.MethodTree
@@ -57,9 +58,8 @@ class KeywordCompletionProvider(
 
         val list = mutableListOf<CompletionItem>()
         for (k in keywords) {
-            val ratio: Int = fuzzySearchRatio(k, partial, settings.shouldMatchAllLowerCase())
-            if (ratio > 0) {
-                list.add(keyword(k, partial, ratio))
+            if (StringUtils.matchesPartialName(k, partial, settings.shouldMatchAllLowerCase())) {
+                list.add(keyword(k, partial, 100))
             }
         }
 
