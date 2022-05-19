@@ -167,8 +167,8 @@ object ProjectManager {
             }
 
             val server = StudioApp.getInstance().javaLanguageServer
-            val sourceDirs = collectSourceDirs(it)
             val classPaths = collectClassPaths(it)
+            val sourceDirs = collectSourceDirs(it)
             val configuration = JavaServerConfiguration(classPaths, sourceDirs)
             server.configurationChanged(configuration)
         }
@@ -191,11 +191,7 @@ object ProjectManager {
                 paths.add(value.artifact!!.toPath())
             } else {
                 val projectPath = value.projectInfo!!.projectPath
-                val module =
-                    (if (projectPath != app.projectPath)
-                        modules.firstOrNull { it.path == projectPath }
-                    else null)
-                        ?: continue
+                val module = modules.firstOrNull { it.path == projectPath } ?: continue
                 if (module.classPaths.isNotEmpty()) {
                     paths.addAll(module.classPaths.map { it.toPath() })
                 }
