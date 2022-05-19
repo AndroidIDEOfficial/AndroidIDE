@@ -56,8 +56,13 @@ public class FileStore {
     javaSources.clear();
   }
 
+  public static void configurationChanged(Set<Path> newWorkspaceRoots) {
+    javaSources.clear();
+    setWorkspaceRoots(newWorkspaceRoots);
+  }
+
   public static void setWorkspaceRoots(Set<Path> newRoots) {
-    newRoots.removeIf(it -> !Files.exists(it));
+    newRoots.removeIf(it -> !Files.exists(it) || !Files.isReadable(it));
     for (Path root : workspaceRoots) {
       if (!newRoots.contains(root)) {
         workspaceRoots.removeIf(f -> f.startsWith(root));
@@ -73,6 +78,10 @@ public class FileStore {
   }
 
   private static void addFiles(Path root) {
+    if (!Files.isReadable(root) || !Files.isWritable(root)) {
+      return;
+    }
+
     try {
       Files.walkFileTree(root, new FindJavaSources());
     } catch (IOException e) {

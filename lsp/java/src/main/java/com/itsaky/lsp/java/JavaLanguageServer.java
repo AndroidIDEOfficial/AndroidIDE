@@ -208,6 +208,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
         "source directories were provided in the configuration");
     // Compiler must be recreated on a configuration change
     this.createCompiler = true;
+
+    FileStore.configurationChanged(this.configuration.getSourceDirs());
   }
 
   @NonNull

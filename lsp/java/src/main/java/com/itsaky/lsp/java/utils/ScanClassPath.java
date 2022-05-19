@@ -83,7 +83,25 @@ public class ScanClassPath {
     return classes;
   }
 
-  @SuppressWarnings("UnstableApiUsage")
+  @Nullable
+  @Contract(" -> new")
+  public FileSystem getJRTFileSystem() throws Exception {
+    final URI uri = URI.create("jrt:/");
+    try {
+      // Tests run on the JVM, so we cannot directly access JRTFileSystemProvider
+      // But this method will work
+      return FileSystems.getFileSystem(uri);
+    } catch (Throwable th) {
+
+      // When on ART, JRT file system is not available
+      // So we create an instance of the FS manually
+      final Class<?> klass = Class.forName("jdk.internal.jrtfs.JrtFileSystemProvider");
+      final Method newFs = klass.getMethod("newFileSystem", URI.class, Map.class);
+      newFs.setAccessible(true);
+      return (FileSystem) newFs.invoke(klass.newInstance(), uri, Collections.emptyMap());
+    }
+  }
+
   public Set<String> classPathTopLevelClasses(Set<Path> classPath) {
     LOG.info(
         String.format(
@@ -109,25 +127,6 @@ public class ScanClassPath {
     LOG.info(String.format(Locale.ROOT, "Found %d classes in classpath", classes.size()));
 
     return classes;
-  }
-
-  @Nullable
-  @Contract(" -> new")
-  public FileSystem getJRTFileSystem() throws Exception {
-    final URI uri = URI.create("jrt:/");
-    try {
-      // Tests run on the JVM, so we cannot directly access JRTFileSystemProvider
-      // But this method will work
-      return FileSystems.getFileSystem(uri);
-    } catch (Throwable th) {
-
-      // When on ART, JRT file system is not available
-      // So we create an instance of the FS manually
-      final Class<?> klass = Class.forName("jdk.internal.jrtfs.JrtFileSystemProvider");
-      final Method newFs = klass.getMethod("newFileSystem", URI.class, Map.class);
-      newFs.setAccessible(true);
-      return (FileSystem) newFs.invoke(klass.newInstance(), uri, Collections.emptyMap());
-    }
   }
 
   private URL toUrl(@NonNull Path p) {

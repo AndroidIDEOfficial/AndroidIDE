@@ -146,7 +146,7 @@ class ScopeCompletionProvider(
         item.insertTextFormat = SNIPPET
         item.data = data(task, method, 1)
         if (item.additionalTextEdits == null) {
-            item.additionalTextEdits = java.util.ArrayList()
+            item.additionalTextEdits = mutableListOf()
         }
         if (imports.isNotEmpty()) {
             val fileImports: Set<String> =
