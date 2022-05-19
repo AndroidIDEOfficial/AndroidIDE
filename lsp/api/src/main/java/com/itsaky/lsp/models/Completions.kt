@@ -47,7 +47,7 @@ data class CompletionParams(var position: Position, var file: Path) {
 }
 
 open class CompletionResult(items: List<CompletionItem>) {
-    var items: List<CompletionItem> = run {
+    val items: List<CompletionItem> = run {
         var temp = items.toMutableList()
         temp.sort()
 
@@ -57,7 +57,7 @@ open class CompletionResult(items: List<CompletionItem>) {
         return@run temp
     }
 
-    val isIncomplete = this.items.size < items.size
+    var isIncomplete = this.items.size < items.size
 
     companion object {
         const val MAX_ITEMS = 50
@@ -67,6 +67,18 @@ open class CompletionResult(items: List<CompletionItem>) {
     }
 
     constructor() : this(listOf())
+
+    fun add(item: CompletionItem) {
+        if (isIncomplete) {
+            // Max limit has been reached
+            return
+        }
+
+        if (items is MutableList) {
+            this.items.add(item)
+        }
+        this.isIncomplete = this.items.size >= MAX_ITEMS
+    }
 
     override fun toString(): String {
         return android.text.TextUtils.join("\n", items)
