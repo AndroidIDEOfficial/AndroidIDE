@@ -22,6 +22,7 @@ import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionResult
+import com.itsaky.lsp.util.StringUtils
 import com.sun.source.tree.SwitchTree
 import com.sun.source.util.TreePath
 import com.sun.source.util.Trees
@@ -71,17 +72,18 @@ class SwitchConstantCompletionProvider(
         }
 
         log.info("...complete constants of type $type")
+        
         val list: MutableList<CompletionItem> = ArrayList()
         for (member in task.task.elements.getAllMembers(element)) {
             if (member.kind != ENUM_CONSTANT) {
                 continue
             }
-            val matchRatio =
-                fuzzySearchRatio(member.simpleName, partial, settings.shouldMatchAllLowerCase())
-            if (matchRatio == 0) {
+            if (!StringUtils.matchesPartialName(
+                member.simpleName, partial, settings.shouldMatchAllLowerCase())) {
                 continue
             }
-            list.add(item(task, member, partial, matchRatio))
+            
+            list.add(item(task, member, partial, 100))
         }
 
         return CompletionResult(list)
