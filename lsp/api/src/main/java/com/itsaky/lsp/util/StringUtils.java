@@ -37,11 +37,16 @@ public class StringUtils {
 
   public static boolean matchesFuzzy(
       CharSequence candidate, CharSequence partialName, boolean allLower) {
-    return fuzzySearchPartialRatio(candidate, partialName, allLower) > 0;
+    return fuzzySearchRatio(candidate, partialName, allLower) > 0;
   }
 
-  public static int fuzzySearchPartialRatio(
-      CharSequence candidate, CharSequence partialName, boolean allLower) {
+  public static int fuzzySearchRatio(
+      CharSequence candidate, CharSequence partial, boolean allLower) {
+    return fuzzySearchRatio(candidate, partial, allLower, true);
+  }
+
+  public static int fuzzySearchRatio(
+      CharSequence candidate, CharSequence partialName, boolean allLower, boolean partial) {
 
     if (candidate == null || partialName == null || candidate.length() < partialName.length()) {
       return 0;
@@ -55,7 +60,11 @@ public class StringUtils {
       second = first.toLowerCase(Locale.ROOT);
     }
 
-    return FuzzySearch.partialRatio(first, second);
+    if (partial) {
+      return FuzzySearch.partialRatio(first, second);
+    } else {
+      return FuzzySearch.ratio(first, second);
+    }
   }
 
   public static int fuzzySearchTokenSortPartialRatio(

@@ -41,7 +41,7 @@ class ImportCompletionProvider(
 
     lateinit var importPath: String
 
-    override fun complete(
+    override fun doComplete(
         task: CompileTask,
         path: TreePath,
         partial: String,

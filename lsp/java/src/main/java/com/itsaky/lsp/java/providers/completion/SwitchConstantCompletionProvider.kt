@@ -44,7 +44,7 @@ class SwitchConstantCompletionProvider(
     settings: IServerSettings,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun complete(
+    override fun doComplete(
         task: CompileTask,
         path: TreePath,
         partial: String,
@@ -72,7 +72,7 @@ class SwitchConstantCompletionProvider(
         }
 
         log.info("...complete constants of type $type")
-        
+
         val list: MutableList<CompletionItem> = ArrayList()
         for (member in task.task.elements.getAllMembers(element)) {
             if (member.kind != ENUM_CONSTANT) {
@@ -82,7 +82,7 @@ class SwitchConstantCompletionProvider(
                 member.simpleName, partial, settings.shouldMatchAllLowerCase())) {
                 continue
             }
-            
+
             list.add(item(task, member, partial, 100))
         }
 

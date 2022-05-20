@@ -49,7 +49,7 @@ class StaticImportCompletionProvider(
     val root: CompilationUnitTree,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun complete(
+    override fun doComplete(
         task: CompileTask,
         path: TreePath,
         partial: String,
@@ -82,9 +82,8 @@ class StaticImportCompletionProvider(
                     continue
                 }
 
-                val matchRatio =
-                    fuzzySearchRatio(member.simpleName, partial, settings.shouldMatchAllLowerCase())
-                if (matchRatio == 0) {
+                val matchRatio = fuzzySearchRatio(member.simpleName, partial)
+                if (!validateMatchRatio(matchRatio)) {
                     continue
                 }
 

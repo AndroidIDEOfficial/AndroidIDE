@@ -149,7 +149,7 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
                 .setImportPath(qualifiedPartialIdentifier(contents, (int) cursor));
           }
           
-          return provider.complete(task, path, partial, endsWithParen);
+          return provider.complete (task, path, partial, endsWithParen);
         });
   }
 

@@ -24,6 +24,7 @@ import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.NoType
+import javax.lang.model.type.NullType
 import javax.lang.model.type.TypeKind
 import javax.lang.model.util.Types
 
@@ -50,14 +51,18 @@ class JavaPoetUtils {
         fun print(build: MethodSpec, imports: MutableSet<String>): String {
             return print(build, imports, true)
         }
-    
+
         @JvmStatic
-        fun buildMethod(method: ExecutableElement, types: Types, type: DeclaredType): MethodSpec.Builder {
+        fun buildMethod(
+            method: ExecutableElement,
+            types: Types,
+            type: DeclaredType
+        ): MethodSpec.Builder {
             val builder = MethodSpec.overriding(method, type, types)
             val mirrors = method.annotationMirrors
             if (mirrors != null && mirrors.isNotEmpty()) {
                 for (mirror in mirrors) {
-                    if (mirror.annotationType.kind != TypeKind.NULL) {
+                    if (mirror !is NullType && mirror.annotationType.kind != TypeKind.NULL) {
                         builder.addAnnotation(AnnotationSpec.get(mirror))
                     }
                 }
@@ -78,8 +83,7 @@ class JavaPoetUtils {
             }
             return builder
         }
-    
-    
+
         /**
          * Create a superclass method invocation statement.
          *

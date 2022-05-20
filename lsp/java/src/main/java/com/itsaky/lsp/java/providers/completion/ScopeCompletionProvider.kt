@@ -21,7 +21,10 @@ import com.itsaky.lsp.api.IServerSettings
 import com.itsaky.lsp.java.FileStore
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
+import com.itsaky.lsp.java.parser.ParseTask
 import com.itsaky.lsp.java.utils.EditHelper
+import com.itsaky.lsp.java.utils.EditHelper.repeatSpaces
+import com.itsaky.lsp.java.utils.FindHelper
 import com.itsaky.lsp.java.utils.JavaPoetUtils.Companion.buildMethod
 import com.itsaky.lsp.java.utils.JavaPoetUtils.Companion.print
 import com.itsaky.lsp.java.utils.ScopeHelper
@@ -30,19 +33,23 @@ import com.itsaky.lsp.models.CompletionItem.Companion.sortTextForMatchRatio
 import com.itsaky.lsp.models.CompletionItemKind
 import com.itsaky.lsp.models.CompletionResult
 import com.itsaky.lsp.models.InsertTextFormat.SNIPPET
-import com.itsaky.lsp.util.StringUtils
+import com.squareup.javapoet.MethodSpec.Builder
 import com.sun.source.tree.ClassTree
+import com.sun.source.tree.MethodTree
 import com.sun.source.tree.Tree.Kind.CLASS
 import com.sun.source.util.TreePath
 import com.sun.source.util.Trees
 import java.nio.file.Path
+import java.util.*
 import java.util.function.*
 import javax.lang.model.element.ElementKind.METHOD
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier.FINAL
 import javax.lang.model.element.Modifier.PRIVATE
 import javax.lang.model.element.Modifier.STATIC
+import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
+import javax.tools.JavaFileObject
 
 /**
  * Provides completions using [com.sun.source.tree.Scope].
@@ -53,10 +60,10 @@ class ScopeCompletionProvider(
     completingFile: Path,
     cursor: Long,
     compiler: CompilerProvider,
-    settings: IServerSettings
+    settings: IServerSettings,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun complete(
+    override fun doComplete(
         task: CompileTask,
         path: TreePath,
         partial: String,
@@ -65,21 +72,31 @@ class ScopeCompletionProvider(
         val trees = Trees.instance(task.task)
         val list: MutableList<CompletionItem> = ArrayList()
         val scope = trees.getScope(path)
-        val filter = Predicate { name: CharSequence? ->
-            StringUtils.matchesFuzzy(name, partial, true)
-        }
+        val filter =
+            Predicate<CharSequence?> {
+                if (it == null || it.isEmpty()) {
+                    return@Predicate false
+                }
+
+                var name = it
+                if (it.contains('(')) {
+                    name = it.substring(0, it.lastIndexOf('('))
+                }
+
+                return@Predicate validateMatchRatio(fuzzySearchRatio(name, partial))
+            }
         for (member in ScopeHelper.scopeMembers(task, scope, filter)) {
-            val matchRatio =
-                fuzzySearchRatio(member.simpleName, partial, settings.shouldMatchAllLowerCase())
             if (member.kind == METHOD) {
                 val method = member as ExecutableElement
                 val parentPath = path.parentPath /*method*/.parentPath /*class*/
                 list.add(
                     overrideIfPossible(
-                        task, parentPath, method, partial, endsWithParen, matchRatio))
+                        task, parentPath, method, partial, endsWithParen, MIN_MATCH_RATIO + 1))
             } else {
-                list.add(item(task, member, partial, matchRatio))
+                list.add(item(task, member, partial, MIN_MATCH_RATIO + 1))
             }
+
+            // TODO Should we always assume that the match ratio is greater than min ratio?
         }
 
         log.info("...found " + list.size + " scope members")
@@ -129,14 +146,22 @@ class ScopeCompletionProvider(
             // Override is not possible
             return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
         }
-
+        
         // Print the method details and the annotations
-        val indent = EditHelper.indent(FileStore.contents(completingFile), this.cursor.toInt())
-        val builder = buildMethod(method, types, type)
+        // Print the method details and the annotations
+        val indent = EditHelper.indent(FileStore.contents(completingFile), cursor.toInt())
+        val builder: Builder
+        try {
+            builder = buildMethod(method, types, type)
+        } catch (error: Throwable) {
+            log.error("Cannot override method:", method.simpleName)
+            return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
+        }
         val imports = mutableSetOf<String>()
         val methodSpec = builder.build()
         var insertText = print(methodSpec, imports, false)
-        insertText = insertText.replace("\n", "\n${EditHelper.repeatSpaces(indent)}")
+        insertText = insertText.replace("\n", "\n${repeatSpaces(indent)}")
+
         val item = CompletionItem()
         item.setLabel(methodSpec.name)
         item.kind = CompletionItemKind.METHOD
@@ -148,19 +173,29 @@ class ScopeCompletionProvider(
         if (item.additionalTextEdits == null) {
             item.additionalTextEdits = mutableListOf()
         }
+        
+        imports.removeIf { "java.lang." == it || fileImports.contains(it) || filePackage == it }
         if (imports.isNotEmpty()) {
-            val fileImports: Set<String> =
-                task
-                    .root(completingFile)
-                    .imports
-                    .map { it.qualifiedIdentifier }
-                    .map { it.toString() }
-                    .toSet()
             for (className in imports) {
                 item.additionalTextEdits =
                     EditHelper.addImportIfNeeded(compiler, completingFile, fileImports, className)
             }
         }
         return item
+    }
+
+    private fun findSource(
+        compiler: CompilerProvider,
+        task: CompileTask,
+        method: ExecutableElement,
+    ): MethodTree? {
+        val superClass = method.enclosingElement as TypeElement
+        val superClassName = superClass.qualifiedName.toString()
+        val methodName = method.simpleName.toString()
+        val erasedParameterTypes = FindHelper.erasedParameterTypes(task, method)
+        val sourceFile: Optional<JavaFileObject> = compiler.findAnywhere(superClassName)
+        if (!sourceFile.isPresent) return null
+        val parse: ParseTask = compiler.parse(sourceFile.get())
+        return FindHelper.findMethod(parse, superClassName, methodName, erasedParameterTypes)
     }
 }

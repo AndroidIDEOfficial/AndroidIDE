@@ -74,7 +74,26 @@ abstract class IJavaCompletionProvider(
     protected val compiler: CompilerProvider,
     protected val settings: IServerSettings,
 ) {
-    protected val log = ILogger.newInstance(javaClass.name)
+
+    companion object {
+        const val MIN_MATCH_RATIO = 59
+    }
+
+    protected val log: ILogger = ILogger.newInstance(javaClass.name)
+    protected lateinit var filePackage: String
+    protected lateinit var fileImports: Set<String>
+
+    open fun complete(
+        task: CompileTask,
+        path: TreePath,
+        partial: String,
+        endsWithParen: Boolean
+    ): CompletionResult {
+        val root = task.root(completingFile)
+        filePackage = root.`package`.packageName.toString()
+        fileImports = root.imports.map { it.qualifiedIdentifier.toString() }.toSet()
+        return doComplete(task, path, partial, endsWithParen)
+    }
 
     /**
      * Provide completions with the given data.
@@ -86,24 +105,25 @@ abstract class IJavaCompletionProvider(
      * @param endsWithParen `true` if the statement at cursor ends with a parenthesis. `false`
      * otherwise.
      */
-    abstract fun complete(
+    protected abstract fun doComplete(
         task: CompileTask,
         path: TreePath,
         partial: String,
         endsWithParen: Boolean,
     ): CompletionResult
 
-    protected open fun fuzzySearchRatio(
-        candidate: CharSequence,
-        partial: CharSequence,
-        allLower: Boolean,
-    ): Int {
-        return if (TextUtils.isEmpty(partial)) {
+    protected open fun validateMatchRatio(ratio: Int) = ratio > MIN_MATCH_RATIO
+
+    protected open fun fuzzySearchRatio(candidate: CharSequence, partial: CharSequence): Int {
+        return if (candidate.isEmpty()) {
+            0
+        } else if (TextUtils.isEmpty(partial)) {
             // If the partial identifier is null, then the user is probably trying access members of
-            // a
-            // class.
+            // a class.
             100
-        } else StringUtils.fuzzySearchPartialRatio(candidate, partial, allLower)
+        } else {
+            StringUtils.fuzzySearchRatio(candidate, partial, settings.shouldMatchAllLowerCase())
+        }
     }
 
     protected open fun putMethod(

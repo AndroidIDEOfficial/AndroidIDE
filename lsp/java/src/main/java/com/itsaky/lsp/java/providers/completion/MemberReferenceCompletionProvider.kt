@@ -47,7 +47,7 @@ class MemberReferenceCompletionProvider(
     settings: IServerSettings,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun complete(
+    override fun doComplete(
         task: CompileTask,
         path: TreePath,
         partial: String,
@@ -116,8 +116,8 @@ class MemberReferenceCompletionProvider(
         val matchRatios: MutableMap<String, Int> = HashMap()
         for (member in task.task.elements.getAllMembers(typeElement)) {
             val matchRatio =
-                fuzzySearchRatio(member.simpleName, partialName, settings.shouldMatchAllLowerCase())
-            if (0 == matchRatio) {
+                fuzzySearchRatio(member.simpleName, partialName)
+            if (!validateMatchRatio(matchRatio)) {
                 continue
             }
 

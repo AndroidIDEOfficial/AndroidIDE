@@ -326,6 +326,7 @@ public class TypeName {
 
           @Override
           protected TypeName defaultAction(TypeMirror e, Void p) {
+            System.out.println("Une");
             throw new IllegalArgumentException("Unexpected type mirror: " + e);
           }
         },

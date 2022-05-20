@@ -43,7 +43,7 @@ class ClassNamesCompletionProvider(
     val root: CompilationUnitTree
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun complete(
+    override fun doComplete(
         task: CompileTask,
         path: TreePath,
         partial: String,
@@ -60,8 +60,8 @@ class ClassNamesCompletionProvider(
 
         for (className in compiler.packagePrivateTopLevelTypes(packageName)) {
             val matchRatio =
-                fuzzySearchRatio(className, partial, settings.shouldMatchAllLowerCase())
-            if (matchRatio == 0) {
+                fuzzySearchRatio(className, partial)
+            if (!validateMatchRatio(matchRatio)) {
                 continue
             }
 
@@ -71,8 +71,8 @@ class ClassNamesCompletionProvider(
 
         for (className in compiler.publicTopLevelTypes()) {
             val matchRatio =
-                fuzzySearchRatio(className, partial, settings.shouldMatchAllLowerCase())
-            if (matchRatio == 0) {
+                fuzzySearchRatio(className, partial)
+            if (!validateMatchRatio(matchRatio)) {
                 continue
             }
             if (uniques.contains(className)) {
@@ -91,8 +91,8 @@ class ClassNamesCompletionProvider(
             }
             val candidate = if (t.simpleName == null) "" else t.simpleName
             val matchRatio =
-                fuzzySearchRatio(candidate, partial, settings.shouldMatchAllLowerCase())
-            if (matchRatio == 0) {
+                fuzzySearchRatio(candidate, partial)
+            if (!validateMatchRatio(matchRatio)) {
                 continue
             }
             val name = packageName + "." + t.simpleName

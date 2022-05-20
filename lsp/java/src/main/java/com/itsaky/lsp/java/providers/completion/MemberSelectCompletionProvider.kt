@@ -49,7 +49,7 @@ class MemberSelectCompletionProvider(
     settings: IServerSettings,
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun complete(
+    override fun doComplete(
         task: CompileTask,
         path: TreePath,
         partial: String,
@@ -124,8 +124,8 @@ class MemberSelectCompletionProvider(
                 continue
             }
             val matchRatio =
-                fuzzySearchRatio(member.simpleName, partialName, settings.shouldMatchAllLowerCase())
-            if (matchRatio == 0) {
+                fuzzySearchRatio(member.simpleName, partialName)
+            if (!validateMatchRatio(matchRatio)) {
                 continue
             }
 

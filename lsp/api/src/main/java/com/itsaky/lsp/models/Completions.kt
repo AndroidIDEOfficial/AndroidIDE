@@ -234,14 +234,7 @@ open class CompletionItem(
     }
 
     override fun compareTo(other: CompletionItem): Int {
-        val sortByKind = this.kind.sortIndex.compareTo(other.kind.sortIndex)
-        if (sortByKind != 0) {
-            return sortByKind
-        }
-
-        val thisSortText = this.sortText ?: label
-        val thatSortText = other.sortText ?: other.label
-        return thisSortText.toString().compareTo(thatSortText.toString())
+        return CompletionItemComparator.compare(this, other)
     }
 }
 

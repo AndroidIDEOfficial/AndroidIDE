@@ -33,7 +33,7 @@ class IdentifierCompletionProvider(
     settings: IServerSettings
 ) : IJavaCompletionProvider(completingFile, cursor, compiler, settings) {
 
-    override fun complete(
+    override fun doComplete(
         task: CompileTask,
         path: TreePath,
         partial: String,
