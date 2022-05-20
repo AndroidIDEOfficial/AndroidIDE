@@ -17,9 +17,6 @@
 
 package com.itsaky.lsp.java.providers;
 
-import static com.itsaky.lsp.java.providers.completion.IJavaCompletionProvider.fuzzySearchRatio;
-import static com.itsaky.lsp.java.providers.completion.IJavaCompletionProvider.validateMatchRatio;
-
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ReflectUtils;
@@ -96,21 +93,19 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     if (this.cache != null && this.cache.canUseCache(params)) {
       final String prefix = params.requirePrefix();
       final String partial = partialIdentifier(prefix, prefix.length());
-      final CompletionResult result =
-          CompletionResult.filter(
-              this.cache.getResult(),
-              item -> validateMatchRatio(fuzzySearchRatio(item.label, partial, getSettings())));
+      final CompletionResult result = CompletionResult.filter(this.cache.getResult(), partial);
 
       result.markCached();
 
-      if (!(
-      /*result.isIncomplete() || */ result.getItems().isEmpty())) {
+      if (!result.getItems().isEmpty()) {
         LOG.info("...using cached completion");
         logCompletionDuration(started, result);
         return result;
       } else {
-        LOG.info("...cannot use cached completions");
+        LOG.info("...cached completions are empty");
       }
+    } else {
+      LOG.info("...cannot use cached completions");
     }
 
     ParseTask task = compiler.parse(file);

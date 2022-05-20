@@ -24,7 +24,6 @@ import com.itsaky.lsp.util.StringUtils
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
-import java.util.function.*
 
 data class CompletionParams(var position: Position, var file: Path) {
     var content: CharSequence? = null
@@ -68,8 +67,9 @@ open class CompletionResult(items: List<CompletionItem>) {
         var TRIM_TO_MAX = true
 
         @JvmStatic
-        fun filter(src: CompletionResult, filter: Predicate<CompletionItem>): CompletionResult {
-            val newItems = src.items.filter { filter.test(it) }
+        fun filter(src: CompletionResult, partial: String): CompletionResult {
+            val newItems = src.items.toMutableList()
+            newItems.removeIf { !it.label.startsWith(partial) }
             return CompletionResult(newItems)
         }
     }

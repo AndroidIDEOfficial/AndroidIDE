@@ -73,22 +73,27 @@ private constructor(val params: CompletionParams, val result: CompletionResult) 
 
         // The changes must be of same length
         if (deltaPrefix != deltaColumn) {
+            log.info("...unequal change in prefix and column")
             return false
         }
 
         if (position.line == -1 || position.column == -1) {
+            log.info("...invalid cached completion position")
             return false
         }
 
         if (position.line != params.position.line || position.column > params.position.column) {
+            log.info("...cursor line changed")
             return false
         }
 
         if (!Files.isSameFile(file, params.file)) {
+            log.info("...no cache available for current file")
             return false
         }
 
         if (!partial.startsWith(prefix) || partial.endsWith(".")) {
+            log.info("...incompatible partial identifier")
             return false
         }
 
