@@ -58,6 +58,7 @@ public class FileStore {
 
   public static void configurationChanged(Set<Path> newWorkspaceRoots) {
     javaSources.clear();
+    workspaceRoots.clear();
     setWorkspaceRoots(newWorkspaceRoots);
   }
 

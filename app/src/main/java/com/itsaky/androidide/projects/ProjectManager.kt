@@ -202,11 +202,10 @@ object ProjectManager {
     }
 
     private fun collectSourceDirs(app: IdeAndroidModule): Set<Path> {
-        val sources = app.mainSourceSet ?: return emptySet()
-        val javaDirs = sources.sourceProvider.javaDirectories
-        val sourcePaths = javaDirs.toMutableSet()
+        val sourcePaths = mutableSetOf<File>()
         val projectSources = collectSourceDirs(collectProjectDependencies(rootProject!!, app))
         sourcePaths.addAll(projectSources)
+        sourcePaths.addAll(collectSources(app))
         return sourcePaths.map { it.toPath() }.toSet()
     }
 
@@ -266,8 +265,10 @@ object ProjectManager {
 
         // build/generated/**
         // AIDL, ViewBinding, Renderscript, BuildConfig i.e every generated source sources
-        sources.addAll(
-            android.simpleVariants.first { it.name == "debug" }.mainArtifact.generatedSourceFolders)
+        val debugVariant = android.simpleVariants.firstOrNull { it.name == "debug" }
+        if (debugVariant != null) {
+            sources.addAll(debugVariant.mainArtifact.generatedSourceFolders)
+        }
         return sources
     }
 
