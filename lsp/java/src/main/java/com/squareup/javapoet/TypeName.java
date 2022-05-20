@@ -87,12 +87,9 @@ public class TypeName {
   private static final ClassName BOXED_CHAR = ClassName.get("java.lang", "Character");
   private static final ClassName BOXED_FLOAT = ClassName.get("java.lang", "Float");
   private static final ClassName BOXED_DOUBLE = ClassName.get("java.lang", "Double");
-
+  public final List<AnnotationSpec> annotations;
   /** The name of this type if it is a keyword, or null. */
   private final String keyword;
-
-  public final List<AnnotationSpec> annotations;
-
   /** Lazily-initialized toString of this type name. */
   private String cachedString;
 
@@ -110,147 +107,25 @@ public class TypeName {
     this(null, annotations);
   }
 
-  public final TypeName annotated(AnnotationSpec... annotations) {
-    return annotated(Arrays.asList(annotations));
-  }
-
-  public TypeName annotated(List<AnnotationSpec> annotations) {
-    Util.checkNotNull(annotations, "annotations == null");
-    return new TypeName(keyword, concatAnnotations(annotations));
-  }
-
-  public TypeName withoutAnnotations() {
-    return new TypeName(keyword);
-  }
-
-  protected final List<AnnotationSpec> concatAnnotations(List<AnnotationSpec> annotations) {
-    List<AnnotationSpec> allAnnotations = new ArrayList<>(this.annotations);
-    allAnnotations.addAll(annotations);
-    return allAnnotations;
-  }
-
-  public boolean isAnnotated() {
-    return !annotations.isEmpty();
-  }
-
-  /**
-   * Returns true if this is a primitive type like {@code int}. Returns false for all other types
-   * types including boxed primitives and {@code void}.
-   */
-  public boolean isPrimitive() {
-    return keyword != null && this != VOID;
-  }
-
-  /**
-   * Returns true if this is a boxed primitive type like {@code Integer}. Returns false for all
-   * other types types including unboxed primitives and {@code java.lang.Void}.
-   */
-  public boolean isBoxedPrimitive() {
-    return this.equals(BOXED_BOOLEAN)
-        || this.equals(BOXED_BYTE)
-        || this.equals(BOXED_SHORT)
-        || this.equals(BOXED_INT)
-        || this.equals(BOXED_LONG)
-        || this.equals(BOXED_CHAR)
-        || this.equals(BOXED_FLOAT)
-        || this.equals(BOXED_DOUBLE);
-  }
-
-  /**
-   * Returns a boxed type if this is a primitive type (like {@code Integer} for {@code int}) or
-   * {@code void}. Returns this type if boxing doesn't apply.
-   */
-  public TypeName box() {
-    if (keyword == null) return this; // Doesn't need boxing.
-    if (this == VOID) return BOXED_VOID;
-    if (this == BOOLEAN) return BOXED_BOOLEAN;
-    if (this == BYTE) return BOXED_BYTE;
-    if (this == SHORT) return BOXED_SHORT;
-    if (this == INT) return BOXED_INT;
-    if (this == LONG) return BOXED_LONG;
-    if (this == CHAR) return BOXED_CHAR;
-    if (this == FLOAT) return BOXED_FLOAT;
-    if (this == DOUBLE) return BOXED_DOUBLE;
-    throw new AssertionError(keyword);
-  }
-
-  /**
-   * Returns an unboxed type if this is a boxed primitive type (like {@code int} for {@code
-   * Integer}) or {@code Void}. Returns this type if it is already unboxed.
-   *
-   * @throws UnsupportedOperationException if this type isn't eligible for unboxing.
-   */
-  public TypeName unbox() {
-    if (keyword != null) return this; // Already unboxed.
-    if (this.equals(BOXED_VOID)) return VOID;
-    if (this.equals(BOXED_BOOLEAN)) return BOOLEAN;
-    if (this.equals(BOXED_BYTE)) return BYTE;
-    if (this.equals(BOXED_SHORT)) return SHORT;
-    if (this.equals(BOXED_INT)) return INT;
-    if (this.equals(BOXED_LONG)) return LONG;
-    if (this.equals(BOXED_CHAR)) return CHAR;
-    if (this.equals(BOXED_FLOAT)) return FLOAT;
-    if (this.equals(BOXED_DOUBLE)) return DOUBLE;
-    throw new UnsupportedOperationException("cannot unbox " + this);
-  }
-
-  @Override
-  public final boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null) return false;
-    if (getClass() != o.getClass()) return false;
-    return toString().equals(o.toString());
-  }
-
-  @Override
-  public final int hashCode() {
-    return toString().hashCode();
-  }
-
-  @Override
-  public final String toString() {
-    String result = cachedString;
-    if (result == null) {
-      try {
-        StringBuilder resultBuilder = new StringBuilder();
-        CodeWriter codeWriter = new CodeWriter(resultBuilder);
-        emit(codeWriter);
-        result = resultBuilder.toString();
-        cachedString = result;
-      } catch (IOException e) {
-        throw new AssertionError();
-      }
-    }
-    return result;
-  }
-
-  CodeWriter emit(CodeWriter out) throws IOException {
-    if (keyword == null) throw new AssertionError();
-
-    if (isAnnotated()) {
-      out.emit("");
-      emitAnnotations(out);
-    }
-    return out.emitAndIndent(keyword);
-  }
-
-  CodeWriter emitAnnotations(CodeWriter out) throws IOException {
-    for (AnnotationSpec annotation : annotations) {
-      annotation.emit(out, true);
-      out.emit(" ");
-    }
-    return out;
-  }
-
   /** Returns a type name equivalent to {@code mirror}. */
   public static TypeName get(TypeMirror mirror) {
     return get(mirror, new LinkedHashMap<>());
+  }
+
+  /** Returns a type name equivalent to {@code type}. */
+  public static TypeName get(Type type) {
+    return get(type, new LinkedHashMap<>());
   }
 
   static TypeName get(
       TypeMirror mirror, final Map<TypeParameterElement, TypeVariableName> typeVariables) {
     return mirror.accept(
         new SimpleTypeVisitor8<TypeName, Void>() {
+          @Override
+          protected TypeName defaultAction(TypeMirror e, Void p) {
+            throw new IllegalArgumentException("Unexpected type mirror: " + e);
+          }
+
           @Override
           public TypeName visitPrimitive(PrimitiveType t, Void p) {
             switch (t.getKind()) {
@@ -273,6 +148,11 @@ public class TypeName {
               default:
                 throw new AssertionError();
             }
+          }
+
+          @Override
+          public ArrayTypeName visitArray(ArrayType t, Void p) {
+            return ArrayTypeName.get(t, typeVariables);
           }
 
           @Override
@@ -304,11 +184,6 @@ public class TypeName {
           }
 
           @Override
-          public ArrayTypeName visitArray(ArrayType t, Void p) {
-            return ArrayTypeName.get(t, typeVariables);
-          }
-
-          @Override
           public TypeName visitTypeVariable(javax.lang.model.type.TypeVariable t, Void p) {
             return TypeVariableName.get(t, typeVariables);
           }
@@ -323,19 +198,8 @@ public class TypeName {
             if (t.getKind() == TypeKind.VOID) return TypeName.VOID;
             return super.visitUnknown(t, p);
           }
-
-          @Override
-          protected TypeName defaultAction(TypeMirror e, Void p) {
-            System.out.println("Une");
-            throw new IllegalArgumentException("Unexpected type mirror: " + e);
-          }
         },
         null);
-  }
-
-  /** Returns a type name equivalent to {@code type}. */
-  public static TypeName get(Type type) {
-    return get(type, new LinkedHashMap<>());
   }
 
   static TypeName get(Type type, Map<Type, TypeVariableName> map) {
@@ -391,5 +255,137 @@ public class TypeName {
   /** Returns {@code type} as an array, or null if {@code type} is not an array. */
   static ArrayTypeName asArray(TypeName type) {
     return type instanceof ArrayTypeName ? ((ArrayTypeName) type) : null;
+  }
+
+  public final TypeName annotated(AnnotationSpec... annotations) {
+    return annotated(Arrays.asList(annotations));
+  }
+
+  public TypeName annotated(List<AnnotationSpec> annotations) {
+    Util.checkNotNull(annotations, "annotations == null");
+    return new TypeName(keyword, concatAnnotations(annotations));
+  }
+
+  protected final List<AnnotationSpec> concatAnnotations(List<AnnotationSpec> annotations) {
+    List<AnnotationSpec> allAnnotations = new ArrayList<>(this.annotations);
+    allAnnotations.addAll(annotations);
+    return allAnnotations;
+  }
+
+  public TypeName withoutAnnotations() {
+    return new TypeName(keyword);
+  }
+
+  /**
+   * Returns true if this is a primitive type like {@code int}. Returns false for all other types
+   * types including boxed primitives and {@code void}.
+   */
+  public boolean isPrimitive() {
+    return keyword != null && this != VOID;
+  }
+
+  /**
+   * Returns true if this is a boxed primitive type like {@code Integer}. Returns false for all
+   * other types types including unboxed primitives and {@code java.lang.Void}.
+   */
+  public boolean isBoxedPrimitive() {
+    return this.equals(BOXED_BOOLEAN)
+        || this.equals(BOXED_BYTE)
+        || this.equals(BOXED_SHORT)
+        || this.equals(BOXED_INT)
+        || this.equals(BOXED_LONG)
+        || this.equals(BOXED_CHAR)
+        || this.equals(BOXED_FLOAT)
+        || this.equals(BOXED_DOUBLE);
+  }
+
+  CodeWriter emit(CodeWriter out) throws IOException {
+    if (keyword == null) throw new AssertionError();
+
+    if (isAnnotated()) {
+      out.emit("");
+      emitAnnotations(out);
+    }
+    return out.emitAndIndent(keyword);
+  }
+
+  public boolean isAnnotated() {
+    return !annotations.isEmpty();
+  }
+
+  CodeWriter emitAnnotations(CodeWriter out) throws IOException {
+    for (AnnotationSpec annotation : annotations) {
+      annotation.emit(out, true);
+      out.emit(" ");
+    }
+    return out;
+  }
+
+  /**
+   * Returns a boxed type if this is a primitive type (like {@code Integer} for {@code int}) or
+   * {@code void}. Returns this type if boxing doesn't apply.
+   */
+  public TypeName box() {
+    if (keyword == null) return this; // Doesn't need boxing.
+    if (this == VOID) return BOXED_VOID;
+    if (this == BOOLEAN) return BOXED_BOOLEAN;
+    if (this == BYTE) return BOXED_BYTE;
+    if (this == SHORT) return BOXED_SHORT;
+    if (this == INT) return BOXED_INT;
+    if (this == LONG) return BOXED_LONG;
+    if (this == CHAR) return BOXED_CHAR;
+    if (this == FLOAT) return BOXED_FLOAT;
+    if (this == DOUBLE) return BOXED_DOUBLE;
+    throw new AssertionError(keyword);
+  }
+
+  /**
+   * Returns an unboxed type if this is a boxed primitive type (like {@code int} for {@code
+   * Integer}) or {@code Void}. Returns this type if it is already unboxed.
+   *
+   * @throws UnsupportedOperationException if this type isn't eligible for unboxing.
+   */
+  public TypeName unbox() {
+    if (keyword != null) return this; // Already unboxed.
+    if (this.equals(BOXED_VOID)) return VOID;
+    if (this.equals(BOXED_BOOLEAN)) return BOOLEAN;
+    if (this.equals(BOXED_BYTE)) return BYTE;
+    if (this.equals(BOXED_SHORT)) return SHORT;
+    if (this.equals(BOXED_INT)) return INT;
+    if (this.equals(BOXED_LONG)) return LONG;
+    if (this.equals(BOXED_CHAR)) return CHAR;
+    if (this.equals(BOXED_FLOAT)) return FLOAT;
+    if (this.equals(BOXED_DOUBLE)) return DOUBLE;
+    throw new UnsupportedOperationException("cannot unbox " + this);
+  }
+
+  @Override
+  public final int hashCode() {
+    return toString().hashCode();
+  }
+
+  @Override
+  public final boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null) return false;
+    if (getClass() != o.getClass()) return false;
+    return toString().equals(o.toString());
+  }
+
+  @Override
+  public final String toString() {
+    String result = cachedString;
+    if (result == null) {
+      try {
+        StringBuilder resultBuilder = new StringBuilder();
+        CodeWriter codeWriter = new CodeWriter(resultBuilder);
+        emit(codeWriter);
+        result = resultBuilder.toString();
+        cachedString = result;
+      } catch (IOException e) {
+        throw new AssertionError();
+      }
+    }
+    return result;
   }
 }
