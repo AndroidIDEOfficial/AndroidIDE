@@ -24,6 +24,7 @@ import com.itsaky.lsp.util.StringUtils
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
+import java.util.function.*
 
 data class CompletionParams(var position: Position, var file: Path) {
     var content: CharSequence? = null
@@ -58,12 +59,19 @@ open class CompletionResult(items: List<CompletionItem>) {
     }
 
     var isIncomplete = this.items.size < items.size
+    var isCached = false
 
     companion object {
         const val MAX_ITEMS = 50
         @JvmField val EMPTY = CompletionResult(listOf())
 
         var TRIM_TO_MAX = true
+
+        @JvmStatic
+        fun filter(src: CompletionResult, filter: Predicate<CompletionItem>): CompletionResult {
+            val newItems = src.items.filter { filter.test(it) }
+            return CompletionResult(newItems)
+        }
     }
 
     constructor() : this(listOf())
@@ -78,6 +86,10 @@ open class CompletionResult(items: List<CompletionItem>) {
             this.items.add(item)
         }
         this.isIncomplete = this.items.size >= MAX_ITEMS
+    }
+
+    fun markCached() {
+        this.isCached = true
     }
 
     override fun toString(): String {

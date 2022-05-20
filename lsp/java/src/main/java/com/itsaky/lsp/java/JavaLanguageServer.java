@@ -27,6 +27,7 @@ import com.itsaky.lsp.api.IDocumentHandler;
 import com.itsaky.lsp.api.ILanguageClient;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.api.IServerSettings;
+import com.itsaky.lsp.internal.model.CachedCompletion;
 import com.itsaky.lsp.java.actions.JavaCodeActionsMenu;
 import com.itsaky.lsp.java.compiler.JavaCompilerService;
 import com.itsaky.lsp.java.models.JavaServerConfiguration;
@@ -62,6 +63,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
@@ -72,6 +74,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   private IServerSettings settings;
   private JavaCompilerService compiler;
   private JavaServerConfiguration configuration;
+  private CachedCompletion cachedCompletion;
   private boolean initialized;
   private boolean createCompiler;
   private ServerCapabilities capabilities;
@@ -82,6 +85,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     this.createCompiler = true;
     this.configuration = new JavaServerConfiguration();
     this.analyzeTimer = new AnalyzeTimer(this::analyzeSelected);
+    this.cachedCompletion = CachedCompletion.EMPTY;
 
     applySettings(getSettings());
   }
@@ -219,7 +223,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
       return new NoCompletionsProvider();
     }
 
-    return new CompletionProvider(getCompiler(), this.settings);
+    return new CompletionProvider(
+        getCompiler(), this.settings, this.cachedCompletion, this::updateCachedCompletion);
   }
 
   @NonNull
@@ -282,6 +287,11 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   @Override
   public IDocumentHandler getDocumentHandler() {
     return this;
+  }
+
+  private void updateCachedCompletion(CachedCompletion cachedCompletion) {
+    Objects.requireNonNull(cachedCompletion);
+    this.cachedCompletion = cachedCompletion;
   }
 
   @Override

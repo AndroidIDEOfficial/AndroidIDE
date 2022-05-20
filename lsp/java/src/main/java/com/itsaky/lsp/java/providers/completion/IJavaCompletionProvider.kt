@@ -77,6 +77,26 @@ abstract class IJavaCompletionProvider(
 
     companion object {
         const val MIN_MATCH_RATIO = 59
+
+        @JvmStatic fun validateMatchRatio(ratio: Int) = ratio > MIN_MATCH_RATIO
+
+        @JvmStatic
+        fun fuzzySearchRatio(
+            candidate: CharSequence,
+            partial: CharSequence,
+            settings: IServerSettings
+        ): Int {
+            return if (candidate.isEmpty()) {
+                0
+            } else if (TextUtils.isEmpty(partial)) {
+                // If the partial identifier is null, then the user is probably trying access
+                // members of
+                // a class.
+                100
+            } else {
+                StringUtils.fuzzySearchRatio(candidate, partial, settings.shouldMatchAllLowerCase())
+            }
+        }
     }
 
     protected val log: ILogger = ILogger.newInstance(javaClass.name)
@@ -112,18 +132,8 @@ abstract class IJavaCompletionProvider(
         endsWithParen: Boolean,
     ): CompletionResult
 
-    protected open fun validateMatchRatio(ratio: Int) = ratio > MIN_MATCH_RATIO
-
-    protected open fun fuzzySearchRatio(candidate: CharSequence, partial: CharSequence): Int {
-        return if (candidate.isEmpty()) {
-            0
-        } else if (TextUtils.isEmpty(partial)) {
-            // If the partial identifier is null, then the user is probably trying access members of
-            // a class.
-            100
-        } else {
-            StringUtils.fuzzySearchRatio(candidate, partial, settings.shouldMatchAllLowerCase())
-        }
+    protected open fun fuzzySearchRatio(candidate: CharSequence, partial: String): Int {
+        return fuzzySearchRatio(candidate, partial, settings)
     }
 
     protected open fun putMethod(

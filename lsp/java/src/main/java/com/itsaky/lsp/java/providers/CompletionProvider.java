@@ -17,6 +17,9 @@
 
 package com.itsaky.lsp.java.providers;
 
+import static com.itsaky.lsp.java.providers.completion.IJavaCompletionProvider.fuzzySearchRatio;
+import static com.itsaky.lsp.java.providers.completion.IJavaCompletionProvider.validateMatchRatio;
+
 import androidx.annotation.NonNull;
 
 import com.blankj.utilcode.util.ReflectUtils;
@@ -24,6 +27,7 @@ import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.lsp.api.AbstractServiceProvider;
 import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.IServerSettings;
+import com.itsaky.lsp.internal.model.CachedCompletion;
 import com.itsaky.lsp.java.compiler.CompilerProvider;
 import com.itsaky.lsp.java.compiler.SourceFileObject;
 import com.itsaky.lsp.java.compiler.SynchronizedTask;
@@ -46,20 +50,28 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 public class CompletionProvider extends AbstractServiceProvider implements ICompletionProvider {
 
   public static final int MAX_COMPLETION_ITEMS = CompletionResult.MAX_ITEMS;
   private static final ILogger LOG = ILogger.newInstance("JavaCompletionProvider");
   private final CompilerProvider compiler;
+  private final CachedCompletion cache;
+  private final Consumer<CachedCompletion> nextCacheConsumer;
 
-  public CompletionProvider(CompilerProvider compiler, IServerSettings settings) {
+  public CompletionProvider(
+      CompilerProvider compiler,
+      IServerSettings settings,
+      CachedCompletion cache,
+      Consumer<CachedCompletion> nextCacheConsumer) {
     super();
     super.applySettings(settings);
 
     this.compiler = compiler;
+    this.cache = cache;
+    this.nextCacheConsumer = nextCacheConsumer;
   }
 
   @Override
@@ -70,11 +82,9 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   @NonNull
   @Override
   public CompletionResult complete(@NonNull CompletionParams params) {
-    return complete(
-        params.getFile(), params.getPosition().getLine(), params.getPosition().getColumn());
-  }
-
-  public CompletionResult complete(@NonNull Path file, int line, int column) {
+    Path file = params.getFile();
+    int line = params.getPosition().getLine();
+    int column = params.getPosition().getColumn();
     LOG.info("Complete at " + file.getFileName() + "(" + line + "," + column + ")...");
 
     // javac expects 1-based line and column indexes
@@ -82,6 +92,27 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     column++;
 
     Instant started = Instant.now();
+
+    if (this.cache != null && this.cache.canUseCache(params)) {
+      final String prefix = params.requirePrefix();
+      final String partial = partialIdentifier(prefix, prefix.length());
+      final CompletionResult result =
+          CompletionResult.filter(
+              this.cache.getResult(),
+              item -> validateMatchRatio(fuzzySearchRatio(item.label, partial, getSettings())));
+
+      result.markCached();
+
+      if (!(
+      /*result.isIncomplete() || */ result.getItems().isEmpty())) {
+        LOG.info("...using cached completion");
+        logCompletionDuration(started, result);
+        return result;
+      } else {
+        LOG.info("...cannot use cached completions");
+      }
+    }
+
     ParseTask task = compiler.parse(file);
 
     long cursor = task.root.getLineMap().getPosition(line, column);
@@ -95,8 +126,34 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     }
 
     new TopLevelSnippetsProvider().complete(task, result);
-    logCompletionTiming(started, result.getItems(), result.isIncomplete());
+    logCompletionDuration(started, result);
+
+    if (this.nextCacheConsumer != null) {
+      this.nextCacheConsumer.accept(CachedCompletion.cache(params, result));
+    }
+
     return result;
+  }
+
+  @NonNull
+  private String partialIdentifier(String contents, int end) {
+    int start = end;
+    while (start > 0 && Character.isJavaIdentifierPart(contents.charAt(start - 1))) {
+      start--;
+    }
+    return contents.substring(start, end);
+  }
+
+  private void logCompletionDuration(Instant started, @NonNull CompletionResult result) {
+    long elapsedMs = Duration.between(started, Instant.now()).toMillis();
+    LOG.info(
+        String.format(
+            Locale.US,
+            "Found %d items%s%sin %,d ms",
+            result.getItems().size(),
+            result.isIncomplete() ? " (incomplete) " : "",
+            result.isCached() ? " (cached) " : " ",
+            elapsedMs));
   }
 
   private int endOfLine(@NonNull CharSequence contents, int cursor) {
@@ -148,18 +205,9 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
             ((ImportCompletionProvider) provider)
                 .setImportPath(qualifiedPartialIdentifier(contents, (int) cursor));
           }
-          
-          return provider.complete (task, path, partial, endsWithParen);
-        });
-  }
 
-  @NonNull
-  private String partialIdentifier(String contents, int end) {
-    int start = end;
-    while (start > 0 && Character.isJavaIdentifierPart(contents.charAt(start - 1))) {
-      start--;
-    }
-    return contents.substring(start, end);
+          return provider.complete(task, path, partial, endsWithParen);
+        });
   }
 
   private boolean endsWithParen(@NonNull String contents, int cursor) {
@@ -182,21 +230,5 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
 
   private boolean isQualifiedIdentifierChar(char c) {
     return c == '.' || Character.isJavaIdentifierPart(c);
-  }
-  
-  private void logCompletionTiming(Instant started, List<?> list, boolean isIncomplete) {
-    long elapsedMs = Duration.between(started, Instant.now()).toMillis();
-    if (isIncomplete) {
-      LOG.info(
-              String.format(
-                      Locale.getDefault(),
-                      "Found %d items (incomplete) in %,d ms",
-                      list.size(),
-                      elapsedMs));
-    } else {
-      LOG.info(
-              String.format(
-                      Locale.getDefault(), "...found %d items in %,d ms", list.size(), elapsedMs));
-    }
   }
 }
