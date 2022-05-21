@@ -36,6 +36,7 @@ android {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion
     }
+    namespace 'com.itsaky.api'
 }
 
 dependencies {
