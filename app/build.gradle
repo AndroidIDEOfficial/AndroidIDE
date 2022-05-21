@@ -81,7 +81,6 @@ android {
         abortOnError false
         disable 'VectorPath', 'NestedWeights', 'ContentDescription', 'SmallSp'
     }
-    namespace 'com.itsaky.androidide'
 }
 
 dependencies {

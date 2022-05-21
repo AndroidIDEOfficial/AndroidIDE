@@ -19,7 +19,6 @@ android {
             minifyEnabled true
         }
     }
-    namespace 'com.itsaky.androidide.lexers'
 }
 
 dependencies {

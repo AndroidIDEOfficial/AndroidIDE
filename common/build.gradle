@@ -22,7 +22,6 @@ android {
             minifyEnabled true
         }
     }
-    namespace 'com.itsaky.androidide.common'
 }
 
 dependencies {

@@ -19,7 +19,6 @@ android {
             minifyEnabled false
         }
     }
-    namespace 'com.unnamed.b.atv'
 }
 
 dependencies {

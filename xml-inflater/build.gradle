@@ -20,7 +20,6 @@ android {
             minifyEnabled true
         }
     }
-    namespace 'com.itsaky.inflater'
 }
 
 dependencies {

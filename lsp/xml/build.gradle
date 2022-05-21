@@ -46,7 +46,6 @@ android {
             includeAndroidResources = true
         }
     }
-    namespace 'com.itsaky.lsp.xml'
 }
 
 dependencies {
