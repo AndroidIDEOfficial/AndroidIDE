@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.models;
 
+import androidx.annotation.NonNull;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Objects;
@@ -59,6 +61,7 @@ public class JavaServerConfiguration {
     return Objects.equals(getClassPaths(), that.getClassPaths());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "JavaServerConfiguration{" + "classPaths=" + classPaths + '}';

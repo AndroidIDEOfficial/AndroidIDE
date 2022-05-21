@@ -146,7 +146,7 @@ class ScopeCompletionProvider(
             // Override is not possible
             return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
         }
-        
+
         // Print the method details and the annotations
         // Print the method details and the annotations
         val indent = EditHelper.indent(FileStore.contents(completingFile), cursor.toInt())
@@ -154,9 +154,10 @@ class ScopeCompletionProvider(
         try {
             builder = buildMethod(method, types, type)
         } catch (error: Throwable) {
-            log.error("Cannot override method:", method.simpleName)
+            log.error("Cannot override method:", method.simpleName, error.message)
             return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
         }
+
         val imports = mutableSetOf<String>()
         val methodSpec = builder.build()
         var insertText = print(methodSpec, imports, false)
@@ -173,7 +174,7 @@ class ScopeCompletionProvider(
         if (item.additionalTextEdits == null) {
             item.additionalTextEdits = mutableListOf()
         }
-        
+
         imports.removeIf { "java.lang." == it || fileImports.contains(it) || filePackage == it }
         if (imports.isNotEmpty()) {
             for (className in imports) {
