@@ -125,6 +125,10 @@ open class IdeGradleProject(
     }
 
     override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> {
+        if (this is IdeAndroidModule) {
+            return CompletableFuture.completedFuture(this)
+        }
+        
         return findAndroidModules().thenApply { modules ->
             val application =
                 modules.stream().filter { it != null && it.projectType == APPLICATION }.findFirst()

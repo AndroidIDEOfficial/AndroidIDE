@@ -136,6 +136,14 @@ public class ProjectReader {
       BuildController controller,
       IdeaModule ideaModule,
       Map<String, DefaultProjectSyncIssues> outIssues) {
+    return buildModuleProject(controller, ideaModule, outIssues, false);
+  }
+
+  private static IdeGradleProject buildModuleProject(
+      BuildController controller,
+      IdeaModule ideaModule,
+      Map<String, DefaultProjectSyncIssues> outIssues,
+      boolean androidOnly) {
 
     final var gradle = ideaModule.getGradleProject();
 
@@ -160,6 +168,12 @@ public class ProjectReader {
       outIssues.put(gradle.getPath(), info.getSyncIssues());
       return info.getProject();
     } catch (Throwable error) {
+
+      if (androidOnly) {
+        System.out.println(error.getMessage());
+        return null;
+      }
+
       try {
         System.err.println("Building IdeGradleProject model for project: " + gradle.getPath());
         if (!(error instanceof UnknownModelException)) {
@@ -198,8 +212,7 @@ public class ProjectReader {
 
     System.err.println("Fetching project model...");
     final var android = controller.findModel(gradle, AndroidProject.class);
-    final var module =
-        ProjectReader.buildAndroidModuleProject(gradle, android, basicAndroid.getProjectType());
+    final var module = buildAndroidModuleProject(gradle, android, basicAndroid.getProjectType());
     module.setBoothclasspaths(basicAndroid.getBootClasspath());
     module.setMainSourceSet(
         basicAndroid.getMainSourceSet() == null
@@ -309,29 +322,38 @@ public class ProjectReader {
       IdeaProject ideaProject,
       BuildController controller,
       Map<String, DefaultProjectSyncIssues> outIssues) {
-    final var hasGradle =
+    final var rootModule =
         ideaProject.getModules().stream()
-            .map(IdeaModule::getGradleProject)
-            .filter(it -> it.getPath().equals(":"))
+            .filter(it -> it.getGradleProject().getPath().equals(":"))
             .findAny();
 
-    if (hasGradle.isEmpty()) {
+    if (rootModule.isEmpty()) {
       throw new IllegalArgumentException(
           "No GradleProject model is associated with project path: " + ":");
     }
 
-    final var gradle = hasGradle.get();
-    final var builder = new ProjectBuilder();
-    builder.setName(gradle.getName());
-    builder.setDescription(gradle.getDescription());
-    builder.setPath(gradle.getPath());
-    builder.setProjectDir(gradle.getProjectDirectory());
-    builder.setBuildDir(gradle.getBuildDirectory());
-    builder.setBuildScript(gradle.getBuildScript().getSourceFile());
+    IdeGradleProject project = buildModuleProject(controller, rootModule.get(), outIssues, true);
+    final var gradle = rootModule.get().getGradleProject();
+    if (project == null) {
+      final var builder = new ProjectBuilder();
+      builder.setName(gradle.getName());
+      builder.setDescription(gradle.getDescription());
+      builder.setPath(gradle.getPath());
+      builder.setProjectDir(gradle.getProjectDirectory());
+      builder.setBuildDir(gradle.getBuildDirectory());
+      builder.setBuildScript(gradle.getBuildScript().getSourceFile());
 
-    final var project = builder.buildGradleProject();
+      project = builder.buildGradleProject();
+
+      // If the root project is an Android project
+      // Then the tasks have already been added into the project
+      // So we only add them here if we create a Gradle project model
+      addTasks(gradle, project);
+    } else {
+      System.out.println("Root project is an Android project...");
+    }
+
     addModules(ideaProject, project, controller, outIssues);
-    addTasks(gradle, project);
 
     return project;
   }
