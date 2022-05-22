@@ -22,7 +22,7 @@ import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionResult
-import com.itsaky.lsp.util.StringUtils
+import com.itsaky.lsp.models.MatchLevel.NO_MATCH
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.MethodTree
@@ -58,9 +58,12 @@ class KeywordCompletionProvider(
 
         val list = mutableListOf<CompletionItem>()
         for (k in keywords) {
-            if (StringUtils.matchesPartialName(k, partial, settings.shouldMatchAllLowerCase())) {
-                list.add(keyword(k, partial, 100))
+            val matchLevel = matchLevel(k, partial)
+            if (matchLevel == NO_MATCH) {
+                continue
             }
+
+            list.add(keyword(k, partial, 100))
         }
 
         return CompletionResult(list)

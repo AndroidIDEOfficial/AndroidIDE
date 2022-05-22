@@ -23,6 +23,7 @@ import com.itsaky.lsp.java.compiler.CompilerProvider
 import com.itsaky.lsp.java.providers.CompletionProvider
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionResult
+import com.itsaky.lsp.models.MatchLevel.NO_MATCH
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.util.TreePath
@@ -59,29 +60,28 @@ class ClassNamesCompletionProvider(
             root.imports.map { it.qualifiedIdentifier }.mapNotNull { it.toString() }.toSet()
 
         for (className in compiler.packagePrivateTopLevelTypes(packageName)) {
-            val matchRatio =
-                fuzzySearchRatio(className, partial)
-            if (!validateMatchRatio(matchRatio)) {
+            val matchLevel = matchLevel(className, partial)
+            if (matchLevel == NO_MATCH) {
                 continue
             }
 
-            list.add(classItem(imports, file, className, partial, matchRatio))
+            list.add(classItem(imports, file, className, partial, matchLevel))
             uniques.add(className)
         }
 
         for (className in compiler.publicTopLevelTypes()) {
-            val matchRatio =
-                fuzzySearchRatio(className, partial)
-            if (!validateMatchRatio(matchRatio)) {
+            val matchLevel = matchLevel(className, partial)
+            if (matchLevel == NO_MATCH) {
                 continue
             }
+
             if (uniques.contains(className)) {
                 continue
             }
             if (list.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
                 break
             }
-            list.add(classItem(imports, file, className, partial, matchRatio))
+            list.add(classItem(imports, file, className, partial, matchLevel))
             uniques.add(className)
         }
 
@@ -90,13 +90,14 @@ class ClassNamesCompletionProvider(
                 continue
             }
             val candidate = if (t.simpleName == null) "" else t.simpleName
-            val matchRatio =
-                fuzzySearchRatio(candidate, partial)
-            if (!validateMatchRatio(matchRatio)) {
+
+            val matchLevel = matchLevel(candidate, partial)
+            if (matchLevel == NO_MATCH) {
                 continue
             }
+
             val name = packageName + "." + t.simpleName
-            list.add(classItem(name, partial, matchRatio))
+            list.add(classItem(name, partial, matchLevel))
 
             if (list.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
                 break

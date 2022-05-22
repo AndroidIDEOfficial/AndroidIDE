@@ -22,7 +22,7 @@ import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionResult
-import com.itsaky.lsp.util.StringUtils
+import com.itsaky.lsp.models.MatchLevel.NO_MATCH
 import com.sun.source.tree.SwitchTree
 import com.sun.source.util.TreePath
 import com.sun.source.util.Trees
@@ -78,12 +78,13 @@ class SwitchConstantCompletionProvider(
             if (member.kind != ENUM_CONSTANT) {
                 continue
             }
-            if (!StringUtils.matchesPartialName(
-                member.simpleName, partial, settings.shouldMatchAllLowerCase())) {
+
+            val matchLevel = matchLevel(member.simpleName, partial)
+            if (matchLevel == NO_MATCH) {
                 continue
             }
 
-            list.add(item(task, member, partial, 100))
+            list.add(item(task, member, matchLevel))
         }
 
         return CompletionResult(list)

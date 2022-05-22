@@ -23,7 +23,7 @@ import com.itsaky.lsp.java.compiler.CompilerProvider
 import com.itsaky.lsp.java.providers.CompletionProvider.MAX_COMPLETION_ITEMS
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionResult
-import com.itsaky.lsp.util.StringUtils
+import com.itsaky.lsp.models.MatchLevel.NO_MATCH
 import com.sun.source.util.TreePath
 import java.nio.file.Path
 
@@ -52,10 +52,11 @@ class ImportCompletionProvider(
         val names: MutableSet<String> = HashSet()
         val list = mutableListOf<CompletionItem>()
         for (className in compiler.publicTopLevelTypes()) {
-            if (!StringUtils.matchesPartialName(
-                className, importPath, settings.shouldMatchAllLowerCase())) {
+            val matchLevel = matchLevel(className, partial)
+            if (matchLevel == NO_MATCH) {
                 continue
             }
+
             val start = importPath.lastIndexOf('.')
             var end = className.indexOf('.', importPath.length)
             if (end == -1) {
@@ -68,9 +69,9 @@ class ImportCompletionProvider(
             names.add(segment)
             val isClass = end == importPath.length
             if (isClass) {
-                list.add(classItem(className, importPath, 100))
+                list.add(classItem(className, importPath, matchLevel))
             } else {
-                list.add(packageItem(segment, importPath, 100))
+                list.add(packageItem(segment, importPath, matchLevel))
             }
 
             if (list.size > MAX_COMPLETION_ITEMS) {

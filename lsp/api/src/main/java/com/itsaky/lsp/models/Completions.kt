@@ -133,7 +133,7 @@ open class CompletionItem(
             if (field.isEmpty()) {
                 return this.label.toString()
             }
-
+ 
             return field
         }
 

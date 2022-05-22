@@ -23,7 +23,8 @@ import com.itsaky.lsp.java.compiler.CompilerProvider
 import com.itsaky.lsp.java.providers.CompletionProvider
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionResult
-import com.itsaky.lsp.util.StringUtils
+import com.itsaky.lsp.models.MatchLevel
+import com.itsaky.lsp.models.MatchLevel.NO_MATCH
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.MemberSelectTree
 import com.sun.source.util.TreePath
@@ -58,7 +59,7 @@ class StaticImportCompletionProvider(
         val list = mutableListOf<CompletionItem>()
         val trees = Trees.instance(task.task)
         val methods = mutableMapOf<String, MutableList<ExecutableElement>>()
-        val matchRatios: MutableMap<String, Int> = HashMap()
+        val matchRatios: MutableMap<String, MatchLevel> = mutableMapOf()
         val previousSize: Int = list.size
         outer@ for (i in root.imports) {
             if (!i.isStatic) {
@@ -82,16 +83,16 @@ class StaticImportCompletionProvider(
                     continue
                 }
 
-                val matchRatio = fuzzySearchRatio(member.simpleName, partial)
-                if (!validateMatchRatio(matchRatio)) {
+                val matchLevel = matchLevel(member.simpleName, partial)
+                if (matchLevel == NO_MATCH) {
                     continue
                 }
 
                 if (member.kind == METHOD) {
                     putMethod(member as ExecutableElement, methods)
-                    matchRatios.putIfAbsent(member.simpleName.toString(), matchRatio)
+                    matchRatios.putIfAbsent(member.simpleName.toString(), matchLevel)
                 } else {
-                    list.add(item(task, member, partial, matchRatio))
+                    list.add(item(task, member, matchLevel))
                 }
                 if (list.size + methods.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
                     break@outer
@@ -100,8 +101,12 @@ class StaticImportCompletionProvider(
         }
 
         for ((key, value) in methods) {
-            val matchRatio = matchRatios.getOrDefault(key, 0)
-            list.add(method(task, value, !endsWithParen, partial, matchRatio))
+            val matchLevel = matchRatios.getOrDefault(key, NO_MATCH)
+            if (matchLevel == NO_MATCH) {
+                continue
+            }
+
+            list.add(method(task, value, !endsWithParen, matchLevel))
         }
 
         log.info("...found " + (list.size - previousSize) + " static imports")
@@ -110,8 +115,7 @@ class StaticImportCompletionProvider(
     }
 
     private fun importMatchesPartial(staticImport: Name, partial: String): Boolean {
-        return (staticImport.contentEquals("*") ||
-            StringUtils.matchesFuzzy(staticImport, partial, settings.shouldMatchAllLowerCase()))
+        return (staticImport.contentEquals("*") || matchLevel(staticImport, partial) != NO_MATCH)
     }
 
     private fun memberMatchesImport(staticImport: Name, member: Element): Boolean {

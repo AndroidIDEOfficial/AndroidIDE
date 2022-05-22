@@ -33,8 +33,9 @@ import com.itsaky.lsp.models.CompletionParams
 import com.itsaky.lsp.models.CompletionResult
 import com.itsaky.lsp.models.CompletionResult.Companion.EMPTY
 import com.itsaky.lsp.models.InsertTextFormat.SNIPPET
+import com.itsaky.lsp.models.MatchLevel
+import com.itsaky.lsp.models.MatchLevel.NO_MATCH
 import com.itsaky.lsp.models.Position
-import com.itsaky.lsp.util.StringUtils
 import com.itsaky.lsp.xml.utils.XmlUtils
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType
 import com.itsaky.lsp.xml.utils.XmlUtils.NodeType.ATTRIBUTE
@@ -139,17 +140,16 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
         val result = mutableListOf<CompletionItem>()
 
         for (widget in widgets) {
-            val simpleNameMatchRatio =
-                StringUtils.fuzzySearchRatio(
-                    widget.simpleName, prefix, settings.shouldMatchAllLowerCase())
-            val nameMatchRatio =
-                StringUtils.fuzzySearchRatio(
-                    widget.name, prefix, settings.shouldMatchAllLowerCase())
-            if (simpleNameMatchRatio > 0 || nameMatchRatio > 0) {
-                result.add(
-                    createTagCompletionItem(
-                        widget, prefix, max(simpleNameMatchRatio, nameMatchRatio)))
+            val simpleNameMatchLevel = matchLevel(widget.simpleName, prefix)
+            val nameMatchLevel = matchLevel(widget.name, prefix)
+            if (simpleNameMatchLevel == NO_MATCH && nameMatchLevel == NO_MATCH) {
+                continue
             }
+
+            val matchLevel =
+                MatchLevel.values()[max(simpleNameMatchLevel.ordinal, nameMatchLevel.ordinal)]
+
+            result.add(createTagCompletionItem(widget, matchLevel))
         }
 
         return CompletionResult(result)
@@ -165,12 +165,12 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
         val attr = document.findAttrAt(position.requireIndex())
         val list = mutableListOf<CompletionItem>()
         for (attribute in sdkInfo.attrInfo.attributes.values) {
-            val matchRatio =
-                StringUtils.fuzzySearchRatio(
-                    attribute.name, attr.name, settings.shouldMatchAllLowerCase())
-            if (matchRatio > 0) {
-                list.add(createAttrCompletionItem(attribute, attr.name, matchRatio))
+            val matchLevel = matchLevel(attribute.name, attr.name)
+            if (matchLevel == NO_MATCH) {
+                continue
             }
+            
+            list.add(createAttrCompletionItem(attribute, matchLevel))
         }
 
         return CompletionResult(list)
@@ -192,61 +192,54 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
         val attribute = sdkInfo.attrInfo.getAttribute(name) ?: return EMPTY
         val items = mutableListOf<CompletionItem>()
         for (value in attribute.possibleValues) {
-            val matchRatio =
-                StringUtils.fuzzySearchRatio(value, prefix, settings.shouldMatchAllLowerCase())
+            val matchLevel = matchLevel(value, prefix)
 
             // It might happen that the completion request is triggered but the prefix is empty
             // For example, a completion request is triggered when the user selects an attribute
             // completion item.
             // In such cases, 'prefix' is an empty string.
             // So, we still have to provide completions
-            if (prefix.isEmpty() || matchRatio > 0) {
-                items.add(createAttrValueCompletionItem(attr.name, value, prefix, matchRatio))
+            if (prefix.isEmpty() || matchLevel != NO_MATCH) {
+                items.add(createAttrValueCompletionItem(attr.name, value, matchLevel))
             }
         }
 
         return CompletionResult(items)
     }
 
-    private fun createTagCompletionItem(
-        widget: Widget,
-        prefix: CharSequence,
-        matchRatio: Int
-    ): CompletionItem =
+    private fun createTagCompletionItem(widget: Widget, matchLevel: MatchLevel): CompletionItem =
         CompletionItem().apply {
-            label = widget.simpleName
-            detail = widget.name
-            sortText = label.toString()
-            kind = CLASS
-            data = CompletionData().apply { className = widget.name }
+            this.label = widget.simpleName
+            this.detail = widget.name
+            this.sortText = label.toString()
+            this.matchLevel = matchLevel
+            this.kind = CLASS
+            this.data = CompletionData().apply { className = widget.name }
         }
 
-    private fun createAttrCompletionItem(
-        attr: Attr,
-        prefix: CharSequence,
-        matchRatio: Int
-    ): CompletionItem =
+    private fun createAttrCompletionItem(attr: Attr, matchLevel: MatchLevel): CompletionItem =
         CompletionItem().apply {
-            label = attr.name
-            kind = FIELD
-            detail = "From package '${attr.namespace.packageName}'"
-            insertText = "${attr.namespace.prefix}:${attr.name}=\"$0\""
-            insertTextFormat = SNIPPET
-            sortText = label.toString()
-            command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
+            this.label = attr.name
+            this.kind = FIELD
+            this.detail = "From package '${attr.namespace.packageName}'"
+            this.insertText = "${attr.namespace.prefix}:${attr.name}=\"$0\""
+            this.insertTextFormat = SNIPPET
+            this.sortText = label.toString()
+            this.matchLevel = matchLevel
+            this.command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
         }
 
     private fun createAttrValueCompletionItem(
         attrName: String,
         value: String,
-        prefix: CharSequence,
-        matchRatio: Int
+        matchLevel: MatchLevel
     ): CompletionItem {
         return CompletionItem().apply {
-            label = value
-            detail = "Value for '$attrName'"
-            kind = VALUE
-            sortText = label.toString()
+            this.label = value
+            this.detail = "Value for '$attrName'"
+            this.kind = VALUE
+            this.sortText = label.toString()
+            this.matchLevel = matchLevel
         }
     }
 }

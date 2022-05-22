@@ -17,9 +17,7 @@
 
 package com.itsaky.lsp.java.providers.completion
 
-import android.text.TextUtils
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.lsp.api.ICompletionProvider
 import com.itsaky.lsp.api.IServerSettings
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
@@ -37,7 +35,7 @@ import com.itsaky.lsp.models.CompletionItemKind.PROPERTY
 import com.itsaky.lsp.models.CompletionItemKind.VARIABLE
 import com.itsaky.lsp.models.CompletionResult
 import com.itsaky.lsp.models.InsertTextFormat.SNIPPET
-import com.itsaky.lsp.util.StringUtils
+import com.itsaky.lsp.models.MatchLevel
 import com.sun.source.tree.Tree
 import com.sun.source.util.TreePath
 import java.nio.file.Path
@@ -74,31 +72,6 @@ abstract class IJavaCompletionProvider(
     protected val compiler: CompilerProvider,
     protected val settings: IServerSettings,
 ) {
-
-    companion object {
-        const val MIN_MATCH_RATIO = ICompletionProvider.MIN_MATCH_RATIO
-
-        @JvmStatic fun validateMatchRatio(ratio: Int) = ratio > MIN_MATCH_RATIO
-
-        @JvmStatic
-        fun fuzzySearchRatio(
-            candidate: CharSequence,
-            partial: CharSequence,
-            settings: IServerSettings
-        ): Int {
-            return if (candidate.isEmpty()) {
-                0
-            } else if (TextUtils.isEmpty(partial)) {
-                // If the partial identifier is null, then the user is probably trying access
-                // members of
-                // a class.
-                100
-            } else {
-                StringUtils.fuzzySearchRatio(candidate, partial, settings.shouldMatchAllLowerCase())
-            }
-        }
-    }
-
     protected val log: ILogger = ILogger.newInstance(javaClass.name)
     protected lateinit var filePackage: String
     protected lateinit var fileImports: Set<String>
@@ -132,8 +105,8 @@ abstract class IJavaCompletionProvider(
         endsWithParen: Boolean,
     ): CompletionResult
 
-    protected open fun fuzzySearchRatio(candidate: CharSequence, partial: String): Int {
-        return fuzzySearchRatio(candidate, partial, settings)
+    protected open fun matchLevel(candidate: CharSequence, partial: CharSequence): MatchLevel {
+        return CompletionItem.matchLevel(candidate.toString(), partial.toString())
     }
 
     protected open fun putMethod(
@@ -165,8 +138,7 @@ abstract class IJavaCompletionProvider(
         task: CompileTask,
         overloads: List<ExecutableElement>,
         addParens: Boolean,
-        partialName: CharSequence,
-        matchRatio: Int,
+        matchLevel: MatchLevel,
     ): CompletionItem {
         val first = overloads[0]
         val item = CompletionItem()
@@ -174,7 +146,7 @@ abstract class IJavaCompletionProvider(
         item.kind = CompletionItemKind.METHOD
         item.detail = first.returnType.toString() + " " + first
         item.sortText = item.label.toString()
-        item.matchLevel = CompletionItem.matchLevel(item.label.toString(), partialName.toString())
+        item.matchLevel = matchLevel
         val data = data(task, first, overloads.size)
         item.data = data
         if (addParens) {
@@ -192,8 +164,7 @@ abstract class IJavaCompletionProvider(
     protected open fun item(
         task: CompileTask,
         element: Element,
-        partialName: CharSequence,
-        matchRatio: Int,
+        matchLevel: MatchLevel
     ): CompletionItem {
         if (element.kind == METHOD) throw RuntimeException("method")
         val item = CompletionItem()
@@ -202,16 +173,16 @@ abstract class IJavaCompletionProvider(
         item.detail = element.toString()
         item.data = data(task, element, 1)
         item.sortText = item.label.toString()
-        item.matchLevel = CompletionItem.matchLevel(item.label.toString(), partialName.toString())
+        item.matchLevel = matchLevel
         return item
     }
 
     protected open fun classItem(
         className: String,
         partialName: String,
-        matchRatio: Int
+        matchLevel: MatchLevel
     ): CompletionItem {
-        return classItem(emptySet(), null, className, partialName, matchRatio)
+        return classItem(emptySet(), null, className, partialName, matchLevel)
     }
 
     protected open fun classItem(
@@ -219,14 +190,14 @@ abstract class IJavaCompletionProvider(
         file: Path?,
         className: String,
         partialName: String,
-        matchRatio: Int,
+        matchLevel: MatchLevel,
     ): CompletionItem {
         val item = CompletionItem()
         item.setLabel(simpleName(className).toString())
         item.kind = CompletionItemKind.CLASS
         item.detail = className
         item.sortText = item.label.toString()
-        item.matchLevel = CompletionItem.matchLevel(item.label.toString(), partialName)
+        item.matchLevel = matchLevel
         val data = CompletionData()
         data.className = className
         item.data = data
@@ -242,13 +213,13 @@ abstract class IJavaCompletionProvider(
     protected open fun packageItem(
         name: String,
         partialName: String,
-        matchRatio: Int
+        matchLevel: MatchLevel
     ): CompletionItem =
         CompletionItem().apply {
             setLabel(name)
-            kind = MODULE
-            sortText = name
-            matchLevel = CompletionItem.matchLevel(name, partialName)
+            this.kind = MODULE
+            this.sortText = name
+            this.matchLevel = matchLevel
         }
 
     protected open fun kind(e: Element): CompletionItemKind {

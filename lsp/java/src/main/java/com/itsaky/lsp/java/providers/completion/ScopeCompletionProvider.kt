@@ -32,6 +32,8 @@ import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionItemKind
 import com.itsaky.lsp.models.CompletionResult
 import com.itsaky.lsp.models.InsertTextFormat.SNIPPET
+import com.itsaky.lsp.models.MatchLevel
+import com.itsaky.lsp.models.MatchLevel.NO_MATCH
 import com.squareup.javapoet.MethodSpec.Builder
 import com.sun.source.tree.ClassTree
 import com.sun.source.tree.MethodTree
@@ -82,71 +84,71 @@ class ScopeCompletionProvider(
                     name = it.substring(0, it.lastIndexOf('('))
                 }
 
-                return@Predicate validateMatchRatio(fuzzySearchRatio(name, partial))
+                return@Predicate matchLevel(name, partial) != NO_MATCH
             }
+
         for (member in ScopeHelper.scopeMembers(task, scope, filter)) {
+            var name = member.simpleName.toString()
+            if (name.contains('(')) {
+                name = name.substring(0, name.lastIndexOf('('))
+            }
+
+            val matchLevel = matchLevel(name, partial)
+
             if (member.kind == METHOD) {
                 val method = member as ExecutableElement
                 val parentPath = path.parentPath /*method*/.parentPath /*class*/
-                list.add(
-                    overrideIfPossible(
-                        task, parentPath, method, partial, endsWithParen, MIN_MATCH_RATIO + 1))
+                list.add(overrideIfPossible(task, parentPath, method, endsWithParen, matchLevel))
             } else {
-                list.add(item(task, member, partial, MIN_MATCH_RATIO + 1))
+                list.add(item(task, member, matchLevel))
             }
-
-            // TODO Should we always assume that the match ratio is greater than min ratio?
         }
 
         log.info("...found " + list.size + " scope members")
 
         return CompletionResult(list)
     }
-    
+
     /**
      * Override the given method if it is overridable.
      *
      * @param task The compilation task.
      * @param parentPath The tree path of the parent class.
      * @param method The method to override if possible.
-     * @param partialName The partial name.
      * @param endsWithParen Does the statement at cursor ends with a parenthesis?
-     * @param matchRatio The match ratio for this completion item.
      * @return The completion item.
      */
     private fun overrideIfPossible(
         task: CompileTask,
         parentPath: TreePath,
         method: ExecutableElement,
-        partialName: CharSequence,
         endsWithParen: Boolean,
-        matchRatio: Int,
+        matchLevel: MatchLevel,
     ): CompletionItem {
         if (parentPath.leaf.kind != CLASS) {
             // Can only override if the cursor is directly in a class declaration
-            return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
+            return method(task, listOf(method), !endsWithParen, matchLevel)
         }
         val types = task.task.types
         val parentElement =
             Trees.instance(task.task).getElement(parentPath)
                 ?: // Can't get further information for overriding this method
-                return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
+            return method(task, listOf(method), !endsWithParen, matchLevel)
         val type = parentElement.asType() as DeclaredType
         val enclosing = method.enclosingElement
         val isFinalClass = enclosing.modifiers.contains(FINAL)
         val isNotOverridable =
             (method.modifiers.contains(STATIC) ||
-                    method.modifiers.contains(FINAL) ||
-                    method.modifiers.contains(PRIVATE))
+                method.modifiers.contains(FINAL) ||
+                method.modifiers.contains(PRIVATE))
         if (isFinalClass ||
             isNotOverridable ||
             !types.isAssignable(type, enclosing.asType()) ||
-            parentPath.leaf !is ClassTree
-        ) {
+            parentPath.leaf !is ClassTree) {
             // Override is not possible
-            return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
+            return method(task, listOf(method), !endsWithParen, matchLevel)
         }
-        
+
         // Print the method details and the annotations
         // Print the method details and the annotations
         val indent = EditHelper.indent(FileStore.contents(completingFile), cursor.toInt())
@@ -155,14 +157,14 @@ class ScopeCompletionProvider(
             builder = buildMethod(method, types, type)
         } catch (error: Throwable) {
             log.error("Cannot override method:", method.simpleName, error.message)
-            return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
+            return method(task, listOf(method), !endsWithParen, matchLevel)
         }
-        
+
         val imports = mutableSetOf<String>()
         val methodSpec = builder.build()
         var insertText = print(methodSpec, imports, false)
         insertText = insertText.replace("\n", "\n${repeatSpaces(indent)}")
-        
+
         val item = CompletionItem()
         item.setLabel(methodSpec.name)
         item.kind = CompletionItemKind.METHOD
@@ -170,12 +172,12 @@ class ScopeCompletionProvider(
         item.sortText = item.label.toString()
         item.insertText = insertText
         item.insertTextFormat = SNIPPET
-        item.matchLevel = CompletionItem.matchLevel(methodSpec.name, partialName.toString())
+        item.matchLevel = matchLevel
         item.data = data(task, method, 1)
         if (item.additionalTextEdits == null) {
             item.additionalTextEdits = mutableListOf()
         }
-        
+
         imports.removeIf { "java.lang." == it || fileImports.contains(it) || filePackage == it }
         if (imports.isNotEmpty()) {
             for (className in imports) {

@@ -36,8 +36,10 @@ package com.itsaky.lsp.api;
 
 import androidx.annotation.NonNull;
 
+import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
+import com.itsaky.lsp.models.MatchLevel;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,10 +51,14 @@ import java.nio.file.Path;
  */
 public interface ICompletionProvider {
 
-  int MIN_MATCH_RATIO = 34;
+  int MIN_MATCH_RATIO = 59;
 
   default boolean canComplete(Path file) {
     return file != null && Files.exists(file) && !Files.isDirectory(file);
+  }
+
+  default MatchLevel matchLevel(CharSequence candidate, CharSequence partial) {
+    return CompletionItem.matchLevel(candidate.toString(), partial.toString());
   }
 
   /**

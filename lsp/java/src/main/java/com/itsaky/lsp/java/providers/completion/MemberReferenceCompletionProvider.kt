@@ -22,6 +22,8 @@ import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
 import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionResult
+import com.itsaky.lsp.models.MatchLevel
+import com.itsaky.lsp.models.MatchLevel.NO_MATCH
 import com.sun.source.tree.MemberReferenceTree
 import com.sun.source.tree.Scope
 import com.sun.source.util.TreePath
@@ -107,17 +109,16 @@ class MemberReferenceCompletionProvider(
         scope: Scope,
         type: DeclaredType,
         isStatic: Boolean,
-        partialName: String,
+        partial: String,
     ): CompletionResult {
         val trees = Trees.instance(task.task)
         val typeElement = type.asElement() as TypeElement
         val list: MutableList<CompletionItem> = ArrayList()
         val methods: MutableMap<String, MutableList<ExecutableElement>> = mutableMapOf()
-        val matchRatios: MutableMap<String, Int> = HashMap()
+        val matchLevels: MutableMap<String, MatchLevel> = HashMap()
         for (member in task.task.elements.getAllMembers(typeElement)) {
-            val matchRatio =
-                fuzzySearchRatio(member.simpleName, partialName)
-            if (!validateMatchRatio(matchRatio)) {
+            val matchLevel = matchLevel(member.simpleName, partial)
+            if (matchLevel == NO_MATCH) {
                 continue
             }
 
@@ -135,19 +136,23 @@ class MemberReferenceCompletionProvider(
 
             if (member.kind == METHOD) {
                 putMethod((member as ExecutableElement), methods)
-                matchRatios.putIfAbsent(member.getSimpleName().toString(), matchRatio)
+                matchLevels.putIfAbsent(member.getSimpleName().toString(), matchLevel)
             } else {
-                list.add(item(task, member, partialName, matchRatio))
+                list.add(item(task, member, matchLevel))
             }
         }
 
         for ((key, value) in methods) {
-            val matchRatio = matchRatios.getOrDefault(key, 0)
-            list.add(method(task, value, false, partialName, matchRatio))
+            val matchLevel = matchLevels.getOrDefault(key, NO_MATCH)
+            if (matchLevel == NO_MATCH) {
+                continue
+            }
+            
+            list.add(method(task, value, false, matchLevel))
         }
 
         if (isStatic) {
-            list.add(keyword("new", partialName, 100))
+            list.add(keyword("new", partial, 100))
         }
 
         return CompletionResult(list)
