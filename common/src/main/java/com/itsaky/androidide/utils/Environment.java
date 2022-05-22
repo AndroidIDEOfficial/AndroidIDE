@@ -194,6 +194,8 @@ public final class Environment {
 
     ENV_VARS.put("HOME", HOME.getAbsolutePath());
     ENV_VARS.put("ANDROID_HOME", ANDROID_HOME.getAbsolutePath());
+    ENV_VARS.put("ANDROID_SDK_ROOT", ANDROID_HOME.getAbsolutePath());
+    ENV_VARS.put("ANDROID_USER_HOME", HOME.getAbsolutePath() + "/.android");
     ENV_VARS.put("JAVA_HOME", JAVA_HOME.getAbsolutePath());
     ENV_VARS.put("GRADLE_USER_HOME", GRADLE_USER_HOME.getAbsolutePath());
     ENV_VARS.put("TMPDIR", TMP_DIR.getAbsolutePath());

@@ -35,8 +35,10 @@ class AndroidIDEPlugin implements Plugin<Project> {
         }
         
         if (isApp) {
-            project.android.sourceSets {
-                main.java.srcDirs += "${System.getenv ("HOME")}/logsender"
+            project.afterEvaluate {
+                project.android.sourceSets {
+                    main.java.srcDirs += "${System.getenv ("HOME")}/logsender"
+                }
             }
         }
     }
