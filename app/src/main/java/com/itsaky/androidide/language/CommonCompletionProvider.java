@@ -114,7 +114,8 @@ public class CommonCompletionProvider {
             });
 
     try {
-      return future.get().getItems();
+        final var items = future.get ().getItems ();
+        return items;
     } catch (Throwable e) {
       // Do not log if completion was interrupted or cancelled
       if (!(e instanceof InterruptedException || e instanceof CompletionCancelledException)) {

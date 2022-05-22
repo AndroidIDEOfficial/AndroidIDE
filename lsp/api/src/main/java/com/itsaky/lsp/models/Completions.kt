@@ -133,7 +133,7 @@ open class CompletionItem(
             if (field.isEmpty()) {
                 return this.label.toString()
             }
- 
+
             return field
         }
 
@@ -166,8 +166,10 @@ open class CompletionItem(
                 }
             }
 
-            if (candidate.lowercase().startsWith(partial.lowercase())) {
-                return if (candidate.length == partial.length) {
+            val lowerCandidate = candidate.lowercase()
+            val lowerPartial = partial.lowercase()
+            if (lowerCandidate.startsWith(lowerPartial)) {
+                return if (lowerCandidate.length == lowerPartial.length) {
                     CASE_INSENSITIVE_EQUAL
                 } else {
                     CASE_INSENSITIVE_PREFIX
@@ -178,7 +180,7 @@ open class CompletionItem(
             if (ratio > ICompletionProvider.MIN_MATCH_RATIO) {
                 return PARTIAL_MATCH
             }
-
+            
             return NO_MATCH
         }
     }
@@ -188,10 +190,6 @@ open class CompletionItem(
     }
 
     fun getLabel(): String = this.label as String
-
-    override fun toString(): String {
-        return "CompletionItem(label='$label', detail='$detail', insertText='$insertText', insertTextFormat=$insertTextFormat, sortText='$sortText', command=$command, kind=$kind, data=$data)"
-    }
 
     override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
         val start = getIdentifierStart(text.getLine(line), column)
@@ -269,6 +267,53 @@ open class CompletionItem(
 
     override fun compareTo(other: CompletionItem): Int {
         return CompletionItemComparator.compare(this, other)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CompletionItem) return false
+
+        if (label != other.label) return false
+        if (detail != other.detail) return false
+        if (command != other.command) return false
+        if (kind != other.kind) return false
+        if (matchLevel != other.matchLevel) return false
+        if (additionalTextEdits != other.additionalTextEdits) return false
+        if (data != other.data) return false
+        if (sortText != other.sortText) return false
+        if (insertText != other.insertText) return false
+        if (insertTextFormat != other.insertTextFormat) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = label.hashCode()
+        result = 31 * result + detail.hashCode()
+        result = 31 * result + (command?.hashCode() ?: 0)
+        result = 31 * result + kind.hashCode()
+        result = 31 * result + matchLevel.hashCode()
+        result = 31 * result + (additionalTextEdits?.hashCode() ?: 0)
+        result = 31 * result + (data?.hashCode() ?: 0)
+        result = 31 * result + (sortText?.hashCode() ?: 0)
+        result = 31 * result + insertText.hashCode()
+        result = 31 * result + insertTextFormat.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "CompletionItem(" +
+            "label='$label', " +
+            "detail='$detail', " +
+            "command=$command, " +
+            "kind=$kind, " +
+            "matchLevel=$matchLevel, " +
+            "additionalTextEdits=$additionalTextEdits, " +
+            "data=$data, " +
+            "sortText=$sortText, " +
+            "insertText='$insertText', " +
+            "insertTextFormat=$insertTextFormat" +
+            ")"
     }
 }
 

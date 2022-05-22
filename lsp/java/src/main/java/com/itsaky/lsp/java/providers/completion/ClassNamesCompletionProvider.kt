@@ -70,7 +70,7 @@ class ClassNamesCompletionProvider(
         }
 
         for (className in compiler.publicTopLevelTypes()) {
-            val matchLevel = matchLevel(className, partial)
+            val matchLevel = matchLevel(simpleName(className), partial)
             if (matchLevel == NO_MATCH) {
                 continue
             }
@@ -78,9 +78,11 @@ class ClassNamesCompletionProvider(
             if (uniques.contains(className)) {
                 continue
             }
+            
             if (list.size > CompletionProvider.MAX_COMPLETION_ITEMS) {
                 break
             }
+            
             list.add(classItem(imports, file, className, partial, matchLevel))
             uniques.add(className)
         }
