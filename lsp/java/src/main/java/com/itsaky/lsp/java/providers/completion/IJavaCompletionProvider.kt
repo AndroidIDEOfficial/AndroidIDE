@@ -19,6 +19,7 @@ package com.itsaky.lsp.java.providers.completion
 
 import android.text.TextUtils
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.lsp.api.ICompletionProvider
 import com.itsaky.lsp.api.IServerSettings
 import com.itsaky.lsp.java.compiler.CompileTask
 import com.itsaky.lsp.java.compiler.CompilerProvider
@@ -26,7 +27,6 @@ import com.itsaky.lsp.java.utils.EditHelper
 import com.itsaky.lsp.models.Command
 import com.itsaky.lsp.models.CompletionData
 import com.itsaky.lsp.models.CompletionItem
-import com.itsaky.lsp.models.CompletionItem.Companion.sortTextForMatchRatio
 import com.itsaky.lsp.models.CompletionItemKind
 import com.itsaky.lsp.models.CompletionItemKind.ENUM_MEMBER
 import com.itsaky.lsp.models.CompletionItemKind.FUNCTION
@@ -76,7 +76,7 @@ abstract class IJavaCompletionProvider(
 ) {
 
     companion object {
-        const val MIN_MATCH_RATIO = 59
+        const val MIN_MATCH_RATIO = ICompletionProvider.MIN_MATCH_RATIO
 
         @JvmStatic fun validateMatchRatio(ratio: Int) = ratio > MIN_MATCH_RATIO
 
@@ -156,7 +156,8 @@ abstract class IJavaCompletionProvider(
         item.setLabel(keyword)
         item.kind = KEYWORD
         item.detail = "keyword"
-        item.sortText = sortTextForMatchRatio(matchRatio, keyword, partialName)
+        item.sortText = keyword
+        item.matchLevel = CompletionItem.matchLevel(keyword, partialName.toString())
         return item
     }
 
@@ -172,7 +173,8 @@ abstract class IJavaCompletionProvider(
         item.setLabel(first.simpleName.toString())
         item.kind = CompletionItemKind.METHOD
         item.detail = first.returnType.toString() + " " + first
-        item.sortText = sortTextForMatchRatio(matchRatio, item.label, partialName)
+        item.sortText = item.label.toString()
+        item.matchLevel = CompletionItem.matchLevel(item.label.toString(), partialName.toString())
         val data = data(task, first, overloads.size)
         item.data = data
         if (addParens) {
@@ -199,7 +201,8 @@ abstract class IJavaCompletionProvider(
         item.kind = kind(element)
         item.detail = element.toString()
         item.data = data(task, element, 1)
-        item.sortText = sortTextForMatchRatio(matchRatio, element.simpleName, partialName)
+        item.sortText = item.label.toString()
+        item.matchLevel = CompletionItem.matchLevel(item.label.toString(), partialName.toString())
         return item
     }
 
@@ -222,7 +225,8 @@ abstract class IJavaCompletionProvider(
         item.setLabel(simpleName(className).toString())
         item.kind = CompletionItemKind.CLASS
         item.detail = className
-        item.sortText = sortTextForMatchRatio(matchRatio, item.label, partialName)
+        item.sortText = item.label.toString()
+        item.matchLevel = CompletionItem.matchLevel(item.label.toString(), partialName)
         val data = CompletionData()
         data.className = className
         item.data = data
@@ -243,7 +247,8 @@ abstract class IJavaCompletionProvider(
         CompletionItem().apply {
             setLabel(name)
             kind = MODULE
-            sortText = sortTextForMatchRatio(matchRatio, name, partialName)
+            sortText = name
+            matchLevel = CompletionItem.matchLevel(name, partialName)
         }
 
     protected open fun kind(e: Element): CompletionItemKind {

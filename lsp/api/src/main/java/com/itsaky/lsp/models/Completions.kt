@@ -17,10 +17,17 @@
 
 package com.itsaky.lsp.models
 
+import com.itsaky.androidide.fuzzysearch.FuzzySearch
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.lsp.api.ICompletionProvider
 import com.itsaky.lsp.models.InsertTextFormat.PLAIN_TEXT
-import com.itsaky.lsp.util.StringUtils
+import com.itsaky.lsp.models.MatchLevel.CASE_INSENSITIVE_EQUAL
+import com.itsaky.lsp.models.MatchLevel.CASE_INSENSITIVE_PREFIX
+import com.itsaky.lsp.models.MatchLevel.CASE_SENSITIVE_EQUAL
+import com.itsaky.lsp.models.MatchLevel.CASE_SENSITIVE_PREFIX
+import com.itsaky.lsp.models.MatchLevel.NO_MATCH
+import com.itsaky.lsp.models.MatchLevel.PARTIAL_MATCH
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.nio.file.Path
@@ -105,6 +112,7 @@ open class CompletionItem(
     sortText: String?,
     var command: Command?,
     var kind: CompletionItemKind,
+    var matchLevel: MatchLevel,
     var additionalTextEdits: List<TextEdit>?,
     var data: CompletionData?
 ) :
@@ -114,10 +122,10 @@ open class CompletionItem(
     var sortText: String? = sortText
         get() {
             if (field == null) {
-                return "$kind$label"
+                return label.toString()
             }
 
-            return "${kind.sortIndex}$field"
+            return field
         }
 
     var insertText: String = insertText ?: ""
@@ -140,24 +148,38 @@ open class CompletionItem(
             null, // sortText
             null, // command
             CompletionItemKind.NONE, // kind
+            NO_MATCH, // match level
             ArrayList(), // additionalEdits
             null // data
             )
 
     companion object {
         private val LOG = ILogger.newInstance("CompletionItem")
-        @JvmStatic
-        fun sortTextForMatchRatio(ratio: Int, label: CharSequence, prefix: CharSequence): String {
-            if (StringUtils.matchesPartialName(label, prefix, true)) {
 
-                // The label starts with prefix
-                // So, this item must be shown at top
-                return "00$label"
+        @JvmStatic
+        fun matchLevel(candidate: String, partial: String): MatchLevel {
+            if (candidate.startsWith(partial)) {
+                return if (candidate.length == partial.length) {
+                    CASE_SENSITIVE_EQUAL
+                } else {
+                    CASE_SENSITIVE_PREFIX
+                }
             }
 
-            // Label does not start with prefix
-            // The order of this item is decided based on the match ratio
-            return "${100-ratio}$label"
+            if (candidate.lowercase().startsWith(partial.lowercase())) {
+                return if (candidate.length == partial.length) {
+                    CASE_INSENSITIVE_EQUAL
+                } else {
+                    CASE_INSENSITIVE_PREFIX
+                }
+            }
+
+            val ratio = FuzzySearch.ratio(candidate, partial)
+            if (ratio > ICompletionProvider.MIN_MATCH_RATIO) {
+                return PARTIAL_MATCH
+            }
+
+            return NO_MATCH
         }
     }
 
@@ -312,24 +334,33 @@ data class Command(var title: String, var command: String) {
     }
 }
 
-enum class CompletionItemKind(val sortIndex: Int) {
-    CLASS(7),
-    INTERFACE(7),
-    ANNOTATION_TYPE(7),
-    CONSTRUCTOR(6),
-    ENUM(7),
-    ENUM_MEMBER(2),
-    PROPERTY(2),
-    FUNCTION(6),
-    METHOD(5),
-    FIELD(2),
-    VARIABLE(1),
-    MODULE(8),
-    SNIPPET(0),
-    TYPE_PARAMETER(3),
-    VALUE(4),
-    KEYWORD(0),
-    NONE(100)
+enum class CompletionItemKind {
+    KEYWORD,
+    VARIABLE,
+    PROPERTY,
+    FIELD,
+    ENUM_MEMBER,
+    CONSTRUCTOR,
+    METHOD,
+    FUNCTION,
+    TYPE_PARAMETER,
+    CLASS,
+    INTERFACE,
+    ENUM,
+    ANNOTATION_TYPE,
+    MODULE,
+    SNIPPET,
+    VALUE,
+    NONE
+}
+
+enum class MatchLevel {
+    CASE_SENSITIVE_EQUAL,
+    CASE_INSENSITIVE_EQUAL,
+    CASE_SENSITIVE_PREFIX,
+    CASE_INSENSITIVE_PREFIX,
+    PARTIAL_MATCH,
+    NO_MATCH
 }
 
 enum class InsertTextFormat {

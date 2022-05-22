@@ -23,6 +23,7 @@ import com.itsaky.lsp.models.CompletionItem
 import com.itsaky.lsp.models.CompletionItemKind.SNIPPET
 import com.itsaky.lsp.models.CompletionResult
 import com.itsaky.lsp.models.InsertTextFormat
+import com.itsaky.lsp.models.MatchLevel.CASE_INSENSITIVE_EQUAL
 import com.sun.source.tree.CompilationUnitTree
 import com.sun.source.tree.Tree.Kind.ERRONEOUS
 import java.nio.file.Path
@@ -67,6 +68,7 @@ class TopLevelSnippetsProvider {
         item.insertText = snippet
         item.insertTextFormat = InsertTextFormat.SNIPPET
         item.sortText = label
+        item.matchLevel = CASE_INSENSITIVE_EQUAL
         return item
     }
 }

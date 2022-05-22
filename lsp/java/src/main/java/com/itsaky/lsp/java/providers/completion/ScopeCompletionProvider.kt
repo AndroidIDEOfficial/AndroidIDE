@@ -29,7 +29,6 @@ import com.itsaky.lsp.java.utils.JavaPoetUtils.Companion.buildMethod
 import com.itsaky.lsp.java.utils.JavaPoetUtils.Companion.print
 import com.itsaky.lsp.java.utils.ScopeHelper
 import com.itsaky.lsp.models.CompletionItem
-import com.itsaky.lsp.models.CompletionItem.Companion.sortTextForMatchRatio
 import com.itsaky.lsp.models.CompletionItemKind
 import com.itsaky.lsp.models.CompletionResult
 import com.itsaky.lsp.models.InsertTextFormat.SNIPPET
@@ -103,7 +102,7 @@ class ScopeCompletionProvider(
 
         return CompletionResult(list)
     }
-
+    
     /**
      * Override the given method if it is overridable.
      *
@@ -131,22 +130,23 @@ class ScopeCompletionProvider(
         val parentElement =
             Trees.instance(task.task).getElement(parentPath)
                 ?: // Can't get further information for overriding this method
-            return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
+                return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
         val type = parentElement.asType() as DeclaredType
         val enclosing = method.enclosingElement
         val isFinalClass = enclosing.modifiers.contains(FINAL)
         val isNotOverridable =
             (method.modifiers.contains(STATIC) ||
-                method.modifiers.contains(FINAL) ||
-                method.modifiers.contains(PRIVATE))
+                    method.modifiers.contains(FINAL) ||
+                    method.modifiers.contains(PRIVATE))
         if (isFinalClass ||
             isNotOverridable ||
             !types.isAssignable(type, enclosing.asType()) ||
-            parentPath.leaf !is ClassTree) {
+            parentPath.leaf !is ClassTree
+        ) {
             // Override is not possible
             return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
         }
-
+        
         // Print the method details and the annotations
         // Print the method details and the annotations
         val indent = EditHelper.indent(FileStore.contents(completingFile), cursor.toInt())
@@ -157,24 +157,25 @@ class ScopeCompletionProvider(
             log.error("Cannot override method:", method.simpleName, error.message)
             return method(task, listOf(method), !endsWithParen, partialName, matchRatio)
         }
-
+        
         val imports = mutableSetOf<String>()
         val methodSpec = builder.build()
         var insertText = print(methodSpec, imports, false)
         insertText = insertText.replace("\n", "\n${repeatSpaces(indent)}")
-
+        
         val item = CompletionItem()
         item.setLabel(methodSpec.name)
         item.kind = CompletionItemKind.METHOD
         item.detail = method.returnType.toString() + " " + method
-        item.sortText = sortTextForMatchRatio(matchRatio, item.label, partialName)
+        item.sortText = item.label.toString()
         item.insertText = insertText
         item.insertTextFormat = SNIPPET
+        item.matchLevel = CompletionItem.matchLevel(methodSpec.name, partialName.toString())
         item.data = data(task, method, 1)
         if (item.additionalTextEdits == null) {
             item.additionalTextEdits = mutableListOf()
         }
-
+        
         imports.removeIf { "java.lang." == it || fileImports.contains(it) || filePackage == it }
         if (imports.isNotEmpty()) {
             for (className in imports) {

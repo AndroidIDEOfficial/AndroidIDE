@@ -74,20 +74,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     this.sdkInfo = sdkInfo;
   }
 
-  @NonNull
-  @Contract(pure = true)
-  private static CompletionItem createNamespaceCompletion(String name, String value) {
-    final var item = new CompletionItem();
-    item.setLabel(name + "Ns");
-    item.setDetail(
-        BaseApplication.getBaseInstance().getString(R.string.msg_add_namespace_decl, name));
-    item.setInsertText(String.format("xmlns:%1$s=\"%2$s\"", name, value));
-    item.setKind(CompletionItemKind.SNIPPET);
-    item.setSortText("1000" + item.getLabel()); // This item is expected to be at the last of the
-    // completion list
-    return item;
-  }
-
   @Override
   public boolean canComplete(Path file) {
     return ICompletionProvider.super.canComplete(file) && file.toFile().getName().endsWith(".xml");
@@ -108,33 +94,6 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
       }
       return CompletionResult.EMPTY;
     }
-  }
-
-  private String getFileType(Path path) {
-    final var file = path.toFile();
-    if (file.getName().equals("AndroidManifest.xml")) {
-      return "manifest";
-    }
-
-    final var resPattern = Pattern.compile(".*/src/.*/res");
-    //noinspection ConstantConditions
-    if (!resPattern.matcher(file.getParentFile().getParentFile().getAbsolutePath()).matches()) {
-      return null;
-    }
-
-    final var parent = file.getParentFile().getName();
-
-    if (parent.startsWith("drawable")
-        || parent.startsWith("mipmap")
-        || parent.startsWith("color")) {
-      return "drawable";
-    } else if (parent.startsWith("values")) {
-      return "values";
-    } else if (parent.startsWith("layout")) {
-      return "layout";
-    }
-
-    return null;
   }
 
   @NonNull
@@ -207,6 +166,33 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     return result;
   }
 
+  private String getFileType(Path path) {
+    final var file = path.toFile();
+    if (file.getName().equals("AndroidManifest.xml")) {
+      return "manifest";
+    }
+
+    final var resPattern = Pattern.compile(".*/src/.*/res");
+    //noinspection ConstantConditions
+    if (!resPattern.matcher(file.getParentFile().getParentFile().getAbsolutePath()).matches()) {
+      return null;
+    }
+
+    final var parent = file.getParentFile().getName();
+
+    if (parent.startsWith("drawable")
+        || parent.startsWith("mipmap")
+        || parent.startsWith("color")) {
+      return "drawable";
+    } else if (parent.startsWith("values")) {
+      return "values";
+    } else if (parent.startsWith("layout")) {
+      return "layout";
+    }
+
+    return null;
+  }
+
   private void addLayoutXmlTags(CompletionResult result, String prefix, boolean slash) {
     prefix = prefix.toLowerCase(Locale.ROOT);
     for (var widget : this.sdkInfo.getWidgetInfo().getWidgets()) {
@@ -215,6 +201,23 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         result.getItems().add(widgetNameAsCompletion(widget, slash));
       }
     }
+  }
+
+  private boolean matchesPartialName(String candidate, String partialName, boolean matchLower) {
+    if (candidate == null || partialName == null) {
+      return false;
+    }
+
+    if (candidate.length() < partialName.length()) {
+      return false;
+    }
+
+    if (matchLower) {
+      candidate = candidate.toLowerCase(Locale.ROOT);
+      partialName = partialName.toLowerCase(Locale.ROOT);
+    }
+
+    return candidate.startsWith(partialName);
   }
 
   @NonNull
@@ -243,22 +246,18 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   }
 
   @NonNull
-  private String createAttributeInsertText(@NonNull Attr attr) {
-    StringBuilder xml = new StringBuilder();
-    xml.append(attr.namespace.getPrefix());
-    xml.append(":");
-    xml.append(attr.name);
-    xml.append("=");
-    xml.append("\"");
-
-    if (attr.namespace.getPrefix().equals("android") && attr.name.equals("id")) {
-      xml.append("@+id/");
-    }
-
-    xml.append("$0");
-    xml.append("\"");
-
-    return xml.toString();
+  @Contract(pure = true)
+  private static CompletionItem createNamespaceCompletion(String name, String value) {
+    final var item = new CompletionItem();
+    item.setLabel(name + "Ns");
+    item.setDetail(
+        BaseApplication.getBaseInstance().getString(R.string.msg_add_namespace_decl, name));
+    item.setInsertText(String.format("xmlns:%1$s=\"%2$s\"", name, value));
+    item.setKind(CompletionItemKind.SNIPPET);
+    item.setSortText("1000" + item.getLabel());
+    // This item is expected to be at the last of the
+    // completion list
+    return item;
   }
 
   @NonNull
@@ -281,6 +280,25 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
   }
 
   @NonNull
+  private String createAttributeInsertText(@NonNull Attr attr) {
+    StringBuilder xml = new StringBuilder();
+    xml.append(attr.namespace.getPrefix());
+    xml.append(":");
+    xml.append(attr.name);
+    xml.append("=");
+    xml.append("\"");
+
+    if (attr.namespace.getPrefix().equals("android") && attr.name.equals("id")) {
+      xml.append("@+id/");
+    }
+
+    xml.append("$0");
+    xml.append("\"");
+
+    return xml.toString();
+  }
+
+  @NonNull
   private String createTagInsertText(@NonNull Widget view, boolean closing) {
     StringBuilder sb = new StringBuilder();
 
@@ -298,35 +316,12 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
     return sb.toString();
   }
 
-  private boolean matchesPartialName(String candidate, String partialName, boolean matchLower) {
-    if (candidate == null || partialName == null) {
-      return false;
-    }
-
-    if (candidate.length() < partialName.length()) {
-      return false;
-    }
-
-    if (matchLower) {
-      candidate = candidate.toLowerCase(Locale.ROOT);
-      partialName = partialName.toLowerCase(Locale.ROOT);
-    }
-
-    return candidate.startsWith(partialName);
-  }
-
   private static class IsInValueScanner {
 
     private final int cursorIndex;
 
     public IsInValueScanner(int cursorIndex) {
       this.cursorIndex = cursorIndex;
-    }
-
-    private boolean containsCursor(@NonNull Token token) {
-      int start = token.getStartIndex();
-      int end = token.getStopIndex();
-      return start <= cursorIndex && cursorIndex <= end;
     }
 
     @Nullable
@@ -350,6 +345,12 @@ public class CompletionProvider extends AbstractServiceProvider implements IComp
         }
       }
       return null;
+    }
+
+    private boolean containsCursor(@NonNull Token token) {
+      int start = token.getStartIndex();
+      int end = token.getStopIndex();
+      return start <= cursorIndex && cursorIndex <= end;
     }
   }
 }

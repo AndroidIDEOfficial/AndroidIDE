@@ -49,6 +49,8 @@ import java.nio.file.Path;
  */
 public interface ICompletionProvider {
 
+  int MIN_MATCH_RATIO = 34;
+
   default boolean canComplete(Path file) {
     return file != null && Files.exists(file) && !Files.isDirectory(file);
   }

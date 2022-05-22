@@ -26,7 +26,6 @@ import com.itsaky.lsp.api.IServerSettings
 import com.itsaky.lsp.models.Command
 import com.itsaky.lsp.models.CompletionData
 import com.itsaky.lsp.models.CompletionItem
-import com.itsaky.lsp.models.CompletionItem.Companion.sortTextForMatchRatio
 import com.itsaky.lsp.models.CompletionItemKind.CLASS
 import com.itsaky.lsp.models.CompletionItemKind.FIELD
 import com.itsaky.lsp.models.CompletionItemKind.VALUE
@@ -217,7 +216,7 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
         CompletionItem().apply {
             label = widget.simpleName
             detail = widget.name
-            sortText = sortTextForMatchRatio(matchRatio, label, prefix)
+            sortText = label.toString()
             kind = CLASS
             data = CompletionData().apply { className = widget.name }
         }
@@ -233,7 +232,7 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
             detail = "From package '${attr.namespace.packageName}'"
             insertText = "${attr.namespace.prefix}:${attr.name}=\"$0\""
             insertTextFormat = SNIPPET
-            sortText = sortTextForMatchRatio(matchRatio, label, prefix)
+            sortText = label.toString()
             command = Command("Trigger completion request", Command.TRIGGER_COMPLETION)
         }
 
@@ -247,7 +246,7 @@ class XmlCompletionProvider(private val sdkInfo: SDKInfo, settings: IServerSetti
             label = value
             detail = "Value for '$attrName'"
             kind = VALUE
-            sortText = sortTextForMatchRatio(matchRatio, label, prefix)
+            sortText = label.toString()
         }
     }
 }

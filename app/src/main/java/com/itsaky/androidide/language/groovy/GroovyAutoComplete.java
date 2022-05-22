@@ -41,41 +41,6 @@ public class GroovyAutoComplete {
   private static final List<String> CONFIGURATIONS = createConfigs();
   private static final List<String> OTHERS = createOtherCompletions();
 
-  public void complete(
-      ContentReference content,
-      CharPosition position,
-      CompletionPublisher publisher,
-      Bundle extraArguments) {
-    publisher.setUpdateThreshold(0);
-    final var prefix =
-        CompletionHelper.computePrefix(content, position, MyCharacter::isJavaIdentifierPart);
-    for (String artifact : ANDROIDX_ARTIFACTS) {
-      if (!artifact.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
-      publisher.addItem(createCompletionItem(artifact));
-    }
-
-    for (String config : CONFIGURATIONS) {
-      if (!config.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
-      publisher.addItem(createCompletionItem(config));
-    }
-
-    for (String other : OTHERS) {
-      if (!other.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
-      publisher.addItem(createCompletionItem(other));
-    }
-  }
-
-  private CompletionItem createCompletionItem(String itemLabel) {
-    CompletionItem item = new CompletionItem();
-    item.setLabel(itemLabel);
-    item.setDetail("");
-    item.setInsertText(itemLabel);
-    item.setSortText("0" + itemLabel);
-    item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
-    item.setKind(CompletionItemKind.SNIPPET);
-    return item;
-  }
-
   private static List<String> createArtifacts() {
     var artifacts = new ArrayList<String>();
     artifacts.add("androidx.arch.core:core-common");
@@ -379,5 +344,46 @@ public class GroovyAutoComplete {
     others.add("allprojects");
     others.add("subprojects");
     return others;
+  }
+
+  public void complete(
+      ContentReference content,
+      CharPosition position,
+      CompletionPublisher publisher,
+      Bundle extraArguments) {
+    publisher.setUpdateThreshold(0);
+    final var prefix =
+        CompletionHelper.computePrefix(content, position, MyCharacter::isJavaIdentifierPart);
+    for (String artifact : ANDROIDX_ARTIFACTS) {
+      if (!artifact.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
+      final var completionItem = createCompletionItem(artifact);
+      completionItem.setMatchLevel(CompletionItem.matchLevel(artifact, prefix));
+      publisher.addItem(completionItem);
+    }
+
+    for (String config : CONFIGURATIONS) {
+      if (!config.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
+      final var completionItem = createCompletionItem(config);
+      completionItem.setMatchLevel(CompletionItem.matchLevel(config, prefix));
+      publisher.addItem(completionItem);
+    }
+
+    for (String other : OTHERS) {
+      if (!other.toLowerCase(Locale.ROOT).startsWith(prefix.toLowerCase(Locale.ROOT))) continue;
+      final var completionItem = createCompletionItem(other);
+      completionItem.setMatchLevel(CompletionItem.matchLevel(other, prefix));
+      publisher.addItem(completionItem);
+    }
+  }
+
+  private CompletionItem createCompletionItem(String itemLabel) {
+    CompletionItem item = new CompletionItem();
+    item.setLabel(itemLabel);
+    item.setDetail("");
+    item.setInsertText(itemLabel);
+    item.setSortText("0" + itemLabel);
+    item.setInsertTextFormat(InsertTextFormat.PLAIN_TEXT);
+    item.setKind(CompletionItemKind.SNIPPET);
+    return item;
   }
 }
