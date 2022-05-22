@@ -55,7 +55,7 @@ public class LogLanguageImpl extends IDELanguage {
 
   @Override
   public int getInterruptionLevel() {
-    return 0;
+    return INTERRUPTION_LEVEL_STRONG;
   }
 
   @Override
