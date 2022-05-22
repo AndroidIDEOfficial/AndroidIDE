@@ -96,7 +96,7 @@ private constructor(val params: CompletionParams, val result: CompletionResult) 
             log.info("...incompatible partial identifier")
             return false
         }
-
+        
         return true
     }
 }
