@@ -890,7 +890,7 @@ public class EditorActivity extends StudioActivity
         .setContentText(R.string.msg_sync_needed);
   }
 
-  private void initializeProject() {
+  public void initializeProject() {
     final var projectPath = ProjectManager.INSTANCE.getProjectPath();
     if (projectPath == null) {
       LOG.error("Cannot initialize project. Project model is null.");
@@ -960,8 +960,7 @@ public class EditorActivity extends StudioActivity
   @NonNull
   public CompletableFuture<TaskExecutionResult> execTasks(
       Consumer<TaskExecutionResult> resultHandler, String... tasks) {
-    ThreadUtils.runOnUiThread(
-        () -> appendBuildOut("Executing tasks: " + TextUtils.join(", ", tasks)));
+    runOnUiThread(() -> appendBuildOut("Executing tasks: " + TextUtils.join(", ", tasks)));
     return mBuildService
         .executeTasks(tasks)
         .whenComplete(
