@@ -664,6 +664,7 @@ public class EditorActivity extends StudioActivity
 
       if (editor != null && editor.getEditor() != null) {
         editor.getEditor().close();
+        editor.getEditor().release();
       } else {
         LOG.error("Cannot save file before close. Editor instance is null");
       }
