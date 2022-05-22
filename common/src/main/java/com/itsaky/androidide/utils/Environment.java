@@ -97,10 +97,7 @@ public final class Environment {
     LIB_HOOK2 = new File(LIB_DIR, "libhook2.so");
     PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
 
-    INIT_SCRIPT =
-        new File(
-            mkdirIfNotExits(new File(app.getIDEDataDir(), "init")),
-            "data/common/androidide.init.gradle");
+    INIT_SCRIPT = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "init")), "init.gradle");
     BOOTCLASSPATH = new File("");
     GRADLE_USER_HOME = new File(HOME, ".gradle");
     GRADLE_PROPS = new File(GRADLE_USER_HOME, "gradle.properties");
