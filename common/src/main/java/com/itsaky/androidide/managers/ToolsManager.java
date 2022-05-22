@@ -60,7 +60,6 @@ public class ToolsManager {
               extractGradlePlugin();
               extractToolingApi();
               writeInitScript();
-              rewriteProjectData();
             })
         .whenComplete(
             (__, error) -> {
@@ -155,10 +154,6 @@ public class ToolsManager {
       FileUtils.delete(Environment.INIT_SCRIPT);
     }
     FileIOUtils.writeFileFromString(Environment.INIT_SCRIPT, readInitScript());
-  }
-
-  private static void rewriteProjectData() {
-    FileIOUtils.writeFileFromString(Environment.PROJECT_DATA_FILE, "/**********************/");
   }
 
   @NonNull
