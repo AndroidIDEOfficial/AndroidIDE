@@ -16,10 +16,6 @@
  */
 package com.itsaky.androidide.projects
 
-import com.android.builder.model.v2.ide.LibraryType.ANDROID_LIBRARY
-import com.android.builder.model.v2.ide.LibraryType.JAVA_LIBRARY
-import com.android.builder.model.v2.ide.LibraryType.PROJECT
-import com.android.builder.model.v2.ide.LibraryType.RELOCATED
 import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.services.BuildService
 import com.itsaky.androidide.tooling.api.IProject
@@ -27,6 +23,7 @@ import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.model.IdeModule
+import com.itsaky.androidide.tooling.api.util.ProjectDataCollector
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.lsp.java.models.JavaServerConfiguration
 import java.io.File
@@ -135,29 +132,6 @@ object ProjectManager {
         }
     }
 
-    fun collectResDirectories(android: IdeAndroidModule): List<File> {
-        val main = android.mainSourceSet
-        if (main == null) {
-            log.error("No main source set found in application module: ${android.name}")
-            return emptyList()
-        }
-
-        val dirs = mutableListOf<File>()
-        if (main.sourceProvider.resDirectories != null) {
-            dirs.addAll(main.sourceProvider.resDirectories!!)
-        }
-
-        val dependencies =
-            collectProjectDependencies(rootProject!!, android)
-                .filterIsInstance(IdeAndroidModule::class.java)
-
-        for (dependency in dependencies) {
-            dirs.addAll(collectResDirectories(dependency))
-        }
-
-        return dirs
-    }
-
     fun notifyProjectUpdate() {
         log.debug("Updating class paths in language servers...")
         getApplicationModule().whenCompleteAsync { it, _ ->
@@ -174,103 +148,28 @@ object ProjectManager {
         }
     }
 
-    private fun collectClassPaths(app: IdeAndroidModule): Set<Path> {
+    fun collectResDirectories(android: IdeAndroidModule) =
+        ProjectDataCollector.collectResDirectories(this.rootProject!!, android)
 
-        val libraries = app.debugLibraries
-        val paths = mutableSetOf<Path>()
-        val modules = this.rootProject!!.listModules().get()
-        for (value in libraries) {
-            if (value.type == RELOCATED) {
-                // this library does not have any artifacts
-                continue
-            }
+    fun collectClassPaths(app: IdeAndroidModule) =
+        ProjectDataCollector.collectClassPaths(this.rootProject!!, app)
 
-            if (value.type == ANDROID_LIBRARY) {
-                paths.addAll(value.androidLibraryData!!.compileJarFiles.map { it.toPath() })
-            } else if (value.type == JAVA_LIBRARY) {
-                paths.add(value.artifact!!.toPath())
-            } else {
-                val projectPath = value.projectInfo!!.projectPath
-                val module = modules.firstOrNull { it.path == projectPath } ?: continue
-                if (module.classPaths.isNotEmpty()) {
-                    paths.addAll(module.classPaths.map { it.toPath() })
-                }
-            }
-        }
+    fun collectSourceDirs(app: IdeAndroidModule): Set<Path> =
+        ProjectDataCollector.collectSourceDirs(this.rootProject!!, app)
 
-        return paths
-    }
+    @Suppress("unused")
+    fun collectProjectDependencies(project: IProject, app: IdeAndroidModule) =
+        ProjectDataCollector.collectProjectDependencies(project, app)
 
-    private fun collectSourceDirs(app: IdeAndroidModule): Set<Path> {
-        val sourcePaths = mutableSetOf<File>()
-        val projectSources = collectSourceDirs(collectProjectDependencies(rootProject!!, app))
-        sourcePaths.addAll(projectSources)
-        sourcePaths.addAll(collectSources(app))
-        return sourcePaths.map { it.toPath() }.toSet()
-    }
+    @Suppress("unused")
+    fun collectSourceDirs(projects: List<IdeModule>) =
+        ProjectDataCollector.collectSourceDirs(projects)
 
-    fun collectProjectDependencies(project: IProject, app: IdeAndroidModule): List<IdeModule> {
+    @Suppress("unused")
+    fun collectSources(java: IdeJavaModule) = ProjectDataCollector.collectSources(java)
 
-        return app.debugLibraries
-            .filter { it.type == PROJECT }
-            .map { project.findByPath(it.projectInfo!!.projectPath) }
-            .filterIsInstance(IdeModule::class.java)
-    }
-
-    fun collectSourceDirs(projects: List<IdeModule>): Set<File> {
-        val sources = mutableSetOf<File>()
-        for (project in projects) {
-            if (project is IdeJavaModule) {
-                sources.addAll(collectSources(project))
-            } else if (project is IdeAndroidModule) {
-                sources.addAll(collectSources(project))
-            }
-        }
-
-        return sources
-    }
-
-    fun collectSourceDirs(vararg projects: IdeModule): List<File> {
-        val sources = mutableListOf<File>()
-        for (project in projects) {
-            if (project is IdeJavaModule) {
-                sources.addAll(collectSources(project))
-            } else if (project is IdeAndroidModule) {
-                sources.addAll(collectSources(project))
-            }
-        }
-
-        return sources
-    }
-
-    fun collectSources(java: IdeJavaModule): List<File> {
-        val sources = mutableListOf<File>()
-        for (root in java.contentRoots) {
-            sources.addAll(root.sourceDirectories.map { it.directory })
-        }
-
-        return sources
-    }
-
-    fun collectSources(android: IdeAndroidModule): List<File> {
-        if (android.mainSourceSet == null) {
-            return mutableListOf()
-        }
-
-        // src/main/java
-        val sources = android.mainSourceSet!!.sourceProvider.javaDirectories.toMutableList()
-
-        // src/main/kotlin
-        sources.addAll(android.mainSourceSet!!.sourceProvider.kotlinDirectories)
-
-        // build/generated/**
-        // AIDL, ViewBinding, Renderscript, BuildConfig i.e every generated source sources
-        val debugVariant = android.simpleVariants.firstOrNull { it.name == "debug" }
-        if (debugVariant != null) {
-            sources.addAll(debugVariant.mainArtifact.generatedSourceFolders)
-        }
-        return sources
-    }
+    @Suppress("unused")
+    fun collectSources(android: IdeAndroidModule) = ProjectDataCollector.collectSources(android)
 
     fun findModuleForFile(file: File): CompletableFuture<IdeGradleProject?> {
         if (!checkInit()) {

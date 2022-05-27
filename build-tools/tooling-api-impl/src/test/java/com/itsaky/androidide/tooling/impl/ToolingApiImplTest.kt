@@ -18,17 +18,23 @@
 package com.itsaky.androidide.tooling.impl
 
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
-import com.android.builder.model.v2.ide.ProjectType
+import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.google.common.truth.Truth.assertThat
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.IProject.Type.Android
+import com.itsaky.androidide.tooling.api.IProject.Type.Gradle
+import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.IToolingApiServer
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage
 import com.itsaky.androidide.tooling.api.messages.result.BuildResult
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher
 import com.itsaky.androidide.tooling.events.ProgressEvent
@@ -55,6 +61,10 @@ class ToolingApiImplTest {
 
         server.initialize(InitializeProjectMessage(getTestProject().absolutePath)).get()
 
+        verifyProjectProps(project, server)
+    }
+
+    private fun verifyProjectProps(project: IProject, server: IToolingApiServer) {
         assertThat(project).isNotNull()
         // As the returned project is just a proxy,
         // project instanceOf IdeGradleProject will always return false
@@ -71,7 +81,7 @@ class ToolingApiImplTest {
         assertThat(app.javaCompileOptions.targetCompatibility).isEqualTo("11")
         assertThat(app.javaCompileOptions.isCoreLibraryDesugaringEnabled).isFalse()
 
-        assertThat(app.projectType).isEqualTo(ProjectType.APPLICATION)
+        assertThat(app.projectType).isEqualTo(APPLICATION)
         assertThat(app.packageName).isEqualTo("com.itsaky.test.app")
 
         assertThat(app.viewBindingOptions).isNotNull()
@@ -95,7 +105,7 @@ class ToolingApiImplTest {
 
         assertThat(project.findByPath(":does-not-exist").get()).isNull()
     }
-
+    
     private fun launchServer(client: IToolingApiClient): Pair<IToolingApiServer, IProject> {
         val builder = ProcessBuilder("java", "-jar", "./build/libs/tooling-api-all.jar")
         builder.environment()["ANDROID_SDK_ROOT"] = findAndroidHome()

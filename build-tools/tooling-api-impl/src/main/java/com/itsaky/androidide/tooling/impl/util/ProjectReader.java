@@ -213,7 +213,7 @@ public class ProjectReader {
     System.err.println("Fetching project model...");
     final var android = controller.findModel(gradle, AndroidProject.class);
     final var module = buildAndroidModuleProject(gradle, android, basicAndroid.getProjectType());
-    module.setBoothclasspaths(basicAndroid.getBootClasspath());
+    module.setBootClassPaths (basicAndroid.getBootClasspath());
     module.setMainSourceSet(
         basicAndroid.getMainSourceSet() == null
             ? null

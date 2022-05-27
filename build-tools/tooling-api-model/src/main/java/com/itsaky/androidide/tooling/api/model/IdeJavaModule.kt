@@ -17,8 +17,11 @@
 
 package com.itsaky.androidide.tooling.api.model
 
+import com.itsaky.androidide.tooling.api.IProject.Type
+import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import java.io.File
 import java.io.Serializable
+import java.util.concurrent.*
 
 /**
  * A java library model. Modules represented by this model does not apply any of the Android
@@ -40,7 +43,7 @@ open class IdeJavaModule(
     val contentRoots: List<JavaContentRoot>,
 
     /** Dependencies of this project. */
-    val javaDependencies: List<JavaModuleDependency>
+    private val javaDependencies: List<JavaModuleDependency>
 ) :
     IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
     IdeModule,
@@ -48,6 +51,10 @@ open class IdeJavaModule(
     Serializable {
 
     override fun getDependencies() = javaDependencies
+
+    override fun getType(): CompletableFuture<Type> {
+        return CompletableFuture.completedFuture(Java)
+    }
 
     @Deprecated("Use getClasspath() instead.")
     override fun getGeneratedJar(variant: String): File {

@@ -18,6 +18,7 @@
 package com.itsaky.androidide.projects
 
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.IProject.Type
 import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
@@ -43,6 +44,7 @@ class CachingProject(val project: IProject) : IProject {
     private val mProjectDir: File by lazy { this.project.projectDir.get() }
     private val mBuildDir: File by lazy { this.project.buildDir.get() }
     private val mBuildScript: File by lazy { this.project.buildScript.get() }
+    private val mProjectType: Type by lazy { this.project.type.get() }
 
     private var mFirstAppModule: IdeAndroidModule? = null
     private val mCachedVariants: MutableMap<VariantDataRequest, SimpleVariantData> = mutableMapOf()
@@ -62,6 +64,10 @@ class CachingProject(val project: IProject) : IProject {
 
     override fun getProjectPath(): CompletableFuture<String> {
         return CompletableFuture.completedFuture(mProjectPath)
+    }
+
+    override fun getType(): CompletableFuture<Type> {
+        return CompletableFuture.completedFuture(mProjectType)
     }
 
     override fun getProjectDir(): CompletableFuture<File> {

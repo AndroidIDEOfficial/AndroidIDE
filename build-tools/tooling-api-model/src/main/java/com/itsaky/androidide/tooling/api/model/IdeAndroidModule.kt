@@ -27,11 +27,14 @@ import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
 import com.itsaky.androidide.builder.model.DefaultVariant
 import com.itsaky.androidide.builder.model.DefaultVariantDependencies
 import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
+import com.itsaky.androidide.tooling.api.IProject.Type
+import com.itsaky.androidide.tooling.api.IProject.Type.Android
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import java.io.File
 import java.io.Serializable
 import org.eclipse.lemminx.dom.DOMParser
 import org.eclipse.lemminx.uriresolver.URIResolverExtensionManager
+import java.util.concurrent.*
 
 /**
  * Default implementation of [IdeAndroidModule].
@@ -73,7 +76,7 @@ open class IdeAndroidModule(
 
             return field
         }
-    var boothclasspaths: Collection<File> = emptyList()
+    var bootClassPaths: Collection<File> = emptyList()
     var mainSourceSet: DefaultSourceSetContainer? = null
 
     @Deprecated(
@@ -166,6 +169,10 @@ open class IdeAndroidModule(
         const val FD_LOGS = "logs"
         const val FD_OUTPUTS = "outputs"
         const val FD_GENERATED = "generated"
+    }
+    
+    override fun getType(): CompletableFuture<Type> {
+        return CompletableFuture.completedFuture(Android)
     }
 
     @Deprecated(
