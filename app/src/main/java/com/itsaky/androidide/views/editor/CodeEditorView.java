@@ -51,6 +51,7 @@ import com.itsaky.androidide.databinding.LayoutCodeEditorBinding;
 import com.itsaky.androidide.language.groovy.GroovyLanguage;
 import com.itsaky.androidide.language.java.JavaLanguage;
 import com.itsaky.androidide.language.xml.XMLLanguage;
+import com.itsaky.androidide.language.kotlin.KotlinLanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
@@ -284,7 +285,10 @@ public class CodeEditorView extends FrameLayout {
       binding.editor.setLanguageServer(StudioApp.getInstance().getXMLLanguageServer());
     } else if (file.isFile() && file.getName().endsWith(".gradle")) {
       binding.editor.setEditorLanguage(new GroovyLanguage());
-    } else {
+    } else if (file.isFile() && file.getName().endsWith(".kt")) {
+      binding.editor.setEditorLanguage(new KotlinLanguage());
+    } 
+    else {
       binding.editor.setEditorLanguage(new EmptyLanguage());
     }
 
