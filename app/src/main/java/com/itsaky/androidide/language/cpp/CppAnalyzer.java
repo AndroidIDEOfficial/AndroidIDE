@@ -9,29 +9,59 @@ import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComm
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forKeyword;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.withoutCompletion;
 
+import androidx.annotation.NonNull;
+
+import com.itsaky.androidide.language.IAnalyzeManager;
 import com.itsaky.androidide.lexers.cpp.CPP14Lexer;
 import com.itsaky.androidide.lexers.cpp.CPP14Parser;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.DiagnosticSeverity;
+import com.itsaky.lsp.models.Position;
+import com.itsaky.lsp.models.Range;
 
 import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.MappedSpans;
+import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.Styles;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
-public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
+public class CppAnalyzer extends SimpleAnalyzeManager<Void> implements IAnalyzeManager {
 
     private static final ILogger LOG = ILogger.newInstance("CppAnalyzer");
+    private final List<DiagnosticItem> ideDiagnostics = new ArrayList<>();
+    private List<DiagnosticItem> diagnostics = new ArrayList<>();
+
+    @Override
+    public void updateDiagnostics(@NonNull List<DiagnosticItem> diagnostics) {
+        this.diagnostics = diagnostics;
+    }
+
+    @NonNull
+    @Override
+    public List<DiagnosticItem> getDiagnostics() {
+        final var result = new ArrayList<>(ideDiagnostics);
+        if (diagnostics != null && !diagnostics.isEmpty()) {
+            result.addAll(diagnostics);
+        }
+        result.sort(DiagnosticItem.START_COMPARATOR);
+        return result;
+    }
 
     @Override
     protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {
@@ -52,6 +82,8 @@ public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
         int line, column, lastLine = 1, currSwitch = 0, maxSwitch = 0, type, previous = 0;
         boolean isFirst = true;
 
+        ideDiagnostics.clear();
+
         while (!delegate.isCancelled()) {
             token = lexer.nextToken();
             if (token == null) {
@@ -66,6 +98,8 @@ public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
                 lastLine = line;
                 break;
             }
+
+            final var tokenLength = token.getText().length();
 
             switch (type) {
                 case Whitespace:
@@ -216,8 +250,44 @@ public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
                     colors.addIfNeeded(line, column, get(LITERAL));
                     break;
                 case BlockComment:
+                    colors.addIfNeeded(line, column, forComment());
+                    break;
                 case LineComment:
-                    colors.addIfNeeded(line, column, get(SchemeAndroidIDE.COMMENT));
+                    var commentType = SchemeAndroidIDE.COMMENT;
+
+                    // highlight special line comments
+                    var commentText = token.getText();
+                    if (commentText.length() > 2) {
+                        commentText = commentText.substring(2);
+                        commentText = commentText.trim();
+
+                        var mark = true;
+                        if ("todo".equalsIgnoreCase(commentText.substring(0, 4))) {
+                            commentType = SchemeAndroidIDE.TODO_COMMENT;
+                        } else if ("fixme".equalsIgnoreCase(commentText.substring(0, 5))) {
+                            commentType = SchemeAndroidIDE.FIXME_COMMENT;
+                        } else {
+                            mark = false;
+                        }
+
+                        if (mark) {
+                            if (diagnostics == null) {
+                                diagnostics = new ArrayList<>();
+                            }
+                            final var diagnostic = new DiagnosticItem();
+                            diagnostic.setSeverity(DiagnosticSeverity.WARNING);
+                            diagnostic.setMessage(commentText);
+                            diagnostic.setCode("special.comment");
+                            diagnostic.setRange(
+                                    new Range(
+                                            new Position(line, column),
+                                            new Position(line, column + tokenLength)));
+                            diagnostic.setSource(commentText);
+                            ideDiagnostics.add(diagnostic);
+                        }
+                    }
+
+                    colors.addIfNeeded(line, column, withoutCompletion(commentType));
                     break;
                 case MultiLineMacro:
                 case Directive:
@@ -241,8 +311,53 @@ public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
 
         colors.determine(lastLine);
         styles.setSuppressSwitch(maxSwitch + 10);
+        if (diagnostics != null && !diagnostics.isEmpty()) {
+            markDiagnostics(colors, diagnostics);
+        }
+
+        if (!ideDiagnostics.isEmpty()) {
+            markDiagnostics(colors, ideDiagnostics);
+        }
+
         styles.spans = colors.build();
 
         return styles;
+    }
+
+    private void markDiagnostics(MappedSpans.Builder colors, List<DiagnosticItem> diagnostics) {
+        diagnostics.sort(DiagnosticItem.START_COMPARATOR);
+        for (var d : diagnostics) {
+            if (d == null) {
+                continue;
+            }
+
+            var start = d.getRange().getStart();
+            var end = d.getRange().getEnd();
+
+            try {
+                colors.markProblemRegion(
+                        convertToSpanFlag(d.getSeverity()),
+                        start.getLine(),
+                        start.getColumn(),
+                        end.getLine(),
+                        end.getColumn());
+            } catch (Throwable e) {
+                // Might happen frequently if user types faster
+            }
+        }
+    }
+
+    @Contract(pure = true)
+    private int convertToSpanFlag(@NonNull DiagnosticSeverity severity) {
+        switch (severity) {
+            case WARNING:
+                return Span.FLAG_WARNING;
+            case ERROR:
+                return Span.FLAG_ERROR;
+            case HINT:
+            case INFO:
+            default:
+                return Span.FLAG_TYPO;
+        }
     }
 }
