@@ -82,4 +82,12 @@ public class SearchResultFragment extends Fragment {
       list.setVisibility(error ? View.GONE : View.VISIBLE);
     }
   }
+  
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unsavedAdapter = null; 
+        list = null;
+        emptyView = null;
+    }
 }

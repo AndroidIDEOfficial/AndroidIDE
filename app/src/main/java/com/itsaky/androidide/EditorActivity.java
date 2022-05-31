@@ -1280,6 +1280,8 @@ public class EditorActivity extends StudioActivity
       LOG.error("Failed to unregister LogReceiver", th);
     }
     unbindService(mGradleServiceConnection);
+    mBinding = null;
+    mViewModel = null;
     super.onDestroy();
   }
 
