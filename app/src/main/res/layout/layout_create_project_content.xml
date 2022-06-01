@@ -105,108 +105,113 @@
 			android:singleLine="true" />
 
 	</com.google.android.material.textfield.TextInputLayout>
-
-
-	<TextView
-		android:id="@+id/createproject_templateLabel"
-		android:layout_width="wrap_content"
+	
+	<LinearLayout
+		android:id="@+id/createproject_templateContainer"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="48dp"
-		android:layout_marginEnd="62dp"
-		android:layout_marginBottom="8dp"
-		android:singleLine="true"
-		android:text="@string/template_empty"
-		android:textColor="@color/secondaryColor"
-		android:textStyle="bold"
-		app:layout_constraintBottom_toTopOf="@+id/createproject_templateDescription"
-		app:layout_constraintEnd_toStartOf="@+id/createproject_templateImage"
-		app:layout_constraintStart_toStartOf="parent" />
-
-	<TextView
-		android:id="@+id/createproject_templateDescription"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:layout_marginStart="48dp"
-		android:layout_marginEnd="16dp"
-		android:textColor="@color/secondaryTextColor"
-		app:layout_constraintBottom_toTopOf="@+id/previousCard"
-		app:layout_constraintEnd_toStartOf="@+id/createproject_templateImage"
-		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/createproject_templateImage" />
-
-
-	<com.google.android.material.card.MaterialCardView
-		android:id="@+id/previousCard"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
-		android:layout_marginStart="48dp"
-		android:layout_marginEnd="32dp"
-		android:layout_marginBottom="32dp"
-		android:clickable="true"
-		android:descendantFocusability="blocksDescendants"
-		android:focusable="true"
-		android:foreground="?attr/selectableItemBackgroundBorderless"
-		app:cardBackgroundColor="@android:color/transparent"
-		app:cardCornerRadius="50dp"
-		app:cardElevation="0dp"
+		android:orientation="horizontal"
+		android:padding="8dp"
+		android:layout_marginBottom="16dp"
 		app:layout_constraintBottom_toTopOf="@+id/createproject_create"
-		app:layout_constraintEnd_toStartOf="@+id/nextCard"
+		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/createproject_templateDescription"
-		app:strokeColor="@color/secondaryColor"
-		app:strokeWidth="0.75dp">
+		app:layout_constraintTop_toBottomOf="@+id/createproject_textTargetSdk">
+		
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="vertical"
+			android:layout_weight="1">
+			<TextView
+				android:id="@+id/createproject_templateLabel"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="16dp"
+				android:layout_marginEnd="8dp"
+				android:layout_marginBottom="8dp"
+				android:text="@string/template_empty"
+				android:textColor="@color/secondaryColor"
+				android:textStyle="bold" />
 
+			<TextView
+				android:id="@+id/createproject_templateDescription"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginStart="16dp"
+				android:layout_marginEnd="8dp"
+				android:textColor="@color/secondaryTextColor" />
+			
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+				<com.google.android.material.card.MaterialCardView
+					android:id="@+id/previousCard"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:layout_margin="8dp"
+					android:clickable="true"
+					android:descendantFocusability="blocksDescendants"
+					android:focusable="true"
+					android:foreground="?attr/selectableItemBackgroundBorderless"
+					app:cardBackgroundColor="@android:color/transparent"
+					app:cardCornerRadius="50dp"
+					app:cardElevation="0dp"
+					app:strokeColor="@color/secondaryColor"
+					app:strokeWidth="0.75dp">
+
+					<ImageView
+						android:id="@+id/createproject_previousTemplate"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:padding="10dp"
+						android:scaleType="fitCenter"
+						app:srcCompat="@drawable/ic_chevron_left" />
+
+				</com.google.android.material.card.MaterialCardView>
+				
+				<LinearLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_weight="1" />
+
+				<com.google.android.material.card.MaterialCardView
+					android:id="@+id/nextCard"
+					android:layout_width="48dp"
+					android:layout_height="48dp"
+					android:layout_marginEnd="180dp"
+					android:clickable="true"
+					android:descendantFocusability="blocksDescendants"
+					android:focusable="true"
+					android:foreground="?attr/selectableItemBackgroundBorderless"
+					app:cardBackgroundColor="@android:color/transparent"
+					app:cardCornerRadius="50dp"
+					app:cardElevation="0dp"
+					app:strokeColor="@color/secondaryColor"
+					app:strokeWidth="0.75dp">
+
+					<ImageView
+						android:id="@+id/createproject_nextTemplate"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:padding="10dp"
+						android:scaleType="fitCenter"
+						app:srcCompat="@drawable/ic_chevron_right" />
+
+				</com.google.android.material.card.MaterialCardView>
+			</LinearLayout>
+			
+		</LinearLayout>
+		
 		<ImageView
-			android:id="@+id/createproject_previousTemplate"
-			android:layout_width="match_parent"
+			android:id="@+id/createproject_templateImage"
+			android:layout_width="90dp"
 			android:layout_height="match_parent"
-			android:padding="10dp"
-			android:scaleType="fitCenter"
-			app:srcCompat="@drawable/ic_chevron_left" />
-
-	</com.google.android.material.card.MaterialCardView>
-
-	<com.google.android.material.card.MaterialCardView
-		android:id="@+id/nextCard"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
-		android:layout_marginEnd="180dp"
-		android:clickable="true"
-		android:descendantFocusability="blocksDescendants"
-		android:focusable="true"
-		android:foreground="?attr/selectableItemBackgroundBorderless"
-		app:cardBackgroundColor="@android:color/transparent"
-		app:cardCornerRadius="50dp"
-		app:cardElevation="0dp"
-		app:layout_constraintBottom_toBottomOf="@+id/previousCard"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@+id/previousCard"
-		app:layout_constraintTop_toBottomOf="@+id/createproject_templateDescription"
-		app:strokeColor="@color/secondaryColor"
-		app:strokeWidth="0.75dp">
-
-		<ImageView
-			android:id="@+id/createproject_nextTemplate"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="10dp"
-			android:scaleType="fitCenter"
-			app:srcCompat="@drawable/ic_chevron_right" />
-
-	</com.google.android.material.card.MaterialCardView>
-
-
-	<ImageView
-		android:id="@+id/createproject_templateImage"
-		android:layout_width="0dp"
-		android:layout_height="0dp"
-		android:scaleType="fitCenter"
-		app:layout_constraintBottom_toTopOf="@+id/createproject_templateDescription"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintStart_toEndOf="@+id/createproject_templateDescription"
-		app:layout_constraintTop_toBottomOf="@+id/createproject_textTargetSdk" />
-
-
+			android:scaleType="fitCenter" />
+		
+	</LinearLayout>
+		
 	<Button
 		android:id="@+id/createproject_create"
 		android:layout_width="wrap_content"
@@ -217,6 +222,6 @@
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/previousCard" />
+		app:layout_constraintTop_toBottomOf="@+id/createproject_templateContainer" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
