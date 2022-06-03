@@ -372,12 +372,19 @@ public class MainActivity extends StudioActivity
                 .setId(4)
                 .setName(this, R.string.template_libgdx)
                 .setDescription(this, R.string.template_description_libgdx)
-                .setImageId(R.drawable.template_libgdx);
+                .setImageId(R.drawable.template_libgdx),
+        compose =
+            new ProjectTemplate()
+                .setId(5)
+                .setName(this, R.string.template_compose)
+                .setDescription(this, R.string.template_description_compose)
+                .setImageId(R.drawable.template_kotlin);
     mTemplates.add(empty);
     mTemplates.add(basic);
     mTemplates.add(drawer);
     mTemplates.add(kotlinBasic);
     mTemplates.add(libgdx);
+    mTemplates.add(compose);
   }
 
   private void askProjectOpenPermission(File root) {

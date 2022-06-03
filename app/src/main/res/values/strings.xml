@@ -142,6 +142,8 @@
     <string name="template_description_kotlin_basic">Kotlin project with Appcompat Toolbar and a Floating Action Button</string>
     <string name="template_libgdx">LibGDX Game</string>
     <string name="template_description_libgdx">LibGDX game project set up to render an image as an example.</string>
+    <string name="template_compose">Jetpack Compose</string>
+    <string name="template_description_compose">Basic Jetpack Compose hello world project.</string>
 
     <!-- Files -->
     <string name="save">Save</string>
