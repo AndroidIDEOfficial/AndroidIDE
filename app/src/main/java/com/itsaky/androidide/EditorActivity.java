@@ -962,6 +962,7 @@ public class EditorActivity extends StudioActivity
   @NonNull
   public CompletableFuture<TaskExecutionResult> execTasks(
       Consumer<TaskExecutionResult> resultHandler, String... tasks) {
+    saveAll(false);
     runOnUiThread(() -> appendBuildOut("Executing tasks: " + TextUtils.join(", ", tasks)));
     return mBuildService
         .executeTasks(tasks)
