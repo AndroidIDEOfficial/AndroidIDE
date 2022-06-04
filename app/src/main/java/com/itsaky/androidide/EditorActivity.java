@@ -930,8 +930,10 @@ public class EditorActivity extends StudioActivity
     ProjectManager.INSTANCE.notifyProjectUpdate();
     ThreadUtils.runOnUiThread(
         () -> {
+          initialSetup();
           setStatus(getString(R.string.msg_project_initialized));
           mBinding.buildProgressIndicator.setVisibility(View.GONE);
+          
           if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
             mFindInProjectDialog.dismiss();
           }
@@ -1107,7 +1109,6 @@ public class EditorActivity extends StudioActivity
     setSupportActionBar(mBinding.editorToolbar);
 
     mViewModel = new ViewModelProvider(this).get(EditorViewModel.class);
-    initialSetup();
 
     mFileTreeFragment = FileTreeFragment.newInstance();
     mDaemonStatusFragment = new TextSheetFragment().setTextSelectable(true);
@@ -1280,9 +1281,9 @@ public class EditorActivity extends StudioActivity
       LOG.error("Failed to unregister LogReceiver", th);
     }
     unbindService(mGradleServiceConnection);
+    super.onDestroy();
     mBinding = null;
     mViewModel = null;
-    super.onDestroy();
   }
 
   private void setupDrawerToggle() {
@@ -1517,8 +1518,19 @@ public class EditorActivity extends StudioActivity
 
     try {
       //noinspection ConstantConditions
+      final var rootProject = ProjectManager.INSTANCE.getRootProject();
+      
+            var projectName = rootProject.getName().get();
+            if(projectName.isEmpty())
+ {
+     projectName = new File(ProjectManager.INSTANCE.getProjectDirPath()).getName();
+    getSupportActionBar()
+          .setSubtitle(projectName);
+    }
+    else{
       getSupportActionBar()
-          .setSubtitle(new File(ProjectManager.INSTANCE.getProjectDirPath()).getName());
+          .setSubtitle(projectName);
+          }
     } catch (Throwable th) {
       // ignored
     }
@@ -1562,7 +1574,7 @@ public class EditorActivity extends StudioActivity
     }
 
     initializeLanguageServers();
-
+    
     // Actually, we don't need to start FileOptionsHandler
     // Because it would work anyway
     // But still we do...
