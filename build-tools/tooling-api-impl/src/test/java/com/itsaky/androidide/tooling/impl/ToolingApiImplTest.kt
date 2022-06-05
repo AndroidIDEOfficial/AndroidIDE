@@ -60,6 +60,7 @@ class ToolingApiImplTest {
 
     private fun verifyProjectProps(project: IProject, server: IToolingApiServer) {
         assertThat(project).isNotNull()
+        assertThat(project.type.get()).isEqualTo(IProject.Type.Gradle)
         // As the returned project is just a proxy,
         // project instanceOf IdeGradleProject will always return false
 
