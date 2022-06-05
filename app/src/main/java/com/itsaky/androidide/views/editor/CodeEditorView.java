@@ -244,26 +244,6 @@ public class CodeEditorView extends FrameLayout {
         }
     }
 
-    public void findDefinition() {
-        binding.editor.findDefinition();
-    }
-
-    public void findReferences() {
-        binding.editor.findReferences();
-    }
-
-    public void commentLine() {
-        binding.editor.commentLine();
-    }
-
-    public void uncommentLine() {
-        binding.editor.uncommentLine();
-    }
-
-    public void beginSearch() {
-        binding.editor.beginSearchMode();
-    }
-
     protected void postRead() {
         binding.editor.setEditorLanguage(createLanguage(file));
         binding.editor.setLanguageServer(createLanguageServer(file));
