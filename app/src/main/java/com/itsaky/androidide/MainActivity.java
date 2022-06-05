@@ -25,10 +25,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.transition.TransitionManager;
 
+import com.blankj.utilcode.util.StringUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.transition.MaterialContainerTransform;
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
@@ -43,12 +48,15 @@ import com.itsaky.androidide.models.ProjectTemplate;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.tasks.callables.ProjectCreatorCallable;
+import com.itsaky.androidide.utils.AndroidUtils;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.TransformUtils;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import abhishekti7.unicorn.filepicker.UnicornFilePicker;
@@ -96,11 +104,53 @@ public class MainActivity extends StudioActivity
   }
 
   private void showCreateProject() {
+    createLayoutBinding.textAppName.setText("My Application");
+    createLayoutBinding.textPackageName.setText("com.example.myapplication");
+    createLayoutBinding.textMinSdk.setAdapter(
+        new ArrayAdapter<>(
+            createLayoutBinding.textMinSdk.getContext(),
+            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+            getSdks()));
+    createLayoutBinding.textMinSdk.setOnItemSelectedListener(
+        new AdapterView.OnItemSelectedListener() {
+          @Override
+          public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {}
+
+          @Override
+          public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
+    createLayoutBinding.textTargetSdk.setAdapter(
+        new ArrayAdapter<>(
+            createLayoutBinding.textTargetSdk.getContext(),
+            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+            getSdks()));
+    createLayoutBinding.textTargetSdk.setOnItemSelectedListener(
+        new AdapterView.OnItemSelectedListener() {
+          @Override
+          public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {}
+
+          @Override
+          public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
+    createLayoutBinding.textMinSdk.setListSelection(5);
+    createLayoutBinding.textMinSdk.setText(
+        getSelectedItem(5, createLayoutBinding.textMinSdk), false);
+
+    createLayoutBinding.textTargetSdk.setListSelection(16);
+    createLayoutBinding.textTargetSdk.setText(
+        getSelectedItem(16, createLayoutBinding.textTargetSdk), false);
+
     MaterialContainerTransform transform =
         TransformUtils.createContainerTransformFor(
             binding.createProject, binding.createNewCard, binding.realContainer);
     TransitionManager.beginDelayedTransition(binding.getRoot(), transform);
     binding.createNewCard.setVisibility(View.VISIBLE);
+  }
+
+  private String getSelectedItem(int pos, MaterialAutoCompleteTextView view) {
+    return view.getAdapter().getItem(pos).toString();
   }
 
   private void hideCreateProject() {
@@ -135,7 +185,15 @@ public class MainActivity extends StudioActivity
     final int minSdk = getMinSdk();
     final int targetSdk = getTargetSdk();
 
-    if (!isValid(appName, packageName, minSdk, targetSdk)) {
+    String pkgCheckerMsg = AndroidUtils.validatePackageName(packageName);
+    if (!StringUtils.isEmpty(pkgCheckerMsg)) {
+      Toast.makeText(
+              createLayoutBinding.createprojectTextPackageName.getContext(),
+              pkgCheckerMsg,
+              Toast.LENGTH_LONG)
+          .show();
+      return;
+    } else if (!isValid(appName, minSdk, targetSdk)) {
       getApp().toast(R.string.invalid_values, Toaster.Type.ERROR);
       return;
     }
@@ -162,10 +220,15 @@ public class MainActivity extends StudioActivity
 
   private int getMinSdk() {
     try {
-      return Integer.parseInt(
-          Objects.requireNonNull(createLayoutBinding.createprojectTextMinSdk.getEditText())
+      String minSdk =
+          createLayoutBinding
+              .textMinSdk
               .getText()
-              .toString());
+              .toString()
+              .substring("API".length() + 1, "API".length() + 3); // at least 2 digits
+      int minSdkInt = Integer.parseInt(minSdk);
+
+      return minSdkInt;
     } catch (Exception e) {
       getApp().toast(e.getMessage(), Toaster.Type.ERROR);
     }
@@ -174,21 +237,23 @@ public class MainActivity extends StudioActivity
 
   private int getTargetSdk() {
     try {
-      return Integer.parseInt(
-          Objects.requireNonNull(createLayoutBinding.createprojectTextTargetSdk.getEditText())
+      String targetSdk =
+          createLayoutBinding
+              .textTargetSdk
               .getText()
-              .toString());
+              .toString()
+              .substring("API".length() + 1, "API".length() + 3); // at least 2 digits
+      int targetSdkInt = Integer.parseInt(targetSdk);
+      return targetSdkInt;
     } catch (Exception e) {
       getApp().toast(e.getMessage(), Toaster.Type.ERROR);
     }
     return -1;
   }
 
-  private boolean isValid(String appName, String packageName, int minSdk, int targetSdk) {
+  private boolean isValid(String appName, int minSdk, int targetSdk) {
     return appName != null
         && appName.length() > 0
-        && packageName != null
-        && packageName.length() > 0
         && minSdk > 1
         && minSdk < 99
         && targetSdk > 1
@@ -416,6 +481,28 @@ public class MainActivity extends StudioActivity
         }
       }
     }
+  }
+
+  private List<String> getSdks() {
+    return Arrays.asList(
+        "API 16: Android 4.0 (Ice Cream Sandwich)",
+        "API 17: Android 4.2 (JellyBean)",
+        "API 18: Android 4.3 (JellyBean)",
+        "API 19: Android 4.4 (KitKat)",
+        "API 20: Android 4.4W (KitKat Wear)",
+        "API 21: Android 5.0 (Lollipop)",
+        "API 22: Android 5.1 (Lollipop)",
+        "API 23: Android 6.0 (Marshmallow)",
+        "API 24: Android 7.0 (Nougat)",
+        "API 25: Android 7.1 (Nougat)",
+        "API 26: Android 8.0 (Oreo)",
+        "API 27: Android 8.1 (Oreo)",
+        "API 28: Android 9.0 (Pie)",
+        "API 29: Android 10.0 (Q)",
+        "API 30: Android 11.0 (R)",
+        "API 31: Android 12.0 (S)",
+        "API 32: Android 12.1 (L)",
+        "API 33: Android 13.0 (T)");
   }
 
   @Override
