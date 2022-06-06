@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -69,6 +70,14 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
   private int minSdkIndex;
   private int targetSdkIndex;
 
+  private final OnBackPressedCallback onBackPressedCallback =
+      new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+          onNavigateBack();
+        }
+      };
+
   @Nullable
   @Override
   public View onCreateView(
@@ -87,6 +96,10 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
 
+    requireActivity()
+        .getOnBackPressedDispatcher()
+        .addCallback(getViewLifecycleOwner(), onBackPressedCallback);
+
     footerBinding.nextButton.setOnClickListener(v -> onNavigateNext());
     footerBinding.exitButton.setOnClickListener(v -> onNavigateBack());
 
@@ -102,6 +115,12 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
   }
 
   @Override
+  public void onDestroy() {
+    super.onDestroy();
+    onBackPressedCallback.setEnabled(false);
+  }
+
+  @Override
   public void onDestroyView() {
     super.onDestroyView();
     binding = null;
@@ -110,6 +129,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     detailsBinding = null;
     footerBinding = null;
     mAdapter = null;
+    mProgressSheet = null;
   }
 
   private String getSelectedItem(int pos, AutoCompleteTextView view) {
