@@ -27,6 +27,8 @@ public class ProjectTemplate {
   private int id;
   private String name;
   private String description;
+  private boolean isSupportJava;
+  private boolean isSupportKotlin;
 
   @DrawableRes private int imageId;
 
@@ -81,5 +83,24 @@ public class ProjectTemplate {
 
   public int getImageId() {
     return imageId;
+  }
+
+  public boolean isSupportJava() {
+    return this.isSupportJava;
+  }
+
+  
+  public ProjectTemplate setSupportJava(boolean isSupportJava) {
+    this.isSupportJava = isSupportJava;
+    return this;
+  }
+
+  public boolean isSupportKotlin() {
+    return this.isSupportKotlin;
+  }
+
+  public ProjectTemplate setSupportKotlin(boolean isSupportKotlin) {
+    this.isSupportKotlin = isSupportKotlin;
+    return this;
   }
 }

@@ -43,6 +43,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -222,6 +224,55 @@ public class FileUtil {
       File file = new File(path);
       file.mkdirs();
     }
+  }
+
+  // Get the target saving file/dir which not exist, by adding (1), (2), etc
+  @NonNull
+  public static File getTargetNonExistFile(String path, boolean isDir) {
+    if (!isExistFile(path)) {
+      return new File(path);
+    }
+    int index = 1;
+    String folder = null;
+    String name = null;
+    String fileType = null;
+    if (!isDir) {
+      int slashPos = path.lastIndexOf('/');
+      folder = path.substring(0, slashPos + 1);
+      String filename = path.substring(slashPos + 1);
+
+      name = filename;
+      fileType = "";
+      int dotPos = filename.lastIndexOf('.');
+      if (dotPos != -1) {
+        name = filename.substring(0, dotPos);
+        fileType = filename.substring(dotPos);
+      }
+    }
+
+    while (true) {
+      String testingPath =
+          isDir ? path + "(" + index + ")" : folder + name + "(" + index + ")" + fileType;
+      File node = new File(testingPath);
+      if (!node.exists()) {
+        return node;
+      }
+      index += 1;
+    }
+  }
+
+  // Get the target saving path which not exist, by adding (1), (2), etc
+  @NonNull
+  public static String getTargetNonExistPath(String path, boolean isDir) {
+    return getTargetNonExistFile(path, isDir).getPath();
+  }
+
+  // Create a new directory by adding (1) (2), ...
+  @NonNull
+  public static File createDirByAddSuffix(String path) {
+    File f = getTargetNonExistFile(path, true);
+    f.mkdirs();
+    return f;
   }
 
   public static void listDir(String path, ArrayList<String> list) {

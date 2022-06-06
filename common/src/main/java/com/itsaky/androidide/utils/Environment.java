@@ -182,7 +182,11 @@ public final class Environment {
   public static void setBootClasspath(@NonNull File file) {
     BOOTCLASSPATH = new File(file.getAbsolutePath());
   }
-
+  
+  public static void setProjectDir(@NonNull File file) {
+    PROJECTS_DIR = new File(file.getAbsolutePath());
+  }
+  
   public static Map<String, String> getEnvironment() {
 
     if (!ENV_VARS.isEmpty()) {
