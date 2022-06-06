@@ -28,6 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionNext"
+            android:inputType="textNoSuggestions"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -52,6 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:imeOptions="actionNext"
+            android:inputType="textNoSuggestions"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,6 +75,7 @@
             android:id="@+id/et_save_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textNoSuggestions"
             android:ellipsize="start" />
     </com.google.android.material.textfield.TextInputLayout>
 
