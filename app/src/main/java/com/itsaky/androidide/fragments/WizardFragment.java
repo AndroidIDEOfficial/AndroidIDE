@@ -141,6 +141,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     TransitionManager.beginDelayedTransition((ViewGroup) requireView(), new MaterialFadeThrough());
     binding.loadingLayout.getRoot().setVisibility(View.VISIBLE);
     binding.wizardTemplatesLayout.getRoot().setVisibility(View.GONE);
+    footerBinding.nextButton.setVisibility(View.GONE);
 
     Executors.newSingleThreadExecutor()
         .execute(
@@ -364,6 +365,12 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
             requireContext(),
             androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
             languages));
+
+    if (languages.size() == 1) {
+      detailsBinding.tilLanguage.setEnabled(false);
+    } else {
+      detailsBinding.tilLanguage.setEnabled(true);
+    }
 
     detailsBinding.etLanguage.setListSelection(0);
     detailsBinding.etLanguage.setText(getSelectedItem(0, detailsBinding.etLanguage), false);
