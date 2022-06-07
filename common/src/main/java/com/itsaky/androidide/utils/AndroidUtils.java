@@ -72,7 +72,7 @@ public class AndroidUtils {
   }
 
   public static boolean validateNameChecker(@NotNull String name) {
-    return name.matches("");
+    return name.matches("^([a-zA-Z0-9_]*)$");
   }
 
   @Nullable

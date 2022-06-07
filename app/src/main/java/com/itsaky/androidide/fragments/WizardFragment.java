@@ -495,9 +495,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     if (TextUtils.isEmpty(name)) {
       detailsBinding.tilAppName.setError(getString(R.string.wizard_error_name_empty));
       return;
-    } else if (name.contains(File.pathSeparator)
-        || name.contains(File.separator)
-        || AndroidUtils.validateNameChecker(AndroidUtils.trimWhiteSpace(name))) {
+    } else if (!AndroidUtils.validateNameChecker(AndroidUtils.trimWhiteSpace(name))) {
       detailsBinding.tilAppName.setError(getString(R.string.wizard_error_name_illegal));
       return;
     } else {
