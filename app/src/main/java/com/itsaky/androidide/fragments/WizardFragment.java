@@ -308,7 +308,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
         "API 29: Android 10.0 (Q)",
         "API 30: Android 11.0 (R)",
         "API 31: Android 12.0 (S)",
-        "API 32: Android 12.1 (L)");
+        "API 32: Android 12.1L (S)");
   }
 
   private void onNavigateBack() {
