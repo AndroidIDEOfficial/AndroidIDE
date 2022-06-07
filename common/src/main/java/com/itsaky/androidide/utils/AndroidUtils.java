@@ -71,6 +71,10 @@ public class AndroidUtils {
     return null;
   }
 
+  public static boolean validateNameChecker(@NotNull String name) {
+    return name.matches("");
+  }
+
   @Nullable
   public static String validatePackageName(@Nullable String packageName) {
     packageName = (packageName == null) ? "" : packageName;
