@@ -17,7 +17,7 @@
 
 package com.itsaky.androidide.utils;
 
-import static com.itsaky.androidide.utils.Environment.SYSROOT;
+import static com.itsaky.androidide.utils.Environment.PREFIX;
 
 import android.content.Context;
 import android.system.ErrnoException;
@@ -89,7 +89,7 @@ public class BootstrapInstaller {
                     throw new CompletionException(new InstallationException(err));
                   }
                   String oldPath = parts[0];
-                  String newPath = SYSROOT.getAbsolutePath() + "/" + parts[1];
+                  String newPath = PREFIX.getAbsolutePath() + "/" + parts[1];
                   symlinks.add(Pair.create(oldPath, newPath));
 
                   final var parentFile = new File(newPath).getParentFile();
@@ -101,7 +101,7 @@ public class BootstrapInstaller {
                 }
               } else {
                 String zipEntryName = entry.getName();
-                File targetFile = new File(SYSROOT, zipEntryName);
+                File targetFile = new File(PREFIX, zipEntryName);
                 boolean isDirectory = entry.isDirectory();
 
                 final var ___ = isDirectory ? targetFile : targetFile.getParentFile();

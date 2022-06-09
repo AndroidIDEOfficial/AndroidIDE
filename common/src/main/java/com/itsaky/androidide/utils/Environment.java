@@ -46,7 +46,7 @@ public final class Environment {
   private static final ILogger LOG = ILogger.newInstance("Environment");
   private static final List<String> blacklist = new ArrayList<>();
   public static File ROOT;
-  public static File SYSROOT;
+  public static File PREFIX;
   public static File HOME;
   public static File ANDROIDIDE_HOME;
   public static File JAVA_HOME;
@@ -80,19 +80,19 @@ public final class Environment {
   public static void init() {
     final BaseApplication app = BaseApplication.getBaseInstance();
     ROOT = app.getIDEDataDir();
-    SYSROOT = mkdirIfNotExits(new File(app.getIDEDataDir(), "usr"));
+    PREFIX = mkdirIfNotExits(new File(app.getIDEDataDir(), "usr"));
     HOME = mkdirIfNotExits(app.getRootDir());
     ANDROIDIDE_HOME = mkdirIfNotExits(new File(HOME, ".androidide"));
-    TMP_DIR = mkdirIfNotExits(new File(SYSROOT, "tmp"));
-    BIN_DIR = mkdirIfNotExits(new File(SYSROOT, "bin"));
-    LIB_DIR = mkdirIfNotExits(new File(SYSROOT, "lib"));
+    TMP_DIR = mkdirIfNotExits(new File(PREFIX, "tmp"));
+    BIN_DIR = mkdirIfNotExits(new File(PREFIX, "bin"));
+    LIB_DIR = mkdirIfNotExits(new File(PREFIX, "lib"));
     PROJECTS_DIR = mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
     COMPILER_MODULE = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "compiler-module"));
     TOOLING_API_JAR =
         new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "tooling-api")), "tooling-api-all.jar");
     AAPT2 = new File(ANDROIDIDE_HOME, "aapt2");
 
-    IDE_PROPS_FILE = new File(SYSROOT, "etc/ide-environment.properties");
+    IDE_PROPS_FILE = new File(PREFIX, "etc/ide-environment.properties");
     LIB_HOOK = new File(LIB_DIR, "libhook.so");
     LIB_HOOK2 = new File(LIB_DIR, "libhook2.so");
     PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
@@ -154,7 +154,7 @@ public final class Environment {
       value = value.replace("$HOME", HOME.getAbsolutePath());
     }
     if (value.contains("$SYSROOT")) {
-      value = value.replace("$SYSROOT", SYSROOT.getAbsolutePath());
+      value = value.replace("$SYSROOT", PREFIX.getAbsolutePath());
     }
     if (value.contains("$PATH")) {
       value = value.replace("$PATH", createPath());
@@ -174,7 +174,7 @@ public final class Environment {
     path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
     path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
     path += String.format(":%s/cmake/bin", ANDROID_HOME.getAbsolutePath());
-    path += String.format(":%s/bin", SYSROOT.getAbsolutePath());
+    path += String.format(":%s/bin", PREFIX.getAbsolutePath());
     path += String.format(":%s", System.getenv("PATH"));
     return path;
   }
@@ -200,7 +200,7 @@ public final class Environment {
     ENV_VARS.put("LANG", "en_US.UTF-8");
     ENV_VARS.put("LC_ALL", "en_US.UTF-8");
 
-    ENV_VARS.put("SYSROOT", SYSROOT.getAbsolutePath());
+    ENV_VARS.put("SYSROOT", PREFIX.getAbsolutePath());
 
     ENV_VARS.put("BUSYBOX", BUSYBOX.getAbsolutePath());
     ENV_VARS.put("SHELL", SHELL.getAbsolutePath());
