@@ -67,7 +67,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   }
 
   public static boolean isAarch64() {
-    return !isAndroid12() && Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
+    return /*!isAndroid12() && */Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
   }
 
   public static boolean isArmv7a() {
