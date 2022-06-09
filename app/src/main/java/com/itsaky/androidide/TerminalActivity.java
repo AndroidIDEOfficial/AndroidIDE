@@ -68,7 +68,7 @@ public class TerminalActivity extends StudioActivity {
   public static final String KEY_WORKING_DIRECTORY = "terminal_workingDirectory";
   private static final ILogger LOG = ILogger.newInstance("TerminalActivity");
   private static final byte[] SOURCES_LIST_CONTENT =
-      "deb https://androidide.com/packages/ stable main".getBytes();
+      "deb https://androidide.com/packages/apt/termux-main/ stable main".getBytes();
   private final Client client = new Client();
   private ActivityTerminalBinding binding;
   private TerminalView terminal;

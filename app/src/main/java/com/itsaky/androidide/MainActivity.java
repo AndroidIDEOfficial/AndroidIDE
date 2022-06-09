@@ -292,6 +292,24 @@ public class MainActivity extends StudioActivity
 
     binding.gotoPreferences.setOnClickListener(this);
 
+    checkRootDirs();
+  }
+
+  private void checkRootDirs() {
+    final var framework = new File(com.itsaky.androidide.utils.Environment.ROOT, "framework");
+    final var sysroot = new File(com.itsaky.androidide.utils.Environment.ROOT, "sysroot");
+    openLastProject();
+    //    TODO Notify users to move their data to the new directories
+    //    if (sysroot.exists() || framework.exists()) {
+    //      showMoveRequired();
+    //    } else {
+    //      openLastProject();
+    //    }
+  }
+
+  private void showMoveRequired() {}
+
+  private void openLastProject() {
     binding
         .getRoot()
         .post(
