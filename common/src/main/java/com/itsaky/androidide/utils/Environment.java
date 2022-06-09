@@ -40,7 +40,7 @@ public final class Environment {
   public static final Map<String, String> ENV_VARS = new HashMap<>();
   public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
   public static final String DEFAULT_ROOT = "/data/data/com.itsaky.androidide/files";
-  public static final String DEFAULT_HOME = DEFAULT_ROOT + "/framework";
+  public static final String DEFAULT_HOME = DEFAULT_ROOT + "/home";
   private static final String DEFAULT_JAVA_HOME = DEFAULT_HOME + "/jdk";
   private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
   private static final ILogger LOG = ILogger.newInstance("Environment");
@@ -80,7 +80,7 @@ public final class Environment {
   public static void init() {
     final BaseApplication app = BaseApplication.getBaseInstance();
     ROOT = app.getIDEDataDir();
-    SYSROOT = mkdirIfNotExits(new File(app.getIDEDataDir(), "sysroot"));
+    SYSROOT = mkdirIfNotExits(new File(app.getIDEDataDir(), "usr"));
     HOME = mkdirIfNotExits(app.getRootDir());
     ANDROIDIDE_HOME = mkdirIfNotExits(new File(HOME, ".androidide"));
     TMP_DIR = mkdirIfNotExits(new File(SYSROOT, "tmp"));

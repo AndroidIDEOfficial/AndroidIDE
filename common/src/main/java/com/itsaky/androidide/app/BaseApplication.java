@@ -133,7 +133,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   }
 
   public File getRootDir() {
-    return new File(getIDEDataDir(), "framework");
+    return new File(getIDEDataDir(), "home");
   }
 
   @SuppressLint("SdCardPath")
