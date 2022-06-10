@@ -83,6 +83,10 @@ public class ToolsManager {
     var contents = ResourceUtils.readAssets2String(getCommonAsset("ideenv"));
     contents = contents.replace("@PREFIX@", Environment.PREFIX.getAbsolutePath());
     FileIOUtils.writeFileFromString(file, contents);
+
+    if (!file.canExecute()) {
+      file.setExecutable(true);
+    }
   }
 
   private static void copyBusyboxIfNeeded() {

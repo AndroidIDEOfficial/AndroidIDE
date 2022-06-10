@@ -55,7 +55,7 @@ public class BuildPreferences extends BasePreferenceFragment
     final var screen = getPreferenceScreen();
     final var categoryGradle = new PreferenceCategory(getContext());
     final var customCommands = new Preference(getContext());
-    final var clearCache = new SwitchPreference(getContext());
+    final var clearCache = new Preference(getContext());
 
     screen.addPreference(categoryGradle);
 
@@ -110,7 +110,7 @@ public class BuildPreferences extends BasePreferenceFragment
       getPrefManager().putBoolean(KEY_TP_FIX, ((boolean) newValue));
     }
 
-    return false;
+    return true;
   }
 
   private void showGradleCommandsDialog() {
