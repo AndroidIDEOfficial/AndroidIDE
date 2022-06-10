@@ -1,7 +1,6 @@
 name: Android CI
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
