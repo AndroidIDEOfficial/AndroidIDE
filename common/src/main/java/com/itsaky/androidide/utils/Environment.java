@@ -40,13 +40,13 @@ public final class Environment {
   public static final Map<String, String> ENV_VARS = new HashMap<>();
   public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
   public static final String DEFAULT_ROOT = "/data/data/com.itsaky.androidide/files";
-  public static final String DEFAULT_HOME = DEFAULT_ROOT + "/framework";
+  public static final String DEFAULT_HOME = DEFAULT_ROOT + "/home";
   private static final String DEFAULT_JAVA_HOME = DEFAULT_HOME + "/jdk";
   private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
   private static final ILogger LOG = ILogger.newInstance("Environment");
   private static final List<String> blacklist = new ArrayList<>();
   public static File ROOT;
-  public static File SYSROOT;
+  public static File PREFIX;
   public static File HOME;
   public static File ANDROIDIDE_HOME;
   public static File JAVA_HOME;
@@ -57,7 +57,6 @@ public final class Environment {
   public static File PROJECTS_DIR;
   public static File IDE_PROPS_FILE;
   public static File LIB_HOOK;
-  public static File LIB_HOOK2;
   /**
    * JDK modules used by the java language server for completions. This version of JDK modules
    * contains only the classes included in android.jar
@@ -80,21 +79,20 @@ public final class Environment {
   public static void init() {
     final BaseApplication app = BaseApplication.getBaseInstance();
     ROOT = app.getIDEDataDir();
-    SYSROOT = mkdirIfNotExits(new File(app.getIDEDataDir(), "sysroot"));
+    PREFIX = mkdirIfNotExits(new File(app.getIDEDataDir(), "usr"));
     HOME = mkdirIfNotExits(app.getRootDir());
     ANDROIDIDE_HOME = mkdirIfNotExits(new File(HOME, ".androidide"));
-    TMP_DIR = mkdirIfNotExits(new File(SYSROOT, "tmp"));
-    BIN_DIR = mkdirIfNotExits(new File(SYSROOT, "bin"));
-    LIB_DIR = mkdirIfNotExits(new File(SYSROOT, "lib"));
+    TMP_DIR = mkdirIfNotExits(new File(PREFIX, "tmp"));
+    BIN_DIR = mkdirIfNotExits(new File(PREFIX, "bin"));
+    LIB_DIR = mkdirIfNotExits(new File(PREFIX, "lib"));
     PROJECTS_DIR = mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
     COMPILER_MODULE = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "compiler-module"));
     TOOLING_API_JAR =
         new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "tooling-api")), "tooling-api-all.jar");
     AAPT2 = new File(ANDROIDIDE_HOME, "aapt2");
 
-    IDE_PROPS_FILE = new File(SYSROOT, "etc/ide-environment.properties");
+    IDE_PROPS_FILE = new File(PREFIX, "etc/ide-environment.properties");
     LIB_HOOK = new File(LIB_DIR, "libhook.so");
-    LIB_HOOK2 = new File(LIB_DIR, "libhook2.so");
     PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
 
     INIT_SCRIPT = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "init")), "init.gradle");
@@ -154,7 +152,7 @@ public final class Environment {
       value = value.replace("$HOME", HOME.getAbsolutePath());
     }
     if (value.contains("$SYSROOT")) {
-      value = value.replace("$SYSROOT", SYSROOT.getAbsolutePath());
+      value = value.replace("$SYSROOT", PREFIX.getAbsolutePath());
     }
     if (value.contains("$PATH")) {
       value = value.replace("$PATH", createPath());
@@ -174,7 +172,7 @@ public final class Environment {
     path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
     path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
     path += String.format(":%s/cmake/bin", ANDROID_HOME.getAbsolutePath());
-    path += String.format(":%s/bin", SYSROOT.getAbsolutePath());
+    path += String.format(":%s/bin", PREFIX.getAbsolutePath());
     path += String.format(":%s", System.getenv("PATH"));
     return path;
   }
@@ -186,7 +184,7 @@ public final class Environment {
   public static void setProjectDir(@NonNull File file) {
     PROJECTS_DIR = new File(file.getAbsolutePath());
   }
-  
+
   public static Map<String, String> getEnvironment() {
 
     if (!ENV_VARS.isEmpty()) {
@@ -204,7 +202,7 @@ public final class Environment {
     ENV_VARS.put("LANG", "en_US.UTF-8");
     ENV_VARS.put("LC_ALL", "en_US.UTF-8");
 
-    ENV_VARS.put("SYSROOT", SYSROOT.getAbsolutePath());
+    ENV_VARS.put("SYSROOT", PREFIX.getAbsolutePath());
 
     ENV_VARS.put("BUSYBOX", BUSYBOX.getAbsolutePath());
     ENV_VARS.put("SHELL", SHELL.getAbsolutePath());
@@ -224,7 +222,8 @@ public final class Environment {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
         && BaseApplication.isAarch64()
-        && LIB_HOOK.exists()) {
+        && LIB_HOOK.exists()
+        && BaseApplication.getBaseInstance().getPrefManager().shouldUseLdPreload()) {
       // Required for JDK 11
       ENV_VARS.put("LD_PRELOAD", LIB_HOOK.getAbsolutePath());
     }

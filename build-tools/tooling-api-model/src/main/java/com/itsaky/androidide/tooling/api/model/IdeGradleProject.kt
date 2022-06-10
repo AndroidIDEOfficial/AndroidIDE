@@ -17,6 +17,8 @@
 package com.itsaky.androidide.tooling.api.model
 
 import com.android.builder.model.v2.ide.ProjectType.APPLICATION
+import com.itsaky.androidide.tooling.api.IProject.Type
+import com.itsaky.androidide.tooling.api.IProject.Type.Gradle
 import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
 import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
@@ -62,6 +64,10 @@ open class IdeGradleProject(
 
     override fun getProjectDir(): CompletableFuture<File> {
         return CompletableFutures.computeAsync { this.projectDir }
+    }
+
+    override fun getType(): CompletableFuture<Type> {
+        return CompletableFuture.completedFuture(Gradle)
     }
 
     override fun getBuildDir(): CompletableFuture<File> {
@@ -128,7 +134,7 @@ open class IdeGradleProject(
         if (this is IdeAndroidModule) {
             return CompletableFuture.completedFuture(this)
         }
-        
+
         return findAndroidModules().thenApply { modules ->
             val application =
                 modules.stream().filter { it != null && it.projectType == APPLICATION }.findFirst()

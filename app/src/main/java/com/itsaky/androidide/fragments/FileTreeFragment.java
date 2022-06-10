@@ -331,15 +331,14 @@ public class FileTreeFragment extends BottomSheetDialogFragment
       }
     }
   }
-  
-  
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-        mFileTreeView = null;
-        mFileActionListener = null;
-    }
+
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    binding = null;
+    mFileTreeView = null;
+    mFileActionListener = null;
+  }
 
   public interface FileActionListener {
     CodeEditorView openFile(File file);

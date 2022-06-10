@@ -225,7 +225,7 @@ public class FileUtil {
       file.mkdirs();
     }
   }
-
+  
   // Get the target saving file/dir which not exist, by adding (1), (2), etc
   @NonNull
   public static File getTargetNonExistFile(String path, boolean isDir) {

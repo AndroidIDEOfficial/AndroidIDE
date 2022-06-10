@@ -50,6 +50,12 @@ public class MainActivity extends StudioActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    openLastProject();
+  }
+
+  private void showMoveRequired() {}
+
+  private void openLastProject() {
     binding
         .getRoot()
         .post(

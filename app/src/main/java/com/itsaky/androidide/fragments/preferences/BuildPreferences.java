@@ -20,15 +20,19 @@
 
 package com.itsaky.androidide.fragments.preferences;
 
+import static com.itsaky.androidide.managers.PreferenceManager.KEY_TP_FIX;
+
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
 
 import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
@@ -37,7 +41,7 @@ import com.itsaky.androidide.utils.Environment;
 import java.io.File;
 
 public class BuildPreferences extends BasePreferenceFragment
-    implements Preference.OnPreferenceClickListener {
+    implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
 
   public static final String KEY_GRADLE_COMMANDS = "idepref_build_gradleCommands";
   public static final String KEY_GRADLE_CLEAR_CACHE = "idepref_build_gradleClearCache";
@@ -48,10 +52,10 @@ public class BuildPreferences extends BasePreferenceFragment
   public void onCreatePreferences(Bundle p1, String p2) {
     super.onCreatePreferences(p1, p2);
     if (getContext() == null) return;
-    final PreferenceScreen screen = getPreferenceScreen();
-    final PreferenceCategory categoryGradle = new PreferenceCategory(getContext());
-    final Preference customCommands = new Preference(getContext());
-    final Preference clearCache = new Preference(getContext());
+    final var screen = getPreferenceScreen();
+    final var categoryGradle = new PreferenceCategory(getContext());
+    final var customCommands = new Preference(getContext());
+    final var clearCache = new Preference(getContext());
 
     screen.addPreference(categoryGradle);
 
@@ -69,6 +73,19 @@ public class BuildPreferences extends BasePreferenceFragment
     categoryGradle.addPreference(customCommands);
     categoryGradle.addPreference(clearCache);
 
+    // Works only for Android 11
+    if (BaseApplication.isAarch64() && Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
+      final var tpFix = new SwitchPreference(getContext());
+      tpFix.setKey(KEY_TP_FIX);
+      tpFix.setIcon(R.drawable.ic_language_java);
+      tpFix.setTitle(getString(R.string.idepref_title_tpFix));
+      tpFix.setSummary(getString(R.string.idepref_msg_tpFix));
+      tpFix.setChecked(getPrefManager().shouldUseLdPreload());
+      tpFix.setOnPreferenceChangeListener(this);
+
+      categoryGradle.addPreference(tpFix);
+    }
+
     setPreferenceScreen(screen);
 
     customCommands.setOnPreferenceClickListener(this);
@@ -83,6 +100,16 @@ public class BuildPreferences extends BasePreferenceFragment
     } else if (key.equals(KEY_GRADLE_CLEAR_CACHE)) {
       showClearCacheDialog();
     }
+    return true;
+  }
+
+  @Override
+  public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+    final var key = preference.getKey();
+    if (KEY_TP_FIX.equals(key)) {
+      getPrefManager().putBoolean(KEY_TP_FIX, ((boolean) newValue));
+    }
+
     return true;
   }
 

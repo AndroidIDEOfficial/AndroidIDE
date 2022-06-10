@@ -18,6 +18,8 @@
 package com.itsaky.androidide.tooling.impl.model
 
 import com.itsaky.androidide.tooling.api.IProject
+import com.itsaky.androidide.tooling.api.IProject.Type
+import com.itsaky.androidide.tooling.api.IProject.Type.Unknown
 import com.itsaky.androidide.tooling.api.IToolingApiClient
 import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
 import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
@@ -64,6 +66,10 @@ class InternalForwardingProject(
     override fun getProjectDir(): CompletableFuture<File> =
         if (this.project != null) this.project!!.projectDir
         else CompletableFuture.completedFuture(File(projectPath))
+
+    override fun getType(): CompletableFuture<Type> =
+        if (this.project != null) this.project!!.type
+        else CompletableFuture.completedFuture(Unknown)
 
     override fun getBuildDir(): CompletableFuture<File> =
         if (this.project != null) this.project!!.buildDir

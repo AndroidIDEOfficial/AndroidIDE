@@ -52,6 +52,7 @@ public class PreferenceManager {
   public static final String KEY_GRADLE_CMD_OFFLINE_MODE = "idepref_gradleCmd_offlineMode";
   public static final String KEY_LAST_OPENED_PROJECT = "ide_last_project";
   public static final String NO_OPENED_PROJECT = "<NO_OPENED_PROJECT>";
+  public static final String KEY_TP_FIX = "idepref_build_tagPointersFix";
   private final SharedPreferences prefs;
 
   @SuppressLint("CommitPrefEdits")
@@ -197,5 +198,9 @@ public class PreferenceManager {
 
   public boolean confirmProjectOpen() {
     return getBoolean(KEY_CONFIRM_PROJECT_OPEN, false);
+  }
+
+  public boolean shouldUseLdPreload() {
+    return getBoolean(KEY_TP_FIX, false);
   }
 }

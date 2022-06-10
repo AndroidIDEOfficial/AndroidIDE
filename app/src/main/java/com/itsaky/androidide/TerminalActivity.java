@@ -20,7 +20,7 @@ package com.itsaky.androidide;
 import static com.itsaky.androidide.utils.Environment.BIN_DIR;
 import static com.itsaky.androidide.utils.Environment.HOME;
 import static com.itsaky.androidide.utils.Environment.LOGIN_SHELL;
-import static com.itsaky.androidide.utils.Environment.SYSROOT;
+import static com.itsaky.androidide.utils.Environment.PREFIX;
 import static com.itsaky.androidide.utils.Environment.getEnvironment;
 
 import android.os.Bundle;
@@ -68,7 +68,7 @@ public class TerminalActivity extends StudioActivity {
   public static final String KEY_WORKING_DIRECTORY = "terminal_workingDirectory";
   private static final ILogger LOG = ILogger.newInstance("TerminalActivity");
   private static final byte[] SOURCES_LIST_CONTENT =
-      "deb https://androidide.com/packages/ stable main".getBytes();
+      "deb https://androidide.com/packages/apt/termux-main/ stable main".getBytes();
   private final Client client = new Client();
   private ActivityTerminalBinding binding;
   private TerminalView terminal;
@@ -89,8 +89,8 @@ public class TerminalActivity extends StudioActivity {
     final var bash = new File(BIN_DIR, "bash");
     final var useSystemShell =
         getApp().getPrefManager().getBoolean(PreferenceManager.KEY_TERMINAL_USE_SYSTEM_SHELL);
-    if ((SYSROOT.exists()
-            && SYSROOT.isDirectory()
+    if ((PREFIX.exists()
+            && PREFIX.isDirectory()
             && bash.exists()
             && bash.isFile()
             && bash.canExecute())
@@ -241,7 +241,7 @@ public class TerminalActivity extends StudioActivity {
             );
 
     try {
-      final var file = new File(SYSROOT, "etc/apt/sources.list");
+      final var file = new File(PREFIX, "etc/apt/sources.list");
       final var out = new FileOutputStream(file);
       out.write(SOURCES_LIST_CONTENT);
       out.flush();

@@ -67,7 +67,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   }
 
   public static boolean isAarch64() {
-    return !isAndroid12() && Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
+    return /*!isAndroid12() && */Arrays.asList(Build.SUPPORTED_ABIS).contains("arm64-v8a");
   }
 
   public static boolean isArmv7a() {
@@ -133,7 +133,7 @@ public abstract class BaseApplication extends MultiDexApplication {
   }
 
   public File getRootDir() {
-    return new File(getIDEDataDir(), "framework");
+    return new File(getIDEDataDir(), "home");
   }
 
   @SuppressLint("SdCardPath")

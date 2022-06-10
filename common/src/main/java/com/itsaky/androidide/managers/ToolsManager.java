@@ -56,9 +56,10 @@ public class ToolsManager {
               copyBusyboxIfNeeded();
               extractLogsenderIfNeeded();
               extractAapt2();
-              extractLibHooks();
+              //              extractLibHooks();
               extractGradlePlugin();
               extractToolingApi();
+              extractIdeEnv();
               writeInitScript();
             })
         .whenComplete(
@@ -71,6 +72,21 @@ public class ToolsManager {
                 onFinish.run();
               }
             });
+  }
+
+  private static void extractIdeEnv() {
+    final var file = new File(Environment.BIN_DIR, "ideenv");
+    if (file.exists()) {
+      file.delete();
+    }
+
+    var contents = ResourceUtils.readAssets2String(getCommonAsset("ideenv"));
+    contents = contents.replace("@PREFIX@", Environment.PREFIX.getAbsolutePath());
+    FileIOUtils.writeFileFromString(file, contents);
+
+    if (!file.canExecute()) {
+      file.setExecutable(true);
+    }
   }
 
   private static void copyBusyboxIfNeeded() {
@@ -115,11 +131,6 @@ public class ToolsManager {
     if (!Environment.LIB_HOOK.exists()) {
       ResourceUtils.copyFileFromAssets(
           getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
-    }
-
-    if (!Environment.LIB_HOOK2.exists()) {
-      ResourceUtils.copyFileFromAssets(
-          getArchSpecificAsset("libhook2.so"), Environment.LIB_HOOK2.getAbsolutePath());
     }
   }
 

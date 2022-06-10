@@ -18,7 +18,7 @@
 package com.itsaky.androidide.tooling.impl
 
 import com.android.builder.model.v2.ide.LibraryType.PROJECT
-import com.android.builder.model.v2.ide.ProjectType
+import com.android.builder.model.v2.ide.ProjectType.APPLICATION
 import com.google.common.truth.Truth.assertThat
 import com.google.gson.GsonBuilder
 import com.itsaky.androidide.models.LogLine
@@ -55,7 +55,12 @@ class ToolingApiImplTest {
 
         server.initialize(InitializeProjectMessage(getTestProject().absolutePath)).get()
 
+        verifyProjectProps(project, server)
+    }
+
+    private fun verifyProjectProps(project: IProject, server: IToolingApiServer) {
         assertThat(project).isNotNull()
+        assertThat(project.type.get()).isEqualTo(IProject.Type.Gradle)
         // As the returned project is just a proxy,
         // project instanceOf IdeGradleProject will always return false
 
@@ -71,7 +76,7 @@ class ToolingApiImplTest {
         assertThat(app.javaCompileOptions.targetCompatibility).isEqualTo("11")
         assertThat(app.javaCompileOptions.isCoreLibraryDesugaringEnabled).isFalse()
 
-        assertThat(app.projectType).isEqualTo(ProjectType.APPLICATION)
+        assertThat(app.projectType).isEqualTo(APPLICATION)
         assertThat(app.packageName).isEqualTo("com.itsaky.test.app")
 
         assertThat(app.viewBindingOptions).isNotNull()

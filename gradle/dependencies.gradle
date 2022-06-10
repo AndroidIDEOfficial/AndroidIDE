@@ -4,7 +4,7 @@ ext {
     ]
     
     common = [
-            editor: 'io.github.Rosemoe.sora-editor:editor:0.11.4',
+            editor: 'io.github.Rosemoe.sora-editor:editor:0.11.1',
             utilcode: 'com.blankj:utilcodex:1.30.6',
             file_picker: 'com.github.abhishekti7:UnicornFilePicker:1.0.2',
             glide: 'com.github.bumptech.glide:glide:4.12.0',
@@ -14,7 +14,7 @@ ext {
             jsoup: 'org.jsoup:jsoup:1.14.2',
             antlr4: 'org.antlr:antlr4-runtime:4.9.2',
             javaparser: 'com.github.javaparser:javaparser-symbol-solver-core:3.24.2',
-            jsonrpc: 'org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.12.0',
+            jsonrpc: 'org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.12.0', 
             lang3:'org.apache.commons:commons-lang3:3.12.0'
     ]
 
