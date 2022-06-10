@@ -1,0 +1,26 @@
+#!/bin/bash
+set -eu
+
+print_help() {
+	echo "Utility command to show/edit AndroidIDE Envrionment Variables"
+	echo "Usage: ideenv [options]"
+	echo ""
+	echo "	-s 	Show the environment variables"
+	echo "	-e	Edit the environment variables"
+	echo "Executing this command without any arguments opens the editor."
+	echo ""
+}
+
+
+PROPS=@TERMUX_PREFIX@/etc/ide-environment.properties
+while getopts ":se" option; do
+	case $option in
+		s) ## Simply print the contents of the file
+		   cat $PROPS
+		   exit;;
+		*) ## Open the file in nano editor
+		   echo "Opening $PROPS file with nano editor..."
+		   nano $PROPS
+		   exit;;
+	esac
+done
