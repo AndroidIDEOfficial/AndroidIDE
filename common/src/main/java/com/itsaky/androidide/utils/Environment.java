@@ -17,7 +17,6 @@
 package com.itsaky.androidide.utils;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 
@@ -218,12 +217,12 @@ public final class Environment {
     ld += LIB_DIR.getAbsolutePath();
     ENV_VARS.put("LD_LIBRARY_PATH", ld);
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-        && BaseApplication.isAarch64()
-        && LIB_HOOK.exists()) {
-      // Required for JDK 11
-      ENV_VARS.put("LD_PRELOAD", LIB_HOOK.getAbsolutePath());
-    }
+    //    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+    //        && BaseApplication.isAarch64()
+    //        && LIB_HOOK.exists()) {
+    //       Required for JDK 11
+    //      ENV_VARS.put("LD_PRELOAD", LIB_HOOK.getAbsolutePath());
+    //    }
 
     addToEnvIfPresent(ENV_VARS, "ANDROID_ART_ROOT");
     addToEnvIfPresent(ENV_VARS, "DEX2OATBOOTCLASSPATH");

@@ -56,9 +56,10 @@ public class ToolsManager {
               copyBusyboxIfNeeded();
               extractLogsenderIfNeeded();
               extractAapt2();
-              extractLibHooks();
+              //              extractLibHooks();
               extractGradlePlugin();
               extractToolingApi();
+              extractIdeEnv();
               writeInitScript();
             })
         .whenComplete(
@@ -71,6 +72,17 @@ public class ToolsManager {
                 onFinish.run();
               }
             });
+  }
+
+  private static void extractIdeEnv() {
+    final var file = new File(Environment.BIN_DIR, "ideenv");
+    if (file.exists()) {
+      file.delete();
+    }
+
+    var contents = ResourceUtils.readAssets2String(getCommonAsset("ideenv"));
+    contents = contents.replace("@PREFIX@", Environment.PREFIX.getAbsolutePath());
+    FileIOUtils.writeFileFromString(file, contents);
   }
 
   private static void copyBusyboxIfNeeded() {

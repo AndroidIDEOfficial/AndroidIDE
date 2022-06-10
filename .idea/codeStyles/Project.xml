@@ -5,8 +5,6 @@
       <option name="GENERATE_FINAL_PARAMETERS" value="true" />
       <option name="SPACE_AFTER_CLOSING_ANGLE_BRACKET_IN_TYPE_ARGUMENT" value="true" />
       <option name="CLASS_NAMES_IN_JAVADOC" value="3" />
-      <option name="USE_FQ_CLASS_NAMES" value="true" />
-      <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
       <option name="JD_DO_NOT_WRAP_ONE_LINE_COMMENTS" value="true" />
     </JavaCodeStyleSettings>
     <JetCodeStyleSettings>
