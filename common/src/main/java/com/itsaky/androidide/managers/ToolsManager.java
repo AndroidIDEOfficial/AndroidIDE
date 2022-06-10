@@ -128,11 +128,6 @@ public class ToolsManager {
       ResourceUtils.copyFileFromAssets(
           getArchSpecificAsset("libhook.so"), Environment.LIB_HOOK.getAbsolutePath());
     }
-
-    if (!Environment.LIB_HOOK2.exists()) {
-      ResourceUtils.copyFileFromAssets(
-          getArchSpecificAsset("libhook2.so"), Environment.LIB_HOOK2.getAbsolutePath());
-    }
   }
 
   private static void extractGradlePlugin() {

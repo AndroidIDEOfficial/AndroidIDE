@@ -57,7 +57,6 @@ public final class Environment {
   public static File PROJECTS_DIR;
   public static File IDE_PROPS_FILE;
   public static File LIB_HOOK;
-  public static File LIB_HOOK2;
   /**
    * JDK modules used by the java language server for completions. This version of JDK modules
    * contains only the classes included in android.jar
@@ -94,7 +93,6 @@ public final class Environment {
 
     IDE_PROPS_FILE = new File(PREFIX, "etc/ide-environment.properties");
     LIB_HOOK = new File(LIB_DIR, "libhook.so");
-    LIB_HOOK2 = new File(LIB_DIR, "libhook2.so");
     PROJECT_DATA_FILE = new File(TMP_DIR, "ide_project");
 
     INIT_SCRIPT = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "init")), "init.gradle");
