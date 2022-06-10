@@ -372,4 +372,6 @@
     <string name="msg_running_task">Running task: \'%1$s\'</string>
     <string name="msg_replacement">Replacement</string>
     <string name="title_sync_project">Sync project</string>
+    <string name="idepref_title_tpFix">JDK 11 tag pointers fix</string>
+    <string name="idepref_msg_tpFix">Set LD_PRELOAD to libhook.so to fix tag pointers issue for JDK 11 in Android 11 [DEPRECATED - Prefer using JDK 17].</string>
 </resources>
