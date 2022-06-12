@@ -41,7 +41,8 @@ public final class Environment {
   public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
   public static final String DEFAULT_ROOT = "/data/data/com.itsaky.androidide/files";
   public static final String DEFAULT_HOME = DEFAULT_ROOT + "/home";
-  private static final String DEFAULT_JAVA_HOME = DEFAULT_HOME + "/jdk";
+  public static final String DEFAULT_PREFIX = DEFAULT_ROOT + "/usr";
+  private static final String DEFAULT_JAVA_HOME = DEFAULT_PREFIX + "/opt/openjdk";
   private static final String DEFAULT_ANDROID_HOME = DEFAULT_HOME + "/android-sdk";
   private static final ILogger LOG = ILogger.newInstance("Environment");
   private static final List<String> blacklist = new ArrayList<>();
@@ -104,6 +105,14 @@ public final class Environment {
     ANDROID_HOME = new File(readProp("ANDROID_HOME", DEFAULT_ANDROID_HOME));
     JAVA_HOME = new File(readProp("JAVA_HOME", DEFAULT_JAVA_HOME));
 
+    // If JDK 17 is not installed, check for any JDK in home directory
+    if (!JAVA_HOME.exists()) {
+      final var java_home = new File(HOME, "jdk");
+      if (java_home.exists()) {
+        JAVA_HOME = java_home;
+      }
+    }
+
     JAVA = new File(JAVA_HOME, "bin/java");
     BUSYBOX = new File(BIN_DIR, "busybox");
     SHELL = new File(BIN_DIR, "bash");
@@ -165,13 +174,16 @@ public final class Environment {
       LOG.error("Unable to set executable permissions to file", file);
     }
   }
+  
+  public static void setProjectDir(@NonNull File file) {
+    PROJECTS_DIR = new File(file.getAbsolutePath());
+  }
 
   @NonNull
   private static String createPath() {
     String path = "";
     path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
     path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
-    path += String.format(":%s/cmake/bin", ANDROID_HOME.getAbsolutePath());
     path += String.format(":%s/bin", PREFIX.getAbsolutePath());
     path += String.format(":%s", System.getenv("PATH"));
     return path;
@@ -179,10 +191,6 @@ public final class Environment {
 
   public static void setBootClasspath(@NonNull File file) {
     BOOTCLASSPATH = new File(file.getAbsolutePath());
-  }
-  
-  public static void setProjectDir(@NonNull File file) {
-    PROJECTS_DIR = new File(file.getAbsolutePath());
   }
 
   public static Map<String, String> getEnvironment() {
