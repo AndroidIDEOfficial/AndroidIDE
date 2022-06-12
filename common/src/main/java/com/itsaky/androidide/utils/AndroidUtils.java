@@ -1,6 +1,10 @@
 package com.itsaky.androidide.utils;
 
+import com.itsaky.androidide.common.R;
+import com.itsaky.androidide.app.BaseApplication;
+
 import org.apache.commons.lang3.StringUtils;
+
 import org.jetbrains.annotations.*;
 
 public class AndroidUtils {
@@ -58,7 +62,7 @@ public class AndroidUtils {
   @Nullable
   public static String validateAndroidPackageName(@NotNull String name) {
     if (name.isEmpty()) {
-      return "Package name is missing";
+      return BaseApplication.getBaseInstance().getString(R.string.msg_empty_package);
     }
 
     String packageManagerCheck = validateName(name);
@@ -66,7 +70,7 @@ public class AndroidUtils {
       return packageManagerCheck;
     }
     if (!name.matches("^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+[0-9a-z_]$")) {
-      return "Package name is not a valid";
+      return BaseApplication.getBaseInstance().getString(R.string.msg_package_is_not_valid);
     }
     return null;
   }
@@ -79,7 +83,7 @@ public class AndroidUtils {
   public static String validatePackageName(@Nullable String packageName) {
     packageName = (packageName == null) ? "" : packageName;
     if (packageName.length() >= PACKAGE_LENGTH_LIMIT) {
-      return "Package name is to long";
+      return BaseApplication.getBaseInstance().getString(R.string.msg_package_is_to_long);
     }
     return AndroidUtils.validateAndroidPackageName(packageName);
   }
@@ -102,9 +106,11 @@ public class AndroidUtils {
           continue;
         } else {
           if (c == '_') {
-            return "The character '_' cannot be the first character in a package segment";
+            return BaseApplication.getBaseInstance()
+                .getString(R.string.msg_package_not_valid_char_1);
           } else {
-            return "A digit cannot be the first character in a package segment";
+            return BaseApplication.getBaseInstance()
+                .getString(R.string.msg_package_not_use_digit_first);
           }
         }
       }
@@ -113,9 +119,12 @@ public class AndroidUtils {
         front = true;
         continue;
       }
-      return "The character '" + c + "' is not allowed in Android application package names";
+      return String.format(
+          BaseApplication.getBaseInstance().getString(R.string.msg_package_not_valid_char_2), c);
     }
-    return hasSep ? null : "The package must have at least one '.' separator";
+    return hasSep
+        ? null
+        : BaseApplication.getBaseInstance().getString(R.string.msg_package_mus_have_dot);
   }
 
   public static boolean isIdentifier(@NotNull String candidate) {

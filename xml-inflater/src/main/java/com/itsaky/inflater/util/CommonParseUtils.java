@@ -245,21 +245,21 @@ public class CommonParseUtils {
     return TypedValue.COMPLEX_UNIT_DIP;
   }
 
-  protected int parseColor(String color, final Context ctx) {
+  public int parseColor(String color, final Context ctx) {
     if (HEX_COLOR.matcher(color).matches()) {
       try {
         return Color.parseColor(color);
       } catch (Throwable th) {
         // Ignored
       }
-    } else if (color.startsWith("@color/")) {
+    } else if (color.startsWith("@color/")) {
       return parseColor(resourceFinder.findColor(color.substring("@color/".length())), ctx);
     } else if (color.startsWith("@android:color/")) {
       final int id = findFrameworkResourceId("color", color.substring("@android:color/".length()));
       return ContextCompat.getColor(ctx, id);
     }
 
-    return Color.parseColor("#00ffffff");
+    return Color.TRANSPARENT;
   }
 
   protected ColorStateList parseColorStateList(@NonNull String value, Context context) {

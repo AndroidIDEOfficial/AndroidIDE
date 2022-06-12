@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.transition.TransitionManager;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.android.material.transition.MaterialSharedAxis;
 
@@ -45,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 public class WizardFragment extends BaseFragment implements ProjectWriterCallback {
@@ -220,31 +223,20 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
   }
 
   private int getMinSdk() {
-    try {
-      String minSdk =
-          detailsBinding
-              .etMinSdk
-              .getText()
-              .toString()
-              .substring("API".length() + 1, "API".length() + 3); // at least 2 digits
-      int minSdkInt = Integer.parseInt(minSdk);
-
-      return minSdkInt;
-    } catch (Exception e) {
-      StudioApp.getInstance().toast(e.getMessage(), Toaster.Type.ERROR);
-    }
-    return -1;
+    return getSdkVersion(detailsBinding.etMinSdk);
   }
 
   private int getTargetSdk() {
+    return getSdkVersion(detailsBinding.etTargetSdk);
+  }
+
+  private int getSdkVersion(AutoCompleteTextView view) {
     try {
-      String targetSdk =
-          detailsBinding
-              .etTargetSdk
-              .getText()
+      String sdk =
+          view.getText()
               .toString()
               .substring("API".length() + 1, "API".length() + 3); // at least 2 digits
-      int targetSdkInt = Integer.parseInt(targetSdk);
+      int targetSdkInt = Integer.parseInt(sdk);
       return targetSdkInt;
     } catch (Exception e) {
       StudioApp.getInstance().toast(e.getMessage(), Toaster.Type.ERROR);
@@ -254,12 +246,8 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
 
   private boolean validateDetails() {
 
-    requireActivity()
-        .runOnUiThread(
-            () -> {
-              verifyPackageName(detailsBinding.tilPackageName.getEditText().getText());
-              verifyAppName(detailsBinding.tilAppName.getEditText().getText());
-            });
+    verifyPackageName(detailsBinding.tilPackageName.getEditText().getText());
+    verifyAppName(detailsBinding.tilAppName.getEditText().getText());
 
     if (detailsBinding.tilPackageName.isErrorEnabled()) {
       return false;
@@ -383,11 +371,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     detailsBinding.etTargetSdk.setText(
         getSelectedItem(targetSdkIndex, detailsBinding.etTargetSdk), false);
 
-    requireActivity()
-        .runOnUiThread(
-            () -> {
-              setSaveLocation();
-            });
+    setSaveLocation();
 
     loadingLayout.getRoot().setVisibility(View.GONE);
     detailsBinding.getRoot().setVisibility(View.GONE);

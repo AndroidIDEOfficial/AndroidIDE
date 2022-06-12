@@ -19,11 +19,12 @@ package com.itsaky.androidide.language.xml;
 
 import android.graphics.Color;
 
+import com.itsaky.androidide.app.StudioApp;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATOR;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
 
-import com.itsaky.androidide.utils.ColorUtil;
+import com.itsaky.inflater.util.CommonParseUtils;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.TextStyle;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
@@ -57,6 +58,10 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
 
   @Override
   protected Styles analyze(StringBuilder content, Delegate<Void> delegate) {
+    CommonParseUtils parser =
+        new CommonParseUtils(
+            StudioApp.getInstance().getResourceTable(),
+            StudioApp.getInstance().getApplicationContext().getResources().getDisplayMetrics());
     final var styles = new Styles();
     final var colors = new MappedSpans.Builder();
 
@@ -125,8 +130,9 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
             var text = token.getText();
             var textVar = text.replace("\"", "");
 
-            if (ColorUtil.isColorValue(textVar)) {
-              int color = ColorUtil.getColor(textVar);
+            if (isColorValue(textVar)) {
+              int color =
+                  parser.parseColor(textVar, StudioApp.getInstance().getApplicationContext());
 
               Span span = Span.obtain(column + 1, LITERAL);
               span.setUnderlineColor(color);
@@ -181,10 +187,11 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
           // highlight hex color line
           try {
             var textVar = token.getText();
-            if (ColorUtil.isColorValue(textVar)) {
-              int bg = ColorUtil.getColor(textVar);
+            if (isColorValue(textVar)) {
+              int color =
+                  parser.parseColor(textVar, StudioApp.getInstance().getApplicationContext());
               Span span = Span.obtain(column, get(SchemeAndroidIDE.TEXT_NORMAL));
-              span.setUnderlineColor(bg);
+              span.setUnderlineColor(color);
               colors.add(line, span);
 
             } else {
@@ -210,5 +217,12 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
     styles.spans = colors.build();
 
     return styles;
+  }
+
+  private static boolean isColorValue(String value) {
+    if (value.startsWith("#") | value.startsWith("@android:color") | value.startsWith("@color/")) {
+      return true;
+    }
+    return false;
   }
 }
