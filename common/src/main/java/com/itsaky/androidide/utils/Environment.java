@@ -180,7 +180,6 @@ public final class Environment {
     String path = "";
     path += String.format("%s/bin", JAVA_HOME.getAbsolutePath());
     path += String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath());
-    path += String.format(":%s/cmake/bin", ANDROID_HOME.getAbsolutePath());
     path += String.format(":%s/bin", PREFIX.getAbsolutePath());
     path += String.format(":%s", System.getenv("PATH"));
     return path;
