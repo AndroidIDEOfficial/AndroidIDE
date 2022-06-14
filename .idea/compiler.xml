@@ -11,14 +11,62 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="AndroidIDE.actions" target="11" />
+      <module name="AndroidIDE.app" target="11" />
       <module name="AndroidIDE.build-tools.builder-api" target="11" />
       <module name="AndroidIDE.build-tools.builder-model" target="11" />
+      <module name="AndroidIDE.build-tools.builder-model-impl" target="11" />
+      <module name="AndroidIDE.build-tools.builder-model-impl.main" target="11" />
+      <module name="AndroidIDE.build-tools.builder-model-impl.test" target="11" />
+      <module name="AndroidIDE.build-tools.framework-stubs" target="11" />
+      <module name="AndroidIDE.build-tools.framework-stubs.main" target="11" />
+      <module name="AndroidIDE.build-tools.framework-stubs.test" target="11" />
+      <module name="AndroidIDE.build-tools.fuzzysearch" target="11" />
+      <module name="AndroidIDE.build-tools.fuzzysearch.main" target="11" />
+      <module name="AndroidIDE.build-tools.fuzzysearch.test" target="11" />
+      <module name="AndroidIDE.build-tools.jsonrpc" target="11" />
+      <module name="AndroidIDE.build-tools.jsonrpc.main" target="11" />
+      <module name="AndroidIDE.build-tools.jsonrpc.test" target="11" />
+      <module name="AndroidIDE.build-tools.logger" target="11" />
+      <module name="AndroidIDE.build-tools.logger.main" target="11" />
+      <module name="AndroidIDE.build-tools.logger.test" target="11" />
       <module name="AndroidIDE.build-tools.project" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api-events" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api-events.main" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api-events.test" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api-impl" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api-impl.main" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api-impl.test" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api-model" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api-model.main" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api-model.test" target="11" />
       <module name="AndroidIDE.build-tools.tooling-api-plugin" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api.main" target="11" />
+      <module name="AndroidIDE.build-tools.tooling-api.test" target="11" />
+      <module name="AndroidIDE.build-tools.xml-dom" target="11" />
+      <module name="AndroidIDE.build-tools.xml-dom.main" target="11" />
+      <module name="AndroidIDE.build-tools.xml-dom.test" target="11" />
+      <module name="AndroidIDE.build-tools.xml-formatter" target="11" />
+      <module name="AndroidIDE.build-tools.xml-formatter.main" target="11" />
+      <module name="AndroidIDE.build-tools.xml-formatter.test" target="11" />
+      <module name="AndroidIDE.common" target="11" />
+      <module name="AndroidIDE.emulatorview" target="11" />
       <module name="AndroidIDE.google-java-format" target="1.8" />
+      <module name="AndroidIDE.gradle-plugin" target="11" />
+      <module name="AndroidIDE.gradle-plugin.main" target="11" />
+      <module name="AndroidIDE.gradle-plugin.test" target="11" />
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
       <module name="AndroidIDE.gradle-tooling.plugin" target="1.8" />
       <module name="AndroidIDE.javac" target="1.8" />
+      <module name="AndroidIDE.lexers" target="11" />
+      <module name="AndroidIDE.lsp.api" target="11" />
+      <module name="AndroidIDE.lsp.java" target="11" />
+      <module name="AndroidIDE.lsp.testing" target="11" />
+      <module name="AndroidIDE.lsp.xml" target="11" />
+      <module name="AndroidIDE.sdk-info" target="11" />
+      <module name="AndroidIDE.treeview" target="11" />
+      <module name="AndroidIDE.xml-inflater" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -36,7 +36,7 @@ dependencies {
     implementation project (path: ':build-tools:xml-dom')
     api project (path: ':build-tools:builder-model-impl')
     
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation common.jkotlin
 }
 
 task copyToTestDir (type: Copy) {
