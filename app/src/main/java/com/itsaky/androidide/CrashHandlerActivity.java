@@ -56,4 +56,10 @@ public class CrashHandlerActivity extends StudioActivity {
         .addToBackStack(null)
         .commit();
   }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
+  }
 }

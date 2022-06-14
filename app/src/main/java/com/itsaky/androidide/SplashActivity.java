@@ -89,4 +89,10 @@ public class SplashActivity extends StudioActivity {
     mHandler.removeCallbacks(mRunnable);
     mHandler.postDelayed(mRunnable, 1000);
   }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
+  }
 }

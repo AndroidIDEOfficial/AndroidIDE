@@ -65,4 +65,10 @@ public class PreferencesActivity extends StudioActivity {
   public void onBackPressed() {
     super.onBackPressed();
   }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
+  }
 }

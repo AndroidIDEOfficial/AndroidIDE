@@ -318,4 +318,10 @@ public class DownloadActivity extends StudioActivity {
       this.exitCode = exitCode;
     }
   }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
+  }
 }

@@ -184,4 +184,10 @@ public class AboutActivity extends StudioActivity {
       return getString(R.string.about_footer_alternate, arch);
     }
   }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
+  }
 }
