@@ -49,7 +49,7 @@ import org.gradle.tooling.events.work.WorkItemStartEvent
  */
 @Suppress("UnstableApiUsage")
 class ForwardingProgressListener : ProgressListener {
-
+    
     override fun statusChanged(event: ProgressEvent?) {
         if (event == null || Main.client == null) {
             return

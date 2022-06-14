@@ -11,8 +11,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
-      <module name="AndroidIDE.actions" target="11" />
-      <module name="AndroidIDE.app" target="11" />
+      <module name="AndroidIDE.actions" target="17" />
+      <module name="AndroidIDE.app" target="17" />
       <module name="AndroidIDE.build-tools.builder-api" target="11" />
       <module name="AndroidIDE.build-tools.builder-model" target="11" />
       <module name="AndroidIDE.build-tools.builder-model-impl" target="11" />
@@ -50,23 +50,23 @@
       <module name="AndroidIDE.build-tools.xml-formatter" target="11" />
       <module name="AndroidIDE.build-tools.xml-formatter.main" target="11" />
       <module name="AndroidIDE.build-tools.xml-formatter.test" target="11" />
-      <module name="AndroidIDE.common" target="11" />
-      <module name="AndroidIDE.emulatorview" target="11" />
+      <module name="AndroidIDE.common" target="17" />
+      <module name="AndroidIDE.emulatorview" target="17" />
       <module name="AndroidIDE.google-java-format" target="1.8" />
-      <module name="AndroidIDE.gradle-plugin" target="11" />
-      <module name="AndroidIDE.gradle-plugin.main" target="11" />
-      <module name="AndroidIDE.gradle-plugin.test" target="11" />
+      <module name="AndroidIDE.gradle-plugin" target="17" />
+      <module name="AndroidIDE.gradle-plugin.main" target="17" />
+      <module name="AndroidIDE.gradle-plugin.test" target="17" />
       <module name="AndroidIDE.gradle-tooling" target="1.8" />
       <module name="AndroidIDE.gradle-tooling.plugin" target="1.8" />
       <module name="AndroidIDE.javac" target="1.8" />
-      <module name="AndroidIDE.lexers" target="11" />
-      <module name="AndroidIDE.lsp.api" target="11" />
-      <module name="AndroidIDE.lsp.java" target="11" />
-      <module name="AndroidIDE.lsp.testing" target="11" />
-      <module name="AndroidIDE.lsp.xml" target="11" />
-      <module name="AndroidIDE.sdk-info" target="11" />
-      <module name="AndroidIDE.treeview" target="11" />
-      <module name="AndroidIDE.xml-inflater" target="11" />
+      <module name="AndroidIDE.lexers" target="17" />
+      <module name="AndroidIDE.lsp.api" target="17" />
+      <module name="AndroidIDE.lsp.java" target="17" />
+      <module name="AndroidIDE.lsp.testing" target="17" />
+      <module name="AndroidIDE.lsp.xml" target="17" />
+      <module name="AndroidIDE.sdk-info" target="17" />
+      <module name="AndroidIDE.treeview" target="17" />
+      <module name="AndroidIDE.xml-inflater" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>
