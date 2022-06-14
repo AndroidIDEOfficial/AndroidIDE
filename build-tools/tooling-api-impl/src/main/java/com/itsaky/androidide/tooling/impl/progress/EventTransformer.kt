@@ -236,6 +236,11 @@ class EventTransformer {
                     result.isIncremental,
                     result.executionReasons)
             }
+    
+            if (result is TaskFailureResult) {
+                return com.itsaky.androidide.tooling.events.task.TaskFailureResult(
+                    result.startTime, result.endTime)
+            }
 
             if (result is TaskExecutionResult) {
                 return com.itsaky.androidide.tooling.events.task.TaskExecutionResult(
@@ -245,11 +250,6 @@ class EventTransformer {
             if (result is TaskSkippedResult) {
                 return com.itsaky.androidide.tooling.events.task.TaskSkippedResult(
                     result.skipMessage, result.startTime, result.endTime)
-            }
-
-            if (result is TaskFailureResult) {
-                return com.itsaky.androidide.tooling.events.task.TaskFailureResult(
-                    result.startTime, result.endTime)
             }
 
             return com.itsaky.androidide.tooling.events.task.TaskOperationResult(

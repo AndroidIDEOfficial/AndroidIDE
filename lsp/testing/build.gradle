@@ -40,8 +40,8 @@ android {
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:1.7.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation androidx.ktx
+    implementation common.kotlin
 
     implementation project(':lsp:api')
     implementation project(':actions')

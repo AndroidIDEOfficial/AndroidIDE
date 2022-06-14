@@ -31,7 +31,7 @@ dependencies {
     api project (path: ':build-tools:tooling-api-model')
     api project (path: ':build-tools:tooling-api-events')
     
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation common.jkotlin
     
     testImplementation tests.junit
     testImplementation tests.google_truth

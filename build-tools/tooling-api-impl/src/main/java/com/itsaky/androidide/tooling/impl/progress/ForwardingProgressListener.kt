@@ -27,9 +27,7 @@ import org.gradle.tooling.events.StatusEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationFinishEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationProgressEvent
 import org.gradle.tooling.events.configuration.ProjectConfigurationStartEvent
-import org.gradle.tooling.events.download.FileDownloadFinishEvent
-import org.gradle.tooling.events.download.FileDownloadProgressEvent
-import org.gradle.tooling.events.download.FileDownloadStartEvent
+import org.gradle.tooling.events.download.FileDownloadOperationDescriptor
 import org.gradle.tooling.events.task.TaskFinishEvent
 import org.gradle.tooling.events.task.TaskProgressEvent
 import org.gradle.tooling.events.task.TaskStartEvent
@@ -55,6 +53,11 @@ class ForwardingProgressListener : ProgressListener {
             return
         }
 
+        // File download progress event must not be sent
+        if (event.descriptor is FileDownloadOperationDescriptor) {
+            return
+        }
+
         val ideEvent: com.itsaky.androidide.tooling.events.ProgressEvent =
             when (event) {
                 is ProjectConfigurationProgressEvent ->
@@ -64,12 +67,6 @@ class ForwardingProgressListener : ProgressListener {
                         is ProjectConfigurationFinishEvent ->
                             EventTransformer.projectConfigurationFinish(event)
                         else -> EventTransformer.projectConfigurationProgress(event)
-                    }
-                is FileDownloadProgressEvent ->
-                    when (event) {
-                        is FileDownloadStartEvent -> EventTransformer.fileDownloadStart(event)
-                        is FileDownloadFinishEvent -> EventTransformer.fileDownloadFinish(event)
-                        else -> EventTransformer.fileDownloadProgress(event)
                     }
                 is TaskProgressEvent ->
                     when (event) {

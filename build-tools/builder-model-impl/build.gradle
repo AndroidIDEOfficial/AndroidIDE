@@ -26,6 +26,6 @@ java {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation common.jkotlin
     api "com.android.tools.build:builder-model:${project.property ("androidide.tooling.supportedAgpVersion")}"
 }

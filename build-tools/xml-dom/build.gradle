@@ -17,7 +17,6 @@
 
 plugins {
     id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
 }
 
 java {
@@ -45,17 +44,5 @@ dependencies {
 repositories {
     maven {
         url "https://repo.eclipse.org/content/repositories/lemminx-snapshots/"
-    }
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
     }
 }
