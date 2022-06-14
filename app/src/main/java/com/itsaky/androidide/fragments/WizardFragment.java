@@ -15,9 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.transition.TransitionManager;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.android.material.transition.MaterialSharedAxis;
 
@@ -40,6 +39,7 @@ import com.itsaky.androidide.utils.AndroidUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.SingleTextWatcher;
+import com.itsaky.androidide.viewmodel.WizardViewModel;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
@@ -47,8 +47,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 public class WizardFragment extends BaseFragment implements ProjectWriterCallback {
 
@@ -64,6 +62,8 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
   private WizardTemplateAdapter mAdapter;
   private LayoutLoadingWizardBinding loadingLayout;
   private SetupFooterBinding footerBinding;
+
+  private WizardViewModel mViewModel;
 
   private ProgressSheet mProgressSheet;
   private ProjectTemplate mCurrentTemplate;
@@ -92,6 +92,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     templatesBinding = binding.wizardTemplatesLayout;
     detailsBinding = binding.wizardDetailsLayout;
     footerBinding = binding.footerLayout;
+    mViewModel = new ViewModelProvider(this).get(WizardViewModel.class);
     return binding.getRoot();
   }
 
@@ -106,13 +107,38 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     footerBinding.nextButton.setOnClickListener(v -> onNavigateNext());
     footerBinding.exitButton.setOnClickListener(v -> onNavigateBack());
 
-    loadTemplates();
-
     templatesBinding.templateRecyclerview.setLayoutManager(
         new GridLayoutManager(requireContext(), 3));
 
     mAdapter = new WizardTemplateAdapter();
     templatesBinding.templateRecyclerview.setAdapter(mAdapter);
+
+    mViewModel.createTemplatesList();
+    mViewModel
+        .getProjects()
+        .observe(
+            getViewLifecycleOwner(),
+            (list) -> {
+              mAdapter.submitList(list);
+            });
+
+    mViewModel
+        .getLoadingState()
+        .observe(
+            getViewLifecycleOwner(),
+            (v) -> {
+              if (v) {
+                showLoading();
+              } else {
+                showTemplatesView();
+              }
+            });
+
+    mAdapter.setOnItemClickListener(
+        (item, pos) -> {
+          mCurrentTemplate = item;
+          onNavigateNext();
+        });
 
     initDetailsView();
   }
@@ -126,6 +152,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
   @Override
   public void onDestroyView() {
     super.onDestroyView();
+    mViewModel = null;
     binding = null;
     loadingLayout = null;
     templatesBinding = null;
@@ -139,87 +166,11 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     return view.getAdapter().getItem(pos).toString();
   }
 
-  private void loadTemplates() {
-
+  private void showLoading() {
     TransitionManager.beginDelayedTransition((ViewGroup) requireView(), new MaterialFadeThrough());
     binding.loadingLayout.getRoot().setVisibility(View.VISIBLE);
     binding.wizardTemplatesLayout.getRoot().setVisibility(View.GONE);
     footerBinding.nextButton.setVisibility(View.GONE);
-
-    Executors.newSingleThreadExecutor()
-        .execute(
-            () -> {
-              List<ProjectTemplate> templates = createTemplates();
-
-              if (getActivity() != null) {
-                getActivity()
-                    .runOnUiThread(
-                        () -> {
-                          TransitionManager.beginDelayedTransition(
-                              (ViewGroup) requireView(), new MaterialFadeThrough());
-                          binding.loadingLayout.getRoot().setVisibility(View.GONE);
-                          binding.wizardTemplatesLayout.getRoot().setVisibility(View.VISIBLE);
-
-                          mAdapter.submitList(templates);
-
-                          mAdapter.setOnItemClickListener(
-                              (item, pos) -> {
-                                mCurrentTemplate = item;
-                                onNavigateNext();
-                              });
-                        });
-              }
-            });
-  }
-
-  private List<ProjectTemplate> createTemplates() {
-    List<ProjectTemplate> mTemplates = new ArrayList<>();
-
-    ProjectTemplate
-        empty =
-            new ProjectTemplate()
-                .setId(0)
-                .setSupportJava(true)
-                .setSupportKotlin(true)
-                .setName(requireContext(), R.string.template_empty)
-                .setDescription(requireContext(), R.string.template_description_empty)
-                .setImageId(R.drawable.template_empty),
-        basic =
-            new ProjectTemplate()
-                .setId(1)
-                .setSupportJava(true)
-                .setSupportKotlin(true)
-                .setName(requireContext(), R.string.template_basic)
-                .setDescription(requireContext(), R.string.template_description_basic)
-                .setImageId(R.drawable.template_basic),
-        drawer =
-            new ProjectTemplate()
-                .setId(2)
-                .setSupportJava(true)
-                .setSupportKotlin(true)
-                .setName(requireContext(), R.string.template_navigation_drawer)
-                .setDescription(requireContext(), R.string.template_description_navigation_drawer)
-                .setImageId(R.drawable.template_navigation_drawer),
-        libgdx =
-            new ProjectTemplate()
-                .setId(3)
-                .setSupportJava(true)
-                .setName(requireContext(), R.string.template_libgdx)
-                .setDescription(requireContext(), R.string.template_description_libgdx)
-                .setImageId(R.drawable.template_libgdx),
-        compose =
-            new ProjectTemplate()
-                .setId(4)
-                .setSupportKotlin(true)
-                .setName(requireContext(), R.string.template_compose)
-                .setDescription(requireContext(), R.string.template_description_compose)
-                .setImageId(R.drawable.template_kotlin);
-    mTemplates.add(empty);
-    mTemplates.add(basic);
-    mTemplates.add(drawer);
-    mTemplates.add(libgdx);
-    mTemplates.add(compose);
-    return mTemplates;
   }
 
   private int getMinSdk() {
@@ -319,17 +270,18 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
   }
 
   private void showTemplatesView() {
-    templatesBinding.getRoot().setVisibility(View.GONE);
 
     MaterialSharedAxis sharedAxis = new MaterialSharedAxis(MaterialSharedAxis.X, false);
 
     TransitionManager.beginDelayedTransition((ViewGroup) requireView(), sharedAxis);
-
+    binding.loadingLayout.getRoot().setVisibility(View.GONE);
+    templatesBinding.getRoot().setVisibility(View.GONE);
     detailsBinding.getRoot().setVisibility(View.GONE);
     templatesBinding.getRoot().setVisibility(View.VISIBLE);
     footerBinding.nextButton.setVisibility(View.GONE);
     footerBinding.nextButton.setText(R.string.next);
     footerBinding.exitButton.setText(R.string.exit);
+    binding.wizardDescriptionId.setText(R.string.new_project);
   }
 
   private void showDetailsView() {
@@ -363,7 +315,9 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     detailsBinding.etLanguage.setListSelection(0);
     detailsBinding.etLanguage.setText(getSelectedItem(0, detailsBinding.etLanguage), false);
     minSdkIndex = manager.getInt(PREF_MIN_SDK_INDEX_KEY, 5);
-    targetSdkIndex = manager.getInt(PREF_TERGET_SDK_INDEX_KEY, 16);
+    
+    // google recommended use latest target sdk version
+    targetSdkIndex = manager.getInt(PREF_TERGET_SDK_INDEX_KEY, getSdks().size() - 1);
     detailsBinding.etMinSdk.setListSelection(minSdkIndex);
     detailsBinding.etMinSdk.setText(getSelectedItem(minSdkIndex, detailsBinding.etMinSdk), false);
 
@@ -382,6 +336,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
 
     detailsBinding.getRoot().setVisibility(View.VISIBLE);
     templatesBinding.getRoot().setVisibility(View.GONE);
+    binding.wizardDescriptionId.setText(mCurrentTemplate.getName());
     footerBinding.nextButton.setText(R.string.create_project);
     footerBinding.nextButton.setVisibility(View.VISIBLE);
     footerBinding.exitButton.setText(R.string.previous);
