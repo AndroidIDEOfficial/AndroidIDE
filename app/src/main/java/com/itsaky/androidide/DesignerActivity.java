@@ -294,6 +294,7 @@ public class DesignerActivity extends StudioActivity
 
   @Override
   protected void onDestroy() {
+    super.onDestroy();
     LOG.logThis();
     if (isAttrEditorShowing()) {
       getAttrEditorSheet().dismiss();
@@ -315,8 +316,7 @@ public class DesignerActivity extends StudioActivity
     } catch (Throwable e) {
       LOG.error("Unable to release activity references from ILayoutInflater", e);
     }
-
-    super.onDestroy();
+    mBinding = null;
   }
 
   private boolean isAttrEditorShowing() {
@@ -508,4 +508,5 @@ public class DesignerActivity extends StudioActivity
   private void setDragDataToInflatedView(@NonNull IView view) {
     view.setExtraData(new WidgetDragData(true, view, null));
   }
+  
 }
