@@ -174,6 +174,10 @@ public final class Environment {
       LOG.error("Unable to set executable permissions to file", file);
     }
   }
+  
+  public static void setProjectDir(@NonNull File file) {
+    PROJECTS_DIR = new File(file.getAbsolutePath());
+  }
 
   @NonNull
   private static String createPath() {

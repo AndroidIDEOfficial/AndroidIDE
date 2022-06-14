@@ -17,9 +17,17 @@
  */
 package com.itsaky.androidide.language.xml;
 
+import android.graphics.Color;
+
+import com.itsaky.androidide.app.StudioApp;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATOR;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
+
+import com.itsaky.inflater.util.CommonParseUtils;
+import io.github.rosemoe.sora.lang.styling.Span;
+import io.github.rosemoe.sora.lang.styling.TextStyle;
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 import static io.github.rosemoe.sora.widget.schemes.EditorColorScheme.LITERAL;
 
 import com.itsaky.androidide.lexers.xml.XMLLexer;
@@ -49,13 +57,17 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
   private static final ILogger LOG = ILogger.newInstance("XMLAnalyzer");
 
   @Override
-  protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {
+  protected Styles analyze(StringBuilder content, Delegate<Void> delegate) {
+    CommonParseUtils parser =
+        new CommonParseUtils(
+            StudioApp.getInstance().getResourceTable(),
+            StudioApp.getInstance().getApplicationContext().getResources().getDisplayMetrics());
     final var styles = new Styles();
     final var colors = new MappedSpans.Builder();
 
     CodePointCharStream stream;
     try {
-      stream = CharStreams.fromReader(new CharSequenceReader(text));
+      stream = CharStreams.fromReader(new CharSequenceReader(content));
     } catch (IOException e) {
       LOG.error("Unable to create stream for analyze", e);
       return styles;
@@ -113,7 +125,36 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
           styles.addCodeBlock(closeBlock);
           break;
         case XMLLexer.STRING:
-          colors.addIfNeeded(line, column, LITERAL);
+          // highlight hex color line
+          try {
+            var text = token.getText();
+            var textVar = text.replace("\"", "");
+
+            if (isColorValue(textVar)) {
+              int color =
+                  parser.parseColor(textVar, StudioApp.getInstance().getApplicationContext());
+
+              Span span = Span.obtain(column + 1, LITERAL);
+              span.setUnderlineColor(color);
+              colors.add(line, span);
+
+              Span middle = Span.obtain(column + text.length() - 1, EditorColorScheme.LITERAL);
+              middle.setUnderlineColor(Color.TRANSPARENT);
+              colors.add(line, middle);
+
+              Span end =
+                  Span.obtain(
+                      column + text.length(), TextStyle.makeStyle(EditorColorScheme.TEXT_NORMAL));
+              end.setUnderlineColor(Color.TRANSPARENT);
+              colors.add(line, end);
+
+            } else {
+              colors.addIfNeeded(line, column, LITERAL);
+            }
+          } catch (Exception ex) {
+            // This color string is not valid
+            colors.addIfNeeded(line, column, LITERAL);
+          }
           break;
         case XMLLexer.Name:
           var type = SchemeAndroidIDE.TEXT_NORMAL;
@@ -132,10 +173,36 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
             block.endColumn = column;
             styles.addCodeBlock(block);
           }
+          String attribute = token.getText();
+          if (attribute.contains(":")) {
+            colors.addIfNeeded(line, column, SchemeAndroidIDE.FIELD);
+            colors.addIfNeeded(
+                line, column + attribute.indexOf(":"), EditorColorScheme.TEXT_NORMAL);
+            break;
+          }
 
           colors.addIfNeeded(line, column, get(type));
           break;
         case XMLLexer.TEXT:
+          // highlight hex color line
+          try {
+            var textVar = token.getText();
+            if (isColorValue(textVar)) {
+              int color =
+                  parser.parseColor(textVar, StudioApp.getInstance().getApplicationContext());
+              Span span = Span.obtain(column, get(SchemeAndroidIDE.TEXT_NORMAL));
+              span.setUnderlineColor(color);
+              colors.add(line, span);
+
+            } else {
+              colors.addIfNeeded(line, column, get(SchemeAndroidIDE.TEXT_NORMAL));
+            }
+          } catch (Exception ex) {
+            // This color string is not valid
+
+            colors.addIfNeeded(line, column, get(SchemeAndroidIDE.TEXT_NORMAL));
+          }
+          break;
         default:
           colors.addIfNeeded(line, column, get(SchemeAndroidIDE.TEXT_NORMAL));
           break;
@@ -150,5 +217,12 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
     styles.spans = colors.build();
 
     return styles;
+  }
+
+  private static boolean isColorValue(String value) {
+    if (value.startsWith("#") | value.startsWith("@android:color") | value.startsWith("@color/")) {
+      return true;
+    }
+    return false;
   }
 }

@@ -23,14 +23,18 @@ public class NewProjectDetails {
   public String packageName;
   public int minSdk;
   public int targetSdk;
+  public String language;
+  public String savePath;
 
   public NewProjectDetails() {}
 
-  public NewProjectDetails(String name, String packageName, int minSdk, int targetSdk) {
+  public NewProjectDetails(String name, String packageName, int minSdk, int targetSdk, String language, String savePath) {
     this.name = name;
     this.packageName = packageName;
     this.minSdk = minSdk;
     this.targetSdk = targetSdk;
+    this.language = language;
+    this.savePath = savePath;
   }
 
   public NewProjectDetails setName(String name) {

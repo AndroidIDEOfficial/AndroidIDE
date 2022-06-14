@@ -32,6 +32,7 @@ import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.colorpicker.ColorPickerView;
 import com.itsaky.androidide.databinding.LayoutColorAttrEditorBinding;
 import com.itsaky.androidide.utils.DialogUtils;
+import com.itsaky.inflater.util.CommonParseUtils;
 import com.itsaky.inflater.values.FrameworkValues;
 import com.itsaky.inflater.values.ValuesTableFactory;
 
@@ -65,7 +66,11 @@ public class ColorEditor extends AbstractReferenceEditor {
     setupReferenceInput((MaterialAutoCompleteTextView) this.binding.colorResInput.getEditText());
 
     try {
-      final var col = Color.parseColor(attribute.getValue());
+      CommonParseUtils parser =
+          new CommonParseUtils(
+              StudioApp.getInstance().getResourceTable(),
+              StudioApp.getInstance().getApplicationContext().getResources().getDisplayMetrics());
+      final var col = parser.parseColor(attribute.getValue(), requireContext());
       this.binding.colorPreview.setCardBackgroundColor(col);
     } catch (Throwable th) {
       // ignored

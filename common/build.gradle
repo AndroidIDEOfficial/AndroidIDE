@@ -27,7 +27,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation common.utilcode
-
+    implementation common.lang3 
     implementation google.material
     
     implementation androidx.appcompat
