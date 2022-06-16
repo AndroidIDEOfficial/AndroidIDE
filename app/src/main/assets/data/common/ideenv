@@ -17,6 +17,7 @@ while getopts ":she" option; do
 	case $option in
 		s) ## Simply print the contents of the file
 		   cat $PROPS
+		   echo ""
 		   exit;;
 		h) ## Show the help
 		   print_help
