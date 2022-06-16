@@ -33,8 +33,11 @@
 Items marked with `(*)` are partially implemented.
 `XML` language server supports only code completion at the moment. Git is currently available only in the terminal i.e. no GUI interface for `git`.
 
+## Installation
+- Download the AndroidIDE APK from [releases](https://github.com/itsaky/AndroidIDE/releases). You can also download APKs from [GitHub actions](https://github.com/itsaky/AndroidIDE/actions).
+- Follow the instructions [here](https://github.com/itsaky/androidide-build-tools#installing-in-androidide) to install the build tools.
+
 ## Limitations
-- Gradle Wrapper is supported. But, it requires that the project's application module is named 'app'.
 - SDK Manager is already included in Android SDK and is accessible in AndroidIDE via its Terminal. But, you cannot use it to install some tools (like NDK) because those tools are not built for Android.
 - No official NDK support because we haven't built the NDK for Android.
 
