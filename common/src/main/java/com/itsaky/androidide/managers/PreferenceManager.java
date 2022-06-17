@@ -58,6 +58,11 @@ public class PreferenceManager {
     this.prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
   }
 
+  public PreferenceManager remove(String key) {
+    prefs.edit().remove(key).apply();
+    return this;
+  }
+
   public PreferenceManager putInt(String key, int val) {
     prefs.edit().putInt(key, val).apply();
     return this;
