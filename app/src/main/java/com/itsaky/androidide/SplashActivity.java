@@ -76,14 +76,11 @@ public class SplashActivity extends StudioActivity {
       builder.create().show();
     } else {
       binding.splashText.setText(getString(R.string.msg_storage_granted));
-      if (getApp().isFrameworkInstalled()) {
-        goToMain();
-      } else {
-        startActivity(new Intent(this, DownloadActivity.class));
-        finish();
-      }
+      mHandler.removeCallbacks(mRunnable);
+      mHandler.postDelayed(mRunnable, 1000);
     }
   }
+<<<<<<< HEAD
 
   private void goToMain() {
     mHandler.removeCallbacks(mRunnable);
@@ -95,4 +92,6 @@ public class SplashActivity extends StudioActivity {
     super.onDestroy();
     binding = null;
   }
+=======
+>>>>>>> upstream/main
 }

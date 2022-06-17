@@ -23,8 +23,6 @@ import android.content.SharedPreferences;
 
 public class PreferenceManager {
 
-  public static final String KEY_FRAMEWORK_DOWNLOADED = "framework_downloaded";
-  public static final String KEY_FRAMEWORK_INSTALLED = "framework_installed";
   public static final String KEY_IS_FIRST_PROJECT_BUILD = "project_isFirstBuild";
   public static final String KEY_OPEN_PROJECTS = "idepref_general_autoOpenProjects";
   public static final String KEY_CONFIRM_PROJECT_OPEN = "idepref_general_confirmProjectOpen";
@@ -58,6 +56,11 @@ public class PreferenceManager {
   @SuppressLint("CommitPrefEdits")
   public PreferenceManager(Context ctx) {
     this.prefs = androidx.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
+  }
+
+  public PreferenceManager remove(String key) {
+    prefs.edit().remove(key).apply();
+    return this;
   }
 
   public PreferenceManager putInt(String key, int val) {
@@ -122,14 +125,6 @@ public class PreferenceManager {
 
   public boolean wasProjectOpened() {
     return !getOpenedProject().equals(NO_OPENED_PROJECT);
-  }
-
-  public boolean isFrameworkDownloaded() {
-    return getBoolean(KEY_FRAMEWORK_DOWNLOADED);
-  }
-
-  public boolean isFrameworkInstalled() {
-    return isFrameworkDownloaded() && getBoolean(KEY_FRAMEWORK_INSTALLED);
   }
 
   public boolean isStackTraceEnabled() {

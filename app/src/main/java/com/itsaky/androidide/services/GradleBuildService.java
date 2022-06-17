@@ -40,11 +40,13 @@ import com.itsaky.androidide.BuildConfig;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
 import com.itsaky.androidide.app.StudioApp;
+import com.itsaky.androidide.fragments.preferences.BuildPreferences;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.LogLine;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.shell.CommonProcessExecutor;
 import com.itsaky.androidide.shell.ProcessStreamsHolder;
+import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
 import com.itsaky.androidide.tooling.api.messages.InitializeProjectMessage;
@@ -54,7 +56,6 @@ import com.itsaky.androidide.tooling.api.messages.result.BuildResult;
 import com.itsaky.androidide.tooling.api.messages.result.GradleWrapperCheckResult;
 import com.itsaky.androidide.tooling.api.messages.result.InitializeResult;
 import com.itsaky.androidide.tooling.api.messages.result.TaskExecutionResult;
-import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.util.ToolingApiLauncher;
 import com.itsaky.androidide.tooling.events.ProgressEvent;
 import com.itsaky.androidide.utils.Environment;
@@ -298,7 +299,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     isBuildInProgress = true;
     return server
-        .initialize(new InitializeProjectMessage(rootDir))
+        .initialize(new InitializeProjectMessage(rootDir, getGradleInstallationPath()))
         .thenApply(this::markBuildAsFinished);
   }
 
@@ -315,8 +316,12 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     isBuildInProgress = true;
     return server
-        .executeTasks(new TaskExecutionMessage(":", Arrays.asList(tasks)))
+        .executeTasks(new TaskExecutionMessage(":", Arrays.asList(tasks), getGradleInstallationPath()))
         .thenApply(this::markBuildAsFinished);
+  }
+
+  private String getGradleInstallationPath() {
+    return StudioApp.getInstance().getPrefManager().getString(BuildPreferences.KEY_CUSTOM_GRADLE_INSTALLATION, "");
   }
 
   @NonNull
@@ -333,7 +338,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     isBuildInProgress = true;
     return server
-        .executeTasks(new TaskExecutionMessage(projectPath, Arrays.asList(tasks)))
+        .executeTasks(new TaskExecutionMessage(projectPath, Arrays.asList(tasks), getGradleInstallationPath()))
         .thenApply(this::markBuildAsFinished);
   }
 
@@ -393,27 +398,33 @@ public class GradleBuildService extends Service implements BuildService, IToolin
       return null;
     }
 
-    return new EventListener() {
+    return  new EventListener() {
+
+      @SuppressWarnings("ConstantConditions")
       @Override
       public void prepareBuild() {
         ThreadUtils.runOnUiThread(listener::prepareBuild);
       }
 
+      @SuppressWarnings("ConstantConditions")
       @Override
       public void onBuildSuccessful(@NonNull List<String> tasks) {
         ThreadUtils.runOnUiThread(() -> listener.onBuildSuccessful(tasks));
       }
 
+      @SuppressWarnings("ConstantConditions")
       @Override
       public void onProgressEvent(@NonNull ProgressEvent event) {
         ThreadUtils.runOnUiThread(() -> listener.onProgressEvent(event));
       }
 
+      @SuppressWarnings("ConstantConditions")
       @Override
       public void onBuildFailed(@NonNull List<String> tasks) {
         ThreadUtils.runOnUiThread(() -> listener.onBuildFailed(tasks));
       }
 
+      @SuppressWarnings("ConstantConditions")
       @Override
       public void onOutput(String line) {
         ThreadUtils.runOnUiThread(() -> listener.onOutput(line));

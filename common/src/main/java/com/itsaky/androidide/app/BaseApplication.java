@@ -157,10 +157,6 @@ public abstract class BaseApplication extends MultiDexApplication {
     return Environment.mkdirIfNotExits(new File(Environment.TMP_DIR, "tempProject"));
   }
 
-  public boolean isFrameworkInstalled() {
-    return getRootDir().exists() && mPrefsManager.isFrameworkInstalled();
-  }
-
   public PreferenceManager getPrefManager() {
     return mPrefsManager;
   }
