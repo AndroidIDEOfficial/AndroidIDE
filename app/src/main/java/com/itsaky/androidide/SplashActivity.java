@@ -80,18 +80,10 @@ public class SplashActivity extends StudioActivity {
       mHandler.postDelayed(mRunnable, 1000);
     }
   }
-<<<<<<< HEAD
-
-  private void goToMain() {
-    mHandler.removeCallbacks(mRunnable);
-    mHandler.postDelayed(mRunnable, 1000);
-  }
-
+  
   @Override
   protected void onDestroy() {
     super.onDestroy();
     binding = null;
   }
-=======
->>>>>>> upstream/main
 }
