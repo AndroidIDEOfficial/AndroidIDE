@@ -933,7 +933,7 @@ public class EditorActivity extends StudioActivity
           initialSetup();
           setStatus(getString(R.string.msg_project_initialized));
           mBinding.buildProgressIndicator.setVisibility(View.GONE);
-          
+
           if (mFindInProjectDialog != null && mFindInProjectDialog.isShowing()) {
             mFindInProjectDialog.dismiss();
           }
@@ -1348,7 +1348,8 @@ public class EditorActivity extends StudioActivity
           @Override
           public void onTabSelected(TabLayout.Tab tab) {
             final var fragment = bottomSheetTabAdapter.getFragmentAtIndex(tab.getPosition());
-            if (fragment instanceof NonEditableEditorFragment) {
+            if (fragment instanceof NonEditableEditorFragment
+                || fragment instanceof LogViewFragment) {
               mBinding.bottomSheet.clearFab.show();
               mBinding.bottomSheet.shareOutputFab.show();
             } else {
@@ -1376,6 +1377,11 @@ public class EditorActivity extends StudioActivity
             if (editor.getEditor() != null) {
               editor.getEditor().setText("");
             }
+          } else if (fragment instanceof LogViewFragment) {
+            final var editor = (LogViewFragment) fragment;
+            if (editor.getEditor() != null) {
+              editor.getEditor().setText("");
+            }
           }
         });
 
@@ -1384,19 +1390,22 @@ public class EditorActivity extends StudioActivity
           final var fragment =
               bottomSheetTabAdapter.getFragmentAtIndex(
                   mBinding.bottomSheet.tabs.getSelectedTabPosition());
-          if (fragment instanceof NonEditableEditorFragment) {
-            final var editor = (NonEditableEditorFragment) fragment;
-            if (editor.getEditor() != null) {
-              final var text = editor.getEditor().getText();
-              final var type =
-                  editor instanceof SimpleOutputFragment
-                      ? "build_output"
-                      : editor instanceof IDELogFragment
-                          ? "ide_logs"
-                          : editor instanceof LogViewFragment ? "app_logs" : "unknown_type";
-              shareText(text, type);
-            }
+          CharSequence text = "";
+          String type = "unknown_type";
+          if (fragment instanceof SimpleOutputFragment) {
+            var editor = (SimpleOutputFragment) fragment;
+            text = editor.getEditor().getText();
+            type = "build_output";
+          } else if (fragment instanceof IDELogFragment) {
+            var editor = (IDELogFragment) fragment;
+            text = editor.getEditor().getText();
+            type = "ide_logs";
+          } else if (fragment instanceof LogViewFragment) {
+            var editor = (IDELogFragment) fragment;
+            text = editor.getEditor().getText();
+            type = "app_logs";
           }
+          shareText(text, type);
         });
 
     if (!getApp().getPrefManager().getBoolean(KEY_BOTTOM_SHEET_SHOWN)
@@ -1520,18 +1529,14 @@ public class EditorActivity extends StudioActivity
     try {
       //noinspection ConstantConditions
       final var rootProject = ProjectManager.INSTANCE.getRootProject();
-      
-            var projectName = rootProject.getName().get();
-            if(projectName.isEmpty())
- {
-     projectName = new File(ProjectManager.INSTANCE.getProjectDirPath()).getName();
-    getSupportActionBar()
-          .setSubtitle(projectName);
-    }
-    else{
-      getSupportActionBar()
-          .setSubtitle(projectName);
-          }
+
+      var projectName = rootProject.getName().get();
+      if (projectName.isEmpty()) {
+        projectName = new File(ProjectManager.INSTANCE.getProjectDirPath()).getName();
+        getSupportActionBar().setSubtitle(projectName);
+      } else {
+        getSupportActionBar().setSubtitle(projectName);
+      }
     } catch (Throwable th) {
       // ignored
     }
@@ -1575,7 +1580,7 @@ public class EditorActivity extends StudioActivity
     }
 
     initializeLanguageServers();
-    
+
     // Actually, we don't need to start FileOptionsHandler
     // Because it would work anyway
     // But still we do...

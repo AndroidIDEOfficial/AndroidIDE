@@ -217,6 +217,12 @@ public class TerminalActivity extends StudioActivity
     setTerminalCursorBlinkingState(false);
   }
 
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
+  }
+
   public boolean isVisible() {
     return isVisible;
   }
