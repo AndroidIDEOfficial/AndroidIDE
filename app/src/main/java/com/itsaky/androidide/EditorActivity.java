@@ -1390,24 +1390,22 @@ public class EditorActivity extends StudioActivity
           final var fragment =
               bottomSheetTabAdapter.getFragmentAtIndex(
                   mBinding.bottomSheet.tabs.getSelectedTabPosition());
-          if (fragment instanceof Fragment) {
-            CharSequence text = "";
-            String type = "unknown_type";
-            if (fragment instanceof SimpleOutputFragment) {
-              var editor = (SimpleOutputFragment) fragment;
-              text = editor.getEditor().getText();
-              type = "build_output";
-            } else if (fragment instanceof IDELogFragment) {
-              var editor = (IDELogFragment) fragment;
-              text = editor.getEditor().getText();
-              type = "ide_logs";
-            } else if (fragment instanceof LogViewFragment) {
-              var editor = (IDELogFragment) fragment;
-              text = editor.getEditor().getText();
-              type = "app_logs";
-            }
-            shareText(text, type);
+          CharSequence text = "";
+          String type = "unknown_type";
+          if (fragment instanceof SimpleOutputFragment) {
+            var editor = (SimpleOutputFragment) fragment;
+            text = editor.getEditor().getText();
+            type = "build_output";
+          } else if (fragment instanceof IDELogFragment) {
+            var editor = (IDELogFragment) fragment;
+            text = editor.getEditor().getText();
+            type = "ide_logs";
+          } else if (fragment instanceof LogViewFragment) {
+            var editor = (IDELogFragment) fragment;
+            text = editor.getEditor().getText();
+            type = "app_logs";
           }
+          shareText(text, type);
         });
 
     if (!getApp().getPrefManager().getBoolean(KEY_BOTTOM_SHEET_SHOWN)
