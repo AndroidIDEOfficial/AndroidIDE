@@ -88,10 +88,6 @@ public class LogLine {
     this.message = message;
     this.priority = parsePriority(priorityChar);
     this.formatted = formatted;
-
-    if (tag.length() > 25) {
-      this.tag = "...".concat(tag.substring(tag.length() - 25));
-    }
   }
 
   private int parsePriority(char s) {
@@ -129,24 +125,10 @@ public class LogLine {
     }
   }
 
-  public int getColor() {
-    int id = 0xffffffff;
-    if (priority == WARNING) {
-      id = 0xffff7043;
-    } else if (priority == ERROR) {
-      id = 0xffc50e29;
-    } else if (priority == INFO) {
-      id = 0xff4caf50;
-    }
-    return id;
-  }
-
   @Override
   public String toString() {
     return this.formatted
-        ? String.format(
-            "%-6s %-13s %-6s %-6s %-2s %-35s %s",
-            date, time, pid, tid, priorityChar, trimIfNeeded(tag, 35), message)
+        ? String.format("%s %s %s/%s %s/%s %s", date, time, pid, tid, priorityChar, tag, message)
         : this.unformatted;
   }
 
