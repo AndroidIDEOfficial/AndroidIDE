@@ -30,18 +30,24 @@ import com.blankj.utilcode.util.FileUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.BaseApplication;
+import com.itsaky.androidide.databinding.LayoutDialogTextInputBinding;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.tasks.TaskExecutor;
 import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
+import com.itsaky.androidide.utils.ILogger;
 
 import java.io.File;
+import java.util.Objects;
 
 public class BuildPreferences extends BasePreferenceFragment
     implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
 
   public static final String KEY_GRADLE_COMMANDS = "idepref_build_gradleCommands";
   public static final String KEY_GRADLE_CLEAR_CACHE = "idepref_build_gradleClearCache";
+  public static final String KEY_CUSTOM_GRADLE_INSTALLATION =
+      "idepref_build_customGradleInstallation";
+  private static final ILogger LOG = ILogger.newInstance("BuildPreferences");
 
   private ProgressSheet progressSheet;
 
@@ -52,6 +58,7 @@ public class BuildPreferences extends BasePreferenceFragment
     final var screen = getPreferenceScreen();
     final var categoryGradle = new PreferenceCategory(getContext());
     final var customCommands = new Preference(getContext());
+    final var customInstallation = new Preference(getContext());
     final var clearCache = new Preference(getContext());
 
     screen.addPreference(categoryGradle);
@@ -61,6 +68,11 @@ public class BuildPreferences extends BasePreferenceFragment
     customCommands.setTitle(R.string.idepref_build_customgradlecommands_title);
     customCommands.setSummary(R.string.idepref_build_customgradlecommands_summary);
 
+    customInstallation.setKey(KEY_CUSTOM_GRADLE_INSTALLATION);
+    customInstallation.setIcon(R.drawable.ic_gradle);
+    customInstallation.setTitle(getString(R.string.idepref_title_customGradleInstallation));
+    customInstallation.setSummary(getString(R.string.idepref_msg_customGradleInstallation));
+
     clearCache.setKey(KEY_GRADLE_CLEAR_CACHE);
     clearCache.setIcon(R.drawable.ic_delete);
     clearCache.setTitle(R.string.idepref_build_clearCache_title);
@@ -68,6 +80,7 @@ public class BuildPreferences extends BasePreferenceFragment
 
     categoryGradle.setTitle(R.string.gradle);
     categoryGradle.addPreference(customCommands);
+    categoryGradle.addPreference(customInstallation);
     categoryGradle.addPreference(clearCache);
 
     // Works only for Android 11
@@ -86,16 +99,23 @@ public class BuildPreferences extends BasePreferenceFragment
     setPreferenceScreen(screen);
 
     customCommands.setOnPreferenceClickListener(this);
+    customInstallation.setOnPreferenceClickListener(this);
     clearCache.setOnPreferenceClickListener(this);
   }
 
   @Override
   public boolean onPreferenceClick(Preference p1) {
     final String key = p1.getKey();
-    if (key.equals(KEY_GRADLE_COMMANDS)) {
-      showGradleCommandsDialog();
-    } else if (key.equals(KEY_GRADLE_CLEAR_CACHE)) {
-      showClearCacheDialog();
+    switch (key) {
+      case KEY_GRADLE_COMMANDS:
+        showGradleCommandsDialog();
+        break;
+      case KEY_GRADLE_CLEAR_CACHE:
+        showClearCacheDialog();
+        break;
+      case KEY_CUSTOM_GRADLE_INSTALLATION:
+        changeGradleDist();
+        break;
     }
     return true;
   }
@@ -106,8 +126,31 @@ public class BuildPreferences extends BasePreferenceFragment
     if (KEY_TP_FIX.equals(key)) {
       getPrefManager().putBoolean(KEY_TP_FIX, ((boolean) newValue));
     }
-
     return true;
+  }
+
+  private void changeGradleDist() {
+    final var builder = DialogUtils.newMaterialDialogBuilder(getContext());
+    final var binding = LayoutDialogTextInputBinding.inflate(getLayoutInflater());
+    binding.name.setStartIconDrawable(R.drawable.ic_gradle);
+    binding.name.setHint(R.string.msg_gradle_installation_path);
+    binding.name.setHelperText(getString(R.string.msg_gradle_installation_input_help));
+    binding.name.setCounterEnabled(false);
+    Objects.requireNonNull(binding.name.getEditText())
+        .setText(getPrefManager().getString(KEY_CUSTOM_GRADLE_INSTALLATION, ""));
+    builder
+        .setTitle(R.string.idepref_title_customGradleInstallation)
+        .setView(binding.getRoot())
+        .setPositiveButton(
+            android.R.string.ok,
+            (dialogInterface, i) -> {
+              final var path =
+                  Objects.requireNonNull(binding.name.getEditText()).getText().toString().trim();
+              getPrefManager().putString(KEY_CUSTOM_GRADLE_INSTALLATION, path);
+            })
+        .setNegativeButton(
+            android.R.string.cancel, (dialogInterface, i) -> dialogInterface.dismiss())
+        .show();
   }
 
   private void showGradleCommandsDialog() {

@@ -43,8 +43,6 @@ import com.itsaky.androidide.tooling.impl.progress.ForwardingProgressListener
 import com.itsaky.androidide.tooling.impl.util.ProjectReader
 import com.itsaky.androidide.tooling.impl.util.StopWatch
 import com.itsaky.androidide.utils.ILogger
-import java.io.File
-import java.util.concurrent.*
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 import org.gradle.tooling.BuildCancelledException
 import org.gradle.tooling.BuildException
@@ -54,6 +52,8 @@ import org.gradle.tooling.GradleConnector
 import org.gradle.tooling.UnsupportedVersionException
 import org.gradle.tooling.exceptions.UnsupportedBuildArgumentException
 import org.gradle.tooling.exceptions.UnsupportedOperationConfigurationException
+import java.io.File
+import java.util.concurrent.*
 
 /**
  * Implementation for the Gradle Tooling API server.
@@ -92,6 +92,7 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
                 val stopWatch = StopWatch("Connection to project")
                 this.connector =
                     GradleConnector.newConnector().forProjectDirectory(File(params.directory))
+                setupConnectorForGradleInstallation(this.connector!!, params.gradleInstallation)
                 stopWatch.lap("Connector created")
 
                 if (this.connector == null) {
@@ -153,7 +154,10 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
                 this.project!!.findByPath(projectPath).get()
                     ?: return@computeAsync TaskExecutionResult(false, PROJECT_NOT_FOUND)
 
-            val connection = this.connector!!.forProjectDirectory(project.projectDir).connect()
+            this.connector!!.forProjectDirectory(project.projectDir)
+            setupConnectorForGradleInstallation(this.connector!!, message.gradleInstallation)
+
+            val connection = this.connector!!.connect()
             val builder = connection.newBuild()
             builder.addProgressListener(ForwardingProgressListener())
 
@@ -180,6 +184,23 @@ internal class ToolingApiServerImpl(private val forwardingProject: InternalForwa
                 notifyBuildFailure(message.tasks)
                 return@computeAsync TaskExecutionResult(false, getTaskFailureType(error))
             }
+        }
+    }
+
+    private fun setupConnectorForGradleInstallation(
+        connector: GradleConnector,
+        gradleDistribution: String?
+    ) {
+        if (gradleDistribution != null && gradleDistribution.isNotBlank()) {
+            val file = File(gradleDistribution)
+            if (file.exists() && file.isDirectory) {
+                log.info("Using Gradle installation:", file.canonicalPath)
+                connector.useInstallation(file)
+            } else {
+                log.error("Specified Gradle installation does not exist:", gradleDistribution)
+            }
+        } else {
+            log.info("Using Gradle wrapper for build...")
         }
     }
 
