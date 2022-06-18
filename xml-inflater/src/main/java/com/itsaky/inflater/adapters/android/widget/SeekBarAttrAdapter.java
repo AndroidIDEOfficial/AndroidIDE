@@ -33,38 +33,37 @@ import com.itsaky.inflater.IResourceTable;
  */
 public class SeekBarAttrAdapter extends AbsSeekBarAttrAdapter {
 
-    public SeekBarAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
+  public SeekBarAttrAdapter(@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof SeekBar;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    final var seek = (SeekBar) view;
+    final var context = seek.getContext();
+    final var namespace = attribute.getNamespace();
+    final var name = attribute.getAttributeName();
+    final var value = attribute.getValue();
+
+    if (!canHandleNamespace(namespace)) {
+      return false;
+    }
+    boolean handled = true;
+
+    switch (name) {
+      case "thumb":
+        seek.setThumb(parseDrawable(value, context));
+        break;
+      default:
+        handled = false;
+        break;
     }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof SeekBar;
-    }
-
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        final var seek = (SeekBar) view;
-        final var context = seek.getContext();
-        final var namespace = attribute.getNamespace();
-        final var name = attribute.getAttributeName();
-        final var value = attribute.getValue();
-
-        if (!canHandleNamespace(namespace)) {
-            return false;
-        }
-        boolean handled = true;
-
-        switch (name) {
-            case "thumb":
-                seek.setThumb(parseDrawable(value, context));
-                break;
-            default:
-                handled = false;
-                break;
-        }
-
-        return handled;
-    }
+    return handled;
+  }
 }

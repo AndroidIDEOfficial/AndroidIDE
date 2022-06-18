@@ -28,10 +28,10 @@ import org.junit.runners.JUnit4;
  */
 @RunWith(JUnit4.class)
 public class LoggerTest {
-    @Test
-    public void testLoggerInstance() {
-        final var log = ILogger.newInstance("LoggerTest");
-        log.debug ("Logger.newInstance() on JVM returns:", log.getClass().getName());
-        assertThat(log).isInstanceOf(JvmLogger.class);
-    }
+  @Test
+  public void testLoggerInstance() {
+    final var log = ILogger.newInstance("LoggerTest");
+    log.debug("Logger.newInstance() on JVM returns:", log.getClass().getName());
+    assertThat(log).isInstanceOf(JvmLogger.class);
+  }
 }

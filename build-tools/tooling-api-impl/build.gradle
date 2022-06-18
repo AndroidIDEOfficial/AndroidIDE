@@ -24,8 +24,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = rootProject.ext.javaSourceVersion
+    targetCompatibility = rootProject.ext.javaTargetVersion
 }
 
 jar {
@@ -69,7 +69,7 @@ dependencies {
     implementation project (path: ':build-tools:logger')
     implementation project (path: ':build-tools:tooling-api')
     
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation common.jkotlin
     implementation 'org.gradle:gradle-tooling-api:7.4.2'
     
     testImplementation tests.junit

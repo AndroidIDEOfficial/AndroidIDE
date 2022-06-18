@@ -25,20 +25,20 @@ import androidx.annotation.NonNull;
  */
 public class IntegerResource extends AbstractResource {
 
-    public IntegerResource(@NonNull String name, @NonNull String value) {
-        super(name, value);
-    }
+  public IntegerResource(@NonNull String name, @NonNull String value) {
+    super(name, value);
+  }
 
-    /**
-     * Get the value as integer. Or -1 if the value is not an integer.
-     *
-     * @return The integer value.
-     */
-    public int asInteger() {
-        try {
-            return Integer.parseInt(getValue());
-        } catch (Throwable th) {
-            return -1;
-        }
+  /**
+   * Get the value as integer. Or -1 if the value is not an integer.
+   *
+   * @return The integer value.
+   */
+  public int asInteger() {
+    try {
+      return Integer.parseInt(getValue());
+    } catch (Throwable th) {
+      return -1;
     }
+  }
 }

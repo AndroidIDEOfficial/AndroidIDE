@@ -26,93 +26,93 @@ package com.itsaky.inflater;
  */
 public enum AttrType {
 
-    /** Refers to another resource */
-    REFERENCE("reference"),
+  /** Refers to another resource */
+  REFERENCE("reference"),
 
-    /** Color value */
-    COLOR("color"),
+  /** Color value */
+  COLOR("color"),
 
-    /** Either {@code true} or {@code false} */
-    BOOLEAN("boolean"),
+  /** Either {@code true} or {@code false} */
+  BOOLEAN("boolean"),
 
-    /** A dimension like 10dp, 14sp etc. */
-    DIMENSION("dimension"),
+  /** A dimension like 10dp, 14sp etc. */
+  DIMENSION("dimension"),
 
-    /** A floating point number. E.g.: 1.9, 123.45 */
-    FLOAT("float"),
+  /** A floating point number. E.g.: 1.9, 123.45 */
+  FLOAT("float"),
 
-    /** An integer value */
-    INTEGER("integer"),
+  /** An integer value */
+  INTEGER("integer"),
 
-    /** A string value */
-    STRING("string"),
+  /** A string value */
+  STRING("string"),
 
-    /** A fraction */
-    FRACTION("fraction"),
+  /** A fraction */
+  FRACTION("fraction"),
 
-    /** A enum value. Unlike {@link #FLAG}, an attribute can have only one of this. */
-    ENUM("enum"),
+  /** A enum value. Unlike {@link #FLAG}, an attribute can have only one of this. */
+  ENUM("enum"),
 
-    /** A flag value. May contain on or more values */
-    FLAG("flag"),
+  /** A flag value. May contain on or more values */
+  FLAG("flag"),
 
-    /** An unknown value. The layout inflater does not consider this */
-    UNKNOWN("");
+  /** An unknown value. The layout inflater does not consider this */
+  UNKNOWN("");
 
-    private final String format;
+  private final String format;
 
-    public static final String FORMAT_REF = REFERENCE.getFormat();
-    public static final String FORMAT_COLOR = COLOR.getFormat();
-    public static final String FORMAT_BOOL = BOOLEAN.getFormat();
-    public static final String FORMAT_DIMEN = DIMENSION.getFormat();
-    public static final String FORMAT_FLOAT = FLOAT.getFormat();
-    public static final String FORMAT_INT = INTEGER.getFormat();
-    public static final String FORMAT_STRING = STRING.getFormat();
-    public static final String FORMAT_FRACTION = FRACTION.getFormat();
-    public static final String FORMAT_ENUM = ENUM.getFormat();
-    public static final String FORMAT_FLAG = FLAG.getFormat();
+  public static final String FORMAT_REF = REFERENCE.getFormat();
+  public static final String FORMAT_COLOR = COLOR.getFormat();
+  public static final String FORMAT_BOOL = BOOLEAN.getFormat();
+  public static final String FORMAT_DIMEN = DIMENSION.getFormat();
+  public static final String FORMAT_FLOAT = FLOAT.getFormat();
+  public static final String FORMAT_INT = INTEGER.getFormat();
+  public static final String FORMAT_STRING = STRING.getFormat();
+  public static final String FORMAT_FRACTION = FRACTION.getFormat();
+  public static final String FORMAT_ENUM = ENUM.getFormat();
+  public static final String FORMAT_FLAG = FLAG.getFormat();
 
-    private AttrType(String format) {
-        this.format = format;
+  private AttrType(String format) {
+    this.format = format;
+  }
+
+  public String getFormat() {
+    return this.format;
+  }
+
+  public boolean hasFixedValues() {
+    return this == AttrType.ENUM || this == AttrType.FLAG;
+  }
+
+  /**
+   * Get the attribute type from format
+   *
+   * @param format Format, as declared in styleables.
+   * @return The Attribute type
+   */
+  public static AttrType fromFormat(String format) {
+    if (FORMAT_REF.equals(format)) {
+      return AttrType.REFERENCE;
+    } else if (FORMAT_COLOR.equals(format)) {
+      return AttrType.COLOR;
+    } else if (FORMAT_BOOL.equals(format)) {
+      return AttrType.BOOLEAN;
+    } else if (FORMAT_DIMEN.equals(format)) {
+      return AttrType.DIMENSION;
+    } else if (FORMAT_FLOAT.equals(format)) {
+      return AttrType.FLOAT;
+    } else if (FORMAT_INT.equals(format)) {
+      return AttrType.INTEGER;
+    } else if (FORMAT_STRING.equals(format)) {
+      return AttrType.STRING;
+    } else if (FORMAT_FRACTION.equals(format)) {
+      return AttrType.FRACTION;
+    } else if (FORMAT_ENUM.equals(format)) {
+      return AttrType.ENUM;
+    } else if (FORMAT_FLAG.equals(format)) {
+      return AttrType.FLAG;
     }
 
-    public String getFormat() {
-        return this.format;
-    }
-
-    public boolean hasFixedValues() {
-        return this == AttrType.ENUM || this == AttrType.FLAG;
-    }
-
-    /**
-     * Get the attribute type from format
-     *
-     * @param format Format, as declared in styleables.
-     * @return The Attribute type
-     */
-    public static AttrType fromFormat(String format) {
-        if (FORMAT_REF.equals(format)) {
-            return AttrType.REFERENCE;
-        } else if (FORMAT_COLOR.equals(format)) {
-            return AttrType.COLOR;
-        } else if (FORMAT_BOOL.equals(format)) {
-            return AttrType.BOOLEAN;
-        } else if (FORMAT_DIMEN.equals(format)) {
-            return AttrType.DIMENSION;
-        } else if (FORMAT_FLOAT.equals(format)) {
-            return AttrType.FLOAT;
-        } else if (FORMAT_INT.equals(format)) {
-            return AttrType.INTEGER;
-        } else if (FORMAT_STRING.equals(format)) {
-            return AttrType.STRING;
-        } else if (FORMAT_FRACTION.equals(format)) {
-            return AttrType.FRACTION;
-        } else if (FORMAT_ENUM.equals(format)) {
-            return AttrType.ENUM;
-        } else if (FORMAT_FLAG.equals(format)) {
-            return AttrType.FLAG;
-        }
-
-        return AttrType.UNKNOWN;
-    }
+    return AttrType.UNKNOWN;
+  }
 }

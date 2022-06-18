@@ -17,11 +17,13 @@
 package com.itsaky.lsp.api
 
 import com.google.common.truth.Truth.assertThat
-import org.junit.Test
-import java.nio.charset.Charset
+import org.bouncycastle.crypto.agreement.srp.SRP6Client
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import kotlin.io.path.readText
+import org.junit.Test
 
 /**
  * Provides paths to source files in 'resources' directory.
@@ -35,15 +37,40 @@ class FileProvider {
         assertThat(Files.exists(path)).isTrue()
         assertThat(path.fileName.toString()).isEqualTo("SourceFileTest.java")
     }
-    
+
     @Test
     fun testNested() {
         val path = sourceFile("package/SourceFileTest")
         assertThat(Files.exists(path)).isTrue()
         assertThat(path.fileName.toString()).isEqualTo("SourceFileTest.java")
     }
-    
+
+    @Test
+    fun testExtension() {
+        val folder = File(".").canonicalFile
+
+        assertThat(extension).isNotEmpty()
+        assertThat(extension)
+            .isEqualTo(
+                when (folder.name) {
+                    "xml" -> "xml"
+                    "java" -> "java"
+                    else -> ""
+                })
+    }
+
     companion object {
+
+        @JvmField
+        val extension = run {
+            val file = File(".").canonicalFile
+            when (file.name) {
+                "xml" -> "xml" // Testing in ':lsp:xml' module
+                "java" -> "java" // Testing in ':lsp:java' module
+                else -> ""
+            }
+        }
+
         /**
          * Get the path to the 'resources' directory.
          *
@@ -53,7 +80,7 @@ class FileProvider {
         fun resources(): Path {
             return Paths.get(".", "src", "test", "resources")
         }
-        
+
         /**
          * Get the path to the file in resources.
          *
@@ -62,24 +89,9 @@ class FileProvider {
          */
         @JvmStatic
         fun sourceFile(name: String): Path {
-            return resources().resolve("${name}_template.java")
+            return resources().resolve("${name}_template.$extension")
         }
-        
-        @JvmStatic
-        fun contents(file: Path): StringBuilder {
-            try {
-                Files.newBufferedReader(file, Charset.defaultCharset()).use { reader ->
-                    val sb = StringBuilder()
-                    var line: String?
-                    while (reader.readLine().also { line = it } != null) {
-                        sb.append(line)
-                        sb.append("\n")
-                    }
-                    return sb
-                }
-            } catch (e: Throwable) {
-                throw RuntimeException(e)
-            }
-        }
+
+        @JvmStatic fun contents(file: Path): StringBuilder = StringBuilder(file.readText())
     }
 }

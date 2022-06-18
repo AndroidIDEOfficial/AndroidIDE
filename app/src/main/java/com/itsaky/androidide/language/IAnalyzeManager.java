@@ -30,18 +30,18 @@ import java.util.List;
  */
 public interface IAnalyzeManager {
 
-    /**
-     * Update the diagnostic items.
-     *
-     * @param diagnostics The new list of diagnostics.
-     */
-    default void updateDiagnostics(@NonNull List<DiagnosticItem> diagnostics) {}
+  /**
+   * Update the diagnostic items.
+   *
+   * @param diagnostics The new list of diagnostics.
+   */
+  default void updateDiagnostics(@NonNull List<DiagnosticItem> diagnostics) {}
 
-    /**
-     * Get the diagnostic items.
-     *
-     * @return The diagnostic items. Must not be <code>null</code>.
-     */
-    @NonNull
-    List<DiagnosticItem> getDiagnostics();
+  /**
+   * Get the diagnostic items.
+   *
+   * @return The diagnostic items. Must not be <code>null</code>.
+   */
+  @NonNull
+  List<DiagnosticItem> getDiagnostics();
 }

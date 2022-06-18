@@ -35,52 +35,52 @@ import io.github.rosemoe.sora.lang.Language;
  */
 public abstract class IDELanguage implements Language {
 
-    @Override
-    public boolean useTab() {
-        return false;
+  @Override
+  public boolean useTab() {
+    return false;
+  }
+
+  public int getTabSize() {
+    return StudioApp.getInstance().getPrefManager().getEditorTabSize();
+  }
+
+  /**
+   * Get the diagnostics from the last analyze.
+   *
+   * @return The diagnostics. Must not be null.
+   */
+  @NonNull
+  public List<DiagnosticItem> getDiagnostics() {
+    return Collections.emptyList();
+  }
+
+  public void setDiagnostics(List<DiagnosticItem> diagnostics) {
+    if (diagnostics == null) {
+      diagnostics = new ArrayList<>(0);
     }
 
-    public int getTabSize() {
-        return StudioApp.getInstance().getPrefManager().getEditorTabSize();
+    final var analyzer = getAnalyzeManager();
+    if (analyzer instanceof IAnalyzeManager) {
+      ((IAnalyzeManager) analyzer).updateDiagnostics(diagnostics);
+      analyzer.rerun();
+    }
+  }
+
+  @Override
+  public CharSequence format(CharSequence text) {
+    final var server = getLanguageServer();
+    if (server != null) {
+      return server.formatCode(text);
     }
 
-    /**
-     * Get the diagnostics from the last analyze.
-     *
-     * @return The diagnostics. Must not be null.
-     */
-    @NonNull
-    public List<DiagnosticItem> getDiagnostics() {
-        return Collections.emptyList();
-    }
+    return text;
+  }
 
-    public void setDiagnostics(List<DiagnosticItem> diagnostics) {
-        if (diagnostics == null) {
-            diagnostics = new ArrayList<>(0);
-        }
+  public int getIndentAdvance(@NonNull String line) {
+    return 0;
+  }
 
-        final var analyzer = getAnalyzeManager();
-        if (analyzer instanceof IAnalyzeManager) {
-            ((IAnalyzeManager) analyzer).updateDiagnostics(diagnostics);
-            analyzer.rerun();
-        }
-    }
-
-    @Override
-    public CharSequence format(CharSequence text) {
-        final var server = getLanguageServer();
-        if (server != null) {
-            return server.formatCode(text);
-        }
-
-        return text;
-    }
-
-    public int getIndentAdvance(@NonNull String line) {
-        return 0;
-    }
-
-    protected ILanguageServer getLanguageServer() {
-        return null;
-    }
+  protected ILanguageServer getLanguageServer() {
+    return null;
+  }
 }

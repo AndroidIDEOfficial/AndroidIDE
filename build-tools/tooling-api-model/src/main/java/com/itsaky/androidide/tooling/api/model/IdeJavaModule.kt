@@ -17,8 +17,11 @@
 
 package com.itsaky.androidide.tooling.api.model
 
+import com.itsaky.androidide.tooling.api.IProject.Type
+import com.itsaky.androidide.tooling.api.IProject.Type.Java
 import java.io.File
 import java.io.Serializable
+import java.util.concurrent.*
 
 /**
  * A java library model. Modules represented by this model does not apply any of the Android
@@ -26,13 +29,13 @@ import java.io.Serializable
  *
  * @author Akash Yadav
  */
-class IdeJavaModule(
-    name: String?,
-    path: String?,
+open class IdeJavaModule(
+    name: String,
+    path: String,
     description: String?,
-    projectDir: File?,
-    buildDir: File?,
-    buildScript: File?,
+    projectDir: File,
+    buildDir: File,
+    buildScript: File,
     parent: IdeGradleProject?,
     tasks: List<IdeGradleTask>,
 
@@ -40,7 +43,7 @@ class IdeJavaModule(
     val contentRoots: List<JavaContentRoot>,
 
     /** Dependencies of this project. */
-    val javaDependencies: List<JavaModuleDependency>
+    private val javaDependencies: List<JavaModuleDependency>
 ) :
     IdeGradleProject(name, description, path, projectDir, buildDir, buildScript, parent, tasks),
     IdeModule,
@@ -49,6 +52,11 @@ class IdeJavaModule(
 
     override fun getDependencies() = javaDependencies
 
+    override fun getType(): CompletableFuture<Type> {
+        return CompletableFuture.completedFuture(Java)
+    }
+
+    @Deprecated("Use getClasspath() instead.")
     override fun getGeneratedJar(variant: String): File {
         var jar = File(buildDir, "libs/$name.jar")
         if (jar.exists()) {
@@ -56,11 +64,12 @@ class IdeJavaModule(
         }
 
         jar =
-            File(buildDir, "libs").listFiles()?.first {
-                it.name.startsWith(this.name ?: this.projectPath?.substring(1) ?: "")
-            }
+            File(buildDir, "libs").listFiles()?.first { it.name.startsWith(this.name) }
                 ?: File("i-do-not-exist.jar")
 
         return jar
     }
+
+    @Suppress("DEPRECATION")
+    override fun getClassPaths(): Set<File> = setOf(getGeneratedJar("debug"))
 }

@@ -24,13 +24,13 @@ import com.itsaky.lsp.util.PrefBasedServerSettings;
  */
 public class XMLServerSettings extends PrefBasedServerSettings {
 
-    private static XMLServerSettings instance;
+  private static XMLServerSettings instance;
 
-    public static XMLServerSettings getInstance() {
-        if (instance == null) {
-            instance = new XMLServerSettings();
-        }
-
-        return instance;
+  public static XMLServerSettings getInstance() {
+    if (instance == null) {
+      instance = new XMLServerSettings();
     }
+
+    return instance;
+  }
 }

@@ -35,57 +35,57 @@ import javax.tools.JavaFileObject;
  */
 public final class FormattingFiler implements Filer {
 
-    private final Filer delegate;
-    // TODO(ronshapiro): consider allowing users to create their own Formatter instance
-    private final Formatter formatter = new Formatter();
-    private final Messager messager;
+  private final Filer delegate;
+  // TODO(ronshapiro): consider allowing users to create their own Formatter instance
+  private final Formatter formatter = new Formatter();
+  private final Messager messager;
 
-    /**
-     * @param delegate filer to decorate
-     */
-    public FormattingFiler(Filer delegate) {
-        this(delegate, null);
-    }
+  /**
+   * @param delegate filer to decorate
+   */
+  public FormattingFiler(Filer delegate) {
+    this(delegate, null);
+  }
 
-    /**
-     * Create a new {@link FormattingFiler}. An optional {@link Messager} may be specified to make
-     * logs more visible.
-     *
-     * @param delegate filer to decorate
-     * @param messager to log warnings to
-     */
-    public FormattingFiler(Filer delegate, @Nullable Messager messager) {
-        this.delegate = checkNotNull(delegate);
-        this.messager = messager;
-    }
+  /**
+   * Create a new {@link FormattingFiler}. An optional {@link Messager} may be specified to make
+   * logs more visible.
+   *
+   * @param delegate filer to decorate
+   * @param messager to log warnings to
+   */
+  public FormattingFiler(Filer delegate, @Nullable Messager messager) {
+    this.delegate = checkNotNull(delegate);
+    this.messager = messager;
+  }
 
-    @Override
-    public JavaFileObject createSourceFile(CharSequence name, Element... originatingElements)
-            throws IOException {
-        return new FormattingJavaFileObject(
-                delegate.createSourceFile(name, originatingElements), formatter, messager);
-    }
+  @Override
+  public JavaFileObject createSourceFile(CharSequence name, Element... originatingElements)
+      throws IOException {
+    return new FormattingJavaFileObject(
+        delegate.createSourceFile(name, originatingElements), formatter, messager);
+  }
 
-    @Override
-    public JavaFileObject createClassFile(CharSequence name, Element... originatingElements)
-            throws IOException {
-        return delegate.createClassFile(name, originatingElements);
-    }
+  @Override
+  public JavaFileObject createClassFile(CharSequence name, Element... originatingElements)
+      throws IOException {
+    return delegate.createClassFile(name, originatingElements);
+  }
 
-    @Override
-    public FileObject createResource(
-            JavaFileManager.Location location,
-            CharSequence pkg,
-            CharSequence relativeName,
-            Element... originatingElements)
-            throws IOException {
-        return delegate.createResource(location, pkg, relativeName, originatingElements);
-    }
+  @Override
+  public FileObject createResource(
+      JavaFileManager.Location location,
+      CharSequence pkg,
+      CharSequence relativeName,
+      Element... originatingElements)
+      throws IOException {
+    return delegate.createResource(location, pkg, relativeName, originatingElements);
+  }
 
-    @Override
-    public FileObject getResource(
-            JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName)
-            throws IOException {
-        return delegate.getResource(location, pkg, relativeName);
-    }
+  @Override
+  public FileObject getResource(
+      JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName)
+      throws IOException {
+    return delegate.getResource(location, pkg, relativeName);
+  }
 }

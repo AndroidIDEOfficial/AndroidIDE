@@ -18,6 +18,7 @@
 package com.itsaky.sdk;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
@@ -37,26 +38,30 @@ import java.util.Objects;
  */
 public class SDKInfo {
 
-    public AttrInfo getAttrInfo() {
-        return attrInfo;
-    }
+  private final AttrInfo attrInfo;
+  private final ApiInfo apiInfo;
+  private final WidgetInfo widgetInfo;
 
-    public ApiInfo getApiInfo() {
-        return apiInfo;
-    }
+  public SDKInfo(@NonNull final Context context) throws Exception {
+    this(context.getResources());
+  }
 
-    public WidgetInfo getWidgetInfo() {
-        return widgetInfo;
-    }
+  public SDKInfo(@NonNull final Resources resources) throws Exception {
+    Objects.requireNonNull(resources);
+    this.apiInfo = new ApiInfo(resources);
+    this.attrInfo = new AttrInfo(resources);
+    this.widgetInfo = new WidgetInfo(resources);
+  }
 
-    private final AttrInfo attrInfo;
-    private final ApiInfo apiInfo;
-    private final WidgetInfo widgetInfo;
+  public AttrInfo getAttrInfo() {
+    return attrInfo;
+  }
 
-    public SDKInfo(@NonNull final Context context) throws Exception {
-        Objects.requireNonNull(context);
-        this.apiInfo = new ApiInfo(context);
-        this.attrInfo = new AttrInfo(context);
-        this.widgetInfo = new WidgetInfo(context);
-    }
+  public ApiInfo getApiInfo() {
+    return apiInfo;
+  }
+
+  public WidgetInfo getWidgetInfo() {
+    return widgetInfo;
+  }
 }

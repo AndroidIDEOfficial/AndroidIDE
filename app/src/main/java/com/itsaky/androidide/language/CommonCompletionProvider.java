@@ -17,22 +17,18 @@
 
 package com.itsaky.androidide.language;
 
-import androidx.annotation.NonNull;
-
+import com.itsaky.androidide.projects.ProjectManager;
+import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.lsp.api.ICompletionProvider;
 import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.CompletionItem;
 import com.itsaky.lsp.models.CompletionParams;
 import com.itsaky.lsp.models.CompletionResult;
 import com.itsaky.lsp.models.Position;
 
-import org.jetbrains.annotations.Contract;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -52,98 +48,81 @@ import io.github.rosemoe.sora.util.MyCharacter;
  */
 public class CommonCompletionProvider {
 
-    private static final Comparator<CompletionItem> RESULT_SORTER =
-            (p1, p2) -> {
-                if (p1 == null && p2 == null) {
-                    return 0;
-                } else if (p1 == null) {
-                    return -1;
-                } else if (p2 == null) {
-                    return 1;
-                }
+  private static final ILogger LOG = ILogger.newInstance("CommonCompletionProvider");
+  private final ILanguageServer server;
+  private CompletableFuture<CompletionResult> future;
 
-                String s1 = p1.getSortText() == null ? p1.getLabel() : p1.getSortText();
-                String s2 = p2.getSortText() == null ? p2.getLabel() : p2.getSortText();
-                return s1.compareTo(s2);
-            };
-    private static final ILogger LOG = ILogger.newInstance("CommonCompletionProvider");
-    private final ILanguageServer server;
-    private CompletableFuture<CompletionResult> future;
+  public CommonCompletionProvider(ILanguageServer server) {
+    this.server = server;
+  }
 
-    public CommonCompletionProvider(ILanguageServer server) {
-        this.server = server;
+  public static boolean checkJavaCompletionChar(char c) {
+    return MyCharacter.isJavaIdentifierPart(c) || c == '.';
+  }
+
+  public static boolean checkXMLCompletionChar(char c) {
+    return MyCharacter.isJavaIdentifierPart(c) || c == '<' || c == '/';
+  }
+
+  /**
+   * Computes completion items using the provided language server instance.
+   *
+   * @param content The reference to the content of the editor.
+   * @param file The file to compute completions for.
+   * @param position The position of the cursor in the content.
+   * @return The computed completion items. May return an empty list if the there was an error
+   *     computing the completion items.
+   */
+  public List<CompletionItem> complete(
+      ContentReference content,
+      Path file,
+      CharPosition position,
+      Predicate<Character> prefixMatcher) {
+    if (this.future != null && !this.future.isDone()) {
+      try {
+        this.future.cancel(true);
+      } catch (CancellationException e) {
+        return new ArrayList<>();
+      }
     }
 
-    public static boolean checkJavaCompletionChar(char c) {
-        return MyCharacter.isJavaIdentifierPart(c) || c == '.';
-    }
+    this.future =
+        CompletableFuture.supplyAsync(
+            () -> {
+              final var prefix =
+                  CompletionHelper.computePrefix(content, position, prefixMatcher::test);
+              final var completer = server.getCompletionProvider();
 
-    public static boolean checkXMLCompletionChar(char c) {
-        return MyCharacter.isJavaIdentifierPart(c) || c == '<' || c == '/';
-    }
+              if (!completer.canComplete(file)) {
+                return CompletionResult.EMPTY;
+              }
 
-    /**
-     * Computes completion items using the provided language server instance.
-     *
-     * @param content The reference to the content of the editor.
-     * @param file The file to compute completions for.
-     * @param position The position of the cursor in the content.
-     * @return The computed completion items. May return an empty list if the there was an error
-     *     computing the completion items.
-     */
-    public List<CompletionItem> complete(
-            ContentReference content,
-            Path file,
-            CharPosition position,
-            Predicate<Character> prefixMatcher) {
-        if (this.future != null && !this.future.isDone()) {
-            try {
-                this.future.cancel(true);
-            } catch (CancellationException e) {
-                return new ArrayList<>();
-            }
-        }
+              IdeGradleProject fileModule = null;
+              try {
+                fileModule = ProjectManager.INSTANCE.findModuleForFile(file.toFile()).get();
+              } catch (Throwable e) {
+                LOG.error("Unable to find module for current file", e);
+              }
 
-        this.future =
-                CompletableFuture.supplyAsync(
-                        () -> {
-                            final var prefix =
-                                    CompletionHelper.computePrefix(
-                                            content, position, prefixMatcher::test);
-                            final var completer = server.getCompletionProvider();
+              final var params =
+                  new CompletionParams(
+                      new Position(position.line, position.column, position.index), file);
+              params.setContent(content);
+              params.setPrefix(prefix);
+              params.setModule(fileModule);
+              return completer.complete(params);
+            });
 
-                            if (!completer.canComplete(file)) {
-                                return ICompletionProvider.EMPTY;
-                            }
-
-                            final var params =
-                                    new CompletionParams(
-                                            new Position(
-                                                    position.line, position.column, position.index),
-                                            file);
-                            params.setContent(content);
-                            params.setPrefix(prefix);
-                            final var result = completer.complete(params);
-                            Collections.sort(result.getItems());
-                            return result;
-                        });
-
-        try {
-            return finalizeResults(future.get().getItems());
-        } catch (Throwable e) {
-            // Do not log if completion was interrupted or cancelled
-            if (!(e instanceof InterruptedException || e instanceof CompletionCancelledException)) {
-                LOG.error("Unable to compute completions", e);
-            }
-
-            return Collections.emptyList();
-        }
-    }
-
-    @NonNull
-    @Contract("_ -> param1")
-    private List<CompletionItem> finalizeResults(@NonNull List<CompletionItem> items) {
-        items.sort(RESULT_SORTER);
+    try {
+        final var items = future.get ().getItems ();
         return items;
+    } catch (Throwable e) {
+      // Do not log if completion was interrupted or cancelled
+      if (!(e instanceof InterruptedException || e instanceof CompletionCancelledException)) {
+        LOG.error("Unable to compute completions", e);
+      }
+
+      return Collections.emptyList();
     }
+  }
 }

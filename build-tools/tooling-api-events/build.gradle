@@ -21,10 +21,10 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = rootProject.ext.javaSourceVersion
+    targetCompatibility = rootProject.ext.javaTargetVersion
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation common.jkotlin
 }

@@ -17,8 +17,8 @@ Building AndroidIDE in AndroidIDE itself is also possible. But that might requir
 If you face `AAPT2` issue while building AndroidIDE in the IDE itself, specify the `android.aapt2FromMavenOverride` property in `gradle.properties` with location of `aapt2` binary from Android SDK. However, this is an **experimental** property.
 
 ## Source code format
-The source code must have `4-space` indentation (soft tab).
-Java source code is formatted using `google-java-format` with `AOSP` style formatting.
+The source code must have `2-space` indentation (soft tab).
+Java source code is formatted using `google-java-format` with `GOOGLE` style formatting.
 You can execute `./gradlew formatJavaSources` in terminal to format all Java source files using Google Java Format.
 **This will commit the changes as well**.
 

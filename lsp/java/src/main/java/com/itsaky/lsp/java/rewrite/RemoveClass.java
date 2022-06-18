@@ -31,20 +31,19 @@ import java.util.Collections;
 import java.util.Map;
 
 public class RemoveClass extends Rewrite {
-    final Path file;
-    final int position;
+  final Path file;
+  final int position;
 
-    public RemoveClass(Path file, int position) {
-        this.file = file;
-        this.position = position;
-    }
+  public RemoveClass(Path file, int position) {
+    this.file = file;
+    this.position = position;
+  }
 
-    @Override
-    public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
-        ParseTask task = compiler.parse(file);
-        final ClassTree type =
-                new FindTypeDeclarationAt(task.task).scan(task.root, (long) position);
-        TextEdit[] edits = {EditHelper.removeTree(task.task, task.root, type)};
-        return Collections.singletonMap(file, edits);
-    }
+  @Override
+  public Map<Path, TextEdit[]> rewrite(@NonNull CompilerProvider compiler) {
+    ParseTask task = compiler.parse(file);
+    final ClassTree type = new FindTypeDeclarationAt(task.task).scan(task.root, (long) position);
+    TextEdit[] edits = {EditHelper.removeTree(task.task, task.root, type)};
+    return Collections.singletonMap(file, edits);
+  }
 }

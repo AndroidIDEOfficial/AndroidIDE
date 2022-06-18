@@ -27,7 +27,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation common.utilcode
-
+    implementation common.lang3 
     implementation google.material
     
     implementation androidx.appcompat
@@ -35,8 +35,8 @@ dependencies {
     implementation androidx.vectors
 	implementation androidx.animated_vectors
     
-    implementation "androidx.core:core-ktx:1.7.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation androidx.ktx
+    implementation common.kotlin
     
     api androidx.multidex
     

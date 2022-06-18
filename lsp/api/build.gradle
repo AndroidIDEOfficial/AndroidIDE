@@ -20,16 +20,16 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion rootProject.ext.compileSdk
     buildToolsVersion rootProject.ext.buildTools
-
+    
     defaultConfig {
         minSdkVersion rootProject.ext.minSdk
         targetSdkVersion rootProject.ext.targetSdk
     }
-
+    
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile ('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -40,13 +40,18 @@ android {
 
 dependencies {
     implementation common.editor
-    implementation "androidx.core:core-ktx:1.7.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
-    compileOnly project(':actions')
-    compileOnly project(':common')
+    implementation project (':build-tools:fuzzysearch')
+    
+    implementation androidx.ktx
+    implementation common.kotlin
+    
+    api project (':build-tools:tooling-api-model')
+    
+    compileOnly project (':xml-inflater')
+    compileOnly project (':actions')
+    compileOnly project (':common')
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral ()
 }

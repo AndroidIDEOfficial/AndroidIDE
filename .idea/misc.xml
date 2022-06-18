@@ -35,6 +35,7 @@
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_password_input.xml" value="0.147" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_pick_color.xml" value="0.147" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_quickfix.xml" value="0.14" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_rebuild.xml" value="0.1425" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_relative_layout.xml" value="0.175" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_run.xml" value="0.151" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_run_debug.xml" value="0.151" />
@@ -43,6 +44,7 @@
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_search_previous.xml" value="0.147" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_signature_help.xml" value="0.19907407407407407" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_submenu_arrow.xml" value="0.1305" />
+        <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_sync.xml" value="0.1425" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_text_actions.xml" value="0.147" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_text_actions_horizontal.xml" value="0.147" />
         <entry key="..\:/Projects/AndroidStudioProjects/AndroidIDE/app/src/main/res/drawable/ic_text_lower.xml" value="0.19907407407407407" />
@@ -139,10 +141,13 @@
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_widget_item.xml" value="0.264" />
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/menu/menu_designer_widgets.xml" value="0.20854700854700856" />
         <entry key="..\:/itsaky/.gradle/caches/transforms-3/e4862cae80f8754ca1a451ad3e00b14c/transformed/jetified-editor-0.10.11/res/drawable/round_select_all_20.xml" value="0.1305" />
+        <entry key="app/src/main/res/drawable/ic_gradle.xml" value="0.3265" />
+        <entry key="app/src/main/res/drawable/ic_language_gradle.xml" value="0.3265" />
+        <entry key="app/src/main/res/layout/activity_download.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/layout_dialog_text_input.xml" value="0.35572916666666665" />
       </map>
     </option>
   </component>
-  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

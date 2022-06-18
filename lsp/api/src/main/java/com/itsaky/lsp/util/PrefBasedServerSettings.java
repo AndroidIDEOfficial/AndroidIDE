@@ -31,26 +31,26 @@ import com.itsaky.lsp.api.IServerSettings;
  */
 public abstract class PrefBasedServerSettings extends DefaultServerSettings {
 
-    private PreferenceManager prefs;
+  private PreferenceManager prefs;
 
-    @Nullable
-    public PreferenceManager getPrefs() {
-        if (prefs == null) {
-            final var app = BaseApplication.getBaseInstance();
-            if (app != null) {
-                prefs = app.getPrefManager();
-            }
-        }
-        return prefs;
+  @Nullable
+  public PreferenceManager getPrefs() {
+    if (prefs == null) {
+      final var app = BaseApplication.getBaseInstance();
+      if (app != null) {
+        prefs = app.getPrefManager();
+      }
+    }
+    return prefs;
+  }
+
+  @Override
+  public boolean shouldMatchAllLowerCase() {
+    final var prefs = getPrefs();
+    if (prefs != null) {
+      return prefs.getBoolean(KEY_COMPLETIONS_MATCH_LOWER, true);
     }
 
-    @Override
-    public boolean shouldMatchAllLowerCase() {
-        final var prefs = getPrefs();
-        if (prefs != null) {
-            return prefs.getBoolean(KEY_COMPLETIONS_MATCH_LOWER, true);
-        }
-
-        return false;
-    }
+    return false;
+  }
 }

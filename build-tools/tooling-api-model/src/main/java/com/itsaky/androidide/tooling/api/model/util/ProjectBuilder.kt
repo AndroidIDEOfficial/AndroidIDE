@@ -17,17 +17,17 @@
 package com.itsaky.androidide.tooling.api.model.util
 
 import com.android.builder.model.v2.ide.ProjectType
+import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlags
+import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
+import com.itsaky.androidide.builder.model.DefaultModelSyncFile
+import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
+import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask
 import com.itsaky.androidide.tooling.api.model.IdeJavaModule
 import com.itsaky.androidide.tooling.api.model.JavaContentRoot
 import com.itsaky.androidide.tooling.api.model.JavaModuleDependency
-import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
-import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
-import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
-import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
-import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
 import java.io.File
 
 /**
@@ -36,12 +36,12 @@ import java.io.File
  * @author Akash Yadav
  */
 class ProjectBuilder {
-    var name: String? = null
+    var name: String = ""
     var description: String? = null
     var path: String = ":"
-    var projectDir: File? = null
-    var buildDir: File? = null
-    var buildScript: File? = null
+    var projectDir: File = File(".")
+    var buildDir: File = File(".")
+    var buildScript: File = File(".")
     var parent: IdeGradleProject? = null
     var modules: List<IdeGradleProject> = mutableListOf()
     var tasks: List<IdeGradleTask> = mutableListOf()
@@ -50,13 +50,13 @@ class ProjectBuilder {
         DefaultAndroidGradlePluginProjectFlags(emptyMap())
     var javaCompileOptions: DefaultJavaCompileOptions = DefaultJavaCompileOptions()
     var resourcePrefix: String? = ""
-    var variants: Collection<DefaultVariant> = mutableListOf()
     var viewBindingOptions: DefaultViewBindingOptions? = null
     var modelSyncFiles: List<DefaultModelSyncFile> = emptyList()
     var lintChecksJars: List<File> = mutableListOf()
     var contentRoots: List<JavaContentRoot> = mutableListOf()
     var javaDependencies: List<JavaModuleDependency> = mutableListOf()
     var projectType: ProjectType? = null
+    var simpleVariants: MutableList<SimpleVariantData> = mutableListOf()
 
     fun buildGradleProject(): IdeGradleProject {
         return IdeGradleProject(
@@ -79,21 +79,21 @@ class ProjectBuilder {
 
     fun buildAndroidModule(): IdeAndroidModule =
         IdeAndroidModule(
-            name,
-            path,
-            description,
-            projectDir,
-            buildDir,
-            buildScript,
-            parent,
-            tasks,
-            projectType,
-            dynamicFeatures,
-            flags,
-            javaCompileOptions,
-            resourcePrefix,
-            variants,
-            viewBindingOptions,
-            lintChecksJars,
-            modelSyncFiles)
+            name = name,
+            path = path,
+            description = description,
+            projectDir = projectDir,
+            buildDir = buildDir,
+            buildScript = buildScript,
+            parent = parent,
+            tasks = tasks,
+            projectType = projectType,
+            dynamicFeatures = dynamicFeatures,
+            flags = flags,
+            javaCompileOptions = javaCompileOptions,
+            resourcePrefix = resourcePrefix,
+            viewBindingOptions = viewBindingOptions,
+            lintChecksJars = lintChecksJars,
+            modelSyncFiles = modelSyncFiles,
+            simpleVariants = simpleVariants)
 }

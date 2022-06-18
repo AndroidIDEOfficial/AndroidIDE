@@ -32,19 +32,19 @@ import com.itsaky.inflater.IResourceTable;
  */
 public class ImageButtonAttrAdapter extends ImageViewAttrAdapter {
 
-    public ImageButtonAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
-    }
+  public ImageButtonAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof ImageButton;
-    }
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof ImageButton;
+  }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        // No special attributes for ImageButton
-        return super.apply(attribute, view);
-    }
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    // No special attributes for ImageButton
+    return super.apply(attribute, view);
+  }
 }

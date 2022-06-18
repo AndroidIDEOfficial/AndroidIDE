@@ -1,0 +1,33 @@
+#!/bin/bash
+set -eu
+
+print_help() {
+	echo "Utility command to show/edit AndroidIDE Environment Variables"
+	echo "Usage: ideenv [options]"
+	echo ""
+	echo "	-s 	Show the environment variables"
+	echo "	-e	Edit the environment variables"
+	echo ""
+}
+
+
+PROPS=@PREFIX@/etc/ide-environment.properties
+while getopts ":she" option; do
+	case $option in
+		s) ## Simply print the contents of the file
+		   if [ ! -f "$PROPS" ]; then
+		      echo "Properties file does not exist."
+		      exit 1
+		   fi
+		   cat $PROPS
+		   echo ""
+		   exit;;
+		h) ## Show the help
+		   print_help
+		   exit;;
+		e) ## Open the file in nano editor
+		   echo "Opening $PROPS file with nano editor..."
+		   nano $PROPS
+		   exit;;
+	esac
+done

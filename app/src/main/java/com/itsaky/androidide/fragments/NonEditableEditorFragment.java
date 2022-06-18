@@ -71,4 +71,10 @@ public abstract class NonEditableEditorFragment extends Fragment {
         }
         return binding.editor;
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }

@@ -53,222 +53,222 @@ import javax.lang.model.type.TypeVariable;
 
 public class TypeUtils {
 
-    // trees
-    public static ClassOrInterfaceType toClassOrInterfaceType(Tree tree) {
-        ClassOrInterfaceType type = new ClassOrInterfaceType();
-        if (tree instanceof IdentifierTree) {
-            type.setName(((IdentifierTree) tree).getName().toString());
-        }
-        if (tree instanceof ParameterizedTypeTree) {
-            ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) tree;
-            Type t = toType(parameterizedTypeTree.getType());
+  // trees
+  public static ClassOrInterfaceType toClassOrInterfaceType(Tree tree) {
+    ClassOrInterfaceType type = new ClassOrInterfaceType();
+    if (tree instanceof IdentifierTree) {
+      type.setName(((IdentifierTree) tree).getName().toString());
+    }
+    if (tree instanceof ParameterizedTypeTree) {
+      ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) tree;
+      Type t = toType(parameterizedTypeTree.getType());
 
-            NodeList<Type> typeArguments = new NodeList<>();
-            for (Tree typeArgument : parameterizedTypeTree.getTypeArguments()) {
-                Type typ = toType(typeArgument);
-                typeArguments.add(typ);
-            }
-            if (t.isClassOrInterfaceType()) {
-                type.setName(t.asClassOrInterfaceType().getName());
-            }
-            type.setTypeArguments(typeArguments);
+      NodeList<Type> typeArguments = new NodeList<>();
+      for (Tree typeArgument : parameterizedTypeTree.getTypeArguments()) {
+        Type typ = toType(typeArgument);
+        typeArguments.add(typ);
+      }
+      if (t.isClassOrInterfaceType()) {
+        type.setName(t.asClassOrInterfaceType().getName());
+      }
+      type.setTypeArguments(typeArguments);
+    }
+    return type;
+  }
+
+  public static Type toType(Tree tree) {
+    Type type;
+    if (tree instanceof PrimitiveTypeTree) {
+      type = getPrimitiveType((PrimitiveTypeTree) tree);
+    } else if (tree instanceof IdentifierTree) {
+      type = toClassOrInterfaceType(tree);
+    } else if (tree instanceof WildcardTree) {
+      JCTree.JCWildcard wildcardTree = (JCTree.JCWildcard) tree;
+      WildcardType wildcardType = new WildcardType();
+      Tree bound = wildcardTree.getBound();
+      Type boundType = toType(bound);
+      if (wildcardTree.kind.kind == BoundKind.EXTENDS) {
+        wildcardType.setExtendedType((ReferenceType) boundType);
+      } else {
+        wildcardType.setSuperType((ReferenceType) boundType);
+      }
+      type = wildcardType;
+    } else if (tree instanceof ParameterizedTypeTree) {
+      type = toClassOrInterfaceType(tree);
+    } else if (tree instanceof TypeParameterTree) {
+      TypeParameter typeParameter = new TypeParameter();
+      typeParameter.setName(((TypeParameterTree) tree).getName().toString());
+      typeParameter.setTypeBound(
+          ((TypeParameterTree) tree)
+              .getBounds().stream()
+                  .map(TypeUtils::toClassOrInterfaceType)
+                  .collect(NodeList.toNodeList()));
+      type = typeParameter;
+    } else {
+      if (tree != null) {
+        type = StaticJavaParser.parseType(tree.toString());
+      } else {
+        type = null;
+      }
+    }
+    return type;
+  }
+
+  public static Type getPrimitiveType(PrimitiveTypeTree tree) {
+    Type type;
+    switch (tree.getPrimitiveTypeKind()) {
+      case INT:
+        type = PrimitiveType.intType();
+        break;
+      case BOOLEAN:
+        type = PrimitiveType.booleanType();
+        break;
+      case LONG:
+        type = PrimitiveType.longType();
+        break;
+      case SHORT:
+        type = PrimitiveType.shortType();
+        break;
+      case CHAR:
+        type = PrimitiveType.charType();
+        break;
+      case FLOAT:
+        type = PrimitiveType.floatType();
+        break;
+      case VOID:
+        type = new VoidType();
+        break;
+      default:
+        type = new UnknownType();
+    }
+    return type;
+  }
+
+  public static Type toType(TypeMirror typeMirror) {
+    if (typeMirror.getKind() == TypeKind.ARRAY) {
+      return toArrayType((javax.lang.model.type.ArrayType) typeMirror);
+    }
+    if (typeMirror.getKind().isPrimitive()) {
+      return toPrimitiveType((javax.lang.model.type.PrimitiveType) typeMirror);
+    }
+    if (typeMirror instanceof javax.lang.model.type.IntersectionType) {
+      return toIntersectionType((javax.lang.model.type.IntersectionType) typeMirror);
+    }
+    if (typeMirror instanceof javax.lang.model.type.WildcardType) {
+      return toWildcardType((javax.lang.model.type.WildcardType) typeMirror);
+    }
+    if (typeMirror instanceof javax.lang.model.type.DeclaredType) {
+      return toClassOrInterfaceType((DeclaredType) typeMirror);
+    }
+    if (typeMirror instanceof javax.lang.model.type.TypeVariable) {
+      return toType(((TypeVariable) typeMirror));
+    }
+    if (typeMirror instanceof NoType) {
+      return new VoidType();
+    }
+    return null;
+  }
+
+  // type mirrors
+
+  public static IntersectionType toIntersectionType(javax.lang.model.type.IntersectionType type) {
+    NodeList<ReferenceType> collect =
+        type.getBounds().stream()
+            .map(TypeUtils::toType)
+            .map(it -> ((ReferenceType) it))
+            .collect(NodeList.toNodeList());
+    return new IntersectionType(collect);
+  }
+
+  public static Type toType(TypeVariable typeVariable) {
+    TypeParameter typeParameter = new TypeParameter();
+    TypeMirror upperBound = typeVariable.getUpperBound();
+
+    if (!typeVariable.equals(upperBound)) {
+      Type type = toType(upperBound);
+      if (type != null) {
+        if (type.isIntersectionType()) {
+          typeParameter.setTypeBound(
+              type.asIntersectionType().getElements().stream()
+                  .filter(Type::isClassOrInterfaceType)
+                  .map(Type::asClassOrInterfaceType)
+                  .collect(NodeList.toNodeList()));
+        } else if (type.isClassOrInterfaceType()) {
+          typeParameter.setTypeBound(NodeList.nodeList(type.asClassOrInterfaceType()));
         }
-        return type;
+      }
+    }
+    typeParameter.setName(typeVariable.toString());
+    return typeParameter;
+  }
+
+  public static WildcardType toWildcardType(javax.lang.model.type.WildcardType type) {
+    WildcardType wildcardType = new WildcardType();
+    if (type.getSuperBound() != null) {
+      Type result = toType(type.getSuperBound());
+      if (result instanceof ReferenceType) {
+        wildcardType.setSuperType((ReferenceType) result);
+      } else if (result instanceof WildcardType) {
+        wildcardType = result.asWildcardType();
+      }
     }
 
-    public static Type toType(Tree tree) {
-        Type type;
-        if (tree instanceof PrimitiveTypeTree) {
-            type = getPrimitiveType((PrimitiveTypeTree) tree);
-        } else if (tree instanceof IdentifierTree) {
-            type = toClassOrInterfaceType(tree);
-        } else if (tree instanceof WildcardTree) {
-            JCTree.JCWildcard wildcardTree = (JCTree.JCWildcard) tree;
-            WildcardType wildcardType = new WildcardType();
-            Tree bound = wildcardTree.getBound();
-            Type boundType = toType(bound);
-            if (wildcardTree.kind.kind == BoundKind.EXTENDS) {
-                wildcardType.setExtendedType((ReferenceType) boundType);
+    if (type.getExtendsBound() != null) {
+      wildcardType.setExtendedType((ReferenceType) toType(type.getExtendsBound()));
+    }
+    return wildcardType;
+  }
+
+  public static PrimitiveType toPrimitiveType(javax.lang.model.type.PrimitiveType type) {
+    PrimitiveType.Primitive primitive = PrimitiveType.Primitive.valueOf(type.getKind().name());
+    return new PrimitiveType(primitive);
+  }
+
+  public static ArrayType toArrayType(javax.lang.model.type.ArrayType type) {
+    Type componentType = toType(type.getComponentType());
+    return new ArrayType(componentType);
+  }
+
+  public static ClassOrInterfaceType toClassOrInterfaceType(DeclaredType type) {
+    ClassOrInterfaceType classOrInterfaceType = new ClassOrInterfaceType();
+    if (!type.getTypeArguments().isEmpty()) {
+      classOrInterfaceType.setTypeArguments(
+          type.getTypeArguments().stream()
+              .map(TypeUtils::toType)
+              .filter(Objects::nonNull)
+              .collect(NodeList.toNodeList()));
+    }
+    if (!type.asElement().toString().isEmpty()) {
+      classOrInterfaceType.setName(type.asElement().toString());
+    }
+    return classOrInterfaceType;
+  }
+
+  public static String getName(Type type, Predicate<String> needFqnDelegate) {
+    PrinterConfiguration configuration = new DefaultPrinterConfiguration();
+    PrettyPrintingVisitor visitor =
+        new PrettyPrintingVisitor(configuration) {
+          @Override
+          public void visit(SimpleName n, Void arg) {
+            printOrphanCommentsBeforeThisChildNode(n);
+            printComment(n.getComment(), arg);
+
+            String identifier = n.getIdentifier();
+            if (needFqnDelegate.test(identifier)) {
+              printer.print(identifier);
             } else {
-                wildcardType.setSuperType((ReferenceType) boundType);
+              printer.print(JavaParserUtils.getSimpleName(identifier));
             }
-            type = wildcardType;
-        } else if (tree instanceof ParameterizedTypeTree) {
-            type = toClassOrInterfaceType(tree);
-        } else if (tree instanceof TypeParameterTree) {
-            TypeParameter typeParameter = new TypeParameter();
-            typeParameter.setName(((TypeParameterTree) tree).getName().toString());
-            typeParameter.setTypeBound(
-                    ((TypeParameterTree) tree)
-                            .getBounds().stream()
-                                    .map(TypeUtils::toClassOrInterfaceType)
-                                    .collect(NodeList.toNodeList()));
-            type = typeParameter;
-        } else {
-            if (tree != null) {
-                type = StaticJavaParser.parseType(tree.toString());
-            } else {
-                type = null;
-            }
-        }
-        return type;
-    }
+          }
+        };
+    DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter(t -> visitor, configuration);
+    return prettyPrinter.print(type);
+  }
 
-    public static Type getPrimitiveType(PrimitiveTypeTree tree) {
-        Type type;
-        switch (tree.getPrimitiveTypeKind()) {
-            case INT:
-                type = PrimitiveType.intType();
-                break;
-            case BOOLEAN:
-                type = PrimitiveType.booleanType();
-                break;
-            case LONG:
-                type = PrimitiveType.longType();
-                break;
-            case SHORT:
-                type = PrimitiveType.shortType();
-                break;
-            case CHAR:
-                type = PrimitiveType.charType();
-                break;
-            case FLOAT:
-                type = PrimitiveType.floatType();
-                break;
-            case VOID:
-                type = new VoidType();
-                break;
-            default:
-                type = new UnknownType();
-        }
-        return type;
-    }
-
-    public static Type toType(TypeMirror typeMirror) {
-        if (typeMirror.getKind() == TypeKind.ARRAY) {
-            return toArrayType((javax.lang.model.type.ArrayType) typeMirror);
-        }
-        if (typeMirror.getKind().isPrimitive()) {
-            return toPrimitiveType((javax.lang.model.type.PrimitiveType) typeMirror);
-        }
-        if (typeMirror instanceof javax.lang.model.type.IntersectionType) {
-            return toIntersectionType((javax.lang.model.type.IntersectionType) typeMirror);
-        }
-        if (typeMirror instanceof javax.lang.model.type.WildcardType) {
-            return toWildcardType((javax.lang.model.type.WildcardType) typeMirror);
-        }
-        if (typeMirror instanceof javax.lang.model.type.DeclaredType) {
-            return toClassOrInterfaceType((DeclaredType) typeMirror);
-        }
-        if (typeMirror instanceof javax.lang.model.type.TypeVariable) {
-            return toType(((TypeVariable) typeMirror));
-        }
-        if (typeMirror instanceof NoType) {
-            return new VoidType();
-        }
-        return null;
-    }
-
-    // type mirrors
-
-    public static IntersectionType toIntersectionType(javax.lang.model.type.IntersectionType type) {
-        NodeList<ReferenceType> collect =
-                type.getBounds().stream()
-                        .map(TypeUtils::toType)
-                        .map(it -> ((ReferenceType) it))
-                        .collect(NodeList.toNodeList());
-        return new IntersectionType(collect);
-    }
-
-    public static Type toType(TypeVariable typeVariable) {
-        TypeParameter typeParameter = new TypeParameter();
-        TypeMirror upperBound = typeVariable.getUpperBound();
-
-        if (!typeVariable.equals(upperBound)) {
-            Type type = toType(upperBound);
-            if (type != null) {
-                if (type.isIntersectionType()) {
-                    typeParameter.setTypeBound(
-                            type.asIntersectionType().getElements().stream()
-                                    .filter(Type::isClassOrInterfaceType)
-                                    .map(Type::asClassOrInterfaceType)
-                                    .collect(NodeList.toNodeList()));
-                } else if (type.isClassOrInterfaceType()) {
-                    typeParameter.setTypeBound(NodeList.nodeList(type.asClassOrInterfaceType()));
-                }
-            }
-        }
-        typeParameter.setName(typeVariable.toString());
-        return typeParameter;
-    }
-
-    public static WildcardType toWildcardType(javax.lang.model.type.WildcardType type) {
-        WildcardType wildcardType = new WildcardType();
-        if (type.getSuperBound() != null) {
-            Type result = toType(type.getSuperBound());
-            if (result instanceof ReferenceType) {
-                wildcardType.setSuperType((ReferenceType) result);
-            } else if (result instanceof WildcardType) {
-                wildcardType = result.asWildcardType();
-            }
-        }
-
-        if (type.getExtendsBound() != null) {
-            wildcardType.setExtendedType((ReferenceType) toType(type.getExtendsBound()));
-        }
-        return wildcardType;
-    }
-
-    public static PrimitiveType toPrimitiveType(javax.lang.model.type.PrimitiveType type) {
-        PrimitiveType.Primitive primitive = PrimitiveType.Primitive.valueOf(type.getKind().name());
-        return new PrimitiveType(primitive);
-    }
-
-    public static ArrayType toArrayType(javax.lang.model.type.ArrayType type) {
-        Type componentType = toType(type.getComponentType());
-        return new ArrayType(componentType);
-    }
-
-    public static ClassOrInterfaceType toClassOrInterfaceType(DeclaredType type) {
-        ClassOrInterfaceType classOrInterfaceType = new ClassOrInterfaceType();
-        if (!type.getTypeArguments().isEmpty()) {
-            classOrInterfaceType.setTypeArguments(
-                    type.getTypeArguments().stream()
-                            .map(TypeUtils::toType)
-                            .filter(Objects::nonNull)
-                            .collect(NodeList.toNodeList()));
-        }
-        if (!type.asElement().toString().isEmpty()) {
-            classOrInterfaceType.setName(type.asElement().toString());
-        }
-        return classOrInterfaceType;
-    }
-
-    public static String getName(Type type, Predicate<String> needFqnDelegate) {
-        PrinterConfiguration configuration = new DefaultPrinterConfiguration();
-        PrettyPrintingVisitor visitor =
-                new PrettyPrintingVisitor(configuration) {
-                    @Override
-                    public void visit(SimpleName n, Void arg) {
-                        printOrphanCommentsBeforeThisChildNode(n);
-                        printComment(n.getComment(), arg);
-
-                        String identifier = n.getIdentifier();
-                        if (needFqnDelegate.test(identifier)) {
-                            printer.print(identifier);
-                        } else {
-                            printer.print(JavaParserUtils.getSimpleName(identifier));
-                        }
-                    }
-                };
-        DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter(t -> visitor, configuration);
-        return prettyPrinter.print(type);
-    }
-
-    public static String getSimpleName(Type type) {
-        PrinterConfiguration configuration = new DefaultPrinterConfiguration();
-        PrettyPrintingVisitor visitor = new PrettyPrintingVisitor(configuration);
-        DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter(t -> visitor, configuration);
-        return prettyPrinter.print(type);
-    }
+  public static String getSimpleName(Type type) {
+    PrinterConfiguration configuration = new DefaultPrinterConfiguration();
+    PrettyPrintingVisitor visitor = new PrettyPrintingVisitor(configuration);
+    DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter(t -> visitor, configuration);
+    return prettyPrinter.print(type);
+  }
 }

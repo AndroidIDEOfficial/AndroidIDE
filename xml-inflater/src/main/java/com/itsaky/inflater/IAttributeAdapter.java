@@ -24,29 +24,29 @@ import android.view.View;
 /** An adapter that handles attributes of a specific type of view */
 public interface IAttributeAdapter {
 
-    /**
-     * Set the resource finder used by this class.
-     *
-     * @param resourceFinder The resource finder.
-     */
-    void setResourceFinder(IResourceTable resourceFinder);
+  /**
+   * Set the resource finder used by this class.
+   *
+   * @param resourceFinder The resource finder.
+   */
+  void setResourceFinder(IResourceTable resourceFinder);
 
-    /**
-     * Can this adapter handle attributes of the provided view?
-     *
-     * @param view The view to which the attributes will be applied
-     * @return {@code true} if this adapter can handle attributes of the specified view
-     */
-    boolean isApplicableTo(View view);
+  /**
+   * Can this adapter handle attributes of the provided view?
+   *
+   * @param view The view to which the attributes will be applied
+   * @return {@code true} if this adapter can handle attributes of the specified view
+   */
+  boolean isApplicableTo(View view);
 
-    /**
-     * Apply the provided attribute to the view.
-     *
-     * <p>This will be called if and only if {@link #isApplicableTo(View)} returns {@code true}.
-     *
-     * @param attribute The attribute to apply
-     * @param view The view to apply attribute to
-     * @return {@code true} if the attribute was applied successfully {@code false} otherwise.
-     */
-    boolean apply(IAttribute attribute, View view);
+  /**
+   * Apply the provided attribute to the view.
+   *
+   * <p>This will be called if and only if {@link #isApplicableTo(View)} returns {@code true}.
+   *
+   * @param attribute The attribute to apply
+   * @param view The view to apply attribute to
+   * @return {@code true} if the attribute was applied successfully {@code false} otherwise.
+   */
+  boolean apply(IAttribute attribute, View view);
 }

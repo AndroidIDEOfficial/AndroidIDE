@@ -31,63 +31,63 @@ import androidx.preference.SwitchPreference;
 import com.itsaky.androidide.R;
 
 public class GeneralPreferences extends BasePreferenceFragment
-        implements Preference.OnPreferenceChangeListener {
+    implements Preference.OnPreferenceChangeListener {
 
-    @Override
-    public void onCreatePreferences(Bundle p1, String p2) {
-        super.onCreatePreferences(p1, p2);
-        if (getContext() == null) return;
+  @Override
+  public void onCreatePreferences(Bundle p1, String p2) {
+    super.onCreatePreferences(p1, p2);
+    if (getContext() == null) return;
 
-        final PreferenceScreen screen = getPreferenceScreen();
-        final SwitchPreference openProjects = new SwitchPreference(getContext());
-        final SwitchPreference confirmProjectOpen = new SwitchPreference(getContext());
-        final SwitchPreference shell = new SwitchPreference(getContext());
+    final PreferenceScreen screen = getPreferenceScreen();
+    final SwitchPreference openProjects = new SwitchPreference(getContext());
+    final SwitchPreference confirmProjectOpen = new SwitchPreference(getContext());
+    final SwitchPreference shell = new SwitchPreference(getContext());
 
-        openProjects.setKey(KEY_OPEN_PROJECTS);
-        openProjects.setTitle(R.string.title_open_projects);
-        openProjects.setIcon(R.drawable.ic_open_project);
-        openProjects.setSummary(R.string.msg_open_projects);
+    openProjects.setKey(KEY_OPEN_PROJECTS);
+    openProjects.setTitle(R.string.title_open_projects);
+    openProjects.setIcon(R.drawable.ic_open_project);
+    openProjects.setSummary(R.string.msg_open_projects);
 
-        confirmProjectOpen.setKey(KEY_CONFIRM_PROJECT_OPEN);
-        confirmProjectOpen.setTitle(R.string.title_confirm_project_open);
-        confirmProjectOpen.setSummary(R.string.msg_confirm_project_open);
-        confirmProjectOpen.setIcon(R.drawable.ic_open_project);
+    confirmProjectOpen.setKey(KEY_CONFIRM_PROJECT_OPEN);
+    confirmProjectOpen.setTitle(R.string.title_confirm_project_open);
+    confirmProjectOpen.setSummary(R.string.msg_confirm_project_open);
+    confirmProjectOpen.setIcon(R.drawable.ic_open_project);
 
-        shell.setKey(KEY_TERMINAL_USE_SYSTEM_SHELL);
-        shell.setTitle(getString(R.string.title_default_shell));
-        shell.setSummary(getString(R.string.msg_default_shell));
-        shell.setIcon(R.drawable.ic_bash_commands);
+    shell.setKey(KEY_TERMINAL_USE_SYSTEM_SHELL);
+    shell.setTitle(getString(R.string.title_default_shell));
+    shell.setSummary(getString(R.string.msg_default_shell));
+    shell.setIcon(R.drawable.ic_bash_commands);
 
-        openProjects.setChecked(getPrefManager().autoOpenProject());
-        confirmProjectOpen.setChecked(getPrefManager().confirmProjectOpen());
-        shell.setChecked(getPrefManager().getBoolean(KEY_TERMINAL_USE_SYSTEM_SHELL));
+    openProjects.setChecked(getPrefManager().autoOpenProject());
+    confirmProjectOpen.setChecked(getPrefManager().confirmProjectOpen());
+    shell.setChecked(getPrefManager().getBoolean(KEY_TERMINAL_USE_SYSTEM_SHELL));
 
-        screen.addPreference(openProjects);
-        screen.addPreference(confirmProjectOpen);
-        screen.addPreference(shell);
+    screen.addPreference(openProjects);
+    screen.addPreference(confirmProjectOpen);
+    screen.addPreference(shell);
 
-        setPreferenceScreen(screen);
+    setPreferenceScreen(screen);
 
-        openProjects.setOnPreferenceChangeListener(this);
-        confirmProjectOpen.setOnPreferenceChangeListener(this);
-        shell.setOnPreferenceChangeListener(this);
+    openProjects.setOnPreferenceChangeListener(this);
+    confirmProjectOpen.setOnPreferenceChangeListener(this);
+    shell.setOnPreferenceChangeListener(this);
+  }
+
+  @Override
+  public boolean onPreferenceChange(@NonNull Preference p1, Object p2) {
+    boolean checked = (Boolean) p2;
+    final var key = p1.getKey();
+    switch (key) {
+      case KEY_OPEN_PROJECTS:
+        getPrefManager().putBoolean(KEY_OPEN_PROJECTS, checked);
+        break;
+      case KEY_CONFIRM_PROJECT_OPEN:
+        getPrefManager().putBoolean(KEY_CONFIRM_PROJECT_OPEN, checked);
+        break;
+      case KEY_TERMINAL_USE_SYSTEM_SHELL:
+        getPrefManager().putBoolean(KEY_TERMINAL_USE_SYSTEM_SHELL, checked);
+        break;
     }
-
-    @Override
-    public boolean onPreferenceChange(@NonNull Preference p1, Object p2) {
-        boolean checked = (Boolean) p2;
-        final var key = p1.getKey();
-        switch (key) {
-            case KEY_OPEN_PROJECTS:
-                getPrefManager().putBoolean(KEY_OPEN_PROJECTS, checked);
-                break;
-            case KEY_CONFIRM_PROJECT_OPEN:
-                getPrefManager().putBoolean(KEY_CONFIRM_PROJECT_OPEN, checked);
-                break;
-            case KEY_TERMINAL_USE_SYSTEM_SHELL:
-                getPrefManager().putBoolean(KEY_TERMINAL_USE_SYSTEM_SHELL, checked);
-                break;
-        }
-        return true;
-    }
+    return true;
+  }
 }

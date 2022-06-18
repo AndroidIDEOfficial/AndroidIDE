@@ -36,19 +36,18 @@ import com.itsaky.inflater.IResourceTable;
  */
 public class ButtonAttrAdapter extends TextViewAttrAdapter {
 
-    public ButtonAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
-    }
+  public ButtonAttrAdapter(@NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof Button;
-    }
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof Button;
+  }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        // No special attributes for Button
-        return super.apply(attribute, view);
-    }
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    // No special attributes for Button
+    return super.apply(attribute, view);
+  }
 }

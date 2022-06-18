@@ -57,7 +57,7 @@ import javax.tools.JavaFileObject
 class OverrideSuperclassMethodsAction : BaseCodeAction() {
     override val titleTextRes: Int = R.string.action_override_superclass_methods
     override val id: String = "lsp_java_overrideSuperclassMethods"
-    override var label: String = "Override superclass methods"
+    override var label: String = ""
     private val log = ILogger.newInstance(javaClass.simpleName)
     private var position: Long = -1
 

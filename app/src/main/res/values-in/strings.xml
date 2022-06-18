@@ -143,6 +143,8 @@
     <string name="template_description_kotlin_basic">Project Kotlin dengan Toolbar Appcompat dan Floating Action Button</string>
     <string name="template_libgdx">Gim LibGDX</string>
     <string name="template_description_libgdx">Persiapan projek gim LibGDX untuk menampilkan gambar as sebagai contoh.</string>
+    <string name="template_compose">Jetpack Compose</string>
+    <string name="template_description_compose">Projek sederhana Jetpack Compose.</string>
 
     <!-- Files -->
     <string name="save">Simpan</string>

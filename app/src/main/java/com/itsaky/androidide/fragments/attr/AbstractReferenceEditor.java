@@ -38,67 +38,66 @@ import java.util.concurrent.CompletableFuture;
  */
 public abstract class AbstractReferenceEditor extends BaseValueEditorFragment {
 
-    private static final ILogger LOG = ILogger.newInstance("ReferenceEditor");
-    public TextWatcherAdapter resInputWatcher;
+  private static final ILogger LOG = ILogger.newInstance("ReferenceEditor");
+  public TextWatcherAdapter resInputWatcher;
 
-    @Override
-    protected void notifyValueChanged(@NonNull String newValue) {
-        try {
-            super.notifyValueChanged(newValue);
-        } catch (Throwable e) {
-            LOG.error("Unable to update resource value to '" + newValue + "'", e);
-        }
+  @Override
+  protected void notifyValueChanged(@NonNull String newValue) {
+    try {
+      super.notifyValueChanged(newValue);
+    } catch (Throwable e) {
+      LOG.error("Unable to update resource value to '" + newValue + "'", e);
+    }
+  }
+
+  protected void setupReferenceInput(MaterialAutoCompleteTextView referenceInput) {
+    Objects.requireNonNull(referenceInput);
+
+    referenceInput.setText(attribute.getValue());
+
+    if (resInputWatcher != null) {
+      referenceInput.removeTextChangedListener(resInputWatcher);
     }
 
-    protected void setupReferenceInput(MaterialAutoCompleteTextView referenceInput) {
-        Objects.requireNonNull(referenceInput);
+    resInputWatcher =
+        new TextWatcherAdapter() {
+          @Override
+          public void afterTextChanged(@NonNull Editable s) {
+            final var text = s.toString().trim();
+            if (TextUtils.isEmpty(text)) {
+              return;
+            }
 
-        referenceInput.setText(attribute.getValue());
+            notifyValueChanged(text);
+          }
+        };
 
-        if (resInputWatcher != null) {
-            referenceInput.removeTextChangedListener(resInputWatcher);
-        }
+    referenceInput.addTextChangedListener(resInputWatcher);
 
-        resInputWatcher =
-                new TextWatcherAdapter() {
-                    @Override
-                    public void afterTextChanged(@NonNull Editable s) {
-                        final var text = s.toString().trim();
-                        if (TextUtils.isEmpty(text)) {
-                            return;
-                        }
+    CompletableFuture.supplyAsync(this::computeReferenceItems)
+        .whenComplete((list, error) -> handleAutoCompleteResult(list, error, referenceInput));
+  }
 
-                        notifyValueChanged(text);
-                    }
-                };
-
-        referenceInput.addTextChangedListener(resInputWatcher);
-
-        CompletableFuture.supplyAsync(this::computeReferenceItems)
-                .whenComplete(
-                        (list, error) -> handleAutoCompleteResult(list, error, referenceInput));
+  protected void handleAutoCompleteResult(
+      List<String> list, Throwable error, AutoCompleteTextView referenceInput) {
+    if (list == null || list.isEmpty()) {
+      LOG.error("No completion items found");
+      LOG.error("Error was:", error);
+      return;
     }
 
-    protected void handleAutoCompleteResult(
-            List<String> list, Throwable error, AutoCompleteTextView referenceInput) {
-        if (list == null || list.isEmpty()) {
-            LOG.error("No completion items found");
-            LOG.error("Error was:", error);
-            return;
-        }
+    LOG.debug("Found", list.size(), "resource items for completion");
 
-        LOG.debug("Found", list.size(), "resource items for completion");
+    ThreadUtils.runOnUiThread(
+        () -> {
+          final var adapter = new AttrValueCompletionAdapter(requireContext(), list);
+          referenceInput.setThreshold(1);
+          referenceInput.setAdapter(adapter);
+          adapter.notifyDataSetChanged();
+        });
+  }
 
-        ThreadUtils.runOnUiThread(
-                () -> {
-                    final var adapter = new AttrValueCompletionAdapter(requireContext(), list);
-                    referenceInput.setThreshold(1);
-                    referenceInput.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
-                });
-    }
-
-    protected List<String> computeReferenceItems() {
-        return new ArrayList<>();
-    }
+  protected List<String> computeReferenceItems() {
+    return new ArrayList<>();
+  }
 }

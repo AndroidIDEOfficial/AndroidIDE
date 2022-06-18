@@ -37,44 +37,44 @@ import java.util.Map;
  */
 public abstract class Rewrite {
 
-    /** CANCELLED signals that the rewrite couldn't be completed. */
-    public static Map<Path, TextEdit[]> CANCELLED = Collections.emptyMap();
+  /** CANCELLED signals that the rewrite couldn't be completed. */
+  public static Map<Path, TextEdit[]> CANCELLED = Collections.emptyMap();
 
-    /**
-     * Perform a rewrite across the entire codebase. The given compiler can be used for anything
-     * except compiling other files. If you try to compile any file, the current thread will be
-     * blocked.
-     *
-     * @param compiler The compiler.
-     */
-    public abstract Map<Path, TextEdit[]> rewrite(CompilerProvider compiler);
+  /**
+   * Perform a rewrite across the entire codebase. The given compiler can be used for anything
+   * except compiling other files. If you try to compile any file, the current thread will be
+   * blocked.
+   *
+   * @param compiler The compiler.
+   */
+  public abstract Map<Path, TextEdit[]> rewrite(CompilerProvider compiler);
 
-    public CodeActionItem asCodeActions(CompilerProvider compiler, String title) {
-        final Map<Path, TextEdit[]> edits = rewrite(compiler);
-        if (edits == null || edits.isEmpty()) {
-            return null;
-        }
-
-        final List<DocumentChange> changes = new ArrayList<>(0);
-
-        for (Path key : edits.keySet()) {
-            TextEdit[] textEdits = edits.get(key);
-            if (textEdits == null) {
-                continue;
-            }
-            final DocumentChange change = new DocumentChange();
-            change.setFile(key);
-            change.setEdits(Arrays.asList(textEdits));
-            changes.add(change);
-        }
-
-        final CodeActionItem action = new CodeActionItem();
-        action.setTitle(title);
-        action.setKind(CodeActionKind.QuickFix);
-        action.setChanges(changes);
-        applyCommands(action);
-        return action;
+  public CodeActionItem asCodeActions(CompilerProvider compiler, String title) {
+    final Map<Path, TextEdit[]> edits = rewrite(compiler);
+    if (edits == null || edits.isEmpty()) {
+      return null;
     }
 
-    protected void applyCommands(@NonNull CodeActionItem action) {}
+    final List<DocumentChange> changes = new ArrayList<>(0);
+
+    for (Path key : edits.keySet()) {
+      TextEdit[] textEdits = edits.get(key);
+      if (textEdits == null) {
+        continue;
+      }
+      final DocumentChange change = new DocumentChange();
+      change.setFile(key);
+      change.setEdits(Arrays.asList(textEdits));
+      changes.add(change);
+    }
+
+    final CodeActionItem action = new CodeActionItem();
+    action.setTitle(title);
+    action.setKind(CodeActionKind.QuickFix);
+    action.setChanges(changes);
+    applyCommands(action);
+    return action;
+  }
+
+  protected void applyCommands(@NonNull CodeActionItem action) {}
 }

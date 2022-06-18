@@ -33,45 +33,45 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  */
 public class RelativeLayoutAttrAdapter extends ViewGroupAttrAdapter {
 
-    public RelativeLayoutAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
+  public RelativeLayoutAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof RelativeLayout;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+
+    final RelativeLayout relative = (RelativeLayout) view;
+    final String name = attribute.getAttributeName();
+    final String value = attribute.getValue();
+
+    if (!canHandleNamespace(attribute)) {
+      return false;
     }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof RelativeLayout;
+    boolean handled = true;
+
+    switch (name) {
+      case "gravity":
+        relative.setGravity(parseGravity(value));
+        break;
+      case "ignoreGravity":
+        relative.setIgnoreGravity(parseId(value));
+        break;
+      default:
+        handled = false;
+        break;
     }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-
-        final RelativeLayout relative = (RelativeLayout) view;
-        final String name = attribute.getAttributeName();
-        final String value = attribute.getValue();
-
-        if (!canHandleNamespace(attribute)) {
-            return false;
-        }
-
-        boolean handled = true;
-
-        switch (name) {
-            case "gravity":
-                relative.setGravity(parseGravity(value));
-                break;
-            case "ignoreGravity":
-                relative.setIgnoreGravity(parseId(value));
-                break;
-            default:
-                handled = false;
-                break;
-        }
-
-        if (!handled) {
-            handled = super.apply(attribute, view);
-        }
-
-        return handled;
+    if (!handled) {
+      handled = super.apply(attribute, view);
     }
+
+    return handled;
+  }
 }

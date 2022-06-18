@@ -20,18 +20,18 @@ package com.itsaky.androidide.models;
 import com.google.gson.annotations.SerializedName;
 
 public class License {
-    @SerializedName("name")
-    public String name;
+  @SerializedName("name")
+  public String name;
 
-    @SerializedName("license")
-    public String license;
+  @SerializedName("license")
+  public String license;
 
-    @SerializedName("url")
-    public String url;
+  @SerializedName("url")
+  public String url;
 
-    public License(String name, String license, String url) {
-        this.name = name;
-        this.license = license;
-        this.url = url;
-    }
+  public License(String name, String license, String url) {
+    this.name = name;
+    this.license = license;
+    this.url = url;
+  }
 }

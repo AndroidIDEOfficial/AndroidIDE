@@ -21,10 +21,10 @@ package com.google.googlejavaformat;
  * OpenOp}-{@link CloseOp} {@code Op}s.
  */
 public interface Op {
-    /**
-     * Add an {@code Op} to a {@link DocBuilder}.
-     *
-     * @param builder the {@link DocBuilder}
-     */
-    void add(DocBuilder builder);
+  /**
+   * Add an {@code Op} to a {@link DocBuilder}.
+   *
+   * @param builder the {@link DocBuilder}
+   */
+  void add(DocBuilder builder);
 }

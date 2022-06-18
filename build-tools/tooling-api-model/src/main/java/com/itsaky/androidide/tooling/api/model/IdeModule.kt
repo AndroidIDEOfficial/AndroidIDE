@@ -31,5 +31,12 @@ interface IdeModule {
      *
      * @param variant The build variant name. NOT application for [IdeJavaModule].
      */
-    fun getGeneratedJar(variant: String): File
+    @Deprecated("Use getClasspath() instead.") fun getGeneratedJar(variant: String): File
+
+    /**
+     * Get the classpath of this module. For example, the generated JAR file.
+     *
+     * @return The class paths.
+     */
+    fun getClassPaths(): Set<File>
 }

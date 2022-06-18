@@ -4,7 +4,12 @@ This is the changelog of all the releases of AndroidIDE.
 ## **v2.0.2-beta** (in development)
 
 ### Important notes
-<!--Breaking changes and other important stuff here-->
+- The `HOME` and `SYSROOT` directories has been renamed to `home` and `usr` respectively.
+- The packages for the AndroidIDE terminal has been updated. But, it requires you to reinstall the bootstrap packages. Please follow [this](https://t.me/androidide_discussions/30564) guide to install the new bootstrap packages.
+- Android 12 devices no longer need to use 32-bit build tools. You can simply reinstall AndroidIDE with 64-bit build tools.
+- You can now easily open/show the `ide-environment.properties` file using the `ideenv` command. Execute :
+  - `ideenv -e`: To edit the environments file. Uses `nano` editor to edit.
+  - `ideenv -s`: To print the contents of the file in the terminal.
 
 ### Additions
 - Warn about empty body for the following statements :
@@ -21,13 +26,18 @@ This is the changelog of all the releases of AndroidIDE.
   - `Generate constructor`: Allows the user to select fields from the current class, then generates a constructor with those fields as parameters.
   - `Remove unused imports`: Removes imports that are not used in the source file.
   - `Import orderer`: Organizes the imports. Thanks to @MrIkso (#180).
-- XML Code formatter. Thanks to @MrIkso (#180).
+- XML Code formatter. Thanks to @MrIkso (#182).
 - New Gradle command line options: `--build-cache` and `--offline`. Thanks to @MrIkso (#180). 
 - Highlight IDE logs based on the log line priority.
+- Option to share Build Output, App log and IDE logs as text file.
+- Syntax highlighting for Kotlin and C/C++ language. Thanks to @MrIkso (#196).
+- Highlight hex color code in string literals. Thanks to @MrIkso (#209).
+- Save all files before executing any build process. (#209).
+- New Template: Jetpack Compose. Thanks to @BanDroid (#198).
 - Added Brazilian Portuguese translations. Thanks to @Hakaisu (#165).
 
 ### Removals
-<!--Things that were removed-->
+- `$ANDROID_HOME/cmake/bin` is no longer prefixed to the `PATH` variable. You can install now install `cmake` using `pkg install cmake`.
 
 ### Fixes
 - Crash when performing 'Replace all' action in editor (#158).
@@ -37,15 +47,25 @@ This is the changelog of all the releases of AndroidIDE.
 - Fixed: Invalid log line formatting when tag to too long.
 - Fixed: Application crashes when layout inflation fails (#168).
 - Fixed: Invalid syntax highlighting for text tags in XML files. Thanks to @MrIkso (#180).
+- Memory leaks in some fragments. Thanks to @MrIkso (#209).
 - Fixed: Extra empty `new line` gets appendend to files while saving.
 
 ### Improvements
 - Do not show 'Cut' & 'Paste' action if editor is not editable.
+- Include `aapt2` in IDE itself. The IDE now automatically specifies 'android.aapt2FromMavenOverride' property while building projects.
 - Use [ported version of NetBeans' `nb-javac`](https://github.com/itsaky/nb-javac-android) for Java language server.
 - Removed extra Maven repository URLs from project templates. Thanks to @MrIkso (#188).
+- Show progress indicator when initializing project
 - Update dependency versions in project templates and update the Kotlin project template image. Thanks to @BanDroid (#191).
+- Ability to cache completion results for faster completions on next completion request.
+- Use Gradle v7.4.2 in template projects and updated template dependencies Thanks to @MrIkso (#209).
+- The project creator UI and logic has been improved (#209).
+- Use of `libhook.so` is now optional and is DISABLED by default. This hook is only required if you use JDK 11 and if you have an Android 11 or lower device.
+- JDK 17 is now preferred by the IDE. It looks for JDK 11 only if JDK 17 is not found on path `$SYSROOT/opt/openjdk`.
 - Updated Hindi translations. Thanks to @Premjit-Chowdhury (#171).
 - Updated Russian translation. Thansk to @AndreyKozhev (#181).
+- Updated Chinese translations. Thanks to @mikofe (#192).
+- Added missing translations for PT-BR. Thanks to @Frederick'XS (#176).
 
 ## **v2.0.1-beta**
 AndroidIDE v2.0.1-beta is here with new features, improvements and bug fixes.

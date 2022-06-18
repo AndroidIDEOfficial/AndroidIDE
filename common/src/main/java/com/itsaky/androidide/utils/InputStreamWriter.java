@@ -31,33 +31,33 @@ import java.io.InputStreamReader;
 /** Writes an InputStream to a file */
 public class InputStreamWriter implements Runnable {
 
-    private final InputStream in;
-    private final File out;
+  private final InputStream in;
+  private final File out;
 
-    private final BufferedOutputStream os;
+  private final BufferedOutputStream os;
 
-    public InputStreamWriter(InputStream in, File out) throws FileNotFoundException {
-        this.in = in;
-        this.out = out;
+  public InputStreamWriter(InputStream in, File out) throws FileNotFoundException {
+    this.in = in;
+    this.out = out;
 
-        this.os = new BufferedOutputStream(new FileOutputStream(out, true));
-    }
+    this.os = new BufferedOutputStream(new FileOutputStream(out, true));
+  }
 
-    @Override
-    public void run() {
-        try {
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            while (true) {
-                final String data = reader.readLine();
-                if (data == null) {
-                    break;
-                }
-
-                os.write(data.concat("\n").getBytes());
-                os.flush();
-            }
-        } catch (Throwable th) {
-            // ignored
+  @Override
+  public void run() {
+    try {
+      final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+      while (true) {
+        final String data = reader.readLine();
+        if (data == null) {
+          break;
         }
+
+        os.write(data.concat("\n").getBytes());
+        os.flush();
+      }
+    } catch (Throwable th) {
+      // ignored
     }
+  }
 }

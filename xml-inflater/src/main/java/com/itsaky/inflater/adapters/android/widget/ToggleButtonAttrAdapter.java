@@ -34,46 +34,46 @@ import com.itsaky.inflater.IResourceTable;
  */
 public class ToggleButtonAttrAdapter extends CompondButtonAttrAdapter {
 
-    public ToggleButtonAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
+  public ToggleButtonAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof ToggleButton;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    final var button = (ToggleButton) view;
+    final var name = attribute.getAttributeName();
+    final var value = attribute.getValue();
+
+    if (!canHandleNamespace(attribute)) {
+      return false;
     }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof ToggleButton;
+    boolean handled = true;
+    switch (name) {
+      case "disabledAlpha":
+        ReflectUtils.reflect(button).field("mDisabledAlpha", parseFloat(value, 0.5f));
+        break;
+      case "textOff":
+        button.setTextOff(parseString(value));
+        break;
+      case "textOn":
+        button.setTextOn(parseString(value));
+        break;
+      default:
+        handled = false;
+        break;
     }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        final var button = (ToggleButton) view;
-        final var name = attribute.getAttributeName();
-        final var value = attribute.getValue();
-
-        if (!canHandleNamespace(attribute)) {
-            return false;
-        }
-
-        boolean handled = true;
-        switch (name) {
-            case "disabledAlpha":
-                ReflectUtils.reflect(button).field("mDisabledAlpha", parseFloat(value, 0.5f));
-                break;
-            case "textOff":
-                button.setTextOff(parseString(value));
-                break;
-            case "textOn":
-                button.setTextOn(parseString(value));
-                break;
-            default:
-                handled = false;
-                break;
-        }
-
-        if (!handled) {
-            handled = super.apply(attribute, view);
-        }
-
-        return handled;
+    if (!handled) {
+      handled = super.apply(attribute, view);
     }
+
+    return handled;
+  }
 }

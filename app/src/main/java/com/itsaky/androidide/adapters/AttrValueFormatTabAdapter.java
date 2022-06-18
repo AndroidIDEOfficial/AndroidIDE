@@ -41,84 +41,84 @@ import java.util.Objects;
 @SuppressWarnings("deprecation")
 public class AttrValueFormatTabAdapter extends FragmentStatePagerAdapter {
 
-    private static final ILogger LOG = ILogger.newInstance("AttrValueEditorTabAdapter");
-    private final List<Fragment> mFragments = new ArrayList<>();
-    private final List<String> mTitles = new ArrayList<>();
-    private final XMLAttribute attribute;
+  private static final ILogger LOG = ILogger.newInstance("AttrValueEditorTabAdapter");
+  private final List<Fragment> mFragments = new ArrayList<>();
+  private final List<String> mTitles = new ArrayList<>();
+  private final XMLAttribute attribute;
 
-    public AttrValueFormatTabAdapter(@NonNull FragmentManager manager, XMLAttribute attribute) {
-        super(manager);
-        Objects.requireNonNull(attribute);
+  public AttrValueFormatTabAdapter(@NonNull FragmentManager manager, XMLAttribute attribute) {
+    super(manager);
+    Objects.requireNonNull(attribute);
 
-        this.attribute = attribute;
+    this.attribute = attribute;
+  }
+
+  public void addFragment(final Class<? extends BaseValueEditorFragment> fragment, String title) {
+    Objects.requireNonNull(fragment);
+    Objects.requireNonNull(title);
+    if (TextUtils.isEmpty(title.trim())) {
+      throw new IllegalArgumentException("Invalid tab title");
     }
 
-    public void addFragment(final Class<? extends BaseValueEditorFragment> fragment, String title) {
-        Objects.requireNonNull(fragment);
-        Objects.requireNonNull(title);
-        if (TextUtils.isEmpty(title.trim())) {
-            throw new IllegalArgumentException("Invalid tab title");
-        }
+    mTitles.add(capitalize(title));
+    mFragments.add(createFragment(fragment, title));
+  }
 
-        mTitles.add(capitalize(title));
-        mFragments.add(createFragment(fragment, title));
+  @NonNull
+  private String capitalize(String title) {
+    title = title.trim();
+
+    final var sb = new StringBuilder();
+    for (int i = 0; i < title.length(); i++) {
+      var ch = title.charAt(i);
+      if (i == 0) {
+        ch = Character.toUpperCase(ch);
+      } else {
+        ch = Character.toLowerCase(ch);
+      }
+
+      sb.append(ch);
     }
 
-    @NonNull
-    private String capitalize(String title) {
-        title = title.trim();
+    return sb.toString();
+  }
 
-        final var sb = new StringBuilder();
-        for (int i = 0; i < title.length(); i++) {
-            var ch = title.charAt(i);
-            if (i == 0) {
-                ch = Character.toUpperCase(ch);
-            } else {
-                ch = Character.toLowerCase(ch);
-            }
+  @NonNull
+  public Fragment createFragment(
+      Class<? extends BaseValueEditorFragment> clazz, @NonNull final String name) {
+    try {
+      final var frag = clazz.newInstance();
+      final var args = new Bundle();
+      args.putParcelable(BaseValueEditorFragment.KEY_ATTR, attribute);
+      args.putString(BaseValueEditorFragment.KEY_NAME, name);
+      frag.setArguments(args);
 
-            sb.append(ch);
-        }
-
-        return sb.toString();
+      return frag;
+    } catch (Throwable th) {
+      LOG.error("Unable to create value editor fragment", th);
+      throw new RuntimeException(th);
     }
+  }
 
-    @NonNull
-    public Fragment createFragment(
-            Class<? extends BaseValueEditorFragment> clazz, @NonNull final String name) {
-        try {
-            final var frag = clazz.newInstance();
-            final var args = new Bundle();
-            args.putParcelable(BaseValueEditorFragment.KEY_ATTR, attribute);
-            args.putString(BaseValueEditorFragment.KEY_NAME, name);
-            frag.setArguments(args);
+  public void removeAll() {
+    mFragments.clear();
+    mTitles.clear();
+  }
 
-            return frag;
-        } catch (Throwable th) {
-            LOG.error("Unable to create value editor fragment", th);
-            throw new RuntimeException(th);
-        }
-    }
+  @NonNull
+  @Override
+  public Fragment getItem(int position) {
+    return mFragments.get(position);
+  }
 
-    public void removeAll() {
-        mFragments.clear();
-        mTitles.clear();
-    }
+  @Override
+  public int getCount() {
+    return mFragments.size();
+  }
 
-    @NonNull
-    @Override
-    public Fragment getItem(int position) {
-        return mFragments.get(position);
-    }
-
-    @Override
-    public int getCount() {
-        return mFragments.size();
-    }
-
-    @Nullable
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return mTitles.get(position);
-    }
+  @Nullable
+  @Override
+  public CharSequence getPageTitle(int position) {
+    return mTitles.get(position);
+  }
 }

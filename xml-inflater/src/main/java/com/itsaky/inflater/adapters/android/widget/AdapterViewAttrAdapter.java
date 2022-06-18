@@ -36,35 +36,35 @@ import com.itsaky.inflater.adapters.android.view.ViewGroupAttrAdapter;
  */
 public abstract class AdapterViewAttrAdapter extends ViewGroupAttrAdapter {
 
-    public AdapterViewAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
-    }
+  public AdapterViewAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof AdapterView;
-    }
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof AdapterView;
+  }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        // No special attributes for AdapterView
-        return super.apply(attribute, view);
-    }
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    // No special attributes for AdapterView
+    return super.apply(attribute, view);
+  }
 
-    protected ArrayAdapter<String> newSimpleAdapter(Context ctx) {
-        return newSimpleAdapter(ctx, newAdapterItems(4));
-    }
+  protected ArrayAdapter<String> newSimpleAdapter(Context ctx) {
+    return newSimpleAdapter(ctx, newAdapterItems(4));
+  }
 
-    protected ArrayAdapter<String> newSimpleAdapter(Context ctx, String[] items) {
-        return new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, items);
-    }
+  protected ArrayAdapter<String> newSimpleAdapter(Context ctx, String[] items) {
+    return new ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, items);
+  }
 
-    protected String[] newAdapterItems(int size) {
-        final var items = new String[size];
-        for (var i = 0; i < size; i++) {
-            items[i] = "Item " + i;
-        }
-        return items;
+  protected String[] newAdapterItems(int size) {
+    final var items = new String[size];
+    for (var i = 0; i < size; i++) {
+      items[i] = "Item " + i;
     }
+    return items;
+  }
 }

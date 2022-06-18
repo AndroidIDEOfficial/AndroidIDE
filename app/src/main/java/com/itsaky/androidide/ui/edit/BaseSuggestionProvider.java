@@ -32,27 +32,27 @@ import java.util.regex.Pattern;
  */
 public abstract class BaseSuggestionProvider implements IValueSuggestionProvider {
 
-    protected final File resDir;
-    protected final File layout;
+  protected final File resDir;
+  protected final File layout;
 
-    protected BaseSuggestionProvider(File layout) {
-        Objects.requireNonNull(layout);
+  protected BaseSuggestionProvider(File layout) {
+    Objects.requireNonNull(layout);
 
-        final var path = layout.getAbsolutePath();
-        if (!Pattern.compile(".*/src/.*/res/layout/(\\w|_)+\\.xml").matcher(path).matches()) {
-            throw new IllegalArgumentException("Given layout file is not valid");
-        }
-
-        this.layout = layout;
-        this.resDir = Objects.requireNonNull(layout.getParentFile()).getParentFile();
-        Objects.requireNonNull(this.resDir);
+    final var path = layout.getAbsolutePath();
+    if (!Pattern.compile(".*/src/.*/res/layout/(\\w|_)+\\.xml").matcher(path).matches()) {
+      throw new IllegalArgumentException("Given layout file is not valid");
     }
 
-    protected ValuesTable getValuesTable() {
-        return ValuesTableFactory.getTable(this.resDir);
-    }
+    this.layout = layout;
+    this.resDir = Objects.requireNonNull(layout.getParentFile()).getParentFile();
+    Objects.requireNonNull(this.resDir);
+  }
 
-    protected IResourceTable getResourceTable() {
-        return StudioApp.getInstance().getResourceTable();
-    }
+  protected ValuesTable getValuesTable() {
+    return ValuesTableFactory.getTable(this.resDir);
+  }
+
+  protected IResourceTable getResourceTable() {
+    return StudioApp.getInstance().getResourceTable();
+  }
 }

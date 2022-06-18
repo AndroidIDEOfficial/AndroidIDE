@@ -26,34 +26,40 @@ import com.itsaky.androidide.fragments.CrashReportFragment;
 
 public class CrashHandlerActivity extends StudioActivity {
 
-    private ActivityCrashHandlerBinding binding;
+  private ActivityCrashHandlerBinding binding;
 
-    public static final String REPORT_ACTION = "com.itsaky.androidide.REPORT_CRASH";
-    public static final String TRACE_KEY = "crash_trace";
+  public static final String REPORT_ACTION = "com.itsaky.androidide.REPORT_CRASH";
+  public static final String TRACE_KEY = "crash_trace";
 
-    @Override
-    protected View bindLayout() {
-        binding = ActivityCrashHandlerBinding.inflate(getLayoutInflater());
-        return binding.getRoot();
+  @Override
+  protected View bindLayout() {
+    binding = ActivityCrashHandlerBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    final var extra = getIntent().getExtras();
+    if (extra == null) {
+      finishAffinity();
+      return;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    final var report = extra.getString(TRACE_KEY, "Unable to get logs.");
+    final var fragment = CrashReportFragment.newInstance(report);
 
-        final var extra = getIntent().getExtras();
-        if (extra == null) {
-            finishAffinity();
-            return;
-        }
+    getSupportFragmentManager()
+        .beginTransaction()
+        .replace(binding.getRoot().getId(), fragment, "crash_report_fragment")
+        .addToBackStack(null)
+        .commit();
+  }
 
-        final var report = extra.getString(TRACE_KEY, "Unable to get logs.");
-        final var fragment = CrashReportFragment.newInstance(report);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(binding.getRoot().getId(), fragment, "crash_report_fragment")
-                .addToBackStack(null)
-                .commit();
-    }
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
+  }
 }

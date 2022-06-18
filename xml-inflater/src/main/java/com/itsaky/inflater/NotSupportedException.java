@@ -25,17 +25,17 @@ package com.itsaky.inflater;
  */
 public class NotSupportedException extends UnsupportedOperationException {
 
-    public NotSupportedException() {}
+  public NotSupportedException() {}
 
-    public NotSupportedException(String message) {
-        super(message);
-    }
+  public NotSupportedException(String message) {
+    super(message);
+  }
 
-    public NotSupportedException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public NotSupportedException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public NotSupportedException(Throwable cause) {
-        super(cause);
-    }
+  public NotSupportedException(Throwable cause) {
+    super(cause);
+  }
 }

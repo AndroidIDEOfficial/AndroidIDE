@@ -151,4 +151,10 @@ public class CrashReportFragment extends Fragment {
                 + ")\n\n Stacktrace: \n"
                 + trace;
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
 }

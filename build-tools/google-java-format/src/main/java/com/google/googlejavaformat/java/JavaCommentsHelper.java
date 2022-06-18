@@ -30,153 +30,153 @@ import java.util.regex.Pattern;
 /** {@code JavaCommentsHelper} extends {@link CommentsHelper} to rewrite Java comments. */
 public final class JavaCommentsHelper implements CommentsHelper {
 
-    private final String lineSeparator;
-    private final JavaFormatterOptions options;
+  private final String lineSeparator;
+  private final JavaFormatterOptions options;
 
-    public JavaCommentsHelper(String lineSeparator, JavaFormatterOptions options) {
-        this.lineSeparator = lineSeparator;
-        this.options = options;
+  public JavaCommentsHelper(String lineSeparator, JavaFormatterOptions options) {
+    this.lineSeparator = lineSeparator;
+    this.options = options;
+  }
+
+  @Override
+  public String rewrite(Tok tok, int maxWidth, int column0) {
+    if (!tok.isComment()) {
+      return tok.getOriginalText();
+    }
+    String text = tok.getOriginalText();
+    if (tok.isJavadocComment() && options.formatJavadoc()) {
+      text = JavadocFormatter.formatJavadoc(text, column0);
+    }
+    List<String> lines = new ArrayList<>();
+    Iterator<String> it = Newlines.lineIterator(text);
+    while (it.hasNext()) {
+      lines.add(CharMatcher.whitespace().trimTrailingFrom(it.next()));
+    }
+    if (tok.isSlashSlashComment()) {
+      return indentLineComments(lines, column0);
+    } else if (javadocShaped(lines)) {
+      return indentJavadoc(lines, column0);
+    } else {
+      return preserveIndentation(lines, column0);
+    }
+  }
+
+  // For non-javadoc-shaped block comments, shift the entire block to the correct
+  // column, but do not adjust relative indentation.
+  private String preserveIndentation(List<String> lines, int column0) {
+    StringBuilder builder = new StringBuilder();
+
+    // find the leftmost non-whitespace character in all trailing lines
+    int startCol = -1;
+    for (int i = 1; i < lines.size(); i++) {
+      int lineIdx = CharMatcher.whitespace().negate().indexIn(lines.get(i));
+      if (lineIdx >= 0 && (startCol == -1 || lineIdx < startCol)) {
+        startCol = lineIdx;
+      }
     }
 
-    @Override
-    public String rewrite(Tok tok, int maxWidth, int column0) {
-        if (!tok.isComment()) {
-            return tok.getOriginalText();
-        }
-        String text = tok.getOriginalText();
-        if (tok.isJavadocComment() && options.formatJavadoc()) {
-            text = JavadocFormatter.formatJavadoc(text, column0);
-        }
-        List<String> lines = new ArrayList<>();
-        Iterator<String> it = Newlines.lineIterator(text);
-        while (it.hasNext()) {
-            lines.add(CharMatcher.whitespace().trimTrailingFrom(it.next()));
-        }
-        if (tok.isSlashSlashComment()) {
-            return indentLineComments(lines, column0);
-        } else if (javadocShaped(lines)) {
-            return indentJavadoc(lines, column0);
-        } else {
-            return preserveIndentation(lines, column0);
-        }
+    // output the first line at the current column
+    builder.append(lines.get(0));
+
+    // output all trailing lines with plausible indentation
+    for (int i = 1; i < lines.size(); ++i) {
+      builder.append(lineSeparator).append(Strings.repeat(" ", column0));
+      // check that startCol is valid index, e.g. for blank lines
+      if (lines.get(i).length() >= startCol) {
+        builder.append(lines.get(i).substring(startCol));
+      } else {
+        builder.append(lines.get(i));
+      }
     }
+    return builder.toString();
+  }
 
-    // For non-javadoc-shaped block comments, shift the entire block to the correct
-    // column, but do not adjust relative indentation.
-    private String preserveIndentation(List<String> lines, int column0) {
-        StringBuilder builder = new StringBuilder();
-
-        // find the leftmost non-whitespace character in all trailing lines
-        int startCol = -1;
-        for (int i = 1; i < lines.size(); i++) {
-            int lineIdx = CharMatcher.whitespace().negate().indexIn(lines.get(i));
-            if (lineIdx >= 0 && (startCol == -1 || lineIdx < startCol)) {
-                startCol = lineIdx;
-            }
-        }
-
-        // output the first line at the current column
-        builder.append(lines.get(0));
-
-        // output all trailing lines with plausible indentation
-        for (int i = 1; i < lines.size(); ++i) {
-            builder.append(lineSeparator).append(Strings.repeat(" ", column0));
-            // check that startCol is valid index, e.g. for blank lines
-            if (lines.get(i).length() >= startCol) {
-                builder.append(lines.get(i).substring(startCol));
-            } else {
-                builder.append(lines.get(i));
-            }
-        }
-        return builder.toString();
+  // Wraps and re-indents line comments.
+  private String indentLineComments(List<String> lines, int column0) {
+    lines = wrapLineComments(lines, column0);
+    StringBuilder builder = new StringBuilder();
+    builder.append(lines.get(0).trim());
+    String indentString = Strings.repeat(" ", column0);
+    for (int i = 1; i < lines.size(); ++i) {
+      builder.append(lineSeparator).append(indentString).append(lines.get(i).trim());
     }
+    return builder.toString();
+  }
 
-    // Wraps and re-indents line comments.
-    private String indentLineComments(List<String> lines, int column0) {
-        lines = wrapLineComments(lines, column0);
-        StringBuilder builder = new StringBuilder();
-        builder.append(lines.get(0).trim());
-        String indentString = Strings.repeat(" ", column0);
-        for (int i = 1; i < lines.size(); ++i) {
-            builder.append(lineSeparator).append(indentString).append(lines.get(i).trim());
+  // Preserve special `//noinspection` and `//$NON-NLS-x$` comments used by IDEs, which cannot
+  // contain leading spaces.
+  private static final Pattern LINE_COMMENT_MISSING_SPACE_PREFIX =
+      Pattern.compile("^(//+)(?!noinspection|\\$NON-NLS-\\d+\\$)[^\\s/]");
+
+  private List<String> wrapLineComments(List<String> lines, int column0) {
+    List<String> result = new ArrayList<>();
+    for (String line : lines) {
+      // Add missing leading spaces to line comments: `//foo` -> `// foo`.
+      Matcher matcher = LINE_COMMENT_MISSING_SPACE_PREFIX.matcher(line);
+      if (matcher.find()) {
+        int length = matcher.group(1).length();
+        line = Strings.repeat("/", length) + " " + line.substring(length);
+      }
+      if (line.startsWith("// MOE:")) {
+        // don't wrap comments for https://github.com/google/MOE
+        result.add(line);
+        continue;
+      }
+      while (line.length() + column0 > Formatter.MAX_LINE_LENGTH) {
+        int idx = Formatter.MAX_LINE_LENGTH - column0;
+        // only break on whitespace characters, and ignore the leading `// `
+        while (idx >= 2 && !CharMatcher.whitespace().matches(line.charAt(idx))) {
+          idx--;
         }
-        return builder.toString();
+        if (idx <= 2) {
+          break;
+        }
+        result.add(line.substring(0, idx));
+        line = "//" + line.substring(idx);
+      }
+      result.add(line);
     }
+    return result;
+  }
 
-    // Preserve special `//noinspection` and `//$NON-NLS-x$` comments used by IDEs, which cannot
-    // contain leading spaces.
-    private static final Pattern LINE_COMMENT_MISSING_SPACE_PREFIX =
-            Pattern.compile("^(//+)(?!noinspection|\\$NON-NLS-\\d+\\$)[^\\s/]");
-
-    private List<String> wrapLineComments(List<String> lines, int column0) {
-        List<String> result = new ArrayList<>();
-        for (String line : lines) {
-            // Add missing leading spaces to line comments: `//foo` -> `// foo`.
-            Matcher matcher = LINE_COMMENT_MISSING_SPACE_PREFIX.matcher(line);
-            if (matcher.find()) {
-                int length = matcher.group(1).length();
-                line = Strings.repeat("/", length) + " " + line.substring(length);
-            }
-            if (line.startsWith("// MOE:")) {
-                // don't wrap comments for https://github.com/google/MOE
-                result.add(line);
-                continue;
-            }
-            while (line.length() + column0 > Formatter.MAX_LINE_LENGTH) {
-                int idx = Formatter.MAX_LINE_LENGTH - column0;
-                // only break on whitespace characters, and ignore the leading `// `
-                while (idx >= 2 && !CharMatcher.whitespace().matches(line.charAt(idx))) {
-                    idx--;
-                }
-                if (idx <= 2) {
-                    break;
-                }
-                result.add(line.substring(0, idx));
-                line = "//" + line.substring(idx);
-            }
-            result.add(line);
-        }
-        return result;
+  // Remove leading whitespace (trailing was already removed), and re-indent.
+  // Add a +1 indent before '*', and add the '*' if necessary.
+  private String indentJavadoc(List<String> lines, int column0) {
+    StringBuilder builder = new StringBuilder();
+    builder.append(lines.get(0).trim());
+    int indent = column0 + 1;
+    String indentString = Strings.repeat(" ", indent);
+    for (int i = 1; i < lines.size(); ++i) {
+      builder.append(lineSeparator).append(indentString);
+      String line = lines.get(i).trim();
+      if (!line.startsWith("*")) {
+        builder.append("* ");
+      }
+      builder.append(line);
     }
+    return builder.toString();
+  }
 
-    // Remove leading whitespace (trailing was already removed), and re-indent.
-    // Add a +1 indent before '*', and add the '*' if necessary.
-    private String indentJavadoc(List<String> lines, int column0) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(lines.get(0).trim());
-        int indent = column0 + 1;
-        String indentString = Strings.repeat(" ", indent);
-        for (int i = 1; i < lines.size(); ++i) {
-            builder.append(lineSeparator).append(indentString);
-            String line = lines.get(i).trim();
-            if (!line.startsWith("*")) {
-                builder.append("* ");
-            }
-            builder.append(line);
-        }
-        return builder.toString();
+  // Returns true if the comment looks like javadoc
+  private static boolean javadocShaped(List<String> lines) {
+    Iterator<String> it = lines.iterator();
+    if (!it.hasNext()) {
+      return false;
     }
-
-    // Returns true if the comment looks like javadoc
-    private static boolean javadocShaped(List<String> lines) {
-        Iterator<String> it = lines.iterator();
-        if (!it.hasNext()) {
-            return false;
-        }
-        String first = it.next().trim();
-        // if it's actually javadoc, we're done
-        if (first.startsWith("/**")) {
-            return true;
-        }
-        // if it's a block comment, check all trailing lines for '*'
-        if (!first.startsWith("/*")) {
-            return false;
-        }
-        while (it.hasNext()) {
-            if (!it.next().trim().startsWith("*")) {
-                return false;
-            }
-        }
-        return true;
+    String first = it.next().trim();
+    // if it's actually javadoc, we're done
+    if (first.startsWith("/**")) {
+      return true;
     }
+    // if it's a block comment, check all trailing lines for '*'
+    if (!first.startsWith("/*")) {
+      return false;
+    }
+    while (it.hasNext()) {
+      if (!it.next().trim().startsWith("*")) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

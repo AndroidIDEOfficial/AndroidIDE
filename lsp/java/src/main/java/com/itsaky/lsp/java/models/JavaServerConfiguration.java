@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java.models;
 
+import androidx.annotation.NonNull;
+
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Objects;
@@ -29,51 +31,52 @@ import java.util.Set;
  */
 public class JavaServerConfiguration {
 
-    private Set<Path> classPaths;
-    private Set<Path> sourceDirs;
+  private Set<Path> classPaths;
+  private Set<Path> sourceDirs;
 
-    public JavaServerConfiguration() {
-        this(Collections.emptySet(), Collections.emptySet());
+  public JavaServerConfiguration() {
+    this(Collections.emptySet(), Collections.emptySet());
+  }
+
+  public JavaServerConfiguration(Set<Path> classPaths, Set<Path> sourcePaths) {
+    this.classPaths = classPaths;
+    this.sourceDirs = sourcePaths;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getClassPaths());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
 
-    public JavaServerConfiguration(Set<Path> classPaths, Set<Path> sourcePaths) {
-        this.classPaths = classPaths;
-        this.sourceDirs = sourcePaths;
-    }
+    JavaServerConfiguration that = (JavaServerConfiguration) o;
+    return Objects.equals(getClassPaths(), that.getClassPaths());
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getClassPaths());
-    }
+  @NonNull
+  @Override
+  public String toString() {
+    return "JavaServerConfiguration{" + "classPaths=" + classPaths + '}';
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+  public Set<Path> getClassPaths() {
+    return classPaths;
+  }
 
-        JavaServerConfiguration that = (JavaServerConfiguration) o;
-        return Objects.equals(getClassPaths(), that.getClassPaths());
-    }
+  public JavaServerConfiguration setClassPaths(Set<Path> classPaths) {
+    this.classPaths = classPaths;
+    return this;
+  }
 
-    @Override
-    public String toString() {
-        return "JavaServerConfiguration{" + "classPaths=" + classPaths + '}';
-    }
-
-    public Set<Path> getClassPaths() {
-        return classPaths;
-    }
-
-    public JavaServerConfiguration setClassPaths(Set<Path> classPaths) {
-        this.classPaths = classPaths;
-        return this;
-    }
-
-    public Set<Path> getSourceDirs() {
-        return sourceDirs;
-    }
+  public Set<Path> getSourceDirs() {
+    return sourceDirs;
+  }
 }

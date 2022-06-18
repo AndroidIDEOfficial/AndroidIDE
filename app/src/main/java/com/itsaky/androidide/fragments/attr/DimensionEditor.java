@@ -47,99 +47,93 @@ import java.util.stream.Collectors;
  */
 public class DimensionEditor extends AbstractReferenceEditor {
 
-    private static final ILogger LOG = ILogger.newInstance("DimensionEditor");
-    public TextWatcherAdapter dimensionInputWatcher;
+  private static final ILogger LOG = ILogger.newInstance("DimensionEditor");
+  public TextWatcherAdapter dimensionInputWatcher;
 
-    private LayoutDimensionAttrEditorBinding binding;
-    private String[] dimensionUnits;
+  private LayoutDimensionAttrEditorBinding binding;
+  private String[] dimensionUnits;
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        this.binding = LayoutDimensionAttrEditorBinding.inflate(inflater, container, false);
-        return this.binding.getRoot();
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    this.binding = LayoutDimensionAttrEditorBinding.inflate(inflater, container, false);
+    return this.binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+
+    final var dimensionInput = Objects.requireNonNull(this.binding.dimensionInput.getEditText());
+    setDimensionValue(dimensionInput);
+    if (dimensionInputWatcher != null) {
+      dimensionInput.removeTextChangedListener(dimensionInputWatcher);
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    dimensionInputWatcher =
+        new TextWatcherAdapter() {
+          @Override
+          public void afterTextChanged(@NonNull Editable s) {
+            final var text = s.toString().trim();
+            final var unit = getDimensionUnits()[binding.unitSelector.getSelectedItemPosition()];
 
-        final var dimensionInput =
-                Objects.requireNonNull(this.binding.dimensionInput.getEditText());
-        setDimensionValue(dimensionInput);
-        if (dimensionInputWatcher != null) {
-            dimensionInput.removeTextChangedListener(dimensionInputWatcher);
-        }
+            // This will call CommonParseUtils#parseDimension
+            notifyValueChanged(text.concat(unit));
+          }
+        };
 
-        dimensionInputWatcher =
-                new TextWatcherAdapter() {
-                    @Override
-                    public void afterTextChanged(@NonNull Editable s) {
-                        final var text = s.toString().trim();
-                        final var unit =
-                                getDimensionUnits()[binding.unitSelector.getSelectedItemPosition()];
+    dimensionInput.addTextChangedListener(dimensionInputWatcher);
 
-                        // This will call CommonParseUtils#parseDimension
-                        notifyValueChanged(text.concat(unit));
-                    }
-                };
+    final var dimensionResInput =
+        (MaterialAutoCompleteTextView)
+            Objects.requireNonNull(binding.dimensionResInput.getEditText());
+    setupReferenceInput(dimensionResInput);
+  }
 
-        dimensionInput.addTextChangedListener(dimensionInputWatcher);
-
-        final var dimensionResInput =
-                (MaterialAutoCompleteTextView)
-                        Objects.requireNonNull(binding.dimensionResInput.getEditText());
-        setupReferenceInput(dimensionResInput);
+  private void setDimensionValue(EditText dimensionInput) {
+    final var val = attribute.getValue();
+    if (TextUtils.isEmpty(val)) {
+      return;
     }
 
-    private void setDimensionValue(EditText dimensionInput) {
-        final var val = attribute.getValue();
-        if (TextUtils.isEmpty(val)) {
-            return;
-        }
+    var dimension = val.substring(0, val.length() - 2);
+    if (TextUtils.isDigitsOnly(dimension)) {
+      dimensionInput.setText(dimension);
+      final var arr = requireContext().getResources().getStringArray(R.array.dimension_units);
+      final var index = Arrays.asList(arr).indexOf(val.substring(dimension.length()));
+      if (index >= 0) {
+        this.binding.unitSelector.setSelection(index);
+      }
+    }
+  }
 
-        var dimension = val.substring(0, val.length() - 2);
-        if (TextUtils.isDigitsOnly(dimension)) {
-            dimensionInput.setText(dimension);
-            final var arr = requireContext().getResources().getStringArray(R.array.dimension_units);
-            final var index = Arrays.asList(arr).indexOf(val.substring(dimension.length()));
-            if (index >= 0) {
-                this.binding.unitSelector.setSelection(index);
-            }
-        }
+  @NonNull
+  private String[] getDimensionUnits() {
+    if (dimensionUnits == null) {
+      dimensionUnits = requireContext().getResources().getStringArray(R.array.dimension_units);
     }
 
-    @NonNull
-    private String[] getDimensionUnits() {
-        if (dimensionUnits == null) {
-            dimensionUnits =
-                    requireContext().getResources().getStringArray(R.array.dimension_units);
-        }
+    return dimensionUnits;
+  }
 
-        return dimensionUnits;
+  @Override
+  protected List<String> computeReferenceItems() {
+    final var list = new ArrayList<String>();
+    final var tables = ValuesTableFactory.getAllTables();
+    for (var entry : tables.entrySet()) {
+      final var dimens = entry.getValue().getTable("dimen");
+      if (dimens != null) {
+        list.addAll(dimens.keySet().stream().map("@dimen/"::concat).collect(Collectors.toSet()));
+      }
     }
 
-    @Override
-    protected List<String> computeReferenceItems() {
-        final var list = new ArrayList<String>();
-        final var tables = ValuesTableFactory.getAllTables();
-        for (var entry : tables.entrySet()) {
-            final var dimens = entry.getValue().getTable("dimen");
-            if (dimens != null) {
-                list.addAll(
-                        dimens.keySet().stream()
-                                .map("@dimen/"::concat)
-                                .collect(Collectors.toSet()));
-            }
-        }
-
-        list.addAll(
-                FrameworkValues.listDimens().stream()
-                        .map("@android:dimen/"::concat)
-                        .collect(Collectors.toList()));
-        return list;
-    }
+    list.addAll(
+        FrameworkValues.listDimens().stream()
+            .map("@android:dimen/"::concat)
+            .collect(Collectors.toList()));
+    return list;
+  }
 }

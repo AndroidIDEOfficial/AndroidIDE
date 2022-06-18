@@ -26,68 +26,68 @@ import java.util.Objects;
 
 public class UiAttribute implements IAttribute {
 
-    private final INamespace namespace;
-    private final String name;
-    protected String value;
+  private final INamespace namespace;
+  private final String name;
+  protected String value;
 
-    public UiAttribute(INamespace namespace, String name, String value) {
-        this.namespace = namespace;
-        this.name = name;
-        this.value = value;
-    }
+  public UiAttribute(INamespace namespace, String name, String value) {
+    this.namespace = namespace;
+    this.name = name;
+    this.value = value;
+  }
 
-    @NonNull
-    @Override
-    public INamespace getNamespace() {
-        return namespace;
-    }
+  @NonNull
+  @Override
+  public INamespace getNamespace() {
+    return namespace;
+  }
 
-    @NonNull
-    @Override
-    public String getAttributeName() {
-        return name;
-    }
+  @NonNull
+  @Override
+  public String getAttributeName() {
+    return name;
+  }
 
-    @NonNull
-    @Override
-    public String getValue() {
-        return this.value;
-    }
+  @NonNull
+  @Override
+  public String getValue() {
+    return this.value;
+  }
 
-    @Override
-    public void apply(String value) {
-        this.value = value;
-    }
+  @Override
+  public void apply(String value) {
+    this.value = value;
+  }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "UiAttribute ["
-                + "\n"
-                + "    namespace = "
-                + namespace
-                + "\n"
-                + "    name = "
-                + name
-                + "\n"
-                + "    value = "
-                + value
-                + "\n"
-                + "]";
-    }
+  @NonNull
+  @Override
+  public String toString() {
+    return "UiAttribute ["
+        + "\n"
+        + "    namespace = "
+        + namespace
+        + "\n"
+        + "    name = "
+        + name
+        + "\n"
+        + "    value = "
+        + value
+        + "\n"
+        + "]";
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UiAttribute that = (UiAttribute) o;
-        return Objects.equals(getNamespace(), that.getNamespace())
-                && Objects.equals(name, that.name)
-                && Objects.equals(getValue(), that.getValue());
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    UiAttribute that = (UiAttribute) o;
+    return Objects.equals(getNamespace(), that.getNamespace())
+        && Objects.equals(name, that.name)
+        && Objects.equals(getValue(), that.getValue());
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getNamespace(), name, getValue());
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(getNamespace(), name, getValue());
+  }
 }

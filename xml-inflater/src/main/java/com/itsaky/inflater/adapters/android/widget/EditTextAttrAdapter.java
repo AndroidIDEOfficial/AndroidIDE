@@ -28,19 +28,19 @@ import com.itsaky.inflater.IResourceTable;
 
 public class EditTextAttrAdapter extends TextViewAttrAdapter {
 
-    public EditTextAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
-    }
+  public EditTextAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof EditText;
-    }
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof EditText;
+  }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-        // No special attributes for EditText
-        return super.apply(attribute, view);
-    }
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+    // No special attributes for EditText
+    return super.apply(attribute, view);
+  }
 }

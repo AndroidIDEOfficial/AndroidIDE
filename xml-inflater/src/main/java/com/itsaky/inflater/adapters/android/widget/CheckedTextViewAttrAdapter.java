@@ -32,48 +32,48 @@ import com.itsaky.inflater.IResourceTable;
  */
 public class CheckedTextViewAttrAdapter extends TextViewAttrAdapter {
 
-    public CheckedTextViewAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
+  public CheckedTextViewAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
+
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof CheckedTextView;
+  }
+
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+
+    final CheckedTextView text = (CheckedTextView) view;
+    final String name = attribute.getAttributeName();
+    final String value = attribute.getValue();
+
+    if (!canHandleNamespace(attribute)) {
+      return false;
     }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof CheckedTextView;
+    boolean handled = true;
+
+    switch (name) {
+      case "checkMarkTintMode":
+        text.setCheckMarkTintMode(parsePorterDuffMode(value));
+        break;
+      case "checkMarkTint":
+        text.setCheckMarkTintList(parseColorStateList(value, text.getContext()));
+        break;
+      case "checkMark":
+        // Ignored...
+        break;
+      default:
+        handled = false;
+        break;
     }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
-
-        final CheckedTextView text = (CheckedTextView) view;
-        final String name = attribute.getAttributeName();
-        final String value = attribute.getValue();
-
-        if (!canHandleNamespace(attribute)) {
-            return false;
-        }
-
-        boolean handled = true;
-
-        switch (name) {
-            case "checkMarkTintMode":
-                text.setCheckMarkTintMode(parsePorterDuffMode(value));
-                break;
-            case "checkMarkTint":
-                text.setCheckMarkTintList(parseColorStateList(value, text.getContext()));
-                break;
-            case "checkMark":
-                // Ignored...
-                break;
-            default:
-                handled = false;
-                break;
-        }
-
-        if (!handled) {
-            handled = super.apply(attribute, view);
-        }
-
-        return handled;
+    if (!handled) {
+      handled = super.apply(attribute, view);
     }
+
+    return handled;
+  }
 }

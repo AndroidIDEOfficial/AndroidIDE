@@ -31,38 +31,44 @@ import com.itsaky.androidide.fragments.preferences.IDEPreferences;
 
 public class PreferencesActivity extends StudioActivity {
 
-    private ActivityPreferencesBinding binding;
-    private IDEPreferences mPref;
+  private ActivityPreferencesBinding binding;
+  private IDEPreferences mPref;
 
-    @Override
-    protected View bindLayout() {
-        binding = ActivityPreferencesBinding.inflate(getLayoutInflater());
-        return binding.getRoot();
-    }
+  @Override
+  protected View bindLayout() {
+    binding = ActivityPreferencesBinding.inflate(getLayoutInflater());
+    return binding.getRoot();
+  }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        setSupportActionBar(binding.toolbar);
-        getSupportActionBar().setTitle(R.string.ide_preferences);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    setSupportActionBar(binding.toolbar);
+    getSupportActionBar().setTitle(R.string.ide_preferences);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        binding.toolbar.setNavigationOnClickListener(v -> onBackPressed());
+    binding.toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        loadFragment(getPrefsFragment());
-    }
+    loadFragment(getPrefsFragment());
+  }
 
-    private IDEPreferences getPrefsFragment() {
-        return mPref == null ? mPref = new IDEPreferences() : mPref;
-    }
+  private IDEPreferences getPrefsFragment() {
+    return mPref == null ? mPref = new IDEPreferences() : mPref;
+  }
 
-    private void loadFragment(Fragment frag) {
-        super.loadFragment(frag, binding.fragmentContainer.getId());
-    }
+  private void loadFragment(Fragment frag) {
+    super.loadFragment(frag, binding.fragmentContainer.getId());
+  }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
+  @Override
+  public void onBackPressed() {
+    super.onBackPressed();
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    binding = null;
+  }
 }

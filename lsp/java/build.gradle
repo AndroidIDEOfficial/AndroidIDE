@@ -62,8 +62,8 @@ dependencies {
     implementation project (path: ':build-tools:javac')
     implementation project (path: ':build-tools:google-java-format')
     
-    implementation "androidx.core:core-ktx:1.7.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation androidx.ktx
+    implementation common.kotlin
     
     testImplementation project (':lsp:testing')
     testImplementation project (':common')

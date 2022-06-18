@@ -25,48 +25,48 @@ import java.text.StringCharacterIterator;
 import java.util.Locale;
 
 public class StudioUtils {
-    private final Context mContext;
-    private Toaster mToaster;
+  private final Context mContext;
+  private Toaster mToaster;
 
-    public StudioUtils(Context mContext) {
-        this.mContext = mContext;
-        mToaster = getToaster();
+  public StudioUtils(Context mContext) {
+    this.mContext = mContext;
+    mToaster = getToaster();
+  }
+
+  private Toaster getToaster() {
+    return mToaster == null ? mToaster = new Toaster(mContext) : mToaster;
+  }
+
+  public static String bytesToSizeString(long bytes) {
+    final var absBytes = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
+    if (absBytes < 1024) {
+      return bytes + " B";
     }
 
-    private Toaster getToaster() {
-        return mToaster == null ? mToaster = new Toaster(mContext) : mToaster;
+    var value = absBytes;
+    final var iterator = new StringCharacterIterator("KMGTPE");
+    for (int i = 40; i >= 0 && absBytes > 0xfffccccccccccccL >> i; i -= 10) {
+      value >>= 10;
+      iterator.next();
     }
 
-    public static String bytesToSizeString(long bytes) {
-        final var absBytes = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
-        if (absBytes < 1024) {
-            return bytes + " B";
-        }
+    value *= Long.signum(bytes);
+    return String.format(Locale.ROOT, "%.1f %cB", value / 1024.0, iterator.current());
+  }
 
-        var value = absBytes;
-        final var iterator = new StringCharacterIterator("KMGTPE");
-        for (int i = 40; i >= 0 && absBytes > 0xfffccccccccccccL >> i; i -= 10) {
-            value >>= 10;
-            iterator.next();
-        }
+  public void toast(String msg, Toaster.Type type) {
+    getToaster().setDuration(Toaster.SHORT).setText(msg).setType(type).show();
+  }
 
-        value *= Long.signum(bytes);
-        return String.format(Locale.ROOT, "%.1f %cB", value / 1024.0, iterator.current());
-    }
+  public void toast(int msg, Toaster.Type type) {
+    getToaster().setDuration(Toaster.SHORT).setText(msg).setType(type).show();
+  }
 
-    public void toast(String msg, Toaster.Type type) {
-        getToaster().setDuration(Toaster.SHORT).setText(msg).setType(type).show();
-    }
+  public void toastLong(String msg, Toaster.Type type) {
+    getToaster().setDuration(Toaster.LONG).setText(msg).setType(type).show();
+  }
 
-    public void toast(int msg, Toaster.Type type) {
-        getToaster().setDuration(Toaster.SHORT).setText(msg).setType(type).show();
-    }
-
-    public void toastLong(String msg, Toaster.Type type) {
-        getToaster().setDuration(Toaster.LONG).setText(msg).setType(type).show();
-    }
-
-    public void toastLong(int msg, Toaster.Type type) {
-        getToaster().setDuration(Toaster.LONG).setText(msg).setType(type).show();
-    }
+  public void toastLong(int msg, Toaster.Type type) {
+    getToaster().setDuration(Toaster.LONG).setText(msg).setType(type).show();
+  }
 }

@@ -23,29 +23,29 @@ import com.google.common.base.MoreObjects;
  * Doc.Level}s.
  */
 public final class OpenOp implements Op {
-    private final Indent plusIndent;
+  private final Indent plusIndent;
 
-    private OpenOp(Indent plusIndent) {
-        this.plusIndent = plusIndent;
-    }
+  private OpenOp(Indent plusIndent) {
+    this.plusIndent = plusIndent;
+  }
 
-    /**
-     * Make an ordinary {@code OpenOp}.
-     *
-     * @param plusIndent the indent for breaks at this level
-     * @return the {@code OpenOp}
-     */
-    public static Op make(Indent plusIndent) {
-        return new OpenOp(plusIndent);
-    }
+  /**
+   * Make an ordinary {@code OpenOp}.
+   *
+   * @param plusIndent the indent for breaks at this level
+   * @return the {@code OpenOp}
+   */
+  public static Op make(Indent plusIndent) {
+    return new OpenOp(plusIndent);
+  }
 
-    @Override
-    public void add(DocBuilder builder) {
-        builder.open(plusIndent);
-    }
+  @Override
+  public void add(DocBuilder builder) {
+    builder.open(plusIndent);
+  }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).add("plusIndent", plusIndent).toString();
-    }
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this).add("plusIndent", plusIndent).toString();
+  }
 }

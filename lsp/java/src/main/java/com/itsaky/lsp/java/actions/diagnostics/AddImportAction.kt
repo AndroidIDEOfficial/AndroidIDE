@@ -35,7 +35,7 @@ import javax.tools.JavaFileObject
 class AddImportAction() : BaseCodeAction() {
 
     override val id: String = "lsp_java_addImport"
-    override var label: String = "Import class(es)"
+    override var label: String = ""
     private val diagnosticCode = DiagnosticCode.NOT_IMPORTED.id
     private val log = ILogger.newInstance("AddImportAction")
 

@@ -94,265 +94,265 @@ import javax.tools.JavaFileObject;
  */
 public class ReusableCompiler {
 
-    private static final ILogger LOG = ILogger.newInstance("ReusableCompiler");
-    private static final JavacTool systemProvider = JavacTool.create();
+  private static final ILogger LOG = ILogger.newInstance("ReusableCompiler");
+  private static final JavacTool systemProvider = JavacTool.create();
 
-    private final List<String> currentOptions = new ArrayList<>();
-    private ReusableContext currentContext;
-    private boolean checkedOut;
+  private final List<String> currentOptions = new ArrayList<>();
+  private ReusableContext currentContext;
+  private boolean checkedOut;
+
+  /**
+   * Creates a new task as if by {@link javax.tools.JavaCompiler#getTask} and runs the provided
+   * worker with it. The task is only valid while the worker is running. The internal structures may
+   * be reused from some previous compilation.
+   *
+   * @param fileManager a file manager; if {@code null} use the compiler's standard filemanager
+   * @param diagnosticListener a diagnostic listener; if {@code null} use the compiler's default
+   *     method for reporting diagnostics
+   * @param options compiler options, {@code null} means no options
+   * @param classes names of classes to be processed by annotation processing, {@code null} means no
+   *     class names
+   * @param compilationUnits the compilation units to compile, {@code null} means no compilation
+   *     units
+   * @return an object representing the compilation
+   * @throws RuntimeException if an unrecoverable error occurred in a user supplied component. The
+   *     {@linkplain Throwable#getCause() cause} will be the error in user code.
+   * @throws IllegalArgumentException if any of the options are invalid, or if any of the given
+   *     compilation units are of other kind than {@linkplain JavaFileObject.Kind#SOURCE source}
+   */
+  Borrow getTask(
+      JavaFileManager fileManager,
+      DiagnosticListener<? super JavaFileObject> diagnosticListener,
+      Iterable<String> options,
+      Iterable<String> classes,
+      Iterable<? extends JavaFileObject> compilationUnits) {
+
+    if (checkedOut) {
+      throw new RuntimeException("Compiler is already in-use!");
+    }
+
+    checkedOut = true;
+    List<String> opts =
+        StreamSupport.stream(options.spliterator(), false)
+            .collect(Collectors.toCollection(ArrayList::new));
+    if (!opts.equals(currentOptions)) {
+      final ArrayList<String> newOpts = new ArrayList<>(currentOptions);
+      newOpts.removeAll(opts);
+      LOG.debug("New compiler options:", newOpts);
+
+      currentOptions.clear();
+      currentOptions.addAll(opts);
+      currentContext = new ReusableContext(new ArrayList<>(opts));
+    }
+    JavacTaskImpl task =
+        (JavacTaskImpl)
+            systemProvider.getTask(
+                null,
+                fileManager,
+                diagnosticListener,
+                opts,
+                classes,
+                compilationUnits,
+                currentContext);
+
+    task.addTaskListener(currentContext);
+
+    return new Borrow(task);
+  }
+
+  private static class IDELazyTreeLoader extends LazyTreeLoader {
+    @Override
+    public boolean loadTreeFor(Symbol.ClassSymbol clazz, boolean persist) {
+      LOG.debug("loadTreeFor:", clazz, persist);
+      return true;
+    }
+
+    @Override
+    public boolean loadParamNames(Symbol.ClassSymbol clazz) {
+      LOG.debug("loadParamNames:", clazz);
+      return true;
+    }
+
+    @Override
+    public void couplingError(Symbol.ClassSymbol clazz, Tree t) {
+      LOG.debug("Coupling error:", clazz, t);
+    }
+
+    @Override
+    public void updateContext(Context context) {
+      LOG.debug("updateContext:", context);
+    }
+  }
+
+  static class ReusableContext extends Context implements TaskListener {
+
+    List<String> arguments;
+
+    ReusableContext(List<String> arguments) {
+      super();
+      this.arguments = arguments;
+      put(Log.logKey, ReusableLog.factory);
+      put(JavaCompiler.compilerKey, ReusableJavaCompiler.factory);
+      registerNBServices();
+    }
+
+    private void registerNBServices() {
+      NBAttr.preRegister(this);
+      NBParserFactory.preRegister(this);
+      NBTreeMaker.preRegister(this);
+      NBJavacTrees.preRegister(this);
+      NBResolve.preRegister(this);
+      NBEnter.preRegister(this);
+      NBMemberEnter.preRegister(this, false);
+      NBClassFinder.preRegister(this);
+
+      if (!TestUtils.isTestEnvironment()) {
+        put(LazyTreeLoader.lazyTreeLoaderKey, new IDELazyTreeLoader());
+      }
+    }
+
+    @Override
+    @DefinedBy(Api.COMPILER_TREE)
+    public void started(TaskEvent e) {
+      // do nothing
+    }
+
+    @Override
+    @DefinedBy(Api.COMPILER_TREE)
+    public void finished(TaskEvent e) {
+      // do nothing
+    }
+
+    void clear() {
+      drop(Arguments.argsKey);
+      drop(DiagnosticListener.class);
+      drop(Log.outKey);
+      drop(Log.errKey);
+      drop(JavaFileManager.class);
+      drop(JavacTask.class);
+      drop(JavacTrees.class);
+      drop(JavacElements.class);
+
+      if (ht.get(Log.logKey) instanceof ReusableLog) {
+        // log already init-ed - not first round
+        ((ReusableLog) Log.instance(this)).clear();
+        Enter.instance(this).newRound();
+        ((ReusableJavaCompiler) ReusableJavaCompiler.instance(this)).clear();
+        Types.instance(this).newRound();
+        Check.instance(this).newRound();
+        Modules.instance(this).newRound();
+        Annotate.instance(this).newRound();
+        CompileStates.instance(this).clear();
+        MultiTaskListener.instance(this).clear();
+      }
+    }
+
+    <T> void drop(Key<T> k) {
+      ht.remove(k);
+    }
+
+    <T> void drop(Class<T> c) {
+      ht.remove(key(c));
+    }
 
     /**
-     * Creates a new task as if by {@link javax.tools.JavaCompiler#getTask} and runs the provided
-     * worker with it. The task is only valid while the worker is running. The internal structures
-     * may be reused from some previous compilation.
-     *
-     * @param fileManager a file manager; if {@code null} use the compiler's standard filemanager
-     * @param diagnosticListener a diagnostic listener; if {@code null} use the compiler's default
-     *     method for reporting diagnostics
-     * @param options compiler options, {@code null} means no options
-     * @param classes names of classes to be processed by annotation processing, {@code null} means
-     *     no class names
-     * @param compilationUnits the compilation units to compile, {@code null} means no compilation
-     *     units
-     * @return an object representing the compilation
-     * @throws RuntimeException if an unrecoverable error occurred in a user supplied component. The
-     *     {@linkplain Throwable#getCause() cause} will be the error in user code.
-     * @throws IllegalArgumentException if any of the options are invalid, or if any of the given
-     *     compilation units are of other kind than {@linkplain JavaFileObject.Kind#SOURCE source}
+     * Reusable JavaCompiler; exposes a method to clean up the component from leftovers associated
+     * with previous compilations.
      */
-    Borrow getTask(
-            JavaFileManager fileManager,
-            DiagnosticListener<? super JavaFileObject> diagnosticListener,
-            Iterable<String> options,
-            Iterable<String> classes,
-            Iterable<? extends JavaFileObject> compilationUnits) {
+    static class ReusableJavaCompiler extends NBJavaCompiler {
 
-        if (checkedOut) {
-            throw new RuntimeException("Compiler is already in-use!");
-        }
+      static final Factory<JavaCompiler> factory = ReusableJavaCompiler::new;
 
-        checkedOut = true;
-        List<String> opts =
-                StreamSupport.stream(options.spliterator(), false)
-                        .collect(Collectors.toCollection(ArrayList::new));
-        if (!opts.equals(currentOptions)) {
-            final ArrayList<String> newOpts = new ArrayList<>(currentOptions);
-            newOpts.removeAll(opts);
-            LOG.debug("New compiler options:", newOpts);
+      ReusableJavaCompiler(Context context) {
+        super(context);
+      }
 
-            currentOptions.clear();
-            currentOptions.addAll(opts);
-            currentContext = new ReusableContext(new ArrayList<>(opts));
-        }
-        JavacTaskImpl task =
-                (JavacTaskImpl)
-                        systemProvider.getTask(
-                                null,
-                                fileManager,
-                                diagnosticListener,
-                                opts,
-                                classes,
-                                compilationUnits,
-                                currentContext);
+      @Override
+      protected void checkReusable() {
+        // do nothing - it's ok to reuse the compiler
+      }
 
-        task.addTaskListener(currentContext);
+      @Override
+      public void close() {
+        // do nothing
+      }
 
-        return new Borrow(task);
+      void clear() {
+        newRound();
+      }
     }
 
-    private static class IDELazyTreeLoader extends LazyTreeLoader {
-        @Override
-        public boolean loadTreeFor(Symbol.ClassSymbol clazz, boolean persist) {
-            LOG.debug("loadTreeFor:", clazz, persist);
-            return true;
-        }
+    /**
+     * Reusable Log; exposes a method to clean up the component from leftovers associated with
+     * previous compilations.
+     */
+    static class ReusableLog extends NBLog {
 
-        @Override
-        public boolean loadParamNames(Symbol.ClassSymbol clazz) {
-            LOG.debug("loadParamNames:", clazz);
-            return true;
-        }
+      static final Factory<Log> factory = ReusableLog::new;
 
-        @Override
-        public void couplingError(Symbol.ClassSymbol clazz, Tree t) {
-            LOG.debug("Coupling error:", clazz, t);
-        }
+      Context context;
 
-        @Override
-        public void updateContext(Context context) {
-            LOG.debug("updateContext:", context);
-        }
+      ReusableLog(Context context) {
+        super(context, new PrintWriter(System.err));
+        this.context = context;
+      }
+
+      void clear() {
+        recorded.clear();
+        sourceMap.clear();
+        nerrors = 0;
+        nwarnings = 0;
+        // Set a fake listener that will lazily lookup the context for the 'real' listener.
+        // Since
+        // this field is never updated when a new task is created, we cannot simply reset
+        // the field
+        // or keep old value. This is a hack to workaround the limitations in the current
+        // infrastructure.
+        diagListener =
+            new DiagnosticListener<JavaFileObject>() {
+              DiagnosticListener<JavaFileObject> cachedListener;
+
+              @Override
+              @DefinedBy(Api.COMPILER)
+              @SuppressWarnings("unchecked")
+              public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
+                if (cachedListener == null) {
+                  cachedListener = context.get(DiagnosticListener.class);
+                }
+                cachedListener.report(diagnostic);
+              }
+            };
+      }
+    }
+  }
+
+  class Borrow implements AutoCloseable {
+
+    final JavacTaskImpl task;
+    boolean closed;
+
+    Borrow(JavacTaskImpl task) {
+      this.task = task;
     }
 
-    static class ReusableContext extends Context implements TaskListener {
+    @Override
+    public void close() {
+      if (closed) {
+        return;
+      }
+      // not returning the context to the pool if task crashes with an exception
+      // the task/context may be in a broken state
+      currentContext.clear();
+      try {
+        Method method = JavacTaskImpl.class.getDeclaredMethod("cleanup");
+        method.setAccessible(true);
+        method.invoke(task);
+      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        throw new RuntimeException("Unable to call cleanup() on JavacTaskImpl", e);
+      }
 
-        List<String> arguments;
-
-        ReusableContext(List<String> arguments) {
-            super();
-            this.arguments = arguments;
-            put(Log.logKey, ReusableLog.factory);
-            put(JavaCompiler.compilerKey, ReusableJavaCompiler.factory);
-            registerNBServices();
-        }
-
-        private void registerNBServices() {
-            NBAttr.preRegister(this);
-            NBParserFactory.preRegister(this);
-            NBTreeMaker.preRegister(this);
-            NBJavacTrees.preRegister(this);
-            NBResolve.preRegister(this);
-            NBEnter.preRegister(this);
-            NBMemberEnter.preRegister(this, false);
-            NBClassFinder.preRegister(this);
-
-            if (!TestUtils.isTestEnvironment()) {
-                put(LazyTreeLoader.lazyTreeLoaderKey, new IDELazyTreeLoader());
-            }
-        }
-
-        @Override
-        @DefinedBy(Api.COMPILER_TREE)
-        public void started(TaskEvent e) {
-            // do nothing
-        }
-
-        @Override
-        @DefinedBy(Api.COMPILER_TREE)
-        public void finished(TaskEvent e) {
-            // do nothing
-        }
-
-        void clear() {
-            drop(Arguments.argsKey);
-            drop(DiagnosticListener.class);
-            drop(Log.outKey);
-            drop(Log.errKey);
-            drop(JavaFileManager.class);
-            drop(JavacTask.class);
-            drop(JavacTrees.class);
-            drop(JavacElements.class);
-
-            if (ht.get(Log.logKey) instanceof ReusableLog) {
-                // log already init-ed - not first round
-                ((ReusableLog) Log.instance(this)).clear();
-                Enter.instance(this).newRound();
-                ((ReusableJavaCompiler) ReusableJavaCompiler.instance(this)).clear();
-                Types.instance(this).newRound();
-                Check.instance(this).newRound();
-                Modules.instance(this).newRound();
-                Annotate.instance(this).newRound();
-                CompileStates.instance(this).clear();
-                MultiTaskListener.instance(this).clear();
-            }
-        }
-
-        <T> void drop(Key<T> k) {
-            ht.remove(k);
-        }
-
-        <T> void drop(Class<T> c) {
-            ht.remove(key(c));
-        }
-
-        /**
-         * Reusable JavaCompiler; exposes a method to clean up the component from leftovers
-         * associated with previous compilations.
-         */
-        static class ReusableJavaCompiler extends NBJavaCompiler {
-
-            static final Factory<JavaCompiler> factory = ReusableJavaCompiler::new;
-
-            ReusableJavaCompiler(Context context) {
-                super(context);
-            }
-
-            @Override
-            protected void checkReusable() {
-                // do nothing - it's ok to reuse the compiler
-            }
-
-            @Override
-            public void close() {
-                // do nothing
-            }
-
-            void clear() {
-                newRound();
-            }
-        }
-
-        /**
-         * Reusable Log; exposes a method to clean up the component from leftovers associated with
-         * previous compilations.
-         */
-        static class ReusableLog extends NBLog {
-
-            static final Factory<Log> factory = ReusableLog::new;
-
-            Context context;
-
-            ReusableLog(Context context) {
-                super(context, new PrintWriter(System.err));
-                this.context = context;
-            }
-
-            void clear() {
-                recorded.clear();
-                sourceMap.clear();
-                nerrors = 0;
-                nwarnings = 0;
-                // Set a fake listener that will lazily lookup the context for the 'real' listener.
-                // Since
-                // this field is never updated when a new task is created, we cannot simply reset
-                // the field
-                // or keep old value. This is a hack to workaround the limitations in the current
-                // infrastructure.
-                diagListener =
-                        new DiagnosticListener<JavaFileObject>() {
-                            DiagnosticListener<JavaFileObject> cachedListener;
-
-                            @Override
-                            @DefinedBy(Api.COMPILER)
-                            @SuppressWarnings("unchecked")
-                            public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
-                                if (cachedListener == null) {
-                                    cachedListener = context.get(DiagnosticListener.class);
-                                }
-                                cachedListener.report(diagnostic);
-                            }
-                        };
-            }
-        }
+      checkedOut = false;
+      closed = true;
     }
-
-    class Borrow implements AutoCloseable {
-
-        final JavacTaskImpl task;
-        boolean closed;
-
-        Borrow(JavacTaskImpl task) {
-            this.task = task;
-        }
-
-        @Override
-        public void close() {
-            if (closed) {
-                return;
-            }
-            // not returning the context to the pool if task crashes with an exception
-            // the task/context may be in a broken state
-            currentContext.clear();
-            try {
-                Method method = JavacTaskImpl.class.getDeclaredMethod("cleanup");
-                method.setAccessible(true);
-                method.invoke(task);
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException("Unable to call cleanup() on JavacTaskImpl", e);
-            }
-
-            checkedOut = false;
-            closed = true;
-        }
-    }
+  }
 }

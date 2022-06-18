@@ -37,42 +37,42 @@ import java.util.Objects;
  */
 public class BaseValueEditorFragment extends Fragment {
 
-    public static final String KEY_ATTR = "editor_attr";
-    public static final String KEY_NAME = "editor_name";
-    protected OnValueChangeListener mValueChangeListener;
-    protected XMLAttribute attribute;
-    protected String name;
+  public static final String KEY_ATTR = "editor_attr";
+  public static final String KEY_NAME = "editor_name";
+  protected OnValueChangeListener mValueChangeListener;
+  protected XMLAttribute attribute;
+  protected String name;
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        mValueChangeListener = (OnValueChangeListener) getParentFragment();
+  @Override
+  public void onAttach(@NonNull Context context) {
+    super.onAttach(context);
+    mValueChangeListener = (OnValueChangeListener) getParentFragment();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    final var args = requireArguments();
+    this.attribute = args.getParcelable(KEY_ATTR);
+    this.name = args.getString(KEY_NAME);
+  }
+
+  protected void notifyValueChanged(@NonNull String newValue) {
+    Objects.requireNonNull(newValue);
+
+    if (mValueChangeListener != null) {
+      mValueChangeListener.onValueChanged(this.attribute, newValue);
     }
+  }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        final var args = requireArguments();
-        this.attribute = args.getParcelable(KEY_ATTR);
-        this.name = args.getString(KEY_NAME);
-    }
-
-    protected void notifyValueChanged(@NonNull String newValue) {
-        Objects.requireNonNull(newValue);
-
-        if (mValueChangeListener != null) {
-            mValueChangeListener.onValueChanged(this.attribute, newValue);
-        }
-    }
-
-    /** Listener for listening for value change event. */
-    public interface OnValueChangeListener {
-        /**
-         * Called when the value was changed.
-         *
-         * @param attribute The attribute whose value was changed.
-         * @param newValue The new value for the editor.
-         */
-        void onValueChanged(IAttribute attribute, String newValue);
-    }
+  /** Listener for listening for value change event. */
+  public interface OnValueChangeListener {
+    /**
+     * Called when the value was changed.
+     *
+     * @param attribute The attribute whose value was changed.
+     * @param newValue The new value for the editor.
+     */
+    void onValueChanged(IAttribute attribute, String newValue);
+  }
 }

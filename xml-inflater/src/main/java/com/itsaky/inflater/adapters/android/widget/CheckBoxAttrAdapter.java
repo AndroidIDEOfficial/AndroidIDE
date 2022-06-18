@@ -28,20 +28,20 @@ import com.itsaky.inflater.IResourceTable;
 /** Attribute handler for handling attributes related to CheckBox */
 public class CheckBoxAttrAdapter extends CompondButtonAttrAdapter {
 
-    public CheckBoxAttrAdapter(
-            @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
-        super(resourceFinder, displayMetrics);
-    }
+  public CheckBoxAttrAdapter(
+      @NonNull IResourceTable resourceFinder, DisplayMetrics displayMetrics) {
+    super(resourceFinder, displayMetrics);
+  }
 
-    @Override
-    public boolean isApplicableTo(View view) {
-        return view instanceof CheckBox;
-    }
+  @Override
+  public boolean isApplicableTo(View view) {
+    return view instanceof CheckBox;
+  }
 
-    @Override
-    public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
+  @Override
+  public boolean apply(@NonNull IAttribute attribute, @NonNull View view) {
 
-        // No special attributes for CheckBox
-        return super.apply(attribute, view);
-    }
+    // No special attributes for CheckBox
+    return super.apply(attribute, view);
+  }
 }

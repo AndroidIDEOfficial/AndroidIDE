@@ -28,35 +28,33 @@ import javax.tools.JavaFileObject;
 /** Checked exception class for formatter errors. */
 public final class FormatterException extends Exception {
 
-    private final ImmutableList<FormatterDiagnostic> diagnostics;
+  private final ImmutableList<FormatterDiagnostic> diagnostics;
 
-    public FormatterException(String message) {
-        this(FormatterDiagnostic.create(message));
-    }
+  public FormatterException(String message) {
+    this(FormatterDiagnostic.create(message));
+  }
 
-    public FormatterException(FormatterDiagnostic diagnostic) {
-        this(ImmutableList.of(diagnostic));
-    }
+  public FormatterException(FormatterDiagnostic diagnostic) {
+    this(ImmutableList.of(diagnostic));
+  }
 
-    public FormatterException(Iterable<FormatterDiagnostic> diagnostics) {
-        super(diagnostics.iterator().next().toString());
-        this.diagnostics = ImmutableList.copyOf(diagnostics);
-    }
+  public FormatterException(Iterable<FormatterDiagnostic> diagnostics) {
+    super(diagnostics.iterator().next().toString());
+    this.diagnostics = ImmutableList.copyOf(diagnostics);
+  }
 
-    public List<FormatterDiagnostic> diagnostics() {
-        return diagnostics;
-    }
+  public List<FormatterDiagnostic> diagnostics() {
+    return diagnostics;
+  }
 
-    public static FormatterException fromJavacDiagnostics(
-            Iterable<Diagnostic<? extends JavaFileObject>> diagnostics) {
-        return new FormatterException(
-                Iterables.transform(diagnostics, FormatterException::toFormatterDiagnostic));
-    }
+  public static FormatterException fromJavacDiagnostics(
+      Iterable<Diagnostic<? extends JavaFileObject>> diagnostics) {
+    return new FormatterException(
+        Iterables.transform(diagnostics, FormatterException::toFormatterDiagnostic));
+  }
 
-    private static FormatterDiagnostic toFormatterDiagnostic(Diagnostic<?> input) {
-        return FormatterDiagnostic.create(
-                (int) input.getLineNumber(),
-                (int) input.getColumnNumber(),
-                input.getMessage(ENGLISH));
-    }
+  private static FormatterDiagnostic toFormatterDiagnostic(Diagnostic<?> input) {
+    return FormatterDiagnostic.create(
+        (int) input.getLineNumber(), (int) input.getColumnNumber(), input.getMessage(ENGLISH));
+  }
 }

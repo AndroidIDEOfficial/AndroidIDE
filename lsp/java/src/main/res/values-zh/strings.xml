@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="action_import_classes">导入 类</string>
+    <string name="action_generate_setters_getters">生成 set/get 方法</string>
+    <string name="action_add_throws">添加 异常声明</string>
+    <string name="action_comment_line">注释此行</string>
+    <string name="action_create_missing_method">创建缺失方法</string>
+    <string name="action_convert_to_block">转为块</string>
+    <string name="action_generate_constructor">生成 构造器</string>
+    <string name="action_implement_abstract_methods">实现 抽象方法</string>
+    <string name="action_remove_class">移除 类</string>
+    <string name="action_remove_method">移除 方法</string>
+    <string name="action_remove_unused_throws">移除 冗余异常声明</string>
+    <string name="action_suppress_unchecked_warning">忽略 \'unchecked\' 警告</string>
+    <string name="action_uncomment_line">取消注释</string>
+    <string name="action_convert_to_statement">转为声明</string>
+    <string name="msg_select_fields">选择字段</string>
+    <string name="msg_no_fields_selected">未选择字段</string>
+    <string name="msg_no_fields_found">未找到字段</string>
+    <string name="action_override_superclass_methods">重写父类方法</string>
+    <string name="msg_no_methods_selected">未选择方法</string>
+    <string name="msg_cannot_override_methods">无法重写方法</string>
+    <string name="msg_cannot_generate_setters_getters">无法生成 set/get 方法</string>
+    <string name="msg_select_methods">选择要重写的方法</string>
+    <string name="msg_no_overridable_methods">找不到任何可重写的方法</string>
+    <string name="action_goto_definition">转到定义</string>
+    <string name="action_find_references">查找引用</string>
+    <string name="action_generate_toString">生成 toString()</string>
+    <string name="action_remove_unused_imports">移除 冗余导入包</string>
+    <string name="action_organize_imports">整理导入包</string>
+    <string name="msg_cannot_generate_toString">无法生成 toString()</string>
+    <string name="msg_toString_overridden">toString() 已被重写</string>
+    <string name="action_generate_missing_constructor">生成缺失构造器</string>
+    <string name="msg_cannot_generate_constructor">无法生成构造器</string>
+    <string name="msg_constructor_available">已存在相同参数的构造器</string>
+</resources>
+

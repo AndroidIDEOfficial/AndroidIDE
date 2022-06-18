@@ -32,23 +32,23 @@ import java.nio.file.Path;
  */
 public class NoDocumentHandler implements IDocumentHandler {
 
-    @Override
-    public boolean accepts(Path file) {
-        return false;
-    }
+  @Override
+  public boolean accepts(Path file) {
+    return false;
+  }
 
-    @Override
-    public void onFileOpened(DocumentOpenEvent event) {}
+  @Override
+  public void onFileOpened(DocumentOpenEvent event) {}
 
-    @Override
-    public void onContentChange(DocumentChangeEvent event) {}
+  @Override
+  public void onContentChange(DocumentChangeEvent event) {}
 
-    @Override
-    public void onFileSaved(DocumentSaveEvent event) {}
+  @Override
+  public void onFileSaved(DocumentSaveEvent event) {}
 
-    @Override
-    public void onFileClosed(DocumentCloseEvent event) {}
+  @Override
+  public void onFileClosed(DocumentCloseEvent event) {}
 
-    @Override
-    public void onFileSelected(@NonNull Path path) {}
+  @Override
+  public void onFileSelected(@NonNull Path path) {}
 }

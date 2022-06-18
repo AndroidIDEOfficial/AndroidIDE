@@ -37,42 +37,42 @@ import java.util.List;
  */
 public class FindVariablesBetween extends TreePathScanner<Void, Void> {
 
-    private final long start;
-    private final long end;
-    private final SourcePositions positions;
-    private final List<TreePath> paths = new ArrayList<>();
-    private CompilationUnitTree root;
+  private final long start;
+  private final long end;
+  private final SourcePositions positions;
+  private final List<TreePath> paths = new ArrayList<>();
+  private CompilationUnitTree root;
 
-    public FindVariablesBetween(@NonNull JavacTask task, long start, long end) {
-        Trees trees = Trees.instance(task);
-        this.positions = trees.getSourcePositions();
-        this.start = start;
-        this.end = end;
+  public FindVariablesBetween(@NonNull JavacTask task, long start, long end) {
+    Trees trees = Trees.instance(task);
+    this.positions = trees.getSourcePositions();
+    this.start = start;
+    this.end = end;
+  }
+
+  @Override
+  public Void visitCompilationUnit(CompilationUnitTree node, Void unused) {
+    this.root = node;
+    return super.visitCompilationUnit(node, unused);
+  }
+
+  @Override
+  public Void visitVariable(VariableTree node, Void unused) {
+    if (isInRange(node)) {
+      this.paths.add(getCurrentPath());
     }
 
-    @Override
-    public Void visitCompilationUnit(CompilationUnitTree node, Void unused) {
-        this.root = node;
-        return super.visitCompilationUnit(node, unused);
-    }
+    return super.visitVariable(node, unused);
+  }
 
-    @Override
-    public Void visitVariable(VariableTree node, Void unused) {
-        if (isInRange(node)) {
-            this.paths.add(getCurrentPath());
-        }
+  @NonNull
+  public List<TreePath> getPaths() {
+    return paths;
+  }
 
-        return super.visitVariable(node, unused);
-    }
-
-    @NonNull
-    public List<TreePath> getPaths() {
-        return paths;
-    }
-
-    private boolean isInRange(VariableTree node) {
-        final long start = this.positions.getStartPosition(root, node);
-        final long end = this.positions.getEndPosition(root, node);
-        return (this.start <= start && end <= this.end) || (start <= this.start && end >= this.end);
-    }
+  private boolean isInRange(VariableTree node) {
+    final long start = this.positions.getStartPosition(root, node);
+    final long end = this.positions.getEndPosition(root, node);
+    return (this.start <= start && end <= this.end) || (start <= this.start && end >= this.end);
+  }
 }

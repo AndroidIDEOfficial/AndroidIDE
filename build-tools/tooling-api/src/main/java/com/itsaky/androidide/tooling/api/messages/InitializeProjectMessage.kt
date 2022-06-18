@@ -22,4 +22,4 @@ package com.itsaky.androidide.tooling.api.messages
  *
  * @author Akash Yadav
  */
-data class InitializeProjectMessage(val directory: String)
+data class InitializeProjectMessage(val directory: String, val gradleInstallation: String = "")

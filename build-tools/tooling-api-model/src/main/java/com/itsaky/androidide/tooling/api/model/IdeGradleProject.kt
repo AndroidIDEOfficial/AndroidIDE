@@ -16,42 +16,129 @@
  */
 package com.itsaky.androidide.tooling.api.model
 
+import com.android.builder.model.v2.ide.ProjectType.APPLICATION
+import com.itsaky.androidide.tooling.api.IProject.Type
+import com.itsaky.androidide.tooling.api.IProject.Type.Gradle
+import com.itsaky.androidide.tooling.api.messages.VariantDataRequest
+import com.itsaky.androidide.tooling.api.messages.result.SimpleModuleData
+import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import java.io.File
 import java.io.Serializable
+import java.util.concurrent.*
+import org.eclipse.lsp4j.jsonrpc.CompletableFutures
 
 /**
  * A root Gradle project.
  * @author Akash Yadav
  */
 open class IdeGradleProject(
-    val name: String?,
-    val description: String?,
-    val projectPath: String?,
-    val projectDir: File?,
-    val buildDir: File?,
-    val buildScript: File?,
-    val parent: IdeGradleProject?,
-    val tasks: List<IdeGradleTask>,
-) : HasModules, Serializable {
+    @JvmField val name: String,
+    @JvmField val description: String?,
+    @JvmField val projectPath: String,
+    @JvmField val projectDir: File,
+    @JvmField val buildDir: File,
+    @JvmField val buildScript: File,
+    @JvmField val parent: IdeGradleProject?,
+    @JvmField val tasks: List<IdeGradleTask>,
+) : com.itsaky.androidide.tooling.api.IProject, Serializable {
     private val serialVersionUID = 1L
 
     private val gsonType: String = javaClass.name
-    private val moduleProjects: MutableList<IdeGradleProject> = mutableListOf()
-    override fun getModules(): List<IdeGradleProject> = moduleProjects
+    @JvmField val moduleProjects: MutableList<IdeGradleProject> = mutableListOf()
 
-    fun findByPath(path: String): IdeGradleProject? {
-        if (path == this.projectPath) {
-            return this
+    override fun isProjectInitialized(): CompletableFuture<Boolean> {
+        return CompletableFuture.completedFuture(true)
+    }
+
+    override fun getName(): CompletableFuture<String> {
+        return CompletableFutures.computeAsync { this.name }
+    }
+
+    override fun getDescription(): CompletableFuture<String> {
+        return CompletableFutures.computeAsync { this.description }
+    }
+
+    override fun getProjectPath(): CompletableFuture<String> {
+        return CompletableFutures.computeAsync { this.projectPath }
+    }
+
+    override fun getProjectDir(): CompletableFuture<File> {
+        return CompletableFutures.computeAsync { this.projectDir }
+    }
+
+    override fun getType(): CompletableFuture<Type> {
+        return CompletableFuture.completedFuture(Gradle)
+    }
+
+    override fun getBuildDir(): CompletableFuture<File> {
+        return CompletableFutures.computeAsync { this.buildDir }
+    }
+
+    override fun getBuildScript(): CompletableFuture<File> {
+        return CompletableFutures.computeAsync { this.buildScript }
+    }
+
+    override fun getTasks(): CompletableFuture<MutableList<IdeGradleTask>> {
+        return CompletableFutures.computeAsync { this.tasks.toMutableList() }
+    }
+
+    override fun getModules(): CompletableFuture<MutableList<IdeGradleProject>> {
+        return CompletableFutures.computeAsync { this.moduleProjects.toMutableList() }
+    }
+
+    override fun listModules(): CompletableFuture<MutableList<SimpleModuleData>> {
+        return CompletableFutures.computeAsync {
+            return@computeAsync this.moduleProjects
+                .map {
+                    SimpleModuleData(
+                        name = it.name,
+                        path = it.projectPath,
+                        projectDir = it.projectDir,
+                        classPaths = if (it is IdeModule) it.getClassPaths() else emptySet())
+                }
+                .toMutableList()
+        }
+    }
+
+    override fun getVariantData(request: VariantDataRequest): CompletableFuture<SimpleVariantData> {
+        return findByPath(request.projectPath).thenApply { project ->
+            if (project !is IdeAndroidModule) {
+                return@thenApply null
+            }
+
+            return@thenApply project.simpleVariants.firstOrNull { it.name == request.variantName }
+        }
+    }
+
+    override fun findByPath(path: String): CompletableFuture<IdeGradleProject?> {
+        return CompletableFutures.computeAsync {
+            if (path == this.projectPath) {
+                return@computeAsync this
+            }
+
+            return@computeAsync moduleProjects.firstOrNull { it.projectPath == path }
+        }
+    }
+
+    override fun findAndroidModules(): CompletableFuture<List<IdeAndroidModule>> {
+        return CompletableFutures.computeAsync {
+            moduleProjects.filterIsInstance(IdeAndroidModule::class.java)
+        }
+    }
+
+    override fun findFirstAndroidModule(): CompletableFuture<IdeAndroidModule?> {
+        return findAndroidModules().thenApply { it.firstOrNull() }
+    }
+
+    override fun findFirstAndroidAppModule(): CompletableFuture<IdeAndroidModule> {
+        if (this is IdeAndroidModule) {
+            return CompletableFuture.completedFuture(this)
         }
 
-        return getModules().firstOrNull { it.projectPath == path }
-    }
-
-    fun findAndroidModules(): List<IdeAndroidModule> {
-        return getModules().filterIsInstance(IdeAndroidModule::class.java)
-    }
-
-    fun findFirstAndroidModule(): IdeAndroidModule? {
-        return findAndroidModules().firstOrNull()
+        return findAndroidModules().thenApply { modules ->
+            val application =
+                modules.stream().filter { it != null && it.projectType == APPLICATION }.findFirst()
+            application.orElse(null)
+        }
     }
 }

@@ -22,7 +22,6 @@ import com.itsaky.lsp.api.ILanguageServer
 
 /** @author Akash Yadav */
 open class BaseJavaTest : CursorDependentTest() {
-
     protected val mServer = JavaLanguageServerProvider.INSTANCE.server()
     override fun getServer(): ILanguageServer = mServer
 }

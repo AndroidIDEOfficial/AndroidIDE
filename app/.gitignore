@@ -11,15 +11,15 @@
 *.class
 
 # Generated files
-bin/
-gen/
-out/
+/bin/
+/gen/
+/out/
 #  Uncomment the following line in case you need and you don't have the release build type files in your app
 # release/
 
 # Gradle files
 .gradle/
-build/
+/build/
 
 # Local configuration file (sdk path, etc)
 local.properties

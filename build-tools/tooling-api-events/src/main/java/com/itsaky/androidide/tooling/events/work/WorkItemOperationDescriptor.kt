@@ -23,8 +23,7 @@ import com.itsaky.androidide.tooling.events.OperationDescriptor
 class WorkItemOperationDescriptor(
     val className: String,
     override val name: String,
-    override val displayName: String,
-    override val parent: OperationDescriptor?
+    override val displayName: String
 ) : OperationDescriptor() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -33,8 +32,7 @@ class WorkItemOperationDescriptor(
         if (className != other.className) return false
         if (name != other.name) return false
         if (displayName != other.displayName) return false
-        if (parent != other.parent) return false
-
+        
         return true
     }
 
@@ -42,7 +40,6 @@ class WorkItemOperationDescriptor(
         var result = className.hashCode()
         result = 31 * result + name.hashCode()
         result = 31 * result + displayName.hashCode()
-        result = 31 * result + (parent?.hashCode() ?: 0)
         return result
     }
 }

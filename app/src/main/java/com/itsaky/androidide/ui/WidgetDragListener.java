@@ -48,185 +48,182 @@ import org.jetbrains.annotations.Contract;
  */
 public class WidgetDragListener implements View.OnDragListener {
 
-    private final IView placeholder;
-    private final IViewGroup viewGroup;
-    private final OnViewAddedListener addedListener;
+  private final IView placeholder;
+  private final IViewGroup viewGroup;
+  private final OnViewAddedListener addedListener;
 
-    private final int PLACEHOLDER_HEIGHT = 20; // in dp
-    private final int PLACEHOLDER_WIDTH = 40; // in dp
+  private final int PLACEHOLDER_HEIGHT = 20; // in dp
+  private final int PLACEHOLDER_WIDTH = 40; // in dp
 
-    public static final String ANDROID_NS = "android";
+  public static final String ANDROID_NS = "android";
 
-    private static final ILogger LOG = ILogger.newInstance("WidgetDragListener");
+  private static final ILogger LOG = ILogger.newInstance("WidgetDragListener");
 
-    public WidgetDragListener(
-            @NonNull Context context, IViewGroup viewGroup, OnViewAddedListener addedListener) {
-        this.placeholder = new UiView("android.view.View", new View(context), true);
-        this.viewGroup = viewGroup;
-        this.addedListener = addedListener;
-        this.placeholder.asView().setBackgroundResource(R.drawable.bg_widget_drag_placeholder);
-        this.placeholder
-                .asView()
-                .setLayoutParams(
-                        new ViewGroup.LayoutParams(
-                                SizeUtils.dp2px(PLACEHOLDER_WIDTH),
-                                SizeUtils.dp2px(PLACEHOLDER_HEIGHT)));
+  public WidgetDragListener(
+      @NonNull Context context, IViewGroup viewGroup, OnViewAddedListener addedListener) {
+    this.placeholder = new UiView("android.view.View", new View(context), true);
+    this.viewGroup = viewGroup;
+    this.addedListener = addedListener;
+    this.placeholder.asView().setBackgroundResource(R.drawable.bg_widget_drag_placeholder);
+    this.placeholder
+        .asView()
+        .setLayoutParams(
+            new ViewGroup.LayoutParams(
+                SizeUtils.dp2px(PLACEHOLDER_WIDTH), SizeUtils.dp2px(PLACEHOLDER_HEIGHT)));
+  }
+
+  @Override
+  public boolean onDrag(View v, @NonNull DragEvent event) {
+
+    if (this.viewGroup instanceof ErrorUiView) {
+      return false;
     }
 
-    @Override
-    public boolean onDrag(View v, @NonNull DragEvent event) {
+    final var action = event.getAction();
+    final var clipDesc = event.getClipDescription();
+    final var dragData = (WidgetDragData) event.getLocalState();
 
-        if (this.viewGroup instanceof ErrorUiView) {
-            return false;
+    var handled = true;
+    switch (action) {
+      case DragEvent.ACTION_DRAG_STARTED:
+        handled = clipDesc.hasMimeType(DesignerActivity.DRAGGING_WIDGET_MIME);
+        break;
+      case DragEvent.ACTION_DRAG_ENTERED:
+      case DragEvent.ACTION_DRAG_LOCATION:
+        this.placeholder.removeFromParent(); // If placeholder is added in another group, remove it.
+        this.viewGroup.addView(this.placeholder, findPlaceHolderIndex(event.getX(), event.getY()));
+        break;
+      case DragEvent.ACTION_DRAG_EXITED:
+        this.placeholder.removeFromParent();
+        break;
+      case DragEvent.ACTION_DROP:
+        final var index = this.viewGroup.indexOfChild(this.placeholder);
+        this.placeholder.removeFromParent();
+
+        var view =
+            dragData.isAlreadyInflated
+                ? dragData.alreadyInflatedView
+                : createView(dragData.newDragData);
+        if (!dragData.isAlreadyInflated) {
+          applyBasicAttributes(view);
         }
 
-        final var action = event.getAction();
-        final var clipDesc = event.getClipDescription();
-        final var dragData = (WidgetDragData) event.getLocalState();
+        // Remove from parent if it has a parent
+        view.removeFromParent();
+        this.viewGroup.addView(view, index);
 
-        var handled = true;
-        switch (action) {
-            case DragEvent.ACTION_DRAG_STARTED:
-                handled = clipDesc.hasMimeType(DesignerActivity.DRAGGING_WIDGET_MIME);
-                break;
-            case DragEvent.ACTION_DRAG_ENTERED:
-            case DragEvent.ACTION_DRAG_LOCATION:
-                this.placeholder
-                        .removeFromParent(); // If placeholder is added in another group, remove it.
-                this.viewGroup.addView(
-                        this.placeholder, findPlaceHolderIndex(event.getX(), event.getY()));
-                break;
-            case DragEvent.ACTION_DRAG_EXITED:
-                this.placeholder.removeFromParent();
-                break;
-            case DragEvent.ACTION_DROP:
-                final var index = this.viewGroup.indexOfChild(this.placeholder);
-                this.placeholder.removeFromParent();
-
-                var view =
-                        dragData.isAlreadyInflated
-                                ? dragData.alreadyInflatedView
-                                : createView(dragData.newDragData);
-                if (!dragData.isAlreadyInflated) {
-                    applyBasicAttributes(view);
-                }
-
-                // Remove from parent if it has a parent
-                view.removeFromParent();
-                this.viewGroup.addView(view, index);
-
-                if (this.addedListener != null) {
-                    this.addedListener.onViewAdded(view);
-                }
-
-                break;
+        if (this.addedListener != null) {
+          this.addedListener.onViewAdded(view);
         }
 
-        return handled;
+        break;
     }
 
-    private void applyBasicAttributes(@NonNull IView view) {
-        view.addAttribute(layoutWidthAttr());
-        view.addAttribute(layoutHeightAttr());
-    }
+    return handled;
+  }
 
-    /**
-     * Finds the index at which the placeholder will be added in the current view group.
-     *
-     * @param x The x coordinate of the touch event
-     * @param y The y coordinate of the touch event
-     * @return The index at which the placeholder of the view should be added. The returned index is
-     *     always valid index in the {@link #viewGroup}.
-     */
-    private int findPlaceHolderIndex(final float x, final float y) {
-        final var count = this.viewGroup.getChildCount();
-        for (int i = 0; i < this.viewGroup.getChildCount(); i++) {
-            final var child = this.viewGroup.getChildAt(i);
-            final var rect = getViewRect(child);
-            if (rect.contains(x, y)) {
-                final var top = topHalf(rect);
-                final var bottom = bottomHalf(rect);
-                if (top.contains(x, y)) {
-                    return Math.max(0, i - 1);
-                } else if (bottom.contains(x, y)) {
-                    return Math.min(count, i + 1);
-                }
-            }
+  private void applyBasicAttributes(@NonNull IView view) {
+    view.addAttribute(layoutWidthAttr());
+    view.addAttribute(layoutHeightAttr());
+  }
+
+  /**
+   * Finds the index at which the placeholder will be added in the current view group.
+   *
+   * @param x The x coordinate of the touch event
+   * @param y The y coordinate of the touch event
+   * @return The index at which the placeholder of the view should be added. The returned index is
+   *     always valid index in the {@link #viewGroup}.
+   */
+  private int findPlaceHolderIndex(final float x, final float y) {
+    final var count = this.viewGroup.getChildCount();
+    for (int i = 0; i < this.viewGroup.getChildCount(); i++) {
+      final var child = this.viewGroup.getChildAt(i);
+      final var rect = getViewRect(child);
+      if (rect.contains(x, y)) {
+        final var top = topHalf(rect);
+        final var bottom = bottomHalf(rect);
+        if (top.contains(x, y)) {
+          return Math.max(0, i - 1);
+        } else if (bottom.contains(x, y)) {
+          return Math.min(count, i + 1);
         }
-
-        // If we don't find a suitable index, return the last index
-        return count;
+      }
     }
 
-    @NonNull
-    private RectF getViewRect(@NonNull IView view) {
-        final var v = view.asView();
+    // If we don't find a suitable index, return the last index
+    return count;
+  }
 
-        final var rect = new RectF();
-        rect.left = v.getLeft();
-        rect.top = v.getTop();
-        rect.right = rect.left + v.getWidth();
-        rect.bottom = rect.top + v.getHeight();
+  @NonNull
+  private RectF getViewRect(@NonNull IView view) {
+    final var v = view.asView();
 
-        return rect;
+    final var rect = new RectF();
+    rect.left = v.getLeft();
+    rect.top = v.getTop();
+    rect.right = rect.left + v.getWidth();
+    rect.bottom = rect.top + v.getHeight();
+
+    return rect;
+  }
+
+  private RectF topHalf(RectF src) {
+    final RectF result = new RectF(src);
+    result.bottom -= result.height() / 2;
+    return src;
+  }
+
+  private RectF bottomHalf(RectF src) {
+    final RectF result = new RectF(src);
+    result.top += result.height() / 2;
+    return src;
+  }
+
+  private RectF leftHalf(RectF src) {
+    final RectF result = new RectF(src);
+    result.right -= result.width() / 2;
+    return src;
+  }
+
+  private RectF rightHalf(RectF src) {
+    final RectF result = new RectF(src);
+    result.left += result.width() / 2;
+    return src;
+  }
+
+  @NonNull
+  @Contract(" -> new")
+  private IAttribute layoutHeightAttr() {
+    return new UiAttribute(INamespace.ANDROID, "layout_height", "wrap_content");
+  }
+
+  @NonNull
+  @Contract(" -> new")
+  private IAttribute layoutWidthAttr() {
+    return new UiAttribute(INamespace.ANDROID, "layout_width", "wrap_content");
+  }
+
+  @NonNull
+  private IView createView(@NonNull UIWidget widget) {
+    try {
+      final var clazz = widget.asClass();
+      final var constructor = clazz.getConstructor(Context.class);
+      constructor.setAccessible(true);
+      final var instance = constructor.newInstance(this.viewGroup.asView().getContext());
+
+      if (instance instanceof ViewGroup) {
+        return new UiViewGroup(clazz.getName(), (ViewGroup) instance);
+      } else {
+        return new UiView(clazz.getName(), instance);
+      }
+    } catch (Throwable e) {
+      LOG.error("Unable to add widget", e);
+      throw new RuntimeException("Unable to add widget", e);
     }
+  }
 
-    private RectF topHalf(RectF src) {
-        final RectF result = new RectF(src);
-        result.bottom -= result.height() / 2;
-        return src;
-    }
-
-    private RectF bottomHalf(RectF src) {
-        final RectF result = new RectF(src);
-        result.top += result.height() / 2;
-        return src;
-    }
-
-    private RectF leftHalf(RectF src) {
-        final RectF result = new RectF(src);
-        result.right -= result.width() / 2;
-        return src;
-    }
-
-    private RectF rightHalf(RectF src) {
-        final RectF result = new RectF(src);
-        result.left += result.width() / 2;
-        return src;
-    }
-
-    @NonNull
-    @Contract(" -> new")
-    private IAttribute layoutHeightAttr() {
-        return new UiAttribute(INamespace.ANDROID, "layout_height", "wrap_content");
-    }
-
-    @NonNull
-    @Contract(" -> new")
-    private IAttribute layoutWidthAttr() {
-        return new UiAttribute(INamespace.ANDROID, "layout_width", "wrap_content");
-    }
-
-    @NonNull
-    private IView createView(@NonNull UIWidget widget) {
-        try {
-            final var clazz = widget.asClass();
-            final var constructor = clazz.getConstructor(Context.class);
-            constructor.setAccessible(true);
-            final var instance = constructor.newInstance(this.viewGroup.asView().getContext());
-
-            if (instance instanceof ViewGroup) {
-                return new UiViewGroup(clazz.getName(), (ViewGroup) instance);
-            } else {
-                return new UiView(clazz.getName(), instance);
-            }
-        } catch (Throwable e) {
-            LOG.error("Unable to add widget", e);
-            throw new RuntimeException("Unable to add widget", e);
-        }
-    }
-
-    public static interface OnViewAddedListener {
-        void onViewAdded(IView view);
-    }
+  public static interface OnViewAddedListener {
+    void onViewAdded(IView view);
+  }
 }

@@ -61,9 +61,19 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    
     packagingOptions {
         resources {
-            excludes += ['META-INF/eclipse.inf', 'about_files/LICENSE-2.0.txt', 'plugin.xml', 'plugin.properties', 'about.mappings', 'about.properties', 'about.ini', 'modeling32.png']
+            excludes += ['META-INF/eclipse.inf',
+                         'META-INF/CHANGES',
+                         'META-INF/README.md',
+                         'about_files/LICENSE-2.0.txt',
+                         'plugin.xml',
+                         'plugin.properties',
+                         'about.mappings',
+                         'about.properties',
+                         'about.ini',
+                         'modeling32.png']
         }
     }
     
@@ -105,11 +115,11 @@ dependencies {
     implementation google.material
     
     // Kotlin
-    implementation "androidx.core:core-ktx:1.7.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation androidx.ktx
+    implementation common.kotlin
     
     // Local projects here
-    implementation project (':build-tools:builder-api')
+    implementation project (':build-tools:tooling-api')
     implementation project (':treeview')
     implementation project (':emulatorview')
     implementation project (':xml-inflater')
@@ -122,6 +132,9 @@ dependencies {
     implementation project (':lsp:xml')
     
     implementation fileTree (dir: 'libs', include: ['*.jar'])
+    
+    // LeakCanary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
     
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     

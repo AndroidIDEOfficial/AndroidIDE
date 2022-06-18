@@ -42,31 +42,33 @@ import com.android.builder.model.v2.ide.Variant
 import com.android.builder.model.v2.ide.ViewBindingOptions
 import com.android.builder.model.v2.models.ProjectSyncIssues
 import com.android.builder.model.v2.models.VariantDependencies
+import com.itsaky.androidide.builder.model.DefaultAndroidArtifact
+import com.itsaky.androidide.builder.model.DefaultAndroidGradlePluginProjectFlags
+import com.itsaky.androidide.builder.model.DefaultAndroidLibraryData
+import com.itsaky.androidide.builder.model.DefaultApiVersion
+import com.itsaky.androidide.builder.model.DefaultArtifactDependencies
+import com.itsaky.androidide.builder.model.DefaultBundleInfo
+import com.itsaky.androidide.builder.model.DefaultCustomSourceDirectory
+import com.itsaky.androidide.builder.model.DefaultGraphItem
+import com.itsaky.androidide.builder.model.DefaultJavaArtifact
+import com.itsaky.androidide.builder.model.DefaultJavaCompileOptions
+import com.itsaky.androidide.builder.model.DefaultLibrary
+import com.itsaky.androidide.builder.model.DefaultLibraryInfo
+import com.itsaky.androidide.builder.model.DefaultModelSyncFile
+import com.itsaky.androidide.builder.model.DefaultProjectInfo
+import com.itsaky.androidide.builder.model.DefaultProjectSyncIssues
+import com.itsaky.androidide.builder.model.DefaultSourceProvider
+import com.itsaky.androidide.builder.model.DefaultSourceSetContainer
+import com.itsaky.androidide.builder.model.DefaultSyncIssue
+import com.itsaky.androidide.builder.model.DefaultTestInfo
+import com.itsaky.androidide.builder.model.DefaultTestedTargetVariant
+import com.itsaky.androidide.builder.model.DefaultUnresolvedDependency
+import com.itsaky.androidide.builder.model.DefaultVariant
+import com.itsaky.androidide.builder.model.DefaultVariantDependencies
+import com.itsaky.androidide.builder.model.DefaultViewBindingOptions
+import com.itsaky.androidide.tooling.api.messages.result.SimpleArtifact
+import com.itsaky.androidide.tooling.api.messages.result.SimpleVariantData
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule
-import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidArtifact
-import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidGradlePluginProjectFlags
-import com.itsaky.androidide.tooling.api.model.internal.DefaultAndroidLibraryData
-import com.itsaky.androidide.tooling.api.model.internal.DefaultApiVersion
-import com.itsaky.androidide.tooling.api.model.internal.DefaultArtifactDependencies
-import com.itsaky.androidide.tooling.api.model.internal.DefaultBundleInfo
-import com.itsaky.androidide.tooling.api.model.internal.DefaultCustomSourceDirectory
-import com.itsaky.androidide.tooling.api.model.internal.DefaultGraphItem
-import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaArtifact
-import com.itsaky.androidide.tooling.api.model.internal.DefaultJavaCompileOptions
-import com.itsaky.androidide.tooling.api.model.internal.DefaultLibrary
-import com.itsaky.androidide.tooling.api.model.internal.DefaultLibraryInfo
-import com.itsaky.androidide.tooling.api.model.internal.DefaultModelSyncFile
-import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectInfo
-import com.itsaky.androidide.tooling.api.model.internal.DefaultProjectSyncIssues
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceProvider
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSourceSetContainer
-import com.itsaky.androidide.tooling.api.model.internal.DefaultSyncIssue
-import com.itsaky.androidide.tooling.api.model.internal.DefaultTestInfo
-import com.itsaky.androidide.tooling.api.model.internal.DefaultTestedTargetVariant
-import com.itsaky.androidide.tooling.api.model.internal.DefaultUnresolvedDependency
-import com.itsaky.androidide.tooling.api.model.internal.DefaultVariant
-import com.itsaky.androidide.tooling.api.model.internal.DefaultVariantDependencies
-import com.itsaky.androidide.tooling.api.model.internal.DefaultViewBindingOptions
 import com.itsaky.androidide.utils.ILogger
 
 /**
@@ -336,7 +338,7 @@ object AndroidModulePropertyCopier {
         return new
     }
 
-    private fun copy(value: Library): DefaultLibrary {
+    fun copy(value: Library): DefaultLibrary {
         return DefaultLibrary().apply {
             this.androidLibraryData = copy(value.androidLibraryData)
             this.artifact = value.artifact
@@ -436,4 +438,34 @@ object AndroidModulePropertyCopier {
     fun copy(issue: SyncIssue) =
         DefaultSyncIssue(
             issue.data, issue.message, issue.multiLineMessage, issue.severity, issue.type)
+
+    fun asSimpleVariants(variants: MutableCollection<Variant>): MutableList<SimpleVariantData> {
+        return mutableListOf<SimpleVariantData>().apply {
+            for (variant in variants) {
+                add(
+                    SimpleVariantData(
+                        variant.name,
+                        asSimpleArtifact("main", variant.mainArtifact),
+                        mutableMapOf()))
+            }
+        }
+    }
+
+    @Suppress("SameParameterValue") // We might need details about other artifacts in future
+    private fun asSimpleArtifact(name: String, artifact: AndroidArtifact): SimpleArtifact {
+        return SimpleArtifact(
+            name = name,
+            assembleTaskName = artifact.assembleTaskName,
+            assembleTaskOutputListingFile = artifact.assembleTaskOutputListingFile,
+            classJars = artifact.classesFolders.filter { it.name.endsWith(".jar") },
+            compileTaskName = artifact.compileTaskName,
+            generatedResourceFolders = artifact.generatedResourceFolders,
+            generatedSourceFolders = artifact.generatedSourceFolders,
+            maxSdkVersion = artifact.maxSdkVersion,
+            minSdkVersion = artifact.minSdkVersion.apiLevel,
+            resGenTaskName = artifact.resGenTaskName,
+            signingConfigName = artifact.signingConfigName,
+            sourceGenTaskName = artifact.sourceGenTaskName,
+            targetSdkVersionOverride = artifact.targetSdkVersionOverride?.apiLevel ?: -1)
+    }
 }

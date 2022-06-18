@@ -43,7 +43,7 @@
     <string name="action_find_references">Find references</string>
     <string name="action_generate_toString">Generate toString()</string>
     <string name="action_remove_unused_imports">Remove unused imports</string>
-    <string name="action_import_ordrerer">Import Orderer</string>
+    <string name="action_organize_imports">Organize imports</string>
     <string name="msg_cannot_generate_toString">Unable to generate toString() implementation</string>
     <string name="msg_toString_overridden">toString() is already overridden</string>
     <string name="action_generate_missing_constructor">Generate missing constructor</string>

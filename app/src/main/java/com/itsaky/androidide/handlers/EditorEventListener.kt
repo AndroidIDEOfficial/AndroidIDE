@@ -83,23 +83,6 @@ class EditorEventListener : GradleBuildService.EventListener {
         } else if (event is TaskProgressEvent) {
             activity()
                 .setStatus(activity().getString(string.msg_running_task, event.descriptor.taskPath))
-        } else if (event is StatusEvent && event.descriptor is FileDownloadOperationDescriptor) {
-            val total = StudioUtils.bytesToSizeString(event.total)
-            val progress = StudioUtils.bytesToSizeString(event.progress)
-            val fileName =
-                URLUtil.guessFileName(
-                    (event.descriptor as FileDownloadOperationDescriptor).uri.path, null, null)
-
-            val status = SpannableStringBuilder()
-            status.append(
-                "[$progress/$total]",
-                AlignmentSpan.Standard(ALIGN_NORMAL),
-                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE)
-            status.append(
-                " Download $fileName",
-                AlignmentSpan.Standard(ALIGN_CENTER),
-                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE)
-            activity().setStatus(status, GravityCompat.START)
         }
     }
 

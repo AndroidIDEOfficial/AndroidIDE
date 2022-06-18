@@ -34,40 +34,40 @@ import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 
 /**
- *
  * @author lahvac
  */
 public class NBTreeMaker extends TreeMaker {
 
-    public static void preRegister(Context context) {
-        context.put(treeMakerKey, new Context.Factory<TreeMaker>() {
-            public TreeMaker make(Context c) {
-                return new NBTreeMaker(c);
-            }
+  public static void preRegister(Context context) {
+    context.put(
+        treeMakerKey,
+        new Context.Factory<TreeMaker>() {
+          public TreeMaker make(Context c) {
+            return new NBTreeMaker(c);
+          }
         });
-    }
+  }
 
-    private final Names names;
-    private final Types types;
-    private final Symtab syms;
+  private final Names names;
+  private final Types types;
+  private final Symtab syms;
 
-    protected NBTreeMaker(Context context) {
-        super(context);
-        this.names = Names.instance(context);
-        this.types = Types.instance(context);
-        this.syms = Symtab.instance(context);
-    }
+  protected NBTreeMaker(Context context) {
+    super(context);
+    this.names = Names.instance(context);
+    this.types = Types.instance(context);
+    this.syms = Symtab.instance(context);
+  }
 
-    protected NBTreeMaker(JCCompilationUnit toplevel, Names names, Types types, Symtab syms) {
-        super(toplevel, names, types, syms);
-        this.names = names;
-        this.types = types;
-        this.syms = syms;
-    }
+  protected NBTreeMaker(JCCompilationUnit toplevel, Names names, Types types, Symtab syms) {
+    super(toplevel, names, types, syms);
+    this.names = names;
+    this.types = types;
+    this.syms = syms;
+  }
 
-    @Override
-    public TreeMaker forToplevel(JCCompilationUnit toplevel) {
-        return new NBTreeMaker(toplevel, names, types, syms);
-    }
-
+  @Override
+  public TreeMaker forToplevel(JCCompilationUnit toplevel) {
+    return new NBTreeMaker(toplevel, names, types, syms);
+  }
 }

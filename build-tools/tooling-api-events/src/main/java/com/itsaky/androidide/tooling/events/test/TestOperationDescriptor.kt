@@ -22,8 +22,7 @@ import com.itsaky.androidide.tooling.events.OperationDescriptor
 /** @author Akash Yadav */
 class TestOperationDescriptor(
     override val name: String,
-    override val displayName: String,
-    override val parent: OperationDescriptor?
+    override val displayName: String
 ) : OperationDescriptor() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -31,15 +30,13 @@ class TestOperationDescriptor(
 
         if (name != other.name) return false
         if (displayName != other.displayName) return false
-        if (parent != other.parent) return false
-
+        
         return true
     }
 
     override fun hashCode(): Int {
         var result = name.hashCode()
         result = 31 * result + displayName.hashCode()
-        result = 31 * result + (parent?.hashCode() ?: 0)
         return result
     }
 }

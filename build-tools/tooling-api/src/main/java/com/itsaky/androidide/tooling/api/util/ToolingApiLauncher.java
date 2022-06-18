@@ -20,6 +20,7 @@ package com.itsaky.androidide.tooling.api.util;
 import com.google.gson.GsonBuilder;
 import com.itsaky.androidide.tooling.api.IToolingApiClient;
 import com.itsaky.androidide.tooling.api.IToolingApiServer;
+import com.itsaky.androidide.tooling.api.IProject;
 import com.itsaky.androidide.tooling.api.model.IdeAndroidModule;
 import com.itsaky.androidide.tooling.api.model.IdeGradleProject;
 import com.itsaky.androidide.tooling.api.model.IdeGradleTask;
@@ -76,6 +77,8 @@ import org.eclipse.lsp4j.jsonrpc.Launcher;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.concurrent.Executors;
 
 /**
  * Utility class for launching {@link IToolingApiClient} and {@link IToolingApiServer}.
@@ -83,160 +86,143 @@ import java.io.OutputStream;
  * @author Akash Yadav
  */
 public class ToolingApiLauncher {
-    public static Launcher<IToolingApiServer> createClientLauncher(
-            IToolingApiClient client, InputStream in, OutputStream out) {
-        return createIOLauncher(client, IToolingApiServer.class, in, out);
-    }
 
-    public static <T> Launcher<T> createIOLauncher(
-            Object local, Class<T> remote, InputStream in, OutputStream out) {
-        return new Launcher.Builder<T>()
-                .setInput(in)
-                .setOutput(out)
-                .setLocalService(local)
-                .setRemoteInterface(remote)
-                .configureGson(ToolingApiLauncher::configureGson)
-                .create();
-    }
+  public static <T> Launcher<T> createIOLauncher(
+      Object local, Class<T> remote, InputStream in, OutputStream out) {
+    return new Launcher.Builder<T>()
+        .setInput(in)
+        .setOutput(out)
+        .setLocalService(local)
+        .setRemoteInterface(remote)
+        .configureGson(ToolingApiLauncher::configureGson)
+        .create();
+  }
 
-    public static void configureGson(GsonBuilder builder) {
-        builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType", true)
-                        .registerSubtype(IdeAndroidModule.class, IdeAndroidModule.class.getName())
-                        .registerSubtype(IdeJavaModule.class, IdeJavaModule.class.getName())
-                        .registerSubtype(IdeGradleProject.class, IdeGradleProject.class.getName()));
-        builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType", true)
-                        .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName())
-                        .registerSubtype(IdeLaunchable.class, IdeLaunchable.class.getName()));
-        builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(JavaModuleDependency.class, "gsonType", true)
-                        .registerSubtype(
-                                JavaModuleExternalDependency.class,
-                                JavaModuleExternalDependency.class.getName())
-                        .registerSubtype(
-                                JavaModuleProjectDependency.class,
-                                JavaModuleProjectDependency.class.getName()));
+  public static void configureGson(GsonBuilder builder) {
+    builder.registerTypeAdapterFactory(
+        RuntimeTypeAdapterFactory.of(IdeGradleProject.class, "gsonType", true)
+            .registerSubtype(IdeAndroidModule.class, IdeAndroidModule.class.getName())
+            .registerSubtype(IdeJavaModule.class, IdeJavaModule.class.getName())
+            .registerSubtype(IdeGradleProject.class, IdeGradleProject.class.getName()));
+    builder.registerTypeAdapterFactory(
+        RuntimeTypeAdapterFactory.of(IdeLaunchable.class, "gsonType", true)
+            .registerSubtype(IdeGradleTask.class, IdeGradleTask.class.getName())
+            .registerSubtype(IdeLaunchable.class, IdeLaunchable.class.getName()));
+    builder.registerTypeAdapterFactory(
+        RuntimeTypeAdapterFactory.of(JavaModuleDependency.class, "gsonType", true)
+            .registerSubtype(
+                JavaModuleExternalDependency.class, JavaModuleExternalDependency.class.getName())
+            .registerSubtype(
+                JavaModuleProjectDependency.class, JavaModuleProjectDependency.class.getName()));
 
-        builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(ProgressEvent.class, "gsonType", true)
+    builder.registerTypeAdapterFactory(
+        RuntimeTypeAdapterFactory.of(ProgressEvent.class, "gsonType", true)
 
-                        // Project configuration
-                        .registerSubtype(
-                                ProjectConfigurationProgressEvent.class,
-                                ProjectConfigurationProgressEvent.class.getName())
-                        .registerSubtype(
-                                ProjectConfigurationStartEvent.class,
-                                ProjectConfigurationStartEvent.class.getName())
-                        .registerSubtype(
-                                ProjectConfigurationFinishEvent.class,
-                                ProjectConfigurationFinishEvent.class.getName())
+            // Project configuration
+            .registerSubtype(
+                ProjectConfigurationProgressEvent.class,
+                ProjectConfigurationProgressEvent.class.getName())
+            .registerSubtype(
+                ProjectConfigurationStartEvent.class,
+                ProjectConfigurationStartEvent.class.getName())
+            .registerSubtype(
+                ProjectConfigurationFinishEvent.class,
+                ProjectConfigurationFinishEvent.class.getName())
 
-                        // File download
-                        .registerSubtype(
-                                FileDownloadProgressEvent.class,
-                                FileDownloadProgressEvent.class.getName())
-                        .registerSubtype(
-                                FileDownloadStartEvent.class,
-                                FileDownloadStartEvent.class.getName())
-                        .registerSubtype(
-                                FileDownloadFinishEvent.class,
-                                FileDownloadFinishEvent.class.getName())
+            // File download
+            .registerSubtype(
+                FileDownloadProgressEvent.class, FileDownloadProgressEvent.class.getName())
+            .registerSubtype(FileDownloadStartEvent.class, FileDownloadStartEvent.class.getName())
+            .registerSubtype(FileDownloadFinishEvent.class, FileDownloadFinishEvent.class.getName())
 
-                        // Task execution
-                        .registerSubtype(TaskProgressEvent.class, TaskProgressEvent.class.getName())
-                        .registerSubtype(TaskStartEvent.class, TaskStartEvent.class.getName())
-                        .registerSubtype(TaskFinishEvent.class, TaskFinishEvent.class.getName())
+            // Task execution
+            .registerSubtype(TaskProgressEvent.class, TaskProgressEvent.class.getName())
+            .registerSubtype(TaskStartEvent.class, TaskStartEvent.class.getName())
+            .registerSubtype(TaskFinishEvent.class, TaskFinishEvent.class.getName())
 
-                        // Test execution
-                        .registerSubtype(TestProgressEvent.class, TestProgressEvent.class.getName())
-                        .registerSubtype(TestStartEvent.class, TestStartEvent.class.getName())
-                        .registerSubtype(TestFinishEvent.class, TestFinishEvent.class.getName())
+            // Test execution
+            .registerSubtype(TestProgressEvent.class, TestProgressEvent.class.getName())
+            .registerSubtype(TestStartEvent.class, TestStartEvent.class.getName())
+            .registerSubtype(TestFinishEvent.class, TestFinishEvent.class.getName())
 
-                        // Transform
-                        .registerSubtype(
-                                TransformProgressEvent.class,
-                                TransformProgressEvent.class.getName())
-                        .registerSubtype(
-                                TransformStartEvent.class, TransformStartEvent.class.getName())
-                        .registerSubtype(
-                                TransformFinishEvent.class, TransformFinishEvent.class.getName())
+            // Transform
+            .registerSubtype(TransformProgressEvent.class, TransformProgressEvent.class.getName())
+            .registerSubtype(TransformStartEvent.class, TransformStartEvent.class.getName())
+            .registerSubtype(TransformFinishEvent.class, TransformFinishEvent.class.getName())
 
-                        // Work item
-                        .registerSubtype(
-                                WorkItemProgressEvent.class, WorkItemProgressEvent.class.getName())
-                        .registerSubtype(
-                                WorkItemStartEvent.class, WorkItemStartEvent.class.getName())
-                        .registerSubtype(
-                                WorkItemFinishEvent.class, WorkItemFinishEvent.class.getName())
+            // Work item
+            .registerSubtype(WorkItemProgressEvent.class, WorkItemProgressEvent.class.getName())
+            .registerSubtype(WorkItemStartEvent.class, WorkItemStartEvent.class.getName())
+            .registerSubtype(WorkItemFinishEvent.class, WorkItemFinishEvent.class.getName())
 
-                        // Default implementations
-                        .registerSubtype(
-                                DefaultProgressEvent.class, DefaultProgressEvent.class.getName())
-                        .registerSubtype(DefaultStartEvent.class, DefaultStartEvent.class.getName())
-                        .registerSubtype(
-                                DefaultFinishEvent.class, DefaultFinishEvent.class.getName())
+            // Default implementations
+            .registerSubtype(DefaultProgressEvent.class, DefaultProgressEvent.class.getName())
+            .registerSubtype(DefaultStartEvent.class, DefaultStartEvent.class.getName())
+            .registerSubtype(DefaultFinishEvent.class, DefaultFinishEvent.class.getName())
 
-                        // Status event
-                        .registerSubtype(StatusEvent.class, StatusEvent.class.getName()));
+            // Status event
+            .registerSubtype(StatusEvent.class, StatusEvent.class.getName()));
 
-        builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(OperationDescriptor.class, "gsonType", true)
-                        .registerSubtype(
-                                ProjectConfigurationOperationDescriptor.class,
-                                ProjectConfigurationOperationDescriptor.class.getName())
-                        .registerSubtype(
-                                FileDownloadOperationDescriptor.class,
-                                FileDownloadOperationDescriptor.class.getName())
-                        .registerSubtype(
-                                TaskOperationDescriptor.class,
-                                TaskOperationDescriptor.class.getName())
-                        .registerSubtype(
-                                TestOperationDescriptor.class,
-                                TestOperationDescriptor.class.getName())
-                        .registerSubtype(
-                                TransformOperationDescriptor.class,
-                                TransformOperationDescriptor.class.getName())
-                        .registerSubtype(
-                                WorkItemOperationDescriptor.class,
-                                WorkItemOperationDescriptor.class.getName())
-                        .registerSubtype(
-                                DefaultOperationDescriptor.class,
-                                DefaultOperationDescriptor.class.getName()));
+    builder.registerTypeAdapterFactory(
+        RuntimeTypeAdapterFactory.of(OperationDescriptor.class, "gsonType", true)
+            .registerSubtype(
+                ProjectConfigurationOperationDescriptor.class,
+                ProjectConfigurationOperationDescriptor.class.getName())
+            .registerSubtype(
+                FileDownloadOperationDescriptor.class,
+                FileDownloadOperationDescriptor.class.getName())
+            .registerSubtype(TaskOperationDescriptor.class, TaskOperationDescriptor.class.getName())
+            .registerSubtype(TestOperationDescriptor.class, TestOperationDescriptor.class.getName())
+            .registerSubtype(
+                TransformOperationDescriptor.class, TransformOperationDescriptor.class.getName())
+            .registerSubtype(
+                WorkItemOperationDescriptor.class, WorkItemOperationDescriptor.class.getName())
+            .registerSubtype(
+                DefaultOperationDescriptor.class, DefaultOperationDescriptor.class.getName()));
 
-        builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(OperationResult.class, "gsonType", true)
-                        .registerSubtype(
-                                ProjectConfigurationOperationResult.class,
-                                ProjectConfigurationOperationResult.class.getName())
-                        .registerSubtype(
-                                FileDownloadResult.class, FileDownloadResult.class.getName())
-                        .registerSubtype(
-                                TaskOperationResult.class, TaskOperationResult.class.getName())
-                        .registerSubtype(
-                                TestOperationResult.class, TestOperationResult.class.getName())
-                        .registerSubtype(
-                                TransformOperationResult.class,
-                                TransformOperationResult.class.getName())
-                        .registerSubtype(
-                                WorkItemOperationResult.class,
-                                WorkItemOperationResult.class.getName())
-                        .registerSubtype(
-                                DefaultOperationResult.class,
-                                DefaultOperationResult.class.getName()));
+    builder.registerTypeAdapterFactory(
+        RuntimeTypeAdapterFactory.of(OperationResult.class, "gsonType", true)
+            .registerSubtype(
+                ProjectConfigurationOperationResult.class,
+                ProjectConfigurationOperationResult.class.getName())
+            .registerSubtype(FileDownloadResult.class, FileDownloadResult.class.getName())
+            .registerSubtype(TaskOperationResult.class, TaskOperationResult.class.getName())
+            .registerSubtype(TestOperationResult.class, TestOperationResult.class.getName())
+            .registerSubtype(
+                TransformOperationResult.class, TransformOperationResult.class.getName())
+            .registerSubtype(WorkItemOperationResult.class, WorkItemOperationResult.class.getName())
+            .registerSubtype(DefaultOperationResult.class, DefaultOperationResult.class.getName()));
 
-        builder.registerTypeAdapterFactory(
-                RuntimeTypeAdapterFactory.of(TaskOperationResult.class, "gsonType", true)
-                        .registerSubtype(TaskFailureResult.class, TaskFailureResult.class.getName())
-                        .registerSubtype(TaskSkippedResult.class, TaskSkippedResult.class.getName())
-                        .registerSubtype(
-                                TaskExecutionResult.class, TaskExecutionResult.class.getName())
-                        .registerSubtype(
-                                TaskSuccessResult.class, TaskSuccessResult.class.getName()));
-    }
+    builder.registerTypeAdapterFactory(
+        RuntimeTypeAdapterFactory.of(TaskOperationResult.class, "gsonType", true)
+            .registerSubtype(TaskFailureResult.class, TaskFailureResult.class.getName())
+            .registerSubtype(TaskSkippedResult.class, TaskSkippedResult.class.getName())
+            .registerSubtype(TaskExecutionResult.class, TaskExecutionResult.class.getName())
+            .registerSubtype(TaskSuccessResult.class, TaskSuccessResult.class.getName()));
+  }
 
-    public static Launcher<IToolingApiClient> createServerLauncher(
-            IToolingApiServer server, InputStream in, OutputStream out) {
-        return createIOLauncher(server, IToolingApiClient.class, in, out);
-    }
+  public static Launcher<Object> newClientLauncher(
+      IToolingApiClient client, InputStream in, OutputStream out) {
+    return newIoLauncher(
+        new Object[] {client}, new Class[] {IToolingApiServer.class, IProject.class}, in, out);
+  }
+
+  public static Launcher<Object> newIoLauncher(
+      Object[] locals, Class<?>[] remotes, InputStream in, OutputStream out) {
+    return new Launcher.Builder<>()
+        .setInput(in)
+        .setOutput(out)
+        .setExecutorService(Executors.newCachedThreadPool())
+        .setLocalServices(Arrays.asList(locals))
+        .setRemoteInterfaces(Arrays.asList(remotes))
+        .configureGson(ToolingApiLauncher::configureGson)
+        .setClassLoader(locals[0].getClass().getClassLoader())
+        .create();
+  }
+
+  public static Launcher<Object> newServerLauncher(
+      IToolingApiServer server, IProject project, InputStream in, OutputStream out) {
+    return newIoLauncher(
+        new Object[] {server, project}, new Class[] {IToolingApiClient.class}, in, out);
+  }
 }

@@ -32,48 +32,48 @@ import javax.lang.model.element.Element;
 
 public class FindReferences extends TreePathScanner<Void, List<TreePath>> {
 
-    final JavacTask task;
-    final Element find;
+  final JavacTask task;
+  final Element find;
 
-    public FindReferences(JavacTask task, Element find) {
-        this.task = task;
-        this.find = find;
-    }
+  public FindReferences(JavacTask task, Element find) {
+    this.task = task;
+    this.find = find;
+  }
 
-    @Override
-    public Void visitIdentifier(IdentifierTree t, List<TreePath> list) {
-        if (check()) {
-            list.add(getCurrentPath());
-        }
-        return super.visitIdentifier(t, list);
+  @Override
+  public Void visitIdentifier(IdentifierTree t, List<TreePath> list) {
+    if (check()) {
+      list.add(getCurrentPath());
     }
+    return super.visitIdentifier(t, list);
+  }
 
-    @Override
-    public Void visitMemberSelect(MemberSelectTree t, List<TreePath> list) {
-        if (check()) {
-            list.add(getCurrentPath());
-        }
-        return super.visitMemberSelect(t, list);
+  @Override
+  public Void visitMemberSelect(MemberSelectTree t, List<TreePath> list) {
+    if (check()) {
+      list.add(getCurrentPath());
     }
+    return super.visitMemberSelect(t, list);
+  }
 
-    @Override
-    public Void visitNewClass(NewClassTree t, List<TreePath> list) {
-        if (check()) {
-            list.add(getCurrentPath());
-        }
-        return super.visitNewClass(t, list);
+  @Override
+  public Void visitNewClass(NewClassTree t, List<TreePath> list) {
+    if (check()) {
+      list.add(getCurrentPath());
     }
+    return super.visitNewClass(t, list);
+  }
 
-    @Override
-    public Void visitMemberReference(MemberReferenceTree t, List<TreePath> list) {
-        if (check()) {
-            list.add(getCurrentPath());
-        }
-        return super.visitMemberReference(t, list);
+  @Override
+  public Void visitMemberReference(MemberReferenceTree t, List<TreePath> list) {
+    if (check()) {
+      list.add(getCurrentPath());
     }
+    return super.visitMemberReference(t, list);
+  }
 
-    private boolean check() {
-        Element candidate = Trees.instance(task).getElement(getCurrentPath());
-        return find.equals(candidate);
-    }
+  private boolean check() {
+    Element candidate = Trees.instance(task).getElement(getCurrentPath());
+    return find.equals(candidate);
+  }
 }
