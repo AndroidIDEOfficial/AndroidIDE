@@ -137,6 +137,9 @@ public class LogViewFragment extends Fragment {
 
   @Nullable
   public IDEEditor getEditor() {
+    if (binding == null) {
+      return null;
+    }
     return binding.editor;
   }
 
