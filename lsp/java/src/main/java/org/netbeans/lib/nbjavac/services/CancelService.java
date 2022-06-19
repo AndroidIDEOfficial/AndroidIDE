@@ -28,7 +28,7 @@ public class CancelService {
 
   /** The context key for the parameter name resolver. */
   protected static final Context.Key<CancelService> cancelServiceKey =
-      new Context.Key<CancelService>();
+      new Context.Key<>();
 
   public static CancelService instance(Context context) {
     CancelService instance = context.get(cancelServiceKey);

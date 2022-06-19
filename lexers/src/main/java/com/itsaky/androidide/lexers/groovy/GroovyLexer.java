@@ -1,27 +1,7 @@
-/************************************************************************************
- * This file is part of AndroidIDE.
- *
- *
- *
- * AndroidIDE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * AndroidIDE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- *
- **************************************************************************************/
-// Generated from GroovyLexer.g4 by ANTLR 4.9.2
+// Generated from GroovyLexer.g4 by ANTLR 4.9.3
 package com.itsaky.androidide.lexers.groovy;
 
 import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.RuntimeMetaData;
 import org.antlr.v4.runtime.Vocabulary;
@@ -32,17 +12,8 @@ import org.antlr.v4.runtime.atn.LexerATNSimulator;
 import org.antlr.v4.runtime.atn.PredictionContextCache;
 import org.antlr.v4.runtime.dfa.DFA;
 
-import java.io.IOException;
-import java.io.StringReader;
-
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class GroovyLexer extends Lexer {
-  static {
-    RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION);
-  }
-
-  protected static final DFA[] _decisionToDFA;
-  protected static final PredictionContextCache _sharedContextCache = new PredictionContextCache();
   public static final int ABSTRACT = 1,
       ASSERT = 2,
       BOOLEAN = 3,
@@ -155,442 +126,11 @@ public class GroovyLexer extends Lexer {
       COMMENT = 110,
       LINE_COMMENT = 111,
       IDENTIFIER = 112;
-  public static String[] channelNames = {"DEFAULT_TOKEN_CHANNEL", "HIDDEN"};
-
-  public static String[] modeNames = {"DEFAULT_MODE"};
-
-  private static String[] makeRuleNames() {
-    return new String[] {
-      "ABSTRACT",
-      "ASSERT",
-      "BOOLEAN",
-      "BREAK",
-      "BYTE",
-      "CASE",
-      "CATCH",
-      "CHAR",
-      "CLASS",
-      "CONST",
-      "CONTINUE",
-      "DEFAULT",
-      "DO",
-      "DOUBLE",
-      "ELSE",
-      "ENUM",
-      "EXTENDS",
-      "FINAL",
-      "FINALLY",
-      "FLOAT",
-      "FOR",
-      "IF",
-      "GOTO",
-      "IMPLEMENTS",
-      "IMPORT",
-      "INSTANCEOF",
-      "INT",
-      "INTERFACE",
-      "LONG",
-      "NATIVE",
-      "NEW",
-      "PACKAGE",
-      "PRIVATE",
-      "PROTECTED",
-      "PUBLIC",
-      "RETURN",
-      "SHORT",
-      "STATIC",
-      "STRICTFP",
-      "SUPER",
-      "SWITCH",
-      "SYNCHRONIZED",
-      "THIS",
-      "THROW",
-      "THROWS",
-      "TRANSIENT",
-      "TRY",
-      "VOID",
-      "VOLATILE",
-      "WHILE",
-      "DECIMAL_LITERAL",
-      "HEX_LITERAL",
-      "OCT_LITERAL",
-      "BINARY_LITERAL",
-      "FLOAT_LITERAL",
-      "HEX_FLOAT_LITERAL",
-      "BOOL_LITERAL",
-      "CHAR_LITERAL",
-      "SINGLE_QUOTE_STRING",
-      "STRING_LITERAL",
-      "NULL_LITERAL",
-      "LPAREN",
-      "RPAREN",
-      "LBRACE",
-      "RBRACE",
-      "LBRACK",
-      "RBRACK",
-      "SEMI",
-      "COMMA",
-      "DOT",
-      "ASSIGN",
-      "GT",
-      "LT",
-      "BANG",
-      "TILDE",
-      "QUESTION",
-      "COLON",
-      "EQUAL",
-      "LE",
-      "GE",
-      "NOTEQUAL",
-      "AND",
-      "OR",
-      "INC",
-      "DEC",
-      "ADD",
-      "SUB",
-      "MUL",
-      "DIV",
-      "BITAND",
-      "BITOR",
-      "CARET",
-      "MOD",
-      "ADD_ASSIGN",
-      "SUB_ASSIGN",
-      "MUL_ASSIGN",
-      "DIV_ASSIGN",
-      "AND_ASSIGN",
-      "OR_ASSIGN",
-      "XOR_ASSIGN",
-      "MOD_ASSIGN",
-      "LSHIFT_ASSIGN",
-      "RSHIFT_ASSIGN",
-      "URSHIFT_ASSIGN",
-      "ARROW",
-      "COLONCOLON",
-      "AT",
-      "ELLIPSIS",
-      "WS",
-      "COMMENT",
-      "LINE_COMMENT",
-      "IDENTIFIER",
-      "ExponentPart",
-      "EscapeSequence",
-      "HexDigits",
-      "HexDigit",
-      "Digits",
-      "LetterOrDigit",
-      "Letter"
-    };
-  }
-
   public static final String[] ruleNames = makeRuleNames();
-
-  private static String[] makeLiteralNames() {
-    return new String[] {
-      null,
-      "'abstract'",
-      "'assert'",
-      "'boolean'",
-      "'break'",
-      "'byte'",
-      "'case'",
-      "'catch'",
-      "'char'",
-      "'class'",
-      "'const'",
-      "'continue'",
-      "'default'",
-      "'do'",
-      "'double'",
-      "'else'",
-      "'enum'",
-      "'extends'",
-      "'final'",
-      "'finally'",
-      "'float'",
-      "'for'",
-      "'if'",
-      "'goto'",
-      "'implements'",
-      "'import'",
-      "'instanceof'",
-      "'int'",
-      "'interface'",
-      "'long'",
-      "'native'",
-      "'new'",
-      "'package'",
-      "'private'",
-      "'protected'",
-      "'public'",
-      "'return'",
-      "'short'",
-      "'static'",
-      "'strictfp'",
-      "'super'",
-      "'switch'",
-      "'synchronized'",
-      "'this'",
-      "'throw'",
-      "'throws'",
-      "'transient'",
-      "'try'",
-      "'void'",
-      "'volatile'",
-      "'while'",
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      "'null'",
-      "'('",
-      "')'",
-      "'{'",
-      "'}'",
-      "'['",
-      "']'",
-      "';'",
-      "','",
-      "'.'",
-      "'='",
-      "'>'",
-      "'<'",
-      "'!'",
-      "'~'",
-      "'?'",
-      "':'",
-      "'=='",
-      "'<='",
-      "'>='",
-      "'!='",
-      "'&&'",
-      "'||'",
-      "'++'",
-      "'--'",
-      "'+'",
-      "'-'",
-      "'*'",
-      "'/'",
-      "'&'",
-      "'|'",
-      "'^'",
-      "'%'",
-      "'+='",
-      "'-='",
-      "'*='",
-      "'/='",
-      "'&='",
-      "'|='",
-      "'^='",
-      "'%='",
-      "'<<='",
-      "'>>='",
-      "'>>>='",
-      "'->'",
-      "'::'",
-      "'@'",
-      "'...'"
-    };
-  }
-
-  private static final String[] _LITERAL_NAMES = makeLiteralNames();
-
-  private static String[] makeSymbolicNames() {
-    return new String[] {
-      null,
-      "ABSTRACT",
-      "ASSERT",
-      "BOOLEAN",
-      "BREAK",
-      "BYTE",
-      "CASE",
-      "CATCH",
-      "CHAR",
-      "CLASS",
-      "CONST",
-      "CONTINUE",
-      "DEFAULT",
-      "DO",
-      "DOUBLE",
-      "ELSE",
-      "ENUM",
-      "EXTENDS",
-      "FINAL",
-      "FINALLY",
-      "FLOAT",
-      "FOR",
-      "IF",
-      "GOTO",
-      "IMPLEMENTS",
-      "IMPORT",
-      "INSTANCEOF",
-      "INT",
-      "INTERFACE",
-      "LONG",
-      "NATIVE",
-      "NEW",
-      "PACKAGE",
-      "PRIVATE",
-      "PROTECTED",
-      "PUBLIC",
-      "RETURN",
-      "SHORT",
-      "STATIC",
-      "STRICTFP",
-      "SUPER",
-      "SWITCH",
-      "SYNCHRONIZED",
-      "THIS",
-      "THROW",
-      "THROWS",
-      "TRANSIENT",
-      "TRY",
-      "VOID",
-      "VOLATILE",
-      "WHILE",
-      "DECIMAL_LITERAL",
-      "HEX_LITERAL",
-      "OCT_LITERAL",
-      "BINARY_LITERAL",
-      "FLOAT_LITERAL",
-      "HEX_FLOAT_LITERAL",
-      "BOOL_LITERAL",
-      "CHAR_LITERAL",
-      "SINGLE_QUOTE_STRING",
-      "STRING_LITERAL",
-      "NULL_LITERAL",
-      "LPAREN",
-      "RPAREN",
-      "LBRACE",
-      "RBRACE",
-      "LBRACK",
-      "RBRACK",
-      "SEMI",
-      "COMMA",
-      "DOT",
-      "ASSIGN",
-      "GT",
-      "LT",
-      "BANG",
-      "TILDE",
-      "QUESTION",
-      "COLON",
-      "EQUAL",
-      "LE",
-      "GE",
-      "NOTEQUAL",
-      "AND",
-      "OR",
-      "INC",
-      "DEC",
-      "ADD",
-      "SUB",
-      "MUL",
-      "DIV",
-      "BITAND",
-      "BITOR",
-      "CARET",
-      "MOD",
-      "ADD_ASSIGN",
-      "SUB_ASSIGN",
-      "MUL_ASSIGN",
-      "DIV_ASSIGN",
-      "AND_ASSIGN",
-      "OR_ASSIGN",
-      "XOR_ASSIGN",
-      "MOD_ASSIGN",
-      "LSHIFT_ASSIGN",
-      "RSHIFT_ASSIGN",
-      "URSHIFT_ASSIGN",
-      "ARROW",
-      "COLONCOLON",
-      "AT",
-      "ELLIPSIS",
-      "WS",
-      "COMMENT",
-      "LINE_COMMENT",
-      "IDENTIFIER"
-    };
-  }
-
-  private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
-  public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
-
   /**
    * @deprecated Use {@link #VOCABULARY} instead.
    */
   @Deprecated public static final String[] tokenNames;
-
-  static {
-    tokenNames = new String[_SYMBOLIC_NAMES.length];
-    for (int i = 0; i < tokenNames.length; i++) {
-      tokenNames[i] = VOCABULARY.getLiteralName(i);
-      if (tokenNames[i] == null) {
-        tokenNames[i] = VOCABULARY.getSymbolicName(i);
-      }
-
-      if (tokenNames[i] == null) {
-        tokenNames[i] = "<INVALID>";
-      }
-    }
-  }
-
-  @Override
-  @Deprecated
-  public String[] getTokenNames() {
-    return tokenNames;
-  }
-
-  @Override
-  public Vocabulary getVocabulary() {
-    return VOCABULARY;
-  }
-
-  public GroovyLexer(String input) throws IOException {
-    this(CharStreams.fromReader(new StringReader(input)));
-  }
-
-  public GroovyLexer(CharStream input) {
-    super(input);
-    _interp = new LexerATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
-  }
-
-  @Override
-  public String getGrammarFileName() {
-    return "GroovyLexer.g4";
-  }
-
-  @Override
-  public String[] getRuleNames() {
-    return ruleNames;
-  }
-
-  @Override
-  public String getSerializedATN() {
-    return _serializedATN;
-  }
-
-  @Override
-  public String[] getChannelNames() {
-    return channelNames;
-  }
-
-  @Override
-  public String[] getModeNames() {
-    return modeNames;
-  }
-
-  @Override
-  public ATN getATN() {
-    return _ATN;
-  }
-
   public static final String _serializedATN =
       "\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\2r\u03bf\b\1\4\2\t"
           + "\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"
@@ -929,11 +469,438 @@ public class GroovyLexer extends Lexer {
           + "\u02cb\u02cd\u02d5\u02d7\u035d\u0367\u0375\u037e\u0383\u038b\u038e\u0395"
           + "\u039c\u03a1\u03a3\u03a7\u03af\u03b3\u03b7\u03bd\3\2\3\2";
   public static final ATN _ATN = new ATNDeserializer().deserialize(_serializedATN.toCharArray());
+  protected static final DFA[] _decisionToDFA;
+  protected static final PredictionContextCache _sharedContextCache = new PredictionContextCache();
+  private static final String[] _LITERAL_NAMES = makeLiteralNames();
+  private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
+  public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+  public static String[] channelNames = {"DEFAULT_TOKEN_CHANNEL", "HIDDEN"};
+  public static String[] modeNames = {"DEFAULT_MODE"};
+
+  static {
+    RuntimeMetaData.checkVersion("4.9.3", RuntimeMetaData.VERSION);
+  }
+
+  static {
+    tokenNames = new String[_SYMBOLIC_NAMES.length];
+    for (int i = 0; i < tokenNames.length; i++) {
+      tokenNames[i] = VOCABULARY.getLiteralName(i);
+      if (tokenNames[i] == null) {
+        tokenNames[i] = VOCABULARY.getSymbolicName(i);
+      }
+
+      if (tokenNames[i] == null) {
+        tokenNames[i] = "<INVALID>";
+      }
+    }
+  }
 
   static {
     _decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
     for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
       _decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
     }
+  }
+
+  public GroovyLexer(CharStream input) {
+    super(input);
+    _interp = new LexerATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
+  }
+
+  private static String[] makeRuleNames() {
+    return new String[] {
+      "ABSTRACT",
+      "ASSERT",
+      "BOOLEAN",
+      "BREAK",
+      "BYTE",
+      "CASE",
+      "CATCH",
+      "CHAR",
+      "CLASS",
+      "CONST",
+      "CONTINUE",
+      "DEFAULT",
+      "DO",
+      "DOUBLE",
+      "ELSE",
+      "ENUM",
+      "EXTENDS",
+      "FINAL",
+      "FINALLY",
+      "FLOAT",
+      "FOR",
+      "IF",
+      "GOTO",
+      "IMPLEMENTS",
+      "IMPORT",
+      "INSTANCEOF",
+      "INT",
+      "INTERFACE",
+      "LONG",
+      "NATIVE",
+      "NEW",
+      "PACKAGE",
+      "PRIVATE",
+      "PROTECTED",
+      "PUBLIC",
+      "RETURN",
+      "SHORT",
+      "STATIC",
+      "STRICTFP",
+      "SUPER",
+      "SWITCH",
+      "SYNCHRONIZED",
+      "THIS",
+      "THROW",
+      "THROWS",
+      "TRANSIENT",
+      "TRY",
+      "VOID",
+      "VOLATILE",
+      "WHILE",
+      "DECIMAL_LITERAL",
+      "HEX_LITERAL",
+      "OCT_LITERAL",
+      "BINARY_LITERAL",
+      "FLOAT_LITERAL",
+      "HEX_FLOAT_LITERAL",
+      "BOOL_LITERAL",
+      "CHAR_LITERAL",
+      "SINGLE_QUOTE_STRING",
+      "STRING_LITERAL",
+      "NULL_LITERAL",
+      "LPAREN",
+      "RPAREN",
+      "LBRACE",
+      "RBRACE",
+      "LBRACK",
+      "RBRACK",
+      "SEMI",
+      "COMMA",
+      "DOT",
+      "ASSIGN",
+      "GT",
+      "LT",
+      "BANG",
+      "TILDE",
+      "QUESTION",
+      "COLON",
+      "EQUAL",
+      "LE",
+      "GE",
+      "NOTEQUAL",
+      "AND",
+      "OR",
+      "INC",
+      "DEC",
+      "ADD",
+      "SUB",
+      "MUL",
+      "DIV",
+      "BITAND",
+      "BITOR",
+      "CARET",
+      "MOD",
+      "ADD_ASSIGN",
+      "SUB_ASSIGN",
+      "MUL_ASSIGN",
+      "DIV_ASSIGN",
+      "AND_ASSIGN",
+      "OR_ASSIGN",
+      "XOR_ASSIGN",
+      "MOD_ASSIGN",
+      "LSHIFT_ASSIGN",
+      "RSHIFT_ASSIGN",
+      "URSHIFT_ASSIGN",
+      "ARROW",
+      "COLONCOLON",
+      "AT",
+      "ELLIPSIS",
+      "WS",
+      "COMMENT",
+      "LINE_COMMENT",
+      "IDENTIFIER",
+      "ExponentPart",
+      "EscapeSequence",
+      "HexDigits",
+      "HexDigit",
+      "Digits",
+      "LetterOrDigit",
+      "Letter"
+    };
+  }
+
+  private static String[] makeLiteralNames() {
+    return new String[] {
+      null,
+      "'abstract'",
+      "'assert'",
+      "'boolean'",
+      "'break'",
+      "'byte'",
+      "'case'",
+      "'catch'",
+      "'char'",
+      "'class'",
+      "'const'",
+      "'continue'",
+      "'default'",
+      "'do'",
+      "'double'",
+      "'else'",
+      "'enum'",
+      "'extends'",
+      "'final'",
+      "'finally'",
+      "'float'",
+      "'for'",
+      "'if'",
+      "'goto'",
+      "'implements'",
+      "'import'",
+      "'instanceof'",
+      "'int'",
+      "'interface'",
+      "'long'",
+      "'native'",
+      "'new'",
+      "'package'",
+      "'private'",
+      "'protected'",
+      "'public'",
+      "'return'",
+      "'short'",
+      "'static'",
+      "'strictfp'",
+      "'super'",
+      "'switch'",
+      "'synchronized'",
+      "'this'",
+      "'throw'",
+      "'throws'",
+      "'transient'",
+      "'try'",
+      "'void'",
+      "'volatile'",
+      "'while'",
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      "'null'",
+      "'('",
+      "')'",
+      "'{'",
+      "'}'",
+      "'['",
+      "']'",
+      "';'",
+      "','",
+      "'.'",
+      "'='",
+      "'>'",
+      "'<'",
+      "'!'",
+      "'~'",
+      "'?'",
+      "':'",
+      "'=='",
+      "'<='",
+      "'>='",
+      "'!='",
+      "'&&'",
+      "'||'",
+      "'++'",
+      "'--'",
+      "'+'",
+      "'-'",
+      "'*'",
+      "'/'",
+      "'&'",
+      "'|'",
+      "'^'",
+      "'%'",
+      "'+='",
+      "'-='",
+      "'*='",
+      "'/='",
+      "'&='",
+      "'|='",
+      "'^='",
+      "'%='",
+      "'<<='",
+      "'>>='",
+      "'>>>='",
+      "'->'",
+      "'::'",
+      "'@'",
+      "'...'"
+    };
+  }
+
+  private static String[] makeSymbolicNames() {
+    return new String[] {
+      null,
+      "ABSTRACT",
+      "ASSERT",
+      "BOOLEAN",
+      "BREAK",
+      "BYTE",
+      "CASE",
+      "CATCH",
+      "CHAR",
+      "CLASS",
+      "CONST",
+      "CONTINUE",
+      "DEFAULT",
+      "DO",
+      "DOUBLE",
+      "ELSE",
+      "ENUM",
+      "EXTENDS",
+      "FINAL",
+      "FINALLY",
+      "FLOAT",
+      "FOR",
+      "IF",
+      "GOTO",
+      "IMPLEMENTS",
+      "IMPORT",
+      "INSTANCEOF",
+      "INT",
+      "INTERFACE",
+      "LONG",
+      "NATIVE",
+      "NEW",
+      "PACKAGE",
+      "PRIVATE",
+      "PROTECTED",
+      "PUBLIC",
+      "RETURN",
+      "SHORT",
+      "STATIC",
+      "STRICTFP",
+      "SUPER",
+      "SWITCH",
+      "SYNCHRONIZED",
+      "THIS",
+      "THROW",
+      "THROWS",
+      "TRANSIENT",
+      "TRY",
+      "VOID",
+      "VOLATILE",
+      "WHILE",
+      "DECIMAL_LITERAL",
+      "HEX_LITERAL",
+      "OCT_LITERAL",
+      "BINARY_LITERAL",
+      "FLOAT_LITERAL",
+      "HEX_FLOAT_LITERAL",
+      "BOOL_LITERAL",
+      "CHAR_LITERAL",
+      "SINGLE_QUOTE_STRING",
+      "STRING_LITERAL",
+      "NULL_LITERAL",
+      "LPAREN",
+      "RPAREN",
+      "LBRACE",
+      "RBRACE",
+      "LBRACK",
+      "RBRACK",
+      "SEMI",
+      "COMMA",
+      "DOT",
+      "ASSIGN",
+      "GT",
+      "LT",
+      "BANG",
+      "TILDE",
+      "QUESTION",
+      "COLON",
+      "EQUAL",
+      "LE",
+      "GE",
+      "NOTEQUAL",
+      "AND",
+      "OR",
+      "INC",
+      "DEC",
+      "ADD",
+      "SUB",
+      "MUL",
+      "DIV",
+      "BITAND",
+      "BITOR",
+      "CARET",
+      "MOD",
+      "ADD_ASSIGN",
+      "SUB_ASSIGN",
+      "MUL_ASSIGN",
+      "DIV_ASSIGN",
+      "AND_ASSIGN",
+      "OR_ASSIGN",
+      "XOR_ASSIGN",
+      "MOD_ASSIGN",
+      "LSHIFT_ASSIGN",
+      "RSHIFT_ASSIGN",
+      "URSHIFT_ASSIGN",
+      "ARROW",
+      "COLONCOLON",
+      "AT",
+      "ELLIPSIS",
+      "WS",
+      "COMMENT",
+      "LINE_COMMENT",
+      "IDENTIFIER"
+    };
+  }
+
+  @Override
+  public String[] getRuleNames() {
+    return ruleNames;
+  }
+
+  @Override
+  public Vocabulary getVocabulary() {
+    return VOCABULARY;
+  }
+
+  @Override
+  public String getSerializedATN() {
+    return _serializedATN;
+  }
+
+  @Override
+  public String getGrammarFileName() {
+    return "GroovyLexer.g4";
+  }
+
+  @Override
+  public ATN getATN() {
+    return _ATN;
+  }
+
+  @Override
+  public String[] getChannelNames() {
+    return channelNames;
+  }
+
+  @Override
+  public String[] getModeNames() {
+    return modeNames;
+  }
+
+  @Override
+  @Deprecated
+  public String[] getTokenNames() {
+    return tokenNames;
   }
 }

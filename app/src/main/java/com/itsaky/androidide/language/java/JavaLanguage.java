@@ -54,12 +54,12 @@ public class JavaLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("JavaLanguage");
   private final NewlineHandler[] newlineHandlers;
-  private JavaAnalyzer analyzer;
+  private JavaIncrementalAnalyzeManager analyzer;
   private CommonCompletionProvider completer;
 
   public JavaLanguage() {
     final var server = getLanguageServer();
-    this.analyzer = new JavaAnalyzer();
+    this.analyzer = new JavaIncrementalAnalyzeManager();
     this.completer = new CommonCompletionProvider(server);
 
     this.newlineHandlers = new NewlineHandler[1];

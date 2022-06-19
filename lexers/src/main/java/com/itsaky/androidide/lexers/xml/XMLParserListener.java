@@ -1,5 +1,4 @@
-// Generated from
-// D:/Projects/AndroidStudioProjects/AndroidIDE/lexers/src/main/java/com/itsaky/androidide/lexers/xml\XMLParser.g4 by ANTLR 4.9.2
+// Generated from XMLParser.g4 by ANTLR 4.9.3
 package com.itsaky.androidide.lexers.xml;
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;

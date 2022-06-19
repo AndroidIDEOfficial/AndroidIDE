@@ -1,24 +1,5 @@
-/************************************************************************************
- * This file is part of AndroidIDE.
- *
- *
- *
- * AndroidIDE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * AndroidIDE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- *
- **************************************************************************************/
-// Generated from JavadocParser.g4 by ANTLR 4.9.2
-package com.itsaky.androidide.antlr4.javadoc;
+// Generated from JavadocParser.g4 by ANTLR 4.9.3
+package com.itsaky.androidide.lexers.javadoc;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -345,21 +326,8 @@ public class JavadocParserBaseListener implements JavadocParserListener {
    * <p>The default implementation does nothing.
    */
   @Override
-  public void enterEveryRule(ParserRuleContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
-  public void exitEveryRule(ParserRuleContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
   public void visitTerminal(TerminalNode node) {}
+
   /**
    * {@inheritDoc}
    *
@@ -367,4 +335,20 @@ public class JavadocParserBaseListener implements JavadocParserListener {
    */
   @Override
   public void visitErrorNode(ErrorNode node) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterEveryRule(ParserRuleContext ctx) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitEveryRule(ParserRuleContext ctx) {}
 }
