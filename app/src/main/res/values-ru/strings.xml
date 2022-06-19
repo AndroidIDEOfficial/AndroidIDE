@@ -2,7 +2,7 @@
 
     <!-- AndroidIDE -->
     <string name="app_name">AndroidIDE</string>
-    <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь:</string>
+    <string name="license_jdk">AndroidIDE использует модифицированную версию JDK, которая лицензирована согласно GNU General Public License v2.0. Исходный код JDK и лицензия доступны здесь: </string>
     <string name="title_developers">Разработчики</string>
     <string name="msg_developers">\u2022 Akash Yadav\n\u2022 Marvin Stelter</string>
     <string name="title_open_source_licenses">Лицензирование открытого кода</string>
@@ -80,8 +80,8 @@
     <string name="build_output">Результат сборки</string>
     <string name="build_release">assembleRelease</string>
     <string name="lint_tasks">Сценарии Lint</string>
-    <string name="clean_amp_build">Зачистить и Собрать</string>
-    <string name="clean_project">Зачистка проекта</string>
+    <string name="clean_amp_build">Очистить и собрать</string>
+    <string name="clean_project">Очистить проект</string>
     <string name="create_aab">Создать AAB</string>
     <string name="build_tasks">Сценарии сборки</string>
     <string name="stop_gradle_daemons">Остановить Daemon\'ы Gradle</string>
@@ -111,8 +111,8 @@
 
     <!-- Project -->
     <string name="create_project">Создать проект</string>
-    <string name="minimum_sdk">Минимальное SDK</string>
-    <string name="target_sdk">Целевое SDK</string>
+    <string name="minimum_sdk">Минимальный SDK</string>
+    <string name="target_sdk">Целевой SDK</string>
     <string name="new_project">Новый проект</string>
     <string name="package_name">Имя пакета</string>
     <string name="project_app_name">Имя приложения</string>
@@ -133,18 +133,18 @@
     <string name="msg_project_delete_failed">Не удалось удалить проект!</string>
     <string name="menu_project_info">Информация о проекте</string>
     <string name="header_module_info">Информация о модуле</string>
-    <string name="msg_module_count">Модули : %d</string>
-    <string name="msg_task_count">Сценарии : %d</string>
-    <string name="msg_dependency_count">Зависимости : %d</string>
-    <string name="msg_package_name">Пакет : %s</string>
-    <string name="msg_min_sdk">Минимальное SDK : %s</string>
-    <string name="msg_target_sdk">Целевое SDK : %s</string>
+    <string name="msg_module_count">Модули: %d</string>
+    <string name="msg_task_count">Сценарии: %d</string>
+    <string name="msg_dependency_count">Зависимости: %d</string>
+    <string name="msg_package_name">Пакет: %s</string>
+    <string name="msg_min_sdk">Минимальный SDK: %s</string>
+    <string name="msg_target_sdk">Целевой SDK: %s</string>
     <string name="title_confirm_project_close">Закрыть проект</string>
     <string name="msg_confirm_project_close">Уверены, что хотите закрыть этот проект? Все запущенные Daemon\'ы Gradle будут остановлены после закрытия этого проекта.</string>
     <string name="project_exists">Проект с таким именем уже существует!</string>
 
     <!-- Templates -->
-    <string name="template_basic">Базовый Проект</string>
+    <string name="template_basic">Базовый проект</string>
     <string name="template_description_basic">Базовый проект, включающий в себя AppCompat Toolbar и Floating Action Button</string>
     <string name="template_description_empty">Пустой проект с верхней панелью. Подойдёт, если вы не хотите делать всю базовую рутину самостоятельно.</string>
     <string name="template_description_navigation_drawer">Проект с AppCompat Toolbar, DrawerLayout и NavigationView</string>
@@ -154,6 +154,8 @@
     <string name="template_description_kotlin_basic">Проект на Kotlin с AppCompat Toolbar и Floating Action Button</string>
     <string name="template_libgdx">Игра LibGDX</string>
     <string name="template_description_libgdx">Проект игры LibGDX. Выводит изображение на экран в качестве примера.</string>
+    <string name="template_compose">Jetpack Compose</string>
+    <string name="template_description_compose">Базовый hello world проект Jetpack Compose.</string>
 
     <!-- Files -->
     <string name="save">Сохранить</string>
@@ -193,7 +195,7 @@
     <string name="new_file">Новый файл</string>
     <string name="new_java_class">Новый Java класс</string>
     <string name="new_xml_resource">Новый ресурс XML</string>
-    <string name="new_folder">Новая Папка</string>
+    <string name="new_folder">Новая папка</string>
     <string name="title_confirm_delete">Подтвердите удаление</string>
     <string name="msg_confirm_delete">Уверены, что хотите удалить:\n%s?</string>
     <string name="copied">Успешно скопировано!</string>
@@ -256,7 +258,7 @@
     <string name="idepref_editor_drawhexcolors_title">Отрисовывать HEX строки цветов</string>
     <string name="idepref_editor_drawhexcolors_summary">Должен ли редактор отрисовывать HEX строки цветов?</string>
     <string name="idepref_editor_title">Редактор</string>
-    <string name="idepref_build_title">Сборка и Запуск</string>
+    <string name="idepref_build_title">Сборка и запуск</string>
     <string name="title_open_projects">Открывать последний проект</string>
     <string name="msg_open_projects">Если включено, IDE будет запоминать последний открытый проект и открывать его при последующих запусках</string>
     <string name="title_confirm_project_open">Подтверждение открытия проекта</string>
@@ -269,7 +271,7 @@
     <string name="msg_preferences">Настройки</string>
     <string name="msg_failed_get_changelog">Не удалось получить список изменений!</string>
     <string name="pref_changelog">Список изменений</string>
-    <string name="msg_editor_font_size">Пожалуйста, выберите размер шрифта по умолчанию для редактора :</string>
+    <string name="msg_editor_font_size">Пожалуйста, выберите размер шрифта по умолчанию для редактора:</string>
     <string name="msg_clear_cache">Это удалит директорию кэша, созданную Gradle. Если вы удалите её, следующая сборка может занять больше времени, чем обычно, так как Gradle будет скачивать необходимые файлы снова.\nВАЖНО: Это также удалит AAPT2. Вам нужно будет переустановить его, иначе вы получите ошибку сборки.\n\nУверены, что хотите удалить кэш?</string>
 
     <!-- Error Messages used while Logging -->
@@ -339,7 +341,7 @@
     <string name="msg_code_generation_failed">Не удалось сгенерировать код XML. Уверены, что все равно хотите выйти?</string>
     <string name="msg_invalid_designer_result">Дизайнер интерфейсов возвратил недопустимое значение</string>
     <string name="msg_swipe_up">Провведите вверх, для просмотра сообщений сборки, логов и прочего.</string>
-    <string name="msg_ide_crashed">AndroidIDE приостановило работу из-за непридвиденной ошибки</string>
+    <string name="msg_ide_crashed">AndroidIDE приостановила работу из-за непридвиденной ошибки</string>
     <string name="msg_report_crash">Пожалуйста, создайте issue на нашем GitHub, прикрепив сообщение ниже :</string>
     <string name="msg_crash_report_hint">Нажмите на кнопку ниже, чтобы скопировать лог и открыть страницу создания issue.</string>
     <string name="msg_copy_report_action">Копировать и сообщить</string>
@@ -369,4 +371,57 @@
     <string name="msg_use_popup_actions">Использовать плавающее окно для отображения дополнительных действий с текстом.</string>
     <string name="title_use_horizontal_popup">Горизонтальные действия с текстом</string>
     <string name="msg_use_horizontal_popup">Расположить действия с текстом в плавающем окне горизонтально.</string>
+    <string name="wizard_error_name_empty">Имя не дожно быть пустым.</string>
+    <string name="wizard_error_name_illegal">Имя не может содержать недопустимых символов</string>
+    <string name="wizard_save_location">Место сохранения</string>
+    <string name="wizard_language">Язык проекта</string>
+    <string name="wizard_loading">Загрузка шаблонов...</string>
+    <string name="exit">Выход</string>
+    <string name="hint_log_tag_filter">Фильтр тегов журнала</string>
+    <string name="idepref_title_tpFix">Исправление указателей тегов JDK 11</string>
+    <string name="idepref_msg_tpFix">Установите значение LD_PRELOAD для libhook.so, чтобы исправить проблему с указателями тегов для JDK11 в Android 11 [УСТАРЕЛО - предпочитаемо использовать JDK 17].</string>
+    <string name="idepref_title_customGradleInstallation">Пользовательская установка Gradle</string>
+    <string name="idepref_msg_customGradleInstallation">Укажите пользовательскую установку Gradle для использования при сборке. Это ПЕРЕОПРЕДЕЛЯЕТ версию, указанную в gradle-wrapper.properties.</string>
+    <string name="msg_gradle_installation_path">Путь установки Gradle</string>
+    <string name="msg_gradle_installation_input_help">Оставьте пустым, чтобы использовать Gradle wrapper.</string>
+    <string name="idepref_editor_word_wrap_title">Перенос слов</string>
+    <string name="idepref_editor_word_wrap_summary">Используйте перенос слов в редакторе</string>
+    <string name="idepref_editor_use_magnifier_title">Включить лупу</string>
+    <string name="idepref_editor_use_magnifier_summary">Увеличьте текст в положении курсора при выделении текста в редакторе</string>
+    <string name="msg_apk_install_intent_failed">Не удается запустить намерение для установки APK</string>
+    <string name="msg_viewaction_add_attr">Добавить атрибут</string>
+    <string name="msg_search_attrs">Поиск атрибутов…</string>
+    <string name="msg_attr_added">Атрибут был успешно добавлен</string>
+    <string name="msg_attr_not_updated">Не удалось обновить этот атрибут</string>
+    <string name="hint_dimension_val">Значение измерения</string>
+    <string name="hint_dimension_res">Ресурс измерения</string>
+    <string name="hint_boolean_res">Логический ресурс</string>
+    <string name="msg_file_tree">Дерево файлов</string>
+    <string name="hint_color_resource">Цветовой ресурс</string>
+    <string name="title_color_picker">Средство выбора цвета</string>
+    <string name="hint_string_value">Строковое значение</string>
+    <string name="hint_string_resource">Строковый ресурс</string>
+    <string name="hint_resource_reference">Любая ссылка на ресурс</string>
+    <string name="title_format_code">Форматирование кода</string>
+    <string name="idepref_java_useGoogleStyle_title">Используйте форматирование кода в стиле Google Java</string>
+    <string name="idepref_java_useGoogleStyle_summary">Используйте конфигурацию форматирования кода в стиле Google Java для форматирования исходного кода Java.</string>
+    <string name="idepref_visiblePassword_title">Флаг видимого пароля</string>
+    <string name="idepref_visiblePassword_summary">Используйте флаг для видимого типа ввода пароля в редакторе. Это гарантирует, что программная клавиатура не предложит никаких предложений.</string>
+    <string name="msg_no_actions">Не найдено никаких действий с кодом</string>
+    <string name="previous">Предыдущий</string>
+    <string name="msg_editor_find_case_sensitive">Чувствительный к регистру</string>
+    <string name="msg_editor_find_regex">Регулярное выражение</string>
+    <string name="msg_replacing">Замена...</string>
+    <string name="title_gradle_service_notification_ticker">Запущена служба сборки Gradle</string>
+    <string name="title_gradle_service_notification">Служба сборки Gradle</string>
+    <string name="msg_gradle_service_notification">Служба сборки Gradle для AndroidIDE работает в фоновом режиме.</string>
+    <string name="title_cancel_build">Отменить сборку</string>
+    <string name="msg_initializing_project">Инициализация проекта</string>
+    <string name="msg_project_initialized">Проект инициализирован</string>
+    <string name="msg_project_initialization_failed">Сбой инициализации проекта</string>
+    <string name="msg_project_not_initialized">Проект не инициализирован</string>
+    <string name="msg_running_task">Запущенная задача: \'%1$s\'</string>
+    <string name="msg_replacement">Замена</string>
+    <string name="title_sync_project">Синхронизация проекта</string>
+
 </resources>

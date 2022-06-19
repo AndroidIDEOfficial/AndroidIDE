@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="title_gradle_service_notification_channel">Служба сборки Android IDE Gradle</string>
+    <string name="msg_hex_color_code">Шестнадцатеричный цветовой код</string>
+    <string name="msg_color_picker_pick">Выбрать</string>
+    <string name="msg_chmod_exec">Настройка разрешений для исполняемого файла…</string>
+    <string name="msg_linking">Связывание %1$s с %2$s</string>
+    <string name="msg_extracting_hooks">Извлечение hook библиотек…</string>
+    <string name="msg_empty_package">Пустое имя пакета</string>
+    <string name="msg_package_is_not_valid">Недопустимое имя пакета</string>
+    <string name="msg_package_is_to_long">Длинное имя пакета</string>
+    <string name="msg_package_not_valid_char_1">Символ \'_\' не может быть первым символом в сегменте пакета</string>
+    <string name="msg_package_not_use_digit_first">Цифра не может быть первым символом в сегменте пакета</string>
+    <string name="msg_package_not_valid_char_2">Символ "%1$s" не допускается в именах пакетов приложений Android</string>
+    <string name="msg_package_mus_have_dot">В пакете должен быть хотя бы один разделитель \'.\'</string>
+
+</resources>

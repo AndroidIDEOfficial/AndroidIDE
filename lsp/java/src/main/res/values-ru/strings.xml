@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~  This file is part of AndroidIDE.
+  ~
+  ~  AndroidIDE is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  AndroidIDE is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="action_import_classes">Импорт класса(ов)</string>
+    <string name="action_generate_setters_getters">Генерировать сеттеры/геттеры</string>
+    <string name="action_add_throws">Добавить \'throws\'</string>
+    <string name="action_comment_line">Закомментировать строку</string>
+    <string name="action_create_missing_method">Создать отсутствующий метод</string>
+    <string name="action_convert_to_block">Преобразовать в блок</string>
+    <string name="action_generate_constructor">Создать конструктор</string>
+    <string name="action_implement_abstract_methods">Реализовать абстрактный метод(ы)</string>
+    <string name="action_remove_class">Удалить класс</string>
+    <string name="action_remove_method">Удалить метод</string>
+    <string name="action_remove_unused_throws">Удалить неиспользованные throws</string>
+    <string name="action_suppress_unchecked_warning">Подавить \'непроверенное\' предупреждение</string>
+    <string name="action_uncomment_line">Раскомментировать строку</string>
+    <string name="action_convert_to_statement">Преобразовать в оператор</string>
+    <string name="msg_select_fields">Выберите поля</string>
+    <string name="msg_no_fields_selected">Поля не выбраны</string>
+    <string name="msg_no_fields_found">Поля не найдены</string>
+    <string name="action_override_superclass_methods">Переопределение методов суперкласса</string>
+    <string name="msg_no_methods_selected">Методы не выбраны</string>
+    <string name="msg_cannot_override_methods">Невозможно переопределить методы</string>
+    <string name="msg_cannot_generate_setters_getters">Невозможно сгенерировать сеттеры и геттеры</string>
+    <string name="msg_select_methods">Выберите методы для переопределения</string>
+    <string name="msg_no_overridable_methods">Не удалось найти какой-либо переопределяемый метод</string>
+    <string name="action_goto_definition">Перейти к определению</string>
+    <string name="action_find_references">Найти ссылки</string>
+    <string name="action_generate_toString">Сгенерировать toString()</string>
+    <string name="action_remove_unused_imports">Удалить неиспользуемые импорты</string>
+    <string name="action_organize_imports">Организовать импорты</string>
+    <string name="msg_cannot_generate_toString">Не удалось сгенерировать реализацию toString()</string>
+    <string name="msg_toString_overridden">toString() уже переопределен</string>
+    <string name="action_generate_missing_constructor">Сгенерировать отсутствующий конструктор</string>
+    <string name="msg_cannot_generate_constructor">Не удалось сгенерировать конструктор</string>
+    <string name="msg_constructor_available">Конструктор с теми же типами параметров уже доступен</string>
+</resources>
