@@ -154,6 +154,8 @@
     <string name="template_description_kotlin_basic">Проект на Kotlin с AppCompat Toolbar и Floating Action Button</string>
     <string name="template_libgdx">Игра LibGDX</string>
     <string name="template_description_libgdx">Проект игры LibGDX. Выводит изображение на экран в качестве примера.</string>
+    <string name="template_compose">Jetpack Compose</string>
+    <string name="template_description_compose">Базовый hello world проект Jetpack Compose.</string>
 
     <!-- Files -->
     <string name="save">Сохранить</string>
@@ -369,4 +371,57 @@
     <string name="msg_use_popup_actions">Использовать плавающее окно для отображения дополнительных действий с текстом.</string>
     <string name="title_use_horizontal_popup">Горизонтальные действия с текстом</string>
     <string name="msg_use_horizontal_popup">Расположить действия с текстом в плавающем окне горизонтально.</string>
+    <string name="wizard_error_name_empty">Имя не дожно быть пустым.</string>
+    <string name="wizard_error_name_illegal">Имя не может содержать недопустимых символов</string>
+    <string name="wizard_save_location">Место сохранения</string>
+    <string name="wizard_language">Язык проекта</string>
+    <string name="wizard_loading">Загрузка шаблонов...</string>
+    <string name="exit">Выход</string>
+    <string name="hint_log_tag_filter">Фильтр тегов журнала</string>
+    <string name="idepref_title_tpFix">Исправление указателей тегов JDK 11</string>
+    <string name="idepref_msg_tpFix">Установите значение LD_PRELOAD для libhook.so, чтобы исправить проблему с указателями тегов для JDK11 в Android 11 [УСТАРЕЛО - предпочитаемо использовать JDK 17].</string>
+    <string name="idepref_title_customGradleInstallation">Пользовательская установка Gradle</string>
+    <string name="idepref_msg_customGradleInstallation">Укажите пользовательскую установку Gradle для использования при сборке. Это ПЕРЕОПРЕДЕЛЯЕТ версию, указанную в gradle-wrapper.properties.</string>
+    <string name="msg_gradle_installation_path">Путь установки Gradle</string>
+    <string name="msg_gradle_installation_input_help">Оставьте пустым, чтобы использовать Gradle wrapper.</string>
+    <string name="idepref_editor_word_wrap_title">Перенос слов</string>
+    <string name="idepref_editor_word_wrap_summary">Используйте перенос слов в редакторе</string>
+    <string name="idepref_editor_use_magnifier_title">Включить лупу</string>
+    <string name="idepref_editor_use_magnifier_summary">Увеличьте текст в положении курсора при выделении текста в редакторе</string>
+    <string name="msg_apk_install_intent_failed">Не удается запустить намерение для установки APK</string>
+    <string name="msg_viewaction_add_attr">Добавить атрибут</string>
+    <string name="msg_search_attrs">Поиск атрибутов…</string>
+    <string name="msg_attr_added">Атрибут был успешно добавлен</string>
+    <string name="msg_attr_not_updated">Не удалось обновить этот атрибут</string>
+    <string name="hint_dimension_val">Значение измерения</string>
+    <string name="hint_dimension_res">Ресурс измерения</string>
+    <string name="hint_boolean_res">Логический ресурс</string>
+    <string name="msg_file_tree">Дерево файлов</string>
+    <string name="hint_color_resource">Цветовой ресурс</string>
+    <string name="title_color_picker">Средство выбора цвета</string>
+    <string name="hint_string_value">Строковое значение</string>
+    <string name="hint_string_resource">Строковый ресурс</string>
+    <string name="hint_resource_reference">Любая ссылка на ресурс</string>
+    <string name="title_format_code">Форматирование кода</string>
+    <string name="idepref_java_useGoogleStyle_title">Используйте форматирование кода в стиле Google Java</string>
+    <string name="idepref_java_useGoogleStyle_summary">Используйте конфигурацию форматирования кода в стиле Google Java для форматирования исходного кода Java.</string>
+    <string name="idepref_visiblePassword_title">Флаг видимого пароля</string>
+    <string name="idepref_visiblePassword_summary">Используйте флаг для видимого типа ввода пароля в редакторе. Это гарантирует, что программная клавиатура не предложит никаких предложений.</string>
+    <string name="msg_no_actions">Не найдено никаких действий с кодом</string>
+    <string name="previous">Предыдущий</string>
+    <string name="msg_editor_find_case_sensitive">Чувствительный к регистру</string>
+    <string name="msg_editor_find_regex">Регулярное выражение</string>
+    <string name="msg_replacing">Замена...</string>
+    <string name="title_gradle_service_notification_ticker">Запущена служба сборки Gradle</string>
+    <string name="title_gradle_service_notification">Служба сборки Gradle</string>
+    <string name="msg_gradle_service_notification">Служба сборки Gradle для AndroidIDE работает в фоновом режиме.</string>
+    <string name="title_cancel_build">Отменить сборку</string>
+    <string name="msg_initializing_project">Инициализация проекта</string>
+    <string name="msg_project_initialized">Проект инициализирован</string>
+    <string name="msg_project_initialization_failed">Сбой инициализации проекта</string>
+    <string name="msg_project_not_initialized">Проект не инициализирован</string>
+    <string name="msg_running_task">Запущенная задача: \'%1$s\'</string>
+    <string name="msg_replacement">Замена</string>
+    <string name="title_sync_project">Синхронизация проекта</string>
+
 </resources>
