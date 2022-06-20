@@ -140,65 +140,13 @@
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_create_project_content.xml" value="0.33" />
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_widget_item.xml" value="0.264" />
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/menu/menu_designer_widgets.xml" value="0.20854700854700856" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/activity_about.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/activity_crash_handler.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/activity_main.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/activity_preferences.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/activity_splash.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/fragment_log_view.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/fragment_main.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/fragment_non_editable_editor.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/fragment_wizard.xml" value="0.26046511627906976" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_about_items.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_add_attr_sheet.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_attr_editor_sheet.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_attr_editor_sheet_item.xml" value="0.25" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_attr_value_editor.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_banner.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_boolean_attr_editor.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_code_action_item.xml" value="0.5" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_code_editor.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_color_attr_editor.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_completion_item.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_crash_report.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_create_file_java.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_diagnostic_group.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_diagnostic_info.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_diagnostic_item.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_dialog_text_input.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_dimension_attr_editor.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_editor_actions.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_editor_bottom_sheet.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_editor_file_tree.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_editor_find_replace.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_filetree_item.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_loading_wizard.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_nav_header.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_optionssheet_item.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_popup_menu_item.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_progress_sheet.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_projects.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_projects_item.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_reference_attr_editor.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_search_project.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_search_result_group.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_search_result_item.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_sheet.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_simple_icon_text.xml" value="0.5" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_string_attr_editor.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_symbol_item.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_text_action_item.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_text_attr_editor.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/layout_text_size_slider.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/setup_footer.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/wizard_details.xml" value="0.33" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/wizard_template_item.xml" value="0.20416666666666666" />
-        <entry key="..\:/Users/Svetl/Documents/GitHub/AndroidIDE/app/src/main/res/layout/wizard_templates.xml" value="0.20416666666666666" />
         <entry key="..\:/itsaky/.gradle/caches/transforms-3/e4862cae80f8754ca1a451ad3e00b14c/transformed/jetified-editor-0.10.11/res/drawable/round_select_all_20.xml" value="0.1305" />
         <entry key="app/src/main/res/drawable/ic_gradle.xml" value="0.3265" />
         <entry key="app/src/main/res/drawable/ic_language_gradle.xml" value="0.3265" />
         <entry key="app/src/main/res/layout/activity_download.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/fragment_log.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/layout_dialog_text_input.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/layout_log_line.xml" value="0.35572916666666665" />
       </map>
     </option>
   </component>

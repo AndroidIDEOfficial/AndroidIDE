@@ -53,7 +53,7 @@ public class LogLine {
 
   // For JSONRpc
   @SuppressWarnings("unused")
-  private LogLine() {}
+  protected LogLine() {}
 
   public LogLine(char priorityChar, String tag, String message) {
     this("", "", "", "", priorityChar, tag, message);

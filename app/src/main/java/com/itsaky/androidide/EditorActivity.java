@@ -84,7 +84,6 @@ import com.itsaky.androidide.databinding.ActivityEditorBinding;
 import com.itsaky.androidide.databinding.LayoutDiagnosticInfoBinding;
 import com.itsaky.androidide.databinding.LayoutSearchProjectBinding;
 import com.itsaky.androidide.fragments.FileTreeFragment;
-import com.itsaky.androidide.fragments.IDELogFragment;
 import com.itsaky.androidide.fragments.LogViewFragment;
 import com.itsaky.androidide.fragments.NonEditableEditorFragment;
 import com.itsaky.androidide.fragments.SearchResultFragment;
@@ -1378,9 +1377,15 @@ public class EditorActivity extends StudioActivity
               editor.getEditor().setText("");
             }
           } else if (fragment instanceof LogViewFragment) {
-            final var editor = (LogViewFragment) fragment;
-            if (editor.getEditor() != null) {
-              editor.getEditor().setText("");
+            final LogViewFragment logFrag = (LogViewFragment) fragment;
+            final var adapter = logFrag.getAdapter();
+            if (adapter != null) {
+              adapter.clear();
+            } else {
+              LOG.error(
+                  "Cannot clear contents. Adapter in LogViewFragment("
+                      + logFrag.getLogType()
+                      + ") is null.");
             }
           }
         });
@@ -1390,22 +1395,40 @@ public class EditorActivity extends StudioActivity
           final var fragment =
               bottomSheetTabAdapter.getFragmentAtIndex(
                   mBinding.bottomSheet.tabs.getSelectedTabPosition());
-          CharSequence text = "";
-          String type = "unknown_type";
-          if (fragment instanceof SimpleOutputFragment) {
-            var editor = (SimpleOutputFragment) fragment;
-            text = editor.getEditor().getText();
-            type = "build_output";
-          } else if (fragment instanceof IDELogFragment) {
-            var editor = (IDELogFragment) fragment;
-            text = editor.getEditor().getText();
-            type = "ide_logs";
-          } else if (fragment instanceof LogViewFragment) {
-            var editor = (IDELogFragment) fragment;
-            text = editor.getEditor().getText();
-            type = "app_logs";
+
+          if (fragment instanceof LogViewFragment) {
+            final var logFrag = (LogViewFragment) fragment;
+            final var type = logFrag.getLogType();
+            final var adapter = logFrag.getAdapter();
+            if (adapter != null) {
+
+              //noinspection deprecation
+              final var progress =
+                  ProgressDialog.show(EditorActivity.this, null, getString(R.string.please_wait));
+              CompletableFuture.runAsync(
+                  () -> {
+                    final var text = adapter.getAsString();
+                    ThreadUtils.runOnUiThread(
+                        () -> {
+                          progress.dismiss();
+                          shareText(text, type);
+                        });
+                  });
+            } else {
+              LOG.error("Adapter in LogViewFragment(" + type + ") is null");
+            }
+            return;
           }
-          shareText(text, type);
+
+          if (fragment instanceof SimpleOutputFragment) {
+            final var editor = (SimpleOutputFragment) fragment;
+            final var text = Objects.requireNonNull(editor.getEditor()).getText();
+            final var type = "build_output";
+            shareText(text, type);
+            return;
+          }
+
+          LOG.error("Unknown fragment:", fragment);
         });
 
     if (!getApp().getPrefManager().getBoolean(KEY_BOTTOM_SHEET_SHOWN)
