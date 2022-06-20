@@ -1407,7 +1407,7 @@ public class EditorActivity extends StudioActivity
                   ProgressDialog.show(EditorActivity.this, null, getString(R.string.please_wait));
               CompletableFuture.runAsync(
                   () -> {
-                    final var text = adapter.getAsString();
+                    final var text = adapter.allAsString();
                     ThreadUtils.runOnUiThread(
                         () -> {
                           progress.dismiss();

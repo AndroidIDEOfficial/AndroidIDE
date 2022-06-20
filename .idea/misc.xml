@@ -141,10 +141,12 @@
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/layout/layout_widget_item.xml" value="0.264" />
         <entry key="..\:/Users/Akash Yadav/AndroidStudioProjects/android-ide/app/src/main/res/menu/menu_designer_widgets.xml" value="0.20854700854700856" />
         <entry key="..\:/itsaky/.gradle/caches/transforms-3/e4862cae80f8754ca1a451ad3e00b14c/transformed/jetified-editor-0.10.11/res/drawable/round_select_all_20.xml" value="0.1305" />
+        <entry key="app/src/main/res/drawable/bg_log_search_field.xml" value="0.3365" />
         <entry key="app/src/main/res/drawable/ic_gradle.xml" value="0.3265" />
         <entry key="app/src/main/res/drawable/ic_language_gradle.xml" value="0.3265" />
         <entry key="app/src/main/res/layout/activity_download.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/fragment_log.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/fragment_log_view.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/layout_dialog_text_input.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/layout_log_line.xml" value="0.35572916666666665" />
       </map>

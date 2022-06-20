@@ -17,11 +17,6 @@
  */
 package com.itsaky.androidide.syntax.colorschemes;
 
-import static com.itsaky.androidide.models.LogLine.DEBUG;
-import static com.itsaky.androidide.models.LogLine.ERROR;
-import static com.itsaky.androidide.models.LogLine.INFO;
-import static com.itsaky.androidide.models.LogLine.WARNING;
-
 import android.graphics.Color;
 
 import io.github.rosemoe.sora.lang.styling.TextStyle;
@@ -115,38 +110,6 @@ public class SchemeAndroidIDE extends EditorColorScheme {
    */
   public static long withoutCompletion(int id) {
     return TextStyle.makeStyle(id, true);
-  }
-
-  /**
-   * Make style for the given log priority.
-   *
-   * @param priority The priority.
-   * @return The style.
-   */
-  public static long forLogPriority(int priority) {
-    return get(getLogPriorityId(priority));
-  }
-
-  /**
-   * Get the appropriate color id for the given log line priority.
-   *
-   * @param priority The log line priority.
-   * @return The color id.
-   */
-  public static int getLogPriorityId(int priority) {
-    if (priority == ERROR) {
-      return LOG_ERROR;
-    }
-
-    if (priority == WARNING) {
-      return LOG_WARNING;
-    }
-
-    if (priority == INFO) {
-      return LOG_INFO;
-    }
-
-    return DEBUG;
   }
 
   @Override

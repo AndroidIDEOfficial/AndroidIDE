@@ -139,9 +139,11 @@ public class RemoteEndpoint
     try {
       out.consume(notificationMessage);
     } catch (Exception exception) {
-      int logLevel =
-          JsonRpcException.indicatesStreamClosed(exception) ? ILogger.INFO : ILogger.WARNING;
-      LOG.log(logLevel, "Failed to send notification message.", exception);
+      ILogger.Priority priority =
+          JsonRpcException.indicatesStreamClosed(exception)
+              ? ILogger.Priority.INFO
+              : ILogger.Priority.WARNING;
+      LOG.log(priority, "Failed to send notification message.", exception);
     }
   }
 

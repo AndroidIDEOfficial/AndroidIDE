@@ -26,13 +26,12 @@
         <item>mm</item>
     </string-array>
     
-    <string-array name="logcat_units">
+    <string-array name="logcat_priorities">
         <item>Verbose</item>
         <item>Debug</item>
         <item>Info</item>
         <item>Warning</item>
         <item>Error</item>
-        <item>Fatal</item>
     </string-array>
 
 </resources>

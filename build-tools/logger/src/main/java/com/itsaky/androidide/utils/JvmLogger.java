@@ -33,8 +33,8 @@ public class JvmLogger extends ILogger {
   }
 
   @Override
-  protected void doLog(int priority, String message) {
-    final var log = new LogLine(priorityChar(priority), TAG, message);
+  protected void doLog(Priority priority, String message) {
+    final var log = new LogLine(priority, TAG, message);
     if (interceptor != null) {
       interceptor.onLog(log);
     } else {

@@ -152,7 +152,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
   @Override
   public void logMessage(@NonNull LogLine line) {
-    SERVER_LOGGER.log(ILogger.priority(line.priorityChar), line.formattedTagAndMessage());
+    SERVER_LOGGER.log(line.priority, line.formattedTagAndMessage());
   }
 
   @Override
@@ -316,12 +316,15 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     isBuildInProgress = true;
     return server
-        .executeTasks(new TaskExecutionMessage(":", Arrays.asList(tasks), getGradleInstallationPath()))
+        .executeTasks(
+            new TaskExecutionMessage(":", Arrays.asList(tasks), getGradleInstallationPath()))
         .thenApply(this::markBuildAsFinished);
   }
 
   private String getGradleInstallationPath() {
-    return StudioApp.getInstance().getPrefManager().getString(BuildPreferences.KEY_CUSTOM_GRADLE_INSTALLATION, "");
+    return StudioApp.getInstance()
+        .getPrefManager()
+        .getString(BuildPreferences.KEY_CUSTOM_GRADLE_INSTALLATION, "");
   }
 
   @NonNull
@@ -338,7 +341,9 @@ public class GradleBuildService extends Service implements BuildService, IToolin
 
     isBuildInProgress = true;
     return server
-        .executeTasks(new TaskExecutionMessage(projectPath, Arrays.asList(tasks), getGradleInstallationPath()))
+        .executeTasks(
+            new TaskExecutionMessage(
+                projectPath, Arrays.asList(tasks), getGradleInstallationPath()))
         .thenApply(this::markBuildAsFinished);
   }
 
@@ -398,7 +403,7 @@ public class GradleBuildService extends Service implements BuildService, IToolin
       return null;
     }
 
-    return  new EventListener() {
+    return new EventListener() {
 
       @SuppressWarnings("ConstantConditions")
       @Override

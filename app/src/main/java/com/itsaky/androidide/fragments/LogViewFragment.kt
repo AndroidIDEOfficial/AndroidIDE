@@ -27,6 +27,7 @@ import com.itsaky.androidide.adapters.LogLinesAdapter
 import com.itsaky.androidide.databinding.FragmentLogBinding
 import com.itsaky.androidide.models.LogLine
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.ILogger.Priority
 
 /**
  * Fragment to show logs in a [androidx.recyclerview.widget.RecyclerView].
@@ -37,7 +38,7 @@ abstract class LogViewFragment : Fragment() {
     private val log = ILogger.newInstance(javaClass.simpleName)
     var binding: FragmentLogBinding? = null
     var adapter: LogLinesAdapter? = null
-    
+
     fun appendLog(line: LogLine) {
         if (this.binding == null || this.adapter == null) {
             return
@@ -48,16 +49,16 @@ abstract class LogViewFragment : Fragment() {
             this.adapter!!.add(line)
         }
     }
-    
+
     abstract fun getLogType(): String
-    
+
     abstract fun isSimpleFormattingEnabled(): Boolean
 
-    protected open fun logLine(priority: Int, tag: String, message: String) {
-        val line = LogLine(ILogger.priorityChar(priority), tag, message)
+    protected open fun logLine(priority: Priority, tag: String, message: String) {
+        val line = LogLine(priority, tag, message)
         appendLog(line)
     }
-    
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -66,12 +67,12 @@ abstract class LogViewFragment : Fragment() {
         binding = FragmentLogBinding.inflate(inflater, container, false)
         return binding!!.root
     }
-    
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val manager = LinearLayoutManager(requireContext())
         this.binding!!.lines.layoutManager = manager
-        
+
         this.adapter = LogLinesAdapter()
         this.binding!!.lines.adapter = this.adapter
     }

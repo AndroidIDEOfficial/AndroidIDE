@@ -48,11 +48,15 @@ import java.util.Objects;
  */
 public abstract class ILogger {
 
-  public static final int DEBUG = 0;
-  public static final int WARNING = 1;
-  public static final int ERROR = 2;
-  public static final int INFO = 3;
-  public static final int VERBOSE = 4;
+  /** Logging priority. */
+  public enum Priority {
+    DEBUG,
+    WARNING,
+    ERROR,
+    INFO,
+    VERBOSE
+  }
+
   private static final String MSG_SEPARATOR = " "; // Separate messages with a space.
   private static final List<LogListener> logListeners = new ArrayList<>();
   private static ILogger instance;
@@ -86,52 +90,21 @@ public abstract class ILogger {
     return createInstance(tag);
   }
 
-  public static String priorityText(int priority) {
-    switch (priority) {
-      case DEBUG:
-        return "DEBUG";
-      case INFO:
-        return "INFO";
-      case VERBOSE:
-        return "VERBOSE";
-      case ERROR:
-        return "ERROR";
-      case WARNING:
-        return "WARNING";
-      default:
-        return "<UNKNOWN>";
-    }
+  public static String priorityText(Priority priority) {
+    return priority.name();
   }
 
-  public static char priorityChar(int priority) {
-    switch (priority) {
-      case INFO:
-        return 'I';
-      case VERBOSE:
-        return 'V';
-      case ERROR:
-        return 'E';
-      case WARNING:
-        return 'W';
-      default:
-        return 'D';
-    }
+  public static char priorityChar(Priority priority) {
+    return Character.toUpperCase(priorityText(priority).charAt(0));
   }
 
-  public static int priority(char priorityChar) {
-    switch (priorityChar) {
-      case 'I':
-        return INFO;
-      case 'V':
-        return VERBOSE;
-      case 'E':
-        return ERROR;
-      case 'W':
-        return WARNING;
-      case 'D':
-      default:
-        return DEBUG;
+  public static Priority priority(char priorityChar) {
+    for (var priority : Priority.values()) {
+      if (priorityChar(priority) == priorityChar) {
+        return priority;
+      }
     }
+    throw new IllegalArgumentException("Invalid priority character: " + priorityChar);
   }
 
   /**
@@ -141,7 +114,7 @@ public abstract class ILogger {
    * @return This logger instance.
    */
   public ILogger error(Object... messages) {
-    return log(ERROR, messages);
+    return log(Priority.ERROR, messages);
   }
 
   /**
@@ -151,12 +124,12 @@ public abstract class ILogger {
    * @param messages The messages to log.
    * @return This logger instance.
    */
-  public ILogger log(int priority, Object... messages) {
+  public ILogger log(Priority priority, Object... messages) {
     logAndNotify(priority, generateMessage(messages));
     return this;
   }
 
-  private void logAndNotify(int priority, String msg) {
+  private void logAndNotify(Priority priority, String msg) {
     doLog(priority, msg);
     for (final var listener : logListeners) {
       listener.log(priority, TAG, msg);
@@ -183,13 +156,13 @@ public abstract class ILogger {
    *
    * @param priority The priority for this log message.
    * @param message The full generated message for this log. Might contain new lines.
-   * @see ILogger#DEBUG
-   * @see ILogger#ERROR
-   * @see ILogger#WARNING
-   * @see ILogger#VERBOSE
-   * @see ILogger#INFO
+   * @see ILogger.Priority#DEBUG
+   * @see ILogger.Priority#ERROR
+   * @see ILogger.Priority#WARNING
+   * @see ILogger.Priority#VERBOSE
+   * @see ILogger.Priority#INFO
    */
-  protected abstract void doLog(int priority, String message);
+  protected abstract void doLog(Priority priority, String message);
 
   /**
    * Log warning messages.
@@ -198,7 +171,7 @@ public abstract class ILogger {
    * @return This logger instance.
    */
   public ILogger warn(Object... messages) {
-    return log(WARNING, messages);
+    return log(Priority.WARNING, messages);
   }
 
   /**
@@ -208,7 +181,7 @@ public abstract class ILogger {
    * @return This logger instance.
    */
   public ILogger verbose(Object... messages) {
-    return log(VERBOSE, messages);
+    return log(Priority.VERBOSE, messages);
   }
 
   /**
@@ -218,7 +191,7 @@ public abstract class ILogger {
    * @return This logger instance.
    */
   public ILogger info(Object... messages) {
-    return log(INFO, messages);
+    return log(Priority.INFO, messages);
   }
 
   /** Logs the name of method and class which calls this method. */
@@ -233,7 +206,7 @@ public abstract class ILogger {
    * @return This logger instance.
    */
   public ILogger debug(Object... messages) {
-    return log(DEBUG, messages);
+    return log(Priority.DEBUG, messages);
   }
 
   protected String getCallerClassDescription() {
@@ -254,6 +227,6 @@ public abstract class ILogger {
 
   /** A listener which can be used to listen to log events. */
   public interface LogListener {
-    void log(int priority, String tag, String message);
+    void log(Priority priority, String tag, String message);
   }
 }
