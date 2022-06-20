@@ -44,6 +44,7 @@ import com.sun.tools.javac.util.DefinedBy;
 import com.sun.tools.javac.util.DefinedBy.Api;
 import com.sun.tools.javac.util.Log;
 
+import org.netbeans.lib.nbjavac.services.CancelService;
 import org.netbeans.lib.nbjavac.services.NBAttr;
 import org.netbeans.lib.nbjavac.services.NBClassFinder;
 import org.netbeans.lib.nbjavac.services.NBEnter;
@@ -101,6 +102,9 @@ public class ReusableCompiler {
   private ReusableContext currentContext;
   private boolean checkedOut;
 
+  // TODO This is not used currently
+  private static final CancelService cancelService = new CancelServiceImpl();
+
   /**
    * Creates a new task as if by {@link javax.tools.JavaCompiler#getTask} and runs the provided
    * worker with it. The task is only valid while the worker is running. The internal structures may
@@ -137,12 +141,12 @@ public class ReusableCompiler {
             .collect(Collectors.toCollection(ArrayList::new));
     if (!opts.equals(currentOptions)) {
       final ArrayList<String> newOpts = new ArrayList<>(currentOptions);
-      newOpts.removeAll(opts);
+      newOpts.removeAll(currentOptions);
       LOG.debug("New compiler options:", newOpts);
 
       currentOptions.clear();
       currentOptions.addAll(opts);
-      currentContext = new ReusableContext(new ArrayList<>(opts));
+      currentContext = new ReusableContext(new ArrayList<>(opts), cancelService);
     }
     JavacTaskImpl task =
         (JavacTaskImpl)
@@ -186,17 +190,17 @@ public class ReusableCompiler {
 
   static class ReusableContext extends Context implements TaskListener {
 
-    List<String> arguments;
+    final List<String> arguments;
 
-    ReusableContext(List<String> arguments) {
+    ReusableContext(List<String> arguments, final CancelService cancelService) {
       super();
       this.arguments = arguments;
       put(Log.logKey, ReusableLog.factory);
       put(JavaCompiler.compilerKey, ReusableJavaCompiler.factory);
-      registerNBServices();
+      registerNBServices(cancelService);
     }
 
-    private void registerNBServices() {
+    private void registerNBServices(final CancelService cancelService) {
       NBAttr.preRegister(this);
       NBParserFactory.preRegister(this);
       NBTreeMaker.preRegister(this);
@@ -205,6 +209,7 @@ public class ReusableCompiler {
       NBEnter.preRegister(this);
       NBMemberEnter.preRegister(this, false);
       NBClassFinder.preRegister(this);
+      CancelService.preRegister(this, cancelService);
 
       if (!TestUtils.isTestEnvironment()) {
         put(LazyTreeLoader.lazyTreeLoaderKey, new IDELazyTreeLoader());

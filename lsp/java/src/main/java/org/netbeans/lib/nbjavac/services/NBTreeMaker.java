@@ -18,19 +18,11 @@
  */
 package org.netbeans.lib.nbjavac.services;
 
-import com.sun.tools.javac.code.Symbol.ClassSymbol;
 import com.sun.tools.javac.code.Symtab;
 import com.sun.tools.javac.code.Types;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
-import com.sun.tools.javac.tree.JCTree.JCExpression;
-import com.sun.tools.javac.tree.JCTree.JCModifiers;
-import com.sun.tools.javac.tree.JCTree.JCTypeParameter;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.List;
-import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 
 /**
@@ -39,13 +31,7 @@ import com.sun.tools.javac.util.Names;
 public class NBTreeMaker extends TreeMaker {
 
   public static void preRegister(Context context) {
-    context.put(
-        treeMakerKey,
-        new Context.Factory<TreeMaker>() {
-          public TreeMaker make(Context c) {
-            return new NBTreeMaker(c);
-          }
-        });
+    context.put(treeMakerKey, (Context.Factory<TreeMaker>) NBTreeMaker::new);
   }
 
   private final Names names;

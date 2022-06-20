@@ -35,11 +35,7 @@ public class NBMemberEnter extends MemberEnter {
   public static void preRegister(Context context, boolean backgroundScan) {
     context.put(
         MemberEnter.class,
-        new Context.Factory<MemberEnter>() {
-          public MemberEnter make(Context c) {
-            return new NBMemberEnter(c, backgroundScan);
-          }
-        });
+        (Context.Factory<MemberEnter>) c -> new NBMemberEnter(c, backgroundScan));
   }
 
   private final CancelService cancelService;

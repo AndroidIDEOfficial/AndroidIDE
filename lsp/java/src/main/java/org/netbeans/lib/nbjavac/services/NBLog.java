@@ -64,23 +64,13 @@ public class NBLog extends Log {
       final PrintWriter noticeWriter) {
     context.put(
         logKey,
-        new Context.Factory<Log>() {
-          @Override
-          public Log make(Context c) {
-            return new NBLog(c, errWriter);
-          }
-        });
+        (Context.Factory<Log>) c -> new NBLog(c, errWriter));
   }
 
   public static void preRegister(Context context, final PrintWriter output) {
     context.put(
         logKey,
-        new Context.Factory<Log>() {
-          @Override
-          public Log make(Context c) {
-            return new NBLog(c, output);
-          }
-        });
+        (Context.Factory<Log>) c -> new NBLog(c, output));
   }
 
   @Override

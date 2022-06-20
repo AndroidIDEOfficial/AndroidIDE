@@ -38,11 +38,7 @@ public class NBEnter extends Enter {
   public static void preRegister(Context context) {
     context.put(
         enterKey,
-        new Context.Factory<Enter>() {
-          public Enter make(Context c) {
-            return new NBEnter(c);
-          }
-        });
+        (Context.Factory<Enter>) NBEnter::new);
   }
 
   private final CancelService cancelService;

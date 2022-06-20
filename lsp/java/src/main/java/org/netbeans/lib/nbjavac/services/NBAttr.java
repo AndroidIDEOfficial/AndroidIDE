@@ -45,11 +45,7 @@ public class NBAttr extends Attr {
   public static void preRegister(Context context) {
     context.put(
         attrKey,
-        new Context.Factory<Attr>() {
-          public Attr make(Context c) {
-            return new NBAttr(c);
-          }
-        });
+        (Context.Factory<Attr>) NBAttr::new);
   }
 
   private final CancelService cancelService;

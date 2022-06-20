@@ -19,6 +19,8 @@
 
 package org.netbeans.lib.nbjavac.services;
 
+import androidx.annotation.NonNull;
+
 import com.sun.tools.javac.util.Context;
 
 /**
@@ -27,16 +29,20 @@ import com.sun.tools.javac.util.Context;
 public class CancelService {
 
   /** The context key for the parameter name resolver. */
-  protected static final Context.Key<CancelService> cancelServiceKey =
-      new Context.Key<CancelService>();
+  protected static final Context.Key<CancelService> cancelServiceKey = new Context.Key<>();
 
-  public static CancelService instance(Context context) {
+  @NonNull
+  public static CancelService instance(@NonNull Context context) {
     CancelService instance = context.get(cancelServiceKey);
     if (instance == null) {
       instance = new CancelService();
       context.put(cancelServiceKey, instance);
     }
     return instance;
+  }
+
+  public static void preRegister(@NonNull Context context, @NonNull CancelService impl) {
+    context.put(CancelService.cancelServiceKey, impl);
   }
 
   protected CancelService() {}

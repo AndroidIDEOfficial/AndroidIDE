@@ -45,12 +45,7 @@ public class NBParserFactory extends ParserFactory {
   public static void preRegister(Context context) {
     context.put(
         parserFactoryKey,
-        new Context.Factory<ParserFactory>() {
-          @Override
-          public ParserFactory make(Context c) {
-            return new NBParserFactory(c);
-          }
-        });
+        (Context.Factory<ParserFactory>) NBParserFactory::new);
   }
 
   private final ScannerFactory scannerFactory;

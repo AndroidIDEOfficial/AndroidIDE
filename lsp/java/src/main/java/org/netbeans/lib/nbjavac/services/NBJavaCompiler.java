@@ -38,11 +38,7 @@ public class NBJavaCompiler extends JavaCompiler {
   public static void preRegister(Context context) {
     context.put(
         compilerKey,
-        new Context.Factory<JavaCompiler>() {
-          public JavaCompiler make(Context c) {
-            return new NBJavaCompiler(c);
-          }
-        });
+        (Context.Factory<JavaCompiler>) NBJavaCompiler::new);
   }
 
   private final CancelService cancelService;

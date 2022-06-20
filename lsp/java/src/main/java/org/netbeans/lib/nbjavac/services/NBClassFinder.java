@@ -46,11 +46,7 @@ public class NBClassFinder extends ClassFinder {
   public static void preRegister(Context context) {
     context.put(
         classFinderKey,
-        new Context.Factory<ClassFinder>() {
-          public ClassFinder make(Context c) {
-            return new NBClassFinder(c);
-          }
-        });
+        (Context.Factory<ClassFinder>) NBClassFinder::new);
   }
 
   private final Context context;

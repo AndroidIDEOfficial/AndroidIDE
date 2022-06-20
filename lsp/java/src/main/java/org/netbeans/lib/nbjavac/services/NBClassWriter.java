@@ -41,11 +41,7 @@ public class NBClassWriter extends ClassWriter {
   public static void preRegister(Context context) {
     context.put(
         classWriterKey,
-        new Context.Factory<ClassWriter>() {
-          public ClassWriter make(Context c) {
-            return new NBClassWriter(c);
-          }
-        });
+        (Context.Factory<ClassWriter>) NBClassWriter::new);
   }
 
   private final NBNames nbNames;

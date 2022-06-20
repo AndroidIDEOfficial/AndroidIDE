@@ -38,6 +38,8 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.utils.ILogger;
 
+import org.netbeans.lib.nbjavac.services.CancelAbort;
+
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
@@ -47,7 +49,6 @@ public class SynchronizedTask {
 
   private static final ILogger LOG = ILogger.newInstance("SynchronizedTask");
   private final Semaphore semaphore = new Semaphore(1);
-  private volatile boolean isWriting;
   private CompileTask task;
 
   public void run(@NonNull Consumer<CompileTask> taskConsumer) {
@@ -75,25 +76,21 @@ public class SynchronizedTask {
 
   void doCompile(@NonNull Runnable run) {
     semaphore.acquireUninterruptibly();
-    isWriting = true;
     try {
       if (this.task != null) {
         this.task.close();
       }
       run.run();
     } catch (Throwable th) {
-      LOG.error("An error occurred in SynchronizedTask.doCompile()", th);
+      if (!(th instanceof CancelAbort)) {
+        LOG.error("An error occurred in SynchronizedTask.doCompile()", th);
+      }
     } finally {
-      isWriting = false;
       semaphore.release();
     }
   }
 
   void setTask(CompileTask task) {
     this.task = task;
-  }
-
-  public synchronized boolean isWriting() {
-    return isWriting || semaphore.hasQueuedThreads();
   }
 }

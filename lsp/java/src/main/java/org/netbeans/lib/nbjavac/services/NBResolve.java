@@ -39,12 +39,7 @@ public class NBResolve extends Resolve {
   public static void preRegister(Context context) {
     context.put(
         resolveKey,
-        new Context.Factory<Resolve>() {
-          @Override
-          public Resolve make(Context c) {
-            return new NBResolve(c);
-          }
-        });
+        (Context.Factory<Resolve>) NBResolve::new);
   }
 
   protected NBResolve(Context ctx) {
