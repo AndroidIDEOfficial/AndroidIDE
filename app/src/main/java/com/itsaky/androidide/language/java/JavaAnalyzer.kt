@@ -33,10 +33,6 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forKeyword
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.withoutCompletion
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.lsp.models.DiagnosticItem
-import com.itsaky.lsp.models.DiagnosticSeverity.WARNING
-import com.itsaky.lsp.models.Position
-import com.itsaky.lsp.models.Range
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
 import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Span
@@ -45,7 +41,7 @@ import io.github.rosemoe.sora.text.Content
 import org.antlr.v4.runtime.CharStreams
 
 /** @author Akash Yadav */
-class JavaIncrementalAnalyzeManager :
+class JavaAnalyzer :
   BaseIncrementalAnalyzeManager(JavaLexer(CharStreams.fromString(""))) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)

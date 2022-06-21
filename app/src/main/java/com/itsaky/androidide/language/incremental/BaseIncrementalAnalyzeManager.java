@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.EvictingQueue;
-import com.itsaky.androidide.language.java.JavaIncrementalAnalyzeManager;
+import com.itsaky.androidide.language.java.JavaAnalyzer;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
@@ -119,7 +119,7 @@ public abstract class BaseIncrementalAnalyzeManager
    *     multiline token and int[] 1 specifies tokens which end the multiline token. For example,
    *     <p>[['/', '*'], ['*', '/']].
    *     <p>But instead of characters, there must be token types.
-   * @see JavaIncrementalAnalyzeManager
+   * @see JavaAnalyzer
    */
   protected abstract int[][] getMultilineTokenStartEndTypes();
 

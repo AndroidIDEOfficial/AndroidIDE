@@ -29,7 +29,6 @@ import com.itsaky.androidide.lexers.java.JavaParser;
 import com.itsaky.androidide.utils.ILogger;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
-import com.itsaky.lsp.models.DiagnosticItem;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
@@ -37,8 +36,6 @@ import org.antlr.v4.runtime.Token;
 import java.io.StringReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
@@ -54,12 +51,12 @@ public class JavaLanguage extends IDELanguage {
 
   private static final ILogger LOG = ILogger.newInstance("JavaLanguage");
   private final NewlineHandler[] newlineHandlers;
-  private JavaIncrementalAnalyzeManager analyzer;
+  private JavaAnalyzer analyzer;
   private CommonCompletionProvider completer;
 
   public JavaLanguage() {
     final var server = getLanguageServer();
-    this.analyzer = new JavaIncrementalAnalyzeManager();
+    this.analyzer = new JavaAnalyzer();
     this.completer = new CommonCompletionProvider(server);
 
     this.newlineHandlers = new NewlineHandler[1];

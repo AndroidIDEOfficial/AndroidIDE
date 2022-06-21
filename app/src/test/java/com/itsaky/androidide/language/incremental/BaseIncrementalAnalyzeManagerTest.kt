@@ -18,7 +18,7 @@
 package com.itsaky.androidide.language.incremental
 
 import com.google.common.truth.Truth.assertThat
-import com.itsaky.androidide.language.java.JavaIncrementalAnalyzeManager
+import com.itsaky.androidide.language.java.JavaAnalyzer
 import com.itsaky.androidide.lexers.java.JavaLexer
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
 import org.junit.Test
@@ -32,7 +32,7 @@ internal class BaseIncrementalAnalyzeManagerTest {
 
   @Test
   fun testSimpleTokenization() {
-    val analyzer = JavaIncrementalAnalyzeManager()
+    val analyzer = JavaAnalyzer()
     val result =
       analyzer.tokenizeLine(
         "public static final String THIS_IS_A_STRING = \"This is a string...!\";",
@@ -62,7 +62,7 @@ internal class BaseIncrementalAnalyzeManagerTest {
 
   @Test
   fun testCompleteCommentTokenization() {
-    val analyzer = JavaIncrementalAnalyzeManager()
+    val analyzer = JavaAnalyzer()
     val result =
       analyzer.tokenizeLine("/*This is a */complete multiline comment", analyzer.initialState)
     assertThat(result.state.state).isEqualTo(LineState.NORMAL)
@@ -81,7 +81,7 @@ internal class BaseIncrementalAnalyzeManagerTest {
 
   @Test
   fun testIncompleteCommentTokenization() {
-    val analyzer = JavaIncrementalAnalyzeManager()
+    val analyzer = JavaAnalyzer()
     var result =
       analyzer.tokenizeLine("/*This is an incomplete multiline comment", analyzer.initialState)
     println(result.state)
@@ -100,7 +100,7 @@ internal class BaseIncrementalAnalyzeManagerTest {
 
   @Test
   fun testMultilineCommentTokenization() {
-    val analyzer = JavaIncrementalAnalyzeManager()
+    val analyzer = JavaAnalyzer()
 
     // Test a simple multiline comment
     run {
