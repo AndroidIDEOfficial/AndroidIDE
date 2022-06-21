@@ -17,50 +17,24 @@
 
 package com.itsaky.androidide.language.incremental
 
-import com.itsaky.lsp.models.DiagnosticItem
+import org.antlr.v4.runtime.Lexer
 
 /**
  * Tokenization state of a line.
  *
+ * @param state The state of the line.
+ * @param hasBraces `true` if the line has braces. `false` otherwise.
+ * @param lexerMode The mode of the lexer. This MUST be preserved in the lexer.
+ *
  * @author Akash Yadav
  */
-class LineState {
-
+data class LineState(
+  @JvmField var state: Int = NORMAL,
+  @JvmField var hasBraces: Boolean = false,
+  @JvmField var lexerMode: Int = Lexer.DEFAULT_MODE
+) {
   companion object {
     const val NORMAL = 0
     const val INCOMPLETE = 1
   }
-
-  @JvmField var state = NORMAL
-  @JvmField var hasBraces = false
-  @JvmField var diagnostics: DiagnosticsState? = null
-
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-
-    other as LineState
-
-    if (state != other.state) return false
-    if (hasBraces != other.hasBraces) return false
-    if (diagnostics != other.diagnostics) return false
-
-    return true
-  }
-
-  override fun hashCode(): Int {
-    var result = state
-    result = 31 * result + hasBraces.hashCode()
-    result = 31 * result + (diagnostics?.hashCode() ?: 0)
-    return result
-  }
-
-  override fun toString(): String {
-    return "LineState(state=$state, hasBraces=$hasBraces, diagnostics=$diagnostics)"
-  }
 }
-
-data class DiagnosticsState(
-  val continueDiagnostic: Boolean = false,
-  val diagnostic: DiagnosticItem? = null
-)

@@ -209,17 +209,19 @@ public abstract class BaseIncrementalAnalyzeManager
     var newState = 0;
     var stateObj = new LineState();
     if (state.state == NORMAL) {
-      newState = tokenizeNormal(line, 0, tokens, stateObj);
+      newState = tokenizeNormal(line, 0, tokens, stateObj, state.lexerMode);
     } else if (state.state == INCOMPLETE) {
-      final var result = fillIncomplete(line, tokens);
+      final var result = fillIncomplete(line, tokens, state.lexerMode);
       newState = IntPair.getFirst(result);
       if (newState == NORMAL) {
-        newState = tokenizeNormal(line, IntPair.getSecond(result), tokens, stateObj);
+        newState =
+            tokenizeNormal(line, IntPair.getSecond(result), tokens, stateObj, state.lexerMode);
       } else {
         newState = INCOMPLETE;
       }
     }
     stateObj.state = newState;
+    stateObj.lexerMode = lexer._mode;
     return new LineTokenizeResult<>(stateObj, tokens);
   }
 
@@ -239,8 +241,10 @@ public abstract class BaseIncrementalAnalyzeManager
       final CharSequence line,
       final int column,
       final List<IncrementalToken> tokens,
-      final LineState st) {
+      final LineState st,
+      final int lexerMode) {
     lexer.setInputStream(createStream(line));
+    lexer.pushMode(lexerMode);
     final var queues = createEvictingQueueForTokens();
     final var start = queues.getFirst();
     final var end = queues.getSecond();
@@ -310,8 +314,10 @@ public abstract class BaseIncrementalAnalyzeManager
    * @return The state and offset.
    */
   @SuppressWarnings("UnstableApiUsage")
-  protected long fillIncomplete(CharSequence line, final List<IncrementalToken> tokens) {
+  protected long fillIncomplete(
+      CharSequence line, final List<IncrementalToken> tokens, final int lexerMode) {
     lexer.setInputStream(createStream(line));
+    lexer.pushMode(lexerMode);
     final var queue = createEvictingQueueForTokens();
     final var end = queue.getSecond();
     final var allTokens =
