@@ -23,8 +23,6 @@ import androidx.annotation.NonNull;
 
 import com.itsaky.androidide.language.IDELanguage;
 
-import com.itsaky.androidide.language.java.JavaLanguage;
-import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.ILogger;
 
 import org.antlr.v4.runtime.CharStreams;
