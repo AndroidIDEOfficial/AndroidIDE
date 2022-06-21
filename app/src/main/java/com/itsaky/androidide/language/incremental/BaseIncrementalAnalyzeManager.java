@@ -63,15 +63,28 @@ public abstract class BaseIncrementalAnalyzeManager
   private final int[] multilineEndTypes;
   private static final ILogger LOG = ILogger.newInstance("BaseIncrementalAnalyzeManager");
 
-  public BaseIncrementalAnalyzeManager(final Lexer lexer) {
+  public BaseIncrementalAnalyzeManager(final Class<? extends Lexer> lexer) {
     Objects.requireNonNull(lexer, "Cannot create analyzer manager for null lexer");
-    this.lexer = lexer;
+    this.lexer = createLexerInstance(lexer);
 
     var multilineTokenTypes = getMultilineTokenStartEndTypes();
     verifyMultilineTypes(multilineTokenTypes);
 
     this.multilineStartTypes = multilineTokenTypes[0];
     this.multilineEndTypes = multilineTokenTypes[1];
+  }
+
+  @NonNull
+  private Lexer createLexerInstance(final Class<? extends Lexer> lexer) {
+    try {
+      final var constructor = lexer.getConstructor(CharStream.class);
+      if (!constructor.isAccessible()) {
+        constructor.setAccessible(true);
+      }
+      return constructor.newInstance(createStream(""));
+    } catch (Throwable err) {
+      throw new RuntimeException("Unable to create Lexer instance", err);
+    }
   }
 
   private void verifyMultilineTypes(@NonNull final int[][] types) {

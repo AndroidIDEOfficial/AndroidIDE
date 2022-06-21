@@ -16,67 +16,54 @@ import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TYPE_NA
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forKeyword;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString;
-import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
-import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.withoutCompletion;
+import static io.github.rosemoe.sora.lang.styling.TextStyle.makeStyle;
 
+import com.itsaky.androidide.language.incremental.BaseIncrementalAnalyzeManager;
+import com.itsaky.androidide.language.incremental.IncrementalToken;
+import com.itsaky.androidide.language.incremental.LineState;
 import com.itsaky.androidide.lexers.cpp.CPP14Lexer;
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
-import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.ILogger;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CodePointCharStream;
-import org.antlr.v4.runtime.Token;
-
-import java.io.IOException;
 import java.lang.Override;
-import java.lang.Void;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
-import io.github.rosemoe.sora.lang.styling.MappedSpans;
-import io.github.rosemoe.sora.lang.styling.Styles;
+import io.github.rosemoe.sora.lang.analysis.AsyncIncrementalAnalyzeManager;
+import io.github.rosemoe.sora.lang.styling.CodeBlock;
+import io.github.rosemoe.sora.lang.styling.Span;
+import io.github.rosemoe.sora.text.Content;
 
-public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
+public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
 
   private static final ILogger LOG = ILogger.newInstance("CppAnalyzer");
 
+  public CppAnalyzer() {
+    super(CPP14Lexer.class);
+  }
+
   @Override
-  protected Styles analyze(StringBuilder text, Delegate<Void> delegate) {
-    final var styles = new Styles();
-    final var colors = new MappedSpans.Builder();
-    final CodePointCharStream stream;
-    try {
-      stream = CharStreams.fromReader(new CharSequenceReader(text));
-    } catch (IOException e) {
-      LOG.error("Unable to read text to analyze", e);
-      return styles;
-    }
+  public List<CodeBlock> computeBlocks(
+      final Content text,
+      final AsyncIncrementalAnalyzeManager<LineState, IncrementalToken>.CodeBlockAnalyzeDelegate
+          delegate) {
+    return Collections.emptyList();
+  }
 
-    final var lexer = new CPP14Lexer(stream);
-    // final var parser = new CPP14Parser(new CommonTokenStream(lexer));
-    Token token;
-    int line, column, lastLine = 1, type;
-    boolean isFirst = true;
-
-    while (!delegate.isCancelled()) {
-      token = lexer.nextToken();
-      if (token == null) {
-        break;
-      }
-
-      line = token.getLine() - 1;
-      column = token.getCharPositionInLine();
-      type = token.getType();
-
-      if (type == CPP14Lexer.EOF) {
-        lastLine = line;
-        break;
-      }
+  @Override
+  protected List<Span> generateSpans(final LineTokenizeResult<LineState, IncrementalToken> tokens) {
+    final var spans = new ArrayList<Span>();
+    var first = true;
+    for (int i = 0; i < tokens.tokens.size(); i++) {
+      final var token = tokens.tokens.get(i);
+      final var type = token.getType();
+      final var offset = token.getStartIndex();
 
       switch (type) {
         case Whitespace:
-          if (isFirst) {
-            colors.addNormalIfNull();
+          if (first) {
+            spans.add(Span.obtain(offset, makeStyle(TEXT_NORMAL)));
+            first = false;
           }
           break;
         case Alignas:
@@ -141,7 +128,7 @@ public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
         case Volatile:
         case While:
         case Void:
-          colors.addIfNeeded(line, column, forKeyword());
+          spans.add(Span.obtain(offset, forKeyword()));
           break;
         case Bool:
         case Char:
@@ -153,7 +140,7 @@ public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
         case Long:
         case Short:
         case Wchar:
-          colors.addIfNeeded(line, column, get(TYPE_NAME));
+          spans.add(Span.obtain(offset, makeStyle(TYPE_NAME)));
           break;
         case LeftParen:
         case LeftBracket:
@@ -202,7 +189,7 @@ public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
         case Doublecolon:
         case DotStar:
         case Ellipsis:
-          colors.addIfNeeded(line, column, get(OPERATOR));
+          spans.add(Span.obtain(offset, makeStyle(OPERATOR)));
           break;
         case IntegerLiteral:
         case DecimalLiteral:
@@ -212,51 +199,40 @@ public class CppAnalyzer extends SimpleAnalyzeManager<Void> {
         case Integersuffix:
         case CharacterLiteral:
         case FloatingLiteral:
-        case StringLiteral:
         case BooleanLiteral:
         case Nullptr:
         case True_:
         case False_:
-          colors.addIfNeeded(line, column, get(LITERAL));
+          spans.add(Span.obtain(offset, makeStyle(LITERAL)));
           break;
-        case BlockComment:
-          colors.addIfNeeded(line, column, forComment());
-          break;
-        case LineComment:
-          var commentType = SchemeAndroidIDE.COMMENT;
-
-          // highlight special line comments
-          var commentText = token.getText();
-          if (commentText.length() > 2) {
-            commentText = commentText.substring(2);
-            commentText = commentText.trim();
-
-            if ("todo".equalsIgnoreCase(commentText.substring(0, 4))) {
-              commentType = SchemeAndroidIDE.TODO_COMMENT;
-            } else if ("fixme".equalsIgnoreCase(commentText.substring(0, 5))) {
-              commentType = SchemeAndroidIDE.FIXME_COMMENT;
-            }
-          }
-
-          colors.addIfNeeded(line, column, withoutCompletion(commentType));
-          break;
+        case StringLiteral:
         case MultiLineMacro:
         case Directive:
-          colors.addIfNeeded(line, column, forString());
+          spans.add(Span.obtain(offset, forString()));
           break;
-
+        case BlockComment:
+          spans.add(Span.obtain(offset, forComment()));
+          break;
+        case LineComment:
+          handleLineCommentSpan(token, spans, offset);
+          break;
         default:
-          colors.addIfNeeded(line, column, get(TEXT_NORMAL));
+          spans.add(Span.obtain(offset, makeStyle(TEXT_NORMAL)));
           break;
       }
-
-      isFirst = false;
     }
+    return null;
+  }
 
-    colors.determine(lastLine);
+  @Override
+  protected int[][] getMultilineTokenStartEndTypes() {
+    final var start = new int[] {Div, Star};
+    final var end = new int[] {Star, Div};
+    return new int[][] {start, end};
+  }
 
-    styles.spans = colors.build();
-
-    return styles;
+  @Override
+  protected void handleIncompleteToken(final IncrementalToken token) {
+    token.type = BlockComment;
   }
 }

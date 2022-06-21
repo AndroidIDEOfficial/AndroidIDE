@@ -21,27 +21,22 @@ import com.itsaky.androidide.language.incremental.IncrementalToken
 import com.itsaky.androidide.language.incremental.LineState
 import com.itsaky.androidide.lexers.java.JavaLexer
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.ANNOTATION
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.COMMENT
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.FIXME_COMMENT
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.LITERAL
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATOR
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TEXT_NORMAL
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TODO_COMMENT
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TYPE_NAME
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forKeyword
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forString
-import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.withoutCompletion
 import com.itsaky.androidide.utils.ILogger
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
 import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.TextStyle.makeStyle
 import io.github.rosemoe.sora.text.Content
-import org.antlr.v4.runtime.CharStreams
 
 /** @author Akash Yadav */
-class JavaAnalyzer : BaseIncrementalAnalyzeManager(JavaLexer(CharStreams.fromString(""))) {
+class JavaAnalyzer : BaseIncrementalAnalyzeManager(JavaLexer::class.java) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
@@ -58,7 +53,6 @@ class JavaAnalyzer : BaseIncrementalAnalyzeManager(JavaLexer(CharStreams.fromStr
     for (token in tokens.tokens) {
       val type = token.type
       val offset = token.startIndex
-      val tokenLength = token.text.length
       when (type) {
         JavaLexer.WS -> {
           if (first) {
@@ -190,7 +184,7 @@ class JavaAnalyzer : BaseIncrementalAnalyzeManager(JavaLexer(CharStreams.fromStr
 
     return spans
   }
-  
+
   override fun getMultilineTokenStartEndTypes(): Array<IntArray> {
     val start = intArrayOf(JavaLexer.DIV, JavaLexer.MUL)
     val end = intArrayOf(JavaLexer.MUL, JavaLexer.DIV)
