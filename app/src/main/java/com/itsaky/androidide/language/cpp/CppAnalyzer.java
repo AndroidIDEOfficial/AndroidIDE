@@ -53,19 +53,13 @@ public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
   @Override
   protected List<Span> generateSpans(final LineTokenizeResult<LineState, IncrementalToken> tokens) {
     final var spans = new ArrayList<Span>();
-    var first = true;
+    spans.add(Span.obtain(0, makeStyle(TEXT_NORMAL)));
     for (int i = 0; i < tokens.tokens.size(); i++) {
       final var token = tokens.tokens.get(i);
       final var type = token.getType();
       final var offset = token.getStartIndex();
 
       switch (type) {
-        case Whitespace:
-          if (first) {
-            spans.add(Span.obtain(offset, makeStyle(TEXT_NORMAL)));
-            first = false;
-          }
-          break;
         case Alignas:
         case Alignof:
         case Asm:
