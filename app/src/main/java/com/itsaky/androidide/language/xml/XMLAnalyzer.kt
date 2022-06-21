@@ -77,18 +77,14 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
     val parser = CommonParseUtils(app.resourceTable, app.resources.displayMetrics)
     val spans = mutableListOf<Span>()
     var previous = XMLLexer.SEA_WS
-    var first = true
+  
+    spans.add(Span.obtain(0, makeStyle(TEXT_NORMAL)))
+    
     for (token in tokens.tokens) {
       val type = token.type
       val offset = token.startIndex
 
       when (type) {
-        XMLLexer.S,
-        XMLLexer.SEA_WS, ->
-          if (first) {
-            spans.add(Span.obtain(offset, makeStyle(TEXT_NORMAL)))
-            first = false
-          }
         XMLLexer.COMMENT -> spans.add(Span.obtain(offset, forComment()))
         OPEN,
         DASH,
@@ -135,9 +131,9 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
           if (attribute.contains(":")) {
             spans.add(Span.obtain(offset, makeStyle(FIELD)))
             spans.add(Span.obtain(offset + attribute.indexOf(":"), makeStyle(TEXT_NORMAL)))
-            break
+          } else {
+            spans.add(Span.obtain(offset, makeStyle(colorId)))
           }
-          spans.add(Span.obtain(offset, makeStyle(colorId)))
         }
         TEXT -> // highlight hex color line
         try {
