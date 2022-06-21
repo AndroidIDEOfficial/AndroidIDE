@@ -26,7 +26,6 @@ import com.itsaky.androidide.language.CommonCompletionProvider;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.androidide.utils.JavaCharacter;
 import com.itsaky.androidide.views.editor.IDEEditor;
 import com.itsaky.lsp.api.ILanguageServer;
 
@@ -56,10 +55,6 @@ public class XMLLanguage extends IDELanguage {
     this.completer = new CommonCompletionProvider(getLanguageServer());
     this.analyzer = new XMLAnalyzer();
     this.newlineHandlers = new NewlineHandler[0];
-  }
-
-  public boolean isAutoCompleteChar(char ch) {
-    return JavaCharacter.isJavaIdentifierPart(ch) || ch == '<' || ch == '/';
   }
 
   @Override

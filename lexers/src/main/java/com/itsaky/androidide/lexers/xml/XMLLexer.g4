@@ -30,7 +30,9 @@
 lexer grammar XMLLexer;
 
 // Default "mode": Everything OUTSIDE of a tag
-COLON       :   ':'                                         ;
+COLON       :   ':'              ;
+NOT         :   '!'              ;
+DASH        :   '-'              ;
 COMMENT     :   '<!--' .*? '-->' ;
 CDATA       :   '<![CDATA[' .*? ']]>' ;
 /** Scarf all DTD stuff, Entity Declarations like <!ENTITY ...>,
