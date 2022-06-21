@@ -47,8 +47,10 @@ dependencies {
     implementation common.editor
     implementation project (':build-tools:fuzzysearch')
     
+    implementation androidx.appcompat
     implementation androidx.ktx
     implementation common.kotlin
+    implementation google.material
     
     api project (':build-tools:tooling-api-model')
     
