@@ -37,8 +37,8 @@ import com.itsaky.lsp.models.DiagnosticItem
 import com.itsaky.lsp.models.DiagnosticSeverity.WARNING
 import com.itsaky.lsp.models.Position
 import com.itsaky.lsp.models.Range
+import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
 import io.github.rosemoe.sora.lang.styling.CodeBlock
-import io.github.rosemoe.sora.lang.styling.MappedSpans
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.TextStyle.makeStyle
 import io.github.rosemoe.sora.text.Content
@@ -55,10 +55,9 @@ class JavaIncrementalAnalyzeManager :
   }
 
   override fun generateSpans(
-    tokens: AsyncLineTokenizeResult<LineState, IncrementalToken>,
-  ): MappedSpans.Builder {
-    val line = tokens.line
-    val spans = MappedSpans.Builder(1)
+    tokens: LineTokenizeResult<LineState, IncrementalToken>,
+  ): List<Span> {
+    val spans = mutableListOf<Span>()
     var previous = JavaLexer.WS
     var first = true
     for (token in tokens.tokens) {
@@ -68,7 +67,7 @@ class JavaIncrementalAnalyzeManager :
       when (type) {
         JavaLexer.WS -> {
           if (first) {
-            spans.addIfNeeded(line, offset, makeStyle(TEXT_NORMAL))
+            spans.add(Span.obtain(offset, makeStyle(TEXT_NORMAL)))
             first = false
           }
         }
@@ -113,7 +112,7 @@ class JavaIncrementalAnalyzeManager :
         JavaLexer.VOID,
         JavaLexer.VOLATILE,
         JavaLexer.WHILE,
-        JavaLexer.VAR, -> spans.addIfNeeded(line, offset, forKeyword())
+        JavaLexer.VAR, -> spans.add(Span.obtain(offset, forKeyword()))
         JavaLexer.DECIMAL_LITERAL,
         JavaLexer.HEX_LITERAL,
         JavaLexer.OCT_LITERAL,
@@ -122,8 +121,8 @@ class JavaIncrementalAnalyzeManager :
         JavaLexer.HEX_FLOAT_LITERAL,
         JavaLexer.BOOL_LITERAL,
         JavaLexer.CHAR_LITERAL,
-        JavaLexer.NULL_LITERAL, -> spans.addIfNeeded(line, offset, makeStyle(LITERAL))
-        JavaLexer.STRING_LITERAL -> spans.addIfNeeded(line, offset, forString())
+        JavaLexer.NULL_LITERAL, -> spans.add(Span.obtain(offset, makeStyle(LITERAL)))
+        JavaLexer.STRING_LITERAL -> spans.add(Span.obtain(offset, forString()))
         JavaLexer.LPAREN,
         JavaLexer.RPAREN,
         JavaLexer.LBRACK,
@@ -169,7 +168,7 @@ class JavaIncrementalAnalyzeManager :
         JavaLexer.ELLIPSIS,
         JavaLexer.LBRACE,
         JavaLexer.RBRACE,
-        JavaLexer.DOT, -> spans.addIfNeeded(line, offset, makeStyle(OPERATOR))
+        JavaLexer.DOT, -> spans.add(Span.obtain(offset, makeStyle(OPERATOR)))
         JavaLexer.BOOLEAN,
         JavaLexer.BYTE,
         JavaLexer.CHAR,
@@ -178,8 +177,8 @@ class JavaIncrementalAnalyzeManager :
         JavaLexer.FLOAT,
         JavaLexer.INT,
         JavaLexer.LONG,
-        JavaLexer.SHORT, -> spans.addIfNeeded(line, offset, makeStyle(TYPE_NAME))
-        JavaLexer.BLOCK_COMMENT -> spans.addIfNeeded(line, offset, forComment())
+        JavaLexer.SHORT, -> spans.add(Span.obtain(offset, makeStyle(TYPE_NAME)))
+        JavaLexer.BLOCK_COMMENT -> spans.add(Span.obtain(offset, forComment()))
         JavaLexer.LINE_COMMENT -> {
           var commentType = COMMENT
 
@@ -197,34 +196,33 @@ class JavaIncrementalAnalyzeManager :
               mark = false
             }
             if (mark) {
-              if (diagnostics == null) {
-                diagnostics = ArrayList<DiagnosticItem>()
-              }
-              val diagnostic = DiagnosticItem()
-              diagnostic.severity = WARNING
-              diagnostic.message = commentText
-              diagnostic.code = "special.comment"
-              diagnostic.range = Range(Position(0, offset), Position(0, offset + tokenLength))
-              diagnostic.source = commentText
-              ideDiagnostics.add(diagnostic)
+//              val diagnostic =
+//                DiagnosticItem(
+//                  severity = WARNING,
+//                  message = commentText,
+//                  code = "special.comment",
+//                  range = Range(Position(0, offset), Position(0, offset + tokenLength)),
+//                  source = commentText
+//                )
+//              ideDiagnostics.add(diagnostic)
             }
           }
-          spans.addIfNeeded(line, offset, withoutCompletion(commentType))
+          spans.add(Span.obtain(offset, withoutCompletion(commentType)))
         }
-        JavaLexer.AT -> spans.addIfNeeded(line, offset, makeStyle(ANNOTATION))
+        JavaLexer.AT -> spans.add(Span.obtain(offset, makeStyle(ANNOTATION)))
         JavaLexer.IDENTIFIER -> {
           var colorId = TEXT_NORMAL
           if (previous == JavaLexer.AT) {
             colorId = ANNOTATION
           }
-          spans.addIfNeeded(line, offset, makeStyle(colorId))
+          spans.add(Span.obtain(offset, makeStyle(colorId)))
         }
-        else -> spans.addIfNeeded(line, offset, makeStyle(TEXT_NORMAL))
+        else -> spans.add(Span.obtain(offset, makeStyle(TEXT_NORMAL)))
       }
       previous = type
     }
-    
-    return spans;
+
+    return spans
   }
 
   override fun getMultilineTokenStartEndTypes(): Array<IntArray> {

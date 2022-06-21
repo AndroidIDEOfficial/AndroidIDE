@@ -17,23 +17,19 @@
  */
 package com.itsaky.androidide.language.xml;
 
-import android.graphics.Color;
-
-import com.itsaky.androidide.app.StudioApp;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.OPERATOR;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment;
 import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.get;
-
-import com.itsaky.inflater.util.CommonParseUtils;
-import io.github.rosemoe.sora.lang.styling.Span;
-import io.github.rosemoe.sora.lang.styling.TextStyle;
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 import static io.github.rosemoe.sora.widget.schemes.EditorColorScheme.LITERAL;
 
+import android.graphics.Color;
+
+import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.lexers.xml.XMLLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.ILogger;
+import com.itsaky.inflater.util.CommonParseUtils;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -45,7 +41,10 @@ import java.util.Stack;
 import io.github.rosemoe.sora.lang.analysis.SimpleAnalyzeManager;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.MappedSpans;
+import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.Styles;
+import io.github.rosemoe.sora.lang.styling.TextStyle;
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 /**
  * Simple analyzer implementation for the XML files.
@@ -220,9 +219,8 @@ public class XMLAnalyzer extends SimpleAnalyzeManager<Void> {
   }
 
   private static boolean isColorValue(String value) {
-    if (value.startsWith("#") | value.startsWith("@android:color") | value.startsWith("@color/")) {
-      return true;
-    }
-    return false;
+    return value.startsWith("#")
+        || value.startsWith("@android:color")
+        || value.startsWith("@color/");
   }
 }

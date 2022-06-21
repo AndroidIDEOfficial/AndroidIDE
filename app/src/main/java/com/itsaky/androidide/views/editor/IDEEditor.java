@@ -30,7 +30,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
-import com.itsaky.androidide.language.IAnalyzeManager;
 import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.lsp.IDELanguageClientImpl;
 import com.itsaky.androidide.managers.PreferenceManager;
@@ -40,6 +39,7 @@ import com.itsaky.lsp.api.ILanguageServer;
 import com.itsaky.lsp.models.Command;
 import com.itsaky.lsp.models.DefinitionResult;
 import com.itsaky.lsp.models.DiagnosticItem;
+import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.DocumentChangeEvent;
 import com.itsaky.lsp.models.DocumentCloseEvent;
 import com.itsaky.lsp.models.DocumentOpenEvent;
@@ -77,9 +77,9 @@ public class IDEEditor extends CodeEditor {
   private int mFileVersion;
   private File file;
   private ILanguageServer mLanguageServer;
-  private IDELanguageClientImpl mLanguageClient;
   private SignatureHelpWindow mSignatureHelpWindow;
   private DiagnosticWindow mDiagnosticWindow;
+  IDELanguageClientImpl mLanguageClient;
 
   public IDEEditor(Context context) {
     this(context, null);
@@ -109,19 +109,17 @@ public class IDEEditor extends CodeEditor {
   }
 
   private void handleSelectionChange(@NonNull SelectionChangeEvent event, Unsubscribe unsubscribe) {
-    if (event.isSelected() || !(getEditorLanguage() instanceof IDELanguage)) {
+    if (event.isSelected() || mLanguageClient == null) {
       // do not show diagnostics when text is selected
       // or if we cannot get diagnostics
       return;
     }
 
-    final var diagnostics = ((IDELanguage) getEditorLanguage()).getDiagnostics();
     final var line = event.getLeft().line;
     final var column = event.getLeft().column;
 
     // diagnostics are expected to be sorted, so, we do a binary search
-    final var diagnostic = binarySearchDiagnostic(diagnostics, line, column);
-    getDiagnosticWindow().showDiagnostic(diagnostic);
+    getDiagnosticWindow().showDiagnostic(mLanguageClient.getDiagnosticAt(getFile(), line, column));
   }
 
   /**
@@ -218,12 +216,10 @@ public class IDEEditor extends CodeEditor {
       CompletableFuture.supplyAsync(() -> mLanguageServer.analyze(getFile().toPath()))
           .whenComplete(
               (diagnostics, throwable) -> {
-                final var lang = (IDELanguage) getEditorLanguage();
-                final var analyzer = lang.getAnalyzeManager();
-                if (analyzer instanceof IAnalyzeManager) {
-                  ((IAnalyzeManager) analyzer).updateDiagnostics(diagnostics);
+                if (mLanguageClient != null) {
+                  mLanguageClient.publishDiagnostics(
+                      new DiagnosticResult(getFile().toPath(), diagnostics));
                 }
-                analyzer.rerun();
               });
     }
   }

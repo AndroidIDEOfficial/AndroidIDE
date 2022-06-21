@@ -26,7 +26,7 @@ import com.itsaky.androidide.actions.BaseEditorAction
 class CutAction() : BaseEditorAction() {
 
     constructor(context: Context) : this() {
-        label = context.getString(R.string.cut)
+        label = context.getString(android.R.string.cut)
 
         val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeCutDrawable))
         icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }

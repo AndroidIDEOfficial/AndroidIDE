@@ -24,20 +24,16 @@ import androidx.annotation.NonNull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.EvictingQueue;
-import com.itsaky.androidide.language.IAnalyzeManager;
 import com.itsaky.androidide.language.java.JavaIncrementalAnalyzeManager;
 import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.ILogger;
-import com.itsaky.lsp.models.DiagnosticItem;
-import com.itsaky.lsp.models.DiagnosticSeverity;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Token;
-import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,7 +41,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import io.github.rosemoe.sora.lang.styling.MappedSpans;
+import io.github.rosemoe.sora.lang.analysis.AsyncIncrementalAnalyzeManager;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.TextStyle;
 import io.github.rosemoe.sora.util.IntPair;
@@ -57,11 +53,9 @@ import kotlin.Pair;
  * @author Akash Yadav
  */
 public abstract class BaseIncrementalAnalyzeManager
-    extends AsyncIncrementalAnalyzeManager<LineState, IncrementalToken> implements IAnalyzeManager {
+    extends AsyncIncrementalAnalyzeManager<LineState, IncrementalToken> {
 
   protected final Lexer lexer;
-  protected final List<DiagnosticItem> ideDiagnostics = new ArrayList<>();
-  protected List<DiagnosticItem> diagnostics = new ArrayList<>();
   private final int[] multilineStartTypes;
   private final int[] multilineEndTypes;
   private static final ILogger LOG = ILogger.newInstance("BaseIncrementalAnalyzeManager");
@@ -135,8 +129,8 @@ public abstract class BaseIncrementalAnalyzeManager
    * @param tokens The tokenization result.
    * @return The spans for the tokens.
    */
-  protected abstract MappedSpans.Builder generateSpans(
-      final AsyncLineTokenizeResult<LineState, IncrementalToken> tokens);
+  protected abstract List<Span> generateSpans(
+      final LineTokenizeResult<LineState, IncrementalToken> tokens);
 
   /**
    * Called when the analyzer finds an incomplete token in a lne.
@@ -164,59 +158,6 @@ public abstract class BaseIncrementalAnalyzeManager
     }
   }
 
-  protected void markDiagnostics(MappedSpans.Builder spans, List<DiagnosticItem> diagnostics) {
-    diagnostics.sort(DiagnosticItem.START_COMPARATOR);
-    for (var d : diagnostics) {
-      if (d == null) {
-        continue;
-      }
-
-      var start = d.getRange().getStart();
-      var end = d.getRange().getEnd();
-
-      try {
-        spans.markProblemRegion(
-            convertToSpanFlag(d.getSeverity()),
-            start.getLine(),
-            start.getColumn(),
-            end.getLine(),
-            end.getColumn());
-      } catch (Throwable e) {
-        // Might happen frequently if user types faster
-      }
-    }
-  }
-
-  @Contract(pure = true)
-  private int convertToSpanFlag(@NonNull DiagnosticSeverity severity) {
-    switch (severity) {
-      case WARNING:
-        return Span.FLAG_WARNING;
-      case ERROR:
-        return Span.FLAG_ERROR;
-      case HINT:
-      case INFO:
-      default:
-        return Span.FLAG_TYPO;
-    }
-  }
-
-  @Override
-  public void updateDiagnostics(@NonNull final List<DiagnosticItem> diagnostics) {
-    this.diagnostics = diagnostics;
-  }
-
-  @NonNull
-  @Override
-  public List<DiagnosticItem> getDiagnostics() {
-    final var result = new ArrayList<>(ideDiagnostics);
-    if (diagnostics != null && !diagnostics.isEmpty()) {
-      result.addAll(diagnostics);
-    }
-    result.sort(DiagnosticItem.START_COMPARATOR);
-    return result;
-  }
-
   @Override
   public LineState getInitialState() {
     return new LineState();
@@ -228,9 +169,8 @@ public abstract class BaseIncrementalAnalyzeManager
   }
 
   @Override
-  public AsyncLineTokenizeResult<LineState, IncrementalToken> tokenizeLine(
+  public LineTokenizeResult<LineState, IncrementalToken> tokenizeLine(
       final CharSequence line, final LineState state) {
-    LOG.debug("Tokenize lines:", line);
     final var tokens = new ArrayList<IncrementalToken>();
     var newState = 0;
     var stateObj = new LineState();
@@ -246,7 +186,7 @@ public abstract class BaseIncrementalAnalyzeManager
       }
     }
     stateObj.state = newState;
-    return new AsyncLineTokenizeResult<>(stateObj, tokens);
+    return new LineTokenizeResult<>(stateObj, tokens);
   }
 
   /**
@@ -371,22 +311,14 @@ public abstract class BaseIncrementalAnalyzeManager
 
   @Override
   public List<Span> generateSpansForLine(
-      final AsyncLineTokenizeResult<LineState, IncrementalToken> tokens) {
-    var spans = generateSpans(tokens);
-    spans.determine(tokens.line);
+      final LineTokenizeResult<LineState, IncrementalToken> tokens) {
+    var result = generateSpans(tokens);
 
-    List<Span> result;
-    try {
-      result = new ArrayList<>(spans.build().read().getSpansOnLine(tokens.line));
-    } catch (Throwable err) {
-      result = new ArrayList<>();
-    }
+    Objects.requireNonNull(result);
 
     if (result.isEmpty()) {
       result.add(Span.obtain(0, TextStyle.makeStyle(SchemeAndroidIDE.TEXT_NORMAL)));
     }
-
-    // TODO Mark diagnostics in spans.
 
     return result;
   }

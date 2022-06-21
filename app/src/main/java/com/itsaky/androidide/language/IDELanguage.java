@@ -44,28 +44,6 @@ public abstract class IDELanguage implements Language {
     return StudioApp.getInstance().getPrefManager().getEditorTabSize();
   }
 
-  /**
-   * Get the diagnostics from the last analyze.
-   *
-   * @return The diagnostics. Must not be null.
-   */
-  @NonNull
-  public List<DiagnosticItem> getDiagnostics() {
-    return Collections.emptyList();
-  }
-
-  public void setDiagnostics(List<DiagnosticItem> diagnostics) {
-    if (diagnostics == null) {
-      diagnostics = new ArrayList<>(0);
-    }
-
-    final var analyzer = getAnalyzeManager();
-    if (analyzer instanceof IAnalyzeManager) {
-      ((IAnalyzeManager) analyzer).updateDiagnostics(diagnostics);
-      analyzer.rerun();
-    }
-  }
-
   @Override
   public CharSequence format(CharSequence text) {
     final var server = getLanguageServer();

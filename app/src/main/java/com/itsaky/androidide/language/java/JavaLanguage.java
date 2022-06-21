@@ -66,12 +66,6 @@ public class JavaLanguage extends IDELanguage {
     this.newlineHandlers[0] = new BraceHandler();
   }
 
-  @NonNull
-  @Override
-  public List<DiagnosticItem> getDiagnostics() {
-    return analyzer == null ? Collections.emptyList() : analyzer.getDiagnostics();
-  }
-
   @Override
   public int getIndentAdvance(@NonNull String line) {
     try {

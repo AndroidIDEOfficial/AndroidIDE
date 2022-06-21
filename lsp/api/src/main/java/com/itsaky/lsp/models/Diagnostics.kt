@@ -17,20 +17,51 @@
 
 package com.itsaky.lsp.models
 
+import com.itsaky.lsp.models.DiagnosticSeverity.ERROR
+import com.itsaky.lsp.models.DiagnosticSeverity.HINT
+import com.itsaky.lsp.models.DiagnosticSeverity.INFO
+import com.itsaky.lsp.models.DiagnosticSeverity.WARNING
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion.SEVERITY_ERROR
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion.SEVERITY_NONE
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion.SEVERITY_TYPO
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion.SEVERITY_WARNING
 import java.nio.file.Path
 
-data class DiagnosticItem(var message: String, var code: String, var range: Range, var source: String, var severity: DiagnosticSeverity) {
-    var extra: Any = Any()
-    
-    constructor() : this("", "", Range.NONE, "", DiagnosticSeverity.HINT)
-    
-    companion object {
-        @JvmField
-        val START_COMPARATOR: Comparator<in DiagnosticItem> = Comparator.comparing(DiagnosticItem::range)
+data class DiagnosticItem(
+  var message: String,
+  var code: String,
+  var range: Range,
+  var source: String,
+  var severity: DiagnosticSeverity
+) {
+
+  var extra: Any = Any()
+
+  companion object {
+    @JvmField
+    val START_COMPARATOR: Comparator<in DiagnosticItem> =
+      Comparator.comparing(DiagnosticItem::range)
+
+    private fun mapSeverity(severity: DiagnosticSeverity): Short {
+      return when (severity) {
+        ERROR -> SEVERITY_ERROR
+        WARNING -> SEVERITY_WARNING
+        INFO -> SEVERITY_NONE
+        HINT -> SEVERITY_TYPO
+      }
     }
+  }
+
+  fun asDiagnosticRegion(): DiagnosticRegion =
+    DiagnosticRegion(range.start.requireIndex(), range.end.requireIndex(), mapSeverity(severity))
 }
 
 data class DiagnosticResult(var file: Path, var diagnostics: List<DiagnosticItem>)
+
 enum class DiagnosticSeverity {
-    ERROR, WARNING, INFO, HINT
+  ERROR,
+  WARNING,
+  INFO,
+  HINT
 }

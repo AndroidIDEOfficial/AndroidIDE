@@ -26,7 +26,7 @@ import com.itsaky.androidide.actions.BaseEditorAction
 class PasteAction() : BaseEditorAction() {
 
     constructor(context: Context) : this() {
-        label = context.getString(R.string.paste)
+        label = context.getString(android.R.string.paste)
 
         val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModePasteDrawable))
         icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }

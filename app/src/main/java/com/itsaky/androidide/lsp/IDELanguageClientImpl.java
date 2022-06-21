@@ -21,6 +21,8 @@ package com.itsaky.androidide.lsp;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ThreadUtils;
@@ -33,7 +35,6 @@ import com.itsaky.androidide.adapters.SearchListAdapter;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.interfaces.EditorActivityProvider;
-import com.itsaky.androidide.language.IDELanguage;
 import com.itsaky.androidide.models.DiagnosticGroup;
 import com.itsaky.androidide.models.SearchResult;
 import com.itsaky.androidide.tasks.TaskExecutor;
@@ -50,6 +51,7 @@ import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.Location;
 import com.itsaky.lsp.models.Range;
 import com.itsaky.lsp.models.TextEdit;
+import com.itsaky.lsp.util.DiagnosticUtil;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
@@ -58,7 +60,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer;
 import io.github.rosemoe.sora.text.Content;
 
 /** AndroidIDE specific implementation of the LanguageClient */
@@ -152,15 +156,27 @@ public class IDELanguageClientImpl implements ILanguageClient {
     if (editorView != null) {
       final var editor = editorView.getEditor();
       if (editor != null) {
-        final var editorLanguage = editor.getEditorLanguage();
-        if (editorLanguage instanceof IDELanguage) {
-          ((IDELanguage) editorLanguage).setDiagnostics(result.getDiagnostics());
+        final var container = new DiagnosticsContainer();
+        try {
+          container.addDiagnostics(
+              result.getDiagnostics().stream()
+                  .map(DiagnosticItem::asDiagnosticRegion)
+                  .collect(Collectors.toList()));
+        } catch (Throwable err) {
+          LOG.error("Unable to map DiagnosticItem to DiagnosticRegion", err);
         }
+        editor.setDiagnostics(container);
       }
     }
 
     diagnostics.put(file, result.getDiagnostics());
     activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
+  }
+
+  @Nullable
+  @Override
+  public DiagnosticItem getDiagnosticAt(final File file, final int line, final int column) {
+    return DiagnosticUtil.binarySearchDiagnostic(this.diagnostics.get(file), line, column);
   }
 
   /** Called by {@link IDEEditor IDEEditor} to show locations in EditorActivity */

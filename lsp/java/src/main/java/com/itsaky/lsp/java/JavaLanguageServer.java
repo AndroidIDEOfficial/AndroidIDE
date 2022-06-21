@@ -301,6 +301,8 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @Override
   public void onFileOpened(DocumentOpenEvent event) {
+    onFileSelected(event.getOpenedFile());
+    ensureAnalyzeTimerStarted();
     FileStore.open(event);
   }
 

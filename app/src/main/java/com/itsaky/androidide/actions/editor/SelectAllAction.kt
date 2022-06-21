@@ -26,7 +26,7 @@ import com.itsaky.androidide.actions.BaseEditorAction
 class SelectAllAction() : BaseEditorAction() {
     
     constructor(context: Context) : this() {
-        label = context.getString(R.string.selectAll)
+        label = context.getString(android.R.string.selectAll)
         
         val arr = context.obtainStyledAttributes(intArrayOf(android.R.attr.actionModeSelectAllDrawable))
         icon = arr.getDrawable(0)?.let { tintDrawable(context, it) }

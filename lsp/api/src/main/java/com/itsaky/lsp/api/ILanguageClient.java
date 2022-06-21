@@ -17,7 +17,10 @@
 
 package com.itsaky.lsp.api;
 
+import androidx.annotation.Nullable;
+
 import com.itsaky.lsp.models.CodeActionItem;
+import com.itsaky.lsp.models.DiagnosticItem;
 import com.itsaky.lsp.models.DiagnosticResult;
 import com.itsaky.lsp.models.ShowDocumentParams;
 import com.itsaky.lsp.models.ShowDocumentResult;
@@ -38,6 +41,23 @@ public interface ILanguageClient {
    */
   void publishDiagnostics(DiagnosticResult result);
 
+  /**
+   * Get the diagnostic item in the given file at the given character position.
+   *
+   * @param file The file to search diagnostics in.
+   * @param line The line.
+   * @param column The column.
+   * @return The diagnostic item or <code>null</code> if none was found.
+   */
+  @Nullable
+  DiagnosticItem getDiagnosticAt(File file, int line, int column);
+
+  /**
+   * Perform the given code action.
+   *
+   * @param file The file in which the given action must be performed.
+   * @param actionItem The action item describing the action.
+   */
   void performCodeAction(File file, CodeActionItem actionItem);
 
   /**

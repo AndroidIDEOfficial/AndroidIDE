@@ -169,6 +169,9 @@ public class DiagnosticUtil {
    */
   public static DiagnosticItem binarySearchDiagnostic(
       List<DiagnosticItem> diagnostics, int line, int column) {
+    if (diagnostics == null) {
+      return null;
+    }
     final var index = binarySearchDiagnosticPosition(diagnostics, line, column);
     if (index == -1) {
       return null;

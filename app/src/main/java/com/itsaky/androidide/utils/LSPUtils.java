@@ -67,28 +67,6 @@ public class LSPUtils {
         && LSPUtils.isEqual(r1.getEnd(), r2.getEnd());
   }
 
-  public static DiagnosticItem newInfoDiagnostic(
-      int line, int column, int length, String message, String text) {
-    final var diag = new DiagnosticItem();
-    diag.setCode("todo");
-    diag.setMessage(message);
-    diag.setRange(getSingleLineRange(line, column, length));
-    diag.setSeverity(DiagnosticSeverity.INFO);
-    diag.setSource(text);
-    return diag;
-  }
-
-  public static DiagnosticItem newWarningDiagnostic(
-      int line, int column, int length, String message, String text) {
-    final var diag = new DiagnosticItem();
-    diag.setCode("custom_warning");
-    diag.setMessage(message);
-    diag.setRange(getSingleLineRange(line, column, length));
-    diag.setSeverity(DiagnosticSeverity.WARNING);
-    diag.setSource(text);
-    return diag;
-  }
-
   public static Range getSingleLineRange(int line, int column, int length) {
     final Range range = new Range();
     range.setStart(new Position(line, column));
