@@ -1,6 +1,4 @@
 <resources>
-     <string name="cms_channel_id_devs">Notificações de desenvolvedores</string>
-     <string name="cms_channel_id_update">Notificações de atualização do aplicativo</string>
      <string name="msg_hex_color_code">Código de cor hexadecimal</string>
      <string name="msg_color_picker_pick">Escolha</string>
      <string name="msg_chmod_exec">Definindo permissões executáveis…</string>

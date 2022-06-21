@@ -16,7 +16,6 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
 -->
 <resources>
-
     <string-array name="dimension_units">
         <item>dp</item>
         <item>sp</item>
@@ -25,13 +24,4 @@
         <item>in</item>
         <item>mm</item>
     </string-array>
-    
-    <string-array name="logcat_priorities">
-        <item>Verbose</item>
-        <item>Debug</item>
-        <item>Info</item>
-        <item>Warning</item>
-        <item>Error</item>
-    </string-array>
-
 </resources>

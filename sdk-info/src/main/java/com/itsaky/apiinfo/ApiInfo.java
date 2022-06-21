@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import com.itsaky.apiinfo.models.ClassInfo;
 import com.itsaky.apiinfo.models.FieldInfo;
 import com.itsaky.apiinfo.models.MethodInfo;
+import com.itsaky.sdkinfo.R;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -56,7 +57,7 @@ public class ApiInfo {
   }
 
   public void doRead(Resources resources) throws Exception {
-    final InputStream in = resources.openRawResource(com.itsaky.sdkinfo.R.raw.versions);
+    final InputStream in = resources.openRawResource(R.raw.versions_xml);
     if (in == null) {
       throw new Resources.NotFoundException("Cannot find versions.xml");
     }

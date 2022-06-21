@@ -17,6 +17,7 @@
 package com.itsaky.lsp.api
 
 import com.itsaky.androidide.utils.ILogger
+import com.itsaky.androidide.utils.ILogger.Priority
 import com.itsaky.lsp.api.util.ReflectiveLogListener
 import java.util.*
 
@@ -28,20 +29,20 @@ import java.util.*
 abstract class LoggingTest : BaseLanguageServerTest() {
     companion object {
         private var logListener: ReflectiveLogListener? = null
-        
+
         init {
             logListener = ReflectiveLogListener(LoggingTest::class.java)
             ILogger.addLogListener(logListener)
         }
-        
+
         @Suppress("unused")
         @JvmStatic
-        fun log(priority: Int, tag: String, message: String) {
-            System.out.printf(Locale.ROOT, "%-8s%-26s%-20s", ILogger.priorityText(priority), tag, message)
+        fun log(priority: Priority, tag: String, message: String) {
+            System.out.printf(Locale.ROOT, "%-8s%-26s%-20s", priority, tag, message)
             println()
         }
     }
-    
+
     @Suppress("PropertyName")
     @JvmField
     protected val LOG = ILogger.newInstance(javaClass.simpleName)

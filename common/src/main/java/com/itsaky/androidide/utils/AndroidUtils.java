@@ -1,11 +1,13 @@
 package com.itsaky.androidide.utils;
 
-import com.itsaky.androidide.common.R;
 import com.itsaky.androidide.app.BaseApplication;
+import com.itsaky.androidide.common.R;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import org.jetbrains.annotations.*;
+import java.util.Locale;
 
 public class AndroidUtils {
   /**
@@ -195,7 +197,7 @@ public class AndroidUtils {
   }
 
   public static String appNameToPackageName(String appName, String packageName) {
-    String newAppName = trimWhiteSpace(appName).toLowerCase();
+    String newAppName = trimWhiteSpace(appName).toLowerCase(Locale.getDefault());
     return getPackageDomain(packageName) + "." + newAppName;
   }
 

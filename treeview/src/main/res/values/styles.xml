@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="TreeNodeStyle">
-        <item name="android:paddingLeft">20dp</item>
-    </style>
-</resources>

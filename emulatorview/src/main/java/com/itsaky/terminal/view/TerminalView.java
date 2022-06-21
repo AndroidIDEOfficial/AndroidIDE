@@ -7,7 +7,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
@@ -29,8 +28,6 @@ import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.Scroller;
-
-import androidx.annotation.RequiresApi;
 
 import com.itsaky.terminal.KeyHandler;
 import com.itsaky.terminal.TerminalEmulator;
@@ -589,7 +586,6 @@ public final class TerminalView extends View {
 
   @SuppressLint("ClickableViewAccessibility")
   @Override
-  @TargetApi(23)
   public boolean onTouchEvent(MotionEvent event) {
     if (mEmulator == null) return true;
     final int action = event.getAction();
@@ -1045,7 +1041,6 @@ public final class TerminalView extends View {
   }
 
   /** Define functions required for AutoFill API */
-  @RequiresApi(api = Build.VERSION_CODES.O)
   @Override
   public void autofill(AutofillValue value) {
     if (value.isText()) {
@@ -1053,13 +1048,11 @@ public final class TerminalView extends View {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.O)
   @Override
   public int getAutofillType() {
     return AUTOFILL_TYPE_TEXT;
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.O)
   @Override
   public AutofillValue getAutofillValue() {
     return AutofillValue.forText("");

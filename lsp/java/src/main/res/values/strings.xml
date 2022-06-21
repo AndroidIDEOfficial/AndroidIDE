@@ -15,7 +15,7 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="action_import_classes">Import class(es)</string>
     <string name="action_generate_setters_getters">Generate setters/getters</string>
     <string name="action_add_throws">Add \'throws\'</string>

@@ -39,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Locale;
 
 /**
  * A document provider for the Storage Access Framework which exposes the files in the $HOME/
@@ -117,7 +118,7 @@ public class IDEDocumentsProvider extends DocumentsProvider {
       final String name = file.getName();
       final int lastDot = name.lastIndexOf('.');
       if (lastDot >= 0) {
-        final String extension = name.substring(lastDot + 1).toLowerCase();
+        final String extension = name.substring(lastDot + 1).toLowerCase(Locale.ROOT);
         final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         if (mime != null) return mime;
       }
@@ -265,7 +266,7 @@ public class IDEDocumentsProvider extends DocumentsProvider {
         if (file.isDirectory()) {
           Collections.addAll(pending, file.listFiles());
         } else {
-          if (file.getName().toLowerCase().contains(query)) {
+          if (file.getName().toLowerCase(Locale.ROOT).contains(query)) {
             includeFile(result, null, file);
           }
         }

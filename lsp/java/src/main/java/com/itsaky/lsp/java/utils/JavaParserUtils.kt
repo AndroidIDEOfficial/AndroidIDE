@@ -61,7 +61,6 @@ import com.github.javaparser.ast.stmt.ExpressionStmt
 import com.github.javaparser.ast.stmt.ReturnStmt
 import com.github.javaparser.ast.stmt.Statement
 import com.github.javaparser.ast.type.ArrayType
-import com.github.javaparser.ast.type.ClassOrInterfaceType
 import com.github.javaparser.ast.type.PrimitiveType
 import com.github.javaparser.ast.type.PrimitiveType.Primitive.BOOLEAN
 import com.github.javaparser.ast.type.PrimitiveType.Primitive.BYTE
@@ -100,9 +99,8 @@ import com.sun.source.tree.Tree
 import com.sun.source.tree.TypeParameterTree
 import com.sun.source.tree.VariableTree
 import java.util.*
-import java.util.function.Predicate
-import java.util.stream.IntStream
-import java.util.stream.Stream
+import java.util.function.*
+import java.util.stream.*
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeParameterElement
@@ -217,8 +215,7 @@ object JavaParserUtils {
             val methodCallExpr = MethodCallExpr()
             methodCallExpr.name = methodDeclaration.name
             methodCallExpr.arguments =
-                methodDeclaration
-                    .parameters
+                methodDeclaration.parameters
                     .stream()
                     .map { obj: Parameter -> obj.nameAsExpression }
                     .collect(NodeList.toNodeList())
@@ -235,7 +232,13 @@ object JavaParserUtils {
     private fun getReturnExpr(type: PrimitiveType): Expression {
         return when (type.type) {
             BOOLEAN -> BooleanLiteralExpr()
-            BYTE, DOUBLE, CHAR, SHORT, LONG, FLOAT, INT -> IntegerLiteralExpr("0")
+            BYTE,
+            DOUBLE,
+            CHAR,
+            SHORT,
+            LONG,
+            FLOAT,
+            INT -> IntegerLiteralExpr("0")
             else -> NullLiteralExpr()
         }
     }
@@ -362,7 +365,7 @@ object JavaParserUtils {
             return CharLiteralExpr(value)
         }
         if (value is Long) {
-            return LongLiteralExpr(value)
+            return LongLiteralExpr(value.toString())
         }
         return if (value is Double) {
             DoubleLiteralExpr(value)
@@ -444,9 +447,7 @@ object JavaParserUtils {
     fun toMethodDeclaration(method: MethodTree, type: ExecutableType?): MethodDeclaration {
         val methodDeclaration = MethodDeclaration()
         methodDeclaration.annotations =
-            method
-                .modifiers
-                .annotations
+            method.modifiers.annotations
                 .stream()
                 .map { toAnnotation(it) }
                 .collect(NodeList.toNodeList())
@@ -463,8 +464,7 @@ object JavaParserUtils {
         methodDeclaration.modifiers =
             method.modifiers.flags.stream().map { toModifier(it) }.collect(NodeList.toNodeList())
         methodDeclaration.parameters =
-            method
-                .parameters
+            method.parameters
                 .stream()
                 .map { toParameter(it) }
                 .peek { parameter: Parameter? ->
@@ -473,8 +473,7 @@ object JavaParserUtils {
                 }
                 .collect(NodeList.toNodeList())
         methodDeclaration.typeParameters =
-            method
-                .typeParameters
+            method.typeParameters
                 .stream()
                 .map { toType(it as Tree?) }
                 .filter { obj: Type? -> Objects.nonNull(obj) }
@@ -527,9 +526,11 @@ object JavaParserUtils {
     fun toParameter(tree: VariableTree): Parameter {
         val parameter = Parameter()
         parameter.type = toType(tree.type)
-        tree.modifiers.flags.stream().map { toModifier(it) }.collect(NodeList.toNodeList()).also {
-            parameter.modifiers = it
-        }
+        tree.modifiers.flags
+            .stream()
+            .map { toModifier(it) }
+            .collect(NodeList.toNodeList())
+            .also { parameter.modifiers = it }
         parameter.setName(tree.name.toString())
         return parameter
     }
@@ -573,8 +574,7 @@ object JavaParserUtils {
         methodDeclaration.isDefault = method!!.isDefault
         methodDeclaration.setName(method.simpleName.toString())
         methodDeclaration.setModifiers(
-            *method
-                .modifiers
+            *method.modifiers
                 .stream()
                 .map { com.github.javaparser.ast.Modifier.Keyword.valueOf(it!!.name) }
                 .asArray())
@@ -655,7 +655,8 @@ object JavaParserUtils {
             return type
         }
         if (type is NodeWithSimpleName<*>) {
-            return ClassOrInterfaceType((type as NodeWithSimpleName<*>).nameAsString)
+            return StaticJavaParser.parseClassOrInterfaceType(
+                (type as NodeWithSimpleName<*>).nameAsString)
         }
         return if (type.isArrayType) {
             ArrayType(getTypeWithoutBounds(type.asArrayType().componentType))
@@ -714,10 +715,12 @@ object JavaParserUtils {
             classNames.addAll(getClassNames(type.asArrayType().componentType))
         }
         if (type.isIntersectionType) {
-            type.asIntersectionType().elements.stream().map { getClassNames(it) }.forEach {
-                c: MutableList<String?>? ->
-                classNames.addAll(c!!)
-            }
+            type
+                .asIntersectionType()
+                .elements
+                .stream()
+                .map { getClassNames(it) }
+                .forEach { c: MutableList<String?>? -> classNames.addAll(c!!) }
         }
         return classNames
     }

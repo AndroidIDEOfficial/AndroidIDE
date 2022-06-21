@@ -1,12 +1,12 @@
 package com.itsaky.terminal;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -324,6 +324,7 @@ public final class TerminalSession extends TerminalOutput {
     return null;
   }
 
+  @SuppressLint("DiscouragedPrivateApi")
   private static FileDescriptor wrapFileDescriptor(
       int fileDescriptor, TerminalSessionClient client) {
     FileDescriptor result = new FileDescriptor();

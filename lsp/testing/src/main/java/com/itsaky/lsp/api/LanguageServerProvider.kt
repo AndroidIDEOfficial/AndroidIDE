@@ -20,8 +20,8 @@ import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.utils.Environment
 import com.itsaky.lsp.api.FileProvider.Companion.resources
 import com.itsaky.lsp.models.InitializeParams
-import java.io.File
 import org.jetbrains.annotations.Contract
+import java.io.File
 
 /**
  * Provides instance to the java language server to test classes.
@@ -53,6 +53,6 @@ abstract class LanguageServerProvider {
 
     @Contract(" -> new")
     private fun createInitParams(): InitializeParams {
-        return InitializeParams(setOf(resources()))
+        return InitializeParams(mutableSetOf(resources()))
     }
 }

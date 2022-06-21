@@ -26,7 +26,6 @@ import com.blankj.utilcode.util.FileIOUtils;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.blankj.utilcode.util.ThreadUtils;
-import com.blankj.utilcode.util.ZipUtils;
 import com.itsaky.androidide.R;
 import com.itsaky.androidide.app.StudioApp;
 import com.itsaky.androidide.interfaces.ProjectWriterCallback;
@@ -39,6 +38,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -172,8 +172,9 @@ public class ProjectWriter {
     try {
       ZipEntry ze = null;
       while ((ze = zin.getNextEntry()) != null) {
-        if (ze.getName().startsWith(details.language.toLowerCase()) && !ze.isDirectory()) {
-          String name = ze.getName().replaceFirst(details.language.toLowerCase(), "");
+        final var prefix = details.language.toLowerCase(Locale.ROOT);
+        if (ze.getName().startsWith(prefix) && !ze.isDirectory()) {
+          String name = ze.getName().replaceFirst(prefix, "");
           if (name.contains(PACKAGE_NAME)) {
             name = name.replace(PACKAGE_NAME, details.packageName.replace(".", "/"));
           }

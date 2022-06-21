@@ -77,7 +77,7 @@ class JavaCompletionProviderTest : BaseJavaTest() {
     }
 
     private fun completionTitles(pos: Position): List<CharSequence> {
-        return mServer.completionProvider.complete(CompletionParams(pos, file!!)).items.map {
+        return mServer.completionProvider.complete(CompletionParams(pos, file!!).apply { prefix = "" }).items.map {
             it.label
         }
     }

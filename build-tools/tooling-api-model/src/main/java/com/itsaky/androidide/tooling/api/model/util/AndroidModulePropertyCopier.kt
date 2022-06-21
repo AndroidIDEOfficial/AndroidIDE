@@ -85,6 +85,7 @@ object AndroidModulePropertyCopier {
     private val log = ILogger.newInstance(javaClass.simpleName)
 
     fun copy(module: IdeAndroidModule): IdeAndroidModule {
+        @Suppress("DEPRECATION")
         return IdeAndroidModule(
             module.name,
             module.projectPath,
@@ -249,7 +250,9 @@ object AndroidModulePropertyCopier {
         }
     }
 
-    fun copy(flags: AndroidGradlePluginProjectFlags): DefaultAndroidGradlePluginProjectFlags {
+    fun copy(
+        @Suppress("UNUSED_PARAMETER") flags: AndroidGradlePluginProjectFlags
+    ): DefaultAndroidGradlePluginProjectFlags {
         val flagMap: MutableMap<BooleanFlag, Boolean?> = mutableMapOf()
         //        log.debug("Flags:", flags)
         //

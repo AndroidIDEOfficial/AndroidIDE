@@ -102,8 +102,20 @@ class ToolingApiImplTest {
     }
 
     private fun launchServer(client: IToolingApiClient): Pair<IToolingApiServer, IProject> {
-        val builder = ProcessBuilder("java", "-jar", "./build/libs/tooling-api-all.jar")
-        builder.environment()["ANDROID_SDK_ROOT"] = findAndroidHome()
+        val builder =
+            ProcessBuilder(
+                "java",
+                "--add-opens",
+                "java.base/java.lang=ALL-UNNAMED",
+                "--add-opens",
+                "java.base/java.util=ALL-UNNAMED",
+                "--add-opens",
+                "java.base/java.io=ALL-UNNAMED",
+                "-jar",
+                "./build/libs/tooling-api-all.jar")
+        val androidHome = findAndroidHome()
+        builder.environment()["ANDROID_SDK_ROOT"] = androidHome
+        builder.environment()["ANDROID_HOME"] = androidHome
         val proc = builder.start()
 
         Thread(Reader(proc.errorStream)).start()
@@ -116,28 +128,13 @@ class ToolingApiImplTest {
     }
 
     private fun findAndroidHome(): String {
-        var fromEnv = System.getenv("ANDROID_SDK_ROOT")
-        if (fromEnv != null) {
-            return fromEnv
-        }
-
-        fromEnv = System.getenv("ANDROID_HOME")
-        if (fromEnv != null) {
-            return fromEnv
-        }
-
-        val home = System.getProperty("user.home")
-        if (System.getProperty("os.name").contains("Windows")) {
-            return "$home/AppData/Local/Android/Sdk"
-        }
-
-        return "$home/android-sdk"
+        return System.getProperty("test.android.home")
     }
 
     private class TestClient : IToolingApiClient {
         private val log = ILogger.newInstance(javaClass.simpleName)
         override fun logMessage(line: LogLine) {
-            log.log(ILogger.priority(line.priorityChar), line.formattedTagAndMessage())
+            log.log(line.priority, line.formattedTagAndMessage())
         }
 
         override fun logOutput(line: String) {

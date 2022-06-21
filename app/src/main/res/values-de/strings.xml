@@ -28,7 +28,6 @@
     <string name="ide_logs">IDE Logs</string>
     <string name="label_splash_image">Splash-Bild</string>
     <string name="get_started">Loslegen</string>
-    <string name="nothing_here">Nichts hier &#x2026;</string>
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_cannot_perform_fix">Schnellkorrektur kann nicht durchgef&#xFC;hrt werden</string>
     <string name="msg_performing_actions">Korrekturen durchf&#xFC;hren&#x2026;</string>
@@ -40,29 +39,12 @@
     <string name="msg_finding_definition">Definition finden&#x2026;</string>
     <string name="msg_no_definition">Definition nicht gefunden</string>
     <string name="msg_no_references">Keine Referenzen gefunden</string>
-    <string name="menu_navigate_definition">Gehen Sie zur Definition</string>
-    <string name="menu_navigate_references">Finden Sie alle Referenzen</string>
-    <string name="menu_navigate">Code</string>
-    <string name="menu_comment_line">Kommentarzeile</string>
-    <string name="menu_uncomment_line">Zeile auskommentieren</string>
     <string name="view_diags">Diagnose</string>
     <!-- Build Tools Installation -->
     <string name="title_installation_failed">Installation fehlgeschlagen</string>
-    <string name="msg_installation_failed">Der Installationsvorgang wurde mit dem Beendigungscode %1$d beendet. Stellen Sie sicher, dass Sie die Build-Tools aus Originalquellen heruntergeladen haben.\n\nSie k&#xF6;nnten versuchen, Daten von AndroidIDE zu l&#xF6;schen und erneut zu installieren.\n\n%2$s</string>
-    <string name="choose">Ausw&#xE4;hlen</string>
     <string name="get_ready_for_something_awesome">Mach dich bereit f&#xFC;r etwas Gro&#xDF;artiges!</string>
-    <string name="androidide_build_tools">AndroidIDE-Build-Tools</string>
-    <string name="install_build_tools_required_b">Installieren Sie die von AndroidIDE ben&#xF6;tigten Build-Tools</string>
-    <string name="choose_directory_which_contain">W&#xE4;hlen Sie das Verzeichnis, das Build-Tools enth&#xE4;lt.</string>
-    <string name="click_install_button_to_st">Klicken Sie auf die Schaltfl&#xE4;che \'Installieren\', um den Installationsvorgang zu starten.</string>
     <string name="msg_picked_isnt_dir">Ausgew&#xE4;hlte Datei ist kein Verzeichnis!</string>
     <string name="msg_pick_single_file">Bitte w&#xE4;hlen Sie nur ein Verzeichnis aus</string>
-    <string name="msg_file_doesnt_exist">Datei existiert nicht!</string>
-    <string name="msg_pick_files">Bitte Dateien ausw&#xE4;hlen!</string>
-    <string name="msg_download_instructions">1. Laden Sie die Build-Tools von der AndroidIDE-Website herunter.\n2. Verschieben Sie alle Archive in ein Verzeichnis.\n3. W&#xE4;hlen Sie dieses Verzeichnis mit der Schaltfl&#xE4;che unten aus.\n4. Klicken Sie auf Installieren.\n5. Der Installationsvorgang beginnt.\n\nDer Installationsvorgang dauert je nach Leistung Ihres Ger&#xE4;ts etwa 5 bis 10 Minuten. Bitte haben Sie Geduld!</string>
-    <string name="msg_installable_files">Zu installierende Dateien\n\n%s</string>
-    <string name="title_restart">Bitte neustarten</string>
-    <string name="msg_restart">Die Installation ist erfolgreich abgeschlossen. Bitte starten Sie AndroidIDE neu.</string>
     <string name="please_wait">Bitte warten Sie einen Moment &#x2026;</string>
     <string name="title_device_not_supported">Ger&#xE4;t nicht unterst&#xFC;tzt</string>
     <string name="msg_device_not_supported">Leider wird Ihr Ger&#xE4;t derzeit nicht unterst&#xFC;tzt. Wir entschuldigen uns f&#xFC;r die Unannehmlichkeiten.\n\nUnterst&#xFC;tzte CPU-ABIs: aarch64 und armeabi-v7a</string>
@@ -79,29 +61,19 @@
     <string name="clean_project">S&#xE4;ubern</string>
     <string name="create_aab">AAB erstellen</string>
     <string name="build_tasks">Build Aufgaben</string>
-    <string name="stop_gradle_daemons">Stoppen sie Gradle-D&#xE4;monen</string>
     <string name="quick_run_debug">Schnelldurchlauf</string>
     <string name="msg_sync_needed">Die Gradle-Dateien haben sich ver&#xE4;ndert. Bitte starte den Build Prozess um diese zu Synchronisieren.</string>
-    <string name="msg_task_begin">========== [%s] TASK_BEGIN: %s ==========</string>
     <string name="preparing">Vorbereiten</string>
     <string name="preparing_first">Vorbereiten. Der erste Build kann bis zu 10 bis 15 Minuten dauern!</string>
-    <string name="msg_gradle_terminated">Der Gradle-Prozess wurde mit dem Exit-Code %1$d beendet</string>
-    <string name="msg_gradlew_installation_failed">Gradle Wrapper konnte nicht installiert werden: %s</string>
     <string name="msg_installing_gradlew">Gradle Wrapper ist nicht verf&#xFC;gbar!\nStandard-Wrapper wird installiert. Gradle v7.4 wird bei Bedarf heruntergeladen.</string>
     <string name="msg_getting_daemom_status">Abrufen des Daemon-Status, bitte warten&#x2026;</string>
-    <string name="msg_daemons_stopped">Gradle-D&#xE4;monen gestoppt</string>
     <string name="gradle_daemon_status">Gradle-Daemon-Status</string>
-    <string name="msg_service_started">Dienst gestartet</string>
-    <string name="msg_starting_completion">Dienste starten</string>
-    <string name="msg_starting_daemon">Gradle Daemon wird gestartet</string>
     <string name="title_install_apks">APK(s) installieren</string>
     <string name="title_clear_output">Ausgabe s&#xE4;ubern</string>
-    <string name="install">Installieren</string>
     <string name="run">Run</string>
     <string name="gradle">Gradle</string>
     <string name="title_first_build">Erster Build</string>
     <string name="msg_first_build">Dies ist der erste Build, nachdem Sie AndroidIDE installiert haben. Der erste Build dauert normalerweise einige Zeit, da Gradle ben&#xF6;tigte Dateien herunterl&#xE4;dt. Dieser Vorgang kann etwa 10 bis 15 Minuten dauern. Dies h&#xE4;ngt jedoch von Ihrer Netzwerkverbindung ab.\n\nBitte haben Sie etwas Geduld &#x2026;</string>
-    <string name="compiling">Kompilieren</string>
     <!-- Project -->
     <string name="create_project">Projekt erstellen</string>
     <string name="minimum_sdk">Mindest SDK</string>
@@ -109,21 +81,14 @@
     <string name="new_project">Neues Projekt</string>
     <string name="package_name">Paketnamen</string>
     <string name="project_app_name">App Name</string>
-    <string name="invalid_values">Ung&#xFC;ltige Werte</string>
-    <string name="msg_no_projects">Anscheinend haben Sie noch keine Projekte erstellt.</string>
     <string name="msg_create_new_project_greeting">Starten Sie Ihr neues gro&#xDF;artiges Projekt!</string>
     <string name="title_confirm_open_project">Letztes Projekt &#xF6;ffnen?</string>
     <string name="msg_confirm_open_project">Soll das zuletzt ge&#xF6;ffnete Projekt ge&#xF6;ffnet werden? Ge&#xF6;ffnetes Projekt war:\n%s</string>
-    <string name="msg_init_project_failed">Fehler beim Initialisieren des Projekts!</string>
     <string name="group_project">Projekt</string>
     <string name="title_close_project">Dieses Projekt schlie&#xDF;en</string>
     <string name="msg_opened_project_does_not_exist">Zuletzt ge&#xF6;ffnetes Projekt existiert nicht!</string>
     <string name="msg_create_new_project">Neues Projekt erstellen</string>
     <string name="msg_open_existing_project">Vorhandenes Projekt &#xF6;ffnen</string>
-    <string name="msg_opening_project">Projekt &#xF6;ffnen&#x2026;</string>
-    <string name="msg_invalid_project">Das ausgew&#xE4;hlte Verzeichnis ist kein Android-Projekt</string>
-    <string name="msg_project_deleted">Projekt gel&#xF6;scht</string>
-    <string name="msg_project_delete_failed">Projekt konnte nicht gel&#xF6;scht werden!</string>
     <string name="title_confirm_project_close">Projekt schlie&#xDF;en</string>
     <string name="msg_confirm_project_close">M&#xF6;chten Sie dieses Projekt wirklich schlie&#xDF;en? Alle gestarteten Gradle-Daemons werden gestoppt, nachdem dieses Projekt geschlossen wurde.</string>
     <string name="project_exists">Ein gleichnamiges Projekt existiert bereits!</string>
@@ -231,15 +196,11 @@
     <string name="title_tab_size">Tab-Gr&#xF6;&#xDF;e</string>
     <string name="msg_tab_size">Geben Sie die Anzahl der Leerzeichen f&#xFC;r TAB an</string>
     <string name="msg_preferences">Einstellungen</string>
-    <string name="msg_failed_get_changelog">&#xC4;nderungsprotokoll konnte nicht gelesen werden!</string>
     <string name="pref_changelog">&#xC4;nderungsprotokoll</string>
     <string name="msg_editor_font_size">Bitte w&#xE4;hlen Sie die Standardschriftgr&#xF6;&#xDF;e des Editors aus:</string>
     <string name="msg_clear_cache">Dadurch wird das von Gradle erstellte Cache-Verzeichnis gel&#xF6;scht. Wenn Sie es l&#xF6;schen, kann der n&#xE4;chste Build etwas l&#xE4;nger als normal dauern, da Gradle die erforderlichen Dateien erneut herunterl&#xE4;dt.\nWICHTIG: Dadurch wird auch AAPT2 gel&#xF6;scht. Sie m&#xFC;ssen es neu installieren, andernfalls kommt es zu einem Build-Fehler.\n\nSind Sie sicher, dass Sie Caches l&#xF6;schen m&#xF6;chten?</string>
     <!-- Error Messages used while Logging -->
-    <string name="err_installation">Installationsfehler</string>
     <string name="err_init_sdkinfo">SDK Info kann nicht initialisiert werden</string>
-    <string name="err_cannot_start_file_picker">Datei Picker kann nicht gestartet werden</string>
-    <string name="err_cannot_parse_apk_metadata">APK-Metadaten konnten nicht geparst werden</string>
     <string name="err_cannot_preview_layout">Vorschau des Layouts nicht m&#xF6;glich</string>
     <string name="err_cannot_inflate_layout">Layout kann nicht angezeigt werden</string>
     <!-- Layout preview and designer -->
@@ -261,10 +222,6 @@
     <string name="widget_group_layouts">Layouts</string>
     <string name="layout_linear">LinearLayout</string>
     <string name="layout_relative">RelativeLayout</string>
-    <string name="hint_new_attr_value">Neuer Wert</string>
-    <string name="attr_val_wrap_content">wrap_content</string>
-    <string name="attr_val_match_parent">match_parent</string>
-    <string name="attr_val_other">Anderer Wert</string>
     <string name="msg_applicable_attrs">Anwendbare Attribute</string>
     <string name="msg_attr_editor_actions">Aktionen</string>
     <string name="title_viewaction_delete">L&#xF6;schen</string>
@@ -275,10 +232,6 @@
     <string name="msg_view_deletion_failed">Die View kann nicht gel&#xF6;scht werden.</string>
     <string name="msg_empty_ui_layout">Es wurden keine View hinzugef&#xFC;gt. Zum Hinzuf&#xFC;gen klicken.</string>
     <string name="msg_no_attr_format">F&#xFC;r dieses Attribut ist kein Attributformat verf&#xFC;gbar.</string>
-    <string name="msg_invalid_attr_value">Ung&#xFC;ltiger Wert</string>
-    <string name="msg_new_str_value">Neue string value</string>
-    <string name="msg_choose_new_val">W&#xE4;hlen Sie einen neuen Wert aus</string>
-    <string name="msg_select_one_flag">Bitte kreuzen Sie mindestens eine Flag an.</string>
     <string name="msg_generate_xml_failed">XML-Code konnte nicht generiert werden</string>
     <string name="title_generating_xml">Generieren von XML-Code</string>
     <string name="title_code_generation_failed">Code generierung fehlgeschlagen</string>
@@ -305,14 +258,10 @@
     <string name="action_expand_selection">Auswahl erweitern</string>
     <string name="idepref_java_matchLower_title">Vervollständigungen in Kleinbuchstaben nutzen</string>
     <string name="msg_compiler_module_install">Kompilierer Modul wird installiert, bitte warten&#8230;</string>
-    <string name="template_description_kotlin_basic">Kotlin Projekt mit einer AppCompat Toolbar und einen FloatingActionButton</string>
-    <string name="template_kotlin_basic">Kotlin Basis Projekt</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="msg_viewaction_add_attr">Attribut hinzufügen</string>
     <string name="msg_search_attrs">Attribute suchen…</string>
-    <string name="msg_attr_added">Attribut wurde erfolgreich hinzugefügt</string>
-    <string name="msg_attr_not_updated">Fehler beim aktualisieren des Attributs</string>
     <string name="msg_file_tree">Dateipfad</string>
     <string name="hint_color_resource">Farbwert</string>
     <string name="title_color_picker">Farbauswahl</string>

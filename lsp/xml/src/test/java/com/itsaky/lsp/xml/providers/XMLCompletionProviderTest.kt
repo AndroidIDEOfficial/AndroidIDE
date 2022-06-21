@@ -37,7 +37,7 @@ class XMLCompletionProviderTest : BaseXMLTest() {
 
         val (isIncomplete, items) = complete()
 
-        assertThat(isIncomplete).isTrue()
+        assertThat(isIncomplete).isFalse()
         assertThat(items).isNotEmpty()
 
         assertThat(items).containsAtLeast("ImageView", "ImageButton")

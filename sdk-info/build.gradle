@@ -27,6 +27,8 @@ dependencies {
     implementation common.jsoup
 
     implementation androidx.annotation
+    implementation androidx.appcompat
+    implementation google.material
 
     compileOnly project(":common")
 }

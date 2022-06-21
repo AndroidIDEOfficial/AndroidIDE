@@ -16,6 +16,10 @@ android {
         sourceCompatibility rootProject.ext.javaSourceVersion
         targetCompatibility rootProject.ext.javaTargetVersion
     }
+    
+    kotlinOptions {
+        jvmTarget = "11"
+    }
 
     buildTypes {
         release {
@@ -32,6 +36,7 @@ dependencies {
     implementation androidx.ktx
     implementation common.kotlin
 }
+
 repositories {
     mavenCentral()
 }

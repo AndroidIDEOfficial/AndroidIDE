@@ -17,6 +17,10 @@ android {
         targetCompatibility rootProject.ext.javaTargetVersion
 	}
     
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+    
     buildTypes {
         release {
             minifyEnabled true

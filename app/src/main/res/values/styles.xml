@@ -46,19 +46,6 @@
         <item name="colorControlActivated">@color/secondaryTextColor_light</item>
     </style>
 
-    <style name="CreateProjectCardView" parent="@style/Widget.MaterialComponents.CardView">
-        <item name="shapeAppearanceOverlay">@style/CreateProjectCardView.ShapeAppearanceOverlay
-        </item>
-    </style>
-
-    <style name="CreateProjectCardView.ShapeAppearanceOverlay" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopRight">16dp</item>
-        <item name="cornerSizeTopLeft">16dp</item>
-        <item name="cornerSizeBottomRight">0dp</item>
-        <item name="cornerSizeBottomLeft">0dp</item>
-    </style>
-
     <style name="AppTheme.ShapeOverlay.Large" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopRight">16dp</item>
@@ -150,10 +137,5 @@
     <style name="AppTheme.TextInputLayout.Outlined" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="hintTextColor">@color/secondaryColor</item>
         <item name="boxStrokeColor">@color/text_input_box_stroke_selector</item>
-    </style>
-    <style name="AppTheme.Editor.TextActionMenu" parent="">
-        <item name="android:overlapAnchor">true</item>
-        <item name="android:dropDownVerticalOffset">0dp</item>
-        <item name="android:dropDownHorizontalOffset">0dp</item>
     </style>
 </resources>

@@ -31,11 +31,14 @@ import com.sun.tools.javac.util.JCDiagnostic.DiagnosticType;
 import com.sun.tools.javac.util.JCDiagnostic.SimpleDiagnosticPosition;
 import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Names;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.tools.JavaFileObject;
 
 /**
@@ -44,9 +47,7 @@ import javax.tools.JavaFileObject;
 public class NBClassFinder extends ClassFinder {
 
   public static void preRegister(Context context) {
-    context.put(
-        classFinderKey,
-        (Context.Factory<ClassFinder>) NBClassFinder::new);
+    context.put(classFinderKey, (Context.Factory<ClassFinder>) NBClassFinder::new);
   }
 
   private final Context context;
@@ -64,7 +65,7 @@ public class NBClassFinder extends ClassFinder {
 
   @Override
   protected JavaFileObject preferredFileObject(JavaFileObject a, JavaFileObject b) {
-    if (b.getName().toLowerCase().endsWith(".sig")) {
+    if (b.getName().toLowerCase(Locale.ROOT).endsWith(".sig")) {
       // do not prefer sources over sig files (unless sources are newer):
       boolean prevPreferSource = preferSource;
       try {

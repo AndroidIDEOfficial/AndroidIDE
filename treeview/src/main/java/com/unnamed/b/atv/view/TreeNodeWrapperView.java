@@ -1,5 +1,6 @@
 package com.unnamed.b.atv.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.RelativeLayout;
 import com.unnamed.b.atv.R;
 
 /** Created by Bogdan Melnychuk on 2/10/15. */
+@SuppressLint("ViewConstructor")
 public class TreeNodeWrapperView extends LinearLayout {
   private LinearLayout nodeItemsContainer;
   private ViewGroup nodeContainer;

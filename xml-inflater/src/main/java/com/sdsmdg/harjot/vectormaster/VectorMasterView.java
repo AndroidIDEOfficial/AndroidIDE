@@ -1,5 +1,6 @@
 package com.sdsmdg.harjot.vectormaster;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -339,6 +340,7 @@ public class VectorMasterView extends View {
     }
   }
 
+  @SuppressLint("CanvasSize")
   @Override
   protected void onDraw(Canvas canvas) {
     super.onDraw(canvas);

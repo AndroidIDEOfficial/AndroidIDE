@@ -1,5 +1,6 @@
 package com.unnamed.b.atv.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -349,6 +350,7 @@ public class TwoDScrollView extends FrameLayout {
     return mIsBeingDragged;
   }
 
+  @SuppressLint("ClickableViewAccessibility")
   @Override
   public boolean onTouchEvent(MotionEvent ev) {
 

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="title_gradle_service_notification_channel">AndroidIDE Gradle build service</string>
     <string name="msg_hex_color_code">Hex color code</string>
     <string name="msg_color_picker_pick">Pick</string>

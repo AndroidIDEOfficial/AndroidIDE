@@ -1,6 +1,5 @@
 <resources>
     <string name="msg_cannot_create_view">Cannot create view for tag: %s</string>
-    <string name="err_cannot_read_values">Unable to read values</string>
     <string name="err_no_attr_adapter">No attribute adapter implementation found for %s</string>
     <string name="msg_view_not_supported">View %s is not supported currently.</string>
 </resources>

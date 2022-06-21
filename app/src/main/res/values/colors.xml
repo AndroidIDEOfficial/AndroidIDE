@@ -20,13 +20,9 @@
     <color name="tabAction_text">@color/primaryLightColor</color>
     <color name="tabAction_icon">#000000</color>
     <color name="rippleHighlightColor">#50121212</color>
-    <color name="log_error">@color/secondaryDarkColor</color>
     <color name="log_warning">#FF7043</color>
-    <color name="log_info">#4CAF50</color>
-    <color name="log_normal">@color/primaryTextColor</color>
     <color name="diagnostic_error">@color/secondaryDarkColor</color>
     <color name="diagnostic_warning">@color/log_warning</color>
     <color name="content_background">#212121</color>
-    <color name="bg_green">#4CAF50</color>
     <color name="bg_widget_selected">#212121</color>
 </resources>

@@ -2140,7 +2140,7 @@ public final class TerminalEmulator {
         mBackColor = code - 100 + 8;
       } else {
         if (LOG_ESCAPE_SEQUENCES)
-          mClient.logWarn(LOG_TAG, String.format("SGR unknown code %d", code));
+          mClient.logWarn(LOG_TAG, String.format(Locale.getDefault(), "SGR unknown code %d", code));
       }
     }
   }
@@ -2160,17 +2160,13 @@ public final class TerminalEmulator {
   }
 
   private void doOscEsc(int b) {
-    switch (b) {
-      case '\\':
-        doOscSetTextParameters("\033\\");
-        break;
-      default:
-        // The ESC character was not followed by a \, so insert the ESC and
-        // the current character in arg buffer.
-        collectOSCArgs(27);
-        collectOSCArgs(b);
-        continueSequence(ESC_OSC);
-        break;
+    if (b == '\\') {
+      doOscSetTextParameters("\033\\");
+    } else { // The ESC character was not followed by a \, so insert the ESC and
+      // the current character in arg buffer.
+      collectOSCArgs(27);
+      collectOSCArgs(b);
+      continueSequence(ESC_OSC);
     }
   }
 

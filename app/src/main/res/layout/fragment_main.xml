@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+    android:layout_height="match_parent"
+    app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
 
     <ImageView
@@ -13,53 +12,50 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="16dp"
+        android:src="@mipmap/ic_launcher"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.25"
-        android:src="@mipmap/ic_launcher" />
+        app:layout_constraintVertical_bias="0.25" />
 
     <TextView
         android:id="@+id/getStarted"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/main_image"
         android:text="@string/get_started"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="@color/primaryTextColor"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/main_image" />
 
     <TextView
         android:id="@+id/greetingText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/getStarted"
         android:text="@string/msg_create_new_project_greeting"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/primaryTextColorLight" />
+        android:textColor="@color/primaryTextColorLight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/getStarted" />
 
     <Button
         android:id="@+id/create_project"
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/greetingText"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:elevation="0dp"
         android:ellipsize="end"
-        android:gravity="center_vertical"
+        android:gravity="center_horizontal"
         android:singleLine="true"
         android:text="@string/msg_create_new_project"
         android:textAlignment="center"
@@ -69,6 +65,9 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
         app:icon="@drawable/ic_add"
         app:iconPadding="8dp"
         app:iconTint="@color/primaryTextColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/greetingText"
         app:rippleColor="@color/rippleHighlightColor" />
 
     <Button
@@ -76,13 +75,11 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintStart_toStartOf="@id/create_project"
-        app:layout_constraintTop_toBottomOf="@id/create_project"
+        android:layout_marginBottom="8dp"
         android:elevation="0dp"
         android:ellipsize="end"
-        android:gravity="center_vertical"
+        android:gravity="center_horizontal"
         android:singleLine="true"
         android:text="@string/msg_open_existing_project"
         android:textAlignment="center"
@@ -92,6 +89,8 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
         app:icon="@drawable/ic_folder"
         app:iconPadding="8dp"
         app:iconTint="@color/primaryTextColor"
+        app:layout_constraintStart_toStartOf="@id/create_project"
+        app:layout_constraintTop_toBottomOf="@id/create_project"
         app:rippleColor="@color/rippleHighlightColor" />
 
     <Button
@@ -99,13 +98,11 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintStart_toStartOf="@id/create_project"
-        app:layout_constraintTop_toBottomOf="@id/open_project"
+        android:layout_marginBottom="8dp"
         android:elevation="0dp"
         android:ellipsize="end"
-        android:gravity="center_vertical"
+        android:gravity="center_horizontal"
         android:singleLine="true"
         android:text="@string/btn_terminal"
         android:textAlignment="center"
@@ -115,6 +112,8 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
         app:icon="@drawable/ic_terminal"
         app:iconPadding="8dp"
         app:iconTint="@color/primaryTextColor"
+        app:layout_constraintStart_toStartOf="@id/create_project"
+        app:layout_constraintTop_toBottomOf="@id/open_project"
         app:rippleColor="@color/rippleHighlightColor" />
 
     <Button
@@ -122,13 +121,11 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="56dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintStart_toStartOf="@id/create_project"
-        app:layout_constraintTop_toBottomOf="@id/open_terminal"
+        android:layout_marginBottom="8dp"
         android:elevation="0dp"
         android:ellipsize="end"
-        android:gravity="center_vertical"
+        android:gravity="center_horizontal"
         android:singleLine="true"
         android:text="@string/msg_preferences"
         android:textAlignment="center"
@@ -138,6 +135,8 @@ app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingVi
         app:icon="@drawable/ic_settings"
         app:iconPadding="8dp"
         app:iconTint="@color/primaryTextColor"
+        app:layout_constraintStart_toStartOf="@id/create_project"
+        app:layout_constraintTop_toBottomOf="@id/open_terminal"
         app:rippleColor="@color/rippleHighlightColor" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

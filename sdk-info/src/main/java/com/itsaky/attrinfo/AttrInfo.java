@@ -57,7 +57,7 @@ public class AttrInfo {
 
     Objects.requireNonNull(resources, "Cannot read from null resources.");
 
-    final var in = resources.openRawResource(R.raw.attrs);
+    final var in = resources.openRawResource(R.raw.attrs_xml);
     parseFromStream(in);
   }
 

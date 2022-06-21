@@ -17,7 +17,6 @@
 
 <resources>
     <string name="msg_cannot_create_view">Не удается создать представление для тега: %s</string>
-    <string name="err_cannot_read_values">Невозможно прочитать значения</string>
     <string name="err_no_attr_adapter">Не найдена реализация адаптера атрибутов для %s</string>
     <string name="msg_view_not_supported">Просмотр %s в настоящее время не поддерживается.</string>
 </resources>

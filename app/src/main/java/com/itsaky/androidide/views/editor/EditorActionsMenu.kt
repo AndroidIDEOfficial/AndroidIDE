@@ -309,11 +309,12 @@ open class EditorActionsMenu(val editor: IDEEditor) :
         super.show()
     }
 
+    @SuppressLint("InflateParams")
     private fun findWidestItem(): Int {
         var widest = 0
         val text =
-            LayoutInflater.from(editor.context).inflate(R.layout.layout_popup_menu_item, null) as
-                MaterialTextView
+            LayoutInflater.from(editor.context).inflate(R.layout.layout_popup_menu_item, null)
+                as MaterialTextView
         val dp30 = SizeUtils.dp2px(30f)
         val paddingHorizontal = text.paddingStart + text.paddingEnd
         val drawablePadding = text.compoundDrawablePadding
@@ -346,8 +347,7 @@ open class EditorActionsMenu(val editor: IDEEditor) :
             val view: MaterialTextView =
                 if (convertView == null || convertView !is MaterialButton) {
                     (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
-                        .inflate(R.layout.layout_popup_menu_item, parent, false) as
-                        MaterialTextView
+                        .inflate(R.layout.layout_popup_menu_item, parent, false) as MaterialTextView
                 } else {
                     convertView as MaterialTextView
                 }

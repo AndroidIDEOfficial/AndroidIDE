@@ -144,11 +144,18 @@
         <entry key="app/src/main/res/drawable/bg_log_search_field.xml" value="0.3365" />
         <entry key="app/src/main/res/drawable/ic_gradle.xml" value="0.3265" />
         <entry key="app/src/main/res/drawable/ic_language_gradle.xml" value="0.3265" />
+        <entry key="app/src/main/res/drawable/ic_widget_linear.xml" value="0.3365" />
         <entry key="app/src/main/res/layout/activity_download.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/activity_terminal.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/fragment_log.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/fragment_log_view.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/layout_attr_editor_sheet.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/layout_attr_value_editor.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/layout_dialog_text_input.xml" value="0.35572916666666665" />
         <entry key="app/src/main/res/layout/layout_log_line.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/layout_progress_sheet.xml" value="0.18229166666666666" />
+        <entry key="app/src/main/res/menu/menu_editor.xml" value="0.35572916666666665" />
+        <entry key="common/src/main/res/drawable-anydpi/ic_hex_icon.xml" value="0.3365" />
       </map>
     </option>
   </component>
