@@ -19,6 +19,9 @@ package com.itsaky.androidide.language.incremental;
 
 import static com.itsaky.androidide.language.incremental.LineState.INCOMPLETE;
 import static com.itsaky.androidide.language.incremental.LineState.NORMAL;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.FIXME_COMMENT;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.TODO_COMMENT;
+import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.withoutCompletion;
 
 import androidx.annotation.NonNull;
 
@@ -156,6 +159,24 @@ public abstract class BaseIncrementalAnalyzeManager
     } catch (IOException e) {
       throw new RuntimeException("Cannot create CharStream for source", e);
     }
+  }
+
+  protected void handleLineCommentSpan(
+      @NonNull IncrementalToken token, @NonNull List<Span> spans, int offset) {
+    var commentType = SchemeAndroidIDE.COMMENT;
+
+    // highlight special line comments
+    var commentText = token.getText();
+    if (commentText.length() > 2) {
+      commentText = commentText.substring(2);
+      commentText = commentText.trim();
+      if ("todo".equalsIgnoreCase(commentText.substring(0, 4))) {
+        commentType = TODO_COMMENT;
+      } else if ("fixme".equalsIgnoreCase(commentText.substring(0, 5))) {
+        commentType = FIXME_COMMENT;
+      }
+    }
+    spans.add(Span.obtain(offset, withoutCompletion(commentType)));
   }
 
   @Override

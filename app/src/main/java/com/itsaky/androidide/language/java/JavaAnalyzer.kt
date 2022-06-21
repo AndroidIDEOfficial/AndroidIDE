@@ -41,8 +41,7 @@ import io.github.rosemoe.sora.text.Content
 import org.antlr.v4.runtime.CharStreams
 
 /** @author Akash Yadav */
-class JavaAnalyzer :
-  BaseIncrementalAnalyzeManager(JavaLexer(CharStreams.fromString(""))) {
+class JavaAnalyzer : BaseIncrementalAnalyzeManager(JavaLexer(CharStreams.fromString(""))) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
@@ -175,36 +174,7 @@ class JavaAnalyzer :
         JavaLexer.LONG,
         JavaLexer.SHORT, -> spans.add(Span.obtain(offset, makeStyle(TYPE_NAME)))
         JavaLexer.BLOCK_COMMENT -> spans.add(Span.obtain(offset, forComment()))
-        JavaLexer.LINE_COMMENT -> {
-          var commentType = COMMENT
-
-          // highlight special line comments
-          var commentText = token.text
-          if (commentText.length > 2) {
-            commentText = commentText.substring(2)
-            commentText = commentText.trim { it <= ' ' }
-            var mark = true
-            if ("todo".equals(commentText.substring(0, 4), ignoreCase = true)) {
-              commentType = TODO_COMMENT
-            } else if ("fixme".equals(commentText.substring(0, 5), ignoreCase = true)) {
-              commentType = FIXME_COMMENT
-            } else {
-              mark = false
-            }
-            if (mark) {
-//              val diagnostic =
-//                DiagnosticItem(
-//                  severity = WARNING,
-//                  message = commentText,
-//                  code = "special.comment",
-//                  range = Range(Position(0, offset), Position(0, offset + tokenLength)),
-//                  source = commentText
-//                )
-//              ideDiagnostics.add(diagnostic)
-            }
-          }
-          spans.add(Span.obtain(offset, withoutCompletion(commentType)))
-        }
+        JavaLexer.LINE_COMMENT -> handleLineCommentSpan(token, spans, offset)
         JavaLexer.AT -> spans.add(Span.obtain(offset, makeStyle(ANNOTATION)))
         JavaLexer.IDENTIFIER -> {
           var colorId = TEXT_NORMAL
@@ -220,7 +190,7 @@ class JavaAnalyzer :
 
     return spans
   }
-
+  
   override fun getMultilineTokenStartEndTypes(): Array<IntArray> {
     val start = intArrayOf(JavaLexer.DIV, JavaLexer.MUL)
     val end = intArrayOf(JavaLexer.MUL, JavaLexer.DIV)
