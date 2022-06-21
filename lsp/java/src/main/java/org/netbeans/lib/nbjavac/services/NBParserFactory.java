@@ -43,9 +43,7 @@ import com.sun.tools.javac.util.Position;
 public class NBParserFactory extends ParserFactory {
 
   public static void preRegister(Context context) {
-    context.put(
-        parserFactoryKey,
-        (Context.Factory<ParserFactory>) NBParserFactory::new);
+    context.put(parserFactoryKey, (Context.Factory<ParserFactory>) NBParserFactory::new);
   }
 
   private final ScannerFactory scannerFactory;

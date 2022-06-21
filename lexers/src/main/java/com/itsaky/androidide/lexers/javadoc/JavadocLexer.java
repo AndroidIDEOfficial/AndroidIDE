@@ -1,24 +1,5 @@
-/************************************************************************************
- * This file is part of AndroidIDE.
- *
- *
- *
- * AndroidIDE is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * AndroidIDE is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
- *
- **************************************************************************************/
-// Generated from JavadocLexer.g4 by ANTLR 4.9.2
-package com.itsaky.androidide.antlr4.javadoc;
+// Generated from JavadocLexer.g4 by ANTLR 4.9.3
+package com.itsaky.androidide.lexers.javadoc;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Lexer;
@@ -34,12 +15,6 @@ import org.antlr.v4.runtime.dfa.DFA;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class JavadocLexer extends Lexer {
-  static {
-    RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION);
-  }
-
-  protected static final DFA[] _decisionToDFA;
-  protected static final PredictionContextCache _sharedContextCache = new PredictionContextCache();
   public static final int NAME = 1,
       NEWLINE = 2,
       SPACE = 3,
@@ -52,144 +27,11 @@ public class JavadocLexer extends Lexer {
       INLINE_TAG_START = 10,
       BRACE_OPEN = 11,
       BRACE_CLOSE = 12;
-  public static String[] channelNames = {"DEFAULT_TOKEN_CHANNEL", "HIDDEN"};
-
-  public static String[] modeNames = {"DEFAULT_MODE"};
-
-  private static String[] makeRuleNames() {
-    return new String[] {
-      "NAME",
-      "NEWLINE",
-      "SPACE",
-      "TEXT_CONTENT",
-      "AT",
-      "STAR",
-      "SLASH",
-      "JAVADOC_START",
-      "JAVADOC_END",
-      "INLINE_TAG_START",
-      "BRACE_OPEN",
-      "BRACE_CLOSE"
-    };
-  }
-
   public static final String[] ruleNames = makeRuleNames();
-
-  private static String[] makeLiteralNames() {
-    return new String[] {
-      null, null, null, null, null, "'@'", "'*'", "'/'", null, null, "'{@'", "'{'", "'}'"
-    };
-  }
-
-  private static final String[] _LITERAL_NAMES = makeLiteralNames();
-
-  private static String[] makeSymbolicNames() {
-    return new String[] {
-      null,
-      "NAME",
-      "NEWLINE",
-      "SPACE",
-      "TEXT_CONTENT",
-      "AT",
-      "STAR",
-      "SLASH",
-      "JAVADOC_START",
-      "JAVADOC_END",
-      "INLINE_TAG_START",
-      "BRACE_OPEN",
-      "BRACE_CLOSE"
-    };
-  }
-
-  private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
-  public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
-
   /**
    * @deprecated Use {@link #VOCABULARY} instead.
    */
   @Deprecated public static final String[] tokenNames;
-
-  static {
-    tokenNames = new String[_SYMBOLIC_NAMES.length];
-    for (int i = 0; i < tokenNames.length; i++) {
-      tokenNames[i] = VOCABULARY.getLiteralName(i);
-      if (tokenNames[i] == null) {
-        tokenNames[i] = VOCABULARY.getSymbolicName(i);
-      }
-
-      if (tokenNames[i] == null) {
-        tokenNames[i] = "<INVALID>";
-      }
-    }
-  }
-
-  @Override
-  @Deprecated
-  public String[] getTokenNames() {
-    return tokenNames;
-  }
-
-  @Override
-  public Vocabulary getVocabulary() {
-    return VOCABULARY;
-  }
-
-  public JavadocLexer(CharStream input) {
-    super(input);
-    _interp = new LexerATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
-  }
-
-  @Override
-  public String getGrammarFileName() {
-    return "JavadocLexer.g4";
-  }
-
-  @Override
-  public String[] getRuleNames() {
-    return ruleNames;
-  }
-
-  @Override
-  public String getSerializedATN() {
-    return _serializedATN;
-  }
-
-  @Override
-  public String[] getChannelNames() {
-    return channelNames;
-  }
-
-  @Override
-  public String[] getModeNames() {
-    return modeNames;
-  }
-
-  @Override
-  public ATN getATN() {
-    return _ATN;
-  }
-
-  @Override
-  public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
-    switch (ruleIndex) {
-      case 1:
-        return NEWLINE_sempred((RuleContext) _localctx, predIndex);
-    }
-    return true;
-  }
-
-  private boolean NEWLINE_sempred(RuleContext _localctx, int predIndex) {
-    switch (predIndex) {
-      case 0:
-        return _input.LA(1) != '/';
-      case 1:
-        return _input.LA(1) != '/';
-      case 2:
-        return _input.LA(1) != '/';
-    }
-    return true;
-  }
-
   public static final String _serializedATN =
       "\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\2\16x\b\1\4\2\t\2\4"
           + "\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"
@@ -224,11 +66,144 @@ public class JavadocLexer extends Lexer {
           + "no\7,\2\2op\7\61\2\2p\24\3\2\2\2qr\7}\2\2rs\7B\2\2s\26\3\2\2\2tu\7}\2"
           + "\2u\30\3\2\2\2vw\7\177\2\2w\32\3\2\2\2\23\2\36\")+\618:>EGINSbfk\2";
   public static final ATN _ATN = new ATNDeserializer().deserialize(_serializedATN.toCharArray());
+  protected static final DFA[] _decisionToDFA;
+  protected static final PredictionContextCache _sharedContextCache = new PredictionContextCache();
+  private static final String[] _LITERAL_NAMES = makeLiteralNames();
+  private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
+  public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
+  public static String[] channelNames = {"DEFAULT_TOKEN_CHANNEL", "HIDDEN"};
+  public static String[] modeNames = {"DEFAULT_MODE"};
+
+  static {
+    RuntimeMetaData.checkVersion("4.9.3", RuntimeMetaData.VERSION);
+  }
+
+  static {
+    tokenNames = new String[_SYMBOLIC_NAMES.length];
+    for (int i = 0; i < tokenNames.length; i++) {
+      tokenNames[i] = VOCABULARY.getLiteralName(i);
+      if (tokenNames[i] == null) {
+        tokenNames[i] = VOCABULARY.getSymbolicName(i);
+      }
+
+      if (tokenNames[i] == null) {
+        tokenNames[i] = "<INVALID>";
+      }
+    }
+  }
 
   static {
     _decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
     for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
       _decisionToDFA[i] = new DFA(_ATN.getDecisionState(i), i);
     }
+  }
+
+  public JavadocLexer(CharStream input) {
+    super(input);
+    _interp = new LexerATNSimulator(this, _ATN, _decisionToDFA, _sharedContextCache);
+  }
+
+  private static String[] makeRuleNames() {
+    return new String[] {
+      "NAME",
+      "NEWLINE",
+      "SPACE",
+      "TEXT_CONTENT",
+      "AT",
+      "STAR",
+      "SLASH",
+      "JAVADOC_START",
+      "JAVADOC_END",
+      "INLINE_TAG_START",
+      "BRACE_OPEN",
+      "BRACE_CLOSE"
+    };
+  }
+
+  private static String[] makeLiteralNames() {
+    return new String[] {
+      null, null, null, null, null, "'@'", "'*'", "'/'", null, null, "'{@'", "'{'", "'}'"
+    };
+  }
+
+  private static String[] makeSymbolicNames() {
+    return new String[] {
+      null,
+      "NAME",
+      "NEWLINE",
+      "SPACE",
+      "TEXT_CONTENT",
+      "AT",
+      "STAR",
+      "SLASH",
+      "JAVADOC_START",
+      "JAVADOC_END",
+      "INLINE_TAG_START",
+      "BRACE_OPEN",
+      "BRACE_CLOSE"
+    };
+  }
+
+  @Override
+  public String[] getRuleNames() {
+    return ruleNames;
+  }
+
+  @Override
+  public Vocabulary getVocabulary() {
+    return VOCABULARY;
+  }
+
+  @Override
+  public String getSerializedATN() {
+    return _serializedATN;
+  }
+
+  @Override
+  public String getGrammarFileName() {
+    return "JavadocLexer.g4";
+  }
+
+  @Override
+  public ATN getATN() {
+    return _ATN;
+  }
+
+  @Override
+  public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
+    switch (ruleIndex) {
+      case 1:
+        return NEWLINE_sempred((RuleContext) _localctx, predIndex);
+    }
+    return true;
+  }
+
+  private boolean NEWLINE_sempred(RuleContext _localctx, int predIndex) {
+    switch (predIndex) {
+      case 0:
+        return _input.LA(1) != '/';
+      case 1:
+        return _input.LA(1) != '/';
+      case 2:
+        return _input.LA(1) != '/';
+    }
+    return true;
+  }
+
+  @Override
+  public String[] getChannelNames() {
+    return channelNames;
+  }
+
+  @Override
+  public String[] getModeNames() {
+    return modeNames;
+  }
+
+  @Override
+  @Deprecated
+  public String[] getTokenNames() {
+    return tokenNames;
   }
 }

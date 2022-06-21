@@ -1,5 +1,4 @@
-// Generated from
-// D:/Projects/AndroidStudioProjects/AndroidIDE/lexers/src/main/java/com/itsaky/androidide/lexers/xml\XMLParser.g4 by ANTLR 4.9.2
+// Generated from XMLParser.g4 by ANTLR 4.9.3
 package com.itsaky.androidide.lexers.xml;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -172,21 +171,8 @@ public class XMLParserBaseListener implements XMLParserListener {
    * <p>The default implementation does nothing.
    */
   @Override
-  public void enterEveryRule(ParserRuleContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
-  public void exitEveryRule(ParserRuleContext ctx) {}
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation does nothing.
-   */
-  @Override
   public void visitTerminal(TerminalNode node) {}
+
   /**
    * {@inheritDoc}
    *
@@ -194,4 +180,20 @@ public class XMLParserBaseListener implements XMLParserListener {
    */
   @Override
   public void visitErrorNode(ErrorNode node) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void enterEveryRule(ParserRuleContext ctx) {}
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.
+   */
+  @Override
+  public void exitEveryRule(ParserRuleContext ctx) {}
 }

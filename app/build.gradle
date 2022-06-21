@@ -138,4 +138,12 @@ dependencies {
     // This is to build the tooling-api-impl project before the app is built
     // So we always copy the latest JAR file to assets
     compileOnly project (path: ':build-tools:tooling-api-impl')
+    
+    testImplementation common.editor
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    testImplementation tests.robolectric
+    androidTestImplementation tests.androidx_junit
+    androidTestImplementation tests.androidx_espresso
+    androidTestImplementation tests.google_truth
 }
