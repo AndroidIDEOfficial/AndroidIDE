@@ -244,7 +244,9 @@ public abstract class BaseIncrementalAnalyzeManager
       final LineState st,
       final int lexerMode) {
     lexer.setInputStream(createStream(line));
-    lexer.pushMode(lexerMode);
+    if (lexer._mode != lexerMode) {
+      lexer.pushMode(lexerMode);
+    }
     final var queues = createEvictingQueueForTokens();
     final var start = queues.getFirst();
     final var end = queues.getSecond();
@@ -317,7 +319,9 @@ public abstract class BaseIncrementalAnalyzeManager
   protected long fillIncomplete(
       CharSequence line, final List<IncrementalToken> tokens, final int lexerMode) {
     lexer.setInputStream(createStream(line));
-    lexer.pushMode(lexerMode);
+    if (lexer._mode != lexerMode) {
+      lexer.pushMode(lexerMode);
+    }
     final var queue = createEvictingQueueForTokens();
     final var end = queue.getSecond();
     final var allTokens =

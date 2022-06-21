@@ -115,8 +115,8 @@ internal class BaseIncrementalAnalyzeManagerTest {
     run {
       var result = analyzer.tokenizeLine("/** This is an", analyzer.initialState)
       assertThat(result.state.state).isEqualTo(LineState.INCOMPLETE)
-      assertThat(result.tokens.last()).isNotNull()
-      assertThat(result.tokens.last().type).isEqualTo(JavaLexer.IDENTIFIER)
+      assertThat(result.tokens.size).isEqualTo(1)
+      assertThat(result.tokens.first().type).isEqualTo(JavaLexer.BLOCK_COMMENT)
 
       result = analyzer.tokenizeLine(" incomplete comment*/ public static void", result.state)
       assertThat(result.state.state).isEqualTo(LineState.NORMAL)
