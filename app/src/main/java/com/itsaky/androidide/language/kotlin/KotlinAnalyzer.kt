@@ -66,7 +66,7 @@ class KotlinAnalyzer : BaseIncrementalAnalyzeManager(KotlinLexer::class.java) {
       when (type) {
         KotlinLexer.WS ->
           if (first) {
-            spans.add(Span.obtain(0, makeStyle(TEXT_NORMAL)))
+            spans.add(Span.obtain(offset, makeStyle(TEXT_NORMAL)))
             first = false
           }
         KotlinLexer.AT_NO_WS,

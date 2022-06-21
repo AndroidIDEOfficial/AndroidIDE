@@ -221,7 +221,7 @@ public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
           break;
       }
     }
-    return null;
+    return spans;
   }
 
   @Override

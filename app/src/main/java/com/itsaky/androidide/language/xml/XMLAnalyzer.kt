@@ -86,7 +86,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
         XMLLexer.S,
         XMLLexer.SEA_WS, ->
           if (first) {
-            spans.add(Span.obtain(0, makeStyle(TEXT_NORMAL)))
+            spans.add(Span.obtain(offset, makeStyle(TEXT_NORMAL)))
             first = false
           }
         XMLLexer.COMMENT -> spans.add(Span.obtain(offset, forComment()))
