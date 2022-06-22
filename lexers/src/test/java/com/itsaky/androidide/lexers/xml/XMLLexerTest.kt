@@ -24,6 +24,7 @@ import com.itsaky.androidide.lexers.xml.XMLLexer.COMMENT_END
 import com.itsaky.androidide.lexers.xml.XMLLexer.COMMENT_MODE
 import com.itsaky.androidide.lexers.xml.XMLLexer.COMMENT_START
 import com.itsaky.androidide.lexers.xml.XMLLexer.CommentModeEnd
+import com.itsaky.androidide.lexers.xml.XMLLexer.CommentText
 import com.itsaky.androidide.lexers.xml.XMLLexer.DEFAULT_MODE
 import com.itsaky.androidide.lexers.xml.XMLLexer.EQUALS
 import com.itsaky.androidide.lexers.xml.XMLLexer.Name
@@ -90,7 +91,7 @@ class XMLLexerTest : BaseLexerTest() {
   fun incompleteCommentStartTest() {
     val lexer = XMLLexer(createStream("<!-- Comment text"))
     val tokens = lexer.allTokens
-    ensureTokenSequence(tokens, listOf(COMMENT_START))
+    ensureTokenSequence(tokens, listOf(COMMENT_START, CommentText))
     assertThat(lexer._mode).isEqualTo(COMMENT_MODE)
   }
 
@@ -98,7 +99,7 @@ class XMLLexerTest : BaseLexerTest() {
   fun incompleteCommentStartAfterTextTest() {
     val lexer = XMLLexer(createStream("Not in comment <!-- Comment text"))
     val tokens = lexer.allTokens
-    ensureTokenSequence(tokens, listOf(TEXT, COMMENT_START))
+    ensureTokenSequence(tokens, listOf(TEXT, COMMENT_START, CommentText))
     assertThat(lexer._mode).isEqualTo(COMMENT_MODE)
   }
 
@@ -107,7 +108,7 @@ class XMLLexerTest : BaseLexerTest() {
     val lexer = XMLLexer(createStream("Comment text -->"))
     lexer.pushMode(COMMENT_MODE)
     val tokens = lexer.allTokens
-    ensureTokenSequence(tokens, listOf(CommentModeEnd))
+    ensureTokenSequence(tokens, listOf(CommentText, CommentModeEnd))
     assertThat(lexer._mode).isEqualTo(DEFAULT_MODE)
   }
 
@@ -116,7 +117,7 @@ class XMLLexerTest : BaseLexerTest() {
     val lexer = XMLLexer(createStream("Comment text --> Not in comment"))
     lexer.pushMode(COMMENT_MODE)
     val tokens = lexer.allTokens
-    ensureTokenSequence(tokens, listOf(CommentModeEnd, TEXT))
+    ensureTokenSequence(tokens, listOf(CommentText, CommentModeEnd, TEXT))
     assertThat(lexer._mode).isEqualTo(DEFAULT_MODE)
   }
 }
