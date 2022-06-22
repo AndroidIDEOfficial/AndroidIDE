@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion rootProject.ext.compileSdk
@@ -14,6 +15,10 @@ android {
         targetCompatibility rootProject.ext.javaTargetVersion
 	}
     
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+    
     buildTypes {
         release {
             minifyEnabled true
@@ -23,6 +28,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    
     api common.antlr4
+    
+    implementation androidx.ktx
+    implementation common.kotlin
+    
+    testImplementation tests.junit
+    testImplementation tests.google_truth
+    testImplementation tests.robolectric
 }

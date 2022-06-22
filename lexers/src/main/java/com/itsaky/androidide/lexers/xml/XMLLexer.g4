@@ -30,10 +30,14 @@
 lexer grammar XMLLexer;
 
 // Default "mode": Everything OUTSIDE of a tag
-COLON       :   ':'              ;
-NOT         :   '!'              ;
-DASH        :   '-'              ;
-COMMENT     :   '<!--' .*? '-->' ;
+COLON       :   ':'                         ;
+NOT         :   '!'                         ;
+DASH        :   '-'                         ;
+
+// When we encounter a comment, enter COMMENT_MODE
+COMMENT_START:  '<' NOT DASH DASH           -> pushMode(COMMENT_MODE);
+COMMENT_END :   DASH DASH '>'                ;
+COMMENT     :   COMMENT_START .*? COMMENT_END ;
 CDATA       :   '<![CDATA[' .*? ']]>' ;
 /** Scarf all DTD stuff, Entity Declarations like <!ENTITY ...>,
  *  and Notation Declarations <!NOTATION ...>
@@ -45,15 +49,20 @@ CharRef     :   '&#' DIGIT+ ';'
             ;
 SEA_WS      :   (' '|'\t'|'\r'? '\n')+ ;
 
-OPEN        :   '<'                     -> pushMode(INSIDE) ;
-OPEN_SLASH  :   '</'                    -> pushMode(INSIDE) ;
-XMLDeclOpen :   '<?xml' S               -> pushMode(INSIDE) ;
+OPEN        :   '<'                     -> pushMode(TAG_MODE) ;
+OPEN_SLASH  :   '</'                    -> pushMode(TAG_MODE) ;
+XMLDeclOpen :   '<?xml' S               -> pushMode(TAG_MODE) ;
 SPECIAL_OPEN:   '<?' Name               -> more, pushMode(PROC_INSTR) ;
 
-TEXT        :   ~[<&]+ ;        // match any 16 bit char other than < and &
+TEXT        :   ~[<&]+;        // match any 16 bit char other than < and &
+
+// ----------------- Inside a comment ------------------------------
+mode COMMENT_MODE;
+CommentText    :   ~[<&-]+               -> skip   ;
+CommentModeEnd :   COMMENT_END           -> popMode; // Comment ended, exit COMMENT_MODE
 
 // ----------------- Everything INSIDE of a tag ---------------------
-mode INSIDE;
+mode TAG_MODE;
 
 CLOSE       :   '>'                     -> popMode ;
 SPECIAL_CLOSE:  '?>'                    -> popMode ; // close <?xml...?>
@@ -75,7 +84,7 @@ DIGIT       :   [0-9] ;
 
 fragment
 NameChar    :   NameStartChar
-            |   '-' | '_' | '.' | DIGIT
+            |   DASH | '_' | '.' | DIGIT
             |   '\u00B7'
             |   '\u0300'..'\u036F'
             |   '\u203F'..'\u2040'

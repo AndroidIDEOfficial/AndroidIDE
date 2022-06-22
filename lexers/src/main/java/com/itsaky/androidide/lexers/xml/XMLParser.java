@@ -17,9 +17,10 @@ public class XMLParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		COLON=1, NOT=2, DASH=3, COMMENT=4, CDATA=5, DTD=6, EntityRef=7, CharRef=8, 
-		SEA_WS=9, OPEN=10, OPEN_SLASH=11, XMLDeclOpen=12, TEXT=13, CLOSE=14, SPECIAL_CLOSE=15, 
-		SLASH_CLOSE=16, SLASH=17, EQUALS=18, STRING=19, Name=20, S=21, PI=22;
+		COLON=1, NOT=2, DASH=3, COMMENT_START=4, COMMENT_END=5, COMMENT=6, CDATA=7, 
+		DTD=8, EntityRef=9, CharRef=10, SEA_WS=11, OPEN=12, OPEN_SLASH=13, XMLDeclOpen=14, 
+		TEXT=15, CommentText=16, CommentModeEnd=17, CLOSE=18, SPECIAL_CLOSE=19, 
+		SLASH_CLOSE=20, SLASH=21, EQUALS=22, STRING=23, Name=24, S=25, PI=26;
 	public static final int
 		RULE_document = 0, RULE_prolog = 1, RULE_content = 2, RULE_element = 3, 
 		RULE_nonEmptyClosingElement = 4, RULE_emptyClosingElement = 5, RULE_reference = 6, 
@@ -35,17 +36,18 @@ public class XMLParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "':'", "'!'", "'-'", null, null, null, null, null, null, "'<'", 
-			"'</'", null, null, "'>'", null, "'/>'", "'/'", "'='"
+			null, "':'", "'!'", "'-'", null, null, null, null, null, null, null, 
+			null, "'<'", "'</'", null, null, null, null, "'>'", null, "'/>'", "'/'", 
+			"'='"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "COLON", "NOT", "DASH", "COMMENT", "CDATA", "DTD", "EntityRef", 
-			"CharRef", "SEA_WS", "OPEN", "OPEN_SLASH", "XMLDeclOpen", "TEXT", "CLOSE", 
-			"SPECIAL_CLOSE", "SLASH_CLOSE", "SLASH", "EQUALS", "STRING", "Name", 
-			"S", "PI"
+			null, "COLON", "NOT", "DASH", "COMMENT_START", "COMMENT_END", "COMMENT", 
+			"CDATA", "DTD", "EntityRef", "CharRef", "SEA_WS", "OPEN", "OPEN_SLASH", 
+			"XMLDeclOpen", "TEXT", "CommentText", "CommentModeEnd", "CLOSE", "SPECIAL_CLOSE", 
+			"SLASH_CLOSE", "SLASH", "EQUALS", "STRING", "Name", "S", "PI"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -876,7 +878,7 @@ public class XMLParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\30p\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\34p\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4"+
 		"\f\t\f\3\2\5\2\32\n\2\3\2\7\2\35\n\2\f\2\16\2 \13\2\3\2\3\2\7\2$\n\2\f"+
 		"\2\16\2\'\13\2\3\3\3\3\7\3+\n\3\f\3\16\3.\13\3\3\3\3\3\3\4\5\4\63\n\4"+
@@ -884,26 +886,26 @@ public class XMLParser extends Parser {
 		"\3\5\5\5F\n\5\3\6\3\6\3\6\7\6K\n\6\f\6\16\6N\13\6\3\6\3\6\3\6\3\6\3\6"+
 		"\3\6\3\7\3\7\3\7\7\7Y\n\7\f\7\16\7\\\13\7\3\7\3\7\3\b\3\b\3\t\5\tc\n\t"+
 		"\3\t\3\t\3\t\3\t\3\n\3\n\3\n\3\13\3\13\3\f\3\f\3\f\2\2\r\2\4\6\b\n\f\16"+
-		"\20\22\24\26\2\5\3\2\t\n\4\2\13\13\17\17\5\2\6\6\13\13\30\30\2s\2\31\3"+
-		"\2\2\2\4(\3\2\2\2\6\62\3\2\2\2\bE\3\2\2\2\nG\3\2\2\2\fU\3\2\2\2\16_\3"+
-		"\2\2\2\20b\3\2\2\2\22h\3\2\2\2\24k\3\2\2\2\26m\3\2\2\2\30\32\5\4\3\2\31"+
+		"\20\22\24\26\2\5\3\2\13\f\4\2\r\r\21\21\5\2\b\b\r\r\34\34\2s\2\31\3\2"+
+		"\2\2\4(\3\2\2\2\6\62\3\2\2\2\bE\3\2\2\2\nG\3\2\2\2\fU\3\2\2\2\16_\3\2"+
+		"\2\2\20b\3\2\2\2\22h\3\2\2\2\24k\3\2\2\2\26m\3\2\2\2\30\32\5\4\3\2\31"+
 		"\30\3\2\2\2\31\32\3\2\2\2\32\36\3\2\2\2\33\35\5\26\f\2\34\33\3\2\2\2\35"+
 		" \3\2\2\2\36\34\3\2\2\2\36\37\3\2\2\2\37!\3\2\2\2 \36\3\2\2\2!%\5\b\5"+
 		"\2\"$\5\26\f\2#\"\3\2\2\2$\'\3\2\2\2%#\3\2\2\2%&\3\2\2\2&\3\3\2\2\2\'"+
-		"%\3\2\2\2(,\7\16\2\2)+\5\20\t\2*)\3\2\2\2+.\3\2\2\2,*\3\2\2\2,-\3\2\2"+
-		"\2-/\3\2\2\2.,\3\2\2\2/\60\7\21\2\2\60\5\3\2\2\2\61\63\5\24\13\2\62\61"+
-		"\3\2\2\2\62\63\3\2\2\2\63@\3\2\2\2\64:\5\b\5\2\65:\5\16\b\2\66:\7\7\2"+
-		"\2\67:\7\30\2\28:\7\6\2\29\64\3\2\2\29\65\3\2\2\29\66\3\2\2\29\67\3\2"+
+		"%\3\2\2\2(,\7\20\2\2)+\5\20\t\2*)\3\2\2\2+.\3\2\2\2,*\3\2\2\2,-\3\2\2"+
+		"\2-/\3\2\2\2.,\3\2\2\2/\60\7\25\2\2\60\5\3\2\2\2\61\63\5\24\13\2\62\61"+
+		"\3\2\2\2\62\63\3\2\2\2\63@\3\2\2\2\64:\5\b\5\2\65:\5\16\b\2\66:\7\t\2"+
+		"\2\67:\7\34\2\28:\7\b\2\29\64\3\2\2\29\65\3\2\2\29\66\3\2\2\29\67\3\2"+
 		"\2\298\3\2\2\2:<\3\2\2\2;=\5\24\13\2<;\3\2\2\2<=\3\2\2\2=?\3\2\2\2>9\3"+
 		"\2\2\2?B\3\2\2\2@>\3\2\2\2@A\3\2\2\2A\7\3\2\2\2B@\3\2\2\2CF\5\n\6\2DF"+
-		"\5\f\7\2EC\3\2\2\2ED\3\2\2\2F\t\3\2\2\2GH\7\f\2\2HL\7\26\2\2IK\5\20\t"+
-		"\2JI\3\2\2\2KN\3\2\2\2LJ\3\2\2\2LM\3\2\2\2MO\3\2\2\2NL\3\2\2\2OP\7\20"+
-		"\2\2PQ\5\6\4\2QR\7\r\2\2RS\7\26\2\2ST\7\20\2\2T\13\3\2\2\2UV\7\f\2\2V"+
-		"Z\7\26\2\2WY\5\20\t\2XW\3\2\2\2Y\\\3\2\2\2ZX\3\2\2\2Z[\3\2\2\2[]\3\2\2"+
-		"\2\\Z\3\2\2\2]^\7\22\2\2^\r\3\2\2\2_`\t\2\2\2`\17\3\2\2\2ac\5\22\n\2b"+
-		"a\3\2\2\2bc\3\2\2\2cd\3\2\2\2de\7\26\2\2ef\7\24\2\2fg\7\25\2\2g\21\3\2"+
-		"\2\2hi\7\26\2\2ij\7\3\2\2j\23\3\2\2\2kl\t\3\2\2l\25\3\2\2\2mn\t\4\2\2"+
-		"n\27\3\2\2\2\16\31\36%,\629<@ELZb";
+		"\5\f\7\2EC\3\2\2\2ED\3\2\2\2F\t\3\2\2\2GH\7\16\2\2HL\7\32\2\2IK\5\20\t"+
+		"\2JI\3\2\2\2KN\3\2\2\2LJ\3\2\2\2LM\3\2\2\2MO\3\2\2\2NL\3\2\2\2OP\7\24"+
+		"\2\2PQ\5\6\4\2QR\7\17\2\2RS\7\32\2\2ST\7\24\2\2T\13\3\2\2\2UV\7\16\2\2"+
+		"VZ\7\32\2\2WY\5\20\t\2XW\3\2\2\2Y\\\3\2\2\2ZX\3\2\2\2Z[\3\2\2\2[]\3\2"+
+		"\2\2\\Z\3\2\2\2]^\7\26\2\2^\r\3\2\2\2_`\t\2\2\2`\17\3\2\2\2ac\5\22\n\2"+
+		"ba\3\2\2\2bc\3\2\2\2cd\3\2\2\2de\7\32\2\2ef\7\30\2\2fg\7\31\2\2g\21\3"+
+		"\2\2\2hi\7\32\2\2ij\7\3\2\2j\23\3\2\2\2kl\t\3\2\2l\25\3\2\2\2mn\t\4\2"+
+		"\2n\27\3\2\2\2\16\31\36%,\629<@ELZb";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
