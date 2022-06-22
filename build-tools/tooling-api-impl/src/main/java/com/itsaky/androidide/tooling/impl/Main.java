@@ -37,7 +37,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class Main {
-  public static final String SUPPORTED_AGP_VERSION = "@AGP_VERSION@";
+  public static final String MIN_SUPPORTED_AGP_VERSION = "@AGP_VERSION@";
   private static final ILogger LOG = newInstance("ToolingApiMain");
   public static IToolingApiClient client;
   public static Future<Void> future;

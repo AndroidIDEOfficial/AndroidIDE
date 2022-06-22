@@ -199,13 +199,14 @@ public class ProjectReader {
       return null;
     }
 
-    if (!versions.getAgp().equals(Main.SUPPORTED_AGP_VERSION)) {
+    if (versions.getAgp().compareTo(Main.MIN_SUPPORTED_AGP_VERSION) < 0) {
       throw new UnsupportedOperationException(
           "Android Gradle Plugin version "
               + versions.getAgp()
-              + " is not supported by AndroidIDE. Please use version "
-              + Main.SUPPORTED_AGP_VERSION
-              + " to build this project.");
+              + " is not supported by AndroidIDE. "
+              + "Please update your project to use at least v"
+              + Main.MIN_SUPPORTED_AGP_VERSION
+              + " of Android Gradle Plugin to build this project.");
     }
 
     final var basicAndroid = controller.findModel(gradle, BasicAndroidProject.class);
@@ -213,7 +214,7 @@ public class ProjectReader {
     System.err.println("Fetching project model...");
     final var android = controller.findModel(gradle, AndroidProject.class);
     final var module = buildAndroidModuleProject(gradle, android, basicAndroid.getProjectType());
-    module.setBootClassPaths (basicAndroid.getBootClasspath());
+    module.setBootClassPaths(basicAndroid.getBootClasspath());
     module.setMainSourceSet(
         basicAndroid.getMainSourceSet() == null
             ? null

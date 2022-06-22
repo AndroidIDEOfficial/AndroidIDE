@@ -87,12 +87,3 @@ compileTestKotlin {
         jvmTarget = "11"
     }
 }
-
-test {
-    doFirst {
-        systemProperty "test.android.home", System.getenv ("ANDROID_HOME")
-//        jvmArgs '--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED'
-    }
-    
-    println jvmArgs
-}
