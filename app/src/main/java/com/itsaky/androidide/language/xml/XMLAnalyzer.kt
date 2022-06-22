@@ -18,6 +18,7 @@
 package com.itsaky.androidide.language.xml
 
 import android.graphics.Color
+import com.google.common.collect.EvictingQueue
 import com.itsaky.androidide.app.StudioApp
 import com.itsaky.androidide.language.incremental.BaseIncrementalAnalyzeManager
 import com.itsaky.androidide.language.incremental.IncrementalToken
@@ -25,6 +26,10 @@ import com.itsaky.androidide.language.incremental.LineState
 import com.itsaky.androidide.lexers.xml.XMLLexer
 import com.itsaky.androidide.lexers.xml.XMLLexer.CLOSE
 import com.itsaky.androidide.lexers.xml.XMLLexer.COLON
+import com.itsaky.androidide.lexers.xml.XMLLexer.COMMENT_END
+import com.itsaky.androidide.lexers.xml.XMLLexer.COMMENT_START
+import com.itsaky.androidide.lexers.xml.XMLLexer.CommentModeEnd
+import com.itsaky.androidide.lexers.xml.XMLLexer.CommentText
 import com.itsaky.androidide.lexers.xml.XMLLexer.DASH
 import com.itsaky.androidide.lexers.xml.XMLLexer.EQUALS
 import com.itsaky.androidide.lexers.xml.XMLLexer.NOT
@@ -64,10 +69,24 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
     return mutableListOf()
   }
 
+  override fun getBraceTypes() = intArrayOf()
+
   override fun getMultilineTokenStartEndTypes(): Array<IntArray> {
-    val start = intArrayOf(OPEN, NOT, DASH, DASH)
-    val end = intArrayOf(DASH, DASH, OPEN)
+    val start = intArrayOf(COMMENT_START)
+    val end = intArrayOf(CommentModeEnd)
     return arrayOf(start, end)
+  }
+
+  @Suppress("UnstableApiUsage")
+  override fun isIncompleteTokenEnd(q: EvictingQueue<IncrementalToken>): Boolean {
+    return super.isIncompleteTokenEnd(q) || q.peek()!!.getType() == COMMENT_END
+  }
+
+  override fun popTokensAfterIncomplete(
+    incompleteToken: IncrementalToken,
+    tokens: MutableList<IncrementalToken>
+  ) {
+    // Do nothing
   }
 
   override fun generateSpans(
@@ -77,15 +96,19 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
     val parser = CommonParseUtils(app.resourceTable, app.resources.displayMetrics)
     val spans = mutableListOf<Span>()
     var previous = XMLLexer.SEA_WS
-  
+
     spans.add(Span.obtain(0, makeStyle(TEXT_NORMAL)))
-    
+
     for (token in tokens.tokens) {
       val type = token.type
       val offset = token.startIndex
 
       when (type) {
-        XMLLexer.COMMENT -> spans.add(Span.obtain(offset, forComment()))
+        XMLLexer.COMMENT,
+        COMMENT_START,
+        COMMENT_END,
+        CommentModeEnd,
+        CommentText -> spans.add(Span.obtain(offset, forComment()))
         OPEN,
         DASH,
         NOT,
@@ -160,9 +183,7 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
     return spans
   }
 
-  override fun handleIncompleteToken(token: IncrementalToken) {
-    token.type = XMLLexer.COMMENT
-  }
+  override fun handleIncompleteToken(token: IncrementalToken) {}
 
   private fun isColorValue(value: String): Boolean {
     return (value.startsWith("#") ||

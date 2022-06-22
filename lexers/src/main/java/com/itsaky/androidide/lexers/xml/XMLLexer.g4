@@ -58,7 +58,7 @@ TEXT        :   ~[<&]+;        // match any 16 bit char other than < and &
 
 // ----------------- Inside a comment ------------------------------
 mode COMMENT_MODE;
-CommentText    :   ~[<&-]+               -> skip   ;
+CommentText    :   ~[<&-]+                         ;
 CommentModeEnd :   COMMENT_END           -> popMode; // Comment ended, exit COMMENT_MODE
 
 // ----------------- Everything INSIDE of a tag ---------------------

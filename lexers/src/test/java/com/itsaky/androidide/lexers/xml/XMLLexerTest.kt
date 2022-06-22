@@ -16,6 +16,7 @@
  */
 package com.itsaky.androidide.lexers.xml
 
+import com.google.common.truth.Truth.assertThat
 import com.itsaky.androidide.lexers.BaseLexerTest
 import com.itsaky.androidide.lexers.xml.XMLLexer.CLOSE
 import com.itsaky.androidide.lexers.xml.XMLLexer.COMMENT
@@ -23,6 +24,7 @@ import com.itsaky.androidide.lexers.xml.XMLLexer.COMMENT_END
 import com.itsaky.androidide.lexers.xml.XMLLexer.COMMENT_MODE
 import com.itsaky.androidide.lexers.xml.XMLLexer.COMMENT_START
 import com.itsaky.androidide.lexers.xml.XMLLexer.CommentModeEnd
+import com.itsaky.androidide.lexers.xml.XMLLexer.DEFAULT_MODE
 import com.itsaky.androidide.lexers.xml.XMLLexer.EQUALS
 import com.itsaky.androidide.lexers.xml.XMLLexer.Name
 import com.itsaky.androidide.lexers.xml.XMLLexer.OPEN
@@ -74,6 +76,7 @@ class XMLLexerTest : BaseLexerTest() {
     val lexer = XMLLexer(createStream("<!--"))
     val tokens = lexer.allTokens
     ensureTokenSequence(tokens, listOf(COMMENT_START))
+    assertThat(lexer._mode).isEqualTo(COMMENT_MODE)
   }
 
   @Test
@@ -88,6 +91,7 @@ class XMLLexerTest : BaseLexerTest() {
     val lexer = XMLLexer(createStream("<!-- Comment text"))
     val tokens = lexer.allTokens
     ensureTokenSequence(tokens, listOf(COMMENT_START))
+    assertThat(lexer._mode).isEqualTo(COMMENT_MODE)
   }
 
   @Test
@@ -95,6 +99,7 @@ class XMLLexerTest : BaseLexerTest() {
     val lexer = XMLLexer(createStream("Not in comment <!-- Comment text"))
     val tokens = lexer.allTokens
     ensureTokenSequence(tokens, listOf(TEXT, COMMENT_START))
+    assertThat(lexer._mode).isEqualTo(COMMENT_MODE)
   }
 
   @Test
@@ -103,6 +108,7 @@ class XMLLexerTest : BaseLexerTest() {
     lexer.pushMode(COMMENT_MODE)
     val tokens = lexer.allTokens
     ensureTokenSequence(tokens, listOf(CommentModeEnd))
+    assertThat(lexer._mode).isEqualTo(DEFAULT_MODE)
   }
 
   @Test
@@ -111,5 +117,6 @@ class XMLLexerTest : BaseLexerTest() {
     lexer.pushMode(COMMENT_MODE)
     val tokens = lexer.allTokens
     ensureTokenSequence(tokens, listOf(CommentModeEnd, TEXT))
+    assertThat(lexer._mode).isEqualTo(DEFAULT_MODE)
   }
 }

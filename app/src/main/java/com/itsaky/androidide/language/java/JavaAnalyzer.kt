@@ -44,6 +44,8 @@ class JavaAnalyzer : BaseIncrementalAnalyzeManager(JavaLexer::class.java) {
     return emptyList()
   }
 
+  override fun getBraceTypes(): IntArray = intArrayOf(JavaLexer.LBRACE, JavaLexer.RBRACE)
+
   override fun generateSpans(
     tokens: LineTokenizeResult<LineState, IncrementalToken>,
   ): List<Span> {

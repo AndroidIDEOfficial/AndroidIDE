@@ -51,6 +51,11 @@ public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
   }
 
   @Override
+  protected int[] getBraceTypes() {
+    return new int[] {LeftBrace, RightBrace};
+  }
+
+  @Override
   protected List<Span> generateSpans(final LineTokenizeResult<LineState, IncrementalToken> tokens) {
     final var spans = new ArrayList<Span>();
     spans.add(Span.obtain(0, makeStyle(TEXT_NORMAL)));

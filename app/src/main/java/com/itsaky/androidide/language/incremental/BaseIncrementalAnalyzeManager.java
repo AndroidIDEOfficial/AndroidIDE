@@ -25,10 +25,10 @@ import static com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.without
 
 import androidx.annotation.NonNull;
 
+import com.blankj.utilcode.util.ArrayUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.EvictingQueue;
 import com.itsaky.androidide.language.java.JavaAnalyzer;
-import com.itsaky.androidide.lexers.java.JavaLexer;
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE;
 import com.itsaky.androidide.utils.CharSequenceReader;
 import com.itsaky.androidide.utils.ILogger;
@@ -107,12 +107,12 @@ public abstract class BaseIncrementalAnalyzeManager
   }
 
   @SuppressWarnings("UnstableApiUsage")
-  private boolean isIncompleteTokenStart(EvictingQueue<IncrementalToken> q) {
+  protected boolean isIncompleteTokenStart(EvictingQueue<IncrementalToken> q) {
     return matchTokenTypes(this.multilineStartTypes, q);
   }
 
   @SuppressWarnings("UnstableApiUsage")
-  private boolean isIncompleteTokenEnd(EvictingQueue<IncrementalToken> q) {
+  protected boolean isIncompleteTokenEnd(EvictingQueue<IncrementalToken> q) {
     return matchTokenTypes(this.multilineEndTypes, q);
   }
 
@@ -162,6 +162,30 @@ public abstract class BaseIncrementalAnalyzeManager
    */
   protected IncrementalToken nextToken() {
     return new IncrementalToken(lexer.nextToken());
+  }
+
+  /**
+   * Get the token types for left and right braces.
+   *
+   * @return An array of left and right brace token types.
+   */
+  protected abstract int[] getBraceTypes();
+
+  /**
+   * Pop (remove) required number of tokens after an incomplete token has been encountered. <br>
+   *
+   * <p>For example: <br>
+   * When ['/', '*'] tokens are encountered, the '*' token must be removed. In this case, <code>
+   * incompleteToken</code> parameter will point to '/' token.
+   *
+   * <p>By default, this method removes only the last token.
+   *
+   * @param incompleteToken The token which is the start of the incomplete token.
+   * @param tokens The list of tokens from which extra tokens must be removed.
+   */
+  protected void popTokensAfterIncomplete(
+      @NonNull IncrementalToken incompleteToken, @NonNull List<IncrementalToken> tokens) {
+    tokens.remove(tokens.size() - 1);
   }
 
   @NonNull
@@ -275,7 +299,7 @@ public abstract class BaseIncrementalAnalyzeManager
       start.add(token);
       end.add(token);
       final var type = token.getType();
-      if (type == JavaLexer.LBRACE || type == JavaLexer.RBRACE) {
+      if (ArrayUtils.contains(getBraceTypes(), type)) {
         st.hasBraces = true;
       }
 
@@ -283,9 +307,8 @@ public abstract class BaseIncrementalAnalyzeManager
         isInIncompleteToken = true;
         incompleteToken = start.poll();
 
-        // Comment starts from the '/' token
-        // So we have to remove the '*' token after '/'
-        tokens.remove(tokens.size() - 1);
+        // Pop extra tokens from the list.
+        popTokensAfterIncomplete(Objects.requireNonNull(incompleteToken), tokens);
       } else if (end.remainingCapacity() == 0 && isIncompleteTokenEnd(end)) {
         // This should most probably not happen because, if a comment starts and ends on the same
         // line, the lexer will create a token for the whole comment
@@ -326,6 +349,9 @@ public abstract class BaseIncrementalAnalyzeManager
     final var end = queue.getSecond();
     final var allTokens =
         lexer.getAllTokens().stream().map(IncrementalToken::new).collect(Collectors.toList());
+    if (allTokens.isEmpty()) {
+      return IntPair.pack(INCOMPLETE, 0);
+    }
     var completed = false;
     var index = 0;
     for (index = 0; index < allTokens.size(); index++) {

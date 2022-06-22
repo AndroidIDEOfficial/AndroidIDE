@@ -48,6 +48,8 @@ class KotlinAnalyzer : BaseIncrementalAnalyzeManager(KotlinLexer::class.java) {
     return mutableListOf()
   }
 
+  override fun getBraceTypes() = intArrayOf(KotlinLexer.LCURL, KotlinLexer.RCURL)
+
   override fun getMultilineTokenStartEndTypes(): Array<IntArray> {
     val start = intArrayOf(KotlinLexer.DIV, KotlinLexer.MULT)
     val end = intArrayOf(KotlinLexer.MULT, KotlinLexer.DIV)
