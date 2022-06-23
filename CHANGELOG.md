@@ -10,6 +10,7 @@ This is the changelog of all the releases of AndroidIDE.
 - You can now easily open/show the `ide-environment.properties` file using the `ideenv` command. Execute :
   - `ideenv -e`: To edit the environments file. Uses `nano` editor to edit.
   - `ideenv -s`: To print the contents of the file in the terminal.
+- The minimum Android Gradle Plugin version required to build projects in AndroidIDE is now set to version `7.2.0`. The build process will fail for projects using older versions. However, those projects would still be able to build with terminal.
 
 ### Additions
 - Warn about empty body for the following statements :
@@ -38,6 +39,7 @@ This is the changelog of all the releases of AndroidIDE.
 
 ### Removals
 - `$ANDROID_HOME/cmake/bin` is no longer prefixed to the `PATH` variable. You can install now install `cmake` using `pkg install cmake`.
+- Removed syntax highlighting from log views.
 
 ### Fixes
 - Crash when performing 'Replace all' action in editor (#158).
@@ -49,6 +51,8 @@ This is the changelog of all the releases of AndroidIDE.
 - Fixed: Invalid syntax highlighting for text tags in XML files. Thanks to @MrIkso (#180).
 - Memory leaks in some fragments. Thanks to @MrIkso (#209).
 - Fixed: Extra empty `new line` gets appendend to files while saving.
+- Fixed: `SuperNotCalledException` in `DesignerActivity` (#214). Thanks for @MrIkso (#219).
+- 
 
 ### Improvements
 - Do not show 'Cut' & 'Paste' action if editor is not editable.
@@ -62,8 +66,9 @@ This is the changelog of all the releases of AndroidIDE.
 - The project creator UI and logic has been improved (#209).
 - Use of `libhook.so` is now optional and is DISABLED by default. This hook is only required if you use JDK 11 and if you have an Android 11 or lower device.
 - JDK 17 is now preferred by the IDE. It looks for JDK 11 only if JDK 17 is not found on path `$SYSROOT/opt/openjdk`.
+- Implemented incremental analysis for supported languages.
 - Updated Hindi translations. Thanks to @Premjit-Chowdhury (#171).
-- Updated Russian translation. Thansk to @AndreyKozhev (#181).
+- Updated Russian translation. Thansk to @AndreyKozhev (#181 and #220).
 - Updated Chinese translations. Thanks to @mikofe (#192).
 - Added missing translations for PT-BR. Thanks to @Frederick'XS (#176).
 
