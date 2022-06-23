@@ -1,7 +1,7 @@
 <p align="center">
-  <img src="./images/header.png" style="width: 70%;"/><br>
-  <img src="./images/banner.png" style="width: 70%"/>
-</p>
+  <img src="./images/header.png" style="width: 70%;"/><br><br>
+  <img src="./images/banner.png"/>
+</p><br>
 <p align="center">
   <img src="https://img.shields.io/badge/Minimum%20SDK-26-%23ff5252" alt="Minimum SDK"/>
   <img src="https://github.com/itsaky/AndroidIDE/actions/workflows/android_workflow.yml/badge.svg" alt="CI Build Status"/>
