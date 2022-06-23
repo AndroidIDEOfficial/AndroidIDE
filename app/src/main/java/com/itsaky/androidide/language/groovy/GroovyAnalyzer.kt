@@ -31,11 +31,7 @@ import io.github.rosemoe.sora.text.Content
 /** @author Akash Yadav */
 class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
 
-  override fun computeBlocks(text: Content, delegate: CodeBlockAnalyzeDelegate): List<CodeBlock> {
-    return emptyList()
-  }
-
-  override fun getBraceTypes() = intArrayOf(GroovyLexer.LBRACE, GroovyLexer.RBRACE)
+  override fun getCodeBlockTokens() = intArrayOf(GroovyLexer.LBRACE, GroovyLexer.RBRACE)
 
   override fun generateSpans(
     tokens: LineTokenizeResult<LineState, IncrementalToken>,

@@ -41,14 +41,7 @@ import io.github.rosemoe.sora.text.Content
  */
 class KotlinAnalyzer : BaseIncrementalAnalyzeManager(KotlinLexer::class.java) {
 
-  override fun computeBlocks(
-    text: Content?,
-    delegate: CodeBlockAnalyzeDelegate,
-  ): MutableList<CodeBlock> {
-    return mutableListOf()
-  }
-
-  override fun getBraceTypes() = intArrayOf(KotlinLexer.LCURL, KotlinLexer.RCURL)
+  override fun getCodeBlockTokens() = intArrayOf(KotlinLexer.LCURL, KotlinLexer.RCURL)
 
   override fun getMultilineTokenStartEndTypes(): Array<IntArray> {
     val start = intArrayOf(KotlinLexer.DIV, KotlinLexer.MULT)

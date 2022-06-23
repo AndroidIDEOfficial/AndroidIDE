@@ -43,15 +43,7 @@ public class CppAnalyzer extends BaseIncrementalAnalyzeManager {
   }
 
   @Override
-  public List<CodeBlock> computeBlocks(
-      final Content text,
-      final AsyncIncrementalAnalyzeManager<LineState, IncrementalToken>.CodeBlockAnalyzeDelegate
-          delegate) {
-    return Collections.emptyList();
-  }
-
-  @Override
-  protected int[] getBraceTypes() {
+  protected int[] getCodeBlockTokens() {
     return new int[] {LeftBrace, RightBrace};
   }
 

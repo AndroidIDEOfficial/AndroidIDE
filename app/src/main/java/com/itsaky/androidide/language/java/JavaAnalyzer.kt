@@ -40,11 +40,7 @@ class JavaAnalyzer : BaseIncrementalAnalyzeManager(JavaLexer::class.java) {
 
   private val log = ILogger.newInstance(javaClass.simpleName)
 
-  override fun computeBlocks(text: Content, delegate: CodeBlockAnalyzeDelegate): List<CodeBlock> {
-    return emptyList()
-  }
-
-  override fun getBraceTypes(): IntArray = intArrayOf(JavaLexer.LBRACE, JavaLexer.RBRACE)
+  override fun getCodeBlockTokens(): IntArray = intArrayOf(JavaLexer.LBRACE, JavaLexer.RBRACE)
 
   override fun generateSpans(
     tokens: LineTokenizeResult<LineState, IncrementalToken>,

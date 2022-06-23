@@ -42,11 +42,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import io.github.rosemoe.sora.lang.analysis.AsyncIncrementalAnalyzeManager;
+import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.TextStyle;
+import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.util.IntPair;
 import kotlin.Pair;
 
@@ -61,6 +64,7 @@ public abstract class BaseIncrementalAnalyzeManager
   protected final Lexer lexer;
   private final int[] multilineStartTypes;
   private final int[] multilineEndTypes;
+  private final int[] blockTokens;
   private static final ILogger LOG = ILogger.newInstance("BaseIncrementalAnalyzeManager");
 
   public BaseIncrementalAnalyzeManager(final Class<? extends Lexer> lexer) {
@@ -72,6 +76,7 @@ public abstract class BaseIncrementalAnalyzeManager
 
     this.multilineStartTypes = multilineTokenTypes[0];
     this.multilineEndTypes = multilineTokenTypes[1];
+    this.blockTokens = Objects.requireNonNullElseGet(getCodeBlockTokens(), () -> new int[] {});
   }
 
   @NonNull
@@ -128,6 +133,14 @@ public abstract class BaseIncrementalAnalyzeManager
     return true;
   }
 
+  protected boolean isCodeBlockStart(IncrementalToken token) {
+    return blockTokens.length == 2 && token.getType() == blockTokens[0];
+  }
+
+  protected boolean isCodeBlockEnd(IncrementalToken token) {
+    return blockTokens.length == 2 && token.getType() == blockTokens[1];
+  }
+
   /**
    * Returns the token types which start and end a multiline token.
    *
@@ -169,7 +182,7 @@ public abstract class BaseIncrementalAnalyzeManager
    *
    * @return An array of left and right brace token types.
    */
-  protected abstract int[] getBraceTypes();
+  protected abstract int[] getCodeBlockTokens();
 
   /**
    * Pop (remove) required number of tokens after an incomplete token has been encountered. <br>
@@ -224,6 +237,59 @@ public abstract class BaseIncrementalAnalyzeManager
   @Override
   public boolean stateEquals(final LineState state, final LineState another) {
     return state.equals(another);
+  }
+
+  @Override
+  public List<CodeBlock> computeBlocks(
+      final Content text,
+      final AsyncIncrementalAnalyzeManager<LineState, IncrementalToken>.CodeBlockAnalyzeDelegate
+          delegate) {
+    final var stack = new Stack<CodeBlock>();
+    final var blocks = new ArrayList<CodeBlock>();
+    var line = 0;
+    var maxSwitch = 0;
+    var currSwitch = 0;
+    while (delegate.isNotCancelled() && line < text.getLineCount()) {
+      final var tokens = getState(line);
+      final var checkForIdentifiers =
+          tokens.state.state == NORMAL
+              || (tokens.state.state == INCOMPLETE && tokens.tokens.size() > 1);
+      if (!tokens.state.hasBraces && !checkForIdentifiers) {
+        line++;
+        continue;
+      }
+
+      for (int i = 0; i < tokens.tokens.size(); i++) {
+        final var token = tokens.tokens.get(i);
+        final var type = token.getType();
+        var offset = token.getStartIndex();
+        if (isCodeBlockStart(token)) {
+          if (stack.isEmpty()) {
+            if (currSwitch > maxSwitch) {
+              maxSwitch = currSwitch;
+            }
+            currSwitch = 0;
+          }
+          currSwitch++;
+          CodeBlock block = new CodeBlock();
+          block.startLine = line;
+          block.startColumn = offset;
+          stack.push(block);
+        } else if (isCodeBlockEnd(token)) {
+          if (!stack.isEmpty()) {
+            CodeBlock block = stack.pop();
+            block.endLine = line;
+            block.endColumn = offset;
+            if (block.startLine != block.endLine) {
+              blocks.add(block);
+            }
+          }
+        }
+      }
+
+      line++;
+    }
+    return blocks;
   }
 
   @Override
@@ -299,7 +365,7 @@ public abstract class BaseIncrementalAnalyzeManager
       start.add(token);
       end.add(token);
       final var type = token.getType();
-      if (ArrayUtils.contains(getBraceTypes(), type)) {
+      if (ArrayUtils.contains(getCodeBlockTokens(), type)) {
         st.hasBraces = true;
       }
 

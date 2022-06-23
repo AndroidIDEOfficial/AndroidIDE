@@ -50,10 +50,8 @@ import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.XML_TAG
 import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE.forComment
 import com.itsaky.inflater.util.CommonParseUtils
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
-import io.github.rosemoe.sora.lang.styling.CodeBlock
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.TextStyle.makeStyle
-import io.github.rosemoe.sora.text.Content
 
 /**
  * Syntax analyzer for XML.
@@ -62,14 +60,7 @@ import io.github.rosemoe.sora.text.Content
  */
 class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
 
-  override fun computeBlocks(
-    text: Content?,
-    delegate: CodeBlockAnalyzeDelegate?,
-  ): MutableList<CodeBlock> {
-    return mutableListOf()
-  }
-
-  override fun getBraceTypes() = intArrayOf()
+  override fun getCodeBlockTokens() = intArrayOf()
 
   override fun getMultilineTokenStartEndTypes(): Array<IntArray> {
     val start = intArrayOf(COMMENT_START)
@@ -80,6 +71,16 @@ class XMLAnalyzer : BaseIncrementalAnalyzeManager(XMLLexer::class.java) {
   @Suppress("UnstableApiUsage")
   override fun isIncompleteTokenEnd(q: EvictingQueue<IncrementalToken>): Boolean {
     return super.isIncompleteTokenEnd(q) || q.peek()!!.getType() == COMMENT_END
+  }
+
+  override fun isCodeBlockStart(token: IncrementalToken): Boolean {
+    val type = token.getType()
+    return type == OPEN || type == XMLDeclOpen
+  }
+
+  override fun isCodeBlockEnd(token: IncrementalToken): Boolean {
+    val type = token.getType()
+    return type == OPEN_SLASH || type == SPECIAL_CLOSE || type == SLASH_CLOSE
   }
 
   override fun popTokensAfterIncomplete(
