@@ -14,21 +14,7 @@
   ~  You should have received a copy of the GNU General Public License
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<HorizontalScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/horizontalScrollView"
+<com.itsaky.androidide.views.editor.IDEEditor xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/editor"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/lines"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp" />
-
-</HorizontalScrollView>
+    android:layout_height="match_parent" />

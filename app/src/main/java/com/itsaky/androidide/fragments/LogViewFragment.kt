@@ -22,12 +22,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.itsaky.androidide.adapters.LogLinesAdapter
+import com.blankj.utilcode.util.ThreadUtils
 import com.itsaky.androidide.databinding.FragmentLogBinding
 import com.itsaky.androidide.models.LogLine
+import com.itsaky.androidide.syntax.colorschemes.SchemeAndroidIDE
 import com.itsaky.androidide.utils.ILogger
 import com.itsaky.androidide.utils.ILogger.Priority
+import com.itsaky.androidide.utils.TypefaceUtils
 
 /**
  * Fragment to show logs in a [androidx.recyclerview.widget.RecyclerView].
@@ -35,51 +36,63 @@ import com.itsaky.androidide.utils.ILogger.Priority
  */
 abstract class LogViewFragment : Fragment() {
 
-    private val log = ILogger.newInstance(javaClass.simpleName)
-    var binding: FragmentLogBinding? = null
-    var adapter: LogLinesAdapter? = null
+  private val log = ILogger.newInstance(javaClass.simpleName)
+  var binding: FragmentLogBinding? = null
 
-    fun appendLog(line: LogLine) {
-        if (this.binding == null || this.adapter == null) {
-            return
-        }
-
-        this.binding!!.lines.post {
-            this.adapter!!.simpleFormatting = isSimpleFormattingEnabled()
-            this.adapter!!.add(line)
-        }
+  fun appendLog(line: LogLine) {
+    if (this.binding == null) {
+      System.err.println("Cannot append log line. Binding is null.")
+      return
     }
 
-    abstract fun getLogType(): String
+    var lineString =
+      if (isSimpleFormattingEnabled()) {
+        line.toSimpleString()
+      } else {
+        line.toString()
+      }
 
-    abstract fun isSimpleFormattingEnabled(): Boolean
-
-    protected open fun logLine(priority: Priority, tag: String, message: String) {
-        val line = LogLine(priority, tag, message)
-        appendLog(line)
+    if (!lineString.endsWith("\n")) {
+      lineString += "\n"
     }
+    
+    ThreadUtils.runOnUiThread { this.binding!!.editor.append(lineString) }
+  }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        binding = FragmentLogBinding.inflate(inflater, container, false)
-        return binding!!.root
-    }
+  abstract fun getLogType(): String
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val manager = LinearLayoutManager(requireContext())
-        this.binding!!.lines.layoutManager = manager
+  abstract fun isSimpleFormattingEnabled(): Boolean
 
-        this.adapter = LogLinesAdapter()
-        this.binding!!.lines.adapter = this.adapter
-    }
+  protected open fun logLine(priority: Priority, tag: String, message: String) {
+    val line = LogLine(priority, tag, message)
+    appendLog(line)
+  }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        this.binding = null
-        this.adapter = null
-    }
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?,
+  ): View {
+    binding = FragmentLogBinding.inflate(inflater, container, false)
+    return binding!!.root
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    val editor = this.binding!!.editor
+    editor.props.autoIndent = false
+    editor.isEditable = false
+    editor.dividerWidth = 0f
+    editor.isWordwrap = false
+    editor.isUndoEnabled = false
+    editor.typefaceLineNumber = TypefaceUtils.jetbrainsMono()
+    editor.setTextSize(12f)
+    editor.typefaceText = TypefaceUtils.jetbrainsMono()
+    editor.colorScheme = SchemeAndroidIDE()
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    this.binding = null
+  }
 }

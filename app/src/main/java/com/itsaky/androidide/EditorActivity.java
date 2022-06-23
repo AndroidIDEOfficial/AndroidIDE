@@ -1378,12 +1378,12 @@ public class EditorActivity extends StudioActivity
             }
           } else if (fragment instanceof LogViewFragment) {
             final LogViewFragment logFrag = (LogViewFragment) fragment;
-            final var adapter = logFrag.getAdapter();
-            if (adapter != null) {
-              adapter.clear();
+            final var binding = logFrag.getBinding();
+            if (binding != null) {
+              binding.editor.setText("");
             } else {
               LOG.error(
-                  "Cannot clear contents. Adapter in LogViewFragment("
+                  "Cannot clear contents. Binding in LogViewFragment("
                       + logFrag.getLogType()
                       + ") is null.");
             }
@@ -1399,15 +1399,15 @@ public class EditorActivity extends StudioActivity
           if (fragment instanceof LogViewFragment) {
             final var logFrag = (LogViewFragment) fragment;
             final var type = logFrag.getLogType();
-            final var adapter = logFrag.getAdapter();
-            if (adapter != null) {
+            final var binding = logFrag.getBinding();
+            if (binding != null) {
 
               //noinspection deprecation
               final var progress =
                   ProgressDialog.show(EditorActivity.this, null, getString(R.string.please_wait));
               CompletableFuture.runAsync(
                   () -> {
-                    final var text = adapter.allAsString();
+                    final var text = binding.editor.getText();
                     ThreadUtils.runOnUiThread(
                         () -> {
                           progress.dismiss();
@@ -1415,7 +1415,7 @@ public class EditorActivity extends StudioActivity
                         });
                   });
             } else {
-              LOG.error("Adapter in LogViewFragment(" + type + ") is null");
+              LOG.error("Binding in LogViewFragment(" + type + ") is null");
             }
             return;
           }
