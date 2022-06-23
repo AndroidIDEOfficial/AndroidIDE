@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="./images/header.png" style="width: 70%;"/>
+  <img src="./images/header.png" style="width: 70%;"/><br>
+  <img src="./images/banner.png" style="width: 70%"/>
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/Minimum%20SDK-26-%23ff5252" alt="Minimum SDK"/>
