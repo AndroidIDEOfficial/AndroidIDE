@@ -50,11 +50,14 @@ public class ProjectWriter {
 
   private static final String XML_TEMPLATE_PATH = "templates/xml";
   private static final String SOURCE_PATH_REGEX = "/.*/src/.*/java|kt";
-  private static final String FILE_EXT_REGEX = ".*/java|kt|gradle|xml";
+  private static final String FILE_EXT_REGEX = ".*/java|kt|gradle|xml|txt|cpp";
   private static final String APP_NAME = "$app_name",
       PACKAGE_NAME = "$package_name",
       MIN_SDK = "$min_sdk",
-      TARGET_SDK = "$target_sdk";
+      TARGET_SDK = "$target_sdk",
+      PACKAGE_NAME_CPP = "{$package_name_cpp}",
+      CPP_FLAGS = "$cpp_flags",
+      LIBRARY_NAME = "$library_name";
 
   @NonNull
   public static String createMenu() {
@@ -211,12 +214,23 @@ public class ProjectWriter {
             Matcher extMatcher = Pattern.compile(FILE_EXT_REGEX).matcher(name);
             if (extMatcher.find()) {
               String fileContent = FileIOUtils.readFile2String(unzipFile);
+
+              fileContent = customReplaceAll(fileContent, APP_NAME, details.name);
               fileContent =
-                  fileContent
-                      .replace(APP_NAME, details.name)
-                      .replace(PACKAGE_NAME, details.packageName)
-                      .replace(MIN_SDK, String.valueOf(details.minSdk))
-                      .replace(TARGET_SDK, String.valueOf(details.targetSdk));
+                  customReplaceAll(
+                      fileContent,
+                      PACKAGE_NAME_CPP,
+                      String.valueOf(details.packageName.replace("_", "_1").replace('.', '_')));
+              fileContent = customReplaceAll(fileContent, PACKAGE_NAME, details.packageName);
+              fileContent = customReplaceAll(fileContent, MIN_SDK, String.valueOf(details.minSdk));
+              fileContent =
+                  customReplaceAll(fileContent, TARGET_SDK, String.valueOf(details.targetSdk));
+              fileContent = customReplaceAll(fileContent, CPP_FLAGS, details.cppFlags);
+              fileContent =
+                  customReplaceAll(
+                      fileContent,
+                      LIBRARY_NAME,
+                      details.packageName.substring(details.packageName.lastIndexOf('.') + 1));
               if (!FileIOUtils.writeFileFromString(unzipFile, fileContent, false)) {
                 notifyFailed(instance.getString(R.string.failed_write_file, unzipFile.getName()));
               }
@@ -227,6 +241,32 @@ public class ProjectWriter {
     } finally {
       zin.close();
     }
+  }
+
+  public static String customReplaceAll(String str, String oldStr, String newStr) {
+
+    if ("".equals(str) || "".equals(oldStr) || oldStr.equals(newStr)) {
+      return str;
+    }
+    if (newStr == null) {
+      newStr = "";
+    }
+    final int strLength = str.length();
+    final int oldStrLength = oldStr.length();
+    StringBuilder builder = new StringBuilder(str);
+
+    for (int i = 0; i < strLength; i++) {
+      int index = builder.indexOf(oldStr, i);
+
+      if (index == -1) {
+        if (i == 0) {
+          return str;
+        }
+        return builder.toString();
+      }
+      builder = builder.replace(index, index + oldStrLength, newStr);
+    }
+    return builder.toString();
   }
 
   private static void notifyBegin() {

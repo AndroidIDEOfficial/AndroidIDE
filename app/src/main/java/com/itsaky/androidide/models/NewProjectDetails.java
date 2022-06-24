@@ -25,15 +25,24 @@ public class NewProjectDetails {
   public int targetSdk;
   public String language;
   public String savePath;
+  public String cppFlags;
 
   public NewProjectDetails() {}
 
-  public NewProjectDetails(String name, String packageName, int minSdk, int targetSdk, String language, String savePath) {
+  public NewProjectDetails(
+      String name,
+      String packageName,
+      int minSdk,
+      int targetSdk,
+      String language,
+      String cppFlags,
+      String savePath) {
     this.name = name;
     this.packageName = packageName;
     this.minSdk = minSdk;
     this.targetSdk = targetSdk;
     this.language = language;
+    this.cppFlags = cppFlags;
     this.savePath = savePath;
   }
 
@@ -71,5 +80,14 @@ public class NewProjectDetails {
 
   public int getTargetSdk() {
     return targetSdk;
+  }
+  
+  public NewProjectDetails setCppFlags(String cppFlags) {
+    this.cppFlags = cppFlags;
+    return this;
+  }
+
+  public String getCppFlags() {
+    return cppFlags;
   }
 }

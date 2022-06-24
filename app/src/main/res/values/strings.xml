@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
     <!-- AndroidIDE -->
@@ -21,7 +22,7 @@
     <string name="share_with_friends">Share with Friends</string>
     <string name="ide_preferences">IDE preferences</string>
     <string name="discussions_on_telegram">Discussions on Telegram</string>
-    <string name="msg_empty_view">I have nothing to show you&#8230;</string>
+    <string name="msg_empty_view">I have nothing to show you…</string>
     <string name="btn_terminal">Terminal</string>
     <string name="reset">Reset</string>
     <string name="app_logs">App Logs</string>
@@ -31,12 +32,12 @@
 
     <!-- LSP, Diagnostics & Completions -->
     <string name="msg_cannot_perform_fix">Unable to perform quick fix</string>
-    <string name="msg_performing_actions">Performing code action&#8230;</string>
+    <string name="msg_performing_actions">Performing code action…</string>
     <string name="msg_api_info_since">Since API %d</string>
     <string name="msg_api_info_removed">Removed in API %d</string>
     <string name="msg_api_info_deprecated">Deprecated in API %d</string>
-    <string name="msg_finding_references">Finding references&#8230;</string>
-    <string name="msg_finding_definition">Finding definition&#8230;</string>
+    <string name="msg_finding_references">Finding references…</string>
+    <string name="msg_finding_definition">Finding definition…</string>
     <string name="msg_no_definition">Definition not found</string>
     <string name="msg_no_references">No references found</string>
     <string name="view_diags">Diagnostics</string>
@@ -46,7 +47,7 @@
     <string name="get_ready_for_something_awesome">Get ready for something awesome !</string>
     <string name="msg_picked_isnt_dir">Picked file is not a directory!</string>
     <string name="msg_pick_single_file">Please choose only one directory</string>
-    <string name="please_wait">Please wait for a moment &#8230;</string>
+    <string name="please_wait">Please wait for a moment …</string>
     <string name="title_device_not_supported">Device Not Supported</string>
     <string name="msg_device_not_supported">Unfortunately, your device is not supported at the moment. We are sorry for the inconvenience.\n\nSupported CPU ABIs: aarch64 and armeabi-v7a</string>
 
@@ -66,16 +67,16 @@
     <string name="quick_run_debug">Quick run</string>
     <string name="msg_sync_needed">Gradle files have changed. Please rebuild your project to sync dependencies and configurations.</string>
     <string name="preparing">Preparing</string>
-    <string name="preparing_first">Preparing. First build may take up to 10&#8211;15 minutes!</string>
+    <string name="preparing_first">Preparing. First build may take up to 10–15 minutes!</string>
     <string name="msg_installing_gradlew">Gradle Wrapper is not available!\nInstalling default one. Gradle v7.4 will be downloaded if necessary.</string>
-    <string name="msg_getting_daemom_status">Getting Daemon status, please wait&#8230;</string>
+    <string name="msg_getting_daemom_status">Getting Daemon status, please wait…</string>
     <string name="gradle_daemon_status">Gradle daemon status</string>
     <string name="title_install_apks">Install APK(s)</string>
     <string name="title_clear_output">Clear output</string>
     <string name="run">Run</string>
     <string name="gradle">Gradle</string>
     <string name="title_first_build">First Build</string>
-    <string name="msg_first_build">This is the first time build after you installed AndroidIDE. First build usually takes time as Gradle downloads all dependencies and plugins. This process may take about 10&#8211;15 minutes. But this totally depends on your network connection.\n\nPlease be patient &#8230;</string>
+    <string name="msg_first_build">This is the first time build after you installed AndroidIDE. First build usually takes time as Gradle downloads all dependencies and plugins. This process may take about 10–15 minutes. But this totally depends on your network connection.\n\nPlease be patient …</string>
 
     <!-- Project -->
     <string name="create_project">Create project</string>
@@ -107,6 +108,13 @@
     <string name="template_description_libgdx">LibGDX game project set up to render an image as an example.</string>
     <string name="template_compose">Jetpack Compose</string>
     <string name="template_description_compose">Basic Jetpack Compose hello world project.</string>
+    <string name="template_navigation_tabs">Bottom Navigation Activity</string>
+    <string name="template_navigation_tabs_description">Creates a new activity with bottom navigation</string>
+    <string name="template_tabs">Tabbed Activity</string>
+    <string name="template_tabs_description">Creates a new blank activity with tabs</string>
+    <string name="template_fragment_and_viewmodel">Fragment + ViewModel</string>
+    <string name="template_cpp">Native C++</string>
+    <string name="template_cpp_description">Creates a new project with an Empty Activity configured to use JNI</string>
 
     <!-- Files -->
     <string name="save">Save</string>
@@ -119,7 +127,7 @@
     <string name="msg_find_project_filter">Separated by \'|\'</string>
     <string name="msg_empty_search_query">Please enter text</string>
     <string name="msg_select_search_modules">Select modules to search</string>
-    <string name="msg_searching_project">Finding in project, please wait&#8230;</string>
+    <string name="msg_searching_project">Finding in project, please wait…</string>
     <string name="view_search_results">Search results</string>
     <string name="copying_files">Copying files</string>
     <string name="writing_files">Writing files</string>
@@ -179,6 +187,7 @@
     <!-- Code Editor -->
     <string name="undo">Undo</string>
     <string name="redo">Redo</string>
+
     <item name="copy" type="string" tools:override="true">Copy</item>
     <item name="text_to_search" type="string">Text to search</item>
 
@@ -214,7 +223,6 @@
     <string name="pref_changelog">Changelog</string>
     <string name="msg_editor_font_size">Please choose default font size of editor :</string>
     <string name="msg_clear_cache">This will delete caches directory created by Gradle. If you delete it, the next build may take a bit longer than normal as Gradle will download required files again.\nIMPORTANT: This will also delete AAPT2. You will need to reinstall it otherwise you\'ll end up with a build failure.\n\nAre you sure you want to delete caches?</string>
-
 
     <!-- Error Messages used while Logging -->
     <string name="err_init_sdkinfo">Unable to initialize SDK Info</string>
@@ -264,7 +272,7 @@
     <string name="msg_bootstrap_installation_error">Bootstrap installation failed with the following exception.</string>
     <string name="title_translations">Translations</string>
     <string name="title_compiler_module_install">Installing compiler module</string>
-    <string name="msg_compiler_module_install">Compiler module is being installed, please wait&#8230;</string>
+    <string name="msg_compiler_module_install">Compiler module is being installed, please wait…</string>
     <string name="msg_compiler_module_install_failed">Compiler module installation failed. The error was:\n%s</string>
     <string name="msg_compiler_module_installed">Compiler module installed successfully!</string>
     <string name="action_expand_selection">Expand selection</string>
@@ -278,7 +286,6 @@
     <string name="idepref_java_matchLower_summary">If enabled, then typing a lower case or upper case letters will suggest class names as well as scope members.</string>
     <string name="idepref_editor_ligatures_title">Font ligatures</string>
     <string name="idepref_editor_ligatures_summary">Enable/disable font ligatures</string>
-
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="msg_apk_install_intent_failed">Unable to start intent for installing APK</string>
@@ -301,11 +308,9 @@
     <string name="idepref_visiblePassword_summary">Use for visible password input type flag in editor. This makes sure that no suggestions are proposed by soft keyboard.</string>
     <string name="previous">Previous</string>
     <string name="msg_replacing">Replacing…</string>
-
     <string name="title_gradle_service_notification_ticker">Gradle build service started</string>
     <string name="title_gradle_service_notification">Gradle build service</string>
     <string name="msg_gradle_service_notification">AndroidIDE\'s Gradle build service is running in the background.</string>
-
     <string name="title_cancel_build">Cancel build</string>
     <string name="msg_initializing_project">Initializing project</string>
     <string name="msg_project_initialized">Project initialized</string>
@@ -314,19 +319,19 @@
     <string name="msg_running_task">Running task: \'%1$s\'</string>
     <string name="msg_replacement">Replacement</string>
     <string name="title_sync_project">Sync project</string>
-
     <string name="wizard_error_name_empty">Name cannot be empty.</string>
     <string name="wizard_error_name_illegal">Name cannot contain illegal characters</string>
     <string name="wizard_save_location">Save location</string>
     <string name="wizard_language">Project Language</string>
     <string name="wizard_loading">Templates loading…</string>
+    <string name="wizard_toolchain">C++ Standard</string>
     <string name="next">Next</string>
     <string name="exit">Exit</string>
-
     <string name="idepref_title_tpFix">JDK 11 tag pointers fix</string>
     <string name="idepref_msg_tpFix">Set LD_PRELOAD to libhook.so to fix tag pointers issue for JDK 11 in Android 11 [DEPRECATED - Prefer using JDK 17].</string>
     <string name="idepref_title_customGradleInstallation">Custom Gradle installation</string>
     <string name="idepref_msg_customGradleInstallation">Specify a custom Gradle installation to use for build. This OVERRIDES the version specified in gradle-wrapper.properties.</string>
     <string name="msg_gradle_installation_path">Gradle installation path</string>
     <string name="msg_gradle_installation_input_help">Leave empty to use Gradle wrapper.</string>
+
 </resources>

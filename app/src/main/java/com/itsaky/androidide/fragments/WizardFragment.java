@@ -3,6 +3,7 @@ package com.itsaky.androidide.fragments;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.transition.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ import com.itsaky.toaster.Toaster;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -197,9 +199,8 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
 
   private boolean validateDetails() {
 
+    verifyAppName(detailsBinding.tilAppName.getEditText().getText(), false);
     verifyPackageName(detailsBinding.tilPackageName.getEditText().getText());
-    verifyAppName(detailsBinding.tilAppName.getEditText().getText());
-
     if (detailsBinding.tilPackageName.isErrorEnabled()) {
       return false;
     }
@@ -221,12 +222,15 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
       final int targetSdk = getTargetSdk();
       final String savePath = detailsBinding.etSaveLocation.getText().toString().trim();
       final String projectLanguage = detailsBinding.etLanguage.getText().toString();
+      final String cppToolChain =
+          getCppToolchans().get(detailsBinding.etToolchain.getText().toString());
 
       PreferenceManager manager = StudioApp.getInstance().getPrefManager();
       manager.putInt(PREF_MIN_SDK_INDEX_KEY, minSdkIndex);
       manager.putInt(PREF_TERGET_SDK_INDEX_KEY, targetSdkIndex);
       manager.putString(PREF_PACKAGE_DOMAIN_KEY, AndroidUtils.getPackageDomain(packageName));
-      createProject(appName, packageName, minSdk, targetSdk, projectLanguage, savePath);
+      createProject(
+          appName, packageName, minSdk, targetSdk, projectLanguage, cppToolChain, savePath);
     }
   }
 
@@ -249,6 +253,15 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
         "API 30: Android 11.0 (R)",
         "API 31: Android 12.0 (S)",
         "API 32: Android 12.1L (S)");
+  }
+
+  private LinkedHashMap<String, String> getCppToolchans() {
+    LinkedHashMap<String, String> cppStandartType = new LinkedHashMap<>();
+    cppStandartType.put("Toolchain Default", "");
+    cppStandartType.put("C++11", "-std=c++11");
+    cppStandartType.put("C++14", "-std=c++14");
+    cppStandartType.put("C++17", "-std=c++17");
+    return cppStandartType;
   }
 
   private void onNavigateBack() {
@@ -278,6 +291,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     templatesBinding.getRoot().setVisibility(View.GONE);
     detailsBinding.getRoot().setVisibility(View.GONE);
     templatesBinding.getRoot().setVisibility(View.VISIBLE);
+    detailsBinding.tilToolchain.setVisibility(View.GONE);
     footerBinding.nextButton.setVisibility(View.GONE);
     footerBinding.nextButton.setText(R.string.next);
     footerBinding.exitButton.setText(R.string.exit);
@@ -297,14 +311,11 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
       }
     }
 
+    detailsBinding.etLanguage.setListSelection(0);
+
     detailsBinding.etAppName.setText("My Application");
     String domain = manager.getString(PREF_PACKAGE_DOMAIN_KEY, "com.example");
     detailsBinding.etPackageName.setText(domain + ".myapplication");
-    detailsBinding.etLanguage.setAdapter(
-        new ArrayAdapter<>(
-            requireContext(),
-            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
-            languages));
 
     if (languages.size() == 1) {
       detailsBinding.tilLanguage.setEnabled(false);
@@ -312,10 +323,27 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
       detailsBinding.tilLanguage.setEnabled(true);
     }
 
-    detailsBinding.etLanguage.setListSelection(0);
+    detailsBinding.etLanguage.setAdapter(
+        new ArrayAdapter<>(
+            requireContext(),
+            androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+            languages));
+
+    if (mCurrentTemplate.isCpp()) {
+      detailsBinding.tilToolchain.setVisibility(View.VISIBLE);
+      detailsBinding.etToolchain.setAdapter(
+          new ArrayAdapter<>(
+              requireContext(),
+              androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+              getCppToolchans().keySet().toArray(new String[getCppToolchans().size()])));
+
+      detailsBinding.etToolchain.setListSelection(0);
+      detailsBinding.etToolchain.setText(getSelectedItem(0, detailsBinding.etToolchain), false);
+    }
+
     detailsBinding.etLanguage.setText(getSelectedItem(0, detailsBinding.etLanguage), false);
     minSdkIndex = manager.getInt(PREF_MIN_SDK_INDEX_KEY, 5);
-    
+
     // google recommended use latest target sdk version
     targetSdkIndex = manager.getInt(PREF_TERGET_SDK_INDEX_KEY, getSdks().size() - 1);
     detailsBinding.etMinSdk.setListSelection(minSdkIndex);
@@ -352,7 +380,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
             new SingleTextWatcher() {
               @Override
               public void afterTextChanged(Editable editable) {
-                verifyAppName(editable);
+                verifyAppName(editable, true);
               }
             });
 
@@ -436,7 +464,7 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     }
   }
 
-  private void verifyAppName(Editable editable) {
+  private void verifyAppName(Editable editable, boolean isAddToPackage) {
     String name = editable.toString().trim();
     if (TextUtils.isEmpty(name)) {
       detailsBinding.tilAppName.setError(getString(R.string.wizard_error_name_empty));
@@ -447,8 +475,9 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     } else {
       detailsBinding.tilAppName.setErrorEnabled(false);
     }
-
-    setPackageName(name);
+    if (isAddToPackage) {
+      setPackageName(name);
+    }
     setSaveLocation();
   }
 
@@ -518,12 +547,14 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
       int minSdk,
       int targetSdk,
       String language,
+      String cppFlags,
       String savePath) {
     new TaskExecutor()
         .executeAsync(
             new ProjectCreatorCallable(
                 mCurrentTemplate,
-                new NewProjectDetails(appName, packageName, minSdk, targetSdk, language, savePath),
+                new NewProjectDetails(
+                    appName, packageName, minSdk, targetSdk, language, cppFlags, savePath),
                 this),
             r -> {});
   }
