@@ -545,7 +545,7 @@ public class WizardFragment extends BaseFragment {
       DialogUtils.newMaterialDialogBuilder(requireContext())
         .setPositiveButton(android.R.string.ok, null)
         .setTitle(R.string.title_warning)
-        .setMessage(R.string.msg_ndk_curently_unsupported)
+        .setMessage(R.string.msg_ndk_currently_unsupported)
         .setCancelable(false)
         .create()
         .show();
