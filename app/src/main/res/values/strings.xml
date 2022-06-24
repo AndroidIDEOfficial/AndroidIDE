@@ -312,6 +312,8 @@
     <string name="title_gradle_service_notification">Gradle build service</string>
     <string name="msg_gradle_service_notification">AndroidIDE\'s Gradle build service is running in the background.</string>
     <string name="title_cancel_build">Cancel build</string>
+    <string name="title_warning">Warning</string>
+    <string name="msg_ndk_curently_unsupported">NDK currently officially not supported. This template only works after you setup NDK</string>
     <string name="msg_initializing_project">Initializing project</string>
     <string name="msg_project_initialized">Project initialized</string>
     <string name="msg_project_initialization_failed">Project initialization failed</string>

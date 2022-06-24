@@ -13,9 +13,9 @@ import android.widget.AutoCompleteTextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.transition.TransitionManager;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.transition.MaterialFadeThrough;
 import com.google.android.material.transition.MaterialSharedAxis;
@@ -32,6 +32,7 @@ import com.itsaky.androidide.fragments.sheets.ProgressSheet;
 import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ProjectTemplate;
 import com.itsaky.androidide.utils.AndroidUtils;
+import com.itsaky.androidide.utils.DialogUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
 import com.itsaky.androidide.utils.SingleTextWatcher;
@@ -371,6 +372,8 @@ public class WizardFragment extends BaseFragment {
 
       detailsBinding.etToolchain.setListSelection(0);
       detailsBinding.etToolchain.setText(getSelectedItem(0, detailsBinding.etToolchain), false);
+      
+      showDialogNdkNotSupportedOfficially();
     }
 
     detailsBinding.etLanguage.setText(getSelectedItem(0, detailsBinding.etLanguage), false);
@@ -537,6 +540,16 @@ public class WizardFragment extends BaseFragment {
   private void setMessage(String msg) {
     mProgressSheet.setMessage(msg);
   }
+  
+  private void showDialogNdkNotSupportedOfficially(){
+      DialogUtils.newMaterialDialogBuilder(requireContext())
+        .setPositiveButton(android.R.string.ok, null)
+        .setTitle(R.string.title_warning)
+        .setMessage(R.string.msg_ndk_curently_unsupported)
+        .setCancelable(false)
+        .create()
+        .show();
+      }
 
   public interface OnProjectCreatedListener {
     void openProject(File project);
