@@ -3,7 +3,6 @@ package com.itsaky.androidide.fragments;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
-import android.transition.Visibility;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +29,8 @@ import com.itsaky.androidide.databinding.SetupFooterBinding;
 import com.itsaky.androidide.databinding.WizardDetailsBinding;
 import com.itsaky.androidide.databinding.WizardTemplatesBinding;
 import com.itsaky.androidide.fragments.sheets.ProgressSheet;
-import com.itsaky.androidide.interfaces.ProjectWriterCallback;
 import com.itsaky.androidide.managers.PreferenceManager;
-import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
-import com.itsaky.androidide.tasks.TaskExecutor;
-import com.itsaky.androidide.tasks.callables.ProjectCreatorCallable;
 import com.itsaky.androidide.utils.AndroidUtils;
 import com.itsaky.androidide.utils.Environment;
 import com.itsaky.androidide.utils.FileUtil;
@@ -50,7 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class WizardFragment extends BaseFragment implements ProjectWriterCallback {
+public class WizardFragment extends BaseFragment {
 
   public static final String TAG = "WizardFragmentTag";
   public static final String PREF_PACKAGE_DOMAIN_KEY = "pref_package_domain";
@@ -134,6 +129,36 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
               } else {
                 showTemplatesView();
               }
+            });
+
+    mViewModel
+        .getStatusMessage()
+        .observe(
+            getViewLifecycleOwner(),
+            (message) -> {
+              if (mProgressSheet == null) {
+                createProgressSheet();
+              }
+              setMessage(message);
+            });
+
+    mViewModel
+        .getErrorState()
+        .observe(
+            getViewLifecycleOwner(),
+            (message) -> {
+              if (mProgressSheet != null && mProgressSheet.isShowing()) {
+                mProgressSheet.dismiss();
+              }
+              StudioApp.getInstance().toast(message, Toaster.Type.ERROR);
+            });
+
+    mViewModel
+        .getFileCreatedState()
+        .observe(
+            getViewLifecycleOwner(),
+            (file) -> {
+              if (file != null) onSuccess(file);
             });
 
     mAdapter.setOnItemClickListener(
@@ -229,8 +254,15 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
       manager.putInt(PREF_MIN_SDK_INDEX_KEY, minSdkIndex);
       manager.putInt(PREF_TERGET_SDK_INDEX_KEY, targetSdkIndex);
       manager.putString(PREF_PACKAGE_DOMAIN_KEY, AndroidUtils.getPackageDomain(packageName));
-      createProject(
-          appName, packageName, minSdk, targetSdk, projectLanguage, cppToolChain, savePath);
+      mViewModel.createProject(
+          mCurrentTemplate,
+          appName,
+          packageName,
+          minSdk,
+          targetSdk,
+          projectLanguage,
+          cppToolChain,
+          savePath);
     }
   }
 
@@ -311,8 +343,6 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
       }
     }
 
-    detailsBinding.etLanguage.setListSelection(0);
-
     detailsBinding.etAppName.setText("My Application");
     String domain = manager.getString(PREF_PACKAGE_DOMAIN_KEY, "com.example");
     detailsBinding.etPackageName.setText(domain + ".myapplication");
@@ -328,6 +358,8 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
             requireContext(),
             androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
             languages));
+            
+    detailsBinding.etLanguage.setListSelection(0);
 
     if (mCurrentTemplate.isCpp()) {
       detailsBinding.tilToolchain.setVisibility(View.VISIBLE);
@@ -481,51 +513,16 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
     setSaveLocation();
   }
 
-  @Override
-  public void beforeBegin() {
-    if (mProgressSheet == null) {
-      createProgressSheet();
-    }
-
-    setMessage(R.string.msg_begin_project_write);
-  }
-
-  @Override
-  public void onProcessTask(String taskName) {
-    setMessage(taskName);
-  }
-
-  @Override
   public void onSuccess(File root) {
-    if (mProgressSheet == null) {
-      createProgressSheet();
-    }
-
-    if (mProgressSheet.isShowing()) {
+    if (mProgressSheet != null && mProgressSheet.isShowing()) {
       mProgressSheet.dismiss();
     }
     StudioApp.getInstance().toast(R.string.project_created_successfully, Toaster.Type.SUCCESS);
 
-    if (getActivity() != null && mListener != null) {
-      requireActivity()
-          .runOnUiThread(
-              () -> {
-                getParentFragmentManager().popBackStack();
-                mListener.openProject(root);
-              });
+    if (mListener != null) {
+      getParentFragmentManager().popBackStack();
+      mListener.openProject(root);
     }
-  }
-
-  @Override
-  public void onFailed(String reason) {
-    if (mProgressSheet == null) {
-      createProgressSheet();
-    }
-
-    if (mProgressSheet.isShowing()) {
-      mProgressSheet.dismiss();
-    }
-    StudioApp.getInstance().toast(reason, Toaster.Type.ERROR);
   }
 
   private void createProgressSheet() {
@@ -539,24 +536,6 @@ public class WizardFragment extends BaseFragment implements ProjectWriterCallbac
 
   private void setMessage(String msg) {
     mProgressSheet.setMessage(msg);
-  }
-
-  private void createProject(
-      String appName,
-      String packageName,
-      int minSdk,
-      int targetSdk,
-      String language,
-      String cppFlags,
-      String savePath) {
-    new TaskExecutor()
-        .executeAsync(
-            new ProjectCreatorCallable(
-                mCurrentTemplate,
-                new NewProjectDetails(
-                    appName, packageName, minSdk, targetSdk, language, cppFlags, savePath),
-                this),
-            r -> {});
   }
 
   public interface OnProjectCreatedListener {

@@ -10,8 +10,13 @@ import androidx.lifecycle.MutableLiveData;
 import com.blankj.utilcode.util.CollectionUtils;
 
 import com.itsaky.androidide.R;
+import com.itsaky.androidide.interfaces.ProjectWriterCallback;
+import com.itsaky.androidide.models.NewProjectDetails;
 import com.itsaky.androidide.models.ProjectTemplate;
 
+import com.itsaky.androidide.tasks.TaskExecutor;
+import com.itsaky.androidide.tasks.callables.ProjectCreatorCallable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -21,6 +26,9 @@ public class WizardViewModel extends AndroidViewModel {
   private MutableLiveData<List<ProjectTemplate>> mProjectTemplatesList =
       new MutableLiveData<>(CollectionUtils.newArrayList());
   private MutableLiveData<Boolean> mLoadingState = new MutableLiveData<>(true);
+  private MutableLiveData<String> mErrorMessageState = new MutableLiveData<>();
+  private MutableLiveData<String> mMessageState = new MutableLiveData<>();
+  private MutableLiveData<File> mCreatedProject = new MutableLiveData<>(null);
 
   public WizardViewModel(@NonNull Application application) {
     super(application);
@@ -142,5 +150,58 @@ public class WizardViewModel extends AndroidViewModel {
 
   public LiveData<Boolean> getLoadingState() {
     return mLoadingState;
+  }
+
+  public LiveData<String> getErrorState() {
+    return mErrorMessageState;
+  }
+
+  public LiveData<File> getFileCreatedState() {
+    return mCreatedProject;
+  }
+
+  public LiveData<String> getStatusMessage() {
+    return mMessageState;
+  }
+
+  public void createProject(
+      ProjectTemplate currentTemplate,
+      String appName,
+      String packageName,
+      int minSdk,
+      int targetSdk,
+      String language,
+      String cppFlags,
+      String savePath) {
+    new TaskExecutor()
+        .executeAsync(
+            new ProjectCreatorCallable(
+                currentTemplate,
+                new NewProjectDetails(
+                    appName, packageName, minSdk, targetSdk, language, cppFlags, savePath),
+                new ProjectWriterCallback() {
+
+                  @Override
+                  public void beforeBegin() {
+                    mMessageState.setValue(
+                        getApplication().getString(R.string.msg_begin_project_write));
+                  }
+
+                  @Override
+                  public void onProcessTask(String arg0) {
+                    mMessageState.setValue(arg0);
+                  }
+
+                  @Override
+                  public void onSuccess(File arg0) {
+                    mCreatedProject.setValue(arg0);
+                  }
+
+                  @Override
+                  public void onFailed(String arg0) {
+                    mErrorMessageState.setValue(arg0);
+                  }
+                }),
+            r -> {});
   }
 }
