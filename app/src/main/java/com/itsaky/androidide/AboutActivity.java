@@ -153,7 +153,8 @@ public class AboutActivity extends StudioActivity {
         new License("JavaPoet", "Apache License 2.0", "https://github.com/square/JavaPoet"));
     licenses.add(
         new License("Zip4j", "Apache License 2.0", "https://github.com/srikanth-lingala/zip4j"));
-
+    licenses.add(new License("Android Studio", "Apache License 2.0", "https://cs.android.com/android-studio"));
+    
     StringBuilder sb = new StringBuilder();
     for (License license : licenses) {
       sb.append("\u2022 ");

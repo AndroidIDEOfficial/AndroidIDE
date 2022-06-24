@@ -29,6 +29,7 @@ public class ProjectTemplate {
   private String description;
   private boolean isSupportJava;
   private boolean isSupportKotlin;
+  private boolean isCpp;
 
   @DrawableRes private int imageId;
 
@@ -89,7 +90,6 @@ public class ProjectTemplate {
     return this.isSupportJava;
   }
 
-  
   public ProjectTemplate setSupportJava(boolean isSupportJava) {
     this.isSupportJava = isSupportJava;
     return this;
@@ -101,6 +101,15 @@ public class ProjectTemplate {
 
   public ProjectTemplate setSupportKotlin(boolean isSupportKotlin) {
     this.isSupportKotlin = isSupportKotlin;
+    return this;
+  }
+  
+  public boolean isCpp() {
+    return this.isCpp;
+  }
+
+  public ProjectTemplate setIsCpp(boolean isCpp) {
+    this.isCpp = isCpp;
     return this;
   }
 }

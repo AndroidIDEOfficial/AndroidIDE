@@ -75,8 +75,8 @@
             android:id="@+id/et_save_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textNoSuggestions"
-            android:ellipsize="start" />
+            android:ellipsize="start"
+            android:inputType="textNoSuggestions" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -98,7 +98,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_min_sdk"
+        android:id="@+id/til_toolchain"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -106,6 +106,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_language"
+        android:hint="@string/wizard_toolchain"
+        android:visibility="gone" >
+
+        <AutoCompleteTextView
+            android:id="@+id/et_toolchain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_min_sdk"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_toolchain"
         android:hint="@string/minimum_sdk"
         app:startIconDrawable="@drawable/ic_min_sdk"
         app:startIconTint="@color/primaryIconColor" >
