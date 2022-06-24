@@ -4,6 +4,8 @@
 -dontnote **
 -dontobfuscate
 
+-keep class javax.** { *; }
+
 # keep javac classes
 -keep class com.sun.** { *; }
 
