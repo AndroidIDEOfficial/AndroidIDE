@@ -18,25 +18,16 @@
 package com.itsaky.androidide.handlers
 
 import android.content.DialogInterface
-import android.text.Layout.Alignment.ALIGN_CENTER
-import android.text.Layout.Alignment.ALIGN_NORMAL
-import android.text.SpannableStringBuilder
-import android.text.style.AlignmentSpan
 import android.view.View
-import android.webkit.URLUtil
-import androidx.core.view.GravityCompat
 import com.itsaky.androidide.EditorActivity
 import com.itsaky.androidide.R.string
 import com.itsaky.androidide.managers.PreferenceManager
 import com.itsaky.androidide.services.GradleBuildService
 import com.itsaky.androidide.tooling.events.ProgressEvent
-import com.itsaky.androidide.tooling.events.StatusEvent
 import com.itsaky.androidide.tooling.events.download.FileDownloadFinishEvent
-import com.itsaky.androidide.tooling.events.download.FileDownloadOperationDescriptor
 import com.itsaky.androidide.tooling.events.task.TaskProgressEvent
 import com.itsaky.androidide.utils.DialogUtils
 import com.itsaky.androidide.utils.ILogger
-import com.itsaky.androidide.utils.StudioUtils
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -46,107 +37,105 @@ import java.lang.ref.WeakReference
  */
 class EditorEventListener : GradleBuildService.EventListener {
 
-    private var activityReference: WeakReference<EditorActivity?> = WeakReference(null)
-    private val log = ILogger.newInstance(javaClass.simpleName)
+  private var activityReference: WeakReference<EditorActivity?> = WeakReference(null)
+  private val log = ILogger.newInstance(javaClass.simpleName)
 
-    fun setActivity(activity: EditorActivity) {
-        this.activityReference = WeakReference(activity)
+  fun setActivity(activity: EditorActivity) {
+    this.activityReference = WeakReference(activity)
+  }
+
+  override fun prepareBuild() {
+    val isFirstBuild =
+      activity().app.prefManager.getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true)
+    activity()
+      .setStatus(
+        activity().getString(if (isFirstBuild) string.preparing_first else string.preparing)
+      )
+
+    if (isFirstBuild) {
+      activity().showFirstBuildNotice()
     }
 
-    override fun prepareBuild() {
-        val isFirstBuild =
-            activity()
-                .app.prefManager.getBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, true)
-        activity()
-            .setStatus(
-                activity()
-                    .getString(if (isFirstBuild) string.preparing_first else string.preparing))
+    activity().binding.buildProgressIndicator.visibility = View.VISIBLE
+  }
 
-        if (isFirstBuild) {
-            activity().showFirstBuildNotice()
-        }
+  override fun onBuildSuccessful(tasks: MutableList<String>) {
+    analyzeCurrentFile()
+    appendOutputSeparator()
 
-        activity().binding.buildProgressIndicator.visibility = View.VISIBLE
+    activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
+    activity().binding.buildProgressIndicator.visibility = View.GONE
+  }
+
+  override fun onProgressEvent(event: ProgressEvent) {
+    if (event is FileDownloadFinishEvent) {
+      activity().setStatus("")
+    } else if (event is TaskProgressEvent) {
+      activity().setStatus(activity().getString(string.msg_running_task, event.descriptor.taskPath))
+    }
+  }
+
+  private fun appendOutputSeparator() {
+    activity().appendBuildOut("\n\n")
+  }
+
+  override fun onBuildFailed(tasks: MutableList<String>) {
+    analyzeCurrentFile()
+    appendOutputSeparator()
+
+    activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
+    activity().binding.buildProgressIndicator.visibility = View.GONE
+  }
+
+  override fun onOutput(line: String?) {
+    activity().appendBuildOut(line)
+
+    // TODO This can be handled better when ProgressEvents are received from Tooling API server
+    if (line!!.contains("BUILD SUCCESSFUL") || line.contains("BUILD FAILED")) {
+      activity().setStatus(line)
+    }
+  }
+
+  private fun analyzeCurrentFile() {
+    val editorView = activity().currentEditor
+    if (editorView != null) {
+      val editor = editorView.editor
+      editor?.analyze()
+    }
+  }
+
+  fun activity(): EditorActivity {
+    return activityReference.get()
+      ?: throw IllegalStateException("Activity reference has been destroyed!")
+  }
+
+  private fun installApks(apks: Set<File>?) {
+    if (apks == null || apks.isEmpty()) {
+      IDEHandler.LOG.error("Cannot install APKs: $apks")
+      return
     }
 
-    override fun onBuildSuccessful(tasks: MutableList<String>) {
-        analyzeCurrentFile()
-        appendOutputSeparator()
+    if (apks.size == 1) {
+      activity().install(apks.iterator().next())
+    } else {
+      IDEHandler.LOG.info("Multiple APKs found. Let the user select...")
+      val files: List<File> = ArrayList(apks)
+      val builder = DialogUtils.newMaterialDialogBuilder(activity())
+      builder.setTitle(activity().getString(string.title_install_apks))
+      builder.setItems(getNames(files)) { d: DialogInterface, w: Int ->
+        d.dismiss()
+        activity().install(files[w])
+      }
+      builder.show()
+    }
+  }
 
-        activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
-        activity().binding.buildProgressIndicator.visibility = View.GONE
+  private fun getNames(apks: Collection<File>): Array<String?> {
+    val names = arrayOfNulls<String>(apks.size)
+    for ((i, apk) in apks.withIndex()) {
+      names[i] = apk.name
     }
 
-    override fun onProgressEvent(event: ProgressEvent) {
-        if (event is FileDownloadFinishEvent) {
-            activity().setStatus("")
-        } else if (event is TaskProgressEvent) {
-            activity()
-                .setStatus(activity().getString(string.msg_running_task, event.descriptor.taskPath))
-        }
-    }
-
-    private fun appendOutputSeparator() {
-        activity().appendBuildOut("\n\n")
-    }
-
-    override fun onBuildFailed(tasks: MutableList<String>) {
-        analyzeCurrentFile()
-        appendOutputSeparator()
-
-        activity().app.prefManager.putBoolean(PreferenceManager.KEY_IS_FIRST_PROJECT_BUILD, false)
-        activity().binding.buildProgressIndicator.visibility = View.GONE
-    }
-
-    override fun onOutput(line: String?) {
-        activity().appendBuildOut(line)
-
-        // TODO This can be handled better when ProgressEvents are received from Tooling API server
-        if (line!!.contains("BUILD SUCCESSFUL") || line.contains("BUILD FAILED")) {
-            activity().setStatus(line)
-        }
-    }
-
-    private fun analyzeCurrentFile() {
-        val editorView = activity().currentEditor
-        if (editorView != null) {
-            val editor = editorView.editor
-            editor?.analyze()
-        }
-    }
-
-    fun activity(): EditorActivity {
-        return activityReference.get()
-            ?: throw IllegalStateException("Activity reference has been destroyed!")
-    }
-
-    private fun installApks(apks: Set<File>?) {
-        if (apks == null || apks.isEmpty()) {
-            IDEHandler.LOG.error("Cannot install APKs: $apks")
-            return
-        }
-
-        if (apks.size == 1) {
-            activity().install(apks.iterator().next())
-        } else {
-            IDEHandler.LOG.info("Multiple APKs found. Let the user select...")
-            val files: List<File> = ArrayList(apks)
-            val builder = DialogUtils.newMaterialDialogBuilder(activity())
-            builder.setTitle(activity().getString(string.title_install_apks))
-            builder.setItems(getNames(files)) { d: DialogInterface, w: Int ->
-                d.dismiss()
-                activity().install(files[w])
-            }
-            builder.show()
-        }
-    }
-
-    private fun getNames(apks: Collection<File>): Array<String?> {
-        val names = arrayOfNulls<String>(apks.size)
-        for ((i, apk) in apks.withIndex()) {
-            names[i] = apk.name
-        }
-
-        return names
-    }
+    return names
+  }
 }

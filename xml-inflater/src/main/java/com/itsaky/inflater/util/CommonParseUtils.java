@@ -252,7 +252,8 @@ public class CommonParseUtils {
       } catch (Throwable th) {
         // Ignored
       }
-    } else if (color.startsWith("@color/")) {
+    } else if (color.startsWith("@color/")) {
+
       return parseColor(resourceFinder.findColor(color.substring("@color/".length())), ctx);
     } else if (color.startsWith("@android:color/")) {
       final int id = findFrameworkResourceId("color", color.substring("@android:color/".length()));

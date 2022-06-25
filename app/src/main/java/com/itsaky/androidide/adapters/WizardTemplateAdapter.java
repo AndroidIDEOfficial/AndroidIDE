@@ -68,19 +68,21 @@ public class WizardTemplateAdapter extends RecyclerView.Adapter<WizardTemplateAd
   @NonNull
   @Override
   public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-      WizardTemplateItemBinding binding = WizardTemplateItemBinding.inflate(LayoutInflater.from(parent.getContext()),
-                parent, false);
-    
+    WizardTemplateItemBinding binding =
+        WizardTemplateItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+
     ViewHolder holder = new ViewHolder(binding);
-    binding.getRoot().setOnClickListener(
-        view1 -> {
-          if (mListener != null) {
-            int pos = holder.getBindingAdapterPosition();
-            if (pos != RecyclerView.NO_POSITION) {
-              mListener.onItemClick(mItems.get(pos), pos);
-            }
-          }
-        });
+    binding
+        .getRoot()
+        .setOnClickListener(
+            view1 -> {
+              if (mListener != null) {
+                int pos = holder.getBindingAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) {
+                  mListener.onItemClick(mItems.get(pos), pos);
+                }
+              }
+            });
     return holder;
   }
 

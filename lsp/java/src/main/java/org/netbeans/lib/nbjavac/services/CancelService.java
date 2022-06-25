@@ -29,8 +29,7 @@ import com.sun.tools.javac.util.Context;
 public class CancelService {
 
   /** The context key for the parameter name resolver. */
-  protected static final Context.Key<CancelService> cancelServiceKey =
-      new Context.Key<>();
+  protected static final Context.Key<CancelService> cancelServiceKey = new Context.Key<>();
 
   @NonNull
   public static CancelService instance(@NonNull Context context) {

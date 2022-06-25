@@ -39,9 +39,7 @@ import java.util.Collection;
 public class NBClassWriter extends ClassWriter {
 
   public static void preRegister(Context context) {
-    context.put(
-        classWriterKey,
-        (Context.Factory<ClassWriter>) NBClassWriter::new);
+    context.put(classWriterKey, (Context.Factory<ClassWriter>) NBClassWriter::new);
   }
 
   private final NBNames nbNames;

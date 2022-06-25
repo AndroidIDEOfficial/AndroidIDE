@@ -44,123 +44,118 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 public class KotlinLanguage extends IDELanguage {
 
-    private static final ILogger LOG = ILogger.newInstance("KotlinLanguage");
-    private KotlinAnalyzer analyzer;
-    private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
+  private static final ILogger LOG = ILogger.newInstance("KotlinLanguage");
+  private KotlinAnalyzer analyzer;
+  private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {new BraceHandler()};
 
-    public KotlinLanguage() {
-        analyzer = new KotlinAnalyzer();
-    }
+  public KotlinLanguage() {
+    analyzer = new KotlinAnalyzer();
+  }
 
-    @Override
-    public int getIndentAdvance(@NonNull String line) {
-        try {
-            KotlinLexer lexer = new KotlinLexer(CharStreams.fromReader(new StringReader(line)));
-            Token token;
-            int advance = 0;
-            while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
-                switch (token.getType()) {
-                    case KotlinParser.LCURL:
-                        advance++;
-                        break;
-                    case KotlinParser.RCURL:
-                        advance--;
-                        break;
-                }
-            }
-            advance = Math.max(0, advance);
-            return advance * getTabSize();
-        } catch (Throwable e) {
-            LOG.error("Error calculating indent advance", e);
+  @Override
+  public int getIndentAdvance(@NonNull String line) {
+    try {
+      KotlinLexer lexer = new KotlinLexer(CharStreams.fromReader(new StringReader(line)));
+      Token token;
+      int advance = 0;
+      while (((token = lexer.nextToken()) != null && token.getType() != token.EOF)) {
+        switch (token.getType()) {
+          case KotlinParser.LCURL:
+            advance++;
+            break;
+          case KotlinParser.RCURL:
+            advance--;
+            break;
         }
-        return 0;
+      }
+      advance = Math.max(0, advance);
+      return advance * getTabSize();
+    } catch (Throwable e) {
+      LOG.error("Error calculating indent advance", e);
+    }
+    return 0;
+  }
+
+  @Override
+  public SymbolPairMatch getSymbolPairs() {
+    return new KotlinSymbolPairs();
+  }
+
+  @NonNull
+  @Override
+  public AnalyzeManager getAnalyzeManager() {
+    return analyzer;
+  }
+
+  @Override
+  public int getInterruptionLevel() {
+    return INTERRUPTION_LEVEL_STRONG;
+  }
+
+  @Override
+  public void requireAutoComplete(
+      @NonNull ContentReference content,
+      @NonNull CharPosition position,
+      @NonNull CompletionPublisher publisher,
+      @NonNull Bundle extraArguments)
+      throws CompletionCancelledException {
+
+    //  completer.complete(content, position, publisher, extraArguments);
+  }
+
+  @Override
+  public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {
+    return getIndentAdvance(content.getLine(line).substring(0, column));
+  }
+
+  @Override
+  public CharSequence format(CharSequence content) {
+    return content;
+  }
+
+  @Override
+  public NewlineHandler[] getNewlineHandlers() {
+    return newlineHandlers;
+  }
+
+  @Override
+  public void destroy() {
+    analyzer = null;
+  }
+
+  private static class KotlinSymbolPairs extends SymbolPairMatch {
+    public KotlinSymbolPairs() {
+      super.putPair('{', new Replacement("{}", 1));
+      super.putPair('(', new Replacement("()", 1));
+      super.putPair('[', new Replacement("[]", 1));
+      super.putPair('"', new Replacement("\"\"", 1));
+      super.putPair('\'', new Replacement("''", 1));
+      super.putPair('<', new Replacement("<>", 1));
+    }
+  }
+
+  class BraceHandler implements NewlineHandler {
+
+    @Override
+    public boolean matchesRequirement(String beforeText, String afterText) {
+      beforeText = beforeText.trim();
+      afterText = afterText.trim();
+      return beforeText.endsWith("{") && afterText.startsWith("}");
     }
 
     @Override
-    public SymbolPairMatch getSymbolPairs() {
-        return new KotlinSymbolPairs();
+    public NewlineHandleResult handleNewline(String beforeText, String afterText, int tabSize) {
+      int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
+      int advanceBefore = getIndentAdvance(beforeText);
+      int advanceAfter = getIndentAdvance(afterText);
+      String text;
+      StringBuilder sb =
+          new StringBuilder("\n")
+              .append(TextUtils.createIndent(count + advanceBefore, tabSize, useTab()))
+              .append('\n')
+              .append(text = TextUtils.createIndent(count + advanceAfter, tabSize, useTab()));
+      int shiftLeft = text.length() + 1;
+      return new NewlineHandleResult(sb, shiftLeft);
     }
-
-    @NonNull
-    @Override
-    public AnalyzeManager getAnalyzeManager() {
-        return analyzer;
-    }
-
-    @Override
-    public int getInterruptionLevel() {
-        return INTERRUPTION_LEVEL_STRONG;
-    }
-
-    @Override
-    public void requireAutoComplete(
-            @NonNull ContentReference content,
-            @NonNull CharPosition position,
-            @NonNull CompletionPublisher publisher,
-            @NonNull Bundle extraArguments)
-            throws CompletionCancelledException {
-
-        //  completer.complete(content, position, publisher, extraArguments);
-    }
-
-    @Override
-    public int getIndentAdvance(@NonNull ContentReference content, int line, int column) {
-        return getIndentAdvance(content.getLine(line).substring(0, column));
-    }
-
-    @Override
-    public CharSequence format(CharSequence content) {
-        return content;
-    }
-
-    @Override
-    public NewlineHandler[] getNewlineHandlers() {
-        return newlineHandlers;
-    }
-
-    @Override
-    public void destroy() {
-        analyzer = null;
-    }
-
-    private static class KotlinSymbolPairs extends SymbolPairMatch {
-        public KotlinSymbolPairs() {
-            super.putPair('{', new Replacement("{}", 1));
-            super.putPair('(', new Replacement("()", 1));
-            super.putPair('[', new Replacement("[]", 1));
-            super.putPair('"', new Replacement("\"\"", 1));
-            super.putPair('\'', new Replacement("''", 1));
-            super.putPair('<', new Replacement("<>", 1));
-        }
-    }
-
-    class BraceHandler implements NewlineHandler {
-
-        @Override
-        public boolean matchesRequirement(String beforeText, String afterText) {
-            beforeText = beforeText.trim();
-            afterText = afterText.trim();
-            return beforeText.endsWith("{") && afterText.startsWith("}");
-        }
-
-        @Override
-        public NewlineHandleResult handleNewline(String beforeText, String afterText, int tabSize) {
-            int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
-            int advanceBefore = getIndentAdvance(beforeText);
-            int advanceAfter = getIndentAdvance(afterText);
-            String text;
-            StringBuilder sb =
-                    new StringBuilder("\n")
-                            .append(
-                                    TextUtils.createIndent(
-                                            count + advanceBefore, tabSize, useTab()))
-                            .append('\n')
-                            .append(
-                                    text =
-                                            TextUtils.createIndent(
-                                                    count + advanceAfter, tabSize, useTab()));
-            int shiftLeft = text.length() + 1;
-            return new NewlineHandleResult(sb, shiftLeft);
-        }
-    }
+  }
 }

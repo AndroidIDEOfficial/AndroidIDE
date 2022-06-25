@@ -359,7 +359,7 @@ public class WizardFragment extends BaseFragment {
             requireContext(),
             androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
             languages));
-            
+
     detailsBinding.etLanguage.setListSelection(0);
 
     if (mCurrentTemplate.isCpp()) {
@@ -372,7 +372,7 @@ public class WizardFragment extends BaseFragment {
 
       detailsBinding.etToolchain.setListSelection(0);
       detailsBinding.etToolchain.setText(getSelectedItem(0, detailsBinding.etToolchain), false);
-      
+
       showDialogNdkNotSupportedOfficially();
     }
 
@@ -540,16 +540,16 @@ public class WizardFragment extends BaseFragment {
   private void setMessage(String msg) {
     mProgressSheet.setMessage(msg);
   }
-  
-  private void showDialogNdkNotSupportedOfficially(){
-      DialogUtils.newMaterialDialogBuilder(requireContext())
+
+  private void showDialogNdkNotSupportedOfficially() {
+    DialogUtils.newMaterialDialogBuilder(requireContext())
         .setPositiveButton(android.R.string.ok, null)
         .setTitle(R.string.title_warning)
         .setMessage(R.string.msg_ndk_currently_unsupported)
         .setCancelable(false)
         .create()
         .show();
-      }
+  }
 
   public interface OnProjectCreatedListener {
     void openProject(File project);

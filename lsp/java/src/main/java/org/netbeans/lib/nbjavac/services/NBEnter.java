@@ -36,9 +36,7 @@ import com.sun.tools.javac.util.Context;
 public class NBEnter extends Enter {
 
   public static void preRegister(Context context) {
-    context.put(
-        enterKey,
-        (Context.Factory<Enter>) NBEnter::new);
+    context.put(enterKey, (Context.Factory<Enter>) NBEnter::new);
   }
 
   private final CancelService cancelService;

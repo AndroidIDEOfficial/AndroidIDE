@@ -114,7 +114,7 @@ public class MainActivity extends StudioActivity {
     getApp().toast(R.string.msg_storage_denied, Toaster.Type.ERROR);
     finishAffinity();
   }
-  
+
   @Override
   protected void onDestroy() {
     super.onDestroy();

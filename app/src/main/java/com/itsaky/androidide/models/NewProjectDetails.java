@@ -81,7 +81,7 @@ public class NewProjectDetails {
   public int getTargetSdk() {
     return targetSdk;
   }
-  
+
   public NewProjectDetails setCppFlags(String cppFlags) {
     this.cppFlags = cppFlags;
     return this;

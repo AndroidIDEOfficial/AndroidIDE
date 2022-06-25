@@ -508,5 +508,4 @@ public class DesignerActivity extends StudioActivity
   private void setDragDataToInflatedView(@NonNull IView view) {
     view.setExtraData(new WidgetDragData(true, view, null));
   }
-  
 }

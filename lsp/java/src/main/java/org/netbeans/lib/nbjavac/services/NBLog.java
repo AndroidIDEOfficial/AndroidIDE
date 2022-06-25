@@ -62,15 +62,11 @@ public class NBLog extends Log {
       final PrintWriter errWriter,
       final PrintWriter warnWriter,
       final PrintWriter noticeWriter) {
-    context.put(
-        logKey,
-        (Context.Factory<Log>) c -> new NBLog(c, errWriter));
+    context.put(logKey, (Context.Factory<Log>) c -> new NBLog(c, errWriter));
   }
 
   public static void preRegister(Context context, final PrintWriter output) {
-    context.put(
-        logKey,
-        (Context.Factory<Log>) c -> new NBLog(c, output));
+    context.put(logKey, (Context.Factory<Log>) c -> new NBLog(c, output));
   }
 
   @Override

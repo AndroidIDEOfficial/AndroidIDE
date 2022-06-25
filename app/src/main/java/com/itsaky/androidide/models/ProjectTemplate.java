@@ -103,7 +103,7 @@ public class ProjectTemplate {
     this.isSupportKotlin = isSupportKotlin;
     return this;
   }
-  
+
   public boolean isCpp() {
     return this.isCpp;
   }

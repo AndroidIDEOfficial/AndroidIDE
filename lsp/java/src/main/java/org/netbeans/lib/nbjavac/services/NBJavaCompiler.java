@@ -36,9 +36,7 @@ import java.util.function.Consumer;
 public class NBJavaCompiler extends JavaCompiler {
 
   public static void preRegister(Context context) {
-    context.put(
-        compilerKey,
-        (Context.Factory<JavaCompiler>) NBJavaCompiler::new);
+    context.put(compilerKey, (Context.Factory<JavaCompiler>) NBJavaCompiler::new);
   }
 
   private final CancelService cancelService;

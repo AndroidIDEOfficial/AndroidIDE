@@ -43,9 +43,7 @@ import java.lang.invoke.MethodType;
 public class NBAttr extends Attr {
 
   public static void preRegister(Context context) {
-    context.put(
-        attrKey,
-        (Context.Factory<Attr>) NBAttr::new);
+    context.put(attrKey, (Context.Factory<Attr>) NBAttr::new);
   }
 
   private final CancelService cancelService;
