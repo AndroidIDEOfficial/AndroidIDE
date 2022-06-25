@@ -19,6 +19,7 @@
  */
 package com.itsaky.androidide.lsp;
 
+import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -151,6 +152,8 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
     File file = result.getFile().toFile();
     if (!file.exists() || !file.isFile()) return;
+
+    LOG.debug("Updating diagnostics. Is main thread?", Looper.getMainLooper() == Looper.myLooper());
 
     final var editorView = activity().getEditorForFile(file);
     if (editorView != null) {
