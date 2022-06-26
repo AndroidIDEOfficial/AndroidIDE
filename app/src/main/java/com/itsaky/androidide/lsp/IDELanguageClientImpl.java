@@ -160,7 +160,6 @@ public class IDELanguageClientImpl implements ILanguageClient {
     File file = result.getFile().toFile();
     if (!file.exists() || !file.isFile()) return;
 
-    Trace.beginSection("publishDiagnostics");
     final var editorView = activity().getEditorForFile(file);
     if (editorView != null) {
       final var editor = editorView.getEditor();
@@ -180,7 +179,6 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
     diagnostics.put(file, result.getDiagnostics());
     activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
-    Trace.endSection();
   }
 
   @Nullable
