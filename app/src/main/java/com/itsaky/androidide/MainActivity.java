@@ -49,8 +49,16 @@ public class MainActivity extends StudioActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    showInstallJdkSdkRequired();
-    openLastProject();
+    if (!checkToolsIsInstalled()) {
+      showDialogInstallJdkSdk();
+    } else {
+      openLastProject();
+    }
+
+    getSupportFragmentManager()
+        .beginTransaction()
+        .replace(R.id.container, new MainFragment(), MainFragment.TAG)
+        .commit();
   }
 
   private void openLastProject() {
@@ -81,11 +89,6 @@ public class MainActivity extends StudioActivity {
 
               ConstantsBridge.SPLASH_TO_MAIN = false;
             });
-
-    getSupportFragmentManager()
-        .beginTransaction()
-        .replace(R.id.container, new MainFragment(), MainFragment.TAG)
-        .commit();
   }
 
   private void askProjectOpenPermission(File root) {
@@ -124,23 +127,25 @@ public class MainActivity extends StudioActivity {
     binding = null;
   }
 
-  private void showInstallJdkSdkRequired() {
-    if (!Environment.JAVA.exists() | !Environment.ANDROID_HOME.exists()) {
-      final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
-      builder.setTitle(R.string.title_warning);
-      TextView view = new TextView(this);
-      view.setPadding(10, 10, 10, 10);
-      view.setText(
-          HtmlCompat.fromHtml(
-              getString(R.string.msg_require_install_jdk_and_android_sdk),
-              HtmlCompat.FROM_HTML_MODE_COMPACT));
-      view.setMovementMethod(LinkMovementMethod.getInstance());
-      builder.setView(view);
-      builder.setCancelable(false);
-      builder.setPositiveButton(R.string.yes, (d, w) -> openTerminal());
-      builder.setNegativeButton(R.string.no, (d, w) -> finishAffinity());
-      builder.show();
-    }
+  private void showDialogInstallJdkSdk() {
+    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
+    builder.setTitle(R.string.title_warning);
+    TextView view = new TextView(this);
+    view.setPadding(10, 10, 10, 10);
+    view.setText(
+        HtmlCompat.fromHtml(
+            getString(R.string.msg_require_install_jdk_and_android_sdk),
+            HtmlCompat.FROM_HTML_MODE_COMPACT));
+    view.setMovementMethod(LinkMovementMethod.getInstance());
+    builder.setView(view);
+    builder.setCancelable(false);
+    builder.setPositiveButton(android.R.string.ok, (d, w) -> openTerminal());
+    builder.setNegativeButton(android.R.string.cancel, (d, w) -> finishAffinity());
+    builder.show();
+  }
+
+  private boolean checkToolsIsInstalled() {
+    return Environment.JAVA.exists() | Environment.ANDROID_HOME.exists();
   }
 
   private void openTerminal() {
