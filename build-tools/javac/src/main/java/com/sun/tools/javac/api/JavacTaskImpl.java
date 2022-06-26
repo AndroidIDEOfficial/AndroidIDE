@@ -25,31 +25,29 @@
 
 package com.sun.tools.javac.api;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.annotation.processing.Processor;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.tools.*;
-
-import com.sun.source.tree.*;
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.Tree;
 import com.sun.source.util.SourcePositions;
-import com.sun.tools.javac.code.*;
+import com.sun.tools.javac.code.DeferredCompletionFailureHandler;
 import com.sun.tools.javac.code.DeferredCompletionFailureHandler.Handler;
+import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Symbol.ClassSymbol;
-import com.sun.tools.javac.comp.*;
+import com.sun.tools.javac.code.Type;
+import com.sun.tools.javac.comp.Annotate;
+import com.sun.tools.javac.comp.ArgumentAttr;
+import com.sun.tools.javac.comp.Attr;
+import com.sun.tools.javac.comp.AttrContext;
+import com.sun.tools.javac.comp.Enter;
+import com.sun.tools.javac.comp.Env;
 import com.sun.tools.javac.file.BaseFileManager;
-import com.sun.tools.javac.main.*;
+import com.sun.tools.javac.main.Arguments;
 import com.sun.tools.javac.main.JavaCompiler;
+import com.sun.tools.javac.main.Main;
 import com.sun.tools.javac.parser.JavacParser;
 import com.sun.tools.javac.parser.Parser;
 import com.sun.tools.javac.parser.ParserFactory;
 import com.sun.tools.javac.processing.AnnotationProcessingError;
-import com.sun.tools.javac.tree.*;
+import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCBlock;
 import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
@@ -57,11 +55,43 @@ import com.sun.tools.javac.tree.JCTree.JCExpression;
 import com.sun.tools.javac.tree.JCTree.JCModuleDecl;
 import com.sun.tools.javac.tree.JCTree.JCStatement;
 import com.sun.tools.javac.tree.JCTree.Tag;
-import com.sun.tools.javac.util.*;
+import com.sun.tools.javac.tree.TreeInfo;
+import com.sun.tools.javac.util.ClientCodeException;
+import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.DefinedBy;
 import com.sun.tools.javac.util.DefinedBy.Api;
+import com.sun.tools.javac.util.FatalError;
+import com.sun.tools.javac.util.JCDiagnostic;
+import com.sun.tools.javac.util.JavacMessages;
 import com.sun.tools.javac.util.List;
+import com.sun.tools.javac.util.ListBuffer;
+import com.sun.tools.javac.util.Log;
 import com.sun.tools.javac.util.Log.PrefixKind;
 import com.sun.tools.javac.util.Log.WriterKind;
+import com.sun.tools.javac.util.Options;
+import com.sun.tools.javac.util.Pair;
+import com.sun.tools.javac.util.PropagatedException;
+
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.annotation.processing.Processor;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticListener;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
 
 /**
  * Provides access to functionality specific to the JDK Java Compiler, javac.
@@ -247,7 +277,7 @@ public class JavacTaskImpl extends BasicJavacTask {
         return sb.toString();
     }
 
-    void cleanup() {
+    public void cleanup() {
         if (compiler != null)
             compiler.close();
         if (fileManager instanceof BaseFileManager && ((BaseFileManager) fileManager).autoClose) {
@@ -686,7 +716,7 @@ public class JavacTaskImpl extends BasicJavacTask {
     /**
      * For internal use only. This method will be
      * removed without warning.
-     * 
+     *
      * @param expr  the type expression to be analyzed
      * @param scope the scope in which to analyze the type expression
      * @return the type
