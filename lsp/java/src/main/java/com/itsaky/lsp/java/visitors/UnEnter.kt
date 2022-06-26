@@ -30,7 +30,7 @@ import com.sun.tools.javac.tree.TreeScanner
  *
  * @author Akash Yadav
  */
-class UnEnterScanner(private val enter: Enter, private val msym: ModuleSymbol) : TreeScanner() {
+class UnEnter(private val enter: Enter, private val msym: ModuleSymbol) : TreeScanner() {
   override fun visitClassDef(tree: JCClassDecl) {
     val csym = tree.sym ?: return
 

@@ -28,7 +28,7 @@ import com.sun.source.tree.Tree.Kind.METHOD
 import com.sun.source.util.TreePath
 import com.sun.tools.javac.api.JavacTrees
 import com.sun.tools.javac.comp.Enter
-import com.itsaky.lsp.java.visitors.UnEnterScanner
+import com.itsaky.lsp.java.visitors.UnEnter
 import com.sun.tools.javac.parser.JavacParser
 import com.sun.tools.javac.parser.LazyDocCommentTable
 import com.sun.tools.javac.parser.ScannerFactory
@@ -188,7 +188,7 @@ class PartialReparserImpl : PartialReparser {
     if (this.unenter != null) {
       this.unenter!!.invoke(enter, cu, method.body)
     } else if (useUnEnterScanner) {
-      UnEnterScanner(enter, cu.modle).scan(method)
+      UnEnter(enter, cu.modle).scan(method)
     }
   }
 
