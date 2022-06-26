@@ -335,5 +335,6 @@
     <string name="idepref_msg_customGradleInstallation">Specify a custom Gradle installation to use for build. This OVERRIDES the version specified in gradle-wrapper.properties.</string>
     <string name="msg_gradle_installation_path">Gradle installation path</string>
     <string name="msg_gradle_installation_input_help">Leave empty to use Gradle wrapper.</string>
+    <string name="msg_require_install_jdk_and_android_sdk">You need to install the JDK and Android SDK for the IDE to work. To install click \'Yes\' and follow the instructions <![CDATA[ <a href="https://github.com/itsaky/androidide-build-tools#installing-in-androidide">here</a>]]></string>
 
 </resources>

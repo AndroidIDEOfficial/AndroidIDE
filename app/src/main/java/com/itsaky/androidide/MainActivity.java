@@ -22,11 +22,15 @@ package com.itsaky.androidide;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import com.itsaky.androidide.app.StudioActivity;
 import com.itsaky.androidide.databinding.ActivityMainBinding;
 import com.itsaky.androidide.fragments.MainFragment;
@@ -34,6 +38,7 @@ import com.itsaky.androidide.managers.PreferenceManager;
 import com.itsaky.androidide.models.ConstantsBridge;
 import com.itsaky.androidide.projects.ProjectManager;
 import com.itsaky.androidide.utils.DialogUtils;
+import com.itsaky.androidide.utils.Environment;
 import com.itsaky.toaster.Toaster;
 
 import java.io.File;
@@ -44,7 +49,16 @@ public class MainActivity extends StudioActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    openLastProject();
+    if (!checkToolsIsInstalled()) {
+      showDialogInstallJdkSdk();
+    } else {
+      openLastProject();
+    }
+
+    getSupportFragmentManager()
+        .beginTransaction()
+        .replace(R.id.container, new MainFragment(), MainFragment.TAG)
+        .commit();
   }
 
   private void openLastProject() {
@@ -75,11 +89,6 @@ public class MainActivity extends StudioActivity {
 
               ConstantsBridge.SPLASH_TO_MAIN = false;
             });
-
-    getSupportFragmentManager()
-        .beginTransaction()
-        .replace(R.id.container, new MainFragment(), MainFragment.TAG)
-        .commit();
   }
 
   private void askProjectOpenPermission(File root) {
@@ -118,5 +127,28 @@ public class MainActivity extends StudioActivity {
     binding = null;
   }
 
-  private void showMoveRequired() {}
+  private void showDialogInstallJdkSdk() {
+    final MaterialAlertDialogBuilder builder = DialogUtils.newMaterialDialogBuilder(this);
+    builder.setTitle(R.string.title_warning);
+    TextView view = new TextView(this);
+    view.setPadding(10, 10, 10, 10);
+    view.setText(
+        HtmlCompat.fromHtml(
+            getString(R.string.msg_require_install_jdk_and_android_sdk),
+            HtmlCompat.FROM_HTML_MODE_COMPACT));
+    view.setMovementMethod(LinkMovementMethod.getInstance());
+    builder.setView(view);
+    builder.setCancelable(false);
+    builder.setPositiveButton(android.R.string.ok, (d, w) -> openTerminal());
+    builder.setNegativeButton(android.R.string.cancel, (d, w) -> finishAffinity());
+    builder.show();
+  }
+
+  private boolean checkToolsIsInstalled() {
+    return Environment.JAVA.exists() && Environment.ANDROID_HOME.exists();
+  }
+
+  private void openTerminal() {
+    startActivity(new Intent(this, TerminalActivity.class));
+  }
 }
