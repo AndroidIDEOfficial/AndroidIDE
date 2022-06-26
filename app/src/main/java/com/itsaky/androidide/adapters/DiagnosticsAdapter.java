@@ -22,6 +22,7 @@ import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,17 +33,19 @@ import com.itsaky.androidide.interfaces.DiagnosticClickListener;
 import com.itsaky.androidide.models.DiagnosticGroup;
 
 import java.util.List;
+import java.util.Objects;
 
 public class DiagnosticsAdapter extends RecyclerView.Adapter<DiagnosticsAdapter.VH> {
 
-  private final List<DiagnosticGroup> diags;
+  private final List<DiagnosticGroup> diagnostics;
   private final DiagnosticClickListener listener;
 
-  public DiagnosticsAdapter(List<DiagnosticGroup> diags, DiagnosticClickListener listener) {
-    this.diags = diags;
+  public DiagnosticsAdapter(List<DiagnosticGroup> diagnostics, DiagnosticClickListener listener) {
+    this.diagnostics = Objects.requireNonNull(diagnostics);
     this.listener = listener;
   }
 
+  @NonNull
   @Override
   public DiagnosticsAdapter.VH onCreateViewHolder(ViewGroup p1, int p2) {
     return new VH(
@@ -51,7 +54,7 @@ public class DiagnosticsAdapter extends RecyclerView.Adapter<DiagnosticsAdapter.
 
   @Override
   public void onBindViewHolder(DiagnosticsAdapter.VH p1, int p2) {
-    final DiagnosticGroup group = diags.get(p2);
+    final DiagnosticGroup group = diagnostics.get(p2);
     final LayoutDiagnosticGroupBinding binding = p1.binding;
 
     final int color =
@@ -77,7 +80,7 @@ public class DiagnosticsAdapter extends RecyclerView.Adapter<DiagnosticsAdapter.
 
   @Override
   public int getItemCount() {
-    return diags.size();
+    return diagnostics.size();
   }
 
   public class VH extends RecyclerView.ViewHolder {

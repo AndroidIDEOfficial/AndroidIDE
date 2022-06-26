@@ -16,7 +16,6 @@
  */
 package com.itsaky.androidide.views.editor;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -128,21 +127,21 @@ public class IDEEditor extends CodeEditor {
    * @param event The content change event.
    */
   private void handleContentChange(ContentChangeEvent event, Unsubscribe unsubscribe) {
-    if (getContext() instanceof Activity) {
-      ((Activity) getContext()).invalidateOptionsMenu();
-    }
-
     if (getFile() == null || mLanguageServer == null) {
       return;
     }
 
-    final var documentHandler = mLanguageServer.getDocumentHandler();
-    final var file = getFile().toPath();
-    if (documentHandler.accepts(file)) {
-      documentHandler.onContentChange(new DocumentChangeEvent(file, getText(), mFileVersion + 1));
-    }
+    CompletableFuture.runAsync(
+        () -> {
+          final var documentHandler = mLanguageServer.getDocumentHandler();
+          final var file = getFile().toPath();
+          if (documentHandler.accepts(file)) {
+            documentHandler.onContentChange(
+                new DocumentChangeEvent(file, getText(), mFileVersion + 1));
+          }
 
-    checkForSignatureHelp(event);
+          checkForSignatureHelp(event);
+        });
   }
 
   public static int createInputFlags() {
@@ -251,7 +250,6 @@ public class IDEEditor extends CodeEditor {
    * If any language server is set, requests signature help at the cursor's position. On a valid
    * response, shows the signature help in a popup window.
    */
-  @SuppressWarnings("unused") // accessed using reflection in CompletionItem class
   public void signatureHelp() {
     if (mLanguageServer != null && getFile() != null) {
       final CompletableFuture<SignatureHelp> future =

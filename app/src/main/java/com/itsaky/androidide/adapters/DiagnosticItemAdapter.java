@@ -33,16 +33,17 @@ import com.itsaky.lsp.models.DiagnosticSeverity;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class DiagnosticItemAdapter extends RecyclerView.Adapter<DiagnosticItemAdapter.VH> {
 
-  private final List<DiagnosticItem> diags;
+  private final List<DiagnosticItem> diagnostics;
   private final File file;
   private final DiagnosticClickListener listener;
 
   public DiagnosticItemAdapter(
-      List<DiagnosticItem> diags, File file, DiagnosticClickListener listener) {
-    this.diags = diags;
+      List<DiagnosticItem> diagnostics, File file, DiagnosticClickListener listener) {
+    this.diagnostics = Objects.requireNonNull(diagnostics);
     this.file = file;
     this.listener = listener;
   }
@@ -56,7 +57,7 @@ public class DiagnosticItemAdapter extends RecyclerView.Adapter<DiagnosticItemAd
 
   @Override
   public void onBindViewHolder(DiagnosticItemAdapter.VH p1, int p2) {
-    final DiagnosticItem diagnostic = diags.get(p2);
+    final DiagnosticItem diagnostic = diagnostics.get(p2);
     final LayoutDiagnosticItemBinding binding = p1.binding;
 
     binding.icon.setImageResource(getDiagnosticIconId(diagnostic));
@@ -81,7 +82,7 @@ public class DiagnosticItemAdapter extends RecyclerView.Adapter<DiagnosticItemAd
 
   @Override
   public int getItemCount() {
-    return diags.size();
+    return diagnostics.size();
   }
 
   private int getDiagnosticIconId(DiagnosticItem diagnostic) {

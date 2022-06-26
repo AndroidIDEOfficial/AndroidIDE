@@ -26,6 +26,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute,MediaCapabilities">
+        <profileable android:shell="true" />
+
         <activity
             android:name=".CrashHandlerActivity"
             android:exported="true"

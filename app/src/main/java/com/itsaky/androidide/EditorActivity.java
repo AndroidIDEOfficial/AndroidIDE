@@ -241,6 +241,7 @@ public class EditorActivity extends StudioActivity
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
+    LOG.debug("Prepare options menu");
     ensureToolbarMenu(menu);
     return true;
   }

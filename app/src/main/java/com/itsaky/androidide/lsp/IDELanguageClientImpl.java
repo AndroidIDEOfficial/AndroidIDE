@@ -19,9 +19,10 @@
  */
 package com.itsaky.androidide.lsp;
 
-import android.os.Looper;
+import android.os.Trace;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.FileIOUtils;
@@ -57,10 +58,13 @@ import com.itsaky.toaster.Toaster;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer;
@@ -74,6 +78,9 @@ public class IDELanguageClientImpl implements ILanguageClient {
   private static IDELanguageClientImpl mInstance;
   private final Map<File, List<DiagnosticItem>> diagnostics = new HashMap<>();
   protected EditorActivityProvider activityProvider;
+
+  public static final int MAX_DIAGNOSTIC_FILES = 10;
+  public static final int MAX_DIAGNOSTIC_ITEMS_PER_FILE = 20;
 
   private IDELanguageClientImpl(EditorActivityProvider provider) {
     setActivityProvider(provider);
@@ -153,8 +160,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
     File file = result.getFile().toFile();
     if (!file.exists() || !file.isFile()) return;
 
-    LOG.debug("Updating diagnostics. Is main thread?", Looper.getMainLooper() == Looper.myLooper());
-
+    Trace.beginSection("publishDiagnostics");
     final var editorView = activity().getEditorForFile(file);
     if (editorView != null) {
       final var editor = editorView.getEditor();
@@ -174,6 +180,7 @@ public class IDELanguageClientImpl implements ILanguageClient {
 
     diagnostics.put(file, result.getDiagnostics());
     activity().setDiagnosticsAdapter(newDiagnosticsAdapter());
+    Trace.endSection();
   }
 
   @Nullable
@@ -284,16 +291,79 @@ public class IDELanguageClientImpl implements ILanguageClient {
             });
   }
 
-  private List<DiagnosticGroup> mapAsGroup(Map<File, List<DiagnosticItem>> diags) {
-    List<DiagnosticGroup> groups = new ArrayList<>();
-    if (diags == null || diags.size() <= 0) return groups;
-    for (File file : diags.keySet()) {
-      var fileDiags = diags.get(file);
-      if (fileDiags == null || fileDiags.size() <= 0) continue;
-      DiagnosticGroup group = new DiagnosticGroup(R.drawable.ic_language_java, file, fileDiags);
+  private List<DiagnosticGroup> mapAsGroup(Map<File, List<DiagnosticItem>> map) {
+    final var groups = new ArrayList<DiagnosticGroup>();
+    var diagnosticMap = map;
+    if (diagnosticMap == null || diagnosticMap.size() <= 0) return groups;
+
+    if (diagnosticMap.size() > 10) {
+      LOG.warn("Limiting the diagnostics to 10 files");
+      diagnosticMap = filterRelevantDiagnostics(map);
+    }
+
+    for (File file : diagnosticMap.keySet()) {
+      var fileDiagnostics = diagnosticMap.get(file);
+      if (fileDiagnostics == null || fileDiagnostics.size() <= 0) continue;
+
+      // Trim the diagnostics list if we have too many diagnostic items.
+      // Including a lot of diagnostic items will result in UI lag when they are shown
+      if (fileDiagnostics.size() > MAX_DIAGNOSTIC_ITEMS_PER_FILE) {
+        LOG.warn(
+            "Limiting diagnostics to",
+            MAX_DIAGNOSTIC_ITEMS_PER_FILE,
+            "items for file",
+            file.getName());
+
+        fileDiagnostics = fileDiagnostics.subList(0, MAX_DIAGNOSTIC_ITEMS_PER_FILE);
+      }
+      DiagnosticGroup group =
+          new DiagnosticGroup(R.drawable.ic_language_java, file, fileDiagnostics);
       groups.add(group);
     }
     return groups;
+  }
+
+  @NonNull
+  private Map<File, List<DiagnosticItem>> filterRelevantDiagnostics(
+      @NonNull final Map<File, List<DiagnosticItem>> map) {
+    final var result = new HashMap<File, List<DiagnosticItem>>();
+    final var files = map.keySet();
+
+    // Diagnostics of files that are open must always be included
+    final var relevantFiles = findOpenFiles(files, MAX_DIAGNOSTIC_FILES);
+
+    // If we can show a few more file diagnostics...
+    if (relevantFiles.size() < MAX_DIAGNOSTIC_FILES) {
+      final var alphabetical = new TreeSet<>(Comparator.comparing(File::getName));
+      alphabetical.addAll(files);
+      for (var file : alphabetical) {
+        relevantFiles.add(file);
+        if (relevantFiles.size() == MAX_DIAGNOSTIC_FILES) {
+          break;
+        }
+      }
+    }
+
+    for (var file : relevantFiles) {
+      result.put(file, map.get(file));
+    }
+    return result;
+  }
+
+  @NonNull
+  private Set<File> findOpenFiles(final Set<File> files, final int max) {
+    final var openedFiles = activity().getViewModel().getOpenedFiles();
+    final var result = new TreeSet<File>();
+    for (int i = 0; i < openedFiles.size(); i++) {
+      final var opened = openedFiles.get(i);
+      if (files.contains(opened)) {
+        result.add(opened);
+      }
+      if (result.size() == max) {
+        break;
+      }
+    }
+    return result;
   }
 
   private void showAvailableQuickfixes(IDEEditor editor, List<CodeActionItem> actions) {

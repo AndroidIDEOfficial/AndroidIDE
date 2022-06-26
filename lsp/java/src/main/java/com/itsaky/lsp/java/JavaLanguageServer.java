@@ -17,6 +17,8 @@
 
 package com.itsaky.lsp.java;
 
+import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
@@ -90,7 +92,12 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
     applySettings(getSettings());
   }
 
+  private void logIfMainThread(String methodName) {
+    LOG.debug(methodName, ": Is main thread?", Looper.myLooper() == Looper.getMainLooper());
+  }
+
   private void analyzeSelected() {
+    logIfMainThread("analyzeSelected");
     if (this.selectedFile == null) {
       return;
     }
@@ -129,6 +136,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @NonNull
   private JavaCompilerService createCompiler() {
+    logIfMainThread("createCompiler");
     return new JavaCompilerService(configuration.getClassPaths(), Collections.emptySet());
   }
 
@@ -197,6 +205,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @Override
   public void configurationChanged(Object newConfiguration) {
+    logIfMainThread("configurationChanged");
     if (!(newConfiguration instanceof JavaServerConfiguration)) {
       LOG.error("Invalid configuration passed to server.", newConfiguration);
       LOG.error("Configuration change event will be ignored.");
@@ -219,6 +228,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   @NonNull
   @Override
   public ICompletionProvider getCompletionProvider() {
+    logIfMainThread("completionProvider");
     if (!settings.completionsEnabled()) {
       return new NoCompletionsProvider();
     }
@@ -260,6 +270,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   @NonNull
   @Override
   public SignatureHelp signatureHelp(@NonNull SignatureHelpParams params) {
+    logIfMainThread("signatureHelp");
     if (!settings.signatureHelpEnabled()) {
       return new SignatureHelp(Collections.emptyList(), -1, -1);
     }
@@ -270,6 +281,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   @NonNull
   @Override
   public List<DiagnosticItem> analyze(@NonNull Path file) {
+    logIfMainThread("analyze file:" + file);
     if (!settings.codeAnalysisEnabled()) {
       return Collections.emptyList();
     }
@@ -301,6 +313,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @Override
   public void onFileOpened(DocumentOpenEvent event) {
+    logIfMainThread("onFileOpened");
     onFileSelected(event.getOpenedFile());
     ensureAnalyzeTimerStarted();
     FileStore.open(event);
@@ -308,6 +321,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @Override
   public void onContentChange(@NonNull DocumentChangeEvent event) {
+    logIfMainThread("onContentChanged");
     // If a file's content is changed, it is definitely visible to user.
     onFileSelected(event.getChangedFile());
     ensureAnalyzeTimerStarted();
@@ -321,6 +335,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
 
   @Override
   public void onFileClosed(DocumentCloseEvent event) {
+    logIfMainThread("onFileClosed");
     FileStore.close(event);
   }
 
@@ -330,6 +345,7 @@ public class JavaLanguageServer implements ILanguageServer, IDocumentHandler {
   }
 
   private void ensureAnalyzeTimerStarted() {
+    logIfMainThread("ensureAnalyzeTimerStarted");
     if (!this.analyzeTimer.isStarted()) {
       this.analyzeTimer.start();
     } else {
